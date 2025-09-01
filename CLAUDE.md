@@ -39,11 +39,11 @@ Keep commit messages clean and professional.
 - **Testing**: Jest + Playwright + MCP
 - **Infrastructure**: Docker + GitHub Actions + GitHub Container Registry
 
-## 🏃‍♂️ Quick Start Commands (Now Working!)
+## 🏃‍♂️ Quick Start Commands
 
 ```bash
-# Bootstrap entire project
-./scripts/bootstrap.sh
+# Install dependencies
+yarn install
 
 # Set up environment
 cp .env.example .env
@@ -51,40 +51,45 @@ cp .env.example .env
 # Start databases
 docker-compose up -d postgres redis
 
-# Generate new feature
-./scripts/generate-feature.sh user-management
+# Run migrations
+npm run db:migrate
+
+# Seed database
+npm run db:seed
 
 # Start development
-nx run-many --target=serve --projects=api,frontend
+nx run-many --target=serve --projects=api,web
 ```
 
-## 📋 Most Used Commands (Executable)
+## 📋 Most Used Commands
 
 | Command | Description | Actual Command |
 |---------|-------------|----------------|
-| **Setup** | Initialize project | `./scripts/bootstrap.sh` |
-| **Feature** | Create full-stack feature | `./scripts/generate-feature.sh [name]` |
-| **Develop** | Start dev servers | `nx run-many --target=serve --projects=api,frontend` |
+| **Install** | Install dependencies | `yarn install` |
+| **DB Setup** | Run migrations & seeds | `npm run db:migrate && npm run db:seed` |
+| **Develop** | Start dev servers | `nx run-many --target=serve --projects=api,web` |
 | **Test** | Run all tests | `nx run-many --target=test --all` |
 | **E2E** | Run E2E tests | `nx e2e e2e` |
 | **Build** | Build for production | `nx run-many --target=build --all` |
-| **Validate** | Check setup | `./scripts/validate-setup.sh` |
+| **Docker** | Start services | `docker-compose up -d` |
 
 
-## 🚀 Real Implementation Files
+## 🚀 Project Structure
 
 ```
-claude/
-├── scripts/                    # Working automation scripts
-│   ├── bootstrap.sh           # ✅ Complete project setup
-│   ├── generate-feature.sh    # ✅ Feature generator
-│   └── validate-setup.sh      # ✅ Environment checker
-├── templates/                  # Code templates
-│   ├── backend/               # ✅ Fastify templates
-│   ├── frontend/              # ✅ Angular templates
-│   └── e2e/                   # ✅ Playwright templates
+aegisx-starter/
+├── apps/                      # Applications
+│   ├── api/                   # ✅ Fastify backend
+│   ├── web/                   # ✅ Angular web app
+│   └── admin/                 # ✅ Angular admin panel
+├── docs/                      # ✅ Complete documentation
+│   ├── 01-feature-tracking.md
+│   ├── 02-quick-commands.md
+│   ├── 04a-api-first-workflow.md
+│   └── ...
 ├── docker-compose.yml         # ✅ Development environment
-└── .env.example              # ✅ Environment template
+├── package.json               # ✅ NPM scripts
+└── nx.json                    # ✅ Nx configuration
 ```
 
 ## 🎯 Development Philosophy

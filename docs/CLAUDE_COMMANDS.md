@@ -6,17 +6,20 @@
 
 ### Initial Setup
 ```bash
-# Bootstrap the entire project
-./scripts/bootstrap.sh
-
-# Validate your setup
-./scripts/validate-setup.sh
+# Install dependencies
+yarn install
 
 # Copy environment file
 cp .env.example .env
 
-# Install dependencies (if already bootstrapped)
-yarn install
+# Start databases
+docker-compose up -d
+
+# Run migrations
+npm run db:migrate
+
+# Seed database
+npm run db:seed
 ```
 
 ### Docker Environment
@@ -47,13 +50,17 @@ docker-compose down -v
 
 ### Generate New Feature
 ```bash
-# Generate complete full-stack feature
-./scripts/generate-feature.sh <feature-name>
+# Use Claude commands for feature generation:
+/start [feature-name]              # Start new feature
+/feature:api [feature-name]        # Design API first
+/sync:types                        # Generate shared types
+/feature:backend [name] --from-spec  # Backend implementation
+/feature:frontend [name] --from-spec # Frontend implementation
 
 # Examples:
-./scripts/generate-feature.sh user-management
-./scripts/generate-feature.sh product-catalog
-./scripts/generate-feature.sh order-processing
+/start user-management
+/start product-catalog
+/start order-processing
 ```
 
 ### Nx Generators
@@ -338,38 +345,48 @@ docker exec aegisx-redis redis-cli ping
 When working with Claude Code, you can use these commands:
 
 ```bash
-# Ask Claude to bootstrap project
-"Please run ./scripts/bootstrap.sh to set up the project"
+# Ask Claude to start a new feature
+/start user-management
 
-# Ask Claude to create a feature
-"Please generate a user-management feature using ./scripts/generate-feature.sh"
+# Ask Claude to design API
+/feature:api user-management
+
+# Ask Claude to implement backend
+/feature:backend user-management --from-spec
+
+# Ask Claude to implement frontend
+/feature:frontend user-management --from-spec
+
+# Ask Claude to check alignment
+/align:check user-management
 
 # Ask Claude to run tests
-"Please run nx test api to check if tests pass"
-
-# Ask Claude to start development
-"Please start the development servers with nx run-many --target=serve --projects=api,frontend"
+/test:unit api
+/test:integration user-management
+/test:e2e user-management
 ```
 
 ## 📚 Quick Command Sequences
 
 ### Start Fresh Development
 ```bash
-./scripts/bootstrap.sh
+yarn install
 cp .env.example .env
 docker-compose up -d postgres redis
-nx run api:migrate
-nx run api:seed
-nx run-many --target=serve --projects=api,frontend
+npm run db:migrate
+npm run db:seed
+nx run-many --target=serve --projects=api,web
 ```
 
-### Create and Test New Feature
+### Create and Test New Feature (API-First)
 ```bash
-./scripts/generate-feature.sh my-feature
-nx test backend-my-feature
-nx test frontend-my-feature
-nx serve api
-nx serve frontend
+/start my-feature
+/feature:api my-feature
+/sync:types
+/feature:backend my-feature --from-spec
+/feature:frontend my-feature --from-spec
+/align:check my-feature
+/test:integration my-feature
 ```
 
 ### Prepare for Production

@@ -1,15 +1,15 @@
 # Project Bootstrap Guide
 
-## 🚀 Quick Start with Bootstrap Script
+## 🚀 Quick Start
 
-### **Automated Setup (Recommended)**
+### **Project Setup**
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd <project-name>
+cd aegisx-starter
 
-# Run bootstrap script
-./scripts/bootstrap.sh
+# Install dependencies
+yarn install
 
 # Copy environment file
 cp .env.example .env
@@ -17,32 +17,27 @@ cp .env.example .env
 # Start databases
 docker-compose up -d
 
-# Copy database files from docs (if not already present)
-cp docs/database/migrations/* database/migrations/
-cp docs/database/seeds/* database/seeds/
-
 # Run migrations
-npx knex migrate:latest
-npx knex seed:run
+npm run db:migrate
+
+# Seed database
+npm run db:seed
 
 # Start development
-nx serve api
-nx serve web
-nx serve admin
+nx run-many --target=serve --projects=api,web
 ```
 
-### **What Bootstrap Script Does**
-1. **Preserves existing files** - Backs up docs/, .git, README.md
-2. **Creates Nx workspace** - In temp directory to avoid conflicts
-3. **Generates initial apps** - API (Fastify), Web and Admin (Angular)
-4. **Creates shared libraries** - Types, utils, etc.
-5. **Installs all dependencies** - Backend & Frontend packages
-6. **Sets up configuration** - ESLint, Prettier, TypeScript
-7. **Creates environment files** - .env.example, docker-compose.yml
-8. **Configures Git hooks** - Husky, commitlint, lint-staged
-9. **Sets up database structure** - Creates knexfile and directories
-
-**Note**: Database migrations and seeds are stored in `docs/database/` and need to be copied to your project after bootstrap.
+### **Project Structure**
+The project is already set up with:
+1. **Nx Monorepo** - Managing multiple applications
+2. **Three Applications**:
+   - `apps/api` - Fastify backend with auth system
+   - `apps/web` - Angular frontend for users
+   - `apps/admin` - Angular admin panel
+3. **Database Ready** - PostgreSQL with migrations
+4. **Authentication** - JWT with refresh tokens
+5. **Development Tools** - ESLint, Prettier, TypeScript
+6. **Docker Environment** - PostgreSQL + Redis + PgAdmin
 
 ### **Login Credentials (After Seeding)**
 - **Super Admin**: admin@aegisx.com / Admin123!

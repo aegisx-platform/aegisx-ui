@@ -140,9 +140,6 @@ npx knex migrate:rollback --all && npx knex migrate:latest && npx knex seed:run
 5. /feature:frontend --from-spec # Frontend uses same spec
 6. /align:check --watch      # Continuous alignment validation
 7. /integration:test         # Verify integration
-
-# Or use the generator script
-./scripts/generate-feature.sh <feature-name>
 ```
 
 ### API Testing

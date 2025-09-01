@@ -1423,7 +1423,8 @@ export class MigrationUtils {
 
 ### Database Backup Utility
 ```typescript
-// database/scripts/backup.ts
+// Example backup utility (create in your project if needed)
+// utils/database-backup.ts
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
@@ -1497,7 +1498,8 @@ export class DatabaseBackup {
 
 ### Seed Reset Utility
 ```typescript
-// database/scripts/reset-seeds.ts
+// Example seed reset utility (create in your project if needed)
+// utils/reset-seeds.ts
 import knex from 'knex';
 import knexConfig from '../knexfile';
 
@@ -1841,7 +1843,8 @@ describe('Database Migrations', () => {
 ### Production Migration Process
 ```bash
 #!/bin/bash
-# database/scripts/migrate-production.sh
+# Example production migration script (create in your project if needed)
+# scripts/migrate-production.sh
 
 set -e  # Exit on any error
 
@@ -1875,7 +1878,8 @@ npx knex migrate:status --knexfile database/knexfile.ts --env production
 
 # 6. Run post-migration verification
 echo "🔍 Running post-migration verification..."
-node database/scripts/verify-data-integrity.js
+# Run data integrity verification
+node utils/verify-data-integrity.js
 
 echo "🎉 Production migration completed successfully!"
 
@@ -1885,7 +1889,8 @@ dropdb "${TEST_DB_URL##*/}" || true
 
 ### Data Integrity Verification
 ```typescript
-// database/scripts/verify-data-integrity.ts
+// Example data integrity verification (create in your project if needed)
+// utils/verify-data-integrity.ts
 import knex from 'knex';
 import knexConfig from '../knexfile';
 
@@ -1972,12 +1977,13 @@ yarn db:fresh                            # Rollback all + migrate (no seeds)
 yarn db:setup                            # Migrate + seed (for new setup)
 
 # Backup & Restore
-node database/scripts/backup.ts           # Create backup
-node database/scripts/restore.ts backup.sql  # Restore from backup
+# Example usage (if utilities are created):
+node utils/backup.ts           # Create backup
+node utils/restore.ts backup.sql  # Restore from backup
 
 # Utilities
-node database/scripts/reset-seeds.ts      # Reset to baseline with seeds
-node database/scripts/verify-data-integrity.ts  # Verify data integrity
+node utils/reset-seeds.ts      # Reset to baseline with seeds
+node utils/verify-data-integrity.ts  # Verify data integrity
 ```
 
 ## Best Practices Summary
