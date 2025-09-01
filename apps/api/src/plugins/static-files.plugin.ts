@@ -1,0 +1,61 @@
+import fp from 'fastify-plugin';
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import * as path from 'path';
+import * as fs from 'fs/promises';
+
+async function staticFilesPlugin(
+  fastify: FastifyInstance,
+  _options: FastifyPluginOptions
+) {
+  // Serve avatar files
+  fastify.get('/api/uploads/avatars/:filename', async (request, reply) => {
+    const { filename } = request.params as { filename: string };
+    
+    // Basic security: only allow certain file extensions
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+    const ext = path.extname(filename).toLowerCase();
+    
+    if (!allowedExtensions.includes(ext)) {
+      return reply.notFound();
+    }
+    
+    // Prevent directory traversal
+    if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+      return reply.notFound();
+    }
+    
+    const uploadsDir = path.join(process.cwd(), 'uploads', 'avatars');
+    const filePath = path.join(uploadsDir, filename);
+    
+    try {
+      // Check if file exists
+      await fs.access(filePath);
+      
+      // Set appropriate content type
+      const contentTypes: Record<string, string> = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.webp': 'image/webp'
+      };
+      
+      reply.type(contentTypes[ext] || 'application/octet-stream');
+      
+      // Set caching headers
+      reply.header('Cache-Control', 'public, max-age=31536000'); // 1 year
+      reply.header('ETag', `"${filename}"`);
+      
+      // Stream the file
+      const stream = require('fs').createReadStream(filePath);
+      return reply.send(stream);
+    } catch (_error) {
+      return reply.notFound();
+    }
+  });
+
+  fastify.log.info('Static files plugin registered successfully');
+}
+
+export default fp(staticFilesPlugin, {
+  name: 'static-files'
+});

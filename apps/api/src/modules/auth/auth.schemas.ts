@@ -161,8 +161,8 @@ export const authSchemas = {
 };
 
 // Export schemas for registration
-export function registerAuthSchemas(fastify: any) {
-  for (const [key, schema] of Object.entries(authSchemas)) {
+export function registerAuthSchemas(fastify: { addSchema: (schema: unknown) => void }) {
+  for (const [_key, schema] of Object.entries(authSchemas)) {
     fastify.addSchema(schema);
   }
 }

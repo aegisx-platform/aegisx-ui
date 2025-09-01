@@ -16,6 +16,10 @@ import errorHandlerPlugin from './plugins/error-handler.plugin';
 import schemasPlugin from './plugins/schemas.plugin';
 import authStrategiesPlugin from './modules/auth/strategies/auth.strategies';
 import authPlugin from './modules/auth/auth.plugin';
+// import navigationPlugin from './modules/navigation/navigation.plugin';
+import userProfilePlugin from './modules/user-profile/user-profile.plugin';
+import staticFilesPlugin from './plugins/static-files.plugin';
+import jwtAuthPlugin from './plugins/jwt-auth.plugin';
 
 // Load environment variables
 dotenv.config();
@@ -82,6 +86,9 @@ async function bootstrap() {
 
   // 6. Authentication strategies
   await app.register(fastifyAuth);
+  
+  // 6.5. JWT Auth wrapper plugin
+  await app.register(jwtAuthPlugin);
 
   // 7. Response handler
   await app.register(responseHandlerPlugin);
@@ -95,9 +102,18 @@ async function bootstrap() {
   // 10. Auth strategies
   await app.register(authStrategiesPlugin);
 
-  // 11. Feature modules
+  // 11. Static files (before feature modules)
+  await app.register(staticFilesPlugin);
+
+  // 12. Feature modules
   // Auth module
   await app.register(authPlugin);
+  
+  // Navigation module (temporarily disabled due to compilation errors)
+  // await app.register(navigationPlugin);
+  
+  // User Profile module
+  await app.register(userProfilePlugin);
 
   // Health check
   app.get('/health', async () => {

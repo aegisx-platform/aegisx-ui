@@ -79,7 +79,7 @@ export class AuthService {
       { 
         id: user.id, 
         email: user.email,
-        roles: [user.role || 'user'] 
+        role: user.role || 'user' 
       },
       { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
     );
@@ -125,7 +125,7 @@ export class AuthService {
       { 
         id: user.id, 
         email: user.email,
-        roles: [user.role || 'user'] 
+        role: user.role || 'user' 
       },
       { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
     );

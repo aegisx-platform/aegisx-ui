@@ -2,7 +2,7 @@
 export interface JWTPayload {
   id: string;
   email: string;
-  roles: string[];
+  role: string;
 }
 
 // Extend Fastify JWT module

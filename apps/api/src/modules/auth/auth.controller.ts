@@ -1,14 +1,15 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { RegisterRequest, LoginRequest, RefreshRequest } from './auth.types';
 
 export const authController = {
   async register(request: FastifyRequest, reply: FastifyReply) {
-    const user = await this.authService.register(request.body as any);
+    const user = await this.authService.register(request.body as RegisterRequest);
     return reply.created(user, 'User registered successfully');
   },
 
   async login(request: FastifyRequest, reply: FastifyReply) {
     const result = await this.authService.login(
-      request.body as any,
+      request.body as LoginRequest,
       request.headers['user-agent'],
       request.ip
     );
@@ -29,7 +30,7 @@ export const authController = {
   },
 
   async refresh(request: FastifyRequest, reply: FastifyReply) {
-    const refreshToken = request.cookies.refreshToken || (request.body as any).refreshToken;
+    const refreshToken = request.cookies.refreshToken || (request.body as RefreshRequest).refreshToken;
     
     if (!refreshToken) {
       throw new Error('REFRESH_TOKEN_NOT_FOUND');
@@ -55,7 +56,7 @@ export const authController = {
   },
 
   async me(request: FastifyRequest, reply: FastifyReply) {
-    const userId = (request.user as any).id;
+    const userId = request.user.id;
     const profile = await this.authService.getProfile(userId);
     
     return reply.success(profile, 'Profile retrieved successfully');

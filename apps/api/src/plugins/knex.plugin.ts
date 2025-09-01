@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import fp from 'fastify-plugin';
 import knex, { Knex } from 'knex';
 
-async function knexPlugin(fastify: FastifyInstance, opts: FastifyPluginOptions) {
+async function knexPlugin(fastify: FastifyInstance, _opts: FastifyPluginOptions) {
   const db = knex({
     client: 'postgresql',
     connection: {
@@ -45,7 +45,7 @@ async function knexPlugin(fastify: FastifyInstance, opts: FastifyPluginOptions) 
 }
 
 export default fp(knexPlugin, {
-  name: 'knex-plugin'
+  name: 'knex'
 });
 
 // TypeScript declarations

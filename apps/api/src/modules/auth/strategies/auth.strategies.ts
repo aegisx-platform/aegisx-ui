@@ -4,18 +4,18 @@ import fp from 'fastify-plugin';
 async function authStrategiesPlugin(fastify: FastifyInstance) {
   
   // Strategy 1: JWT Authentication
-  fastify.decorate('verifyJWT', async function (request: FastifyRequest, reply: FastifyReply) {
+  fastify.decorate('verifyJWT', async function (request: FastifyRequest, _reply: FastifyReply) {
     try {
       await request.jwtVerify();
-    } catch (err) {
+    } catch (_err) {
       throw new Error('INVALID_TOKEN');
     }
   });
 
   // Strategy 2: Role-based Authorization
   fastify.decorate('verifyRole', function (allowedRoles: string[]) {
-    return async function (request: FastifyRequest, reply: FastifyReply) {
-      const user = request.user as any;
+    return async function (request: FastifyRequest, _reply: FastifyReply) {
+      const user = request.user;
       if (!user || !user.role || !allowedRoles.includes(user.role)) {
         throw new Error('INSUFFICIENT_PERMISSIONS');
       }
@@ -23,10 +23,10 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
   });
 
   // Strategy 3: Resource Ownership
-  fastify.decorate('verifyOwnership', function (resourceParam: string = 'id') {
-    return async function (request: FastifyRequest, reply: FastifyReply) {
-      const user = request.user as any;
-      const resourceId = (request.params as any)[resourceParam];
+  fastify.decorate('verifyOwnership', function (resourceParam = 'id') {
+    return async function (request: FastifyRequest, _reply: FastifyReply) {
+      const user = request.user;
+      const resourceId = (request.params as Record<string, string>)[resourceParam];
       
       // Check if user owns resource or is admin
       if (user.role !== 'admin' && user.id !== resourceId) {
@@ -37,8 +37,8 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
 
   // Strategy 4: Permission-based Authorization
   fastify.decorate('verifyPermission', function (resource: string, action: string) {
-    return async function (request: FastifyRequest, reply: FastifyReply) {
-      const user = request.user as any;
+    return async function (request: FastifyRequest, _reply: FastifyReply) {
+      const user = request.user;
       
       // For now, we'll use role-based permissions
       // In a full implementation, this would check the permissions table
@@ -86,6 +86,6 @@ declare module 'fastify' {
     verifyOwnership: (param?: string) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     verifyPermission: (resource: string, action: string) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
-    requireRole: (roles: string[]) => any;
+    requireRole: (roles: string[]) => unknown;
   }
 }

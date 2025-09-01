@@ -119,9 +119,9 @@ export const commonSchemas = {
   }
 };
 
-async function schemasPlugin(fastify: FastifyInstance, opts: FastifyPluginOptions) {
+async function schemasPlugin(fastify: FastifyInstance, _opts: FastifyPluginOptions) {
   // Register common schemas
-  for (const [key, schema] of Object.entries(commonSchemas)) {
+  for (const [_key, schema] of Object.entries(commonSchemas)) {
     fastify.addSchema(schema);
   }
 }

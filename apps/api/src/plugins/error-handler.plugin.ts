@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyError } from 'fastify';
 import fp from 'fastify-plugin';
 
-async function errorHandlerPlugin(fastify: FastifyInstance, opts: FastifyPluginOptions) {
+async function errorHandlerPlugin(fastify: FastifyInstance, _opts: FastifyPluginOptions) {
   fastify.setErrorHandler(async (error: FastifyError, request, reply) => {
     const { statusCode = 500, message, code } = error;
     

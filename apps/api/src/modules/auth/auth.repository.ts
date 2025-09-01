@@ -14,6 +14,19 @@ export interface User {
   updatedAt: Date;
 }
 
+export interface DBUser {
+  id: string;
+  email: string;
+  username: string;
+  password?: string;
+  first_name: string;
+  last_name: string;
+  is_active: boolean;
+  role?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface UserSession {
   id: string;
   user_id: string;
@@ -167,7 +180,7 @@ export class AuthRepository {
   }
 
   // Transform snake_case DB fields to camelCase
-  private transformUser(dbUser: any): User {
+  private transformUser(dbUser: DBUser): User {
     return {
       id: dbUser.id,
       email: dbUser.email,

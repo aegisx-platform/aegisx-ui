@@ -6,7 +6,7 @@ import authRoutes from './auth.routes';
 
 export default fp(async function authPlugin(
   fastify: FastifyInstance,
-  opts: FastifyPluginOptions
+  _opts: FastifyPluginOptions
 ) {
   // Register auth schemas
   registerAuthSchemas(fastify);
@@ -21,7 +21,7 @@ export default fp(async function authPlugin(
   await fastify.register(authRoutes);
 }, {
   name: 'auth-plugin',
-  dependencies: ['knex-plugin', 'response-handler', 'auth-strategies-plugin']
+  dependencies: ['knex', 'response-handler', 'auth-strategies-plugin']
 });
 
 // TypeScript declarations
