@@ -14,12 +14,15 @@ import knexPlugin from './plugins/knex.plugin';
 import responseHandlerPlugin from './plugins/response-handler.plugin';
 import errorHandlerPlugin from './plugins/error-handler.plugin';
 import schemasPlugin from './plugins/schemas.plugin';
+import schemaEnforcementPlugin from './plugins/schema-enforcement.plugin';
 import authStrategiesPlugin from './modules/auth/strategies/auth.strategies';
 import authPlugin from './modules/auth/auth.plugin';
-// import navigationPlugin from './modules/navigation/navigation.plugin';
+import navigationPlugin from './modules/navigation/navigation.plugin';
 import userProfilePlugin from './modules/user-profile/user-profile.plugin';
+import defaultPlugin from './modules/default/default.plugin';
 import staticFilesPlugin from './plugins/static-files.plugin';
 import jwtAuthPlugin from './plugins/jwt-auth.plugin';
+import swaggerPlugin from './plugins/swagger.plugin';
 
 // Load environment variables
 dotenv.config();
@@ -99,30 +102,31 @@ async function bootstrap() {
   // 9. Common schemas
   await app.register(schemasPlugin);
 
-  // 10. Auth strategies
+  // 10. Schema enforcement (ensures all routes have schemas)
+  await app.register(schemaEnforcementPlugin);
+
+  // 11. Auth strategies
   await app.register(authStrategiesPlugin);
 
-  // 11. Static files (before feature modules)
+  // 12. Swagger documentation (before routes so it can capture them)
+  await app.register(swaggerPlugin);
+
+  // 13. Static files (before feature modules)
   await app.register(staticFilesPlugin);
 
-  // 12. Feature modules
+  // 14. Feature modules
+  // Default/System module (info, status, health endpoints)
+  await app.register(defaultPlugin);
+  
   // Auth module
   await app.register(authPlugin);
   
-  // Navigation module (temporarily disabled due to compilation errors)
-  // await app.register(navigationPlugin);
+  // Navigation module
+  await app.register(navigationPlugin);
   
   // User Profile module
   await app.register(userProfilePlugin);
 
-  // Health check
-  app.get('/health', async () => {
-    return { 
-      status: 'ok', 
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development'
-    };
-  });
 
   // Start server
   const port = process.env.PORT || 3333;

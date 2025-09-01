@@ -36,7 +36,31 @@ export { NavigationController, createNavigationController } from './navigation.c
 export * from './navigation.types';
 
 // Schemas and validation
-export { registerNavigationSchemas, navigationRouteSchemas, schemas, schemaOptions } from './navigation.schemas';
+export {
+  // Schemas
+  BadgeVariantEnum,
+  NavigationTypeEnum,
+  NavigationVariantEnum,
+  TargetEnum,
+  NavigationBadgeSchema,
+  NavigationItemSchema,
+  NavigationDataSchema,
+  NavigationResponseSchema,
+  GetNavigationQuerySchema,
+  GetUserNavigationQuerySchema,
+  navigationSchemas,
+  // Types
+  type BadgeVariant,
+  type NavigationType,
+  type NavigationVariant,
+  type Target,
+  type NavigationBadge,
+  type NavigationItem,
+  type NavigationData,
+  type NavigationResponse,
+  type GetNavigationQuery,
+  type GetUserNavigationQuery
+} from './navigation.schemas';
 
 // Routes
 export { default as navigationRoutes } from './navigation.routes';

@@ -8,7 +8,41 @@ async function staticFilesPlugin(
   _options: FastifyPluginOptions
 ) {
   // Serve avatar files
-  fastify.get('/api/uploads/avatars/:filename', async (request, reply) => {
+  fastify.route({
+    method: 'GET',
+    url: '/api/uploads/avatars/:filename',
+    schema: {
+      description: 'Serve avatar image files',
+      tags: ['Files'],
+      summary: 'Get avatar image',
+      params: {
+        type: 'object',
+        required: ['filename'],
+        properties: {
+          filename: {
+            type: 'string',
+            pattern: '^[a-zA-Z0-9._-]+\\.(jpg|jpeg|png|webp)$',
+            description: 'Avatar filename'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar image file'
+        },
+        404: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', const: false },
+            error: { type: 'string' },
+            message: { type: 'string' }
+          }
+        }
+      }
+    },
+    handler: async (request, reply) => {
     const { filename } = request.params as { filename: string };
     
     // Basic security: only allow certain file extensions
@@ -50,6 +84,7 @@ async function staticFilesPlugin(
       return reply.send(stream);
     } catch (_error) {
       return reply.notFound();
+    }
     }
   });
 

@@ -276,8 +276,42 @@ async function userRoutes(fastify: FastifyInstance) {
 ```
 
 ### 2. Complete OpenAPI Schema System (MANDATORY)
+
+#### Schema Organization Standards
+
+1. **File Structure**:
+   - Each module must have its own `{module}.schemas.ts` file
+   - All schemas must be exported as a single object
+   - Schema files must be in the module directory, not in routes
+
+2. **Schema Registration Pattern**:
+   ```typescript
+   // Standardized schema registration in plugin
+   export default fp(
+     async function modulePlugin(fastify: FastifyInstance) {
+       // Register schemas first
+       Object.values(moduleSchemas).forEach(schema => {
+         fastify.addSchema(schema);
+       });
+       
+       // Initialize services and controllers
+       const service = new ModuleService(fastify.knex);
+       const controller = new ModuleController(service);
+       
+       // Register routes with controller
+       await fastify.register(moduleRoutes, { controller });
+     }
+   );
+   ```
+
+3. **Controller Pattern**:
+   - Every module must have a separate controller file
+   - Controllers handle request/response logic
+   - Services handle business logic
+   - Routes only define endpoints and schemas
+
 ```typescript
-// apps/api/src/schemas/user.schema.ts
+// apps/api/src/modules/user/user.schemas.ts
 export const userSchemas = {
   // Base entity schemas
   user: {

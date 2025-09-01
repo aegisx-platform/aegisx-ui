@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { createNavigationController } from './navigation.controller';
-import { navigationRouteSchemas } from './navigation.schemas';
+import { SchemaRefs } from '../../schemas/registry';
 
 /**
  * Navigation Routes
@@ -11,6 +12,8 @@ export default async function navigationRoutes(
   fastify: FastifyInstance,
   _opts: FastifyPluginOptions
 ) {
+  const typedFastify = fastify.withTypeProvider<TypeBoxTypeProvider>();
+  
   // Get navigation service from fastify instance
   const navigationService = fastify.navigationService;
   if (!navigationService) {
@@ -25,8 +28,20 @@ export default async function navigationRoutes(
    * Get complete navigation structure
    * Requires authentication and navigation.view permission
    */
-  fastify.get('/navigation', {
-    schema: navigationRouteSchemas.getNavigation,
+  typedFastify.get('/navigation', {
+    schema: {
+      description: 'Get complete navigation structure',
+      tags: ['Navigation'],
+      summary: 'Get navigation items for all variants',
+      security: [{ bearerAuth: [] }],
+      querystring: SchemaRefs.module('navigation', 'get-navigation-query'),
+      response: {
+        200: SchemaRefs.module('navigation', 'navigation-response'),
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
     preHandler: [
       fastify.authenticate, // JWT authentication
       fastify.verifyPermission('navigation', 'view') // Permission check
@@ -39,8 +54,19 @@ export default async function navigationRoutes(
    * Get user-specific navigation filtered by permissions
    * Requires authentication
    */
-  fastify.get('/navigation/user', {
-    schema: navigationRouteSchemas.getUserNavigation,
+  typedFastify.get('/navigation/user', {
+    schema: {
+      description: 'Get user-specific navigation filtered by permissions',
+      tags: ['Navigation'],
+      summary: 'Get navigation items filtered by user permissions',
+      security: [{ bearerAuth: [] }],
+      querystring: SchemaRefs.module('navigation', 'get-user-navigation-query'),
+      response: {
+        200: SchemaRefs.module('navigation', 'navigation-response'),
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError
+      }
+    },
     preHandler: [
       fastify.authenticate // JWT authentication only
     ],
@@ -48,20 +74,31 @@ export default async function navigationRoutes(
   });
 
   // Health check for navigation module
-  fastify.get('/navigation/health', {
+  typedFastify.get('/navigation/health', {
     schema: {
       description: 'Navigation module health check',
       tags: ['Navigation', 'Health'],
+      summary: 'Check navigation module health status',
       response: {
         200: {
           type: 'object',
           properties: {
             success: { type: 'boolean' },
-            module: { type: 'string' },
-            timestamp: { type: 'string', format: 'date-time' },
-            uptime: { type: 'number' }
+            data: {
+              type: 'object',
+              properties: {
+                module: { type: 'string' },
+                status: { type: 'string' },
+                database: { type: 'string' },
+                responseTime: { type: 'string' },
+                timestamp: { type: 'string', format: 'date-time' },
+                uptime: { type: 'number' }
+              }
+            },
+            message: { type: 'string' }
           }
-        }
+        },
+        500: SchemaRefs.ServerError
       }
     },
     handler: async (request, reply) => {

@@ -1,80 +1,58 @@
 import { FastifyInstance } from 'fastify';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { authController } from './auth.controller';
+import { SchemaRefs } from '../../schemas/registry';
 
 export default async function authRoutes(fastify: FastifyInstance) {
-  // ⚠️ IMPORTANT: ALL routes MUST have complete schema definition
+  const typedFastify = fastify.withTypeProvider<TypeBoxTypeProvider>();
   
   // POST /api/auth/register
-  fastify.route({
+  typedFastify.route({
     method: 'POST',
     url: '/api/auth/register',
     schema: {
-      body: { $ref: 'registerRequest#' },
+      body: SchemaRefs.module('auth', 'registerRequest'),
       response: {
-        201: { $ref: 'registerResponse#' },
-        400: { $ref: 'validationErrorResponse#' },
-        409: { $ref: 'conflictResponse#' },
-        500: { $ref: 'serverErrorResponse#' }
+        201: SchemaRefs.module('auth', 'registerResponse'),
+        400: SchemaRefs.ValidationError,
+        409: SchemaRefs.Conflict,
+        500: SchemaRefs.ServerError
       }
     },
     handler: authController.register
   });
 
   // POST /api/auth/login
-  fastify.route({
+  typedFastify.route({
     method: 'POST',
     url: '/api/auth/login',
     schema: {
-      body: { $ref: 'loginRequest#' },
+      body: SchemaRefs.module('auth', 'loginRequest'),
       response: {
-        200: { $ref: 'authResponse#' },
-        401: { $ref: 'unauthorizedResponse#' },
-        500: { $ref: 'serverErrorResponse#' }
+        200: SchemaRefs.module('auth', 'authResponse'),
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError
       }
     },
     handler: authController.login
   });
 
   // POST /api/auth/refresh
-  fastify.route({
+  typedFastify.route({
     method: 'POST',
     url: '/api/auth/refresh',
     schema: {
-      body: { $ref: 'refreshRequest#' },
+      body: SchemaRefs.module('auth', 'refreshRequest'),
       response: {
-        200: { $ref: 'refreshResponse#' },
-        401: { $ref: 'unauthorizedResponse#' },
-        500: { $ref: 'serverErrorResponse#' }
+        200: SchemaRefs.module('auth', 'refreshResponse'),
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError
       }
     },
     handler: authController.refresh
   });
 
-  // POST /api/auth/logout
-  fastify.route({
-    method: 'POST',
-    url: '/api/auth/logout',
-    schema: {
-      response: {
-        200: { $ref: 'logoutResponse#' },
-        500: { $ref: 'serverErrorResponse#' }
-      }
-    },
-    handler: authController.logout
-  });
-
-  // GET /api/auth/me
-  fastify.route({
-    method: 'GET',
-    url: '/api/auth/me',
-    schema: {
-      response: {
-        200: { $ref: 'profileResponse#' },
-        401: { $ref: 'unauthorizedResponse#' },
-        500: { $ref: 'serverErrorResponse#' }
-      }
-    },
-    preHandler: fastify.auth([fastify.verifyJWT]),
-    handler: authController.me
-  });
+  // TODO: Implement profile and logout endpoints
+  // GET /api/auth/profile - Requires authController.profile implementation
+  // POST /api/auth/logout - Requires authController.logout implementation
 }

@@ -1,236 +1,175 @@
-// Fastify JSON Schema definitions for user profile module
+import { Type, Static } from '@sinclair/typebox';
+import { ApiSuccessResponseSchema } from '../../schemas/base.schemas';
 
-export const userProfileResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean' },
-    data: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        email: { type: 'string', format: 'email' },
-        name: { type: 'string' },
-        firstName: { type: 'string' },
-        lastName: { type: 'string' },
-        avatar: { type: 'string', format: 'uri', nullable: true },
-        role: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            name: { type: 'string' },
-            permissions: {
-              type: 'array',
-              items: { type: 'string' }
-            }
-          },
-          required: ['id', 'name']
-        },
-        preferences: {
-          type: 'object',
-          properties: {
-            theme: { type: 'string', enum: ['default', 'dark', 'light', 'auto'] },
-            scheme: { type: 'string', enum: ['light', 'dark', 'auto'] },
-            layout: { type: 'string', enum: ['classic', 'compact', 'enterprise', 'empty'] },
-            language: { type: 'string' },
-            timezone: { type: 'string' },
-            dateFormat: { type: 'string', enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'] },
-            timeFormat: { type: 'string', enum: ['12h', '24h'] },
-            notifications: {
-              type: 'object',
-              properties: {
-                email: { type: 'boolean' },
-                push: { type: 'boolean' },
-                desktop: { type: 'boolean' },
-                sound: { type: 'boolean' }
-              }
-            },
-            navigation: {
-              type: 'object',
-              properties: {
-                collapsed: { type: 'boolean' },
-                type: { type: 'string', enum: ['default', 'compact', 'horizontal'] },
-                position: { type: 'string', enum: ['left', 'right', 'top'] }
-              }
-            }
-          }
-        },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-        lastLoginAt: { type: 'string', format: 'date-time', nullable: true },
-        status: { type: 'string', enum: ['active', 'inactive', 'suspended', 'pending'] },
-        emailVerified: { type: 'boolean' },
-        twoFactorEnabled: { type: 'boolean' }
-      },
-      required: ['id', 'email', 'name', 'role', 'status']
-    },
-    meta: {
-      type: 'object',
-      properties: {
-        timestamp: { type: 'string', format: 'date-time' },
-        version: { type: 'string' },
-        requestId: { type: 'string' }
-      }
-    }
-  },
-  required: ['success']
-} as const;
+// Enums
+export const ThemeEnum = Type.Union([
+  Type.Literal('default'),
+  Type.Literal('dark'),
+  Type.Literal('light'),
+  Type.Literal('auto')
+]);
 
-export const userProfileUpdateRequestSchema = {
-  type: 'object',
-  properties: {
-    name: { type: 'string', minLength: 1, maxLength: 100 },
-    firstName: { type: 'string', minLength: 1, maxLength: 50 },
-    lastName: { type: 'string', minLength: 1, maxLength: 50 },
-    preferences: {
-      type: 'object',
-      properties: {
-        theme: { type: 'string', enum: ['default', 'dark', 'light', 'auto'] },
-        scheme: { type: 'string', enum: ['light', 'dark', 'auto'] },
-        layout: { type: 'string', enum: ['classic', 'compact', 'enterprise', 'empty'] },
-        language: { type: 'string', pattern: '^[a-z]{2}$' },
-        timezone: { type: 'string' },
-        dateFormat: { type: 'string', enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'] },
-        timeFormat: { type: 'string', enum: ['12h', '24h'] },
-        notifications: {
-          type: 'object',
-          properties: {
-            email: { type: 'boolean' },
-            push: { type: 'boolean' },
-            desktop: { type: 'boolean' },
-            sound: { type: 'boolean' }
-          },
-          additionalProperties: false
-        },
-        navigation: {
-          type: 'object',
-          properties: {
-            collapsed: { type: 'boolean' },
-            type: { type: 'string', enum: ['default', 'compact', 'horizontal'] },
-            position: { type: 'string', enum: ['left', 'right', 'top'] }
-          },
-          additionalProperties: false
-        }
-      },
-      additionalProperties: false
-    }
-  },
-  additionalProperties: false
-} as const;
+export const SchemeEnum = Type.Union([
+  Type.Literal('light'),
+  Type.Literal('dark'),
+  Type.Literal('auto')
+]);
 
-export const userPreferencesUpdateRequestSchema = {
-  type: 'object',
-  properties: {
-    theme: { type: 'string', enum: ['default', 'dark', 'light', 'auto'] },
-    scheme: { type: 'string', enum: ['light', 'dark', 'auto'] },
-    layout: { type: 'string', enum: ['classic', 'compact', 'enterprise', 'empty'] },
-    language: { type: 'string', pattern: '^[a-z]{2}$' },
-    timezone: { type: 'string' },
-    dateFormat: { type: 'string', enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'] },
-    timeFormat: { type: 'string', enum: ['12h', '24h'] },
-    notifications: {
-      type: 'object',
-      properties: {
-        email: { type: 'boolean' },
-        push: { type: 'boolean' },
-        desktop: { type: 'boolean' },
-        sound: { type: 'boolean' }
-      },
-      additionalProperties: false
-    },
-    navigation: {
-      type: 'object',
-      properties: {
-        collapsed: { type: 'boolean' },
-        type: { type: 'string', enum: ['default', 'compact', 'horizontal'] },
-        position: { type: 'string', enum: ['left', 'right', 'top'] }
-      },
-      additionalProperties: false
-    }
-  },
-  additionalProperties: false
-} as const;
+export const LayoutEnum = Type.Union([
+  Type.Literal('classic'),
+  Type.Literal('compact'),
+  Type.Literal('enterprise'),
+  Type.Literal('empty')
+]);
 
-export const avatarUploadResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean' },
-    data: {
-      type: 'object',
-      properties: {
-        avatar: { type: 'string', format: 'uri' },
-        thumbnails: {
-          type: 'object',
-          properties: {
-            small: { type: 'string', format: 'uri' },
-            medium: { type: 'string', format: 'uri' },
-            large: { type: 'string', format: 'uri' }
-          },
-          required: ['small', 'medium', 'large']
-        }
-      },
-      required: ['avatar', 'thumbnails']
-    }
-  },
-  required: ['success', 'data']
-} as const;
+export const DateFormatEnum = Type.Union([
+  Type.Literal('MM/DD/YYYY'),
+  Type.Literal('DD/MM/YYYY'),
+  Type.Literal('YYYY-MM-DD')
+]);
 
-export const avatarDeleteResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean' },
-    data: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' }
-      },
-      required: ['message']
-    }
-  },
-  required: ['success', 'data']
-} as const;
+export const TimeFormatEnum = Type.Union([
+  Type.Literal('12h'),
+  Type.Literal('24h')
+]);
 
-export const errorResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean' },
-    error: {
-      type: 'object',
-      properties: {
-        code: { type: 'string' },
-        message: { type: 'string' },
-        details: { type: 'object' },
-        field: { type: 'string' }
-      },
-      required: ['code', 'message']
-    }
-  },
-  required: ['success', 'error']
-} as const;
+export const NavigationTypeEnum = Type.Union([
+  Type.Literal('default'),
+  Type.Literal('compact'),
+  Type.Literal('horizontal')
+]);
 
-export const validationErrorResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean' },
-    error: {
-      type: 'object',
-      properties: {
-        code: { type: 'string' },
-        message: { type: 'string' },
-        details: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              field: { type: 'string' },
-              message: { type: 'string' },
-              code: { type: 'string' }
-            },
-            required: ['field', 'message', 'code']
-          }
-        }
-      },
-      required: ['code', 'message']
-    }
-  },
-  required: ['success', 'error']
-} as const;
+export const NavigationPositionEnum = Type.Union([
+  Type.Literal('left'),
+  Type.Literal('right'),
+  Type.Literal('top')
+]);
+
+export const UserStatusEnum = Type.Union([
+  Type.Literal('active'),
+  Type.Literal('inactive'),
+  Type.Literal('suspended'),
+  Type.Literal('pending')
+]);
+
+// Sub-schemas
+export const NotificationPreferencesSchema = Type.Object({
+  email: Type.Boolean({ description: 'Email notifications enabled' }),
+  push: Type.Boolean({ description: 'Push notifications enabled' }),
+  desktop: Type.Boolean({ description: 'Desktop notifications enabled' }),
+  sound: Type.Boolean({ description: 'Sound notifications enabled' })
+});
+
+export const NavigationPreferencesSchema = Type.Object({
+  collapsed: Type.Boolean({ description: 'Navigation collapsed state' }),
+  type: NavigationTypeEnum,
+  position: NavigationPositionEnum
+});
+
+export const UserPreferencesSchema = Type.Object({
+  theme: ThemeEnum,
+  scheme: SchemeEnum,
+  layout: LayoutEnum,
+  language: Type.String({ pattern: '^[a-z]{2}$', description: 'Two-letter language code' }),
+  timezone: Type.String({ description: 'User timezone' }),
+  dateFormat: DateFormatEnum,
+  timeFormat: TimeFormatEnum,
+  notifications: NotificationPreferencesSchema,
+  navigation: NavigationPreferencesSchema
+});
+
+export const UserRoleSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  name: Type.String({ description: 'Role name' }),
+  permissions: Type.Array(Type.String(), { description: 'List of permission codes' })
+});
+
+// Main schemas
+export const UserProfileSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  email: Type.String({ format: 'email' }),
+  name: Type.String(),
+  firstName: Type.String(),
+  lastName: Type.String(),
+  avatar: Type.Union([Type.String({ format: 'uri' }), Type.Null()]),
+  role: UserRoleSchema,
+  preferences: UserPreferencesSchema,
+  createdAt: Type.String({ format: 'date-time' }),
+  updatedAt: Type.String({ format: 'date-time' }),
+  lastLoginAt: Type.Union([Type.String({ format: 'date-time' }), Type.Null()]),
+  status: UserStatusEnum,
+  emailVerified: Type.Boolean(),
+  twoFactorEnabled: Type.Boolean()
+});
+
+// Request schemas
+export const UserProfileUpdateRequestSchema = Type.Object({
+  name: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
+  firstName: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
+  lastName: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
+  preferences: Type.Optional(Type.Partial(UserPreferencesSchema))
+});
+
+export const UserPreferencesUpdateRequestSchema = Type.Partial(UserPreferencesSchema);
+
+// Response schemas
+export const UserProfileResponseSchema = ApiSuccessResponseSchema(UserProfileSchema);
+
+export const AvatarUploadDataSchema = Type.Object({
+  avatar: Type.String({ format: 'uri', description: 'Avatar URL' }),
+  thumbnails: Type.Object({
+    small: Type.String({ format: 'uri' }),
+    medium: Type.String({ format: 'uri' }),
+    large: Type.String({ format: 'uri' })
+  })
+});
+
+export const AvatarUploadResponseSchema = ApiSuccessResponseSchema(AvatarUploadDataSchema);
+
+export const AvatarDeleteDataSchema = Type.Object({
+  message: Type.String({ description: 'Success message' })
+});
+
+export const AvatarDeleteResponseSchema = ApiSuccessResponseSchema(AvatarDeleteDataSchema);
+
+// TypeScript types
+export type NotificationPreferences = Static<typeof NotificationPreferencesSchema>;
+export type NavigationPreferences = Static<typeof NavigationPreferencesSchema>;
+export type UserPreferences = Static<typeof UserPreferencesSchema>;
+export type UserRole = Static<typeof UserRoleSchema>;
+export type UserProfile = Static<typeof UserProfileSchema>;
+export type UserProfileUpdateRequest = Static<typeof UserProfileUpdateRequestSchema>;
+export type UserPreferencesUpdateRequest = Static<typeof UserPreferencesUpdateRequestSchema>;
+export type UserProfileResponse = Static<typeof UserProfileResponseSchema>;
+export type AvatarUploadData = Static<typeof AvatarUploadDataSchema>;
+export type AvatarUploadResponse = Static<typeof AvatarUploadResponseSchema>;
+export type AvatarDeleteData = Static<typeof AvatarDeleteDataSchema>;
+export type AvatarDeleteResponse = Static<typeof AvatarDeleteResponseSchema>;
+
+// Export schemas for registration
+export const userProfileSchemas = {
+  // Main schemas
+  'user-profile': UserProfileSchema,
+  'user-role': UserRoleSchema,
+  'user-preferences': UserPreferencesSchema,
+  'notification-preferences': NotificationPreferencesSchema,
+  'navigation-preferences': NavigationPreferencesSchema,
+  
+  // Request schemas
+  'user-profile-update-request': UserProfileUpdateRequestSchema,
+  'user-preferences-update-request': UserPreferencesUpdateRequestSchema,
+  
+  // Response schemas
+  'user-profile-response': UserProfileResponseSchema,
+  'avatar-upload-response': AvatarUploadResponseSchema,
+  'avatar-delete-response': AvatarDeleteResponseSchema,
+  'avatar-upload-data': AvatarUploadDataSchema,
+  'avatar-delete-data': AvatarDeleteDataSchema,
+  
+  // Legacy compatibility
+  'userProfileResponse': UserProfileResponseSchema,
+  'userProfileUpdateRequest': UserProfileUpdateRequestSchema,
+  'userPreferencesUpdateRequest': UserPreferencesUpdateRequestSchema,
+  'avatarUploadResponse': AvatarUploadResponseSchema,
+  'avatarDeleteResponse': AvatarDeleteResponseSchema
+};

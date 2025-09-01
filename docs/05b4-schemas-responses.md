@@ -1,5 +1,27 @@
 # OpenAPI Schemas & Response Standards
 
+## 🚨 MANDATORY: TypeBox Schema System
+
+**ALL routes MUST use TypeBox schemas - NO EXCEPTIONS**
+
+See [TypeBox Schema Standard](./05c-typebox-schema-standard.md) for complete implementation guide.
+
+### Quick Reference:
+```typescript
+// ✅ CORRECT - TypeBox with type safety
+import { Type, Static } from '@sinclair/typebox';
+const UserSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  email: Type.String({ format: 'email' })
+});
+
+// ❌ WRONG - Plain JSON Schema
+const userSchema = {
+  type: 'object',
+  properties: { id: { type: 'string' } }
+};
+```
+
 ## MANDATORY OpenAPI Schema System
 
 ### Complete Schema Definitions

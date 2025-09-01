@@ -1,128 +1,29 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import fp from 'fastify-plugin';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { createSchemaRegistry } from '../schemas/registry';
 
-// Common error response schemas
-export const commonSchemas = {
-  validationErrorResponse: {
-    $id: 'validationErrorResponse',
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', const: false },
-      error: {
-        type: 'object',
-        properties: {
-          code: { type: 'string', const: 'VALIDATION_ERROR' },
-          message: { type: 'string' },
-          details: { type: 'array', items: { type: 'object' } },
-          statusCode: { type: 'integer', const: 400 }
-        },
-        required: ['code', 'message']
-      }
-    },
-    required: ['success', 'error'],
-    additionalProperties: false
-  },
-
-  unauthorizedResponse: {
-    $id: 'unauthorizedResponse',
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', const: false },
-      error: {
-        type: 'object',
-        properties: {
-          code: { type: 'string', const: 'UNAUTHORIZED' },
-          message: { type: 'string', default: 'Authentication required' },
-          statusCode: { type: 'integer', const: 401 }
-        },
-        required: ['code', 'message']
-      }
-    },
-    required: ['success', 'error'],
-    additionalProperties: false
-  },
-
-  forbiddenResponse: {
-    $id: 'forbiddenResponse',
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', const: false },
-      error: {
-        type: 'object',
-        properties: {
-          code: { type: 'string', const: 'FORBIDDEN' },
-          message: { type: 'string', default: 'Insufficient permissions' },
-          statusCode: { type: 'integer', const: 403 }
-        },
-        required: ['code', 'message']
-      }
-    },
-    required: ['success', 'error'],
-    additionalProperties: false
-  },
-
-  notFoundResponse: {
-    $id: 'notFoundResponse',
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', const: false },
-      error: {
-        type: 'object',
-        properties: {
-          code: { type: 'string', const: 'NOT_FOUND' },
-          message: { type: 'string' },
-          statusCode: { type: 'integer', const: 404 }
-        },
-        required: ['code', 'message']
-      }
-    },
-    required: ['success', 'error'],
-    additionalProperties: false
-  },
-
-  conflictResponse: {
-    $id: 'conflictResponse',
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', const: false },
-      error: {
-        type: 'object',
-        properties: {
-          code: { type: 'string', const: 'CONFLICT' },
-          message: { type: 'string' },
-          statusCode: { type: 'integer', const: 409 }
-        },
-        required: ['code', 'message']
-      }
-    },
-    required: ['success', 'error'],
-    additionalProperties: false
-  },
-
-  serverErrorResponse: {
-    $id: 'serverErrorResponse',
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', const: false },
-      error: {
-        type: 'object',
-        properties: {
-          code: { type: 'string', const: 'INTERNAL_SERVER_ERROR' },
-          message: { type: 'string', default: 'An unexpected error occurred' },
-          statusCode: { type: 'integer', const: 500 }
-        },
-        required: ['code', 'message']
-      }
-    },
-    required: ['success', 'error'],
-    additionalProperties: false
-  }
-};
-
+/**
+ * Schemas Plugin
+ * Registers TypeBox type provider and all base schemas
+ */
 async function schemasPlugin(fastify: FastifyInstance, _opts: FastifyPluginOptions) {
-  // Register common schemas
-  for (const [_key, schema] of Object.entries(commonSchemas)) {
-    fastify.addSchema(schema);
+  // Set up TypeBox type provider for enhanced type safety
+  fastify.withTypeProvider<TypeBoxTypeProvider>();
+
+  // Create and initialize schema registry
+  const schemaRegistry = createSchemaRegistry(fastify);
+
+  // Decorate fastify with schema registry for module access
+  fastify.decorate('schemaRegistry', schemaRegistry);
+
+  fastify.log.info('Schema registry initialized with base schemas');
+}
+
+// Augment FastifyInstance type to include schemaRegistry
+declare module 'fastify' {
+  interface FastifyInstance {
+    schemaRegistry: import('../schemas/registry').SchemaRegistry;
   }
 }
 

@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import fp from 'fastify-plugin';
 import { NavigationService } from './services/navigation.service';
-import { registerNavigationSchemas } from './navigation.schemas';
+import { navigationSchemas } from './navigation.schemas';
 import navigationRoutes from './navigation.routes';
 
 /**
@@ -13,8 +13,8 @@ async function navigationPlugin(
   fastify: FastifyInstance,
   _opts: FastifyPluginOptions
 ) {
-  // Register navigation schemas
-  registerNavigationSchemas(fastify);
+  // Register module schemas using the schema registry
+  fastify.schemaRegistry.registerModuleSchemas('navigation', navigationSchemas);
 
   // Initialize navigation service
   const navigationService = new NavigationService(fastify);
@@ -61,7 +61,7 @@ async function navigationPlugin(
 
 export default fp(navigationPlugin, {
   name: 'navigation-plugin',
-  dependencies: ['knex-plugin', 'response-handler', 'auth-strategies-plugin']
+  dependencies: ['knex', 'response-handler', 'auth-strategies-plugin']
 });
 
 // TypeScript declarations

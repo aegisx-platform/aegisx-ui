@@ -1,248 +1,122 @@
-import { FastifyInstance } from 'fastify';
+import { Type, Static } from '@sinclair/typebox';
+import { ApiSuccessResponseSchema } from '../../schemas/base.schemas';
 
 /**
  * Navigation API Schemas
- * Fastify schemas for request validation and response serialization
+ * TypeBox schemas for request validation and response serialization
  * Based on OpenAPI specification: navigation-api.yaml
  */
 
+// Enums
+export const BadgeVariantEnum = Type.Union([
+  Type.Literal('default'),
+  Type.Literal('primary'),
+  Type.Literal('secondary'),
+  Type.Literal('success'),
+  Type.Literal('warning'),
+  Type.Literal('error')
+]);
+
+export const NavigationTypeEnum = Type.Union([
+  Type.Literal('item'),
+  Type.Literal('group'),
+  Type.Literal('collapsible'),
+  Type.Literal('divider'),
+  Type.Literal('spacer')
+]);
+
+export const NavigationVariantEnum = Type.Union([
+  Type.Literal('default'),
+  Type.Literal('compact'),
+  Type.Literal('horizontal'),
+  Type.Literal('mobile'),
+  Type.Literal('all')
+]);
+
+export const TargetEnum = Type.Union([
+  Type.Literal('_self'),
+  Type.Literal('_blank'),
+  Type.Literal('_parent'),
+  Type.Literal('_top')
+]);
+
 // Navigation Badge Schema
-const navigationBadgeSchema = {
-  type: 'object',
-  properties: {
-    title: { type: 'string' },
-    classes: { type: 'string' },
-    variant: { 
-      type: 'string', 
-      enum: ['default', 'primary', 'secondary', 'success', 'warning', 'error'] 
-    }
-  },
-  additionalProperties: false
-};
+export const NavigationBadgeSchema = Type.Object({
+  title: Type.String({ description: 'Badge title' }),
+  classes: Type.Optional(Type.String({ description: 'CSS classes for styling' })),
+  variant: Type.Optional(BadgeVariantEnum)
+});
 
-// Navigation Item Schema (recursive)
-const navigationItemSchema = {
-  type: 'object',
-  properties: {
-    id: { type: 'string' },
-    title: { type: 'string' },
-    type: { 
-      type: 'string', 
-      enum: ['item', 'group', 'collapsible', 'divider', 'spacer'] 
-    },
-    icon: { type: 'string' },
-    link: { type: 'string' },
-    target: { 
-      type: 'string', 
-      enum: ['_self', '_blank', '_parent', '_top'],
-      default: '_self'
-    },
-    disabled: { type: 'boolean', default: false },
-    hidden: { type: 'boolean', default: false },
-    badge: navigationBadgeSchema,
-    permissions: {
-      type: 'array',
-      items: { type: 'string' }
-    },
-    children: {
-      type: 'array',
-      items: { $ref: '#navigationItem' }
-    },
-    meta: {
-      type: 'object',
-      additionalProperties: true
-    }
-  },
-  required: ['id', 'title', 'type'],
-  additionalProperties: false,
-  $id: '#navigationItem'
-};
+// Navigation Item Schema (using recursive pattern)
+const NavigationItemBase = Type.Object({
+  id: Type.String({ description: 'Unique identifier for the navigation item' }),
+  title: Type.String({ description: 'Display title of the navigation item' }),
+  type: NavigationTypeEnum,
+  icon: Type.Optional(Type.String({ description: 'Icon class or name' })),
+  link: Type.Optional(Type.String({ description: 'URL or route path' })),
+  target: Type.Optional(TargetEnum),
+  disabled: Type.Optional(Type.Boolean({ default: false, description: 'Whether the item is disabled' })),
+  hidden: Type.Optional(Type.Boolean({ default: false, description: 'Whether the item is hidden' })),
+  badge: Type.Optional(NavigationBadgeSchema),
+  permissions: Type.Optional(Type.Array(Type.String(), { description: 'Required permissions to view this item' })),
+  meta: Type.Optional(Type.Record(Type.String(), Type.Any(), { description: 'Additional metadata' }))
+});
 
-// Navigation Response Schema
-const navigationResponseSchema = {
-  type: 'object',
-  properties: {
-    default: {
-      type: 'array',
-      items: { $ref: '#navigationItem' }
-    },
-    compact: {
-      type: 'array',
-      items: { $ref: '#navigationItem' }
-    },
-    horizontal: {
-      type: 'array',
-      items: { $ref: '#navigationItem' }
-    },
-    mobile: {
-      type: 'array',
-      items: { $ref: '#navigationItem' }
-    }
-  },
-  additionalProperties: false
-};
+export type NavigationItemBase = Static<typeof NavigationItemBase>;
 
-// API Meta Schema
-const apiMetaSchema = {
-  type: 'object',
-  properties: {
-    timestamp: { type: 'string', format: 'date-time' },
-    version: { type: 'string' },
-    requestId: { type: 'string' }
-  },
-  additionalProperties: false
-};
-
-// API Response Schema
-const apiResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean' },
-    data: {},
-    message: { type: 'string' },
-    meta: apiMetaSchema
-  },
-  required: ['success'],
-  additionalProperties: false
-};
-
-// API Error Schema
-const apiErrorSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean', const: false },
-    error: {
-      type: 'object',
-      properties: {
-        code: { type: 'string' },
-        message: { type: 'string' },
-        details: {},
-        field: { type: 'string' }
-      },
-      required: ['code', 'message'],
-      additionalProperties: false
-    }
-  },
-  required: ['success', 'error'],
-  additionalProperties: false
-};
-
-// Request Query Schemas
-const getNavigationQuerySchema = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      enum: ['default', 'compact', 'horizontal', 'mobile']
-    },
-    includeDisabled: {
-      type: 'boolean',
-      default: false
-    }
-  },
-  additionalProperties: false
-};
-
-const getUserNavigationQuerySchema = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      enum: ['default', 'compact', 'horizontal', 'mobile']
-    }
-  },
-  additionalProperties: false
-};
-
-// Route Schemas
-export const navigationRouteSchemas = {
-  getNavigation: {
-    querystring: getNavigationQuerySchema,
-    response: {
-      200: {
-        ...apiResponseSchema,
-        properties: {
-          ...apiResponseSchema.properties,
-          data: navigationResponseSchema
-        }
-      },
-      401: apiErrorSchema,
-      403: apiErrorSchema,
-      500: apiErrorSchema
-    }
-  },
-
-  getUserNavigation: {
-    querystring: getUserNavigationQuerySchema,
-    response: {
-      200: {
-        ...apiResponseSchema,
-        properties: {
-          ...apiResponseSchema.properties,
-          data: navigationResponseSchema
-        }
-      },
-      401: apiErrorSchema,
-      500: apiErrorSchema
-    }
-  }
-};
-
-/**
- * Register navigation schemas with Fastify instance
- * @param fastify Fastify instance
- */
-export function registerNavigationSchemas(fastify: FastifyInstance) {
-  // Register base schemas that can be referenced
-  fastify.addSchema({
-    $id: 'navigationBadge',
-    ...navigationBadgeSchema
-  });
-
-  fastify.addSchema({
-    $id: 'navigationItem',
-    ...navigationItemSchema
-  });
-
-  fastify.addSchema({
-    $id: 'navigationResponse',
-    ...navigationResponseSchema
-  });
-
-  fastify.addSchema({
-    $id: 'apiMeta',
-    ...apiMetaSchema
-  });
-
-  fastify.addSchema({
-    $id: 'apiResponse',
-    ...apiResponseSchema
-  });
-
-  fastify.addSchema({
-    $id: 'apiError',
-    ...apiErrorSchema
-  });
-
-  fastify.log.info('Navigation schemas registered successfully');
+// Recursive Navigation Item
+export interface NavigationItem extends NavigationItemBase {
+  children?: NavigationItem[];
 }
 
-// Export individual schemas for testing and documentation
-export const schemas = {
-  navigationBadge: navigationBadgeSchema,
-  navigationItem: navigationItemSchema,
-  navigationResponse: navigationResponseSchema,
-  apiMeta: apiMetaSchema,
-  apiResponse: apiResponseSchema,
-  apiError: apiErrorSchema,
-  getNavigationQuery: getNavigationQuerySchema,
-  getUserNavigationQuery: getUserNavigationQuerySchema
-};
+// Create schema that matches the interface
+export const NavigationItemSchema: any = Type.Intersect([
+  NavigationItemBase,
+  Type.Object({
+    children: Type.Optional(Type.Array(Type.Any()))
+  })
+]);
 
-// JSON Schema compilation options
-export const schemaOptions = {
-  removeAdditional: true, // Remove properties not defined in schema
-  useDefaults: true, // Apply default values
-  coerceTypes: true, // Coerce types (string to boolean, etc.)
-  addUsedSchema: false // Don't add used schemas to compiled schema
+// Navigation Response Schema
+export const NavigationDataSchema = Type.Object({
+  default: Type.Optional(Type.Array(NavigationItemSchema, { description: 'Default navigation items' })),
+  compact: Type.Optional(Type.Array(NavigationItemSchema, { description: 'Compact navigation items' })),
+  horizontal: Type.Optional(Type.Array(NavigationItemSchema, { description: 'Horizontal navigation items' })),
+  mobile: Type.Optional(Type.Array(NavigationItemSchema, { description: 'Mobile navigation items' }))
+});
+
+export const NavigationResponseSchema = ApiSuccessResponseSchema(NavigationDataSchema);
+
+// Request Query Schemas
+export const GetNavigationQuerySchema = Type.Object({
+  type: Type.Optional(NavigationVariantEnum),
+  includeDisabled: Type.Optional(Type.Boolean({ default: false, description: 'Include disabled items' }))
+});
+
+export const GetUserNavigationQuerySchema = Type.Object({
+  type: Type.Optional(NavigationVariantEnum)
+});
+
+// TypeScript types
+export type BadgeVariant = Static<typeof BadgeVariantEnum>;
+export type NavigationType = Static<typeof NavigationTypeEnum>;
+export type NavigationVariant = Static<typeof NavigationVariantEnum>;
+export type Target = Static<typeof TargetEnum>;
+export type NavigationBadge = Static<typeof NavigationBadgeSchema>;
+export type NavigationData = Static<typeof NavigationDataSchema>;
+export type NavigationResponse = Static<typeof NavigationResponseSchema>;
+export type GetNavigationQuery = Static<typeof GetNavigationQuerySchema>;
+export type GetUserNavigationQuery = Static<typeof GetUserNavigationQuerySchema>;
+
+// Export schemas for registration
+export const navigationSchemas = {
+  // Main schemas
+  'navigation-badge': NavigationBadgeSchema,
+  'navigation-item': NavigationItemSchema,
+  'navigation-data': NavigationDataSchema,
+  'navigation-response': NavigationResponseSchema,
+  
+  // Query schemas
+  'get-navigation-query': GetNavigationQuerySchema,
+  'get-user-navigation-query': GetUserNavigationQuerySchema
 };

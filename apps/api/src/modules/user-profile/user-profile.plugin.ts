@@ -5,6 +5,7 @@ import { AvatarService } from './services/avatar.service';
 import { UserProfileService } from './services/user-profile.service';
 import { UserProfileController } from './user-profile.controller';
 import { userProfileRoutes } from './user-profile.routes';
+import { userProfileSchemas } from './user-profile.schemas';
 
 export interface UserProfilePluginOptions extends FastifyPluginOptions {
   prefix?: string;
@@ -14,6 +15,9 @@ async function userProfilePlugin(
   fastify: FastifyInstance,
   options: UserProfilePluginOptions
 ) {
+  // Register module schemas using the schema registry
+  fastify.schemaRegistry.registerModuleSchemas('user-profile', userProfileSchemas);
+
   // Register multipart support for file uploads
   await fastify.register(require('@fastify/multipart'), {
     limits: {

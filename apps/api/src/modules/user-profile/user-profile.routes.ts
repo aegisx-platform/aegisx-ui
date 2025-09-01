@@ -1,14 +1,7 @@
 import { FastifyInstance } from 'fastify';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { UserProfileController } from './user-profile.controller';
-import {
-  userProfileResponseSchema,
-  userProfileUpdateRequestSchema,
-  userPreferencesUpdateRequestSchema,
-  avatarUploadResponseSchema,
-  avatarDeleteResponseSchema,
-  errorResponseSchema,
-  validationErrorResponseSchema
-} from './user-profile.schemas';
+import { SchemaRefs } from '../../schemas/registry';
 
 export interface UserProfileRoutesOptions {
   controller: UserProfileController;
@@ -19,174 +12,111 @@ export async function userProfileRoutes(
   options: UserProfileRoutesOptions
 ) {
   const { controller } = options;
+  const typedFastify = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
   // Get current user profile
-  fastify.get('/users/profile', {
+  typedFastify.get('/users/profile', {
     preValidation: [fastify.authenticate],
     schema: {
       description: 'Get current user profile',
       tags: ['User Profile'],
+      summary: 'Get current user profile with preferences and role information',
       security: [{ bearerAuth: [] }],
       response: {
-        200: userProfileResponseSchema,
-        401: errorResponseSchema,
-        500: errorResponseSchema
+        200: SchemaRefs.module('user-profile', 'user-profile-response'),
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError
       }
     }
   }, controller.getUserProfile.bind(controller));
 
   // Update current user profile
-  fastify.put('/users/profile', {
+  typedFastify.put('/users/profile', {
     preValidation: [fastify.authenticate],
     schema: {
       description: 'Update current user profile',
       tags: ['User Profile'],
+      summary: 'Update user profile information',
       security: [{ bearerAuth: [] }],
-      body: userProfileUpdateRequestSchema,
+      body: SchemaRefs.module('user-profile', 'user-profile-update-request'),
       response: {
-        200: userProfileResponseSchema,
-        400: validationErrorResponseSchema,
-        401: errorResponseSchema,
-        404: errorResponseSchema,
-        422: validationErrorResponseSchema,
-        500: errorResponseSchema
+        200: SchemaRefs.module('user-profile', 'user-profile-response'),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.ValidationError,
+        500: SchemaRefs.ServerError
       }
     }
   }, controller.updateUserProfile.bind(controller));
 
   // Get user preferences
-  fastify.get('/users/preferences', {
+  typedFastify.get('/users/preferences', {
     preValidation: [fastify.authenticate],
     schema: {
       description: 'Get current user preferences',
       tags: ['User Profile'],
+      summary: 'Get user preferences including theme, language, and notifications',
       security: [{ bearerAuth: [] }],
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            data: {
-              type: 'object',
-              properties: {
-                theme: { type: 'string', enum: ['default', 'dark', 'light', 'auto'] },
-                scheme: { type: 'string', enum: ['light', 'dark', 'auto'] },
-                layout: { type: 'string', enum: ['classic', 'compact', 'enterprise', 'empty'] },
-                language: { type: 'string' },
-                timezone: { type: 'string' },
-                dateFormat: { type: 'string', enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'] },
-                timeFormat: { type: 'string', enum: ['12h', '24h'] },
-                notifications: {
-                  type: 'object',
-                  properties: {
-                    email: { type: 'boolean' },
-                    push: { type: 'boolean' },
-                    desktop: { type: 'boolean' },
-                    sound: { type: 'boolean' }
-                  }
-                },
-                navigation: {
-                  type: 'object',
-                  properties: {
-                    collapsed: { type: 'boolean' },
-                    type: { type: 'string', enum: ['default', 'compact', 'horizontal'] },
-                    position: { type: 'string', enum: ['left', 'right', 'top'] }
-                  }
-                }
-              }
-            }
-          },
-          required: ['success']
-        },
-        401: errorResponseSchema,
-        500: errorResponseSchema
+        200: SchemaRefs.module('user-profile', 'user-profile-response'),
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError
       }
     }
   }, controller.getUserPreferences.bind(controller));
 
   // Update user preferences
-  fastify.put('/users/preferences', {
+  typedFastify.put('/users/preferences', {
     preValidation: [fastify.authenticate],
     schema: {
       description: 'Update current user preferences',
       tags: ['User Profile'],
+      summary: 'Update user preferences',
       security: [{ bearerAuth: [] }],
-      body: userPreferencesUpdateRequestSchema,
+      body: SchemaRefs.module('user-profile', 'user-preferences-update-request'),
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            data: {
-              type: 'object',
-              properties: {
-                theme: { type: 'string', enum: ['default', 'dark', 'light', 'auto'] },
-                scheme: { type: 'string', enum: ['light', 'dark', 'auto'] },
-                layout: { type: 'string', enum: ['classic', 'compact', 'enterprise', 'empty'] },
-                language: { type: 'string' },
-                timezone: { type: 'string' },
-                dateFormat: { type: 'string', enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'] },
-                timeFormat: { type: 'string', enum: ['12h', '24h'] },
-                notifications: {
-                  type: 'object',
-                  properties: {
-                    email: { type: 'boolean' },
-                    push: { type: 'boolean' },
-                    desktop: { type: 'boolean' },
-                    sound: { type: 'boolean' }
-                  }
-                },
-                navigation: {
-                  type: 'object',
-                  properties: {
-                    collapsed: { type: 'boolean' },
-                    type: { type: 'string', enum: ['default', 'compact', 'horizontal'] },
-                    position: { type: 'string', enum: ['left', 'right', 'top'] }
-                  }
-                }
-              }
-            }
-          },
-          required: ['success']
-        },
-        400: validationErrorResponseSchema,
-        401: errorResponseSchema,
-        500: errorResponseSchema
+        200: SchemaRefs.module('user-profile', 'user-profile-response'),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError
       }
     }
   }, controller.updateUserPreferences.bind(controller));
 
   // Upload user avatar
-  fastify.post('/users/avatar', {
+  typedFastify.post('/users/avatar', {
     preValidation: [fastify.authenticate],
     schema: {
       description: 'Upload user avatar',
       tags: ['User Profile'],
+      summary: 'Upload a new avatar image',
       security: [{ bearerAuth: [] }],
       consumes: ['multipart/form-data'],
       response: {
-        200: avatarUploadResponseSchema,
-        400: errorResponseSchema,
-        401: errorResponseSchema,
-        413: errorResponseSchema,
-        415: errorResponseSchema,
-        500: errorResponseSchema
+        200: SchemaRefs.module('user-profile', 'avatar-upload-response'),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        413: SchemaRefs.ValidationError,
+        415: SchemaRefs.ValidationError,
+        500: SchemaRefs.ServerError
       }
     }
   }, controller.uploadUserAvatar.bind(controller));
 
   // Delete user avatar
-  fastify.delete('/users/avatar', {
+  typedFastify.delete('/users/avatar', {
     preValidation: [fastify.authenticate],
     schema: {
       description: 'Delete user avatar',
       tags: ['User Profile'],
+      summary: 'Delete the current user avatar',
       security: [{ bearerAuth: [] }],
       response: {
-        200: avatarDeleteResponseSchema,
-        401: errorResponseSchema,
-        404: errorResponseSchema,
-        500: errorResponseSchema
+        200: SchemaRefs.module('user-profile', 'avatar-delete-response'),
+        401: SchemaRefs.Unauthorized,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError
       }
     }
   }, controller.deleteUserAvatar.bind(controller));

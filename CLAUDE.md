@@ -18,6 +18,13 @@ Keep commit messages clean and professional.
 - **This includes temporary files, old code, or seemingly unused files**
 - When refactoring or cleaning up, list files to be deleted and wait for confirmation
 
+### Schema Standards (MANDATORY)
+**🚨 ALL API routes MUST use TypeBox schemas - NO EXCEPTIONS**
+- **See [TypeBox Schema Standard](./docs/05c-typebox-schema-standard.md) for implementation**
+- **TypeBox provides both runtime validation and TypeScript types**
+- **Use base schemas from `/src/schemas/base.schemas.ts`**
+- **Register schemas via schema registry**
+
 ## Quick Navigation
 
 ### 🚀 Start Here

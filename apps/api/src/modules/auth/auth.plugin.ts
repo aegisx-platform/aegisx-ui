@@ -1,15 +1,16 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import fp from 'fastify-plugin';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { AuthService } from './services/auth.service';
-import { registerAuthSchemas } from './auth.schemas';
+import { authSchemas } from './auth.schemas';
 import authRoutes from './auth.routes';
 
 export default fp(async function authPlugin(
   fastify: FastifyInstance,
   _opts: FastifyPluginOptions
 ) {
-  // Register auth schemas
-  registerAuthSchemas(fastify);
+  // Register module schemas using the schema registry
+  fastify.schemaRegistry.registerModuleSchemas('auth', authSchemas);
 
   // Initialize auth service
   const authService = new AuthService(fastify);
