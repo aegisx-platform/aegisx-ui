@@ -2,6 +2,46 @@
 
 ## IMPORTANT: Follow this workflow for EVERY new feature
 
+## 🌿 Git Flow Strategy: Develop + Main
+
+### Branch Structure
+```
+main (production)
+  └─ develop (integration)
+       ├─ feature/[feature-name]
+       ├─ bugfix/[bug-name]
+       └─ hotfix/[urgent-fix]
+```
+
+### Workflow
+1. **Always branch from develop** (not main)
+2. **Use conventional commits** for automatic versioning
+3. **Create PR to develop** for code review
+4. **Merge develop to main** triggers auto-release
+
+### Commands
+```bash
+# Start new feature
+git checkout develop
+git pull origin develop
+git checkout -b feature/ui-integration
+
+# Work on feature
+git add .
+git commit -m "feat: integrate @aegisx/ui library"
+git push origin feature/ui-integration
+
+# Create PR to develop via GitHub
+# After PR merged:
+git checkout develop
+git pull origin develop
+
+# Release to production (triggers auto-tag)
+git checkout main
+git merge develop
+git push origin main
+```
+
 ## Step 0: Initialize Feature Tracking
 **ALWAYS start with creating a feature tracking card:**
 
@@ -299,17 +339,25 @@ apps/[portal]/src/app/features/[feature]/
    ```
 
 ## Step 7: Pull Request
-1. **Check affected projects**
+1. **Push feature branch**
+   ```bash
+   git push origin feature/[feature-name]
+   ```
+2. **Check affected projects**
    ```bash
    nx affected:graph
    ```
-2. **Run affected tests**
+3. **Run affected tests**
    ```bash
    nx affected:test
    nx affected:lint
    ```
-3. **Create PR** with description
-4. **Wait for CI** to pass
+4. **Create PR to develop** (not main)
+   - Use PR template
+   - Add reviewers
+   - Link related issues
+5. **Wait for CI** to pass
+6. **After merge**: Delete feature branch
 
 ## Step 8: Update Status (REQUIRED)
 **After EVERY work session:**
@@ -373,14 +421,26 @@ yarn type-check           # TypeScript check
 
 ### Committing & Releasing
 ```bash
-# Interactive commit
+# Interactive commit (with conventional format)
 yarn commit
+# OR manual commit
+git commit -m "feat: add user management"
+git commit -m "fix: resolve login issue"
+git commit -m "docs: update API documentation"
 
-# Version preview
-yarn version:preview
+# Feature branches: Push to origin
+git push origin feature/[name]
 
-# Release
-yarn release
+# Release from develop to main (auto-versioning)
+git checkout main
+git merge develop
+git push origin main
+# GitHub Actions will:
+# - Calculate version bump (major/minor/patch)
+# - Create tag (v1.x.x)
+# - Generate CHANGELOG.md
+# - Create GitHub Release
+# - Trigger deployment
 ```
 
 ## Conventional Commits
@@ -395,25 +455,71 @@ yarn release
 ```
 
 ### Types & Version Impact
-| Type | Description | Version Impact |
-|------|-------------|----------------|
-| feat | New feature | MINOR |
-| fix | Bug fix | PATCH |
-| docs | Documentation | None |
-| style | Code style | None |
-| refactor | Refactoring | None |
-| perf | Performance | PATCH |
-| test | Tests | None |
-| chore | Maintenance | None |
+| Type | Description | Version Impact | Example |
+|------|-------------|----------------|----------|
+| feat | New feature | MINOR (0.x.0) | `feat: add user profile API` |
+| fix | Bug fix | PATCH (0.0.x) | `fix: resolve login timeout` |
+| docs | Documentation | None | `docs: update API guide` |
+| style | Code style | None | `style: format code` |
+| refactor | Refactoring | None | `refactor: simplify auth logic` |
+| perf | Performance | PATCH (0.0.x) | `perf: optimize query` |
+| test | Tests | None | `test: add unit tests` |
+| chore | Maintenance | None | `chore: update dependencies` |
+| build | Build system | None | `build: update webpack config` |
+| ci | CI/CD | None | `ci: add e2e tests to pipeline` |
 
 ### Breaking Changes
-- Use `BREAKING CHANGE:` in footer → MAJOR version
-- Or use `!` after type: `feat!:`
+- Use `BREAKING CHANGE:` in footer → MAJOR version (x.0.0)
+- Or use `!` after type: `feat!:` or `fix!:`
+
+### Examples
+```bash
+# Minor version bump (0.1.0 → 0.2.0)
+git commit -m "feat: add user management module"
+
+# Patch version bump (0.2.0 → 0.2.1)
+git commit -m "fix: resolve navigation menu bug"
+
+# Major version bump (0.2.1 → 1.0.0)
+git commit -m "feat!: redesign authentication flow
+
+BREAKING CHANGE: auth endpoints have changed"
+
+# No version bump
+git commit -m "docs: update README"
+git commit -m "chore: clean up unused imports"
+```
 
 ### Scopes
 - `api`, `web`, `admin`
 - `ui-kit`, `auth`, `utils`, `api-client`
 - `database`, `docker`, `ci`
+
+## Git Flow Best Practices
+
+### DO ✅
+- Always pull latest `develop` before creating feature branch
+- Use descriptive branch names: `feature/user-authentication`
+- Write meaningful commit messages following conventional format
+- Keep feature branches small and focused
+- Delete feature branches after merge
+- Test thoroughly before creating PR
+
+### DON'T ❌
+- Never commit directly to `main`
+- Avoid committing directly to `develop` (use PRs)
+- Don't merge without code review
+- Don't use generic commit messages like "fix bug"
+- Don't leave stale branches
+
+### Auto-Release Triggers
+When merging develop → main, these commits trigger releases:
+- `feat:` → Minor version (1.2.0 → 1.3.0)
+- `fix:` → Patch version (1.3.0 → 1.3.1)
+- `feat!:` or `BREAKING CHANGE:` → Major version (1.3.1 → 2.0.0)
+
+These commits DON'T trigger releases:
+- `docs:`, `style:`, `refactor:`, `test:`, `chore:`, `build:`, `ci:`
 
 ## Feature Completion Checklist
 
