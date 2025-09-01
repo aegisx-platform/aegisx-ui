@@ -20,6 +20,7 @@ Keep commit messages clean and professional.
 
 ## Quick Navigation
 
+- **[🚨 Current Project Status](./PROJECT_STATUS.md)** - Session recovery & current progress
 - **[📊 Feature Tracking System](./docs/01-feature-tracking.md)** - Track development progress
 - **[🚀 Quick Commands](./docs/02-quick-commands.md)** - Claude command reference (/feature, /status, etc.)
 - **[🏗️ Project Setup](./docs/03-project-setup.md)** - Bootstrap guide
