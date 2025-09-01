@@ -105,6 +105,8 @@ develop → feature/xxx → PR → develop → main
 main → hotfix/xxx → main + develop
 ```
 
+📖 **อ่านเพิ่มเติม**: [Git Flow & Release Strategy Guide](./GIT-FLOW-RELEASE-GUIDE.md) - คู่มือ Git Flow แบบละเอียด
+
 ### ตัวอย่าง Daily Workflow
 ```bash
 # เช้า - Update code
@@ -168,10 +170,11 @@ git commit -m "feat: add user authentication with JWT"
 
 ## 📚 เอกสารที่ควรอ่านต่อ
 
-1. **[Project Setup](./03-project-setup.md)** - ถ้าต้อง setup ใหม่
-2. **[API-First Workflow](./04a-api-first-workflow.md)** - วิธีพัฒนา feature
+1. **[Git Flow & Release Guide](./GIT-FLOW-RELEASE-GUIDE.md)** - 🔥 **อ่านต่อจากนี้!** วิธี branch, merge, release
+2. **[API-First Workflow](./04a-api-first-workflow.md)** - วิธีพัฒนา feature แบบ API-First
 3. **[Quick Commands](./02-quick-commands.md)** - คำสั่งที่ใช้บ่อย
-4. **[Architecture Overview](./05-architecture.md)** - เข้าใจโครงสร้าง
+4. **[Project Setup](./03-project-setup.md)** - ถ้าต้อง setup ใหม่
+5. **[Architecture Overview](./05-architecture.md)** - เข้าใจโครงสร้าง project
 
 ## 💡 Tips สำหรับมือใหม่
 
