@@ -20,6 +20,10 @@ Keep commit messages clean and professional.
 
 ## Quick Navigation
 
+### 🚀 Start Here
+- **[📖 Getting Started](./docs/00-GETTING-STARTED.md)** - **อ่านก่อนเริ่มงาน! Git workflow & rules**
+
+### Development Resources
 - **[🚨 Current Project Status](./PROJECT_STATUS.md)** - Session recovery & current progress
 - **[📊 Feature Tracking System](./docs/01-feature-tracking.md)** - Track development progress
 - **[🚀 Quick Commands](./docs/02-quick-commands.md)** - Claude command reference (/feature, /status, etc.)

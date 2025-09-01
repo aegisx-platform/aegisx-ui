@@ -119,18 +119,29 @@ npm run release:major  # Force major
 
 ## 🔐 Setup Requirements
 
-### GitHub Secrets ที่ต้อง setup:
-```
-DATABASE_URL      # PostgreSQL connection
-JWT_SECRET        # Auth secret key
-REDIS_URL         # Redis cache
+### GitHub Secrets (Optional):
+```bash
+# For CI/CD features:
+SNYK_TOKEN        # Security scanning (ถ้าใช้)
+SLACK_WEBHOOK     # Notifications (ถ้าใช้)
 
-# Optional:
-SLACK_WEBHOOK     # Notifications
-SNYK_TOKEN        # Security scanning
+# For deployment from GitHub:
+STAGING_SSH_KEY   # Deploy to staging
+PRODUCTION_SSH_KEY # Deploy to production
 ```
 
-> 💡 **Note**: `GITHUB_TOKEN` ไม่ต้อง setup - GitHub Actions จัดการให้อัตโนมัติ!
+### Environment Variables (Set on server):
+```bash
+# These are NOT GitHub secrets:
+DATABASE_URL      # Set on actual server
+JWT_SECRET        # Set on actual server
+REDIS_URL         # Set on actual server
+NODE_ENV          # production/staging
+```
+
+> 💡 **Note**: 
+> - `GITHUB_TOKEN` - GitHub Actions มีให้อัตโนมัติ
+> - Environment variables - Set ตอน deploy จริงบน server
 
 ### First Time:
 ```bash

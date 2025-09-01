@@ -18,22 +18,25 @@
    - `delete:packages` (optional)
 4. Copy token ที่ได้
 
-### 1.2 เพิ่ม Secrets ใน Repository
+### 1.2 เพิ่ม Secrets ใน Repository (ถ้าต้องการ)
 
-ไปที่ Repository → Settings → Secrets and variables → Actions → New repository secret:
+**สำหรับ CI/CD Pipeline:**
 
 ```bash
-# Required Secrets:
-DATABASE_URL          # postgresql://user:pass@host:5432/dbname
-JWT_SECRET           # Random string อย่างน้อย 32 ตัวอักษร
-REDIS_URL            # redis://localhost:6379
-
 # Optional Secrets:
-SNYK_TOKEN           # สำหรับ security scanning
-SLACK_WEBHOOK_URL    # สำหรับ notifications
+SNYK_TOKEN           # สำหรับ security scanning (ถ้าใช้ Snyk)
+SLACK_WEBHOOK_URL    # สำหรับ notifications (ถ้าใช้ Slack)
 
-# Note: GITHUB_TOKEN ไม่ต้อง setup - GitHub Actions มีให้อัตโนมัติ
+# Production Deployment Secrets (ถ้า deploy จาก GitHub Actions):
+STAGING_HOST         # Staging server host
+STAGING_SSH_KEY      # SSH key for staging
+PRODUCTION_HOST      # Production server host  
+PRODUCTION_SSH_KEY   # SSH key for production
 ```
+
+**Note:** 
+- `GITHUB_TOKEN` - ไม่ต้อง setup, GitHub Actions มีให้อัตโนมัติ
+- `DATABASE_URL`, `JWT_SECRET`, `REDIS_URL` - เป็น environment variables ที่ set ตอน deploy บน server จริง ไม่ใช่ GitHub secrets
 
 ### 1.3 รัน Setup Script
 

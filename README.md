@@ -81,6 +81,9 @@ nx run-many --target=serve --projects=api,web,admin
 
 ## 📚 Documentation
 
+### 🚀 Start Here
+- **[📖 Getting Started Guide](./docs/00-GETTING-STARTED.md)** - **MUST READ! Git workflow, rules, and quick start**
+
 ### Quick Links
 - [📊 Feature Tracking](./docs/01-feature-tracking.md) - Development progress tracker
 - [🚀 Quick Commands](./docs/02-quick-commands.md) - Common commands reference
