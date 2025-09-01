@@ -98,6 +98,13 @@ nx run-many --target=serve --projects=api,web,admin
 ### Development Progress
 - [Project Status](./PROJECT_STATUS.md) - Current development status and session recovery
 
+### CI/CD & DevOps Documentation
+- [Git Flow & Release Strategy](./docs/GIT-FLOW-RELEASE-GUIDE.md) - Branch management and release process
+- [Automated Versioning Guide](./docs/AUTOMATED-VERSIONING-GUIDE.md) - Semantic versioning with conventional commits
+- [Monorepo Docker Management](./docs/MONOREPO-DOCKER-GUIDE.md) - Docker strategies for monorepo apps
+- [CI/CD Quick Start](./docs/QUICK-START-CICD.md) - Get started with GitHub Actions
+- [Complete CI/CD Setup](./docs/CI-CD-SETUP.md) - Detailed DevOps documentation
+
 ## 🧪 Testing
 
 ```bash

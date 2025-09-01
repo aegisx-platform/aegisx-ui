@@ -32,6 +32,13 @@ Keep commit messages clean and professional.
 - **[🤖 MCP Integration](./docs/09-mcp-integration.md)** - Nx MCP & Playwright MCP usage
 - **[📋 All Commands Reference](./docs/CLAUDE_COMMANDS.md)** - Complete shell command list
 
+### CI/CD & DevOps
+- **[🔄 Git Flow & Release](./docs/GIT-FLOW-RELEASE-GUIDE.md)** - Branch strategy & release process
+- **[📦 Automated Versioning](./docs/AUTOMATED-VERSIONING-GUIDE.md)** - Conventional commits & changelog
+- **[🐳 Monorepo Docker Guide](./docs/MONOREPO-DOCKER-GUIDE.md)** - Docker management for monorepo
+- **[🚀 CI/CD Quick Start](./docs/QUICK-START-CICD.md)** - GitHub Actions setup & usage
+- **[📚 CI/CD Complete Setup](./docs/CI-CD-SETUP.md)** - Detailed CI/CD documentation
+
 ## 🛠️ Technology Stack
 
 - **Frontend**: Angular 19+ with Signals, Angular Material + TailwindCSS
