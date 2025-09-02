@@ -18,7 +18,7 @@ jobs:
   e2e-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -33,7 +33,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -67,42 +67,51 @@ jobs:
 
       - name: Setup test database
         run: |
-          yarn db:migrate
-          yarn db:seed
+          npm run db:migrate
+          npm run db:seed
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
 
       - name: Build applications
         run: |
-          yarn build:prod
+          npm run build:prod
         env:
           NODE_ENV: production
 
       - name: Start API server
         run: |
-          yarn dev:api &
+          npm run dev:api &
           sleep 10
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
           REDIS_URL: ${{ env.REDIS_URL }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
-          NODE_ENV: test
 
       - name: Start Web server
         run: |
-          yarn dev:web &
+          npm run dev:web &
           sleep 10
         env:
           NODE_ENV: test
 
       - name: Wait for servers to be ready
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:3333/api/health; do sleep 2; done'
           timeout 60 bash -c 'until curl -f http://localhost:4200; do sleep 2; done'
 
       - name: Run E2E tests
         run: |
-          yarn test:e2e --shard=${{ matrix.shard }}/4
+          npm run test:e2e -- --shard=${{ matrix.shard }}/4
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
           CI: true
@@ -135,7 +144,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    
+
     services:
       postgres:
         image: postgres:15
@@ -150,7 +159,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -181,31 +190,41 @@ jobs:
 
       - name: Setup test database
         run: |
-          yarn db:migrate
-          yarn db:seed
+          npm run db:migrate
+          npm run db:seed
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
 
       - name: Build applications
         run: yarn build:prod
 
       - name: Start servers
         run: |
-          yarn dev:api &
-          yarn dev:web &
+          npm run dev:api &
+          npm run dev:web &
           sleep 15
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
           REDIS_URL: ${{ env.REDIS_URL }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
 
       - name: Wait for servers
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:3333/api/health; do sleep 2; done'
           timeout 60 bash -c 'until curl -f http://localhost:4200; do sleep 2; done'
 
       - name: Run visual regression tests
-        run: yarn test:e2e:visual
+        run: npm run test:e2e:visual
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
           CI: true
@@ -223,7 +242,7 @@ jobs:
   accessibility-tests:
     timeout-minutes: 20
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -238,7 +257,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -267,31 +286,41 @@ jobs:
 
       - name: Setup test database
         run: |
-          yarn db:migrate
-          yarn db:seed
+          npm run db:migrate
+          npm run db:seed
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
 
       - name: Build applications
         run: yarn build:prod
 
       - name: Start servers
         run: |
-          yarn dev:api &
-          yarn dev:web &
+          npm run dev:api &
+          npm run dev:web &
           sleep 15
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
           REDIS_URL: ${{ env.REDIS_URL }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
 
       - name: Wait for servers
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:3333/api/health; do sleep 2; done'
           timeout 60 bash -c 'until curl -f http://localhost:4200; do sleep 2; done'
 
       - name: Run accessibility tests
-        run: yarn test:e2e:a11y
+        run: npm run test:e2e:a11y
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
           CI: true
@@ -309,7 +338,7 @@ jobs:
   performance-tests:
     timeout-minutes: 20
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -324,7 +353,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -353,31 +382,41 @@ jobs:
 
       - name: Setup test database
         run: |
-          yarn db:migrate
-          yarn db:seed
+          npm run db:migrate
+          npm run db:seed
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
 
       - name: Build applications
         run: yarn build:prod
 
       - name: Start servers
         run: |
-          yarn dev:api &
-          yarn dev:web &
+          npm run dev:api &
+          npm run dev:web &
           sleep 15
         env:
-          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          NODE_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: aegisx_test
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
           REDIS_URL: ${{ env.REDIS_URL }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
 
       - name: Wait for servers
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:3333/api/health; do sleep 2; done'
           timeout 60 bash -c 'until curl -f http://localhost:4200; do sleep 2; done'
 
       - name: Run performance tests
-        run: yarn test:e2e:performance
+        run: npm run test:e2e:performance
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
           CI: true
@@ -394,12 +433,18 @@ jobs:
 
   report-summary:
     if: always()
-    needs: [e2e-tests, visual-regression-tests, accessibility-tests, performance-tests]
+    needs:
+      [
+        e2e-tests,
+        visual-regression-tests,
+        accessibility-tests,
+        performance-tests,
+      ]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-        
+
       - name: Merge Playwright reports
         run: |
           npx playwright merge-reports --reporter=html ./playwright-report-*/
