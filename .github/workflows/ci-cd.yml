@@ -94,9 +94,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [quality, security]
     outputs:
-      api-image: ${{ steps.meta-api.outputs.tags }}
-      web-image: ${{ steps.meta-web.outputs.tags }}
-      admin-image: ${{ steps.meta-admin.outputs.tags }}
       version: ${{ steps.meta.outputs.version }}
 
     strategy:
@@ -130,10 +127,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha,prefix={{branch}}-
-
-      - name: Extract metadata for specific app
-        id: meta-${{ matrix.app }}
-        run: echo "tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
