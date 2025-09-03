@@ -29,7 +29,7 @@
     "test:e2e:a11y": "nx e2e e2e --project=\"accessibility\"",
     "test:e2e:performance": "nx e2e e2e --project=\"performance\"",
     "lint": "nx run-many --target=lint --all",
-    "lint:fix": "nx run-many --target=lint --all --fix",
+    "lint:fix": "nx affected --target=lint --fix",
     "db:migrate": "npx knex migrate:latest",
     "db:rollback": "npx knex migrate:rollback",
     "db:seed": "npx knex seed:run",
@@ -52,7 +52,13 @@
     "changelog": "scripts/generate-changelog.sh",
     "security:fix": "npm audit fix",
     "hooks:skip": "echo \"Use SKIP_HOOKS=1 git push to skip pre-push hooks\"",
-    "hooks:test": "npm run lint-staged && .husky/pre-push"
+    "hooks:test": "npm run lint-staged && .husky/pre-push",
+    "push:quick": "SKIP_HOOKS=1 git push",
+    "push:force": "SKIP_HOOKS=1 git push --force-with-lease",
+    "commit:fix": "git commit -m \"fix: \"",
+    "commit:feat": "git commit -m \"feat: \"",
+    "test:affected": "nx affected --target=test",
+    "lint:affected": "nx affected --target=lint"
   },
   "private": true,
   "dependencies": {

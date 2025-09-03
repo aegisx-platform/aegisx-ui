@@ -2,42 +2,16 @@
 
 echo "🚀 Running pre-push checks..."
 
-# Allow bypass with SKIP_HOOKS=1
+# Allow bypass
 if [ "$SKIP_HOOKS" = "1" ]; then
-    echo "⏭️  Skipping pre-push hooks (SKIP_HOOKS=1)"
+    echo "⏭️  Skipping pre-push hooks"
     exit 0
 fi
 
-# Use correct base branch
-BASE_BRANCH="origin/main"
+# Only lint affected files - FAST!
+echo "🔍 Linting affected files..."
+npx nx affected --base=origin/develop --target=lint --parallel=3 --quiet
 
-# Check if there are any affected projects
-AFFECTED=$(npx nx print-affected --base=$BASE_BRANCH --select=projects 2>/dev/null || echo "")
-
-if [ -z "$AFFECTED" ]; then
-    echo "✨ No affected projects. Skipping checks."
-    exit 0
-fi
-
-echo "🎯 Affected projects found. Running checks..."
-
-# Run checks in parallel with modern syntax
-echo "📝 Type checking..."
-if ! npx nx affected --base=$BASE_BRANCH --target=typecheck --parallel=3; then
-    echo "❌ Type check failed! Fix errors or use: SKIP_HOOKS=1 git push"
-    exit 1
-fi
-
-echo "🔍 Linting..."
-if ! npx nx affected --base=$BASE_BRANCH --target=lint --parallel=3; then
-    echo "❌ Linting failed! Fix errors or use: SKIP_HOOKS=1 git push"
-    exit 1
-fi
-
-echo "🧪 Running unit tests..."
-if ! npx nx affected --base=$BASE_BRANCH --target=test --exclude=e2e --parallel=3; then
-    echo "❌ Tests failed! Fix errors or use: SKIP_HOOKS=1 git push"
-    exit 1
-fi
-
-echo "✅ All checks passed!"
+# That's it! Tests run in CI/CD
+echo "✅ Pre-push check passed!"
+echo "💡 Full test suite will run in GitHub Actions"
