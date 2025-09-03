@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import knex, { Knex } from 'knex';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { build } from '../../test-helpers/app-helper';
 import { TestUserFactory, TestDataFactory } from './factories';
 
@@ -41,15 +42,18 @@ const testDbConfig = {
       'postgres',
   },
   pool: {
-    min: 1,
-    max: 5,
+    min: 0,
+    max: 10,
+    acquireTimeoutMillis: 60000,
+    idleTimeoutMillis: 600,
+    reapIntervalMillis: 1000,
   },
   migrations: {
-    directory: './src/database/migrations',
+    directory: path.join(__dirname, '../../database/migrations'),
     extension: 'ts',
   },
   seeds: {
-    directory: './src/database/seeds',
+    directory: path.join(__dirname, '../../database/seeds'),
     extension: 'ts',
   },
 };
@@ -156,8 +160,23 @@ export async function setupTestContext(
   };
 
   const cleanup = async () => {
-    await app.close();
-    await db.connection.destroy();
+    // Close Fastify app first
+    try {
+      await app.close();
+    } catch (error) {
+      console.warn('Error closing Fastify app:', error);
+    }
+
+    // Clean database and destroy connection
+    try {
+      await db.cleanup();
+      await db.connection.destroy();
+    } catch (error) {
+      console.warn('Error closing database connection:', error);
+    }
+
+    // Give connections time to fully close
+    await new Promise((resolve) => setTimeout(resolve, 100));
   };
 
   return {
