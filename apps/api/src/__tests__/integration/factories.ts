@@ -22,7 +22,13 @@ export interface NavigationItemFactoryOptions {
   icon?: string;
   badge?: {
     title?: string;
-    variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+    variant?:
+      | 'default'
+      | 'primary'
+      | 'secondary'
+      | 'success'
+      | 'warning'
+      | 'error';
   };
   permissions?: string[];
   parentId?: string;
@@ -83,8 +89,8 @@ export class TestUserFactory {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(
-      userData.password, 
-      parseInt(process.env.BCRYPT_ROUNDS || '10')
+      userData.password,
+      parseInt(process.env.BCRYPT_ROUNDS || '10'),
     );
 
     // Get or create role
@@ -98,24 +104,31 @@ export class TestUserFactory {
     } else {
       const [newRole] = await this.db('roles')
         .insert({
-          id: `role-${userData.role}-${timestamp}`,
           name: userData.role,
           description: `${userData.role} role`,
           created_at: new Date(),
           updated_at: new Date(),
         })
-        .returning('id');
+        .returning('*');
       roleId = newRole.id;
     }
 
-    // Insert user
+    // Insert user (remove role from userData to avoid conflict)
+    const { role, ...userDataWithoutRole } = userData;
     const [user] = await this.db('users')
       .insert({
-        ...userData,
+        ...userDataWithoutRole,
         password: hashedPassword,
-        role_id: roleId,
       })
       .returning('*');
+
+    // Assign role to user
+    await this.db('user_roles').insert({
+      user_id: user.id,
+      role_id: roleId,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
 
     // Create default preferences
     await this.createPreferences(user.id);
@@ -126,7 +139,10 @@ export class TestUserFactory {
     };
   }
 
-  async createMany(count: number, options: UserFactoryOptions = {}): Promise<any[]> {
+  async createMany(
+    count: number,
+    options: UserFactoryOptions = {},
+  ): Promise<any[]> {
     const users = [];
     for (let i = 0; i < count; i++) {
       const user = await this.create({
@@ -148,18 +164,22 @@ export class TestUserFactory {
     });
   }
 
-  async createWithRole(roleName: string, permissions: string[] = [], options: UserFactoryOptions = {}): Promise<any> {
+  async createWithRole(
+    roleName: string,
+    permissions: string[] = [],
+    options: UserFactoryOptions = {},
+  ): Promise<any> {
     // Create role with permissions
     const timestamp = Date.now();
-    const roleId = `role-${roleName}-${timestamp}`;
-
-    await this.db('roles').insert({
-      id: roleId,
-      name: roleName,
-      description: `${roleName} role`,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+    const [role] = await this.db('roles')
+      .insert({
+        name: roleName,
+        description: `${roleName} role`,
+        created_at: new Date(),
+        updated_at: new Date(),
+      })
+      .returning('*');
+    const roleId = role.id;
 
     // Add permissions
     for (const permission of permissions) {
@@ -170,7 +190,6 @@ export class TestUserFactory {
       if (!permissionRecord) {
         const [newPermission] = await this.db('permissions')
           .insert({
-            id: `perm-${permission.replace(/\./g, '-')}-${timestamp}`,
             name: permission,
             description: `Permission: ${permission}`,
             created_at: new Date(),
@@ -225,7 +244,7 @@ export class NavigationItemFactory {
   async create(options: NavigationItemFactoryOptions = {}): Promise<any> {
     const timestamp = Date.now();
     const itemData = {
-      id: options.id || `nav-item-${timestamp}`,
+      id: options.id,
       title: options.title || `Test Item ${timestamp}`,
       type: options.type || 'item',
       link: options.link || `/test-${timestamp}`,
@@ -260,7 +279,6 @@ export class NavigationItemFactory {
         if (!permissionRecord) {
           const [newPermission] = await this.db('permissions')
             .insert({
-              id: `perm-${permission.replace(/\./g, '-')}-${timestamp}`,
               name: permission,
               description: `Permission: ${permission}`,
               created_at: new Date(),
@@ -284,7 +302,10 @@ export class NavigationItemFactory {
     return item;
   }
 
-  async createMany(count: number, options: NavigationItemFactoryOptions = {}): Promise<any[]> {
+  async createMany(
+    count: number,
+    options: NavigationItemFactoryOptions = {},
+  ): Promise<any[]> {
     const items = [];
     for (let i = 0; i < count; i++) {
       const item = await this.create({
@@ -297,7 +318,10 @@ export class NavigationItemFactory {
     return items;
   }
 
-  async createGroup(title: string, children: NavigationItemFactoryOptions[] = []): Promise<any> {
+  async createGroup(
+    title: string,
+    children: NavigationItemFactoryOptions[] = [],
+  ): Promise<any> {
     const group = await this.create({
       title,
       type: 'group',
@@ -345,7 +369,10 @@ export class SessionFactory {
     return session;
   }
 
-  async createForUser(userId: string, options: Omit<SessionFactoryOptions, 'userId'> = {}): Promise<any> {
+  async createForUser(
+    userId: string,
+    options: Omit<SessionFactoryOptions, 'userId'> = {},
+  ): Promise<any> {
     return this.create({
       ...options,
       userId,
@@ -384,7 +411,10 @@ export class SettingsFactory {
     return settings;
   }
 
-  async createForUser(userId: string, options: Omit<SettingsFactoryOptions, 'userId'> = {}): Promise<any> {
+  async createForUser(
+    userId: string,
+    options: Omit<SettingsFactoryOptions, 'userId'> = {},
+  ): Promise<any> {
     return this.create({
       ...options,
       userId,
@@ -415,7 +445,7 @@ export class TestDataFactory {
   }> {
     const user = await this.user.create(options);
     const session = await this.session.createForUser(user.id);
-    
+
     // Preferences are created automatically by UserFactory
     const preferences = await this.db('user_preferences')
       .where({ user_id: user.id })
@@ -494,5 +524,4 @@ export class TestDataFactory {
   }
 }
 
-// Export individual factories for convenience
-export { TestUserFactory, NavigationItemFactory, SessionFactory, SettingsFactory };
+// Individual factories are already exported above

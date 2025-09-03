@@ -24,7 +24,7 @@ export interface AuthTokens {
 export class AuthHelper {
   constructor(
     private app: FastifyInstance,
-    private db: Knex
+    private db: Knex,
   ) {}
 
   /**
@@ -46,8 +46,8 @@ export class AuthHelper {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(
-      defaultUser.password, 
-      parseInt(process.env.BCRYPT_ROUNDS || '10')
+      defaultUser.password,
+      parseInt(process.env.BCRYPT_ROUNDS || '10'),
     );
 
     // Get or create role
@@ -149,7 +149,7 @@ export class AuthHelper {
   }> {
     const user = await this.createTestUser(userData);
     const tokens = await this.loginUser(user.email, user.password);
-    
+
     return { user, tokens };
   }
 
@@ -180,9 +180,9 @@ export class AuthHelper {
    * Create user with specific role and permissions
    */
   async createUserWithRole(
-    roleName: string, 
+    roleName: string,
     permissions: string[] = [],
-    userData: Partial<TestUser> = {}
+    userData: Partial<TestUser> = {},
   ): Promise<TestUser> {
     // Create role with permissions if it doesn't exist
     const existingRole = await this.db('roles')
@@ -304,9 +304,20 @@ export class AuthHelper {
    * Clean up test users
    */
   async cleanupTestUsers(): Promise<void> {
-    await this.db('user_sessions').where('user_id', 'like', 'test-user-%').del();
-    await this.db('user_preferences').where('user_id', 'like', 'test-user-%').del();
-    await this.db('users').where('id', 'like', 'test-user-%').del();
+    // Since user IDs are UUIDs, we need to track test users by email or username patterns
+    const testUsers = await this.db('users')
+      .where('email', 'like', 'test%')
+      .orWhere('username', 'like', 'test%')
+      .select('id');
+
+    if (testUsers.length > 0) {
+      const userIds = testUsers.map((u) => u.id);
+
+      // Delete in correct order due to foreign key constraints
+      await this.db('user_sessions').whereIn('user_id', userIds).del();
+      await this.db('user_preferences').whereIn('user_id', userIds).del();
+      await this.db('users').whereIn('id', userIds).del();
+    }
   }
 }
 
@@ -320,7 +331,9 @@ export function authHeaders(token: string): { authorization: string } {
 /**
  * Helper function to create test user data
  */
-export function createTestUserData(overrides: Partial<TestUser> = {}): Partial<TestUser> {
+export function createTestUserData(
+  overrides: Partial<TestUser> = {},
+): Partial<TestUser> {
   const timestamp = Date.now();
   return {
     email: `test${timestamp}@example.com`,
@@ -331,6 +344,29 @@ export function createTestUserData(overrides: Partial<TestUser> = {}): Partial<T
     role: 'user',
     emailVerified: true,
     status: 'active',
+    ...overrides,
+  };
+}
+
+/**
+ * Helper function to create register request data (API schema compatible)
+ */
+export function createRegisterRequestData(
+  overrides: Partial<{
+    email: string;
+    username: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  }> = {},
+) {
+  const timestamp = Date.now();
+  return {
+    email: `test${timestamp}@example.com`,
+    username: `testuser${timestamp}`,
+    password: 'testpass123',
+    firstName: 'Test',
+    lastName: 'User',
     ...overrides,
   };
 }

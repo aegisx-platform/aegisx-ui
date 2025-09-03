@@ -30,21 +30,26 @@ const testDbConfig = {
   client: 'postgresql',
   connection: {
     host: process.env.TEST_DB_HOST || process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.TEST_DB_PORT || process.env.DATABASE_PORT || '5432'),
+    port: parseInt(
+      process.env.TEST_DB_PORT || process.env.DATABASE_PORT || '5432',
+    ),
     database: process.env.TEST_DB_NAME || 'aegisx_test',
     user: process.env.TEST_DB_USER || process.env.DATABASE_USER || 'postgres',
-    password: process.env.TEST_DB_PASSWORD || process.env.DATABASE_PASSWORD || 'postgres',
+    password:
+      process.env.TEST_DB_PASSWORD ||
+      process.env.DATABASE_PASSWORD ||
+      'postgres',
   },
   pool: {
     min: 1,
     max: 5,
   },
   migrations: {
-    directory: './src/database/migrations',
+    directory: './apps/api/src/database/migrations',
     extension: 'ts',
   },
   seeds: {
-    directory: './src/database/seeds',
+    directory: './apps/api/src/database/seeds',
     extension: 'ts',
   },
 };
@@ -70,10 +75,12 @@ async function createTestDatabase(): Promise<TestDatabase> {
       WHERE schemaname = 'public' 
       AND tablename NOT LIKE 'knex_%'
     `);
-    
+
     if (tables.rows.length > 0) {
       const tableNames = tables.rows.map((row: any) => row.tablename);
-      await connection.raw(`TRUNCATE TABLE ${tableNames.join(', ')} RESTART IDENTITY CASCADE`);
+      await connection.raw(
+        `TRUNCATE TABLE ${tableNames.join(', ')} RESTART IDENTITY CASCADE`,
+      );
     }
   };
 
@@ -83,9 +90,11 @@ async function createTestDatabase(): Promise<TestDatabase> {
       SELECT sequence_name FROM information_schema.sequences 
       WHERE sequence_schema = 'public'
     `);
-    
+
     for (const seq of sequences.rows) {
-      await connection.raw(`ALTER SEQUENCE ${seq.sequence_name} RESTART WITH 1`);
+      await connection.raw(
+        `ALTER SEQUENCE ${seq.sequence_name} RESTART WITH 1`,
+      );
     }
   };
 
@@ -101,11 +110,13 @@ async function createTestDatabase(): Promise<TestDatabase> {
 /**
  * Setup test context with full application and database
  */
-export async function setupTestContext(options: {
-  runMigrations?: boolean;
-  runSeeds?: boolean;
-  cleanDatabase?: boolean;
-} = {}): Promise<TestContext> {
+export async function setupTestContext(
+  options: {
+    runMigrations?: boolean;
+    runSeeds?: boolean;
+    cleanDatabase?: boolean;
+  } = {},
+): Promise<TestContext> {
   const {
     runMigrations = true,
     runSeeds = true,
@@ -176,8 +187,8 @@ export async function globalSetup(): Promise<void> {
   try {
     // Create test database if it doesn't exist
     const dbExists = await adminDb.raw(
-      "SELECT 1 FROM pg_database WHERE datname = ?",
-      [testDbConfig.connection.database]
+      'SELECT 1 FROM pg_database WHERE datname = ?',
+      [testDbConfig.connection.database],
     );
 
     if (dbExists.rows.length === 0) {
@@ -209,7 +220,9 @@ export async function globalTeardown(): Promise<void> {
     });
 
     try {
-      await adminDb.raw(`DROP DATABASE IF EXISTS ${testDbConfig.connection.database}`);
+      await adminDb.raw(
+        `DROP DATABASE IF EXISTS ${testDbConfig.connection.database}`,
+      );
       console.log(`Dropped test database: ${testDbConfig.connection.database}`);
     } catch (error) {
       console.warn('Could not drop test database:', error);

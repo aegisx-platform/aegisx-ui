@@ -6,8 +6,7 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
-import fastifySensible from '@fastify/sensible';
-
+// import fastifySensible from '@fastify/sensible'; // Removed - using custom response format
 
 // Import plugins
 import knexPlugin from './plugins/knex.plugin';
@@ -37,34 +36,44 @@ async function bootstrap() {
   });
 
   // 1. Essential utilities and sensible defaults
-  await app.register(fastifySensible);
+  // await app.register(fastifySensible); // Removed - using custom response format
 
   // 2. Infrastructure plugins
   await app.register(fastifyCors, {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://yourdomain.com', 'https://admin.yourdomain.com']
-      : true,
-    credentials: true
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? ['https://yourdomain.com', 'https://admin.yourdomain.com']
+        : true,
+    credentials: true,
   });
 
   await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
-        imgSrc: ["'self'", "data:", "https:", "blob:"],
-        fontSrc: ["'self'", "https:", "data:"],
-        connectSrc: ["'self'", "http://localhost:3333", "http://127.0.0.1:3333"],
-        workerSrc: ["'self'", "blob:"]
-      }
-    }
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          'https://cdn.jsdelivr.net',
+        ],
+        imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        connectSrc: [
+          "'self'",
+          'http://localhost:3333',
+          'http://127.0.0.1:3333',
+        ],
+        workerSrc: ["'self'", 'blob:'],
+      },
+    },
   });
 
   await app.register(fastifyRateLimit, {
     global: true,
     max: 100,
-    timeWindow: '1 minute'
+    timeWindow: '1 minute',
   });
 
   // 3. Database connection
@@ -91,13 +100,13 @@ async function bootstrap() {
     parseOptions: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    }
+      sameSite: 'strict',
+    },
   });
 
   // 6. Authentication strategies
   await app.register(fastifyAuth);
-  
+
   // 6.5. JWT Auth wrapper plugin
   await app.register(jwtAuthPlugin);
 
@@ -125,24 +134,23 @@ async function bootstrap() {
   // 14. Feature modules
   // Default/System module (info, status, health endpoints)
   await app.register(defaultPlugin);
-  
+
   // Auth module
   await app.register(authPlugin);
-  
+
   // Navigation module
   await app.register(navigationPlugin);
-  
+
   // User Profile module
   await app.register(userProfilePlugin);
-  
+
   // Settings module
   await app.register(settingsPlugin);
-
 
   // Start server
   const port = process.env.PORT || 3333;
   const host = process.env.HOST || '0.0.0.0';
-  
+
   try {
     await app.listen({ port: Number(port), host });
     console.log(`🚀 API is running on http://localhost:${port}`);
