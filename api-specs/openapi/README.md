@@ -4,13 +4,13 @@ This directory contains comprehensive OpenAPI 3.0 specifications for all APIs re
 
 ## 📋 API Specifications Overview
 
-| API | File | Description | Endpoints |
-|-----|------|-------------|-----------|
-| **Complete API** | `aegisx-complete-api.yaml` | Combined specification with all endpoints | All endpoints in one file |
-| **Navigation API** | `navigation-api.yaml` | Navigation structure and menu management | 2 endpoints |
-| **User Profile API** | `user-profile-api.yaml` | User profile, avatar, and preferences | 4 endpoints |
-| **Settings API** | `settings-api.yaml` | Application settings and themes | 6 endpoints |
-| **Auth Extensions API** | `auth-extensions-api.yaml` | Logout, refresh, and session management | 6 endpoints |
+| API                     | File                       | Description                               | Endpoints                 |
+| ----------------------- | -------------------------- | ----------------------------------------- | ------------------------- |
+| **Complete API**        | `aegisx-complete-api.yaml` | Combined specification with all endpoints | All endpoints in one file |
+| **Navigation API**      | `navigation-api.yaml`      | Navigation structure and menu management  | 2 endpoints               |
+| **User Profile API**    | `user-profile-api.yaml`    | User profile, avatar, and preferences     | 4 endpoints               |
+| **Settings API**        | `settings-api.yaml`        | Application settings and themes           | 6 endpoints               |
+| **Auth Extensions API** | `auth-extensions-api.yaml` | Logout, refresh, and session management   | 6 endpoints               |
 
 ## 🚀 Quick Start
 
@@ -60,9 +60,9 @@ All APIs use JWT Bearer token authentication:
 // Example usage in TypeScript
 const config = {
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
-    'Content-Type': 'application/json'
-  }
+    Authorization: `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+  },
 };
 
 const response = await axios.get('/api/users/profile', config);
@@ -71,6 +71,7 @@ const response = await axios.get('/api/users/profile', config);
 ## 📊 API Endpoints Summary
 
 ### Authentication (`/api/auth`)
+
 - `POST /auth/logout` - Logout user (current device or all devices)
 - `POST /auth/refresh` - Refresh access token using refresh token
 - `GET /auth/me` - Get current authenticated user information
@@ -79,10 +80,12 @@ const response = await axios.get('/api/users/profile', config);
 - `POST /auth/verify-token` - Verify if access token is valid
 
 ### Navigation (`/api/navigation`)
+
 - `GET /navigation` - Get complete navigation structure
 - `GET /navigation/user` - Get user-specific navigation (filtered by permissions)
 
 ### User Profile (`/api/users`)
+
 - `GET /users/profile` - Get current user profile
 - `PUT /users/profile` - Update user profile
 - `POST /users/avatar` - Upload user avatar image
@@ -91,6 +94,7 @@ const response = await axios.get('/api/users/profile', config);
 - `PUT /users/preferences` - Update user preferences
 
 ### Settings (`/api/settings`)
+
 - `GET /settings` - Get all user settings
 - `PUT /settings` - Update multiple settings
 - `GET /settings/theme` - Get theme settings
@@ -106,6 +110,7 @@ const response = await axios.get('/api/users/profile', config);
 All APIs follow a consistent response format:
 
 ### Success Response
+
 ```json
 {
   "success": true,
@@ -121,6 +126,7 @@ All APIs follow a consistent response format:
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -136,6 +142,7 @@ All APIs follow a consistent response format:
 ```
 
 ### Validation Error Response
+
 ```json
 {
   "success": false,
@@ -160,17 +167,17 @@ All APIs follow a consistent response format:
 
 ## 🏷️ Common Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `BAD_REQUEST` | 400 | Invalid request format or parameters |
-| `UNAUTHORIZED` | 401 | Authentication required |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `VALIDATION_ERROR` | 422 | Input validation failed |
-| `FILE_TOO_LARGE` | 413 | File size exceeds limit |
-| `UNSUPPORTED_MEDIA_TYPE` | 415 | Media type not supported |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `INTERNAL_SERVER_ERROR` | 500 | Unexpected server error |
+| Code                     | HTTP Status | Description                          |
+| ------------------------ | ----------- | ------------------------------------ |
+| `BAD_REQUEST`            | 400         | Invalid request format or parameters |
+| `UNAUTHORIZED`           | 401         | Authentication required              |
+| `FORBIDDEN`              | 403         | Insufficient permissions             |
+| `NOT_FOUND`              | 404         | Resource not found                   |
+| `VALIDATION_ERROR`       | 422         | Input validation failed              |
+| `FILE_TOO_LARGE`         | 413         | File size exceeds limit              |
+| `UNSUPPORTED_MEDIA_TYPE` | 415         | Media type not supported             |
+| `RATE_LIMIT_EXCEEDED`    | 429         | Too many requests                    |
+| `INTERNAL_SERVER_ERROR`  | 500         | Unexpected server error              |
 
 ## 🔄 Rate Limiting
 
@@ -181,6 +188,7 @@ API requests are rate limited with the following headers included in responses:
 - `X-RateLimit-Reset`: Time when rate limit resets (Unix timestamp)
 
 **Limits:**
+
 - **Authenticated users**: 1000 requests/hour
 - **Unauthenticated users**: 100 requests/hour
 - **File uploads**: 10 uploads/minute
@@ -190,36 +198,46 @@ API requests are rate limited with the following headers included in responses:
 ### Key Schemas
 
 #### NavigationItem
+
 Navigation menu items with hierarchical structure supporting different layouts (default, compact, horizontal, mobile).
 
 #### UserProfile
+
 Complete user profile including personal information, role, permissions, and preferences.
 
 #### ThemeSettings
+
 Theme configuration including color schemes, dark mode settings, and custom colors.
 
 #### UserSettings
+
 Comprehensive user settings covering theme, layout, localization, notifications, privacy, and accessibility preferences.
 
 ## 🔧 Implementation Notes
 
 ### File Upload Handling
+
 Avatar uploads support:
+
 - **Formats**: JPEG, PNG, WebP
 - **Max size**: 5MB
 - **Automatic thumbnails**: Small (64x64), Medium (128x128), Large (256x256)
 
 ### Navigation Permissions
+
 Navigation items are filtered based on user permissions. Items without required permissions are automatically hidden.
 
 ### Theme System
+
 The theme system supports:
+
 - **Predefined themes**: default, dark, light, minimal, enterprise
 - **Custom colors**: Primary, accent, warning colors
 - **Auto theme**: System preference detection
 - **Real-time switching**: Immediate UI updates
 
 ### Caching Strategy
+
 - **Navigation**: Cached for 5 minutes
 - **User profile**: Cached for 1 minute
 - **Settings**: Cached for 10 minutes
@@ -273,21 +291,21 @@ class AegisXApiClient {
   private getHeaders() {
     return {
       'Content-Type': 'application/json',
-      ...(this.token && { Authorization: `Bearer ${this.token}` })
+      ...(this.token && { Authorization: `Bearer ${this.token}` }),
     };
   }
 
   async getNavigation(type: 'default' | 'compact' | 'horizontal' | 'mobile' = 'default') {
     const response = await axios.get(`${this.baseURL}/navigation`, {
       params: { type },
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.data;
   }
 
   async updateTheme(settings: ThemeSettings) {
     const response = await axios.put(`${this.baseURL}/settings/theme`, settings, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.data;
   }
@@ -295,12 +313,12 @@ class AegisXApiClient {
   async uploadAvatar(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const response = await axios.post(`${this.baseURL}/users/avatar`, formData, {
       headers: {
         ...this.getHeaders(),
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     });
     return response.data;
   }
@@ -315,7 +333,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AegisXApiService {
   private baseURL = 'http://localhost:3000/api';
@@ -326,26 +344,26 @@ export class AegisXApiService {
     const token = localStorage.getItem('access_token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` })
+      ...(token && { Authorization: `Bearer ${token}` }),
     });
   }
 
   getUserNavigation(type: string = 'default'): Observable<any> {
     return this.http.get(`${this.baseURL}/navigation/user`, {
       params: { type },
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   updateUserProfile(profile: any): Observable<any> {
     return this.http.put(`${this.baseURL}/users/profile`, profile, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   getThemeSettings(): Observable<any> {
     return this.http.get(`${this.baseURL}/settings/theme`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 }

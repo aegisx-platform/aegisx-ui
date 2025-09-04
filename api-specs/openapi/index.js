@@ -1,6 +1,6 @@
 /**
  * AegisX Platform OpenAPI Specifications Index
- * 
+ *
  * This file exports all OpenAPI specifications and provides utilities
  * for working with the API documentation.
  */
@@ -36,7 +36,7 @@ export const specifications = {
     version: '1.0.0',
     endpoints: 18,
     tags: ['Authentication', 'Navigation', 'User Profile', 'Settings', 'Theme'],
-    load: () => loadSpec('aegisx-complete-api.yaml')
+    load: () => loadSpec('aegisx-complete-api.yaml'),
   },
 
   // Individual API specifications
@@ -47,7 +47,7 @@ export const specifications = {
     version: '1.0.0',
     endpoints: 2,
     tags: ['Navigation'],
-    load: () => loadSpec('navigation-api.yaml')
+    load: () => loadSpec('navigation-api.yaml'),
   },
 
   userProfile: {
@@ -57,7 +57,7 @@ export const specifications = {
     version: '1.0.0',
     endpoints: 4,
     tags: ['User Profile'],
-    load: () => loadSpec('user-profile-api.yaml')
+    load: () => loadSpec('user-profile-api.yaml'),
   },
 
   settings: {
@@ -67,18 +67,19 @@ export const specifications = {
     version: '1.0.0',
     endpoints: 6,
     tags: ['Settings', 'Theme', 'Layout', 'Notifications'],
-    load: () => loadSpec('settings-api.yaml')
+    load: () => loadSpec('settings-api.yaml'),
   },
 
   authExtensions: {
     name: 'Auth Extensions API',
-    description: 'Extended authentication, logout, refresh, and session management',
+    description:
+      'Extended authentication, logout, refresh, and session management',
     file: 'auth-extensions-api.yaml',
     version: '1.0.0',
     endpoints: 6,
     tags: ['Authentication', 'Sessions'],
-    load: () => loadSpec('auth-extensions-api.yaml')
-  }
+    load: () => loadSpec('auth-extensions-api.yaml'),
+  },
 };
 
 /**
@@ -93,7 +94,7 @@ export function getSpecificationList() {
     file: spec.file,
     version: spec.version,
     endpoints: spec.endpoints,
-    tags: spec.tags
+    tags: spec.tags,
   }));
 }
 
@@ -116,8 +117,8 @@ export function loadSpecification(key) {
  */
 export function getAllTags() {
   const tags = new Set();
-  Object.values(specifications).forEach(spec => {
-    spec.tags.forEach(tag => tags.add(tag));
+  Object.values(specifications).forEach((spec) => {
+    spec.tags.forEach((tag) => tags.add(tag));
   });
   return Array.from(tags).sort();
 }
@@ -142,12 +143,12 @@ export function validateSpecifications() {
     valid: true,
     missing: [],
     invalid: [],
-    total: Object.keys(specifications).length
+    total: Object.keys(specifications).length,
   };
 
   Object.entries(specifications).forEach(([key, spec]) => {
     const filePath = path.join(__dirname, spec.file);
-    
+
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       results.missing.push(spec.file);
@@ -159,7 +160,7 @@ export function validateSpecifications() {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
       const parsed = yaml.load(content);
-      
+
       // Basic validation
       if (!parsed.openapi || !parsed.info || !parsed.paths) {
         results.invalid.push(spec.file);
@@ -186,7 +187,12 @@ export function getCombinedSpecification() {
 /**
  * Export Swagger configuration
  */
-export { swaggerConfig, swaggerUiConfig, commonSchemas, commonResponses } from './swagger-config.js';
+export {
+  swaggerConfig,
+  swaggerUiConfig,
+  commonSchemas,
+  commonResponses,
+} from './swagger-config.js';
 
 /**
  * CLI utility functions for development
@@ -197,9 +203,9 @@ export const cli = {
    */
   list() {
     console.log('📋 AegisX Platform OpenAPI Specifications\n');
-    
+
     const specs = getSpecificationList();
-    specs.forEach(spec => {
+    specs.forEach((spec) => {
       console.log(`🔹 ${spec.name}`);
       console.log(`   Description: ${spec.description}`);
       console.log(`   File: ${spec.file}`);
@@ -215,19 +221,19 @@ export const cli = {
    */
   validate() {
     console.log('🔍 Validating OpenAPI specifications...\n');
-    
+
     const results = validateSpecifications();
-    
+
     if (results.valid) {
       console.log('✅ All specifications are valid!');
       console.log(`   Total: ${results.total} specifications`);
     } else {
       console.log('❌ Validation errors found:');
-      
+
       if (results.missing.length > 0) {
         console.log(`   Missing files: ${results.missing.join(', ')}`);
       }
-      
+
       if (results.invalid.length > 0) {
         console.log(`   Invalid files: ${results.invalid.join(', ')}`);
       }
@@ -257,9 +263,11 @@ export const cli = {
     try {
       const loaded = spec.load();
       console.log('Paths:');
-      Object.keys(loaded.paths).forEach(path => {
+      Object.keys(loaded.paths).forEach((path) => {
         const methods = Object.keys(loaded.paths[path]);
-        console.log(`  ${methods.map(m => m.toUpperCase()).join(', ')} ${path}`);
+        console.log(
+          `  ${methods.map((m) => m.toUpperCase()).join(', ')} ${path}`,
+        );
       });
     } catch (error) {
       console.log(`❌ Error loading specification: ${error.message}`);
@@ -271,17 +279,17 @@ export const cli = {
    */
   tags() {
     console.log('🏷️  Available Tags\n');
-    
+
     const tags = getAllTags();
-    tags.forEach(tag => {
+    tags.forEach((tag) => {
       const specs = getSpecificationsByTag(tag);
       console.log(`📋 ${tag}`);
-      specs.forEach(spec => {
+      specs.forEach((spec) => {
         console.log(`   - ${spec.name} (${spec.endpoints} endpoints)`);
       });
       console.log('');
     });
-  }
+  },
 };
 
 // CLI support when run directly
@@ -306,8 +314,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log('AegisX OpenAPI Specifications CLI\n');
       console.log('Usage:');
       console.log('  node openapi/index.js list     - List all specifications');
-      console.log('  node openapi/index.js validate - Validate all specifications');
-      console.log('  node openapi/index.js info <key> - Show specification details');
+      console.log(
+        '  node openapi/index.js validate - Validate all specifications',
+      );
+      console.log(
+        '  node openapi/index.js info <key> - Show specification details',
+      );
       console.log('  node openapi/index.js tags     - Show all available tags');
       console.log('');
       console.log('Available specification keys:');
@@ -323,5 +335,5 @@ export default {
   getSpecificationsByTag,
   validateSpecifications,
   getCombinedSpecification,
-  cli
+  cli,
 };

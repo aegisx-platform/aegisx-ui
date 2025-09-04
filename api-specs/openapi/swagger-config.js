@@ -1,17 +1,17 @@
 /**
  * Swagger Configuration for AegisX Platform API
- * 
+ *
  * This configuration can be used with @fastify/swagger to serve OpenAPI documentation
  * and generate interactive API documentation with Swagger UI.
- * 
+ *
  * Usage in Fastify:
- * 
+ *
  * ```javascript
  * import { swaggerConfig, swaggerUiConfig } from './openapi/swagger-config.js';
- * 
+ *
  * // Register swagger
  * await fastify.register(import('@fastify/swagger'), swaggerConfig);
- * 
+ *
  * // Register swagger UI
  * await fastify.register(import('@fastify/swagger-ui'), swaggerUiConfig);
  * ```
@@ -92,27 +92,27 @@ If no version is specified, the latest stable version is used.
       contact: {
         name: 'AegisX Platform Team',
         url: 'https://github.com/aegisx-platform',
-        email: 'support@aegisx.com'
+        email: 'support@aegisx.com',
       },
       license: {
         name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT'
+        url: 'https://opensource.org/licenses/MIT',
       },
-      termsOfService: 'https://aegisx.com/terms'
+      termsOfService: 'https://aegisx.com/terms',
     },
     servers: [
       {
         url: 'http://localhost:3000/api',
-        description: 'Development server'
+        description: 'Development server',
       },
       {
         url: 'https://staging-api.aegisx.com',
-        description: 'Staging server'
+        description: 'Staging server',
       },
       {
         url: 'https://api.aegisx.com',
-        description: 'Production server'
-      }
+        description: 'Production server',
+      },
     ],
     components: {
       securitySchemes: {
@@ -120,14 +120,14 @@ If no version is specified, the latest stable version is used.
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'JWT Bearer token authentication'
-        }
-      }
+          description: 'JWT Bearer token authentication',
+        },
+      },
     },
     security: [
       {
-        bearerAuth: []
-      }
+        bearerAuth: [],
+      },
     ],
     tags: [
       {
@@ -135,84 +135,84 @@ If no version is specified, the latest stable version is used.
         description: 'Authentication and session management endpoints',
         externalDocs: {
           description: 'Auth Guide',
-          url: 'https://docs.aegisx.com/auth'
-        }
+          url: 'https://docs.aegisx.com/auth',
+        },
       },
       {
         name: 'Navigation',
         description: 'Navigation structure and menu management',
         externalDocs: {
-          description: 'Navigation Guide', 
-          url: 'https://docs.aegisx.com/navigation'
-        }
+          description: 'Navigation Guide',
+          url: 'https://docs.aegisx.com/navigation',
+        },
       },
       {
         name: 'User Profile',
         description: 'User profile and preferences management',
         externalDocs: {
           description: 'Profile Guide',
-          url: 'https://docs.aegisx.com/profile'
-        }
+          url: 'https://docs.aegisx.com/profile',
+        },
       },
       {
         name: 'Settings',
         description: 'Application settings and configuration',
         externalDocs: {
           description: 'Settings Guide',
-          url: 'https://docs.aegisx.com/settings'
-        }
+          url: 'https://docs.aegisx.com/settings',
+        },
       },
       {
         name: 'Theme',
         description: 'Theme and appearance settings',
         externalDocs: {
           description: 'Theming Guide',
-          url: 'https://docs.aegisx.com/theming'
-        }
-      }
+          url: 'https://docs.aegisx.com/theming',
+        },
+      },
     ],
     externalDocs: {
       description: 'AegisX Platform Documentation',
-      url: 'https://docs.aegisx.com'
-    }
+      url: 'https://docs.aegisx.com',
+    },
   },
   // Enable OpenAPI schema transformations
   transform: ({ schema, url, method }) => {
     // Add common response headers
     if (schema.response) {
-      Object.keys(schema.response).forEach(statusCode => {
+      Object.keys(schema.response).forEach((statusCode) => {
         if (!schema.response[statusCode].headers) {
           schema.response[statusCode].headers = {};
         }
-        
+
         // Add rate limiting headers
         schema.response[statusCode].headers['X-RateLimit-Limit'] = {
           type: 'integer',
-          description: 'Request limit per hour'
+          description: 'Request limit per hour',
         };
         schema.response[statusCode].headers['X-RateLimit-Remaining'] = {
           type: 'integer',
-          description: 'Remaining requests in current window'
+          description: 'Remaining requests in current window',
         };
         schema.response[statusCode].headers['X-RateLimit-Reset'] = {
           type: 'integer',
-          description: 'Time when rate limit resets (Unix timestamp)'
+          description: 'Time when rate limit resets (Unix timestamp)',
         };
-        
+
         // Add request ID header
         schema.response[statusCode].headers['X-Request-ID'] = {
           type: 'string',
-          description: 'Unique request identifier for tracing'
+          description: 'Unique request identifier for tracing',
         };
       });
     }
-    
+
     return { schema, url };
   },
   // Hide internal routes from documentation
   hideUntagged: true,
   // Expose OpenAPI JSON at /documentation/json
-  exposeRoute: true
+  exposeRoute: true,
 };
 
 export const swaggerUiConfig = {
@@ -269,17 +269,17 @@ export const swaggerUiConfig = {
     `,
     // Custom site title and favicon
     customSiteTitle: 'AegisX Platform API Documentation',
-    customfavIcon: '/favicon.ico'
+    customfavIcon: '/favicon.ico',
   },
   staticCSP: true,
   transformStaticCSP: (header) => header,
   // Allow iframe embedding for documentation
   uiHooks: {
-    onComplete: function() {
+    onComplete: function () {
       // Add custom JavaScript if needed
       console.log('AegisX API Documentation loaded');
-    }
-  }
+    },
+  },
 };
 
 /**
@@ -293,40 +293,40 @@ export const commonSchemas = {
     properties: {
       success: {
         type: 'boolean',
-        description: 'Indicates if the request was successful'
+        description: 'Indicates if the request was successful',
       },
       meta: {
-        $ref: '#/components/schemas/ApiMeta'
-      }
-    }
+        $ref: '#/components/schemas/ApiMeta',
+      },
+    },
   },
-  
+
   ApiMeta: {
     type: 'object',
     properties: {
       timestamp: {
         type: 'string',
         format: 'date-time',
-        description: 'Timestamp of the response'
+        description: 'Timestamp of the response',
       },
       version: {
         type: 'string',
-        description: 'API version'
+        description: 'API version',
       },
       requestId: {
         type: 'string',
-        description: 'Unique request identifier for tracing'
-      }
-    }
+        description: 'Unique request identifier for tracing',
+      },
+    },
   },
-  
+
   ApiError: {
     type: 'object',
     required: ['success', 'error'],
     properties: {
       success: {
         type: 'boolean',
-        example: false
+        example: false,
       },
       error: {
         type: 'object',
@@ -334,24 +334,24 @@ export const commonSchemas = {
         properties: {
           code: {
             type: 'string',
-            description: 'Error code identifier'
+            description: 'Error code identifier',
           },
           message: {
             type: 'string',
-            description: 'Human-readable error message'
+            description: 'Human-readable error message',
           },
           details: {
             type: 'object',
             additionalProperties: true,
-            description: 'Additional error details'
+            description: 'Additional error details',
           },
           field: {
             type: 'string',
-            description: 'Field that caused the error (for validation errors)'
-          }
-        }
-      }
-    }
+            description: 'Field that caused the error (for validation errors)',
+          },
+        },
+      },
+    },
   },
 
   ValidationError: {
@@ -360,7 +360,7 @@ export const commonSchemas = {
     properties: {
       success: {
         type: 'boolean',
-        example: false
+        example: false,
       },
       error: {
         type: 'object',
@@ -368,11 +368,11 @@ export const commonSchemas = {
         properties: {
           code: {
             type: 'string',
-            example: 'VALIDATION_ERROR'
+            example: 'VALIDATION_ERROR',
           },
           message: {
             type: 'string',
-            example: 'Validation failed'
+            example: 'Validation failed',
           },
           details: {
             type: 'array',
@@ -380,21 +380,21 @@ export const commonSchemas = {
               type: 'object',
               properties: {
                 field: {
-                  type: 'string'
+                  type: 'string',
                 },
                 message: {
-                  type: 'string'
+                  type: 'string',
                 },
                 code: {
-                  type: 'string'
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 /**
@@ -410,13 +410,13 @@ export const commonResponses = {
           success: false,
           error: {
             code: 'BAD_REQUEST',
-            message: 'Invalid request format or parameters'
-          }
-        }
-      }
-    }
+            message: 'Invalid request format or parameters',
+          },
+        },
+      },
+    },
   },
-  
+
   Unauthorized: {
     description: 'Authentication required',
     content: {
@@ -426,13 +426,13 @@ export const commonResponses = {
           success: false,
           error: {
             code: 'UNAUTHORIZED',
-            message: 'Authentication required'
-          }
-        }
-      }
-    }
+            message: 'Authentication required',
+          },
+        },
+      },
+    },
   },
-  
+
   Forbidden: {
     description: 'Insufficient permissions',
     content: {
@@ -442,13 +442,13 @@ export const commonResponses = {
           success: false,
           error: {
             code: 'FORBIDDEN',
-            message: 'Insufficient permissions'
-          }
-        }
-      }
-    }
+            message: 'Insufficient permissions',
+          },
+        },
+      },
+    },
   },
-  
+
   NotFound: {
     description: 'Resource not found',
     content: {
@@ -458,22 +458,22 @@ export const commonResponses = {
           success: false,
           error: {
             code: 'NOT_FOUND',
-            message: 'Requested resource not found'
-          }
-        }
-      }
-    }
+            message: 'Requested resource not found',
+          },
+        },
+      },
+    },
   },
-  
+
   ValidationError: {
     description: 'Validation error',
     content: {
       'application/json': {
-        schema: { $ref: '#/components/schemas/ValidationError' }
-      }
-    }
+        schema: { $ref: '#/components/schemas/ValidationError' },
+      },
+    },
   },
-  
+
   InternalServerError: {
     description: 'Internal server error',
     content: {
@@ -483,17 +483,17 @@ export const commonResponses = {
           success: false,
           error: {
             code: 'INTERNAL_SERVER_ERROR',
-            message: 'An unexpected error occurred'
-          }
-        }
-      }
-    }
-  }
+            message: 'An unexpected error occurred',
+          },
+        },
+      },
+    },
+  },
 };
 
 export default {
   swaggerConfig,
   swaggerUiConfig,
   commonSchemas,
-  commonResponses
+  commonResponses,
 };

@@ -80,29 +80,30 @@ function createRegisterRequestData() {
 
 ### 🚀 Start Here
 
-- **[📖 Getting Started](./docs/00-GETTING-STARTED.md)** - **อ่านก่อนเริ่มงาน! Git workflow & rules**
+- **[📖 Getting Started](./docs/getting-started/getting-started.md)** - **อ่านก่อนเริ่มงาน! Git workflow & rules**
 
 ### Development Resources
 
 - **[🚨 Current Project Status](./PROJECT_STATUS.md)** - Session recovery & current progress
-- **[📊 Feature Tracking System](./docs/01-feature-tracking.md)** - Track development progress
-- **[🚀 Quick Commands](./docs/02-quick-commands.md)** - Claude command reference (/feature, /status, etc.)
-- **[🏗️ Project Setup](./docs/03-project-setup.md)** - Bootstrap guide
-- **[🔄 Development Workflow](./docs/04-development-workflow.md)** - Step-by-step workflows
-- **[🎯 API-First Workflow](./docs/04a-api-first-workflow.md)** - Recommended development approach
-- **[🏛️ Architecture](./docs/05-architecture.md)** - Frontend/Backend patterns
-- **[🧪 Testing Strategy](./docs/06-testing.md)** - E2E with Playwright MCP
-- **[🚀 Deployment](./docs/07-deployment.md)** - Docker + CI/CD
-- **[🤖 MCP Integration](./docs/09-mcp-integration.md)** - Nx MCP & Playwright MCP usage
-- **[📋 All Commands Reference](./docs/CLAUDE_COMMANDS.md)** - Complete shell command list
+- **[📚 Complete Documentation](./docs/)** - Organized documentation hub
+- **[📊 Feature Tracking System](./docs/development/feature-tracking.md)** - Track development progress
+- **[🚀 Quick Commands](./docs/development/quick-commands.md)** - Claude command reference (/feature, /status, etc.)
+- **[🏗️ Project Setup](./docs/getting-started/project-setup.md)** - Bootstrap guide
+- **[🔄 Development Workflow](./docs/development/development-workflow.md)** - Step-by-step workflows
+- **[🎯 API-First Workflow](./docs/development/api-first-workflow.md)** - Recommended development approach
+- **[🏛️ Architecture](./docs/architecture/architecture-overview.md)** - Frontend/Backend patterns
+- **[🧪 Testing Strategy](./docs/testing/testing-strategy.md)** - E2E with Playwright MCP
+- **[🚀 Deployment](./docs/infrastructure/deployment.md)** - Docker + CI/CD
+- **[🤖 MCP Integration](./docs/development/mcp-integration.md)** - Nx MCP & Playwright MCP usage
+- **[📋 All Commands Reference](./docs/references/claude-commands.md)** - Complete shell command list
 
 ### CI/CD & DevOps
 
-- **[🔄 Git Flow & Release](./docs/GIT-FLOW-RELEASE-GUIDE.md)** - Branch strategy & release process
-- **[📦 Automated Versioning](./docs/AUTOMATED-VERSIONING-GUIDE.md)** - Conventional commits & changelog
-- **[🐳 Monorepo Docker Guide](./docs/MONOREPO-DOCKER-GUIDE.md)** - Docker management for monorepo
-- **[🚀 CI/CD Quick Start](./docs/QUICK-START-CICD.md)** - GitHub Actions setup & usage
-- **[📚 CI/CD Complete Setup](./docs/CI-CD-SETUP.md)** - Detailed CI/CD documentation
+- **[🔄 Git Flow & Release](./docs/infrastructure/git-flow-release-guide.md)** - Branch strategy & release process
+- **[📦 Automated Versioning](./docs/infrastructure/automated-versioning-guide.md)** - Conventional commits & changelog
+- **[🐳 Monorepo Docker Guide](./docs/infrastructure/monorepo-docker-guide.md)** - Docker management for monorepo
+- **[🚀 CI/CD Quick Start](./docs/infrastructure/quick-start-cicd.md)** - GitHub Actions setup & usage
+- **[📚 CI/CD Complete Setup](./docs/infrastructure/ci-cd-setup.md)** - Detailed CI/CD documentation
 
 ## 🛠️ Technology Stack
 

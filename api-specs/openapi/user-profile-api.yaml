@@ -45,33 +45,39 @@ paths:
                   value:
                     success: true
                     data:
-                      id: "usr_123456789"
-                      email: "john.doe@example.com"
-                      name: "John Doe"
-                      firstName: "John"
-                      lastName: "Doe"
-                      avatar: "https://api.aegisx.com/avatars/usr_123456789.jpg"
+                      id: 'usr_123456789'
+                      email: 'john.doe@example.com'
+                      name: 'John Doe'
+                      firstName: 'John'
+                      lastName: 'Doe'
+                      avatar: 'https://api.aegisx.com/avatars/usr_123456789.jpg'
                       role:
-                        id: "role_admin"
-                        name: "Administrator"
-                        permissions: ["users.view", "users.create", "users.update", "users.delete"]
+                        id: 'role_admin'
+                        name: 'Administrator'
+                        permissions:
+                          [
+                            'users.view',
+                            'users.create',
+                            'users.update',
+                            'users.delete',
+                          ]
                       preferences:
-                        theme: "default"
-                        scheme: "light"
-                        layout: "classic"
-                        language: "en"
-                        timezone: "UTC"
+                        theme: 'default'
+                        scheme: 'light'
+                        layout: 'classic'
+                        language: 'en'
+                        timezone: 'UTC'
                         notifications:
                           email: true
                           push: false
                           desktop: true
-                      createdAt: "2024-01-01T00:00:00Z"
-                      updatedAt: "2024-01-15T10:30:00Z"
-                      lastLoginAt: "2024-01-15T09:00:00Z"
-                      status: "active"
+                      createdAt: '2024-01-01T00:00:00Z'
+                      updatedAt: '2024-01-15T10:30:00Z'
+                      lastLoginAt: '2024-01-15T09:00:00Z'
+                      status: 'active'
                     meta:
-                      timestamp: "2024-01-15T10:35:00Z"
-                      version: "1.0"
+                      timestamp: '2024-01-15T10:35:00Z'
+                      version: '1.0'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -93,13 +99,13 @@ paths:
               profile_update:
                 summary: Profile update request
                 value:
-                  name: "John Smith"
-                  firstName: "John"
-                  lastName: "Smith"
+                  name: 'John Smith'
+                  firstName: 'John'
+                  lastName: 'Smith'
                   preferences:
-                    theme: "dark"
-                    language: "en"
-                    timezone: "America/New_York"
+                    theme: 'dark'
+                    language: 'en'
+                    timezone: 'America/New_York'
                     notifications:
                       email: true
                       push: true
@@ -165,22 +171,22 @@ paths:
                             type: string
                             format: uri
                             description: URL of the uploaded avatar
-                            example: "https://api.aegisx.com/avatars/usr_123456789.jpg"
+                            example: 'https://api.aegisx.com/avatars/usr_123456789.jpg'
                           thumbnails:
                             type: object
                             properties:
                               small:
                                 type: string
                                 format: uri
-                                example: "https://api.aegisx.com/avatars/usr_123456789_small.jpg"
+                                example: 'https://api.aegisx.com/avatars/usr_123456789_small.jpg'
                               medium:
                                 type: string
                                 format: uri
-                                example: "https://api.aegisx.com/avatars/usr_123456789_medium.jpg"
+                                example: 'https://api.aegisx.com/avatars/usr_123456789_medium.jpg'
                               large:
                                 type: string
                                 format: uri
-                                example: "https://api.aegisx.com/avatars/usr_123456789_large.jpg"
+                                example: 'https://api.aegisx.com/avatars/usr_123456789_large.jpg'
         '400':
           $ref: '#/components/responses/ValidationError'
         '401':
@@ -194,8 +200,8 @@ paths:
               example:
                 success: false
                 error:
-                  code: "FILE_TOO_LARGE"
-                  message: "File size exceeds maximum limit of 5MB"
+                  code: 'FILE_TOO_LARGE'
+                  message: 'File size exceeds maximum limit of 5MB'
         '415':
           description: Unsupported media type
           content:
@@ -205,8 +211,8 @@ paths:
               example:
                 success: false
                 error:
-                  code: "UNSUPPORTED_MEDIA_TYPE"
-                  message: "Only JPEG, PNG, and WebP images are supported"
+                  code: 'UNSUPPORTED_MEDIA_TYPE'
+                  message: 'Only JPEG, PNG, and WebP images are supported'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -231,7 +237,7 @@ paths:
                         properties:
                           message:
                             type: string
-                            example: "Avatar deleted successfully"
+                            example: 'Avatar deleted successfully'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
@@ -243,8 +249,8 @@ paths:
               example:
                 success: false
                 error:
-                  code: "AVATAR_NOT_FOUND"
-                  message: "No avatar found for the current user"
+                  code: 'AVATAR_NOT_FOUND'
+                  message: 'No avatar found for the current user'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -348,30 +354,30 @@ components:
         id:
           type: string
           description: Unique user identifier
-          example: "usr_123456789"
+          example: 'usr_123456789'
         email:
           type: string
           format: email
           description: User's email address
-          example: "john.doe@example.com"
+          example: 'john.doe@example.com'
         name:
           type: string
           description: User's full name
-          example: "John Doe"
+          example: 'John Doe'
         firstName:
           type: string
           description: User's first name
-          example: "John"
+          example: 'John'
         lastName:
           type: string
           description: User's last name
-          example: "Doe"
+          example: 'Doe'
         avatar:
           type: string
           format: uri
           nullable: true
           description: URL of the user's avatar image
-          example: "https://api.aegisx.com/avatars/usr_123456789.jpg"
+          example: 'https://api.aegisx.com/avatars/usr_123456789.jpg'
         role:
           $ref: '#/components/schemas/UserRole'
         preferences:
@@ -393,7 +399,7 @@ components:
           type: string
           enum: [active, inactive, suspended, pending]
           description: User account status
-          example: "active"
+          example: 'active'
         emailVerified:
           type: boolean
           description: Whether the user's email is verified
@@ -412,17 +418,18 @@ components:
         id:
           type: string
           description: Role identifier
-          example: "role_admin"
+          example: 'role_admin'
         name:
           type: string
           description: Role display name
-          example: "Administrator"
+          example: 'Administrator'
         permissions:
           type: array
           items:
             type: string
           description: List of permissions granted by this role
-          example: ["users.view", "users.create", "users.update", "users.delete"]
+          example:
+            ['users.view', 'users.create', 'users.update', 'users.delete']
 
     UserPreferences:
       type: object
@@ -431,37 +438,37 @@ components:
           type: string
           enum: [default, dark, light, auto]
           description: UI theme preference
-          default: "default"
+          default: 'default'
         scheme:
           type: string
           enum: [light, dark, auto]
           description: Color scheme preference
-          default: "light"
+          default: 'light'
         layout:
           type: string
           enum: [classic, compact, enterprise, empty]
           description: Layout preference
-          default: "classic"
+          default: 'classic'
         language:
           type: string
           description: Language preference (ISO 639-1 code)
-          example: "en"
-          default: "en"
+          example: 'en'
+          default: 'en'
         timezone:
           type: string
           description: Timezone preference (IANA timezone)
-          example: "UTC"
-          default: "UTC"
+          example: 'UTC'
+          default: 'UTC'
         dateFormat:
           type: string
           enum: [MM/DD/YYYY, DD/MM/YYYY, YYYY-MM-DD]
           description: Date format preference
-          default: "MM/DD/YYYY"
+          default: 'MM/DD/YYYY'
         timeFormat:
           type: string
           enum: [12h, 24h]
           description: Time format preference
-          default: "12h"
+          default: '12h'
         notifications:
           $ref: '#/components/schemas/NotificationPreferences'
         navigation:
@@ -498,12 +505,12 @@ components:
           type: string
           enum: [default, compact, horizontal]
           description: Preferred navigation type
-          default: "default"
+          default: 'default'
         position:
           type: string
           enum: [left, right, top]
           description: Navigation position
-          default: "left"
+          default: 'left'
 
     UserProfileUpdateRequest:
       type: object
@@ -572,11 +579,11 @@ components:
             code:
               type: string
               description: Error code identifier
-              example: "VALIDATION_ERROR"
+              example: 'VALIDATION_ERROR'
             message:
               type: string
               description: Human-readable error message
-              example: "Validation failed"
+              example: 'Validation failed'
             details:
               type: object
               additionalProperties: true
@@ -602,10 +609,10 @@ components:
           properties:
             code:
               type: string
-              example: "VALIDATION_ERROR"
+              example: 'VALIDATION_ERROR'
             message:
               type: string
-              example: "Validation failed"
+              example: 'Validation failed'
             details:
               type: array
               items:
@@ -613,13 +620,13 @@ components:
                 properties:
                   field:
                     type: string
-                    example: "name"
+                    example: 'name'
                   message:
                     type: string
-                    example: "Name is required"
+                    example: 'Name is required'
                   code:
                     type: string
-                    example: "REQUIRED"
+                    example: 'REQUIRED'
 
   responses:
     UnauthorizedError:
@@ -631,8 +638,8 @@ components:
           example:
             success: false
             error:
-              code: "UNAUTHORIZED"
-              message: "Authentication required"
+              code: 'UNAUTHORIZED'
+              message: 'Authentication required'
 
     ValidationError:
       description: Validation error
@@ -643,12 +650,12 @@ components:
           example:
             success: false
             error:
-              code: "VALIDATION_ERROR"
-              message: "Validation failed"
+              code: 'VALIDATION_ERROR'
+              message: 'Validation failed'
               details:
-                - field: "name"
-                  message: "Name is required"
-                  code: "REQUIRED"
+                - field: 'name'
+                  message: 'Name is required'
+                  code: 'REQUIRED'
 
     InternalServerError:
       description: Internal server error
@@ -659,8 +666,8 @@ components:
           example:
             success: false
             error:
-              code: "INTERNAL_SERVER_ERROR"
-              message: "An unexpected error occurred"
+              code: 'INTERNAL_SERVER_ERROR'
+              message: 'An unexpected error occurred'
 
 tags:
   - name: User Profile

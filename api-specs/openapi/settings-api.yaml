@@ -46,37 +46,37 @@ paths:
                     success: true
                     data:
                       theme:
-                        name: "default"
-                        scheme: "light"
+                        name: 'default'
+                        scheme: 'light'
                         customColors:
-                          primary: "#1976d2"
-                          accent: "#ff4081"
-                          warn: "#f44336"
+                          primary: '#1976d2'
+                          accent: '#ff4081'
+                          warn: '#f44336'
                         darkMode: false
                         autoTheme: false
                       layout:
-                        type: "classic"
+                        type: 'classic'
                         navigation:
-                          type: "default"
-                          position: "left"
+                          type: 'default'
+                          position: 'left'
                           collapsed: false
                           folded: false
                         toolbar:
-                          position: "top"
-                          style: "fixed"
+                          position: 'top'
+                          style: 'fixed'
                         footer:
-                          position: "bottom"
-                          style: "fixed"
+                          position: 'bottom'
+                          style: 'fixed'
                         sidebar:
                           hidden: false
-                          position: "right"
+                          position: 'right'
                       localization:
-                        language: "en"
-                        dateFormat: "MM/DD/YYYY"
-                        timeFormat: "12h"
-                        timezone: "UTC"
-                        currency: "USD"
-                        numberFormat: "en-US"
+                        language: 'en'
+                        dateFormat: 'MM/DD/YYYY'
+                        timeFormat: '12h'
+                        timezone: 'UTC'
+                        currency: 'USD'
+                        numberFormat: 'en-US'
                       notifications:
                         email: true
                         push: false
@@ -88,13 +88,13 @@ paths:
                           marketing: false
                           reminders: true
                       privacy:
-                        profileVisibility: "public"
+                        profileVisibility: 'public'
                         activityTracking: true
                         analyticsOptOut: false
                         dataSharing: false
                       accessibility:
                         highContrast: false
-                        fontSize: "medium"
+                        fontSize: 'medium'
                         reducedMotion: false
                         screenReader: false
                       performance:
@@ -103,8 +103,8 @@ paths:
                         caching: true
                         compression: true
                     meta:
-                      timestamp: "2024-01-15T10:35:00Z"
-                      version: "1.0"
+                      timestamp: '2024-01-15T10:35:00Z'
+                      version: '1.0'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -127,7 +127,7 @@ paths:
                 summary: Update multiple settings
                 value:
                   theme:
-                    scheme: "dark"
+                    scheme: 'dark'
                     darkMode: true
                   layout:
                     navigation:
@@ -182,27 +182,27 @@ paths:
                   value:
                     success: true
                     data:
-                      name: "default"
-                      scheme: "light"
+                      name: 'default'
+                      scheme: 'light'
                       customColors:
-                        primary: "#1976d2"
-                        accent: "#ff4081"
-                        warn: "#f44336"
+                        primary: '#1976d2'
+                        accent: '#ff4081'
+                        warn: '#f44336'
                       darkMode: false
                       autoTheme: false
                       availableThemes:
-                        - name: "default"
-                          displayName: "Default"
-                          preview: "https://api.aegisx.com/themes/default/preview.jpg"
-                        - name: "dark"
-                          displayName: "Dark"
-                          preview: "https://api.aegisx.com/themes/dark/preview.jpg"
-                        - name: "minimal"
-                          displayName: "Minimal"
-                          preview: "https://api.aegisx.com/themes/minimal/preview.jpg"
+                        - name: 'default'
+                          displayName: 'Default'
+                          preview: 'https://api.aegisx.com/themes/default/preview.jpg'
+                        - name: 'dark'
+                          displayName: 'Dark'
+                          preview: 'https://api.aegisx.com/themes/dark/preview.jpg'
+                        - name: 'minimal'
+                          displayName: 'Minimal'
+                          preview: 'https://api.aegisx.com/themes/minimal/preview.jpg'
                     meta:
-                      timestamp: "2024-01-15T10:35:00Z"
-                      version: "1.0"
+                      timestamp: '2024-01-15T10:35:00Z'
+                      version: '1.0'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -225,7 +225,7 @@ paths:
               theme_update:
                 summary: Switch to dark theme
                 value:
-                  scheme: "dark"
+                  scheme: 'dark'
                   darkMode: true
                   autoTheme: false
       responses:
@@ -379,9 +379,18 @@ paths:
                   type: array
                   items:
                     type: string
-                    enum: [theme, layout, notifications, localization, privacy, accessibility, performance]
+                    enum:
+                      [
+                        theme,
+                        layout,
+                        notifications,
+                        localization,
+                        privacy,
+                        accessibility,
+                        performance,
+                      ]
                   description: Specific setting categories to reset (if not provided, all settings are reset)
-                  example: ["theme", "layout"]
+                  example: ['theme', 'layout']
       responses:
         '200':
           description: Settings reset successfully
@@ -457,12 +466,12 @@ components:
           type: string
           enum: [default, dark, light, minimal, enterprise]
           description: Theme name
-          default: "default"
+          default: 'default'
         scheme:
           type: string
           enum: [light, dark, auto]
           description: Color scheme
-          default: "light"
+          default: 'light'
         customColors:
           type: object
           properties:
@@ -470,17 +479,17 @@ components:
               type: string
               pattern: '^#[0-9A-Fa-f]{6}$'
               description: Primary color (hex)
-              example: "#1976d2"
+              example: '#1976d2'
             accent:
               type: string
               pattern: '^#[0-9A-Fa-f]{6}$'
               description: Accent color (hex)
-              example: "#ff4081"
+              example: '#ff4081'
             warn:
               type: string
               pattern: '^#[0-9A-Fa-f]{6}$'
               description: Warning color (hex)
-              example: "#f44336"
+              example: '#f44336'
         darkMode:
           type: boolean
           description: Enable dark mode
@@ -501,16 +510,16 @@ components:
         name:
           type: string
           description: Theme identifier
-          example: "default"
+          example: 'default'
         displayName:
           type: string
           description: Human-readable theme name
-          example: "Default"
+          example: 'Default'
         preview:
           type: string
           format: uri
           description: Preview image URL
-          example: "https://api.aegisx.com/themes/default/preview.jpg"
+          example: 'https://api.aegisx.com/themes/default/preview.jpg'
         description:
           type: string
           description: Theme description
@@ -522,7 +531,7 @@ components:
           type: string
           enum: [classic, compact, enterprise, empty]
           description: Layout type
-          default: "classic"
+          default: 'classic'
         navigation:
           $ref: '#/components/schemas/NavigationSettings'
         toolbar:
@@ -539,12 +548,12 @@ components:
           type: string
           enum: [default, compact, horizontal]
           description: Navigation type
-          default: "default"
+          default: 'default'
         position:
           type: string
           enum: [left, right, top]
           description: Navigation position
-          default: "left"
+          default: 'left'
         collapsed:
           type: boolean
           description: Navigation collapsed state
@@ -561,12 +570,12 @@ components:
           type: string
           enum: [top, bottom, hidden]
           description: Toolbar position
-          default: "top"
+          default: 'top'
         style:
           type: string
           enum: [fixed, static, sticky]
           description: Toolbar style
-          default: "fixed"
+          default: 'fixed'
 
     FooterSettings:
       type: object
@@ -575,12 +584,12 @@ components:
           type: string
           enum: [bottom, hidden]
           description: Footer position
-          default: "bottom"
+          default: 'bottom'
         style:
           type: string
           enum: [fixed, static, sticky]
           description: Footer style
-          default: "static"
+          default: 'static'
 
     SidebarSettings:
       type: object
@@ -593,7 +602,7 @@ components:
           type: string
           enum: [left, right]
           description: Sidebar position
-          default: "right"
+          default: 'right'
 
     LocalizationSettings:
       type: object
@@ -602,34 +611,34 @@ components:
           type: string
           pattern: '^[a-z]{2}$'
           description: Language code (ISO 639-1)
-          example: "en"
-          default: "en"
+          example: 'en'
+          default: 'en'
         dateFormat:
           type: string
           enum: [MM/DD/YYYY, DD/MM/YYYY, YYYY-MM-DD]
           description: Date format preference
-          default: "MM/DD/YYYY"
+          default: 'MM/DD/YYYY'
         timeFormat:
           type: string
           enum: [12h, 24h]
           description: Time format preference
-          default: "12h"
+          default: '12h'
         timezone:
           type: string
           description: Timezone (IANA timezone)
-          example: "UTC"
-          default: "UTC"
+          example: 'UTC'
+          default: 'UTC'
         currency:
           type: string
           pattern: '^[A-Z]{3}$'
           description: Currency code (ISO 4217)
-          example: "USD"
-          default: "USD"
+          example: 'USD'
+          default: 'USD'
         numberFormat:
           type: string
           description: Number format locale
-          example: "en-US"
-          default: "en-US"
+          example: 'en-US'
+          default: 'en-US'
 
     NotificationSettings:
       type: object
@@ -677,7 +686,7 @@ components:
           type: string
           enum: [public, private, friends]
           description: Profile visibility
-          default: "public"
+          default: 'public'
         activityTracking:
           type: boolean
           description: Enable activity tracking
@@ -702,7 +711,7 @@ components:
           type: string
           enum: [small, medium, large, x-large]
           description: Font size preference
-          default: "medium"
+          default: 'medium'
         reducedMotion:
           type: boolean
           description: Reduce motion and animations
@@ -860,10 +869,10 @@ components:
           properties:
             code:
               type: string
-              example: "VALIDATION_ERROR"
+              example: 'VALIDATION_ERROR'
             message:
               type: string
-              example: "Validation failed"
+              example: 'Validation failed'
             details:
               type: array
               items:
@@ -886,8 +895,8 @@ components:
           example:
             success: false
             error:
-              code: "UNAUTHORIZED"
-              message: "Authentication required"
+              code: 'UNAUTHORIZED'
+              message: 'Authentication required'
 
     ValidationError:
       description: Validation error
@@ -905,8 +914,8 @@ components:
           example:
             success: false
             error:
-              code: "INTERNAL_SERVER_ERROR"
-              message: "An unexpected error occurred"
+              code: 'INTERNAL_SERVER_ERROR'
+              message: 'An unexpected error occurred'
 
 tags:
   - name: Settings
