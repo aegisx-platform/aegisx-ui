@@ -22,6 +22,7 @@ async function monitoringRoutes(fastify: FastifyInstance) {
     '/client-errors',
     {
       schema: {
+        summary: 'Log client errors',
         description: 'Log client-side errors from the frontend application',
         tags: ['monitoring'],
         body: ClientErrorsRequestSchema,
@@ -99,6 +100,7 @@ async function monitoringRoutes(fastify: FastifyInstance) {
     '/client-monitoring',
     {
       schema: {
+        summary: 'Log monitoring data',
         description:
           'Receive client-side performance and user interaction data',
         tags: ['monitoring'],

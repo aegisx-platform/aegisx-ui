@@ -18,7 +18,7 @@ const redisMonitoringPlugin: FastifyPluginAsync<
     return;
   }
 
-  let monitoringInterval: NodeJS.Timer;
+  let monitoringInterval: NodeJS.Timeout | undefined;
   const cacheServices = new Map<string, RedisCacheService>();
 
   // Register cache service tracking
@@ -71,7 +71,8 @@ const redisMonitoringPlugin: FastifyPluginAsync<
 
       // Check for potential issues
       if (parseInt(connectedClients) > 100) {
-        fastify.log.warn('High number of Redis connections', {
+        fastify.log.warn({
+          msg: 'High number of Redis connections',
           connectedClients,
         });
       }
@@ -83,7 +84,8 @@ const redisMonitoringPlugin: FastifyPluginAsync<
           serviceStats.hitRate < 50 &&
           serviceStats.hits + serviceStats.misses > 100
         ) {
-          fastify.log.warn(`Low cache hit rate for ${name}`, {
+          fastify.log.warn({
+            msg: `Low cache hit rate for ${name}`,
             hitRate: serviceStats.hitRate,
             hits: serviceStats.hits,
             misses: serviceStats.misses,

@@ -1,8 +1,22 @@
 import knex from 'knex';
-import knexConfig from '../../../../knexfile';
+// import knexConfig from '../../../../knexfile.js';
 import { config } from 'dotenv';
 
 config();
+
+// Temporary fix - use direct config
+const knexConfig = {
+  development: {
+    client: 'postgresql',
+    connection: process.env.DATABASE_URL || {
+      host: process.env.POSTGRES_HOST || 'localhost',
+      port: parseInt(process.env.POSTGRES_PORT || '5432'),
+      user: process.env.POSTGRES_USER || 'aegisx_user',
+      password: process.env.POSTGRES_PASSWORD || 'aegisx_password123',
+      database: process.env.POSTGRES_DB || 'aegisx_dev',
+    }
+  }
+};
 
 const db = knex(knexConfig.development);
 

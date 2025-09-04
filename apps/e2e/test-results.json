@@ -1,6 +1,6 @@
 {
   "config": {
-    "configFile": "/Users/sathitseethaphon/projects/aegisx-platform/aegisx-start-2/apps/e2e/playwright.config.ts",
+    "configFile": "/Users/sathitseethaphon/projects/aegisx-platform/aegisx-start-2/apps/e2e/playwright.clone2.config.ts",
     "rootDir": "/Users/sathitseethaphon/projects/aegisx-platform/aegisx-start-2/apps/e2e/src/specs",
     "forbidOnly": false,
     "fullyParallel": true,
@@ -193,13 +193,13 @@
   "suites": [],
   "errors": [
     {
-      "message": "Error: Timed out waiting 120000ms from config.webServer.",
-      "stack": "Error: Timed out waiting 120000ms from config.webServer."
+      "message": "Error: Process from config.webServer was not able to start. Exit code: 130",
+      "stack": "Error: Process from config.webServer was not able to start. Exit code: 130"
     }
   ],
   "stats": {
-    "startTime": "2025-09-03T20:15:23.102Z",
-    "duration": 120726.589,
+    "startTime": "2025-09-04T03:54:18.239Z",
+    "duration": 1414.52,
     "expected": 0,
     "skipped": 0,
     "unexpected": 0,

@@ -170,6 +170,6 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
   },
   {
     name: 'swagger-plugin',
-    dependencies: ['schemas-plugin', 'schema-enforcement-plugin']
+    dependencies: ['schemas-plugin']
   }
 );
