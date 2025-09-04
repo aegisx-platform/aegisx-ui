@@ -24,8 +24,8 @@ async function settingsPlugin(
   const cacheService = new SettingsCacheService(fastify);
 
   // Register cache service with monitoring if available
-  if (fastify.registerCacheService && settingsService['cache']) {
-    fastify.registerCacheService('settings', settingsService['cache']);
+  if ((fastify as any).registerCacheService && settingsService['cache']) {
+    (fastify as any).registerCacheService('settings', settingsService['cache']);
   }
 
   // Start cache warming every 30 minutes

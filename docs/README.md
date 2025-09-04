@@ -15,6 +15,7 @@ Everything you need to bootstrap and run the project for the first time.
 
 Workflows, commands, and development standards for efficient coding.
 
+- **[QA Checklist](./development/qa-checklist.md)** - 🚨 Mandatory quality assurance steps (do this every time!)
 - **[Feature Tracking System](./development/feature-tracking.md)** - Progress tracking and session documentation
 - **[Quick Commands](./development/quick-commands.md)** - Claude command reference (/feature, /status, etc.)
 - **[Development Workflow](./development/development-workflow.md)** - Step-by-step feature development

@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { AuthGuard, GuestGuard } from './core/auth.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -6,13 +7,25 @@ export const appRoutes: Route[] = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
+
+  // Authentication routes (guest only)
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/auth/login.page').then((m) => m.LoginPage),
+    canActivate: [GuestGuard],
+  },
+
+  // Protected routes (require authentication)
   {
     path: 'dashboard',
     loadComponent: () =>
       import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),
+    canActivate: [AuthGuard],
   },
   {
     path: 'users',
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -36,9 +49,11 @@ export const appRoutes: Route[] = [
       import('./features/settings/settings.component').then(
         (m) => m.SettingsComponent,
       ),
+    canActivate: [AuthGuard],
   },
   {
     path: 'components',
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'buttons',

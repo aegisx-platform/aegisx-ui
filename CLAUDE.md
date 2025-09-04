@@ -31,6 +31,12 @@ Keep commit messages clean and professional.
 - **Use base schemas from `/src/schemas/base.schemas.ts`**
 - **Register schemas via schema registry**
 
+### Quality Assurance Workflow (MANDATORY)
+
+**🚨 MUST run QA Checklist after every code change - NO EXCEPTIONS**
+
+See **[QA Checklist](./docs/development/qa-checklist.md)** for complete quality assurance steps that must be performed before every commit.
+
 ### Testing Workflow (MANDATORY)
 
 **🚨 ALWAYS follow this workflow when writing tests - NO EXCEPTIONS**

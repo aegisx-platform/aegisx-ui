@@ -12,6 +12,7 @@ import { AegisxConfigService, AegisxNavigationService } from '@aegisx/ui';
 import { appRoutes } from './app.routes';
 import { provideGlobalErrorHandler } from './core/error-handler.service';
 import { httpErrorInterceptorProvider } from './core/http-error.interceptor';
+import { authInterceptor } from './core/auth.interceptor';
 import { MonitoringService } from './core/monitoring.service';
 
 // Factory function to initialize monitoring service
@@ -29,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([])),
+    provideHttpClient(withInterceptors([authInterceptor])),
 
     // Error handling and monitoring
     provideGlobalErrorHandler(),

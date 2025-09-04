@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Observable, map, take } from 'rxjs';
+import { Observable, map, take, catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,20 +27,15 @@ export class AuthGuard implements CanActivate {
 
     // Try to refresh token if expired
     if (isAuthenticated && this.authService.isTokenExpired()) {
-      return (
-        this.authService
-          .refreshToken()
-          .pipe(
-            map(() => true),
-            take(1),
-          )
-          .toPromise()
-          .catch(() => {
-            this.router.navigate(['/login'], {
-              queryParams: { returnUrl: state.url },
-            });
-            return false;
-          }) || false
+      return this.authService.refreshToken().pipe(
+        map(() => true),
+        take(1),
+        catchError(() => {
+          this.router.navigate(['/login'], {
+            queryParams: { returnUrl: state.url },
+          });
+          return of(false);
+        }),
       );
     }
 

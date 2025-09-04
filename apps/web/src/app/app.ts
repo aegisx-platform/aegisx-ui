@@ -13,6 +13,7 @@ import {
   AegisxConfigService,
   AegisxNavigationItem,
 } from '@aegisx/ui';
+import { AuthService } from './core/auth.service';
 
 interface Notification {
   id: number;
@@ -41,53 +42,57 @@ interface Notification {
       <!-- Toolbar Title -->
       <div toolbar-title class="flex items-center">
         <span class="text-xl font-bold">AegisX Platform</span>
-        <span class="ml-2 text-xs px-2 py-1 bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 rounded">
+        <span
+          class="ml-2 text-xs px-2 py-1 bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 rounded"
+        >
           v2.0
         </span>
       </div>
-      
+
       <!-- Toolbar Actions -->
       <div toolbar-actions class="flex items-center space-x-2">
         <!-- Search Button -->
-        <button mat-icon-button matTooltip="Search" class="hidden sm:inline-flex">
+        <button
+          mat-icon-button
+          matTooltip="Search"
+          class="hidden sm:inline-flex"
+        >
           <mat-icon>search</mat-icon>
         </button>
-        
+
         <!-- Notifications -->
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           matTooltip="Notifications"
-          [matBadge]="notificationCount()" 
+          [matBadge]="notificationCount()"
           matBadgeColor="warn"
           [matBadgeHidden]="notificationCount() === 0"
           [matMenuTriggerFor]="notificationMenu"
         >
           <mat-icon>notifications</mat-icon>
         </button>
-        
+
         <!-- User Menu -->
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           [matMenuTriggerFor]="userMenu"
           class="ml-2"
+          [attr.aria-label]="'User menu for ' + authService.userDisplayName()"
+          matTooltip="User menu"
         >
           <mat-icon>account_circle</mat-icon>
         </button>
-        
+
         <!-- Settings -->
-        <button 
-          mat-icon-button 
-          matTooltip="Settings"
-          routerLink="/settings"
-        >
+        <button mat-icon-button matTooltip="Settings" routerLink="/settings">
           <mat-icon>settings</mat-icon>
         </button>
       </div>
-      
+
       <!-- Main Content -->
       <router-outlet></router-outlet>
     </ax-classic-layout>
-    
+
     <!-- Notification Menu -->
     <mat-menu #notificationMenu="matMenu" class="notification-menu">
       <div class="px-4 py-2 border-b dark:border-gray-700">
@@ -102,7 +107,9 @@ interface Notification {
         } @else {
           @for (notification of notifications(); track notification.id) {
             <button mat-menu-item class="notification-item">
-              <mat-icon [ngClass]="getNotificationClass(notification.type)">{{ notification.icon }}</mat-icon>
+              <mat-icon [ngClass]="getNotificationClass(notification.type)">{{
+                notification.icon
+              }}</mat-icon>
               <div class="ml-3 flex-1">
                 <p class="text-sm font-medium">{{ notification.title }}</p>
                 <p class="text-xs text-gray-500">{{ notification.time }}</p>
@@ -116,12 +123,17 @@ interface Notification {
         <span class="text-primary">View All Notifications</span>
       </button>
     </mat-menu>
-    
+
     <!-- User Menu -->
     <mat-menu #userMenu="matMenu">
       <div class="px-4 py-3 border-b dark:border-gray-700">
-        <p class="text-sm font-medium">John Doe</p>
-        <p class="text-xs text-gray-500">john.doe@example.com</p>
+        @if (authService.currentUser(); as user) {
+          <p class="text-sm font-medium">{{ authService.userDisplayName() }}</p>
+          <p class="text-xs text-gray-500">{{ user.email }}</p>
+        } @else {
+          <p class="text-sm font-medium">Guest User</p>
+          <p class="text-xs text-gray-500">Not logged in</p>
+        }
       </div>
       <button mat-menu-item routerLink="/profile">
         <mat-icon>person</mat-icon>
@@ -185,6 +197,7 @@ interface Notification {
 export class App implements OnInit {
   private navigationService = inject(AegisxNavigationService);
   private configService = inject(AegisxConfigService);
+  protected authService = inject(AuthService);
 
   protected title = 'AegisX Platform';
 
@@ -255,8 +268,15 @@ export class App implements OnInit {
   }
 
   logout(): void {
-    console.log('Logging out...');
-    // Implement logout logic
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logged out successfully');
+      },
+      error: (error) => {
+        console.error('Logout failed:', error);
+        // Even if logout fails on server, user will be redirected to login
+      },
+    });
   }
 
   private getNavigationItems(): AegisxNavigationItem[] {

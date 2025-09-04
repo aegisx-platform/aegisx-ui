@@ -77,7 +77,7 @@ describe('Navigation API Integration', () => {
         adminToken = app.jwt.sign({
           id: 'admin-user-id',
           email: 'admin@example.com',
-          roles: ['admin'],
+          role: 'admin',
         });
       }
     } catch (error) {
@@ -85,13 +85,13 @@ describe('Navigation API Integration', () => {
       validToken = app.jwt.sign({
         id: 'test-user-id',
         email: 'test@example.com',
-        roles: ['user'],
+        role: 'user',
       });
 
       adminToken = app.jwt.sign({
         id: 'admin-user-id',
         email: 'admin@example.com',
-        roles: ['admin'],
+        role: 'admin',
       });
     }
   });
