@@ -8,7 +8,7 @@ const db = knex(knexConfig.development);
 
 async function analyzeIndexes() {
   console.log('\n🔍 Analyzing Database Indexes\n');
-  
+
   try {
     // Get all indexes
     const indexes = await db.raw(`
@@ -22,10 +22,10 @@ async function analyzeIndexes() {
       WHERE schemaname = 'public'
       ORDER BY tablename, indexname;
     `);
-    
+
     console.log('📊 Current Indexes:');
     console.log('==================\n');
-    
+
     let currentTable = '';
     indexes.rows.forEach((index: any) => {
       if (currentTable !== index.tablename) {
@@ -36,7 +36,7 @@ async function analyzeIndexes() {
       console.log(`  📌 ${index.indexname} (${index.index_size})`);
       console.log(`     ${index.indexdef}`);
     });
-    
+
     // Analyze table sizes
     const tableSizes = await db.raw(`
       SELECT 
@@ -50,24 +50,26 @@ async function analyzeIndexes() {
       WHERE schemaname = 'public'
       ORDER BY pg_total_relation_size(tablename::regclass) DESC;
     `);
-    
+
     console.log('\n\n📈 Table Size Analysis:');
     console.log('=====================\n');
-    console.log('Table Name                      | Total Size | Table Size | Index Size | Table %');
+    console.log(
+      'Table Name                      | Total Size | Table Size | Index Size | Table %',
+    );
     console.log('-'.repeat(82));
-    
+
     tableSizes.rows.forEach((table: any) => {
       console.log(
         `${table.tablename.padEnd(30)} | ${table.total_size.padStart(10)} | ` +
-        `${table.table_size.padStart(10)} | ${table.indexes_size.padStart(10)} | ` +
-        `${table.table_percent}%`
+          `${table.table_size.padStart(10)} | ${table.indexes_size.padStart(10)} | ` +
+          `${table.table_percent}%`,
       );
     });
-    
+
     // Check for missing indexes
     console.log('\n\n🔍 Potential Missing Indexes:');
     console.log('============================\n');
-    
+
     // Check foreign keys without indexes
     const fkWithoutIndexes = await db.raw(`
       SELECT DISTINCT
@@ -88,16 +90,18 @@ async function analyzeIndexes() {
         )
       ORDER BY tc.table_name, kcu.column_name;
     `);
-    
+
     if (fkWithoutIndexes.rows.length > 0) {
       console.log('⚠️  Foreign keys without indexes (may cause slow JOINs):');
       fkWithoutIndexes.rows.forEach((fk: any) => {
-        console.log(`   - ${fk.table_name}.${fk.column_name} (${fk.constraint_name})`);
+        console.log(
+          `   - ${fk.table_name}.${fk.column_name} (${fk.constraint_name})`,
+        );
       });
     } else {
       console.log('✅ All foreign keys have indexes');
     }
-    
+
     // Check for duplicate indexes
     const duplicateIndexes = await db.raw(`
       WITH index_info AS (
@@ -122,7 +126,7 @@ async function analyzeIndexes() {
         AND i1.columns = i2.columns
         AND i1.indexname < i2.indexname;
     `);
-    
+
     if (duplicateIndexes.rows.length > 0) {
       console.log('\n⚠️  Potential duplicate indexes:');
       duplicateIndexes.rows.forEach((dup: any) => {
@@ -131,7 +135,6 @@ async function analyzeIndexes() {
     } else {
       console.log('\n✅ No duplicate indexes found');
     }
-    
   } catch (error) {
     console.error('Error analyzing indexes:', error);
   } finally {

@@ -89,7 +89,10 @@ export class SettingsRepository {
     if (search) {
       // Use full-text search for better performance on large datasets
       if (search.length > 2) {
-        qb = SettingsQueryOptimizer.getOptimizedSearchQuery(this.knex)(qb, search);
+        qb = SettingsQueryOptimizer.getOptimizedSearchQuery(this.knex)(
+          qb,
+          search,
+        );
       } else {
         // Fallback to ILIKE for short searches
         qb = qb.where(function () {
@@ -121,17 +124,17 @@ export class SettingsRepository {
     // Use the optimized query that leverages the filter combo index
     const settings = await SettingsQueryOptimizer.getGroupedSettingsOptimized(
       this.knex,
-      namespace
+      namespace,
     );
-    
+
     // Transform the grouped result back to flat array
     const flatSettings: DBSetting[] = [];
-    Object.values(settings).forEach(categories => {
+    Object.values(settings).forEach((categories) => {
       Object.values(categories).forEach((groupSettings: any[]) => {
         flatSettings.push(...groupSettings);
       });
     });
-    
+
     return flatSettings;
   }
 
@@ -284,7 +287,14 @@ export class SettingsRepository {
     // This query now uses the covering index idx_user_settings_lookup
     return this.knex('app_user_settings')
       .where('user_id', userId)
-      .select('id', 'user_id', 'setting_id', 'value', 'created_at', 'updated_at');
+      .select(
+        'id',
+        'user_id',
+        'setting_id',
+        'value',
+        'created_at',
+        'updated_at',
+      );
   }
 
   /**

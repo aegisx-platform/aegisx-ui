@@ -17,17 +17,17 @@ async function settingsPlugin(
     fastify.knex,
     fastify.redis,
     fastify.log,
-    fastify
+    fastify,
   );
 
   // Initialize cache service and start cache warming
   const cacheService = new SettingsCacheService(fastify);
-  
+
   // Register cache service with monitoring if available
   if (fastify.registerCacheService && settingsService['cache']) {
     fastify.registerCacheService('settings', settingsService['cache']);
   }
-  
+
   // Start cache warming every 30 minutes
   if (process.env.NODE_ENV === 'production') {
     cacheService.startCacheWarming(30);
@@ -36,7 +36,7 @@ async function settingsPlugin(
   // Decorate fastify instance with services
   fastify.decorate('settingsService', settingsService);
   fastify.decorate('settingsCacheService', cacheService);
-  
+
   // Gracefully stop cache warming on shutdown
   fastify.addHook('onClose', async () => {
     cacheService.stopCacheWarming();

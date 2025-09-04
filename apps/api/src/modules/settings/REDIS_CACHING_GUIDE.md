@@ -24,6 +24,7 @@ const cache = new RedisCacheService(fastify, 'settings');
 ### 2. Cache Strategies
 
 #### Read-Through Caching
+
 ```typescript
 // Automatically fetch from source if not cached
 const data = await cache.getOrSet(
@@ -35,12 +36,13 @@ const data = await cache.getOrSet(
   {
     ttl: 3600,
     tags: ['settings', 'namespace:default'],
-    compress: true
-  }
+    compress: true,
+  },
 );
 ```
 
 #### Tag-Based Invalidation
+
 ```typescript
 // Invalidate all cache entries with specific tags
 await cache.invalidateByTags(['namespace:default']);
@@ -48,6 +50,7 @@ await cache.invalidateByTags(['namespace:default']);
 ```
 
 #### Batch Operations
+
 ```typescript
 // Get multiple keys in one operation
 const keys = ['setting1', 'setting2', 'setting3'];
@@ -56,7 +59,7 @@ const results = await cache.mget(keys);
 // Set multiple keys
 const items = new Map([
   ['key1', value1],
-  ['key2', value2]
+  ['key2', value2],
 ]);
 await cache.mset(items, { ttl: 3600 });
 ```
@@ -64,6 +67,7 @@ await cache.mset(items, { ttl: 3600 });
 ### 3. Cache Monitoring
 
 #### Statistics Tracking
+
 ```typescript
 interface CacheStats {
   hits: number;
@@ -78,6 +82,7 @@ console.log(`Cache hit rate: ${stats.hitRate}%`);
 ```
 
 #### Redis Monitoring Plugin
+
 ```typescript
 // Automatic monitoring every 5 minutes
 // Logs Redis memory, connections, hit rate
@@ -90,10 +95,8 @@ console.log(`Cache hit rate: ${stats.hitRate}%`);
 class SettingsCacheWarmer {
   // Warm frequently accessed settings
   static async warmFrequentSettings(knex, redis) {
-    const publicSettings = await knex('app_settings')
-      .whereIn('access_level', ['public', 'user'])
-      .where('is_hidden', false);
-      
+    const publicSettings = await knex('app_settings').whereIn('access_level', ['public', 'user']).where('is_hidden', false);
+
     // Batch set in Redis with pipeline
     const pipeline = redis.pipeline();
     for (const setting of publicSettings) {
@@ -101,7 +104,7 @@ class SettingsCacheWarmer {
     }
     await pipeline.exec();
   }
-  
+
   // Warm active user settings
   static async warmUserSettings(knex, redis, userIds) {
     // Pre-cache settings for active users
@@ -112,6 +115,7 @@ class SettingsCacheWarmer {
 ## 📊 Performance Improvements
 
 ### Before Enhancement
+
 - Simple key-value caching
 - Manual cache invalidation
 - No compression
@@ -119,6 +123,7 @@ class SettingsCacheWarmer {
 - No batch operations
 
 ### After Enhancement
+
 - **Read-through caching**: Simplified code, automatic fallback
 - **Tag invalidation**: Clear related caches in one operation
 - **Compression**: 50-70% size reduction for large JSON
@@ -128,41 +133,46 @@ class SettingsCacheWarmer {
 ## 🔧 Configuration Options
 
 ### Cache Options
+
 ```typescript
 interface CacheOptions {
-  ttl?: number;        // Time to live in seconds
-  prefix?: string;     // Custom key prefix
-  compress?: boolean;  // Enable compression for large values
-  tags?: string[];     // Tags for bulk invalidation
+  ttl?: number; // Time to live in seconds
+  prefix?: string; // Custom key prefix
+  compress?: boolean; // Enable compression for large values
+  tags?: string[]; // Tags for bulk invalidation
 }
 ```
 
 ### Monitoring Options
+
 ```typescript
 // In main.ts
 fastify.register(redisMonitoringPlugin, {
-  interval: 300,      // Monitor every 5 minutes
-  logLevel: 'info'    // Logging level
+  interval: 300, // Monitor every 5 minutes
+  logLevel: 'info', // Logging level
 });
 ```
 
 ## 🎯 Best Practices
 
 ### 1. Key Naming Convention
+
 ```typescript
 // Pattern: service:entity:identifier:version
-'settings:namespace:default:v1'
-'settings:user:123:preferences'
-'settings:grouped:admin:2024-01-01'
+'settings:namespace:default:v1';
+'settings:user:123:preferences';
+'settings:grouped:admin:2024-01-01';
 ```
 
 ### 2. TTL Strategy
+
 - **Frequently changing**: 5-15 minutes
 - **Stable data**: 1-24 hours
 - **User-specific**: 30-60 minutes
 - **Configuration**: 1-6 hours
 
 ### 3. Cache Invalidation
+
 ```typescript
 // Clear specific cache
 await cache.del('settings:key');
@@ -178,15 +188,17 @@ await cache.flush();
 ```
 
 ### 4. Error Handling
+
 ```typescript
 // Cache operations never throw
 // Fallback to database on cache failure
-const value = await cache.get(key) || await database.get(key);
+const value = (await cache.get(key)) || (await database.get(key));
 ```
 
 ## 📈 Monitoring Endpoints
 
 ### GET /api/monitoring/redis
+
 ```json
 {
   "redis": {
@@ -208,29 +220,36 @@ const value = await cache.get(key) || await database.get(key);
 ```
 
 ### POST /api/monitoring/redis/reset-stats
+
 Reset all cache statistics counters.
 
 ## 🚨 Common Issues & Solutions
 
 ### Low Hit Rate
+
 **Symptoms**: Hit rate < 50%
 **Solutions**:
+
 - Increase TTL for stable data
 - Implement cache warming
 - Review key naming consistency
 - Check for cache key collisions
 
 ### Memory Growth
+
 **Symptoms**: Redis memory continuously increasing
 **Solutions**:
+
 - Review TTL settings
 - Enable Redis eviction policy
 - Monitor for memory leaks
 - Use compression for large values
 
 ### Connection Pool Exhaustion
+
 **Symptoms**: "Too many connections" errors
 **Solutions**:
+
 - Increase pool size
 - Review connection lifecycle
 - Check for connection leaks
@@ -250,11 +269,7 @@ if (this.redis) {
 }
 
 // New approach
-const data = await cache.getOrSet(
-  key,
-  () => database.get(),
-  { ttl, compress: true }
-);
+const data = await cache.getOrSet(key, () => database.get(), { ttl, compress: true });
 ```
 
 ## ✅ Checklist
@@ -279,6 +294,7 @@ const data = await cache.getOrSet(
 ---
 
 **Next Steps**:
+
 - Monitor cache effectiveness in production
 - Tune TTL based on usage patterns
 - Implement cache preloading for critical paths

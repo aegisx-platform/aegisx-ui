@@ -99,7 +99,7 @@ await app.register(fastifyJwt, {
 interface EnhancedJWTPayload {
   // Subject
   sub: string; // User ID
-  
+
   // Standard claims
   iss: string; // Issuer
   aud: string[]; // Audience
@@ -107,7 +107,7 @@ interface EnhancedJWTPayload {
   iat: number; // Issued at
   nbf: number; // Not before
   jti: string; // JWT ID (unique)
-  
+
   // Custom claims
   email: string;
   role: string;
@@ -123,15 +123,15 @@ interface EnhancedJWTPayload {
 export class SecureAuthService {
   private readonly TOKEN_VERSION = 1;
   private readonly FINGERPRINT_COOKIE = '__Secure-Fgp';
-  
+
   async generateTokens(user: User, request: FastifyRequest) {
     // Generate token fingerprint
     const fingerprint = this.generateFingerprint();
     const fingerprintHash = this.hashFingerprint(fingerprint);
-    
+
     // Generate JWT ID
     const jti = randomBytes(16).toString('hex');
-    
+
     // Create session
     const sessionId = await this.createSecureSession({
       userId: user.id,
@@ -140,7 +140,7 @@ export class SecureAuthService {
       userAgent: request.headers['user-agent'],
       ipAddress: request.ip,
     });
-    
+
     // Generate access token
     const accessToken = await this.app.jwt.sign({
       sub: user.id,
@@ -152,30 +152,30 @@ export class SecureAuthService {
       fingerprint: fingerprintHash,
       v: this.TOKEN_VERSION,
     });
-    
+
     // Generate refresh token (hashed)
     const refreshToken = this.generateRefreshToken();
     const refreshTokenHash = await this.hashRefreshToken(refreshToken);
-    
+
     // Store hashed refresh token
     await this.storeRefreshToken(sessionId, refreshTokenHash);
-    
+
     return {
       accessToken,
       refreshToken,
       fingerprint, // Set as httpOnly cookie
     };
   }
-  
+
   async verifyToken(token: string, fingerprint?: string) {
     try {
       const decoded = await this.app.jwt.verify(token);
-      
+
       // Verify token version
       if (decoded.v !== this.TOKEN_VERSION) {
         throw new Error('Invalid token version');
       }
-      
+
       // Verify fingerprint if provided
       if (fingerprint && decoded.fingerprint) {
         const fingerprintHash = this.hashFingerprint(fingerprint);
@@ -183,40 +183,37 @@ export class SecureAuthService {
           throw new Error('Token fingerprint mismatch');
         }
       }
-      
+
       // Check if token is revoked
       const isRevoked = await this.isTokenRevoked(decoded.jti);
       if (isRevoked) {
         throw new Error('Token has been revoked');
       }
-      
+
       // Check session validity
       const session = await this.getSession(decoded.sessionId);
       if (!session || !session.isActive) {
         throw new Error('Invalid session');
       }
-      
+
       return decoded;
     } catch (error) {
       throw new UnauthorizedError('Invalid token');
     }
   }
-  
+
   private generateFingerprint(): string {
     return randomBytes(32).toString('base64');
   }
-  
+
   private hashFingerprint(fingerprint: string): string {
-    return crypto
-      .createHash('sha256')
-      .update(fingerprint)
-      .digest('hex');
+    return crypto.createHash('sha256').update(fingerprint).digest('hex');
   }
-  
+
   private generateRefreshToken(): string {
     return randomBytes(64).toString('base64url');
   }
-  
+
   private async hashRefreshToken(token: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(token, salt);
@@ -231,38 +228,30 @@ export class SecureAuthService {
 export class TokenRevocationService {
   private readonly BLACKLIST_PREFIX = 'revoked:jwt:';
   private readonly SESSION_PREFIX = 'session:';
-  
+
   async revokeToken(jti: string, exp: number): Promise<void> {
     const ttl = exp - Math.floor(Date.now() / 1000);
     if (ttl > 0) {
-      await this.redis.setex(
-        `${this.BLACKLIST_PREFIX}${jti}`,
-        ttl,
-        '1'
-      );
+      await this.redis.setex(`${this.BLACKLIST_PREFIX}${jti}`, ttl, '1');
     }
   }
-  
+
   async isTokenRevoked(jti: string): Promise<boolean> {
     const result = await this.redis.get(`${this.BLACKLIST_PREFIX}${jti}`);
     return result === '1';
   }
-  
+
   async revokeAllUserTokens(userId: string): Promise<void> {
     // Get all user sessions
     const sessions = await this.getUserSessions(userId);
-    
+
     // Revoke all JTIs
     const pipeline = this.redis.pipeline();
     for (const session of sessions) {
       if (session.jti && session.exp) {
         const ttl = session.exp - Math.floor(Date.now() / 1000);
         if (ttl > 0) {
-          pipeline.setex(
-            `${this.BLACKLIST_PREFIX}${session.jti}`,
-            ttl,
-            '1'
-          );
+          pipeline.setex(`${this.BLACKLIST_PREFIX}${session.jti}`, ttl, '1');
         }
       }
     }
@@ -307,23 +296,20 @@ const authRateLimiter = {
 export class CSRFProtection {
   private readonly CSRF_HEADER = 'X-CSRF-Token';
   private readonly CSRF_COOKIE = '__Host-csrf';
-  
+
   generateToken(): string {
     return randomBytes(32).toString('base64url');
   }
-  
+
   async validateCSRF(request: FastifyRequest): Promise<boolean> {
     const headerToken = request.headers[this.CSRF_HEADER.toLowerCase()];
     const cookieToken = request.cookies[this.CSRF_COOKIE];
-    
+
     if (!headerToken || !cookieToken) {
       return false;
     }
-    
-    return timingSafeEqual(
-      Buffer.from(headerToken),
-      Buffer.from(cookieToken)
-    );
+
+    return timingSafeEqual(Buffer.from(headerToken), Buffer.from(cookieToken));
   }
 }
 ```
@@ -414,6 +400,7 @@ app.addHook('onSend', async (request, reply) => {
 **After Implementation**: 9/10
 
 **Key Improvements**:
+
 1. Strong cryptographic defaults
 2. Token revocation capability
 3. Protection against token theft

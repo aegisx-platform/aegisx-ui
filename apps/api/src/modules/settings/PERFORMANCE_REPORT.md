@@ -9,6 +9,7 @@
 ### Existing Indexes (21 total)
 
 #### Settings Table (app_settings)
+
 - `app_settings_pkey` - Primary key index (19 scans)
 - `app_settings_key_unique` - Unique key constraint (0 scans)
 - `app_settings_key_index` - Key column index (0 scans - redundant with unique)
@@ -18,11 +19,13 @@
 - `idx_app_settings_namespace_key` - Composite index (20 scans)
 
 #### New Performance Indexes Added
+
 - ✅ `idx_settings_filter_combo` - Partial index for common filters (0 scans - new)
 - ✅ `idx_settings_search_text` - GIN index for full-text search (0 scans - new)
 - ✅ `idx_settings_sort` - Sorting performance index (0 scans - new)
 
 #### User Settings Table (app_user_settings)
+
 - `app_user_settings_pkey` - Primary key (0 scans)
 - `app_user_settings_user_id_index` - User lookups (366 scans - heavily used)
 - `app_user_settings_setting_id_index` - Setting lookups (150 scans)
@@ -30,6 +33,7 @@
 - ✅ `idx_user_settings_lookup` - Covering index with value (0 scans - new)
 
 #### History Table (app_settings_history)
+
 - `app_settings_history_pkey` - Primary key (0 scans)
 - `app_settings_history_setting_id_index` - Setting history (168 scans)
 - `app_settings_history_changed_by_index` - User audit (384 scans - most used)
@@ -42,21 +46,23 @@
 ### 1. Query Optimization
 
 #### Full-Text Search
+
 ```sql
 -- Before: ILIKE with OR conditions (slow on large datasets)
-WHERE key ILIKE '%search%' 
-   OR label ILIKE '%search%' 
+WHERE key ILIKE '%search%'
+   OR label ILIKE '%search%'
    OR description ILIKE '%search%'
 
 -- After: PostgreSQL full-text search with GIN index
-WHERE to_tsvector('english', key || ' ' || label || ' ' || description) 
+WHERE to_tsvector('english', key || ' ' || label || ' ' || description)
    @@ plainto_tsquery('english', 'search')
 ```
 
 #### Filtered Queries
+
 ```sql
 -- Optimized with partial index
-CREATE INDEX idx_settings_filter_combo 
+CREATE INDEX idx_settings_filter_combo
 ON app_settings(namespace, access_level, is_hidden, category)
 WHERE is_hidden = false;
 ```
@@ -64,19 +70,17 @@ WHERE is_hidden = false;
 ### 2. Caching Strategy
 
 #### Redis Cache Implementation
+
 - **Cache Key Pattern**: `settings:{namespace}:{key}:{userId|public}`
 - **TTL**: 1 hour (3600 seconds)
 - **Cache Warming**: Every 30 minutes in production
 - **Active User Detection**: Based on last hour activity
 
 #### Cache Service Features
+
 ```typescript
 // Implemented in SettingsCacheService
-- startCacheWarming(intervalMinutes)
-- warmFrequentSettings()
-- warmUserSettings(activeUserIds)
-- clearSettingCache(namespace, key)
-- clearUserCache(userId)
+-startCacheWarming(intervalMinutes) - warmFrequentSettings() - warmUserSettings(activeUserIds) - clearSettingCache(namespace, key) - clearUserCache(userId);
 ```
 
 ### 3. Database Connection Pooling
@@ -102,11 +106,7 @@ writePool: {
 
 ```typescript
 // Query tracking with slow query detection
-PerformanceMonitor.trackQuery(
-  queryName,
-  queryFunction,
-  logger
-)
+PerformanceMonitor.trackQuery(queryName, queryFunction, logger);
 
 // Slow query threshold: 100ms
 // Automatic logging of slow queries
@@ -135,6 +135,7 @@ PerformanceMonitor.trackQuery(
 ### Immediate Actions
 
 1. **Remove Redundant Indexes**:
+
    ```sql
    DROP INDEX app_settings_key_index;
    DROP INDEX app_settings_namespace_index;
@@ -175,7 +176,7 @@ PerformanceMonitor.trackQuery(
 
 ```sql
 -- Query to monitor index effectiveness
-SELECT 
+SELECT
   schemaname,
   tablename,
   indexname,
@@ -183,14 +184,14 @@ SELECT
   idx_tup_read,
   idx_tup_fetch,
   pg_size_pretty(pg_relation_size(indexrelid)) as size,
-  CASE 
+  CASE
     WHEN idx_scan = 0 THEN 'UNUSED'
     WHEN idx_scan < 10 THEN 'RARELY USED'
     WHEN idx_scan < 100 THEN 'OCCASIONALLY USED'
     ELSE 'FREQUENTLY USED'
   END as usage_category
 FROM pg_stat_user_indexes
-WHERE schemaname = 'public' 
+WHERE schemaname = 'public'
   AND tablename LIKE 'app_%settings%'
 ORDER BY idx_scan DESC;
 ```
@@ -206,7 +207,8 @@ ORDER BY idx_scan DESC;
 
 ---
 
-**Next Steps**: 
+**Next Steps**:
+
 - Redis caching improvements (Todo #3)
 - JWT security review (Todo #4)
 - Rate limiting implementation (Todo #5)

@@ -257,7 +257,7 @@ async function monitoringPlugin(
 export default fp(monitoringPlugin, {
   name: 'monitoring-plugin',
   dependencies: ['logging-plugin'],
-  fastify: '4.x',
+  fastify: '>=4.x',
 });
 
 export { MonitoringOptions };

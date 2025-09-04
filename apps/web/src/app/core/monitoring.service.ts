@@ -75,7 +75,7 @@ export class MonitoringService {
           for (const entry of list.getEntries()) {
             this.trackPerformanceMetric({
               name: 'fid',
-              value: entry.processingStart - entry.startTime,
+              value: (entry as any).processingStart - entry.startTime,
               timestamp: Date.now(),
               url: window.location.href,
               userAgent: navigator.userAgent,
@@ -91,7 +91,7 @@ export class MonitoringService {
           let clsValue = 0;
           for (const entry of list.getEntries()) {
             if (!(entry as any).hadRecentInput) {
-              clsValue += entry.value;
+              clsValue += (entry as any).value;
             }
           }
 
@@ -121,20 +121,20 @@ export class MonitoringService {
           this.trackPerformanceMetric({
             name: 'page_load_time',
             value:
-              navigationTiming.loadEventEnd - navigationTiming.navigationStart,
+              navigationTiming.loadEventEnd - navigationTiming.fetchStart,
             timestamp: Date.now(),
             url: window.location.href,
             userAgent: navigator.userAgent,
             context: {
               domContentLoaded:
                 navigationTiming.domContentLoadedEventEnd -
-                navigationTiming.navigationStart,
+                navigationTiming.fetchStart,
               firstByte:
                 navigationTiming.responseStart -
-                navigationTiming.navigationStart,
+                navigationTiming.fetchStart,
               domInteractive:
                 navigationTiming.domInteractive -
-                navigationTiming.navigationStart,
+                navigationTiming.fetchStart,
             },
           });
         }

@@ -12,7 +12,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import knexPlugin from './plugins/knex.plugin';
 import redisPlugin from './plugins/redis.plugin';
 import loggingPlugin from './plugins/logging.plugin';
-import monitoringPlugin from './plugins/monitoring.plugin';
+import pluginMonitoring from './plugins/monitoring.plugin';
 import healthCheckPlugin from './plugins/health-check.plugin';
 import responseHandlerPlugin from './plugins/response-handler.plugin';
 import errorHandlerPlugin from './plugins/error-handler.plugin';
@@ -90,7 +90,7 @@ async function bootstrap() {
   await app.register(redisPlugin);
 
   // 3.6. Monitoring (after infrastructure)
-  await app.register(monitoringPlugin, {
+  await app.register(pluginMonitoring, {
     enableDefaultMetrics: true,
     enableResourceMonitoring: true,
     metricsPrefix: 'aegisx_api_',

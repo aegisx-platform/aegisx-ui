@@ -33,7 +33,7 @@ export class SettingsService {
   ) {
     this.repository = new SettingsRepository(db);
     this.logger = logger || console;
-    
+
     // Initialize cache service if fastify instance is provided
     if (fastify && redis) {
       this.cache = new RedisCacheService(fastify, 'settings');
@@ -86,7 +86,7 @@ export class SettingsService {
           limit,
         };
       },
-      this.logger
+      this.logger,
     );
   }
 
@@ -114,25 +114,24 @@ export class SettingsService {
               ttl: SettingsService.CACHE_TTL,
               tags: ['settings', `namespace:${namespace}`],
               compress: true,
-            }
+            },
           );
         }
-        
+
         // Fallback to direct computation if no cache
         return this.computeGroupedSettings(namespace, userId);
       },
-      this.logger
+      this.logger,
     );
   }
-  
+
   /**
    * Compute grouped settings (extracted for reuse)
    */
   private async computeGroupedSettings(
     namespace: string,
-    userId?: string
+    userId?: string,
   ): Promise<GroupedSettings[]> {
-
     const settings = await this.repository.findGroupedSettings(namespace);
 
     // Transform and apply user overrides
@@ -651,7 +650,7 @@ export class SettingsService {
       }
       return;
     }
-    
+
     // Fallback to direct Redis operations
     if (!this.redis) return;
 

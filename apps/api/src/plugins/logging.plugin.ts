@@ -82,7 +82,7 @@ function createLogger(options: LoggingOptions): winston.Logger {
               winston.format.printf(
                 ({ timestamp, level, message, correlationId, method, url }) => {
                   const correlation = correlationId
-                    ? `[${correlationId.slice(0, 8)}]`
+                    ? `[${(correlationId as string).slice(0, 8)}]`
                     : '';
                   const request = method && url ? `${method} ${url}` : '';
                   return `${timestamp} ${level} ${correlation} ${request} ${message}`;
@@ -248,7 +248,7 @@ async function loggingPlugin(
 
 export default fp(loggingPlugin, {
   name: 'logging-plugin',
-  fastify: '4.x',
+  fastify: '>=4.x',
 });
 
 export { LoggingOptions };

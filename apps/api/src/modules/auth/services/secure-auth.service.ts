@@ -59,6 +59,15 @@ export class SecureAuthService {
 
     // Generate access token with comprehensive claims
     const accessToken = this.app.jwt.sign({
+      // Standard claims
+      sub: user.id,
+      iss: process.env.JWT_ISSUER || 'aegisx-api',
+      aud: ['aegisx-web', 'aegisx-admin'],
+      exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
+      iat: Math.floor(Date.now() / 1000),
+      nbf: Math.floor(Date.now() / 1000),
+      jti,
+
       // User claims required by JWTPayload interface
       id: user.id,
       email: user.email,

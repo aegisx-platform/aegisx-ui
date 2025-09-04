@@ -409,7 +409,7 @@ async function healthCheckPlugin(
 export default fp(healthCheckPlugin, {
   name: 'health-check-plugin',
   dependencies: ['logging-plugin', 'knex-plugin'],
-  fastify: '4.x',
+  fastify: '>=4.x',
 });
 
 export { HealthCheckOptions };

@@ -7,13 +7,12 @@ interface RedisMonitoringOptions {
   logLevel?: 'debug' | 'info' | 'warn';
 }
 
-const redisMonitoringPlugin: FastifyPluginAsync<RedisMonitoringOptions> = async (
-  fastify, 
-  options
-) => {
+const redisMonitoringPlugin: FastifyPluginAsync<
+  RedisMonitoringOptions
+> = async (fastify, options) => {
   const interval = (options.interval || 300) * 1000; // Default 5 minutes
   const logLevel = options.logLevel || 'info';
-  
+
   if (!fastify.redis) {
     fastify.log.warn('Redis monitoring disabled - Redis not available');
     return;
@@ -23,9 +22,12 @@ const redisMonitoringPlugin: FastifyPluginAsync<RedisMonitoringOptions> = async 
   const cacheServices = new Map<string, RedisCacheService>();
 
   // Register cache service tracking
-  fastify.decorate('registerCacheService', (name: string, service: RedisCacheService) => {
-    cacheServices.set(name, service);
-  });
+  fastify.decorate(
+    'registerCacheService',
+    (name: string, service: RedisCacheService) => {
+      cacheServices.set(name, service);
+    },
+  );
 
   // Monitor Redis and cache statistics
   const monitor = async () => {
@@ -34,8 +36,14 @@ const redisMonitoringPlugin: FastifyPluginAsync<RedisMonitoringOptions> = async 
       const info = await fastify.redis.info();
       const memoryInfo = parseRedisInfo(info, 'used_memory_human');
       const connectedClients = parseRedisInfo(info, 'connected_clients');
-      const totalConnections = parseRedisInfo(info, 'total_connections_received');
-      const commandsProcessed = parseRedisInfo(info, 'total_commands_processed');
+      const totalConnections = parseRedisInfo(
+        info,
+        'total_connections_received',
+      );
+      const commandsProcessed = parseRedisInfo(
+        info,
+        'total_commands_processed',
+      );
       const hitRate = calculateHitRate(info);
 
       // Get cache service statistics
@@ -56,28 +64,32 @@ const redisMonitoringPlugin: FastifyPluginAsync<RedisMonitoringOptions> = async 
         cacheServices: cacheStats,
       };
 
-      fastify.log[logLevel]({ 
-        msg: 'Redis monitoring update', 
-        ...monitoringData 
+      fastify.log[logLevel]({
+        msg: 'Redis monitoring update',
+        ...monitoringData,
       });
 
       // Check for potential issues
       if (parseInt(connectedClients) > 100) {
-        fastify.log.warn('High number of Redis connections', { connectedClients });
+        fastify.log.warn('High number of Redis connections', {
+          connectedClients,
+        });
       }
 
       // Check cache hit rates
       for (const [name, stats] of Object.entries(cacheStats)) {
         const serviceStats = stats as any;
-        if (serviceStats.hitRate < 50 && serviceStats.hits + serviceStats.misses > 100) {
-          fastify.log.warn(`Low cache hit rate for ${name}`, { 
+        if (
+          serviceStats.hitRate < 50 &&
+          serviceStats.hits + serviceStats.misses > 100
+        ) {
+          fastify.log.warn(`Low cache hit rate for ${name}`, {
             hitRate: serviceStats.hitRate,
             hits: serviceStats.hits,
-            misses: serviceStats.misses 
+            misses: serviceStats.misses,
           });
         }
       }
-
     } catch (error) {
       fastify.log.error({ msg: 'Redis monitoring error', error });
     }
@@ -101,7 +113,7 @@ const redisMonitoringPlugin: FastifyPluginAsync<RedisMonitoringOptions> = async 
   fastify.get('/api/monitoring/redis', async () => {
     const info = await fastify.redis.info();
     const stats: any = {};
-    
+
     for (const [name, service] of cacheServices) {
       stats[name] = service.getStats();
     }
