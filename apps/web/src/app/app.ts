@@ -458,7 +458,7 @@ export class App implements OnInit {
             title: 'API Reference',
             type: 'basic',
             icon: 'heroicons_outline:code',
-            link: 'http://localhost:3335/api-docs',
+            link: 'http://localhost:3333/api-docs',
             externalLink: true,
             target: '_blank',
           },

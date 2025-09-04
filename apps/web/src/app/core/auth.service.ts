@@ -87,7 +87,7 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, credentials, {
+      .post<AuthResponse>(`${environment.apiUrl}/api/auth/login`, credentials, {
         withCredentials: true, // Include cookies for refresh token
       })
       .pipe(
@@ -103,7 +103,7 @@ export class AuthService {
 
   register(userData: RegisterRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, userData)
+      .post<AuthResponse>(`${environment.apiUrl}/api/auth/register`, userData)
       .pipe(
         tap((response) => {
           if (response.success && response.data) {
@@ -118,7 +118,7 @@ export class AuthService {
   logout(): Observable<any> {
     return this.http
       .post(
-        `${environment.apiUrl}/auth/logout`,
+        `${environment.apiUrl}/api/auth/logout`,
         {},
         {
           withCredentials: true,
@@ -141,7 +141,7 @@ export class AuthService {
   refreshToken(): Observable<any> {
     return this.http
       .post<AuthResponse>(
-        `${environment.apiUrl}/auth/refresh`,
+        `${environment.apiUrl}/api/auth/refresh`,
         {},
         {
           withCredentials: true,

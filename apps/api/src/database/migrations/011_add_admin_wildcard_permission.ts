@@ -1,6 +1,13 @@
 import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
+  // Check if app_roles table exists first
+  const hasAppRolesTable = await knex.schema.hasTable('app_roles');
+  if (!hasAppRolesTable) {
+    console.log('app_roles table does not exist, skipping migration');
+    return;
+  }
+
   // Add wildcard permission for admin role to have access to all resources
   const adminRole = await knex('app_roles').where('name', 'admin').first();
 
