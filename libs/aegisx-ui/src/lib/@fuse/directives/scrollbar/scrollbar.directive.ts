@@ -27,9 +27,9 @@ import { Subject, debounceTime, fromEvent, takeUntil } from 'rxjs';
     standalone: true,
 })
 export class FuseScrollbarDirective implements OnChanges, OnInit, OnDestroy {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_fuseScrollbar: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     private _elementRef = inject(ElementRef);
     private _platform = inject(Platform);

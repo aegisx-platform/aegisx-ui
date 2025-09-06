@@ -33,9 +33,9 @@ import { Subject, takeUntil } from 'rxjs';
     ],
 })
 export class UserComponent implements OnInit, OnDestroy {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_showAvatar: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     @Input() showAvatar: boolean = true;
     user: User;

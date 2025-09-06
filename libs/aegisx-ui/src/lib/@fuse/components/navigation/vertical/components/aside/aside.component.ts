@@ -42,10 +42,10 @@ import { Subject, filter, takeUntil } from 'rxjs';
 export class FuseVerticalNavigationAsideItemComponent
     implements OnChanges, OnInit, OnDestroy
 {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_autoCollapse: BooleanInput;
     static ngAcceptInputType_skipChildren: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     private _changeDetectorRef = inject(ChangeDetectorRef);
     private _router = inject(Router);

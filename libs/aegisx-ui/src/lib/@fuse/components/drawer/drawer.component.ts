@@ -37,11 +37,11 @@ import { FuseUtilsService } from '../../services/utils/utils.service';
     standalone: true,
 })
 export class FuseDrawerComponent implements OnChanges, OnInit, OnDestroy {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_fixed: BooleanInput;
     static ngAcceptInputType_opened: BooleanInput;
     static ngAcceptInputType_transparentOverlay: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     private _animationBuilder = inject(AnimationBuilder);
     private _elementRef = inject(ElementRef);
@@ -78,7 +78,7 @@ export class FuseDrawerComponent implements OnChanges, OnInit, OnDestroy {
      * Host binding for component classes
      */
     @HostBinding('class') get classList(): any {
-        /* eslint-disable @typescript-eslint/naming-convention */
+         
         return {
             'fuse-drawer-animations-enabled': this._animationsEnabled,
             'fuse-drawer-fixed': this.fixed,
@@ -87,7 +87,7 @@ export class FuseDrawerComponent implements OnChanges, OnInit, OnDestroy {
             'fuse-drawer-opened': this.opened,
             [`fuse-drawer-position-${this.position}`]: true,
         };
-        /* eslint-enable @typescript-eslint/naming-convention */
+         
     }
 
     /**
