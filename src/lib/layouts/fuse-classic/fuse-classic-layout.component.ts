@@ -5,7 +5,7 @@ import { RouterOutlet } from '@angular/router';
 import { SimpleVerticalNavigationComponent } from './simple-vertical-navigation.component';
 import { FuseMediaWatcherService } from '../../services/fuse-media-watcher.service';
 import { FuseLoadingBarComponent } from '../../components/fuse-loading-bar.component';
-import { FuseNavigationItem } from '../../@fuse/components/navigation/navigation.types';
+import { FuseNavigationItem } from '../../types/fuse-navigation.types';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 

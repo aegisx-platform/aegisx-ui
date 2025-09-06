@@ -14,12 +14,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
-import { FuseNavigationItem } from '../../@fuse/components/navigation/navigation.types';
+import { FuseNavigationItem } from '../../types/fuse-navigation.types';
 import { FuseScrollbarDirective } from '../../directives/fuse-scrollbar.directive';
 import { Subject, takeUntil } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { IconService } from '../../services/icon.service';
-import { NavigationIconComponent } from '../../ax/components/ax-navigation-icon.component';
+import { NavigationIconComponent } from '../../components/ax-navigation-icon.component';
 
 @Component({
     selector: 'ax-simple-vertical-navigation',
