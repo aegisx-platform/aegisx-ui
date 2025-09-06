@@ -1,5 +1,5 @@
-import { FuseNavigationItem } from '../@fuse/components/navigation/navigation.types';
-import { AxNavigationItem } from '../ax/types/ax-navigation.types';
+import { FuseNavigationItem } from '../types/fuse-navigation.types';
+import { AxNavigationItem } from '../types/ax-navigation.types';
 
 /**
  * Convert FuseNavigationItem to AxNavigationItem

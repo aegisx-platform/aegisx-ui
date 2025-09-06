@@ -3,35 +3,35 @@
 // -----------------------------------------------------------------------------------------------------
 
 // Import Fuse navigation component styles
-@import '../@fuse/components/navigation/vertical/vertical.component.scss';
-@import '../@fuse/components/navigation/vertical/styles/appearances/default.scss';
-@import '../@fuse/components/navigation/vertical/styles/appearances/compact.scss';
-@import '../@fuse/components/navigation/vertical/styles/appearances/dense.scss';
-@import '../@fuse/components/navigation/vertical/styles/appearances/thin.scss';
+@import './vendor/fuse/vertical.component.scss';
+@import './vendor/fuse/default.scss';
+@import './vendor/fuse/compact.scss';
+@import './vendor/fuse/dense.scss';
+@import './vendor/fuse/thin.scss';
 
 // Import Fuse loading bar styles
-@import '../@fuse/components/loading-bar/loading-bar.component.scss';
+@import './vendor/fuse/loading-bar.component.scss';
 
 // Import Fuse card styles
-@import '../@fuse/components/card/card.component.scss';
+@import './vendor/fuse/card.component.scss';
 
 // Import Fuse alert styles
-@import '../@fuse/components/alert/alert.component.scss';
+@import './vendor/fuse/alert.component.scss';
 
 // Import Fuse drawer styles
-@import '../@fuse/components/drawer/drawer.component.scss';
+@import './vendor/fuse/drawer.component.scss';
 
 // Import highlight.js styles
-@import '../@fuse/styles/overrides/highlightjs.scss';
+@import './vendor/fuse/overrides/highlightjs.scss';
 
 // Import perfect scrollbar styles
-@import '../@fuse/styles/overrides/perfect-scrollbar.scss';
+@import './vendor/fuse/overrides/perfect-scrollbar.scss';
 
 // Import Angular Material overrides
-@import '../@fuse/styles/overrides/angular-material.scss';
+@import './vendor/fuse/overrides/angular-material.scss';
 
 // Import Fuse utility classes
-@import '../@fuse/styles/tailwind.scss';
+@import './vendor/fuse/tailwind.scss';
 
 // -----------------------------------------------------------------------------------------------------
 // @ Fuse Vertical Navigation Overlays
