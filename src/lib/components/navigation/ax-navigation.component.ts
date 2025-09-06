@@ -6,8 +6,7 @@ import {
   HostBinding,
   ViewEncapsulation,
   ChangeDetectionStrategy,
-  signal,
-  computed
+  signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -90,6 +89,7 @@ import { NavigationIconComponent } from '../navigation-icon.component';
             <!-- Collapsible Item -->
             <button
               class="ax-navigation__item-wrapper"
+              type="button"
               [attr.aria-expanded]="isExpanded(item)"
               [attr.title]="state === 'collapsed' ? item.title : null"
               (click)="toggleCollapsible(item)"

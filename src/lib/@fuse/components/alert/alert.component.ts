@@ -37,11 +37,11 @@ import { Subject, filter, takeUntil } from 'rxjs';
     imports: [MatIconModule, MatButtonModule],
 })
 export class FuseAlertComponent implements OnChanges, OnInit, OnDestroy {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_dismissible: BooleanInput;
     static ngAcceptInputType_dismissed: BooleanInput;
     static ngAcceptInputType_showIcon: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     private _changeDetectorRef = inject(ChangeDetectorRef);
     private _fuseAlertService = inject(FuseAlertService);
@@ -66,7 +66,7 @@ export class FuseAlertComponent implements OnChanges, OnInit, OnDestroy {
      * Host binding for component classes
      */
     @HostBinding('class') get classList(): any {
-        /* eslint-disable @typescript-eslint/naming-convention */
+         
         return {
             'fuse-alert-appearance-border': this.appearance === 'border',
             'fuse-alert-appearance-fill': this.appearance === 'fill',
@@ -84,7 +84,7 @@ export class FuseAlertComponent implements OnChanges, OnInit, OnDestroy {
             'fuse-alert-type-warning': this.type === 'warning',
             'fuse-alert-type-error': this.type === 'error',
         };
-        /* eslint-enable @typescript-eslint/naming-convention */
+         
     }
 
     // -----------------------------------------------------------------------------------------------------

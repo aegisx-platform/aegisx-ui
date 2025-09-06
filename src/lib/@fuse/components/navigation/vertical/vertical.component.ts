@@ -77,11 +77,11 @@ import {
 export class FuseVerticalNavigationComponent
     implements OnChanges, OnInit, AfterViewInit, OnDestroy
 {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_inner: BooleanInput;
     static ngAcceptInputType_opened: BooleanInput;
     static ngAcceptInputType_transparentOverlay: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     private _animationBuilder = inject(AnimationBuilder);
     private _changeDetectorRef = inject(ChangeDetectorRef);
@@ -154,7 +154,7 @@ export class FuseVerticalNavigationComponent
      * Host binding for component classes
      */
     @HostBinding('class') get classList(): any {
-        /* eslint-disable @typescript-eslint/naming-convention */
+         
         return {
             'fuse-vertical-navigation-animations-enabled':
                 this._animationsEnabled,
@@ -168,7 +168,7 @@ export class FuseVerticalNavigationComponent
             'fuse-vertical-navigation-position-right':
                 this.position === 'right',
         };
-        /* eslint-enable @typescript-eslint/naming-convention */
+         
     }
 
     /**

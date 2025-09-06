@@ -43,9 +43,9 @@ import { Subject, filter, takeUntil } from 'rxjs';
 export class FuseVerticalNavigationCollapsableItemComponent
     implements OnInit, OnDestroy
 {
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     static ngAcceptInputType_autoCollapse: BooleanInput;
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     private _changeDetectorRef = inject(ChangeDetectorRef);
     private _router = inject(Router);
@@ -68,12 +68,12 @@ export class FuseVerticalNavigationCollapsableItemComponent
      * Host binding for component classes
      */
     @HostBinding('class') get classList(): any {
-        /* eslint-disable @typescript-eslint/naming-convention */
+         
         return {
             'fuse-vertical-navigation-item-collapsed': this.isCollapsed,
             'fuse-vertical-navigation-item-expanded': this.isExpanded,
         };
-        /* eslint-enable @typescript-eslint/naming-convention */
+         
     }
 
     // -----------------------------------------------------------------------------------------------------
