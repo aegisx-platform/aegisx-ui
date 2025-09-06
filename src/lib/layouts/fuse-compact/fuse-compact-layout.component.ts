@@ -61,9 +61,9 @@ export class FuseCompactLayoutComponent implements OnInit, OnDestroy {
 
   currentYear = new Date().getFullYear();
   isScreenSmall = false;
-  isNavigationExpanded = signal(true);
+  isNavigationExpanded = signal(false); // Start collapsed, will be set correctly in ngOnInit
   navigationConfig = signal<Partial<AxNavigationConfig>>({
-    state: 'expanded',
+    state: 'collapsed', // Start collapsed
     mode: 'side',
     position: 'left',
     showToggleButton: true,
@@ -75,6 +75,31 @@ export class FuseCompactLayoutComponent implements OnInit, OnDestroy {
   private _mediaWatcher = inject(FuseMediaWatcherService);
 
   ngOnInit(): void {
+    // Check initial screen size immediately
+    const checkInitialSize = () => {
+      // Check if window width is less than 768px (md breakpoint)
+      const isMobile = window.innerWidth < 768;
+      this.isScreenSmall = isMobile;
+
+      if (isMobile) {
+        this.isNavigationExpanded.set(false);
+        this.navigationConfig.update((config) => ({
+          ...config,
+          state: 'collapsed',
+        }));
+      } else {
+        this.isNavigationExpanded.set(true);
+        this.navigationConfig.update((config) => ({
+          ...config,
+          state: 'expanded',
+        }));
+      }
+    };
+
+    // Set initial state
+    checkInitialSize();
+
+    // Then subscribe to media changes
     this._mediaWatcher.onMediaChange$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(({ matchingAliases }: { matchingAliases: string[] }) => {
