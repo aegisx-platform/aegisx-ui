@@ -192,11 +192,6 @@ import { filter } from 'rxjs/operators';
         </div>
       }
     </ng-template>
-
-    <!-- Overlay for mobile -->
-    @if (config.mode === 'over' && isOpen) {
-      <div class="ax-navigation__overlay" (click)="close()" [@fade]></div>
-    }
   `,
   styleUrl: './ax-navigation.component.scss',
   encapsulation: ViewEncapsulation.None,

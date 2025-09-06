@@ -18,6 +18,9 @@
 .ax-navigation-host {
   display: block;
   height: 100%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 
   &--collapsed {
     // Width controlled by parent
@@ -48,6 +51,7 @@
   transition: all var(--ax-navigation-transition-duration)
     var(--ax-navigation-transition-timing);
   overflow: hidden;
+  contain: layout style paint;
 
   // Navigation Modes
   &--side {
@@ -150,6 +154,8 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  width: 100%;
+  box-sizing: border-box;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -250,6 +256,8 @@
   position: relative;
   margin-bottom: 0.25rem;
   padding: 0 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
 
   &--active {
     > .ax-navigation__item-wrapper {
@@ -306,6 +314,10 @@
   cursor: pointer;
   transition: all 200ms ease-in-out;
   outline: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover:not(:disabled) {
     background-color: rgba(255, 255, 255, 0.12);
@@ -454,58 +466,15 @@
   }
 }
 
-// Overlay
-.ax-navigation__overlay {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 998;
-  cursor: pointer;
-}
-
 // Responsive
 @media (max-width: 768px) {
   .ax-navigation {
+    // Remove the transform logic from here as it's handled by parent
     &--side {
-      position: fixed;
       top: 0;
       bottom: 0;
       z-index: 999;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-      transform: translateX(-100%);
-      transition: transform var(--ax-navigation-transition-duration)
-        var(--ax-navigation-transition-timing);
-
-      &[data-position='left'] {
-        left: 0;
-
-        &.ax-navigation--expanded {
-          transform: translateX(0);
-        }
-      }
-
-      &[data-position='right'] {
-        right: 0;
-        transform: translateX(100%);
-
-        &.ax-navigation--expanded {
-          transform: translateX(0);
-        }
-      }
-    }
-
-    // Always use full width on mobile when expanded
-    &--expanded {
-      width: 16rem !important;
-    }
-
-    // Hide collapsed navigation on mobile
-    &--collapsed {
-      width: 0 !important;
-      opacity: 0;
     }
   }
 }
