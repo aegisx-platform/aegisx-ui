@@ -124,6 +124,9 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
   fastify.decorate('requireRole', function (roles: string[]) {
     return fastify.auth([fastify.verifyJWT, fastify.verifyRole(roles)]);
   });
+
+  // authorize decorator (alias for verifyRole)
+  fastify.decorate('authorize', fastify.verifyRole);
 }
 
 export default fp(authStrategiesPlugin, {
@@ -150,5 +153,8 @@ declare module 'fastify' {
       reply: FastifyReply,
     ) => Promise<void>;
     requireRole: (roles: string[]) => unknown;
+    authorize: (
+      roles: string[],
+    ) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
 }

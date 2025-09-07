@@ -146,6 +146,9 @@
 /* Import Angular Material Theme BEFORE any custom styles */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+/* Import Material Theme Configuration */
+@import 'styles/material-theme-config';
+
 /* Fix Material outline input border issue with Tailwind */
 /* The issue is Tailwind sets border-style: solid globally, causing the notch to show borders */
 .mdc-notched-outline__notch {
@@ -325,7 +328,6 @@ body {
 .mdc-notched-outline,
 .mdc-notched-outline *,
 .mdc-line-ripple {
-  border-color: initial !important;
   --tw-border-opacity: initial !important;
 }
 

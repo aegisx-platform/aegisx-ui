@@ -25,6 +25,7 @@ import userProfilePlugin from './modules/user-profile/user-profile.plugin';
 import defaultPlugin from './modules/default/default.plugin';
 import settingsPlugin from './modules/settings/settings.plugin';
 import { monitoringPlugin as monitoringModulePlugin } from './modules/monitoring';
+import { usersPlugin } from './modules/users';
 import staticFilesPlugin from './plugins/static-files.plugin';
 import jwtAuthPlugin from './plugins/jwt-auth.plugin';
 import swaggerPlugin from './plugins/swagger.plugin';
@@ -165,6 +166,9 @@ async function bootstrap() {
 
   // User Profile module
   await app.register(userProfilePlugin);
+
+  // Users management module
+  await app.register(usersPlugin);
 
   // Settings module
   await app.register(settingsPlugin);
