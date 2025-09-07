@@ -1,6 +1,5 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { container } from 'tsyringe';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UsersRepository } from './users.repository';
@@ -20,14 +19,10 @@ export default fp(
       );
     }
 
-    // Register dependencies in the container
-    container.register(UsersRepository, {
-      useFactory: () => new UsersRepository(fastify.knex),
-    });
-
-    // Get instances from container
-    const usersService = container.resolve(UsersService);
-    const usersController = container.resolve(UsersController);
+    // Create service instances manually (avoiding tsyringe for now)
+    const usersRepository = new UsersRepository(fastify.knex);
+    const usersService = new UsersService(usersRepository);
+    const usersController = new UsersController(usersService);
 
     // Register routes
     await fastify.register(usersRoutes, {

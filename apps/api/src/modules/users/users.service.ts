@@ -1,4 +1,3 @@
-import { injectable } from 'tsyringe';
 import bcrypt from 'bcrypt';
 import { UsersRepository } from './users.repository';
 import {
@@ -9,7 +8,6 @@ import {
 } from './users.types';
 import { AppError } from '../../core/errors/app-error';
 
-@injectable()
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 

@@ -1,5 +1,4 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { injectable } from 'tsyringe';
 import { UsersService } from './users.service';
 import {
   ListUsersQuery,
@@ -8,7 +7,6 @@ import {
   ChangeUserPasswordRequest,
 } from './users.schemas';
 
-@injectable()
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

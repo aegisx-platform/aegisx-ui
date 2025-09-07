@@ -6,9 +6,7 @@ import {
   UserUpdateData,
   UserListOptions,
 } from './users.types';
-import { injectable } from 'tsyringe';
 
-@injectable()
 export class UsersRepository {
   constructor(private knex: Knex) {}
 
