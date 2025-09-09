@@ -93,6 +93,18 @@ const SuccessMessageResponseSchema = ApiSuccessResponseSchema(
   }),
 );
 
+// Role schema
+const RoleSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  name: Type.String(),
+  description: Type.Optional(Type.String()),
+});
+
+// List roles response
+const ListRolesResponseSchema = ApiSuccessResponseSchema(
+  Type.Array(RoleSchema),
+);
+
 // Export schemas for registration
 export const usersSchemas = {
   'list-users-query': ListUsersQuerySchema,
@@ -105,6 +117,7 @@ export const usersSchemas = {
   'delete-user-response': DeleteUserResponseSchema,
   'change-user-password-request': ChangeUserPasswordRequestSchema,
   'success-message-response': SuccessMessageResponseSchema,
+  'list-roles-response': ListRolesResponseSchema,
 };
 
 // Export types
@@ -121,3 +134,5 @@ export type DeleteUserResponse = Static<typeof DeleteUserResponseSchema>;
 export type ChangeUserPasswordRequest = Static<
   typeof ChangeUserPasswordRequestSchema
 >;
+export type Role = Static<typeof RoleSchema>;
+export type ListRolesResponse = Static<typeof ListRolesResponseSchema>;

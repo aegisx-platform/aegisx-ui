@@ -1,14 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { SchemaRefs } from '../../schemas/registry';
 import {
-  ClientErrorsRequestSchema,
-  ClientErrorsResponseSchema,
-  ClientMonitoringRequestSchema,
-  ClientMonitoringResponseSchema,
   ClientErrorsRequest,
-  ClientMonitoringRequest,
   ClientErrorsResponse,
+  ClientMonitoringRequest,
   ClientMonitoringResponse,
-  ClientErrorLog,
   PerformanceMetric,
   UserAction,
 } from './monitoring.schemas';
@@ -25,10 +21,11 @@ async function monitoringRoutes(fastify: FastifyInstance) {
         summary: 'Log client errors',
         description: 'Log client-side errors from the frontend application',
         tags: ['monitoring'],
-        body: ClientErrorsRequestSchema,
+        body: SchemaRefs.module('monitoring', 'client-errors-request'),
         response: {
-          200: ClientErrorsResponseSchema,
-          400: ClientErrorsResponseSchema,
+          200: SchemaRefs.module('monitoring', 'client-errors-response'),
+          400: SchemaRefs.ServerError,
+          500: SchemaRefs.ServerError,
         },
       },
     },
@@ -66,13 +63,10 @@ async function monitoringRoutes(fastify: FastifyInstance) {
           await storeClientError(fastify, enhancedError);
         }
 
-        const response: ClientErrorsResponse = {
-          success: true,
+        return reply.success({
           message: `Successfully processed ${errors.length} error(s)`,
           errorsProcessed: errors.length,
-        };
-
-        return response;
+        });
       } catch (error) {
         fastify.logger.error('Failed to process client errors', {
           error: error.message,
@@ -80,14 +74,11 @@ async function monitoringRoutes(fastify: FastifyInstance) {
           correlationId: request.correlationId,
         });
 
-        const response: ClientErrorsResponse = {
-          success: false,
-          message: 'Failed to process client errors',
-          errorsProcessed: 0,
-        };
-
-        reply.code(500);
-        return response;
+        return reply.error(
+          'PROCESSING_ERROR',
+          'Failed to process client errors',
+          500,
+        );
       }
     },
   );
@@ -104,10 +95,11 @@ async function monitoringRoutes(fastify: FastifyInstance) {
         description:
           'Receive client-side performance and user interaction data',
         tags: ['monitoring'],
-        body: ClientMonitoringRequestSchema,
+        body: SchemaRefs.module('monitoring', 'client-monitoring-request'),
         response: {
-          200: ClientMonitoringResponseSchema,
-          400: ClientMonitoringResponseSchema,
+          200: SchemaRefs.module('monitoring', 'client-monitoring-response'),
+          400: SchemaRefs.ServerError,
+          500: SchemaRefs.ServerError,
         },
       },
     },
@@ -157,14 +149,11 @@ async function monitoringRoutes(fastify: FastifyInstance) {
           await storeUserAction(fastify, enhancedAction);
         }
 
-        const response: ClientMonitoringResponse = {
-          success: true,
+        return reply.success({
           message: `Successfully processed ${performance.length} metrics and ${userActions.length} actions`,
           metricsProcessed: performance.length,
           actionsProcessed: userActions.length,
-        };
-
-        return response;
+        });
       } catch (error) {
         fastify.logger.error('Failed to process client monitoring data', {
           error: error.message,
@@ -172,15 +161,11 @@ async function monitoringRoutes(fastify: FastifyInstance) {
           correlationId: request.correlationId,
         });
 
-        const response: ClientMonitoringResponse = {
-          success: false,
-          message: 'Failed to process monitoring data',
-          metricsProcessed: 0,
-          actionsProcessed: 0,
-        };
-
-        reply.code(500);
-        return response;
+        return reply.error(
+          'PROCESSING_ERROR',
+          'Failed to process monitoring data',
+          500,
+        );
       }
     },
   );

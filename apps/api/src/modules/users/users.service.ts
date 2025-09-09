@@ -61,12 +61,25 @@ export class UsersService {
       throw new AppError('Username already exists', 409, 'USERNAME_EXISTS');
     }
 
+    // If role name is provided instead of roleId, convert it
+    let roleId = data.roleId;
+    if (!roleId && (data as any).role) {
+      const roles = await this.usersRepository.getRoles();
+      const role = roles.find((r) => r.name === (data as any).role);
+      if (role) {
+        roleId = role.id;
+      } else {
+        throw new AppError('Invalid role', 400, 'INVALID_ROLE');
+      }
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     // Create user
     const user = await this.usersRepository.create({
       ...data,
+      roleId,
       password: hashedPassword,
     });
 
@@ -151,5 +164,9 @@ export class UsersService {
     if (!success) {
       throw new AppError('Failed to delete user', 500, 'DELETE_FAILED');
     }
+  }
+
+  async listRoles() {
+    return this.usersRepository.getRoles();
   }
 }

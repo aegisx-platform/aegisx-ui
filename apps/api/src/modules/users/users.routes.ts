@@ -169,4 +169,28 @@ export async function usersRoutes(
     },
     controller.deleteUser.bind(controller),
   );
+
+  // Get all roles (admin/manager only)
+  typedFastify.get(
+    '/api/roles',
+    {
+      preValidation: [
+        fastify.authenticate,
+        fastify.authorize(['admin', 'manager']),
+      ],
+      schema: {
+        description: 'Get all available roles',
+        tags: ['Users'],
+        summary: 'List all roles',
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: SchemaRefs.module('users', 'list-roles-response'),
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          500: SchemaRefs.ServerError,
+        },
+      },
+    },
+    controller.listRoles.bind(controller),
+  );
 }

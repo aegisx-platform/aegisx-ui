@@ -229,4 +229,13 @@ export class UsersRepository {
       roleId: row.roleId,
     };
   }
+
+  async getRoles() {
+    const roles = await this.knex
+      .select('id', 'name', 'description')
+      .from('roles')
+      .orderBy('name');
+
+    return roles;
+  }
 }

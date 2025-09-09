@@ -10,9 +10,16 @@ export interface User {
   lastName: string;
   isActive: boolean;
   role: string;
+  roleId: string;
   createdAt: string;
   updatedAt: string;
   lastLoginAt?: string;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description?: string;
 }
 
 export interface CreateUserRequest {
@@ -21,7 +28,7 @@ export interface CreateUserRequest {
   firstName: string;
   lastName: string;
   password: string;
-  role: string;
+  roleId: string;
   isActive?: boolean;
 }
 
@@ -29,7 +36,7 @@ export interface UpdateUserRequest {
   firstName?: string;
   lastName?: string;
   isActive?: boolean;
-  role?: string;
+  roleId?: string;
 }
 
 interface GetUsersParams {
@@ -198,6 +205,22 @@ export class UserService {
       throw error;
     } finally {
       this.loadingSignal.set(false);
+    }
+  }
+
+  async getRoles(): Promise<Role[]> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<Role[]>>(`/api/roles`)
+        .toPromise();
+
+      if (response?.success && response.data) {
+        return response.data;
+      }
+      return [];
+    } catch (error: any) {
+      console.error('Failed to fetch roles:', error);
+      return [];
     }
   }
 

@@ -1,7 +1,7 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-01-09  
-**Current Task:** Continuing development with standardized API response patterns  
+**Last Updated:** 2025-01-09 (Session 2)  
+**Current Task:** Fixed CORS and monitoring endpoints, updated user creation to use roleId  
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 
 ## 🏗️ Project Overview
@@ -14,43 +14,52 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 
 ### Session Overview
 
-- **Date**: 2025-01-09
-- **Main Focus**: Fixed Material Input styling issues, configured Material theme, implemented user management backend, standardized API response schemas
+- **Date**: 2025-01-09 (Session 2)
+- **Main Focus**: Fixed CORS configuration, monitoring endpoint issues, and user creation API
 
-### ✅ Completed Tasks
+### ✅ Completed Tasks (Session 2)
 
-1. **Material Design Input Styling Fix**
-   - Fixed unwanted border lines in Material Design input fields caused by Tailwind CSS conflicts
-   - Added CSS fix to hide notch borders in `/apps/web/src/styles.scss`
-   - Configured Material theme to allow theme changes
+1. **Fixed CORS Configuration**
+   - Added explicit HTTP methods to CORS configuration in `/apps/api/src/main.ts`
+   - Added support for PUT, DELETE, PATCH methods that were missing
+   - Resolved "Method PUT is not allowed by Access-Control-Allow-Methods" error
 
-2. **User Management Backend Implementation**
-   - Created complete CRUD module at `/apps/api/src/modules/users/`
-   - Implemented controllers, services, repositories with proper TypeScript types
-   - Fixed API route prefix issues (missing `/api` prefix)
-   - Resolved database column naming issues (camelCase vs snake_case)
-   - Fixed response structure to match frontend expectations
+2. **Fixed Client Monitoring Endpoint**
+   - Added `/api` prefix to monitoring module routes
+   - Fixed monitoring response schemas to use `ApiSuccessResponseSchema` wrapper
+   - Updated schema validation to accept relative URLs instead of requiring full URI format
+   - Fixed "Failed to serialize an error" issue with proper response formatting
+   - Registered monitoring schemas in the schema registry
 
-3. **API Response Standardization**
-   - Unified API response schema using single `ApiSuccessResponseSchema`
-   - Added optional `pagination` field to support both paginated and non-paginated responses
-   - Fixed `PaginationMetaSchema` to use `totalPages` (was `pages`) to match `reply.paginated()` helper
-   - Removed redundant `PaginatedResponseSchema`
-   - Updated all TypeScript types to match new structure
+3. **Fixed Angular Proxy Configuration**
+   - Created `/apps/web/proxy.conf.json` for development API proxying
+   - Updated `project.json` to use proxy configuration
+   - Ensured `/api` requests from Angular are properly forwarded to backend
 
-4. **UI/UX Improvements**
-   - Fixed button height inconsistency in user list (Reset/Export buttons now match form field height)
-   - Fixed navigation header border issue
+4. **Added Roles Management**
+   - Created `/api/roles` endpoint to fetch available roles
+   - Added `getRoles()` method in backend controller, service, and repository
+   - Registered roles schemas in the schema registry
+
+5. **Updated User Creation to Use RoleId**
+   - Modified frontend to fetch roles from API and display in dropdown
+   - Updated `CreateUserRequest` and `UpdateUserRequest` to use `roleId` instead of `role`
+   - Added Role interface and getRoles method in UserService
+   - Modified user form component to load roles dynamically
+   - Backend service now supports both `role` name and `roleId` for backward compatibility
 
 ### 🔄 Current State
 
 #### Working Features
 
 - ✅ User list with pagination, search, and filters
-- ✅ User CRUD operations (Create, Read, Update, Delete)
+- ✅ User CRUD operations (Create, Read, Update, Delete) with proper role management
 - ✅ Material Design components with proper styling
 - ✅ Standardized API response structure
 - ✅ TypeBox schema validation throughout
+- ✅ Client monitoring endpoint for performance tracking
+- ✅ CORS configuration with all HTTP methods
+- ✅ Roles API endpoint for dynamic role selection
 
 #### API Response Standard (New)
 
@@ -77,16 +86,19 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
    - Add password reset functionality
    - Implement user profile editing
    - Add email verification flow
+   - Add user avatar upload
 
 2. **Testing**
    - Write unit tests for user module
    - Add E2E tests for user management flows
-   - Test all CRUD operations
+   - Test all CRUD operations with role management
+   - Test monitoring endpoint data collection
 
 3. **Documentation**
    - Document the new API response standard
-   - Update API documentation with user endpoints
+   - Update API documentation with user endpoints and roles endpoint
    - Create user management feature guide
+   - Document monitoring/analytics implementation
 
 ### 📝 Important Notes
 
@@ -94,6 +106,10 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 2. **Database Columns**: Always use snake_case for database columns (e.g., `created_at`, not `createdAt`)
 3. **Material Design**: Custom CSS fixes are in `/apps/web/src/styles.scss`
 4. **TypeBox Schemas**: All API routes must use TypeBox schemas for validation
+5. **CORS Configuration**: Explicit methods must be defined in CORS config (GET, POST, PUT, DELETE, PATCH, OPTIONS)
+6. **Schema URI Validation**: Use `minLength: 1` for URLs that accept relative paths instead of `format: 'uri'`
+7. **Frontend Proxy**: Development uses `/apps/web/proxy.conf.json` to forward API requests
+8. **Role Management**: Always use `roleId` (UUID) in API requests, not `role` name
 
 ### 🐛 Known Issues
 
@@ -107,6 +123,10 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 2. **Schema Consistency**: Having a single response schema with optional fields is cleaner than multiple schemas
 3. **TypeScript + Fastify**: Proper typing requires careful attention to request/reply interfaces
 4. **Database Naming**: Always check database column names match the code (snake_case vs camelCase)
+5. **CORS Issues**: Always explicitly define allowed methods in CORS configuration
+6. **Schema Validation**: URI format validation can be too strict for relative URLs
+7. **Response Formatting**: Use reply helpers (`reply.success()`, `reply.error()`) instead of manual object creation
+8. **Frontend-Backend Contract**: Ensure frontend sends data in the exact format backend expects (roleId vs role)
 
 ## 📋 Quick Commands Reference
 

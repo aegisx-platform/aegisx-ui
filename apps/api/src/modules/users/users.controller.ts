@@ -98,4 +98,9 @@ export class UsersController {
       message: 'User deleted successfully',
     });
   }
+
+  async listRoles(request: FastifyRequest, reply: FastifyReply) {
+    const roles = await this.usersService.listRoles();
+    return reply.success(roles);
+  }
 }

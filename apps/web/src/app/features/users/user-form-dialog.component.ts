@@ -17,6 +17,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   UserService,
   User,
+  Role,
   CreateUserRequest,
   UpdateUserRequest,
 } from './user.service';
@@ -144,12 +145,12 @@ interface DialogData {
           <!-- Role -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Role</mat-label>
-            <mat-select formControlName="role">
-              <mat-option value="admin">Admin</mat-option>
-              <mat-option value="manager">Manager</mat-option>
-              <mat-option value="user">User</mat-option>
+            <mat-select formControlName="roleId">
+              @for (role of roles(); track role.id) {
+                <mat-option [value]="role.id">{{ role.name }}</mat-option>
+              }
             </mat-select>
-            <mat-error *ngIf="userForm.get('role')?.hasError('required')">
+            <mat-error *ngIf="userForm.get('roleId')?.hasError('required')">
               Role is required
             </mat-error>
           </mat-form-field>
@@ -217,6 +218,7 @@ export class UserFormDialogComponent implements OnInit {
 
   isSubmitting = signal(false);
   showPassword = signal(false);
+  roles = signal<Role[]>([]);
 
   userForm = this.fb.group({
     firstName: ['', [Validators.required]],
@@ -229,24 +231,44 @@ export class UserFormDialogComponent implements OnInit {
         ? [Validators.required, Validators.minLength(8)]
         : [],
     ],
-    role: ['user', Validators.required],
+    roleId: ['', Validators.required],
     isActive: [true],
   });
 
   ngOnInit() {
+    // Load roles
+    this.loadRoles();
+
     if (this.data.mode === 'edit' && this.data.user) {
       this.userForm.patchValue({
         firstName: this.data.user.firstName,
         lastName: this.data.user.lastName,
         email: this.data.user.email,
         username: this.data.user.username,
-        role: this.data.user.role,
+        roleId: this.data.user.roleId,
         isActive: this.data.user.isActive,
       });
 
       // Disable fields that shouldn't be edited
       this.userForm.get('email')?.disable();
       this.userForm.get('username')?.disable();
+    }
+  }
+
+  async loadRoles() {
+    const roles = await this.userService.getRoles();
+    this.roles.set(roles);
+
+    // Set default role for new user if roles are loaded and no role selected
+    if (
+      this.data.mode === 'create' &&
+      !this.userForm.value.roleId &&
+      roles.length > 0
+    ) {
+      const userRole = roles.find((r) => r.name === 'user');
+      if (userRole) {
+        this.userForm.patchValue({ roleId: userRole.id });
+      }
     }
   }
 
@@ -265,7 +287,7 @@ export class UserFormDialogComponent implements OnInit {
           firstName: formValue.firstName!,
           lastName: formValue.lastName!,
           password: formValue.password!,
-          role: formValue.role!,
+          roleId: formValue.roleId!,
           isActive: formValue.isActive!,
         };
 
@@ -277,7 +299,7 @@ export class UserFormDialogComponent implements OnInit {
         const updateData: UpdateUserRequest = {
           firstName: formValue.firstName!,
           lastName: formValue.lastName!,
-          role: formValue.role!,
+          roleId: formValue.roleId!,
           isActive: formValue.isActive!,
         };
 
