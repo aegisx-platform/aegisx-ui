@@ -47,5 +47,8 @@ Thumbs.db
 
 .env
 
+# Playwright MCP generated files
+.playwright-mcp/
+
 # Logs
 api.log
