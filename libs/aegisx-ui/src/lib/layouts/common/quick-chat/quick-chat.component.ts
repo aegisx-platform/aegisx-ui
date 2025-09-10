@@ -50,7 +50,7 @@ export class QuickChatComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedChat: Chat;
   private _mutationObserver: MutationObserver;
   private _overlay: HTMLElement;
-  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
   private _document = inject(DOCUMENT);
   private _elementRef = inject(ElementRef);
@@ -67,7 +67,7 @@ export class QuickChatComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Host binding for component classes
    */
-  @HostBinding('class') get classList(): any {
+  @HostBinding('class') get classList(): Record<string, boolean> {
     return {
       'quick-chat-opened': this.opened,
     };
@@ -168,7 +168,7 @@ export class QuickChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this._mutationObserver.disconnect();
 
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
 
@@ -232,7 +232,7 @@ export class QuickChatComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param index
    * @param item
    */
-  trackByFn(index: number, item: any): any {
+  trackByFn(index: number, item: Chat): string | number {
     return item.id || index;
   }
 

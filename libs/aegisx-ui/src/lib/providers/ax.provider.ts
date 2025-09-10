@@ -1,9 +1,9 @@
 import { Provider } from '@angular/core';
 
 export interface AxProviderConfig {
-  ax?: any;
+  ax?: unknown;
 }
 
-export function provideAx(config: AxProviderConfig): Provider[] {
+export function provideAx(_config: AxProviderConfig): Provider[] {
   return [];
 }

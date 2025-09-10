@@ -27,7 +27,7 @@ export interface FuseNavigationItem {
     tooltip?: string;
   };
   children?: FuseNavigationItem[];
-  meta?: any;
+  meta?: Record<string, unknown>;
 }
 
 export interface FuseNavigationConfig {

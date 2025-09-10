@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -38,16 +39,11 @@ export class UserComponent implements OnInit, OnDestroy {
   @Input() showAvatar: boolean = true;
   user: User;
 
-  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
-  /**
-   * Constructor
-   */
-  constructor(
-    private _changeDetectorRef: ChangeDetectorRef,
-    private _router: Router,
-    private _userService: UserService,
-  ) {}
+  private _changeDetectorRef = inject(ChangeDetectorRef);
+  private _router = inject(Router);
+  private _userService = inject(UserService);
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -73,7 +69,7 @@ export class UserComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
 
