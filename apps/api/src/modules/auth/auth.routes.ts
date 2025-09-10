@@ -23,6 +23,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       url: '/api/auth/register',
       schema: {
         tags: ['Authentication'],
+        summary: 'Register a new user account',
         body: bodySchema,
         response: {
           201: responseSchema,
@@ -45,6 +46,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     url: '/api/auth/login',
     schema: {
       tags: ['Authentication'],
+      summary: 'Login with email and password',
       body: SchemaRefs.module('auth', 'loginRequest'),
       response: {
         200: SchemaRefs.module('auth', 'authResponse'),
@@ -61,6 +63,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     url: '/api/auth/refresh',
     schema: {
       tags: ['Authentication'],
+      summary: 'Refresh access token using refresh token',
       body: SchemaRefs.module('auth', 'refreshRequest'),
       response: {
         200: SchemaRefs.module('auth', 'refreshResponse'),
@@ -77,6 +80,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
     url: '/api/auth/logout',
     schema: {
       tags: ['Authentication'],
+      summary: 'Logout and clear session',
+      security: [{ bearerAuth: [] }],
       response: {
         200: SchemaRefs.module('auth', 'logoutResponse'),
         401: SchemaRefs.Unauthorized,
@@ -86,6 +91,20 @@ export default async function authRoutes(fastify: FastifyInstance) {
     handler: authController.logout,
   });
 
-  // TODO: Implement profile endpoint
-  // GET /api/auth/profile - Requires authController.profile implementation
+  // GET /api/auth/me - Get current user profile
+  typedFastify.route({
+    method: 'GET',
+    url: '/api/auth/me',
+    schema: {
+      tags: ['Authentication'],
+      summary: 'Get current authenticated user profile',
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: SchemaRefs.module('auth', 'profileResponse'),
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: authController.me,
+  });
 }
