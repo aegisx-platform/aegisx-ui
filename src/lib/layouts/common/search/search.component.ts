@@ -69,7 +69,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
   @Input() appearance: 'basic' | 'bar' = 'basic';
   @Input() debounce: number = 300;
   @Input() minLength: number = 2;
-  @Output() search: EventEmitter<string> = new EventEmitter<string>();
+  @Output() searchChange: EventEmitter<string> = new EventEmitter<string>();
 
   opened: boolean = false;
   resultSets: unknown[];
@@ -174,7 +174,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
             this.resultSets = resultSets;
 
             // Execute the event
-            this.search.next(resultSets);
+            this.searchChange.emit(value);
           });
       });
   }
