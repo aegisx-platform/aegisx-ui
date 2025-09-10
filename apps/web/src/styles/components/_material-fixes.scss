@@ -301,7 +301,7 @@ textarea.mat-mdc-input-element {
   height: 24px;
 }
 
-/* Datepicker specific */
+/* Datepicker specific - Lower specificity so form utilities can override */
 .mat-mdc-form-field-icon-suffix,
 .mat-mdc-form-field-icon-prefix {
   display: flex;
@@ -310,11 +310,14 @@ textarea.mat-mdc-input-element {
   flex-shrink: 0;
 }
 
-.mat-mdc-form-field-icon-suffix {
+/* Only apply default margins when NOT inside form utility classes */
+:not(.form-xs):not(.form-compact):not(.form-standard):not(.form-lg)
+  .mat-mdc-form-field-icon-suffix {
   margin-left: 0.5rem;
 }
 
-.mat-mdc-form-field-icon-prefix {
+:not(.form-xs):not(.form-compact):not(.form-standard):not(.form-lg)
+  .mat-mdc-form-field-icon-prefix {
   margin-right: 0.5rem;
 }
 
