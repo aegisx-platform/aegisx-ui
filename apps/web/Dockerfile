@@ -51,8 +51,8 @@ COPY --chown=aegisx:nodejs apps/web/src apps/web/src/
 COPY --chown=aegisx:nodejs apps/web/public apps/web/public/
 COPY --chown=aegisx:nodejs libs/ libs/
 
-# Build Angular application with production optimizations
-RUN NODE_ENV=production npx nx build web --configuration=production \
+# Build Angular application with production optimizations (disable Nx daemon for Docker)
+RUN NODE_ENV=production NX_DAEMON=false npx nx build web --configuration=production \
     --optimization --extractLicenses --namedChunks=false \
     --outputHashing=all --buildOptimizer --aot
 

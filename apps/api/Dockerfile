@@ -50,8 +50,8 @@ FROM dependencies AS builder
 COPY --chown=aegisx:nodejs apps/api/src apps/api/src/
 COPY --chown=aegisx:nodejs libs/ libs/
 
-# Build the application with production optimizations
-RUN NODE_ENV=production npx nx build api --configuration=production \
+# Build the application with production optimizations (disable Nx daemon for Docker)
+RUN NODE_ENV=production NX_DAEMON=false npx nx build api --configuration=production \
     --optimization --extractLicenses --namedChunks=false \
     --outputHashing=all
 
