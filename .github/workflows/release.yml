@@ -1,207 +1,162 @@
-name: Auto Release
+name: Release
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
   workflow_dispatch:
-    inputs:
-      release-type:
-        description: 'Release type (overrides auto-detection)'
-        required: false
-        type: choice
-        default: 'auto'
-        options:
-          - auto
-          - patch
-          - minor
-          - major
-      skip-build:
-        description: 'Skip Docker build (version bump only)'
-        required: false
-        type: boolean
-        default: false
-
-env:
-  NODE_VERSION: '20'
-  POSTGRES_VERSION: '15'
-  REDIS_VERSION: '7-alpine'
-
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  packages: write
 
 jobs:
-  # Validate and prepare release
-  prepare:
-    name: Prepare Release
+  release:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
-      should-release: ${{ steps.check.outputs.should-release }}
-      version: ${{ steps.version.outputs.version }}
+      VERSION: ${{ steps.get_version.outputs.VERSION }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
-
-      - name: Check if release is needed
-        id: check
-        run: |
-          # Check for conventional commits since last tag
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
-          if [ -z "$LAST_TAG" ]; then
-            echo "No previous tags found, will create initial release"
-            echo "should-release=true" >> $GITHUB_OUTPUT
-          else
-            # Check for feat, fix, or breaking changes
-            CHANGES=$(git log $LAST_TAG..HEAD --pretty=format:"%s" | grep -E "^(feat|fix|perf|refactor|revert|BREAKING CHANGE):" || true)
-            
-            if [ -n "$CHANGES" ]; then
-              echo "Found releasable changes:"
-              echo "$CHANGES"
-              echo "should-release=true" >> $GITHUB_OUTPUT
-            else
-              echo "No releasable changes found"
-              echo "should-release=false" >> $GITHUB_OUTPUT
-            fi
-          fi
-
-      - name: Determine version
-        id: version
-        if: steps.check.outputs.should-release == 'true'
-        run: |
-          if [ "${{ github.event.inputs.release-type }}" != "auto" ] && [ -n "${{ github.event.inputs.release-type }}" ]; then
-            VERSION_TYPE="${{ github.event.inputs.release-type }}"
-          else
-            # Auto-detect version type from commits
-            BREAKING=$(git log $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD --pretty=format:"%B" | grep -E "BREAKING CHANGE:" || true)
-            FEAT=$(git log $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD --pretty=format:"%s" | grep -E "^feat:" || true)
-            
-            if [ -n "$BREAKING" ]; then
-              VERSION_TYPE="major"
-            elif [ -n "$FEAT" ]; then
-              VERSION_TYPE="minor"
-            else
-              VERSION_TYPE="patch"
-            fi
-          fi
-
-          echo "Version type: $VERSION_TYPE"
-          echo "version-type=$VERSION_TYPE" >> $GITHUB_OUTPUT
-
-  # Create release immediately (skip tests)
-  release:
-    name: Create Release
-    needs: [prepare]
-    if: needs.prepare.outputs.should-release == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 'lts/*'
           cache: 'yarn'
 
       - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile --ignore-scripts
-          yarn run prepare || true
+        run: yarn install --frozen-lockfile && yarn add -D @semantic-release/changelog
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          # Install conventional-changelog-cli if not present
-          npx conventional-changelog-cli -p angular -i CHANGELOG.md -s -r 0
-
-          # Extract changelog for this release
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            CHANGELOG=$(cat CHANGELOG.md)
-          else
-            CHANGELOG=$(npx conventional-changelog-cli -p angular -r 1 | tail -n +2)
-          fi
-
-          # Save to file for release notes
-          echo "$CHANGELOG" > release-notes.md
-
-          # Commit changelog if changed
-          if ! git diff --quiet CHANGELOG.md; then
-            git add CHANGELOG.md
-            git commit -m "docs: update CHANGELOG.md [skip ci]"
-          fi
-
-      - name: Bump version
-        id: bump
-        run: |
-          VERSION_TYPE="${{ needs.prepare.outputs.version }}"
-
-          # Bump version in package.json files
-          npm version $VERSION_TYPE --no-git-tag-version --workspaces-update=false
-
-          # Get new version
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "new-version=$NEW_VERSION" >> $GITHUB_OUTPUT
-
-          # Commit version bump
-          git add -A
-          git commit -m "chore: release v$NEW_VERSION [skip ci]"
-
-          # Create and push tag
-          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
-          git push origin main --follow-tags
-
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
+      - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.bump.outputs.new-version }}
-          release_name: Release v${{ steps.bump.outputs.new-version }}
-          body_path: release-notes.md
-          draft: false
-          prerelease: false
+        run: npx semantic-release
 
-      - name: Summary
+      - name: Get version from package.json
+        id: get_version
+        shell: bash
         run: |
-          echo "✅ Release v${{ steps.bump.outputs.new-version }} created successfully!"
-          echo "🏷️ Docker build will be triggered automatically by the new tag"
-          echo "📦 Images will be available at:"
-          echo "  - ghcr.io/${{ github.repository }}-api:v${{ steps.bump.outputs.new-version }}"
-          echo "  - ghcr.io/${{ github.repository }}-web:v${{ steps.bump.outputs.new-version }}"
-          echo "  - ghcr.io/${{ github.repository }}-admin:v${{ steps.bump.outputs.new-version }}"
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-  # Notify release status
-  notify:
-    name: Notify Release Status
-    needs: [release]
-    if: always()
+  build_and_push_docker:
+    if: github.ref == 'refs/heads/main'
+    needs: release
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, web, admin]
+    permissions:
+      packages: write
+      contents: read
     steps:
-      - name: Send notification
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Build application
         run: |
-          if [[ "${{ needs.release.result }}" == "success" ]]; then
-            echo "✅ Release completed successfully!"
-            # Add Slack/Discord/Email notification here
-          else
-            echo "❌ Release failed!"
-            # Add failure notification here
-          fi
+          echo "🏗️ Building ${{ matrix.app }} for release v${{ needs.release.outputs.VERSION }}"
+          npx nx build ${{ matrix.app }} --configuration=production
+
+      - name: Get repository name in lowercase
+        id: lowercase_repo
+        run: echo "REPO_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_NAME }}-${{ matrix.app }}:latest
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_NAME }}-${{ matrix.app }}:v${{ needs.release.outputs.VERSION }}
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            APP_VERSION=${{ needs.release.outputs.VERSION }}
+
+  build_and_push_docker_staging:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, web, admin]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get short SHA
+        id: vars
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Build application
+        run: |
+          echo "🏗️ Building ${{ matrix.app }} for staging"
+          npx nx build ${{ matrix.app }} --configuration=production
+
+      - name: Get repository name in lowercase
+        id: lowercase_repo
+        run: echo "REPO_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image for staging
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_NAME }}-${{ matrix.app }}:staging-${{ steps.vars.outputs.SHORT_SHA }}
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_NAME }}-${{ matrix.app }}:staging-latest
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            APP_VERSION=${{ steps.vars.outputs.SHORT_SHA }}
