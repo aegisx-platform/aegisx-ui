@@ -1,5 +1,11 @@
 import { NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -49,15 +55,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
   scheme: 'dark' | 'light';
   theme: string;
   themes: Themes;
-  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
-  /**
-   * Constructor
-   */
-  constructor(
-    private _router: Router,
-    private _fuseConfigService: FuseConfigService,
-  ) {}
+  private _router = inject(Router);
+  private _fuseConfigService = inject(FuseConfigService);
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -81,7 +82,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
 
