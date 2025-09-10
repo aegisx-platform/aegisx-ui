@@ -4,6 +4,7 @@ export interface AxScrollbarOptions {
   theme?: string;
   suppressScrollX?: boolean;
   suppressScrollY?: boolean;
+  wheelPropagation?: boolean;
 }
 
 @Directive({
