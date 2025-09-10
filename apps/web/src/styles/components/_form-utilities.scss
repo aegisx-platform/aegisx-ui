@@ -72,6 +72,30 @@
     line-height: 1.2 !important;
   }
 
+  /* Fix prefix/suffix icon positioning for extra small */
+  .mat-mdc-form-field.mat-form-field-appearance-outline {
+    .mat-mdc-form-field-icon-prefix,
+    .mat-mdc-form-field-icon-suffix {
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+
+      .mat-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+      }
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      padding-right: 6px !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      padding-left: 6px !important;
+    }
+  }
+
   /* Buttons */
   .mat-mdc-button,
   .mat-mdc-raised-button,
@@ -121,6 +145,30 @@
     line-height: 1.2 !important;
   }
 
+  /* Fix prefix/suffix icon positioning for compact */
+  .mat-mdc-form-field.mat-form-field-appearance-outline {
+    .mat-mdc-form-field-icon-prefix,
+    .mat-mdc-form-field-icon-suffix {
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+
+      .mat-icon {
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      padding-right: 8px !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      padding-left: 8px !important;
+    }
+  }
+
   /* Buttons */
   .mat-mdc-button,
   .mat-mdc-raised-button,
@@ -161,6 +209,30 @@
 
   .mat-mdc-input-element {
     line-height: 1.2 !important;
+  }
+
+  /* Fix prefix/suffix icon positioning for standard */
+  .mat-mdc-form-field.mat-form-field-appearance-outline {
+    .mat-mdc-form-field-icon-prefix,
+    .mat-mdc-form-field-icon-suffix {
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+
+      .mat-icon {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+      }
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      padding-right: 10px !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      padding-left: 10px !important;
+    }
   }
 
   /* Buttons - Material standard size */
@@ -209,6 +281,30 @@
   .mat-mdc-input-element {
     line-height: 1.2 !important;
     font-size: 1.125rem !important;
+  }
+
+  /* Fix prefix/suffix icon positioning for large */
+  .mat-mdc-form-field.mat-form-field-appearance-outline {
+    .mat-mdc-form-field-icon-prefix,
+    .mat-mdc-form-field-icon-suffix {
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+
+      .mat-icon {
+        font-size: 24px !important;
+        width: 24px !important;
+        height: 24px !important;
+      }
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      padding-right: 12px !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      padding-left: 12px !important;
+    }
   }
 
   /* Buttons */

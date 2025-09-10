@@ -137,19 +137,19 @@ interface PeriodicElement {
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <mat-form-field appearance="outline">
                   <mat-label>Name</mat-label>
+                  <mat-icon matPrefix>person</mat-icon>
                   <input matInput placeholder="Enter your name" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Email</mat-label>
+                  <mat-icon matPrefix>email</mat-icon>
                   <input matInput placeholder="Enter your email" type="email" />
+                  <mat-icon matSuffix>send</mat-icon>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Department</mat-label>
-                  <mat-select>
-                    <mat-option value="it">IT</mat-option>
-                    <mat-option value="hr">HR</mat-option>
-                    <mat-option value="finance">Finance</mat-option>
-                  </mat-select>
+                  <mat-label>Search</mat-label>
+                  <input matInput placeholder="Search items" />
+                  <mat-icon matSuffix>search</mat-icon>
                 </mat-form-field>
               </div>
               <div class="flex gap-2">
@@ -175,19 +175,19 @@ interface PeriodicElement {
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <mat-form-field appearance="outline">
                   <mat-label>Name</mat-label>
+                  <mat-icon matPrefix>person</mat-icon>
                   <input matInput placeholder="Enter your name" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Email</mat-label>
+                  <mat-icon matPrefix>email</mat-icon>
                   <input matInput placeholder="Enter your email" type="email" />
+                  <mat-icon matSuffix>send</mat-icon>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Department</mat-label>
-                  <mat-select>
-                    <mat-option value="it">IT</mat-option>
-                    <mat-option value="hr">HR</mat-option>
-                    <mat-option value="finance">Finance</mat-option>
-                  </mat-select>
+                  <mat-label>Search</mat-label>
+                  <input matInput placeholder="Search items" />
+                  <mat-icon matSuffix>search</mat-icon>
                 </mat-form-field>
               </div>
               <div class="flex gap-2">
