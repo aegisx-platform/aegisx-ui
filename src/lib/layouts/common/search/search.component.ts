@@ -69,13 +69,13 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
   @Input() appearance: 'basic' | 'bar' = 'basic';
   @Input() debounce: number = 300;
   @Input() minLength: number = 2;
-  @Output() search: EventEmitter<any> = new EventEmitter<any>();
+  @Output() search: EventEmitter<string> = new EventEmitter<string>();
 
   opened: boolean = false;
-  resultSets: any[];
+  resultSets: unknown[];
   searchControl: UntypedFormControl = new UntypedFormControl();
   private _matAutocomplete: MatAutocomplete;
-  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
   private _elementRef = inject(ElementRef);
   private _httpClient = inject(HttpClient);
@@ -88,7 +88,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
   /**
    * Host binding for component classes
    */
-  @HostBinding('class') get classList(): any {
+  @HostBinding('class') get classList(): Record<string, boolean> {
     return {
       'search-appearance-bar': this.appearance === 'bar',
       'search-appearance-basic': this.appearance === 'basic',
@@ -169,7 +169,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
       .subscribe((value) => {
         this._httpClient
           .post('api/common/search', { query: value })
-          .subscribe((resultSets: any) => {
+          .subscribe((resultSets: unknown[]) => {
             // Store the result sets
             this.resultSets = resultSets;
 
@@ -184,7 +184,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
 
@@ -244,7 +244,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
    * @param index
    * @param item
    */
-  trackByFn(index: number, item: any): any {
+  trackByFn(index: number, item: { id?: string | number }): string | number {
     return item.id || index;
   }
 }

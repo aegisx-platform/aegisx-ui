@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnDestroy,
   OnInit,
   ViewEncapsulation,
   inject,
@@ -25,7 +24,7 @@ import { take } from 'rxjs';
   exportAs: 'languages',
   imports: [MatButtonModule, MatMenuModule, NgTemplateOutlet],
 })
-export class LanguagesComponent implements OnInit, OnDestroy {
+export class LanguagesComponent implements OnInit {
   private _changeDetectorRef = inject(ChangeDetectorRef);
   private _fuseNavigationService = inject(FuseNavigationService);
   private _translocoService = inject(TranslocoService);
@@ -61,13 +60,6 @@ export class LanguagesComponent implements OnInit, OnDestroy {
       en: 'us',
       tr: 'tr',
     };
-  }
-
-  /**
-   * On destroy
-   */
-  ngOnDestroy(): void {
-    // Component cleanup if needed in the future
   }
 
   // -----------------------------------------------------------------------------------------------------

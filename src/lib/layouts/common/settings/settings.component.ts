@@ -55,7 +55,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   scheme: 'dark' | 'light';
   theme: string;
   themes: Themes;
-  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
   private _router = inject(Router);
   private _fuseConfigService = inject(FuseConfigService);
@@ -82,7 +82,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
 

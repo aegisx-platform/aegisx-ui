@@ -5,7 +5,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { AegisxConfig, DEFAULT_CONFIG } from '../../types/config.types';
+import {
+  AegisxConfig,
+  DEFAULT_CONFIG,
+  AegisxLayoutType,
+} from '../../types/config.types';
 import { merge, cloneDeep } from 'lodash-es';
 
 // Injection token for initial config
@@ -91,8 +95,8 @@ export class AegisxConfigService {
   /**
    * Set layout
    */
-  setLayout(layout: string): void {
-    this.updateConfig({ layout: layout as any });
+  setLayout(layout: AegisxLayoutType): void {
+    this.updateConfig({ layout });
   }
 
   /**

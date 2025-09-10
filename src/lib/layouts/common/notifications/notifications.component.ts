@@ -11,6 +11,7 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,17 +45,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   notifications: Notification[];
   unreadCount: number = 0;
   private _overlayRef: OverlayRef;
-  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
-  /**
-   * Constructor
-   */
-  constructor(
-    private _changeDetectorRef: ChangeDetectorRef,
-    private _notificationsService: NotificationsService,
-    private _overlay: Overlay,
-    private _viewContainerRef: ViewContainerRef,
-  ) {}
+  private _changeDetectorRef = inject(ChangeDetectorRef);
+  private _notificationsService = inject(NotificationsService);
+  private _overlay = inject(Overlay);
+  private _viewContainerRef = inject(ViewContainerRef);
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -84,7 +80,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
 
     // Dispose the overlay
@@ -159,7 +155,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    * @param index
    * @param item
    */
-  trackByFn(index: number, item: any): any {
+  trackByFn(index: number, item: Notification): string | number {
     return item.id || index;
   }
 
