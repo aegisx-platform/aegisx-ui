@@ -16,6 +16,10 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S aegisx -u 1001 -G nodejs
 
 WORKDIR /app
+
+# Ensure proper ownership of /app directory for non-root user
+RUN chown -R aegisx:nodejs /app
+
 USER aegisx
 
 # Stage 2: Dependencies with optimized caching
@@ -30,6 +34,9 @@ COPY --chown=aegisx:nodejs apps/web/project.json apps/web/
 COPY --chown=aegisx:nodejs apps/web/tsconfig*.json apps/web/
 COPY --chown=aegisx:nodejs apps/web/tailwind.config.js apps/web/
 COPY --chown=aegisx:nodejs apps/web/postcss.config.js apps/web/
+
+# Ensure node_modules directory has proper permissions
+RUN mkdir -p /app/node_modules && chown -R aegisx:nodejs /app/node_modules
 
 # Install dependencies with cache optimization
 RUN yarn install --frozen-lockfile --network-timeout 300000 \

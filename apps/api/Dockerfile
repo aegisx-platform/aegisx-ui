@@ -17,6 +17,10 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S aegisx -u 1001 -G nodejs
 
 WORKDIR /app
+
+# Ensure proper ownership of /app directory for non-root user
+RUN chown -R aegisx:nodejs /app
+
 USER aegisx
 
 # Stage 2: Dependencies installation with layer caching optimization
@@ -29,6 +33,9 @@ COPY --chown=aegisx:nodejs nx.json tsconfig.base.json ./
 # Copy project-specific configurations
 COPY --chown=aegisx:nodejs apps/api/project.json apps/api/
 COPY --chown=aegisx:nodejs apps/api/tsconfig*.json apps/api/
+
+# Ensure node_modules directory has proper permissions
+RUN mkdir -p /app/node_modules && chown -R aegisx:nodejs /app/node_modules
 
 # Install dependencies with cache optimization and security settings
 RUN yarn install --frozen-lockfile --network-timeout 300000 \
