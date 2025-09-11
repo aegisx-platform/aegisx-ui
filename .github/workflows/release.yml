@@ -45,7 +45,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: release
     runs-on: self-hosted
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       packages: write
       contents: read
@@ -88,7 +88,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: release
     runs-on: self-hosted
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       packages: write
       contents: read
@@ -131,7 +131,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: release
     runs-on: self-hosted
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       packages: write
       contents: read
@@ -174,7 +174,7 @@ jobs:
   build_staging_api:
     if: github.ref == 'refs/heads/develop'
     runs-on: self-hosted
-    timeout-minutes: 12
+    timeout-minutes: 8
     permissions:
       contents: read
       packages: write
@@ -216,7 +216,7 @@ jobs:
   build_staging_web:
     if: github.ref == 'refs/heads/develop'
     runs-on: self-hosted
-    timeout-minutes: 12
+    timeout-minutes: 8
     permissions:
       contents: read
       packages: write
@@ -258,7 +258,7 @@ jobs:
   build_staging_admin:
     if: github.ref == 'refs/heads/develop'
     runs-on: self-hosted
-    timeout-minutes: 12
+    timeout-minutes: 8
     permissions:
       contents: read
       packages: write
