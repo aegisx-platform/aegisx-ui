@@ -134,42 +134,9 @@ jobs:
           file: apps/${{ matrix.app }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ needs.setup.outputs.is_production == 'true' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
             APP_VERSION=${{ needs.release.outputs.VERSION || github.sha }}
             CI=true
-
-  # Deploy notification
-  deploy_notification:
-    name: 🚀 Deploy Ready
-    needs: [setup, docker_build, release]
-    if: always() && needs.docker_build.result == 'success'
-    runs-on: self-hosted
-    timeout-minutes: 2
-    steps:
-      - name: 📋 Deployment Summary
-        run: |
-          REPO_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')
-
-          if [[ "${{ needs.setup.outputs.is_production }}" == "true" ]]; then
-            echo "🎯 Production Release Ready"
-            echo "🏷️ Version: v${{ needs.release.outputs.VERSION }}"
-            echo "🐳 Images:"
-            echo "  - ghcr.io/$REPO_NAME-api:v${{ needs.release.outputs.VERSION }}"
-            echo "  - ghcr.io/$REPO_NAME-web:v${{ needs.release.outputs.VERSION }}"
-            echo "  - ghcr.io/$REPO_NAME-admin:v${{ needs.release.outputs.VERSION }}"
-            echo "  - ghcr.io/$REPO_NAME-api:latest"
-            echo "  - ghcr.io/$REPO_NAME-web:latest"
-            echo "  - ghcr.io/$REPO_NAME-admin:latest"
-          else
-            SHORT_SHA=${GITHUB_SHA:0:7}
-            echo "🎯 Staging Build Ready"
-            echo "🐳 Images:"
-            echo "  - ghcr.io/$REPO_NAME-api:staging-$SHORT_SHA"
-            echo "  - ghcr.io/$REPO_NAME-web:staging-$SHORT_SHA"
-            echo "  - ghcr.io/$REPO_NAME-admin:staging-$SHORT_SHA"
-          fi
-          echo "🔗 Commit: ${{ github.sha }}"
-          echo "👤 Actor: ${{ github.actor }}"
