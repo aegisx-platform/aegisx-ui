@@ -1,6 +1,6 @@
 # Multi-stage production-optimized Dockerfile for AegisX Web Application
 # Stage 1: Base builder with security hardening
-FROM node:20.18.1-alpine3.20 AS base
+FROM node:20.19.0-alpine3.20 AS base
 
 # Install security updates and build dependencies
 RUN apk update && apk upgrade --no-cache && \
@@ -16,6 +16,10 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S aegisx -u 1001 -G nodejs
 
 WORKDIR /app
+
+# Ensure proper ownership of /app directory for non-root user
+RUN chown -R aegisx:nodejs /app
+
 USER aegisx
 
 # Stage 2: Dependencies with optimized caching
@@ -26,14 +30,16 @@ COPY --chown=aegisx:nodejs package*.json yarn.lock ./
 COPY --chown=aegisx:nodejs nx.json tsconfig.base.json ./
 
 # Copy project configurations
-COPY --chown=aegisx:nodejs apps/web/package*.json apps/web/ 2>/dev/null || true
 COPY --chown=aegisx:nodejs apps/web/project.json apps/web/
 COPY --chown=aegisx:nodejs apps/web/tsconfig*.json apps/web/
-COPY --chown=aegisx:nodejs apps/web/tailwind.config.js apps/web/ 2>/dev/null || true
-COPY --chown=aegisx:nodejs apps/web/postcss.config.js apps/web/ 2>/dev/null || true
+COPY --chown=aegisx:nodejs apps/web/tailwind.config.js apps/web/
+COPY --chown=aegisx:nodejs apps/web/postcss.config.js apps/web/
+
+# Ensure node_modules directory has proper permissions
+RUN mkdir -p /app/node_modules && chown -R aegisx:nodejs /app/node_modules
 
 # Install dependencies with cache optimization
-RUN yarn install --frozen-lockfile --network-timeout 300000 \
+RUN yarn install --frozen-lockfile --network-timeout 600000 \
     --prefer-offline --cache-folder /tmp/yarn-cache \
     && rm -rf /tmp/yarn-cache
 
@@ -43,10 +49,10 @@ FROM dependencies AS builder
 # Copy source code and libraries
 COPY --chown=aegisx:nodejs apps/web/src apps/web/src/
 COPY --chown=aegisx:nodejs apps/web/public apps/web/public/
-COPY --chown=aegisx:nodejs libs/ libs/ 2>/dev/null || true
+COPY --chown=aegisx:nodejs libs/ libs/
 
-# Build Angular application with production optimizations
-RUN NODE_ENV=production npx nx build web --configuration=production \
+# Build Angular application with production optimizations (disable Nx daemon for Docker)
+RUN NODE_ENV=production NX_DAEMON=false npx nx build web --configuration=production \
     --optimization --extractLicenses --namedChunks=false \
     --outputHashing=all --buildOptimizer --aot
 

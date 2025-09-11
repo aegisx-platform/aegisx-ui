@@ -1,6 +1,6 @@
 # Multi-stage production-optimized Dockerfile for AegisX API
 # Stage 1: Base builder with security hardening
-FROM node:20.18.1-alpine3.20 AS base
+FROM node:20.19.0-alpine3.20 AS base
 
 # Install security updates and essential build tools
 RUN apk update && apk upgrade --no-cache && \
@@ -17,6 +17,10 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S aegisx -u 1001 -G nodejs
 
 WORKDIR /app
+
+# Ensure proper ownership of /app directory for non-root user
+RUN chown -R aegisx:nodejs /app
+
 USER aegisx
 
 # Stage 2: Dependencies installation with layer caching optimization
@@ -27,12 +31,14 @@ COPY --chown=aegisx:nodejs package*.json yarn.lock ./
 COPY --chown=aegisx:nodejs nx.json tsconfig.base.json ./
 
 # Copy project-specific configurations
-COPY --chown=aegisx:nodejs apps/api/package*.json apps/api/ 2>/dev/null || true
 COPY --chown=aegisx:nodejs apps/api/project.json apps/api/
 COPY --chown=aegisx:nodejs apps/api/tsconfig*.json apps/api/
 
+# Ensure node_modules directory has proper permissions
+RUN mkdir -p /app/node_modules && chown -R aegisx:nodejs /app/node_modules
+
 # Install dependencies with cache optimization and security settings
-RUN yarn install --frozen-lockfile --network-timeout 300000 \
+RUN yarn install --frozen-lockfile --network-timeout 600000 \
     --prefer-offline --production=false \
     --cache-folder /tmp/yarn-cache \
     && rm -rf /tmp/yarn-cache
@@ -42,21 +48,20 @@ FROM dependencies AS builder
 
 # Copy source code and libraries
 COPY --chown=aegisx:nodejs apps/api/src apps/api/src/
-COPY --chown=aegisx:nodejs libs/ libs/ 2>/dev/null || true
-COPY --chown=aegisx:nodejs schemas/ schemas/ 2>/dev/null || true
+COPY --chown=aegisx:nodejs libs/ libs/
 
-# Build the application with production optimizations
-RUN NODE_ENV=production npx nx build api --configuration=production \
+# Build the application with production optimizations (disable Nx daemon for Docker)
+RUN NODE_ENV=production NX_DAEMON=false npx nx build api --configuration=production \
     --optimization --extractLicenses --namedChunks=false \
     --outputHashing=all
 
 # Create production node_modules (remove dev dependencies)
 RUN yarn install --frozen-lockfile --production=true \
-    --ignore-scripts --prefer-offline \
+    --network-timeout 600000 --ignore-scripts --prefer-offline \
     && yarn cache clean
 
 # Stage 4: Production runtime with minimal footprint
-FROM node:20.18.1-alpine3.20 AS production
+FROM node:20.19.0-alpine3.20 AS production
 
 # Install only essential runtime packages and security updates
 RUN apk update && apk upgrade --no-cache && \
