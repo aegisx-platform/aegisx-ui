@@ -53,9 +53,7 @@ COPY --chown=aegisx:nodejs apps/api/src apps/api/src/
 COPY --chown=aegisx:nodejs libs/ libs/
 
 # Build the application with production optimizations (disable Nx daemon for Docker)
-RUN NODE_ENV=production NX_DAEMON=false npx nx build api --configuration=production \
-    --optimization --extractLicenses --namedChunks=false \
-    --outputHashing=all
+RUN NODE_ENV=production NX_DAEMON=false npx nx build api --configuration=production
 
 # Create production node_modules (remove dev dependencies)
 RUN yarn install --frozen-lockfile --production=true \
