@@ -3,8 +3,11 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@10 --activate
+
 # Copy package files
-COPY package*.json yarn.lock ./
+COPY package.json pnpm-lock.yaml ./
 COPY nx.json tsconfig.base.json ./
 
 # Copy web app files
@@ -12,7 +15,7 @@ COPY apps/web/ apps/web/
 COPY libs/ libs/
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Build the app
 RUN npx nx build web --configuration=production

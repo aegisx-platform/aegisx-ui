@@ -3,15 +3,18 @@ FROM node:22-alpine
 
 WORKDIR /app
 
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@10 --activate
+
 # Copy package files
-COPY package*.json yarn.lock ./
+COPY package.json pnpm-lock.yaml ./
 COPY nx.json tsconfig.base.json ./
 
 # Copy API source
 COPY apps/api/ apps/api/
 
 # Install dependencies
-RUN yarn install --frozen-lockfile --production=false
+RUN pnpm install --frozen-lockfile
 
 # Build the API
 RUN npx nx build api
