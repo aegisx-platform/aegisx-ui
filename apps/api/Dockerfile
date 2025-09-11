@@ -17,7 +17,7 @@ COPY apps/api/ apps/api/
 RUN pnpm install --frozen-lockfile
 
 # Build the API
-RUN npx nx build api
+RUN pnpm nx build api
 
 # Expose port
 EXPOSE 3000
