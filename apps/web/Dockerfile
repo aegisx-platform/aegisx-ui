@@ -1,4 +1,9 @@
 # Multi-stage production-optimized Dockerfile for AegisX Web Application
+# Accept build arguments
+ARG APP_VERSION=latest
+ARG NODE_ENV=production
+ARG CI=true
+
 # Stage 1: Base builder with security hardening
 FROM node:20.19.0-alpine3.20 AS base
 
@@ -39,7 +44,7 @@ COPY --chown=aegisx:nodejs apps/web/postcss.config.js apps/web/
 RUN mkdir -p /app/node_modules && chown -R aegisx:nodejs /app/node_modules
 
 # Install dependencies with cache optimization
-ENV YARN_IGNORE_ENGINES=true YARN_SILENT=1
+ENV YARN_IGNORE_ENGINES=true YARN_SILENT=1 NODE_ENV=${NODE_ENV} CI=${CI}
 RUN yarn install --frozen-lockfile --network-timeout 600000 \
     --prefer-offline --cache-folder /tmp/yarn-cache \
     --silent \
@@ -100,7 +105,8 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 # Set environment variables for production
 ENV NGINX_ENVSUBST_TEMPLATE_DIR=/etc/nginx/templates \
     NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template \
-    TZ=UTC
+    TZ=UTC \
+    APP_VERSION=${APP_VERSION}
 
 # Use tini as init system for proper signal handling
 ENTRYPOINT ["/sbin/tini", "--"]
