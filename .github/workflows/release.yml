@@ -93,17 +93,11 @@ jobs:
           context: .
           file: apps/${{ matrix.app }}/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ghcr.io/${{ steps.repo.outputs.REPO_NAME }}-${{ matrix.app }}:latest
             ghcr.io/${{ steps.repo.outputs.REPO_NAME }}-${{ matrix.app }}:${{ needs.release.outputs.VERSION }}
           platforms: linux/arm64
-          cache-from: type=local,src=/tmp/.buildx-cache-${{ matrix.app }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.app }}-new,mode=max
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache-${{ matrix.app }}
-          mv /tmp/.buildx-cache-${{ matrix.app }}-new /tmp/.buildx-cache-${{ matrix.app }}
 
       - name: Health check image
         run: |
@@ -159,17 +153,11 @@ jobs:
           context: .
           file: apps/${{ matrix.app }}/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ghcr.io/${{ steps.vars.outputs.REPO_NAME }}-${{ matrix.app }}:staging
             ghcr.io/${{ steps.vars.outputs.REPO_NAME }}-${{ matrix.app }}:staging-${{ steps.vars.outputs.SHORT_SHA }}
           platforms: linux/arm64
-          cache-from: type=local,src=/tmp/.buildx-cache-${{ matrix.app }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.app }}-new,mode=max
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache-${{ matrix.app }}
-          mv /tmp/.buildx-cache-${{ matrix.app }}-new /tmp/.buildx-cache-${{ matrix.app }}
 
       - name: Quick health check staging
         run: |
