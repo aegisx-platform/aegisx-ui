@@ -106,6 +106,72 @@ const ListRolesResponseSchema = ApiSuccessResponseSchema(
 );
 
 // Export schemas for registration
+// Bulk operations schemas
+
+// Base bulk request schema for user IDs
+const BulkUserIdsRequestSchema = Type.Object({
+  userIds: Type.Array(Type.String({ format: 'uuid' }), {
+    minItems: 1,
+    maxItems: 100,
+    description: 'Array of user IDs to operate on (max 100)',
+  }),
+});
+
+// Bulk status change (activate/deactivate) request
+const BulkStatusChangeRequestSchema = BulkUserIdsRequestSchema;
+
+// Bulk role change request
+const BulkRoleChangeRequestSchema = Type.Object({
+  userIds: Type.Array(Type.String({ format: 'uuid' }), {
+    minItems: 1,
+    maxItems: 100,
+    description: 'Array of user IDs to change roles for (max 100)',
+  }),
+  roleId: Type.String({ format: 'uuid', description: 'New role ID to assign' }),
+});
+
+// Individual bulk operation result
+const BulkOperationResultSchema = Type.Object({
+  userId: Type.String({ format: 'uuid' }),
+  success: Type.Boolean(),
+  error: Type.Optional(
+    Type.Object({
+      code: Type.String(),
+      message: Type.String(),
+    }),
+  ),
+});
+
+// Bulk operation response
+const BulkOperationResponseSchema = ApiSuccessResponseSchema(
+  Type.Object({
+    totalRequested: Type.Number({
+      description: 'Total number of users requested',
+    }),
+    successCount: Type.Number({
+      description: 'Number of successful operations',
+    }),
+    failureCount: Type.Number({ description: 'Number of failed operations' }),
+    results: Type.Array(BulkOperationResultSchema),
+    summary: Type.Object({
+      message: Type.String(),
+      hasFailures: Type.Boolean(),
+    }),
+  }),
+);
+
+// Bulk operation error codes enum for better error handling
+const BulkErrorCodesSchema = Type.Union([
+  Type.Literal('USER_NOT_FOUND'),
+  Type.Literal('USER_ALREADY_ACTIVE'),
+  Type.Literal('USER_ALREADY_INACTIVE'),
+  Type.Literal('ROLE_NOT_FOUND'),
+  Type.Literal('CANNOT_CHANGE_OWN_STATUS'),
+  Type.Literal('CANNOT_CHANGE_ADMIN_STATUS'),
+  Type.Literal('INSUFFICIENT_PERMISSIONS'),
+  Type.Literal('USER_ALREADY_DELETED'),
+]);
+
 export const usersSchemas = {
   'list-users-query': ListUsersQuerySchema,
   'list-users-response': ListUsersResponseSchema,
@@ -118,6 +184,11 @@ export const usersSchemas = {
   'change-user-password-request': ChangeUserPasswordRequestSchema,
   'success-message-response': SuccessMessageResponseSchema,
   'list-roles-response': ListRolesResponseSchema,
+  // Bulk operation schemas
+  'bulk-user-ids-request': BulkUserIdsRequestSchema,
+  'bulk-status-change-request': BulkStatusChangeRequestSchema,
+  'bulk-role-change-request': BulkRoleChangeRequestSchema,
+  'bulk-operation-response': BulkOperationResponseSchema,
 };
 
 // Export types
@@ -136,3 +207,12 @@ export type ChangeUserPasswordRequest = Static<
 >;
 export type Role = Static<typeof RoleSchema>;
 export type ListRolesResponse = Static<typeof ListRolesResponseSchema>;
+
+// Bulk operation types
+export type BulkUserIdsRequest = Static<typeof BulkUserIdsRequestSchema>;
+export type BulkStatusChangeRequest = Static<
+  typeof BulkStatusChangeRequestSchema
+>;
+export type BulkRoleChangeRequest = Static<typeof BulkRoleChangeRequestSchema>;
+export type BulkOperationResponse = Static<typeof BulkOperationResponseSchema>;
+export type BulkOperationResult = Static<typeof BulkOperationResultSchema>;

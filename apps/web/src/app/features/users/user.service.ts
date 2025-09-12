@@ -47,6 +47,33 @@ interface GetUsersParams {
   status?: 'active' | 'inactive';
 }
 
+export interface BulkOperationResult {
+  totalRequested: number;
+  successCount: number;
+  failureCount: number;
+  results: Array<{
+    userId: string;
+    success: boolean;
+    error?: {
+      code: string;
+      message: string;
+    };
+  }>;
+  summary: {
+    message: string;
+    hasFailures: boolean;
+  };
+}
+
+export interface BulkUsersRequest {
+  userIds: string[];
+}
+
+export interface BulkRoleChangeRequest {
+  userIds: string[];
+  roleId: string;
+}
+
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -275,5 +302,99 @@ export class UserService {
     this.selectedUserSignal.set(null);
     this.currentPageSignal.set(1);
     this.errorSignal.set(null);
+  }
+
+  // Bulk operations
+  async bulkActivateUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/activate`,
+          {
+            userIds,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk activate failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to activate users');
+      throw error;
+    }
+  }
+
+  async bulkDeactivateUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/deactivate`,
+          {
+            userIds,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk deactivate failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to deactivate users');
+      throw error;
+    }
+  }
+
+  async bulkDeleteUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(`${this.baseUrl}/bulk/delete`, {
+          userIds,
+        })
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk delete failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to delete users');
+      throw error;
+    }
+  }
+
+  async bulkChangeUserRoles(
+    userIds: string[],
+    roleId: string,
+  ): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/role-change`,
+          {
+            userIds,
+            roleId,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk role change failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to change user roles');
+      throw error;
+    }
   }
 }

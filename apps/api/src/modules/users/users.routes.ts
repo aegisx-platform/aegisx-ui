@@ -193,4 +193,174 @@ export async function usersRoutes(
     },
     controller.listRoles.bind(controller),
   );
+
+  // ===== BULK OPERATIONS =====
+
+  // Bulk activate users (admin only)
+  typedFastify.post(
+    '/api/users/bulk/activate',
+    {
+      preValidation: [fastify.authenticate, fastify.authorize(['admin'])],
+      schema: {
+        description: 'Bulk activate multiple users',
+        tags: ['Users', 'Bulk Operations'],
+        summary: 'Activate multiple users at once',
+        security: [{ bearerAuth: [] }],
+        body: SchemaRefs.module('users', 'bulk-status-change-request'),
+        response: {
+          200: SchemaRefs.module('users', 'bulk-operation-response'),
+          400: SchemaRefs.ValidationError,
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          422: SchemaRefs.ValidationError,
+          429: {
+            description: 'Rate limit exceeded',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean', const: false },
+              error: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string', const: 'RATE_LIMIT_EXCEEDED' },
+                  message: { type: 'string' },
+                  retryAfter: { type: 'number' },
+                },
+              },
+            },
+          },
+          500: SchemaRefs.ServerError,
+        },
+      },
+      onError: (request, _reply, error) => {
+        request.log.error({ err: error }, 'Error in bulk activate endpoint');
+      },
+    },
+    controller.bulkActivateUsers.bind(controller),
+  );
+
+  // Bulk deactivate users (admin only)
+  typedFastify.post(
+    '/api/users/bulk/deactivate',
+    {
+      preValidation: [fastify.authenticate, fastify.authorize(['admin'])],
+      schema: {
+        description: 'Bulk deactivate multiple users',
+        tags: ['Users', 'Bulk Operations'],
+        summary: 'Deactivate multiple users at once',
+        security: [{ bearerAuth: [] }],
+        body: SchemaRefs.module('users', 'bulk-status-change-request'),
+        response: {
+          200: SchemaRefs.module('users', 'bulk-operation-response'),
+          400: SchemaRefs.ValidationError,
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          422: SchemaRefs.ValidationError,
+          429: {
+            description: 'Rate limit exceeded',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean', const: false },
+              error: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string', const: 'RATE_LIMIT_EXCEEDED' },
+                  message: { type: 'string' },
+                  retryAfter: { type: 'number' },
+                },
+              },
+            },
+          },
+          500: SchemaRefs.ServerError,
+        },
+      },
+      onError: (request, _reply, error) => {
+        request.log.error({ err: error }, 'Error in bulk deactivate endpoint');
+      },
+    },
+    controller.bulkDeactivateUsers.bind(controller),
+  );
+
+  // Bulk delete users (admin only)
+  typedFastify.post(
+    '/api/users/bulk/delete',
+    {
+      preValidation: [fastify.authenticate, fastify.authorize(['admin'])],
+      schema: {
+        description: 'Bulk soft delete multiple users',
+        tags: ['Users', 'Bulk Operations'],
+        summary: 'Soft delete multiple users at once',
+        security: [{ bearerAuth: [] }],
+        body: SchemaRefs.module('users', 'bulk-user-ids-request'),
+        response: {
+          200: SchemaRefs.module('users', 'bulk-operation-response'),
+          400: SchemaRefs.ValidationError,
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          422: SchemaRefs.ValidationError,
+          429: {
+            description: 'Rate limit exceeded',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean', const: false },
+              error: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string', const: 'RATE_LIMIT_EXCEEDED' },
+                  message: { type: 'string' },
+                  retryAfter: { type: 'number' },
+                },
+              },
+            },
+          },
+          500: SchemaRefs.ServerError,
+        },
+      },
+      onError: (request, _reply, error) => {
+        request.log.error({ err: error }, 'Error in bulk delete endpoint');
+      },
+    },
+    controller.bulkDeleteUsers.bind(controller),
+  );
+
+  // Bulk role change (admin only)
+  typedFastify.post(
+    '/api/users/bulk/role-change',
+    {
+      preValidation: [fastify.authenticate, fastify.authorize(['admin'])],
+      schema: {
+        description: 'Bulk change roles for multiple users',
+        tags: ['Users', 'Bulk Operations'],
+        summary: 'Change roles for multiple users at once',
+        security: [{ bearerAuth: [] }],
+        body: SchemaRefs.module('users', 'bulk-role-change-request'),
+        response: {
+          200: SchemaRefs.module('users', 'bulk-operation-response'),
+          400: SchemaRefs.ValidationError,
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          422: SchemaRefs.ValidationError,
+          429: {
+            description: 'Rate limit exceeded',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean', const: false },
+              error: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string', const: 'RATE_LIMIT_EXCEEDED' },
+                  message: { type: 'string' },
+                  retryAfter: { type: 'number' },
+                },
+              },
+            },
+          },
+          500: SchemaRefs.ServerError,
+        },
+      },
+      onError: (request, _reply, error) => {
+        request.log.error({ err: error }, 'Error in bulk role change endpoint');
+      },
+    },
+    controller.bulkChangeUserRoles.bind(controller),
+  );
 }

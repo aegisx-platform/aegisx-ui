@@ -5,6 +5,9 @@ import {
   CreateUserRequest,
   UpdateUserRequest,
   ChangeUserPasswordRequest,
+  BulkStatusChangeRequest,
+  BulkUserIdsRequest,
+  BulkRoleChangeRequest,
 } from './users.schemas';
 
 export class UsersController {
@@ -102,5 +105,195 @@ export class UsersController {
   async listRoles(request: FastifyRequest, reply: FastifyReply) {
     const roles = await this.usersService.listRoles();
     return reply.success(roles);
+  }
+
+  // ===== BULK OPERATIONS =====
+
+  async bulkActivateUsers(
+    request: FastifyRequest<{ Body: BulkStatusChangeRequest }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const currentUserId = request.user.id;
+      request.log.info(
+        {
+          userIds: request.body.userIds,
+          requestedBy: currentUserId,
+          operation: 'bulk_activate',
+        },
+        'Bulk activate users requested',
+      );
+
+      const result = await this.usersService.bulkActivateUsers(
+        request.body.userIds,
+        currentUserId,
+      );
+
+      request.log.info(
+        {
+          totalRequested: result.totalRequested,
+          successCount: result.successCount,
+          failureCount: result.failureCount,
+          operation: 'bulk_activate',
+        },
+        'Bulk activate operation completed',
+      );
+
+      return reply.success(result, 'Bulk activation completed');
+    } catch (error) {
+      request.log.error(
+        {
+          error,
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
+          userIds: request.body.userIds,
+          operation: 'bulk_activate',
+        },
+        'Error in bulk activate users',
+      );
+      throw error;
+    }
+  }
+
+  async bulkDeactivateUsers(
+    request: FastifyRequest<{ Body: BulkStatusChangeRequest }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const currentUserId = request.user.id;
+      request.log.info(
+        {
+          userIds: request.body.userIds,
+          requestedBy: currentUserId,
+          operation: 'bulk_deactivate',
+        },
+        'Bulk deactivate users requested',
+      );
+
+      const result = await this.usersService.bulkDeactivateUsers(
+        request.body.userIds,
+        currentUserId,
+      );
+
+      request.log.info(
+        {
+          totalRequested: result.totalRequested,
+          successCount: result.successCount,
+          failureCount: result.failureCount,
+          operation: 'bulk_deactivate',
+        },
+        'Bulk deactivate operation completed',
+      );
+
+      return reply.success(result, 'Bulk deactivation completed');
+    } catch (error) {
+      request.log.error(
+        {
+          error,
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
+          userIds: request.body.userIds,
+          operation: 'bulk_deactivate',
+        },
+        'Error in bulk deactivate users',
+      );
+      throw error;
+    }
+  }
+
+  async bulkDeleteUsers(
+    request: FastifyRequest<{ Body: BulkUserIdsRequest }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const currentUserId = request.user.id;
+      request.log.info(
+        {
+          userIds: request.body.userIds,
+          requestedBy: currentUserId,
+          operation: 'bulk_delete',
+        },
+        'Bulk delete users requested',
+      );
+
+      const result = await this.usersService.bulkDeleteUsers(
+        request.body.userIds,
+        currentUserId,
+      );
+
+      request.log.info(
+        {
+          totalRequested: result.totalRequested,
+          successCount: result.successCount,
+          failureCount: result.failureCount,
+          operation: 'bulk_delete',
+        },
+        'Bulk delete operation completed',
+      );
+
+      return reply.success(result, 'Bulk deletion completed');
+    } catch (error) {
+      request.log.error(
+        {
+          error,
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
+          userIds: request.body.userIds,
+          operation: 'bulk_delete',
+        },
+        'Error in bulk delete users',
+      );
+      throw error;
+    }
+  }
+
+  async bulkChangeUserRoles(
+    request: FastifyRequest<{ Body: BulkRoleChangeRequest }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const currentUserId = request.user.id;
+      request.log.info(
+        {
+          userIds: request.body.userIds,
+          roleId: request.body.roleId,
+          requestedBy: currentUserId,
+          operation: 'bulk_role_change',
+        },
+        'Bulk role change requested',
+      );
+
+      const result = await this.usersService.bulkChangeUserRoles(
+        request.body.userIds,
+        request.body.roleId,
+        currentUserId,
+      );
+
+      request.log.info(
+        {
+          totalRequested: result.totalRequested,
+          successCount: result.successCount,
+          failureCount: result.failureCount,
+          roleId: request.body.roleId,
+          operation: 'bulk_role_change',
+        },
+        'Bulk role change operation completed',
+      );
+
+      return reply.success(result, 'Bulk role change completed');
+    } catch (error) {
+      request.log.error(
+        {
+          error,
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
+          userIds: request.body.userIds,
+          roleId: request.body.roleId,
+          operation: 'bulk_role_change',
+        },
+        'Error in bulk role change',
+      );
+      throw error;
+    }
   }
 }
