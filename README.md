@@ -4,6 +4,8 @@
 
 ## 🚀 Features
 
+<!-- Build trigger: nginx config fixes -->
+
 ### ✅ Completed Features
 
 - **Database Setup**: PostgreSQL with migrations and seed data
