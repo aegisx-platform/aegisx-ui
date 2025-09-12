@@ -199,6 +199,24 @@ nx run-many --target=serve --projects=api,web
 | **Build**    | Build for production             | `nx run-many --target=build --all`              |
 | **Docker**   | Start services                   | `docker-compose up -d`                          |
 
+## 🚀 Feature Development Commands
+
+| Command       | Description              | Actual Command                                              |
+| ------------- | ------------------------ | ----------------------------------------------------------- |
+| **Start**     | Start new feature        | `./scripts/feature-toolkit.sh start [name] [priority]`      |
+| **Status**    | Check feature progress   | `./scripts/feature-toolkit.sh status [name]`                |
+| **Progress**  | Update feature progress  | `./scripts/feature-toolkit.sh progress [name] "[task]" [%]` |
+| **Complete**  | Mark feature complete    | `./scripts/feature-toolkit.sh complete [name]`              |
+| **Dashboard** | Show all features        | `./scripts/feature-toolkit.sh dashboard`                    |
+| **Conflicts** | Check resource conflicts | `./scripts/feature-toolkit.sh conflicts [name]`             |
+
+### Quick Aliases (add to ~/.bashrc or ~/.zshrc)
+
+```bash
+source .feature-aliases  # Load feature command shortcuts
+# Then use: fs, fstat, fprog, fcomp, fdash
+```
+
 ## 🚀 Project Structure
 
 ```
