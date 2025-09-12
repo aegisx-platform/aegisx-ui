@@ -7,6 +7,8 @@ out-tsc
 
 # dependencies
 node_modules
+.pnpm-store
+.pnpm-debug.log*
 
 # IDEs and editors
 /.idea
@@ -46,3 +48,9 @@ Thumbs.db
 .angular
 
 .env
+
+# Playwright MCP generated files
+.playwright-mcp/
+
+# Logs
+api.log

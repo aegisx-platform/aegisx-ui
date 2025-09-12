@@ -16,7 +16,8 @@ module.exports = {
         'build',    // Build system or dependencies
         'ci',       // CI/CD configuration
         'chore',    // Other changes that don't modify src or test
-        'revert'    // Revert previous commit
+        'revert',   // Revert previous commit
+        'release'   // Release commits (semantic-release)
       ]
     ],
     'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case', 'upper-case']],
