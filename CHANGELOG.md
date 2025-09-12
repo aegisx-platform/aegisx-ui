@@ -1,3 +1,24 @@
+## [1.0.7](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.6...v1.0.7) (2025-09-12)
+
+
+### Bug Fixes
+
+* force nginx config refresh with content changes ([c20891c](https://github.com/aegisx-platform/aegisx-starter/commit/c20891c45f0083b7f40b96b94ffbdd3e99f480d0))
+
+## [1.0.6](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.5...v1.0.6) (2025-09-12)
+
+
+### Bug Fixes
+
+* remove must-revalidate from Cache-Control headers in nginx configs ([54d94f4](https://github.com/aegisx-platform/aegisx-starter/commit/54d94f4ff081bfc64e03fbd0b113edfad9fbd6a2))
+
+## [1.0.5](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.4...v1.0.5) (2025-09-12)
+
+
+### Bug Fixes
+
+* **dockerfile:** add space ([1067e61](https://github.com/aegisx-platform/aegisx-starter/commit/1067e611f5d713245e11125566227821c4a2d419))
+
 ## [1.0.4](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.3...v1.0.4) (2025-09-12)
 
 
