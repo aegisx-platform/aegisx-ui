@@ -1,3 +1,10 @@
+## [1.0.9](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.8...v1.0.9) (2025-09-12)
+
+
+### Bug Fixes
+
+* remove github workflow ([5bc00a4](https://github.com/aegisx-platform/aegisx-starter/commit/5bc00a47ab3d6ecc43598c7570f78f621d310df7))
+
 ## [1.0.8](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.7...v1.0.8) (2025-09-12)
 
 
