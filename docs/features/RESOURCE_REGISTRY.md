@@ -2,8 +2,8 @@
 
 > **🚨 CRITICAL** - This registry MUST be updated before starting any feature development to prevent conflicts and ensure smooth parallel development.
 
-**Last Updated**: 2025-09-13 06:20  
-**Active Features**: 1  
+**Last Updated**: 2025-09-13 15:00  
+**Active Features**: 2
 **Resolved Conflicts**: 0
 
 ---
@@ -12,10 +12,17 @@
 
 | Table/Column          | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
-| `users.bio` column    | user-profile | Claude | 🔶 Reserved | For user biography text | 2025-09-13 |
-| `users.avatar_url`    | user-profile | Claude | 🔶 Reserved | Profile picture URL | 2025-09-13 |
-| `user_preferences`    | user-profile | Claude | 🔶 Reserved | User settings/preferences | 2025-09-13 |
+| `users.bio` column    | user-profile | Claude | ✅ Completed | For user biography text | 2025-09-13 |
+| `users.avatar_url`    | user-profile | Claude | ✅ Completed | Profile picture URL | 2025-09-13 |
+| `user_preferences`    | user-profile | Claude | ✅ Completed | User settings/preferences | 2025-09-13 |
 | `user_activity_logs`  | user-profile | Claude | 🔶 Reserved | Account activity history | 2025-09-13 |
+| roles | rbac | Claude | 🔒 Reserved | Core roles table for RBAC system | 2025-09-13 |
+| permissions | rbac | Claude | 🔒 Reserved | Permissions table for RBAC system | 2025-09-13 |
+| role_permissions | rbac | Claude | 🔒 Reserved | Many-to-many mapping of roles to permissions | 2025-09-13 |
+| user_roles | rbac | Claude | 🔒 Reserved | Many-to-many mapping of users to roles | 2025-09-13 |
+| role_hierarchy | rbac | Claude | 🔒 Reserved | Role hierarchy and inheritance structure | 2025-09-13 |
+| permission_categories | rbac | Claude | 🔒 Reserved | Categories for organizing permissions | 2025-09-13 |
+| audit_role_changes | rbac-management | Claude | 🔒 Reserved | Audit trail for role and permission changes | 2025-09-13 |
 
 ### Available Tables for New Features
 
@@ -30,11 +37,19 @@
 
 | Endpoint Pattern      | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
-| `/api/profile`        | user-profile | Claude | 🔶 Reserved | User profile CRUD | 2025-09-13 |
-| `/api/profile/password` | user-profile | Claude | ✅ In Use | Password change (existing) | 2025-09-13 |
-| `/api/profile/avatar` | user-profile | Claude | 🔶 Reserved | Avatar upload/update | 2025-09-13 |
-| `/api/profile/preferences` | user-profile | Claude | 🔶 Reserved | User preferences | 2025-09-13 |
+| `/api/profile`        | user-profile | Claude | ✅ Completed | User profile CRUD | 2025-09-13 |
+| `/api/profile/password` | user-profile | Claude | ✅ Completed | Password change | 2025-09-13 |
+| `/api/profile/avatar` | user-profile | Claude | ✅ Completed | Avatar upload/update | 2025-09-13 |
+| `/api/profile/preferences` | user-profile | Claude | ✅ Completed | User preferences | 2025-09-13 |
 | `/api/profile/activity` | user-profile | Claude | 🔶 Reserved | Activity logs | 2025-09-13 |
+| /api/rbac/roles/* | rbac | Claude | 🔒 Reserved | Role management endpoints | 2025-09-13 |
+| /api/rbac/permissions/* | rbac | Claude | 🔒 Reserved | Permission management endpoints | 2025-09-13 |
+| /api/rbac/users/*/roles | rbac | Claude | 🔒 Reserved | User role assignment endpoints | 2025-09-13 |
+| /api/rbac/check-permission | rbac | Claude | 🔒 Reserved | Permission checking endpoint | 2025-09-13 |
+| /api/rbac/hierarchy/* | rbac | Claude | 🔒 Reserved | Role hierarchy management | 2025-09-13 |
+| /api/admin/rbac/* | rbac-management | Claude | 🔒 Reserved | Admin UI for RBAC management | 2025-09-13 |
+| /api/admin/users/*/assign-roles | rbac-management | Claude | 🔒 Reserved | Bulk user role assignment | 2025-09-13 |
+| /api/admin/audit/rbac/* | rbac-management | Claude | 🔒 Reserved | RBAC audit trail endpoints | 2025-09-13 |
 
 ### Available Endpoint Patterns
 
@@ -50,7 +65,13 @@
 
 | Route Pattern         | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
-| _No reservations yet_ | -       | -         | -      | -     | -             |
+| /rbac/* | rbac | Claude | 🔒 Reserved | Core RBAC system routes (internal use) | 2025-09-13 |
+| /admin/rbac/roles | rbac-management | Claude | 🔒 Reserved | Role management interface | 2025-09-13 |
+| /admin/rbac/permissions | rbac-management | Claude | 🔒 Reserved | Permission management interface | 2025-09-13 |
+| /admin/rbac/users | rbac-management | Claude | 🔒 Reserved | User role assignment interface | 2025-09-13 |
+| /admin/rbac/hierarchy | rbac-management | Claude | 🔒 Reserved | Role hierarchy management | 2025-09-13 |
+| /admin/rbac/audit | rbac-management | Claude | 🔒 Reserved | RBAC audit trail view | 2025-09-13 |
+| /admin/rbac/matrix | rbac-management | Claude | 🔒 Reserved | Permission matrix view | 2025-09-13 |
 
 ### Available Route Patterns
 
@@ -66,6 +87,10 @@
 
 | Component                   | Features Using | Lead Developer | Status       | Coordination Notes                     | Last Updated |
 | --------------------------- | -------------- | -------------- | ------------ | -------------------------------------- | ------------ |
+| `RBACService`               | rbac, rbac-management | Claude | 🔒 Reserved | Core RBAC service for permission checking | 2025-09-13 |
+| `PermissionGuard`           | rbac, rbac-management | Claude | 🤝 Shared | Route guard using RBAC permissions | 2025-09-13 |
+| `RoleAssignmentComponent`   | rbac-management | Claude | 🔒 Reserved | Component for managing user role assignments | 2025-09-13 |
+| `PermissionMatrixComponent` | rbac-management | Claude | 🔒 Reserved | Visual permission matrix display | 2025-09-13 |
 | `UserProfileService`        | (Available)    | -              | 🟢 Available | Angular service for profile operations | 2025-09-12   |
 | `NotificationService`       | (Available)    | -              | 🟢 Available | Service for notification handling      | 2025-09-12   |
 | `SecurityGuard`             | (Available)    | -              | 🟢 Available | Route guard for security checks        | 2025-09-12   |
@@ -77,8 +102,8 @@
 
 ### Next Available Migration Numbers
 
-- **Backend API**: `010_` (next available)
-- **Database Schema**: Planning stage for next batch
+- **Backend API**: `012_` (next available after RBAC migrations)
+- **Database Schema**: `010_rbac_tables` (reserved), `011_rbac_audit` (reserved)
 
 ### Migration Coordination Rules
 
@@ -176,10 +201,10 @@ When multiple features need the same resource:
 
 ### Resource Utilization
 
-- **Database Tables**: 0/50 in use (0%)
-- **API Endpoints**: 0/100 in use (0%)
-- **Frontend Routes**: 0/30 in use (0%)
-- **Shared Components**: 0/20 in use (0%)
+- **Database Tables**: 7/50 in use (14%)
+- **API Endpoints**: 8/100 in use (8%)
+- **Frontend Routes**: 7/30 in use (23%)
+- **Shared Components**: 4/20 in use (20%)
 
 ### Conflict Metrics
 
@@ -190,7 +215,7 @@ When multiple features need the same resource:
 
 ### Feature Development Stats
 
-- **Active Features**: 0
+- **Active Features**: 2
 - **Completed Features**: 0
 - **Average Feature Duration**: N/A
 - **Resource Conflicts Per Feature**: 0
