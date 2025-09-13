@@ -1,7 +1,10 @@
 import { test, expect, Page } from '@playwright/test';
 import { UserPreferencesPage } from '../pages/user-preferences.page';
 import { PreferencesApiHelper } from '../support/preferences-api.helper';
-import { DEFAULT_USER_PREFERENCES, TestPreferencesFactory } from '../fixtures/test-data';
+import {
+  DEFAULT_USER_PREFERENCES,
+  TestPreferencesFactory,
+} from '../fixtures/test-data';
 
 test.describe('User Preferences Error Scenarios', () => {
   let page: Page;
@@ -22,16 +25,18 @@ test.describe('User Preferences Error Scenarios', () => {
     test('should handle network failure during initial load', async () => {
       // Mock network failure for GET request
       await apiHelper.mockPreferencesApiError('network');
-      
+
       await preferencesPage.goto();
 
       // Verify error state is displayed
-      await expect(page.locator('[data-testid="error"], .error, ax-alert[type="error"]')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="error"], .error, ax-alert[type="error"]'),
+      ).toBeVisible();
 
       // Take screenshot of error state
       await page.screenshot({
         path: 'screenshots/error-network-initial-load.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Verify retry functionality if available
@@ -40,13 +45,13 @@ test.describe('User Preferences Error Scenarios', () => {
         // Mock successful response for retry
         await apiHelper.mockGetPreferences();
         await retryButton.click();
-        
+
         // Should now load successfully
         await preferencesPage.verifyPreferencesComponentLoads();
-        
+
         await page.screenshot({
           path: 'screenshots/error-network-retry-success.png',
-          fullPage: true
+          fullPage: true,
         });
       }
     });
@@ -67,7 +72,7 @@ test.describe('User Preferences Error Scenarios', () => {
       // Take screenshot before save attempt
       await page.screenshot({
         path: 'screenshots/error-network-before-save.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Attempt to save
@@ -79,7 +84,7 @@ test.describe('User Preferences Error Scenarios', () => {
       // Take screenshot of error state
       await page.screenshot({
         path: 'screenshots/error-network-save-failed.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Verify error message appears
@@ -88,12 +93,14 @@ test.describe('User Preferences Error Scenarios', () => {
         page.locator('.mat-mdc-snack-bar-container:has-text("failed")'),
         page.locator('[data-testid="error"]'),
         page.locator('.error'),
-        page.locator('ax-alert[type="error"]')
+        page.locator('ax-alert[type="error"]'),
       ];
 
       let errorFound = false;
       for (const errorElement of errorElements) {
-        if (await errorElement.isVisible({ timeout: 1000 }).catch(() => false)) {
+        if (
+          await errorElement.isVisible({ timeout: 1000 }).catch(() => false)
+        ) {
           errorFound = true;
           break;
         }
@@ -115,7 +122,7 @@ test.describe('User Preferences Error Scenarios', () => {
       let requestCount = 0;
       await page.route('**/api/profile/preferences', async (route) => {
         requestCount++;
-        
+
         if (requestCount <= 2) {
           // First two requests fail
           await route.abort('failed');
@@ -127,8 +134,8 @@ test.describe('User Preferences Error Scenarios', () => {
             body: JSON.stringify({
               success: true,
               data: { ...DEFAULT_USER_PREFERENCES, theme: 'dark' },
-              message: 'Preferences updated successfully!'
-            })
+              message: 'Preferences updated successfully!',
+            }),
           });
         }
       });
@@ -142,7 +149,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-intermittent-first-attempt.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Second save attempt (should fail)
@@ -151,7 +158,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-intermittent-second-attempt.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Third save attempt (should succeed)
@@ -160,7 +167,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-intermittent-success.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Verify eventual success
@@ -174,7 +181,10 @@ test.describe('User Preferences Error Scenarios', () => {
       await preferencesPage.goto();
 
       // Mock server error for save
-      await apiHelper.mockPreferencesApiError('server', 'Internal server error occurred');
+      await apiHelper.mockPreferencesApiError(
+        'server',
+        'Internal server error occurred',
+      );
 
       await preferencesPage.changeTheme('dark');
       await preferencesPage.savePreferences();
@@ -185,7 +195,7 @@ test.describe('User Preferences Error Scenarios', () => {
       // Take screenshot of server error
       await page.screenshot({
         path: 'screenshots/error-server-500.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Verify appropriate error handling
@@ -193,7 +203,7 @@ test.describe('User Preferences Error Scenarios', () => {
         page.locator('.mat-mdc-snack-bar-container'),
         page.locator('[data-testid="error"]'),
         page.locator('.error'),
-        page.locator('ax-alert[type="error"]')
+        page.locator('ax-alert[type="error"]'),
       ];
 
       let errorShown = false;
@@ -223,14 +233,17 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-authentication-401.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Should redirect to login or show auth error
       // Check if redirected to login page or error is shown
       const currentUrl = page.url();
-      const hasAuthError = await page.locator('text=authentication').isVisible({ timeout: 1000 }).catch(() => false);
-      
+      const hasAuthError = await page
+        .locator('text=authentication')
+        .isVisible({ timeout: 1000 })
+        .catch(() => false);
+
       expect(currentUrl.includes('login') || hasAuthError).toBeTruthy();
     });
 
@@ -248,13 +261,18 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-rate-limiting-429.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Should show rate limiting message
-      const rateLimitError = await page.locator('text=too many requests').isVisible({ timeout: 1000 }).catch(() => false);
-      const saveButtonEnabled = await page.locator('button:has-text("Save Preferences")').isEnabled();
-      
+      const rateLimitError = await page
+        .locator('text=too many requests')
+        .isVisible({ timeout: 1000 })
+        .catch(() => false);
+      const saveButtonEnabled = await page
+        .locator('button:has-text("Save Preferences")')
+        .isEnabled();
+
       // Either show rate limit error or keep save button enabled for retry
       expect(rateLimitError || saveButtonEnabled).toBeTruthy();
     });
@@ -266,7 +284,10 @@ test.describe('User Preferences Error Scenarios', () => {
       await preferencesPage.goto();
 
       // Mock validation error
-      await apiHelper.mockPreferencesApiError('validation', 'Validation failed');
+      await apiHelper.mockPreferencesApiError(
+        'validation',
+        'Validation failed',
+      );
 
       // Try to save with potentially invalid data
       await preferencesPage.changeLanguage('invalid');
@@ -276,7 +297,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-validation-server.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Should show validation error
@@ -284,12 +305,14 @@ test.describe('User Preferences Error Scenarios', () => {
         page.locator('.mat-mdc-form-field-error'),
         page.locator('.validation-error'),
         page.locator('[data-testid="validation-error"]'),
-        page.locator('.mat-mdc-snack-bar-container:has-text("validation")')
+        page.locator('.mat-mdc-snack-bar-container:has-text("validation")'),
       ];
 
       let validationErrorShown = false;
       for (const errorElement of validationErrors) {
-        if (await errorElement.isVisible({ timeout: 1000 }).catch(() => false)) {
+        if (
+          await errorElement.isVisible({ timeout: 1000 }).catch(() => false)
+        ) {
           validationErrorShown = true;
           break;
         }
@@ -309,7 +332,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-validation-client.png',
-        fullPage: true
+        fullPage: true,
       });
     });
 
@@ -319,7 +342,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       // Try to submit form with missing required data (if any)
       // This would depend on the actual form validation rules
-      
+
       // For now, test that form behaves reasonably with edge cases
       const testCases = [
         { field: 'language', value: '' },
@@ -329,12 +352,14 @@ test.describe('User Preferences Error Scenarios', () => {
       for (const testCase of testCases) {
         // Reset form
         await preferencesPage.resetToDefaults();
-        
+
         // Try invalid value
         if (testCase.field === 'language') {
           // Test with empty language if validation exists
           await page.evaluate(() => {
-            const languageSelect = document.querySelector('mat-select[formcontrolname="language"]') as any;
+            const languageSelect = document.querySelector(
+              'mat-select[formcontrolname="language"]',
+            ) as any;
             if (languageSelect && languageSelect._value !== undefined) {
               languageSelect.value = '';
             }
@@ -343,7 +368,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
         await page.screenshot({
           path: `screenshots/error-validation-${testCase.field}-empty.png`,
-          fullPage: true
+          fullPage: true,
         });
 
         // Try to save and see if validation catches it
@@ -352,7 +377,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
         await page.screenshot({
           path: `screenshots/error-validation-${testCase.field}-after-save.png`,
-          fullPage: true
+          fullPage: true,
         });
       }
     });
@@ -362,27 +387,31 @@ test.describe('User Preferences Error Scenarios', () => {
     test('should handle slow API responses', async () => {
       // Mock very slow response
       await apiHelper.mockSlowPreferencesResponse(10000); // 10 seconds
-      
+
       const startTime = Date.now();
       await preferencesPage.goto();
 
       // Should show loading state
-      await expect(page.locator('[data-testid="loading"], .loading, mat-spinner')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="loading"], .loading, mat-spinner'),
+      ).toBeVisible();
 
       await page.screenshot({
         path: 'screenshots/error-timeout-loading-state.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Wait for reasonable timeout period
       await page.waitForTimeout(5000);
 
       // Check if still loading or if timeout handling kicked in
-      const isStillLoading = await page.locator('[data-testid="loading"], .loading, mat-spinner').isVisible();
-      
+      const isStillLoading = await page
+        .locator('[data-testid="loading"], .loading, mat-spinner')
+        .isVisible();
+
       await page.screenshot({
         path: 'screenshots/error-timeout-after-wait.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // The test framework should handle timeouts appropriately
@@ -401,28 +430,35 @@ test.describe('User Preferences Error Scenarios', () => {
 
       // Start first save
       const savePromise1 = preferencesPage.savePreferences();
-      
+
       // Immediately try second save
       await page.waitForTimeout(100);
       const savePromise2 = preferencesPage.savePreferences();
 
       await page.screenshot({
         path: 'screenshots/error-concurrent-saves.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Wait for both to complete
-      await Promise.all([savePromise1.catch(() => {}), savePromise2.catch(() => {})]);
+      await Promise.all([
+        savePromise1.catch(() => {
+          // Ignore errors for this test
+        }),
+        savePromise2.catch(() => {
+          // Ignore errors for this test
+        }),
+      ]);
 
       await page.screenshot({
         path: 'screenshots/error-concurrent-saves-completed.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Should handle gracefully - either disable button during save or queue requests
       const saveButton = page.locator('button:has-text("Save Preferences")');
       const isEnabled = await saveButton.isEnabled();
-      
+
       // Button should be in a reasonable state (enabled for retry if failed, or disabled if still processing)
       expect(typeof isEnabled).toBe('boolean');
     });
@@ -442,9 +478,9 @@ test.describe('User Preferences Error Scenarios', () => {
                 theme: 'invalid-theme-value',
                 language: null,
                 notifications: 'not-an-object',
-                navigation: undefined
-              }
-            })
+                navigation: undefined,
+              },
+            }),
           });
         } else {
           await route.continue();
@@ -458,7 +494,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-corrupted-data.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Form should still be usable even with corrupted initial data
@@ -475,8 +511,8 @@ test.describe('User Preferences Error Scenarios', () => {
             contentType: 'application/json',
             body: JSON.stringify({
               success: true,
-              data: null
-            })
+              data: null,
+            }),
           });
         } else {
           await route.continue();
@@ -488,7 +524,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-missing-data.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Should fall back to default values
@@ -503,7 +539,7 @@ test.describe('User Preferences Error Scenarios', () => {
       await page.addInitScript(() => {
         Object.defineProperty(window, 'localStorage', {
           value: undefined,
-          writable: false
+          writable: false,
         });
       });
 
@@ -512,7 +548,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-no-localstorage.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Should still function without localStorage
@@ -536,7 +572,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-javascript-error.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Form should still be functional despite the error
@@ -549,17 +585,20 @@ test.describe('User Preferences Error Scenarios', () => {
   test.describe('Error Recovery Scenarios', () => {
     test('should recover from temporary errors', async () => {
       let attemptCount = 0;
-      
+
       await page.route('**/api/profile/preferences', async (route) => {
         attemptCount++;
-        
+
         if (route.request().method() === 'GET') {
           if (attemptCount === 1) {
             // First attempt fails
             await route.fulfill({
               status: 500,
               contentType: 'application/json',
-              body: JSON.stringify({ success: false, error: 'Temporary error' })
+              body: JSON.stringify({
+                success: false,
+                error: 'Temporary error',
+              }),
             });
           } else {
             // Second attempt succeeds
@@ -568,8 +607,8 @@ test.describe('User Preferences Error Scenarios', () => {
               contentType: 'application/json',
               body: JSON.stringify({
                 success: true,
-                data: DEFAULT_USER_PREFERENCES
-              })
+                data: DEFAULT_USER_PREFERENCES,
+              }),
             });
           }
         } else {
@@ -583,7 +622,7 @@ test.describe('User Preferences Error Scenarios', () => {
       // Should show error initially
       await page.screenshot({
         path: 'screenshots/error-recovery-initial-error.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Try to reload or retry
@@ -593,7 +632,7 @@ test.describe('User Preferences Error Scenarios', () => {
       // Should recover successfully
       await page.screenshot({
         path: 'screenshots/error-recovery-success.png',
-        fullPage: true
+        fullPage: true,
       });
 
       await preferencesPage.verifyPreferencesComponentLoads();
@@ -609,7 +648,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-recovery-changes-made.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Mock save error
@@ -624,7 +663,7 @@ test.describe('User Preferences Error Scenarios', () => {
 
       await page.screenshot({
         path: 'screenshots/error-recovery-changes-preserved.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // Fix API and retry
@@ -633,10 +672,10 @@ test.describe('User Preferences Error Scenarios', () => {
 
       // Should eventually succeed
       await preferencesPage.verifySuccessMessage();
-      
+
       await page.screenshot({
         path: 'screenshots/error-recovery-final-success.png',
-        fullPage: true
+        fullPage: true,
       });
     });
   });
