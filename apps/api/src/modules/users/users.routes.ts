@@ -194,6 +194,32 @@ export async function usersRoutes(
     controller.listRoles.bind(controller),
   );
 
+  // Change current user password (self)
+  typedFastify.post(
+    '/api/profile/password',
+    {
+      preValidation: [fastify.authenticate],
+      schema: {
+        description: 'Change current user password',
+        tags: ['User Profile', 'Users'],
+        summary: 'Change user password with current password verification',
+        security: [{ bearerAuth: [] }],
+        body: SchemaRefs.module('users', 'self-password-change-request'),
+        response: {
+          200: SchemaRefs.module('users', 'success-message-response'),
+          400: SchemaRefs.ValidationError,
+          401: SchemaRefs.Unauthorized,
+          422: SchemaRefs.ValidationError,
+          500: SchemaRefs.ServerError,
+        },
+      },
+    },
+    controller.changeSelfPassword.bind(controller),
+  );
+
+  // ===== PROFILE ROUTES =====
+  // NOTE: Profile routes moved to user-profile module
+
   // ===== BULK OPERATIONS =====
 
   // Bulk activate users (admin only)

@@ -59,8 +59,14 @@ export class UserProfileRepository {
       return null;
     }
 
+
     // Get role permissions
-    const permissions = await this.getRolePermissions(result.role_id);
+    const permissions: string[] = [];
+    try {
+      permissions.push(...(await this.getRolePermissions(result.role_id)));
+    } catch (error) {
+      // Continue with empty permissions on error
+    }
 
     return this.transformToUserProfile(result, permissions);
   }
@@ -207,49 +213,68 @@ export class UserProfileRepository {
   }
 
   private transformToUserProfile(dbResult: any, permissions: string[]): UserProfile {
-    const role: UserRole = {
-      id: dbResult.role_id || 'role_user',
-      name: dbResult.role_name || 'User',
-      permissions
-    };
+    try {
+      const role: UserRole = {
+        id: dbResult.role_id || 'role_user',
+        name: dbResult.role_name || 'User',
+        permissions
+      };
 
-    const preferences: UserPreferences = {
-      theme: dbResult.theme || 'default',
-      scheme: dbResult.scheme || 'light',
-      layout: dbResult.layout || 'classic',
-      language: dbResult.language || 'en',
-      timezone: dbResult.timezone || 'UTC',
-      dateFormat: dbResult.date_format || 'MM/DD/YYYY',
-      timeFormat: dbResult.time_format || '12h',
-      notifications: {
-        email: dbResult.notifications_email ?? true,
-        push: dbResult.notifications_push ?? false,
-        desktop: dbResult.notifications_desktop ?? true,
-        sound: dbResult.notifications_sound ?? true
-      },
-      navigation: {
-        collapsed: dbResult.navigation_collapsed ?? false,
-        type: dbResult.navigation_type || 'default',
-        position: dbResult.navigation_position || 'left'
+      const preferences: UserPreferences = {
+        theme: dbResult.theme || 'default',
+        scheme: dbResult.scheme || 'light',
+        layout: dbResult.layout || 'classic',
+        language: dbResult.language || 'en',
+        timezone: dbResult.timezone || 'UTC',
+        dateFormat: dbResult.date_format || 'MM/DD/YYYY',
+        timeFormat: dbResult.time_format || '12h',
+        notifications: {
+          email: dbResult.notifications_email ?? true,
+          push: dbResult.notifications_push ?? false,
+          desktop: dbResult.notifications_desktop ?? true,
+          sound: dbResult.notifications_sound ?? true
+        },
+        navigation: {
+          collapsed: dbResult.navigation_collapsed ?? false,
+          type: dbResult.navigation_type || 'default',
+          position: dbResult.navigation_position || 'left'
+        }
+      };
+
+      // Build full avatar URL with base API URL
+      let avatarUrl = null;
+      if (dbResult.avatar_url) {
+        const baseUrl = process.env.API_BASE_URL || 'http://localhost:4200';
+        // If already absolute URL, use as is, otherwise prepend base URL
+        if (dbResult.avatar_url.startsWith('http://') || dbResult.avatar_url.startsWith('https://')) {
+          avatarUrl = dbResult.avatar_url;
+        } else {
+          avatarUrl = `${baseUrl}${dbResult.avatar_url}`;
+        }
       }
-    };
 
-    return {
-      id: dbResult.id,
-      email: dbResult.email,
-      name: dbResult.name || `${dbResult.first_name} ${dbResult.last_name}`.trim(),
-      firstName: dbResult.first_name,
-      lastName: dbResult.last_name,
-      avatar: dbResult.avatar_url,
-      role,
-      preferences,
-      createdAt: dbResult.created_at?.toISOString(),
-      updatedAt: dbResult.updated_at?.toISOString(),
-      lastLoginAt: dbResult.last_login_at?.toISOString(),
-      status: dbResult.status,
-      emailVerified: dbResult.email_verified || false,
-      twoFactorEnabled: dbResult.two_factor_enabled || false
-    };
+      const profile = {
+        id: dbResult.id,
+        email: dbResult.email,
+        username: dbResult.username,
+        name: dbResult.name || `${dbResult.first_name || ''} ${dbResult.last_name || ''}`.trim(),
+        firstName: dbResult.first_name,
+        lastName: dbResult.last_name,
+        avatar: avatarUrl,
+        role,
+        preferences,
+        createdAt: dbResult.created_at?.toISOString(),
+        updatedAt: dbResult.updated_at?.toISOString(),
+        lastLoginAt: dbResult.last_login_at?.toISOString(),
+        status: dbResult.status,
+        emailVerified: dbResult.email_verified || false,
+        twoFactorEnabled: dbResult.two_factor_enabled || false
+      };
+
+      return profile;
+    } catch (error) {
+      throw error;
+    }
   }
 
   private transformToUserPreferences(dbPrefs: DatabaseUserPreferences): UserPreferences {

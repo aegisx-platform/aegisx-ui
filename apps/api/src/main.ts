@@ -1,34 +1,34 @@
-import 'reflect-metadata'; // Required for tsyringe
-import Fastify from 'fastify';
-import * as dotenv from 'dotenv';
 import fastifyAuth from '@fastify/auth';
-import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyJwt from '@fastify/jwt';
 import fastifyRateLimit from '@fastify/rate-limit';
+import * as dotenv from 'dotenv';
+import Fastify from 'fastify';
+import 'reflect-metadata'; // Required for tsyringe
 // import fastifySensible from '@fastify/sensible'; // Removed - using custom response format
 
 // Import plugins
+import errorHandlerPlugin from './plugins/error-handler.plugin';
+import healthCheckPlugin from './plugins/health-check.plugin';
 import knexPlugin from './plugins/knex.plugin';
-import redisPlugin from './plugins/redis.plugin';
 import loggingPlugin from './plugins/logging.plugin';
 import pluginMonitoring from './plugins/monitoring.plugin';
-import healthCheckPlugin from './plugins/health-check.plugin';
+import redisPlugin from './plugins/redis.plugin';
 import responseHandlerPlugin from './plugins/response-handler.plugin';
-import errorHandlerPlugin from './plugins/error-handler.plugin';
 import schemasPlugin from './plugins/schemas.plugin';
 // import schemaEnforcementPlugin from './plugins/schema-enforcement.plugin';
-import authStrategiesPlugin from './modules/auth/strategies/auth.strategies';
 import authPlugin from './modules/auth/auth.plugin';
-import navigationPlugin from './modules/navigation/navigation.plugin';
-import userProfilePlugin from './modules/user-profile/user-profile.plugin';
+import authStrategiesPlugin from './modules/auth/strategies/auth.strategies';
 import defaultPlugin from './modules/default/default.plugin';
-import settingsPlugin from './modules/settings/settings.plugin';
 import { monitoringPlugin as monitoringModulePlugin } from './modules/monitoring';
+import navigationPlugin from './modules/navigation/navigation.plugin';
+import settingsPlugin from './modules/settings/settings.plugin';
+import userProfilePlugin from './modules/user-profile/user-profile.plugin';
 import { usersPlugin } from './modules/users';
-import staticFilesPlugin from './plugins/static-files.plugin';
 import jwtAuthPlugin from './plugins/jwt-auth.plugin';
+import staticFilesPlugin from './plugins/static-files.plugin';
 import swaggerPlugin from './plugins/swagger.plugin';
 import websocketPlugin from './shared/websocket/websocket.plugin';
 
@@ -38,7 +38,7 @@ dotenv.config();
 async function bootstrap() {
   const app = Fastify({
     // Disable default logger - we'll use Winston instead
-    logger: false,
+    logger: true,
   });
 
   // 1. Logging (must be first to capture all logs)

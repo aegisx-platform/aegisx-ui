@@ -143,6 +143,67 @@ export class UsersService {
     }
   }
 
+  async changeSelfPassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<void> {
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      throw new AppError(
+        'New password and confirmation do not match',
+        400,
+        'PASSWORD_MISMATCH',
+      );
+    }
+
+    // Get user with password hash
+    const user = await this.usersRepository.findByIdWithPassword(userId);
+    if (!user) {
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!isCurrentPasswordValid) {
+      throw new AppError(
+        'Current password is incorrect',
+        400,
+        'INVALID_CURRENT_PASSWORD',
+      );
+    }
+
+    // Ensure new password is different from current
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new AppError(
+        'New password must be different from current password',
+        400,
+        'SAME_PASSWORD',
+      );
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update password
+    const success = await this.usersRepository.updatePassword(
+      userId,
+      hashedNewPassword,
+    );
+
+    if (!success) {
+      throw new AppError('Failed to update password', 500, 'UPDATE_FAILED');
+    }
+
+    // TODO: Invalidate all user sessions except current one
+    // This would require session management implementation
+  }
+
   async deleteUser(id: string, currentUserId: string): Promise<void> {
     // Prevent user from deleting themselves
     if (id === currentUserId) {
@@ -165,6 +226,37 @@ export class UsersService {
     if (!success) {
       throw new AppError('Failed to delete user', 500, 'DELETE_FAILED');
     }
+  }
+
+  // Profile-specific methods
+  async getProfile(userId: string): Promise<any> {
+    const profile = await this.usersRepository.findProfileById(userId);
+    if (!profile) {
+      throw new AppError('Profile not found', 404, 'PROFILE_NOT_FOUND');
+    }
+    return profile;
+  }
+
+  async updateProfile(userId: string, data: {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    bio?: string;
+  }): Promise<any> {
+    // Check if username is taken (if username is being changed)
+    if (data.username) {
+      const existingUser = await this.usersRepository.findByUsername(data.username);
+      if (existingUser && existingUser.id !== userId) {
+        throw new AppError('Username is already taken', 400, 'USERNAME_TAKEN');
+      }
+    }
+
+    const updatedProfile = await this.usersRepository.updateProfile(userId, data);
+    if (!updatedProfile) {
+      throw new AppError('Profile not found', 404, 'PROFILE_NOT_FOUND');
+    }
+
+    return updatedProfile;
   }
 
   async listRoles() {

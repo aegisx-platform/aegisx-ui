@@ -112,10 +112,17 @@ export class NavigationService {
       ],
     },
     {
-      id: 'settings',
-      title: 'Settings',
+      id: 'account',
+      title: 'Account',
       type: 'group',
       children: [
+        {
+          id: 'profile',
+          title: 'My Profile',
+          type: 'item',
+          icon: 'heroicons_outline:user-circle',
+          link: '/profile',
+        },
         {
           id: 'settings',
           title: 'Settings',

@@ -2,8 +2,8 @@
 
 > **🚨 CRITICAL** - This registry MUST be updated before starting any feature development to prevent conflicts and ensure smooth parallel development.
 
-**Last Updated**: 2025-09-13 14:30  
-**Active Features**: 2  
+**Last Updated**: 2025-09-13 15:00  
+**Active Features**: 2
 **Resolved Conflicts**: 0
 
 ---
@@ -12,6 +12,10 @@
 
 | Table/Column          | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
+| `users.bio` column    | user-profile | Claude | ✅ Completed | For user biography text | 2025-09-13 |
+| `users.avatar_url`    | user-profile | Claude | ✅ Completed | Profile picture URL | 2025-09-13 |
+| `user_preferences`    | user-profile | Claude | ✅ Completed | User settings/preferences | 2025-09-13 |
+| `user_activity_logs`  | user-profile | Claude | 🔶 Reserved | Account activity history | 2025-09-13 |
 | roles | rbac | Claude | 🔒 Reserved | Core roles table for RBAC system | 2025-09-13 |
 | permissions | rbac | Claude | 🔒 Reserved | Permissions table for RBAC system | 2025-09-13 |
 | role_permissions | rbac | Claude | 🔒 Reserved | Many-to-many mapping of roles to permissions | 2025-09-13 |
@@ -33,6 +37,11 @@
 
 | Endpoint Pattern      | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
+| `/api/profile`        | user-profile | Claude | ✅ Completed | User profile CRUD | 2025-09-13 |
+| `/api/profile/password` | user-profile | Claude | ✅ Completed | Password change | 2025-09-13 |
+| `/api/profile/avatar` | user-profile | Claude | ✅ Completed | Avatar upload/update | 2025-09-13 |
+| `/api/profile/preferences` | user-profile | Claude | ✅ Completed | User preferences | 2025-09-13 |
+| `/api/profile/activity` | user-profile | Claude | 🔶 Reserved | Activity logs | 2025-09-13 |
 | /api/rbac/roles/* | rbac | Claude | 🔒 Reserved | Role management endpoints | 2025-09-13 |
 | /api/rbac/permissions/* | rbac | Claude | 🔒 Reserved | Permission management endpoints | 2025-09-13 |
 | /api/rbac/users/*/roles | rbac | Claude | 🔒 Reserved | User role assignment endpoints | 2025-09-13 |

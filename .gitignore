@@ -58,4 +58,43 @@ docker-compose.instance.yml
 .playwright-mcp/
 
 # Logs
+*.log
 api.log
+web.log
+e2e.log
+api-debug.log
+debug.log
+
+# Upload directories
+uploads/
+!/uploads/.gitkeep
+
+# Test results and artifacts
+test-results/
+playwright-report/
+junit-results.xml
+test-results.json
+*.json.test
+bulk_test.json
+login_data.json
+
+# Temporary and build directories
+tmp/
+dist/
+.angular/
+node_modules/
+
+# E2E test artifacts
+apps/e2e/test-results/
+apps/e2e/playwright-report/
+apps/e2e/screenshots/
+apps/*/api.log
+
+# Docker and dev files
+docker-compose.override.yml
+docker-compose.instance.yml
+
+# Test and development files
+test-*.html
+responsive-test.html
+test-websocket.html
