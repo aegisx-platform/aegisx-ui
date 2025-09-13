@@ -24,6 +24,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../users/user.service';
+import {
+  AvatarUploadComponent,
+  AvatarUploadResult,
+} from './avatar-upload.component';
 
 @Component({
   selector: 'ax-profile-info',
@@ -39,40 +43,20 @@ import { UserService } from '../../users/user.service';
     MatDividerModule,
     MatTooltipModule,
     MatCardModule,
+    AvatarUploadComponent,
   ],
   template: `
     <div class="space-y-6">
       <!-- Profile Picture Section -->
       <div class="flex items-center space-x-6">
-        <div class="relative">
-          <div
-            class="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center overflow-hidden"
-          >
-            @if (userProfile?.avatarUrl) {
-              <img
-                [src]="userProfile.avatarUrl"
-                [alt]="userProfile.firstName + ' ' + userProfile.lastName"
-                class="w-full h-full object-cover"
-              />
-            } @else {
-              <mat-icon
-                class="text-gray-500 dark:text-gray-400"
-                style="font-size: 48px; height: 48px; width: 48px;"
-              >
-                person
-              </mat-icon>
-            }
-          </div>
-          <button
-            mat-mini-fab
-            color="primary"
-            class="absolute bottom-0 right-0 transform translate-x-1 translate-y-1"
-            (click)="onAvatarUpload()"
-            matTooltip="Change profile picture"
-          >
-            <mat-icon>photo_camera</mat-icon>
-          </button>
-        </div>
+        <ax-avatar-upload
+          [avatarUrl]="userProfile?.avatarUrl"
+          [displayName]="getDisplayName()"
+          (avatarChange)="onAvatarChange($event)"
+          (uploadStart)="onAvatarUploadStart()"
+          (uploadComplete)="onAvatarUploadComplete($event)"
+          (uploadError)="onAvatarUploadError($event)"
+        ></ax-avatar-upload>
 
         <div>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -249,11 +233,15 @@ import { UserService } from '../../users/user.service';
             [disabled]="profileForm.invalid || !hasChanges() || isSaving()"
           >
             @if (isSaving()) {
-              <mat-icon class="mr-2 animate-spin">sync</mat-icon>
-              Saving...
+              <ng-container>
+                <mat-icon class="mr-2 animate-spin">sync</mat-icon>
+                Saving...
+              </ng-container>
             } @else {
-              <mat-icon class="mr-2">save</mat-icon>
-              Save Changes
+              <ng-container>
+                <mat-icon class="mr-2">save</mat-icon>
+                Save Changes
+              </ng-container>
             }
           </button>
         </div>
@@ -437,8 +425,32 @@ export class ProfileInfoComponent implements OnChanges {
     }
   }
 
-  onAvatarUpload(): void {
-    // TODO: Implement avatar upload functionality
-    console.log('Avatar upload would be implemented here');
+  onAvatarChange(avatarUrl: string): void {
+    // Update the local profile data
+    if (this.userProfile) {
+      this.userProfile = {
+        ...this.userProfile,
+        avatarUrl: avatarUrl,
+      };
+
+      // Emit the updated profile
+      this.profileChange.emit(this.userProfile);
+    }
+  }
+
+  onAvatarUploadStart(): void {
+    console.log('Avatar upload started');
+  }
+
+  onAvatarUploadComplete(result: AvatarUploadResult): void {
+    if (result.success && result.avatarUrl) {
+      console.log('Avatar upload completed:', result.avatarUrl);
+      this.onAvatarChange(result.avatarUrl);
+    }
+  }
+
+  onAvatarUploadError(error: string): void {
+    console.error('Avatar upload error:', error);
+    // Error is already handled by the AvatarUploadComponent with snackbar
   }
 }
