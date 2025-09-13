@@ -72,6 +72,47 @@ See **[Universal Full-Stack Standard](./docs/development/universal-fullstack-sta
 - **Update progress daily** in feature PROGRESS.md files
 - **Check [Feature Status Dashboard](./docs/features/README.md)** for coordination with other developers
 
+### API-First Development Policy (MANDATORY)
+
+**🚨 MUST follow API-First workflow for ALL feature development - NO EXCEPTIONS**
+
+**Before implementing ANY frontend component or making API calls:**
+
+1. **📋 CHECK API SPEC** - Review `docs/features/[feature]/API_CONTRACTS.md` thoroughly
+2. **🔍 VERIFY ENDPOINTS** - Confirm backend routes match the documented API spec exactly
+3. **🧪 TEST API ENDPOINTS** - Test actual API calls before implementing frontend logic
+4. **📝 VALIDATE SCHEMAS** - Ensure request/response schemas match TypeBox definitions
+5. **🔄 UPDATE DOCUMENTATION** - Update API docs if any changes are needed
+
+**API Spec Verification Rules:**
+
+- **NEVER assume endpoint URLs** - Always check the documented API contracts first
+- **NEVER implement frontend without backend API** - API must exist and work before frontend
+- **NEVER guess schema formats** - Use exact TypeBox schemas from documentation
+- **ALWAYS test with real data** - Use actual API responses, not mock data
+
+**If API spec missing or incorrect:**
+
+1. **STOP development immediately**
+2. **Ask user:** "API spec for [feature] is missing/incorrect. Should I update the spec or fix the implementation?"
+3. **Wait for explicit direction**
+4. **Update either spec or implementation as instructed**
+
+**Example API-First Workflow:**
+
+```bash
+# 1. Check feature API contracts
+cat docs/features/user-profile/API_CONTRACTS.md
+
+# 2. Verify backend routes exist
+grep -r "GET /api/profile/preferences" apps/api/src/
+
+# 3. Test API endpoint
+curl -X GET http://localhost:3333/api/profile/preferences
+
+# 4. Only then implement frontend service
+```
+
 ### Quality Assurance Workflow (MANDATORY)
 
 **🚨 MUST run QA Checklist after every code change - NO EXCEPTIONS**

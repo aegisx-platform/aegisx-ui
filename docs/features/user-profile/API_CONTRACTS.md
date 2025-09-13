@@ -1,52 +1,33 @@
-# user profile - API Contracts
+# User Profile Management - API Contracts
 
 ## 📋 API Overview
 
-**Base URL**: `/api/[resource]`  
+**Base URL**: `/api/profile`  
 **Authentication**: JWT Bearer Token Required  
 **Content Type**: `application/json`
 
 ## 🛠️ Endpoints
 
-### 1. List [Resources]
+### 1. Get User Profile
 
 ```http
-GET /api/[resource]
+GET /api/profile
 ```
-
-#### Query Parameters
-
-- `page` (number, optional): Page number (default: 1)
-- `limit` (number, optional): Items per page (default: 10, max: 100)
-- `sort` (string, optional): Sort field (default: 'created_at')
-- `order` (string, optional): Sort order ('asc' or 'desc', default: 'desc')
-- `search` (string, optional): Search query
-- `filter` (object, optional): Filter criteria
 
 #### Request Example
 
 ```bash
-GET /api/[resource]?page=1&limit=20&sort=name&order=asc&search=query
+curl -X GET http://localhost:3333/api/profile \
+  -H "Authorization: Bearer <jwt_token>"
 ```
 
 #### Response Schema
 
 ```typescript
 {
-  data: [Resource][];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  };
+  success: boolean;
+  data: UserProfile;
+  message?: string;
 }
 ```
 
@@ -54,85 +35,58 @@ GET /api/[resource]?page=1&limit=20&sort=name&order=asc&search=query
 
 ```json
 {
-  "data": [
-    {
-      "id": "uuid",
-      "name": "Example Resource",
-      "created_at": "2025-09-12T10:30:00Z",
-      "updated_at": "2025-09-12T10:30:00Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 100,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": false
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
-  }
-}
-```
-
-### 2. Get Single [Resource]
-
-```http
-GET /api/[resource]/:id
-```
-
-#### Path Parameters
-
-- `id` (string, required): Resource UUID
-
-#### Response Schema
-
-```typescript
-{
-  data: Resource;
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
-}
-```
-
-#### Response Example
-
-```json
-{
+  "success": true,
   "data": {
-    "id": "uuid",
-    "name": "Example Resource",
-    "description": "Resource description",
-    "created_at": "2025-09-12T10:30:00Z",
-    "updated_at": "2025-09-12T10:30:00Z"
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
+    "id": "user-uuid",
+    "email": "user@example.com",
+    "username": "johndoe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "bio": "Software developer and tech enthusiast",
+    "avatar": "http://localhost:4200/api/uploads/avatars/user-uuid/avatar.jpg",
+    "role": "user",
+    "status": "active",
+    "emailVerified": true,
+    "createdAt": "2025-09-13T10:30:00Z",
+    "updatedAt": "2025-09-13T10:30:00Z",
+    "preferences": {
+      "theme": "dark",
+      "scheme": "dark",
+      "layout": "compact",
+      "language": "en",
+      "timezone": "UTC",
+      "dateFormat": "MM/DD/YYYY",
+      "timeFormat": "24h",
+      "notifications": {
+        "email": true,
+        "push": false,
+        "desktop": true,
+        "sound": false
+      },
+      "navigation": {
+        "collapsed": false,
+        "type": "default",
+        "position": "left"
+      }
+    }
   }
 }
 ```
 
-### 3. Create [Resource]
+### 2. Update User Profile
 
 ```http
-POST /api/[resource]
+PUT /api/profile
 ```
 
 #### Request Schema
 
 ```typescript
 {
-  name: string;
-  description?: string;
-  // Add other required fields
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  bio?: string;
 }
 ```
 
@@ -140,8 +94,9 @@ POST /api/[resource]
 
 ```json
 {
-  "name": "New Resource",
-  "description": "Resource description"
+  "firstName": "John",
+  "lastName": "Smith",
+  "bio": "Updated bio information"
 }
 ```
 
@@ -149,32 +104,25 @@ POST /api/[resource]
 
 ```typescript
 {
-  data: Resource;
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
+  success: boolean;
+  data: UserProfile;
+  message?: string;
 }
 ```
 
-### 4. Update [Resource]
+### 3. Change Password
 
 ```http
-PUT /api/[resource]/:id
+POST /api/profile/password
 ```
-
-#### Path Parameters
-
-- `id` (string, required): Resource UUID
 
 #### Request Schema
 
 ```typescript
 {
-  name?: string;
-  description?: string;
-  // Add other updatable fields
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 ```
 
@@ -182,8 +130,9 @@ PUT /api/[resource]/:id
 
 ```json
 {
-  "name": "Updated Resource Name",
-  "description": "Updated description"
+  "currentPassword": "oldPassword123",
+  "newPassword": "newPassword456",
+  "confirmPassword": "newPassword456"
 }
 ```
 
@@ -191,105 +140,172 @@ PUT /api/[resource]/:id
 
 ```typescript
 {
-  data: Resource;
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
-}
-```
-
-### 5. Delete [Resource]
-
-```http
-DELETE /api/[resource]/:id
-```
-
-#### Path Parameters
-
-- `id` (string, required): Resource UUID
-
-#### Response Schema
-
-```typescript
-{
+  success: boolean;
   data: {
-    id: string;
-    deleted: boolean;
-  }
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
+    message: string;
+  };
+}
+```
+
+### 4. Upload Avatar
+
+```http
+POST /api/profile/avatar
+```
+
+#### Request
+- **Content-Type**: `multipart/form-data`
+- **Body**: Form data with `avatar` file field
+
+#### Request Example
+
+```bash
+curl -X POST http://localhost:3333/api/profile/avatar \
+  -H "Authorization: Bearer <jwt_token>" \
+  -F "avatar=@/path/to/image.jpg"
+```
+
+#### Response Schema
+
+```typescript
+{
+  success: boolean;
+  data: {
+    avatar: string;
+    thumbnails: {
+      small: string;
+      medium: string;
+      large: string;
+    };
+  };
+  message?: string;
+}
+```
+
+#### Response Example
+
+```json
+{
+  "success": true,
+  "data": {
+    "avatar": "http://localhost:4200/api/uploads/avatars/user-uuid/avatar.jpg",
+    "thumbnails": {
+      "small": "http://localhost:4200/api/uploads/avatars/user-uuid/avatar-small.jpg",
+      "medium": "http://localhost:4200/api/uploads/avatars/user-uuid/avatar-medium.jpg",
+      "large": "http://localhost:4200/api/uploads/avatars/user-uuid/avatar-large.jpg"
+    }
+  },
+  "message": "Avatar uploaded successfully"
+}
+```
+
+### 5. Delete Avatar
+
+```http
+DELETE /api/profile/avatar
+```
+
+#### Response Schema
+
+```typescript
+{
+  success: boolean;
+  data: {
+    message: string;
+  };
+}
+```
+
+### 6. Get User Preferences
+
+```http
+GET /api/profile/preferences
+```
+
+#### Response Schema
+
+```typescript
+{
+  success: boolean;
+  data: UserPreferences;
+}
+```
+
+### 7. Update User Preferences
+
+```http
+PUT /api/profile/preferences
+```
+
+#### Request Schema
+
+```typescript
+{
+  theme?: 'default' | 'dark' | 'light' | 'auto';
+  scheme?: 'light' | 'dark' | 'auto';
+  layout?: 'classic' | 'compact' | 'enterprise' | 'empty';
+  language?: string;
+  timezone?: string;
+  dateFormat?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
+  timeFormat?: '12h' | '24h';
+  notifications?: {
+    email?: boolean;
+    push?: boolean;
+    desktop?: boolean;
+    sound?: boolean;
+  };
+  navigation?: {
+    collapsed?: boolean;
+    type?: 'default' | 'compact' | 'horizontal';
+    position?: 'left' | 'right' | 'top';
+  };
 }
 ```
 
 ## 📊 Data Models
 
-### Resource Model
+### UserProfile Model
 
 ```typescript
-interface Resource {
+interface UserProfile {
   id: string;
-  name: string;
-  description?: string;
-  status: 'active' | 'inactive' | 'deleted';
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by?: string;
+  email: string;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  avatar?: string;
+  role: string;
+  status: string;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  preferences?: UserPreferences;
 }
 ```
 
-### Request Models
+### UserPreferences Model
 
 ```typescript
-interface CreateResourceRequest {
-  name: string;
-  description?: string;
-}
-
-interface UpdateResourceRequest {
-  name?: string;
-  description?: string;
-}
-
-interface ResourceFilters {
-  status?: 'active' | 'inactive';
-  created_after?: string;
-  created_before?: string;
-}
-```
-
-### Response Models
-
-```typescript
-interface ResourceListResponse {
-  data: Resource[];
-  pagination: PaginationMeta;
-  meta: ResponseMeta;
-}
-
-interface ResourceResponse {
-  data: Resource;
-  meta: ResponseMeta;
-}
-
-interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
-
-interface ResponseMeta {
-  requestId: string;
-  timestamp: string;
-  version: string;
+interface UserPreferences {
+  theme: 'default' | 'dark' | 'light' | 'auto';
+  scheme: 'light' | 'dark' | 'auto';
+  layout: 'classic' | 'compact' | 'enterprise' | 'empty';
+  language: string;
+  timezone: string;
+  dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
+  timeFormat: '12h' | '24h';
+  notifications: {
+    email: boolean;
+    push: boolean;
+    desktop: boolean;
+    sound: boolean;
+  };
+  navigation: {
+    collapsed: boolean;
+    type: 'default' | 'compact' | 'horizontal';
+    position: 'left' | 'right' | 'top';
+  };
 }
 ```
 
@@ -299,28 +315,22 @@ interface ResponseMeta {
 
 ```typescript
 {
+  success: false;
   error: {
     code: string;
     message: string;
     details?: any;
-  };
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
   };
 }
 ```
 
 ### Common Error Codes
 
-- `400` Bad Request
-- `401` Unauthorized
-- `403` Forbidden
-- `404` Not Found
-- `409` Conflict
-- `422` Validation Error
-- `500` Internal Server Error
+- `400` Bad Request - Invalid request data
+- `401` Unauthorized - Missing or invalid JWT token
+- `403` Forbidden - Insufficient permissions
+- `422` Validation Error - Request validation failed
+- `500` Internal Server Error - Server error
 
 ### Error Examples
 
@@ -328,34 +338,26 @@ interface ResponseMeta {
 
 ```json
 {
+  "success": false,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Validation failed",
+    "message": "Password validation failed",
     "details": {
-      "name": ["Name is required"],
-      "description": ["Description must be at least 10 characters"]
+      "newPassword": ["Password must be at least 8 characters long"],
+      "confirmPassword": ["Passwords do not match"]
     }
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
   }
 }
 ```
 
-#### Not Found Error (404)
+#### Unauthorized Error (401)
 
 ```json
 {
+  "success": false,
   "error": {
-    "code": "RESOURCE_NOT_FOUND",
-    "message": "Resource not found"
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or expired token"
   }
 }
 ```
@@ -370,55 +372,88 @@ All endpoints require JWT Bearer token in Authorization header:
 Authorization: Bearer <jwt_token>
 ```
 
-### Authorization
+### File Upload Requirements
 
-Different endpoints may require different permissions:
-
-- `[resource]:read` - View resources
-- `[resource]:create` - Create resources
-- `[resource]:update` - Update resources
-- `[resource]:delete` - Delete resources
+- **Avatar Upload**: 
+  - Max file size: 5MB
+  - Supported formats: JPG, PNG, WebP
+  - Files are automatically resized and optimized
+  - Multiple thumbnail sizes generated
 
 ## 📝 TypeBox Schemas
 
-### Request Schemas
+### Profile Update Schema
 
 ```typescript
-export const CreateResourceSchema = Type.Object({
-  name: Type.String({ minLength: 1, maxLength: 255 }),
-  description: Type.Optional(Type.String({ minLength: 1, maxLength: 1000 })),
-});
-
-export const UpdateResourceSchema = Type.Object({
-  name: Type.Optional(Type.String({ minLength: 1, maxLength: 255 })),
-  description: Type.Optional(Type.String({ minLength: 1, maxLength: 1000 })),
-});
-
-export const ResourceFiltersSchema = Type.Object({
-  status: Type.Optional(Type.Union([Type.Literal('active'), Type.Literal('inactive')])),
-  created_after: Type.Optional(Type.String({ format: 'date-time' })),
-  created_before: Type.Optional(Type.String({ format: 'date-time' })),
+export const UpdateProfileSchema = Type.Object({
+  firstName: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
+  lastName: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
+  username: Type.Optional(Type.String({ minLength: 3, maxLength: 30 })),
+  bio: Type.Optional(Type.String({ maxLength: 500 })),
 });
 ```
 
-### Response Schemas
+### Password Change Schema
 
 ```typescript
-export const ResourceSchema = Type.Object({
-  id: Type.String({ format: 'uuid' }),
-  name: Type.String(),
-  description: Type.Union([Type.String(), Type.Null()]),
-  status: Type.Union([Type.Literal('active'), Type.Literal('inactive'), Type.Literal('deleted')]),
-  created_at: Type.String({ format: 'date-time' }),
-  updated_at: Type.String({ format: 'date-time' }),
-  created_by: Type.String({ format: 'uuid' }),
-  updated_by: Type.Union([Type.String({ format: 'uuid' }), Type.Null()]),
+export const ChangePasswordSchema = Type.Object({
+  currentPassword: Type.String({ minLength: 1 }),
+  newPassword: Type.String({ minLength: 8 }),
+  confirmPassword: Type.String({ minLength: 8 }),
 });
+```
 
-export const ResourceListResponseSchema = Type.Object({
-  data: Type.Array(ResourceSchema),
-  pagination: PaginationSchema,
-  meta: ResponseMetaSchema,
+### Preferences Update Schema
+
+```typescript
+export const UpdatePreferencesSchema = Type.Object({
+  theme: Type.Optional(Type.Union([
+    Type.Literal('default'),
+    Type.Literal('dark'),
+    Type.Literal('light'),
+    Type.Literal('auto')
+  ])),
+  scheme: Type.Optional(Type.Union([
+    Type.Literal('light'),
+    Type.Literal('dark'),
+    Type.Literal('auto')
+  ])),
+  layout: Type.Optional(Type.Union([
+    Type.Literal('classic'),
+    Type.Literal('compact'),
+    Type.Literal('enterprise'),
+    Type.Literal('empty')
+  ])),
+  language: Type.Optional(Type.String()),
+  timezone: Type.Optional(Type.String()),
+  dateFormat: Type.Optional(Type.Union([
+    Type.Literal('MM/DD/YYYY'),
+    Type.Literal('DD/MM/YYYY'),
+    Type.Literal('YYYY-MM-DD')
+  ])),
+  timeFormat: Type.Optional(Type.Union([
+    Type.Literal('12h'),
+    Type.Literal('24h')
+  ])),
+  notifications: Type.Optional(Type.Object({
+    email: Type.Optional(Type.Boolean()),
+    push: Type.Optional(Type.Boolean()),
+    desktop: Type.Optional(Type.Boolean()),
+    sound: Type.Optional(Type.Boolean()),
+  })),
+  navigation: Type.Optional(Type.Object({
+    collapsed: Type.Optional(Type.Boolean()),
+    type: Type.Optional(Type.Union([
+      Type.Literal('default'),
+      Type.Literal('compact'),
+      Type.Literal('horizontal')
+    ])),
+    position: Type.Optional(Type.Union([
+      Type.Literal('left'),
+      Type.Literal('right'),
+      Type.Literal('top')
+    ])),
+  })),
 });
 ```
 
@@ -426,71 +461,70 @@ export const ResourceListResponseSchema = Type.Object({
 
 ### Unit Test Cases
 
-1. **GET /api/[resource]**
-   - Returns paginated list
-   - Applies filters correctly
-   - Handles empty results
-   - Validates query parameters
+1. **GET /api/profile**
+   - Returns user profile with preferences
+   - Returns 401 for invalid token
+   - Handles missing user data
 
-2. **GET /api/[resource]/:id**
-   - Returns single resource
-   - Returns 404 for non-existent resource
-   - Validates UUID format
-
-3. **POST /api/[resource]**
-   - Creates resource successfully
-   - Validates required fields
+2. **PUT /api/profile**
+   - Updates profile successfully
+   - Validates input fields
    - Returns validation errors
-   - Handles duplicate names
+   - Handles username conflicts
 
-4. **PUT /api/[resource]/:id**
-   - Updates resource successfully
-   - Validates fields
-   - Returns 404 for non-existent resource
+3. **POST /api/profile/password**
+   - Changes password successfully
+   - Validates current password
+   - Validates new password strength
+   - Confirms password match
+
+4. **POST /api/profile/avatar**
+   - Uploads avatar successfully
+   - Validates file type and size
+   - Generates thumbnails
+   - Handles upload errors
+
+5. **PUT /api/profile/preferences**
+   - Updates preferences successfully
+   - Validates preference values
    - Handles partial updates
-
-5. **DELETE /api/[resource]/:id**
-   - Deletes resource successfully
-   - Returns 404 for non-existent resource
-   - Handles cascade deletions
 
 ### Integration Test Cases
 
-1. **Complete CRUD workflow**
-2. **Authentication/Authorization**
-3. **Error handling**
-4. **Performance under load**
-5. **Concurrent operations**
+1. **Complete profile management workflow**
+2. **File upload and avatar management**
+3. **Password security and validation**
+4. **Preferences persistence and retrieval**
+5. **Error handling across all endpoints**
 
-## 📋 Implementation Checklist
+## 📋 Implementation Status
 
 ### Backend Implementation
 
-- [ ] Database migrations
-- [ ] TypeBox schemas defined
-- [ ] Repository layer implemented
-- [ ] Service layer implemented
-- [ ] Controller layer implemented
-- [ ] Route registration
-- [ ] Validation middleware
-- [ ] Error handling
-- [ ] Unit tests written
-- [ ] Integration tests written
+- [x] Database migrations ✅ Completed
+- [x] TypeBox schemas defined ✅ Completed
+- [x] Repository layer implemented ✅ Completed
+- [x] Service layer implemented ✅ Completed
+- [x] Controller layer implemented ✅ Completed
+- [x] Route registration ✅ Completed
+- [x] Validation middleware ✅ Completed
+- [x] Error handling ✅ Completed
+- [x] Unit tests written ✅ Completed
+- [x] Integration tests written ✅ Completed
 
 ### Frontend Implementation
 
-- [ ] Service interfaces defined
-- [ ] HTTP client implementation
-- [ ] Type definitions created
-- [ ] Error handling implemented
-- [ ] Loading states managed
-- [ ] Response transformation
-- [ ] Unit tests written
+- [x] Service interfaces defined ✅ Completed
+- [x] HTTP client implementation ✅ Completed
+- [x] Type definitions created ✅ Completed
+- [x] Error handling implemented ✅ Completed
+- [x] Loading states managed ✅ Completed
+- [x] Response transformation ✅ Completed
+- [x] Component tests written ✅ Completed
 
 ### Documentation
 
-- [ ] API documentation complete
-- [ ] OpenAPI/Swagger specs
-- [ ] Postman collection created
-- [ ] Examples provided
-- [ ] Error scenarios documented
+- [x] API documentation complete ✅ Completed
+- [x] TypeBox schema specs ✅ Completed
+- [x] Examples provided ✅ Completed
+- [x] Error scenarios documented ✅ Completed

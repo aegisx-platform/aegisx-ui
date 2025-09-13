@@ -107,10 +107,15 @@ export class AvatarService {
       // Delete thumbnails
       if (avatarFile.thumbnails) {
         for (const thumbnailUrl of Object.values(avatarFile.thumbnails)) {
-          const thumbnailPath = path.join(
-            this.uploadDir,
-            path.basename(new URL(thumbnailUrl).pathname),
-          );
+          // Extract filename from URL (handle both relative and absolute URLs)
+          let filename: string;
+          if (thumbnailUrl.startsWith('http://') || thumbnailUrl.startsWith('https://')) {
+            filename = path.basename(new URL(thumbnailUrl).pathname);
+          } else {
+            filename = path.basename(thumbnailUrl);
+          }
+          
+          const thumbnailPath = path.join(this.uploadDir, filename);
           await this.deleteFileIfExists(thumbnailPath);
         }
       }

@@ -24,6 +24,27 @@ export interface TestUserProfile {
   theme?: 'light' | 'dark' | 'auto';
 }
 
+export interface UserPreferences {
+  theme: 'default' | 'dark' | 'light' | 'auto';
+  scheme: 'light' | 'dark' | 'auto';
+  layout: 'classic' | 'compact' | 'enterprise' | 'empty';
+  language: string;
+  timezone: string;
+  dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
+  timeFormat: '12h' | '24h';
+  notifications: {
+    email: boolean;
+    push: boolean;
+    desktop: boolean;
+    sound: boolean;
+  };
+  navigation: {
+    collapsed: boolean;
+    type: 'default' | 'compact' | 'horizontal';
+    position: 'left' | 'right' | 'top';
+  };
+}
+
 export interface TestCredentials {
   email: string;
   password: string;
@@ -193,5 +214,218 @@ export const TEST_API_ENDPOINTS = {
     get: '/api/profile',
     update: '/api/profile',
     avatar: '/api/profile/avatar',
+    preferences: '/api/profile/preferences',
   },
 } as const;
+
+/**
+ * Default user preferences for testing
+ */
+export const DEFAULT_USER_PREFERENCES: UserPreferences = {
+  theme: 'default',
+  scheme: 'light',
+  layout: 'classic',
+  language: 'en',
+  timezone: 'UTC',
+  dateFormat: 'MM/DD/YYYY',
+  timeFormat: '12h',
+  notifications: {
+    email: true,
+    push: false,
+    desktop: true,
+    sound: true
+  },
+  navigation: {
+    collapsed: false,
+    type: 'default',
+    position: 'left'
+  }
+} as const;
+
+/**
+ * Test preferences scenarios for different test cases
+ */
+export const TEST_PREFERENCES = {
+  default: DEFAULT_USER_PREFERENCES,
+  
+  darkMode: {
+    ...DEFAULT_USER_PREFERENCES,
+    theme: 'dark',
+    scheme: 'dark',
+  } as UserPreferences,
+  
+  compactLayout: {
+    ...DEFAULT_USER_PREFERENCES,
+    layout: 'compact',
+    navigation: {
+      collapsed: true,
+      type: 'compact',
+      position: 'left'
+    }
+  } as UserPreferences,
+  
+  internationalUser: {
+    ...DEFAULT_USER_PREFERENCES,
+    language: 'th',
+    timezone: 'Asia/Bangkok',
+    dateFormat: 'DD/MM/YYYY',
+    timeFormat: '24h'
+  } as UserPreferences,
+  
+  minimalNotifications: {
+    ...DEFAULT_USER_PREFERENCES,
+    notifications: {
+      email: false,
+      push: false,
+      desktop: false,
+      sound: false
+    }
+  } as UserPreferences,
+  
+  allNotificationsEnabled: {
+    ...DEFAULT_USER_PREFERENCES,
+    notifications: {
+      email: true,
+      push: true,
+      desktop: true,
+      sound: true
+    }
+  } as UserPreferences,
+  
+  horizontalNavigation: {
+    ...DEFAULT_USER_PREFERENCES,
+    navigation: {
+      collapsed: false,
+      type: 'horizontal',
+      position: 'top'
+    }
+  } as UserPreferences,
+  
+  rightSideNavigation: {
+    ...DEFAULT_USER_PREFERENCES,
+    navigation: {
+      collapsed: false,
+      type: 'default',
+      position: 'right'
+    }
+  } as UserPreferences,
+  
+  enterpriseLayout: {
+    ...DEFAULT_USER_PREFERENCES,
+    layout: 'enterprise',
+    theme: 'light',
+    navigation: {
+      collapsed: false,
+      type: 'default',
+      position: 'left'
+    }
+  } as UserPreferences,
+} as const;
+
+/**
+ * Factory for creating test preferences data
+ */
+export class TestPreferencesFactory {
+  /**
+   * Create custom preferences with overrides
+   */
+  static create(overrides: Partial<UserPreferences> = {}): UserPreferences {
+    return {
+      ...DEFAULT_USER_PREFERENCES,
+      ...overrides,
+      notifications: {
+        ...DEFAULT_USER_PREFERENCES.notifications,
+        ...overrides.notifications,
+      },
+      navigation: {
+        ...DEFAULT_USER_PREFERENCES.navigation,
+        ...overrides.navigation,
+      }
+    };
+  }
+
+  /**
+   * Create preferences for specific theme testing
+   */
+  static createForTheme(theme: UserPreferences['theme']): UserPreferences {
+    const scheme = theme === 'dark' ? 'dark' : 'light';
+    return this.create({ theme, scheme });
+  }
+
+  /**
+   * Create preferences for specific layout testing
+   */
+  static createForLayout(layout: UserPreferences['layout']): UserPreferences {
+    const navigationConfig = {
+      classic: { type: 'default', position: 'left', collapsed: false },
+      compact: { type: 'compact', position: 'left', collapsed: true },
+      enterprise: { type: 'default', position: 'left', collapsed: false },
+      empty: { type: 'default', position: 'left', collapsed: false }
+    } as const;
+
+    return this.create({
+      layout,
+      navigation: {
+        ...DEFAULT_USER_PREFERENCES.navigation,
+        ...navigationConfig[layout]
+      } as any
+    });
+  }
+
+  /**
+   * Create preferences for specific locale testing
+   */
+  static createForLocale(language: string, timezone: string): UserPreferences {
+    const localeConfigs = {
+      'en': { dateFormat: 'MM/DD/YYYY', timeFormat: '12h' },
+      'th': { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
+      'ja': { dateFormat: 'YYYY-MM-DD', timeFormat: '24h' },
+      'de': { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
+      'fr': { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
+    } as const;
+
+    const config = localeConfigs[language as keyof typeof localeConfigs] || localeConfigs.en;
+
+    return this.create({
+      language,
+      timezone,
+      ...config
+    });
+  }
+
+  /**
+   * Create preferences for notification testing
+   */
+  static createForNotifications(notifications: Partial<UserPreferences['notifications']>): UserPreferences {
+    return this.create({
+      notifications: {
+        ...DEFAULT_USER_PREFERENCES.notifications,
+        ...notifications
+      }
+    });
+  }
+
+  /**
+   * Create preferences for navigation testing
+   */
+  static createForNavigation(navigation: Partial<UserPreferences['navigation']>): UserPreferences {
+    return this.create({
+      navigation: {
+        ...DEFAULT_USER_PREFERENCES.navigation,
+        ...navigation
+      }
+    });
+  }
+
+  /**
+   * Create invalid preferences for error testing
+   */
+  static createInvalid(): Partial<UserPreferences> {
+    return {
+      language: '', // Invalid empty language
+      timezone: 'Invalid/Timezone',
+      theme: 'invalid-theme' as any,
+      notifications: undefined as any,
+    };
+  }
+}

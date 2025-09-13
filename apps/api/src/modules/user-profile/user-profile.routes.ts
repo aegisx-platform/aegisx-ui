@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { UserProfileController } from './user-profile.controller';
+import { FastifyInstance } from 'fastify';
 import { SchemaRefs } from '../../schemas/registry';
+import { UserProfileController } from './user-profile.controller';
 
 export interface UserProfileRoutesOptions {
   controller: UserProfileController;
@@ -16,7 +16,7 @@ export async function userProfileRoutes(
 
   // Get current user profile
   typedFastify.get(
-    '/users/profile',
+    '/profile',
     {
       preValidation: [fastify.authenticate],
       schema: {
@@ -37,7 +37,7 @@ export async function userProfileRoutes(
 
   // Update current user profile
   typedFastify.put(
-    '/users/profile',
+    '/profile',
     {
       preValidation: [fastify.authenticate],
       schema: {

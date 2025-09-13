@@ -86,6 +86,46 @@ const ChangeUserPasswordRequestSchema = Type.Object({
   newPassword: Type.String({ minLength: 8 }),
 });
 
+// Self password change request (for user to change their own password)
+const SelfPasswordChangeRequestSchema = Type.Object({
+  currentPassword: Type.String({ minLength: 1 }),
+  newPassword: Type.String({ 
+    minLength: 8,
+    description: 'Must be at least 8 characters long'
+  }),
+  confirmPassword: Type.String({ 
+    minLength: 8,
+    description: 'Must match new password'
+  }),
+});
+
+// Profile schemas
+const UserProfileSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  email: Type.String({ format: 'email' }),
+  username: Type.String({ minLength: 3, maxLength: 100 }),
+  firstName: Type.Optional(Type.String({ maxLength: 100 })),
+  lastName: Type.Optional(Type.String({ maxLength: 100 })),
+  bio: Type.Optional(Type.String({ maxLength: 500 })),
+  avatarUrl: Type.Optional(Type.String({ format: 'uri' })),
+  role: Type.String(),
+  status: Type.String(),
+  emailVerified: Type.Boolean(),
+  createdAt: Type.String({ format: 'date-time' }),
+  updatedAt: Type.String({ format: 'date-time' }),
+});
+
+const GetProfileResponseSchema = ApiSuccessResponseSchema(UserProfileSchema);
+
+const UpdateProfileRequestSchema = Type.Object({
+  firstName: Type.Optional(Type.String({ maxLength: 100 })),
+  lastName: Type.Optional(Type.String({ maxLength: 100 })),
+  username: Type.Optional(Type.String({ minLength: 3, maxLength: 100 })),
+  bio: Type.Optional(Type.String({ maxLength: 500 })),
+});
+
+const UpdateProfileResponseSchema = ApiSuccessResponseSchema(UserProfileSchema);
+
 // Success message response - Using standard success response
 const SuccessMessageResponseSchema = ApiSuccessResponseSchema(
   Type.Object({
@@ -182,6 +222,11 @@ export const usersSchemas = {
   'update-user-response': UpdateUserResponseSchema,
   'delete-user-response': DeleteUserResponseSchema,
   'change-user-password-request': ChangeUserPasswordRequestSchema,
+  'self-password-change-request': SelfPasswordChangeRequestSchema,
+  // Profile schemas
+  'get-profile-response': GetProfileResponseSchema,
+  'update-profile-request': UpdateProfileRequestSchema,
+  'update-profile-response': UpdateProfileResponseSchema,
   'success-message-response': SuccessMessageResponseSchema,
   'list-roles-response': ListRolesResponseSchema,
   // Bulk operation schemas
@@ -205,6 +250,14 @@ export type DeleteUserResponse = Static<typeof DeleteUserResponseSchema>;
 export type ChangeUserPasswordRequest = Static<
   typeof ChangeUserPasswordRequestSchema
 >;
+export type SelfPasswordChangeRequest = Static<
+  typeof SelfPasswordChangeRequestSchema
+>;
+// Profile types
+export type UserProfile = Static<typeof UserProfileSchema>;
+export type GetProfileResponse = Static<typeof GetProfileResponseSchema>;
+export type UpdateProfileRequest = Static<typeof UpdateProfileRequestSchema>;
+export type UpdateProfileResponse = Static<typeof UpdateProfileResponseSchema>;
 export type Role = Static<typeof RoleSchema>;
 export type ListRolesResponse = Static<typeof ListRolesResponseSchema>;
 

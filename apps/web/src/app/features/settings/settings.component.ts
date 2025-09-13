@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 import { DynamicSettingsComponent } from './components/dynamic-settings.component';
+import { SecuritySettingsComponent } from './components/security-settings.component';
 import { SettingsService } from './settings.service';
 import { GroupedSettings, SettingChangeEvent } from './settings.types';
 
@@ -26,6 +27,7 @@ import { GroupedSettings, SettingChangeEvent } from './settings.types';
     AegisxCardComponent,
     AegisxAlertComponent,
     DynamicSettingsComponent,
+    SecuritySettingsComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -82,6 +84,20 @@ import { GroupedSettings, SettingChangeEvent } from './settings.types';
             animationDuration="200ms"
             class="settings-tabs"
           >
+            <!-- Security Tab (Always First) -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="mr-2">security</mat-icon>
+                <span>Security</span>
+              </ng-template>
+              <div class="tab-content">
+                <ax-security-settings
+                  (settingsChange)="onSecuritySettingsChange($event)"
+                ></ax-security-settings>
+              </div>
+            </mat-tab>
+
+            <!-- Dynamic Settings Tabs -->
             @for (
               categoryGroup of settingsService.groupedSettings();
               track categoryGroup.category
@@ -212,6 +228,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
   onSettingChange(event: SettingChangeEvent): void {
     // Handle individual setting changes from dynamic components
     this.settingsService.optimisticUpdate(event.settingId, event.newValue);
+  }
+
+  onSecuritySettingsChange(event: any): void {
+    // Handle security settings changes (like password change)
+    // These are separate from dynamic settings and don't need to be saved via settings service
+    console.log('Security settings changed:', event);
   }
 
   saveSettings(): void {

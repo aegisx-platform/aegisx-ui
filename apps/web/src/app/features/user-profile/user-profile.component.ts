@@ -11,6 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 import { ProfileInfoComponent } from './components/profile-info.component';
 import { ProfileSecurityComponent } from './components/profile-security.component';
+import { UserPreferencesComponent } from './components/user-preferences.component';
 import { UserService } from '../users/user.service';
 
 @Component({
@@ -29,6 +30,7 @@ import { UserService } from '../users/user.service';
     AegisxAlertComponent,
     ProfileInfoComponent,
     ProfileSecurityComponent,
+    UserPreferencesComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -146,22 +148,10 @@ import { UserService } from '../users/user.service';
                 }
               </ng-template>
               <div class="tab-content">
-                <div class="text-center py-8">
-                  <mat-icon
-                    class="text-gray-400 mb-4"
-                    style="font-size: 48px; height: 48px; width: 48px;"
-                    >tune</mat-icon
-                  >
-                  <h3
-                    class="text-lg font-medium text-gray-600 dark:text-gray-300"
-                  >
-                    Preferences Coming Soon
-                  </h3>
-                  <p class="text-gray-500 dark:text-gray-400 mt-2">
-                    Theme, language, and notification preferences will be
-                    available here.
-                  </p>
-                </div>
+                <ax-user-preferences
+                  [userProfile]="userProfile()"
+                  (preferencesChange)="onPreferencesChange($event)"
+                ></ax-user-preferences>
               </div>
             </mat-tab>
 
@@ -327,6 +317,21 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     // Clear any pending changes since profile was saved
     this.profileChanges.update((current) => {
       const { profile, ...rest } = current;
+      return rest;
+    });
+  }
+
+  onPreferencesChange(updatedPreferences: any): void {
+    // Update the profile with new preferences
+    this.userProfile.update((current) => {
+      if (current) {
+        return { ...current, preferences: updatedPreferences };
+      }
+      return current;
+    });
+    // Clear any pending preferences changes since they were saved
+    this.profileChanges.update((current) => {
+      const { preferences, ...rest } = current;
       return rest;
     });
   }

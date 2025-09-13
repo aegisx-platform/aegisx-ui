@@ -4,7 +4,9 @@ import {
   ListUsersQuery,
   CreateUserRequest,
   UpdateUserRequest,
+  UpdateProfileRequest,
   ChangeUserPasswordRequest,
+  SelfPasswordChangeRequest,
   BulkStatusChangeRequest,
   BulkUserIdsRequest,
   BulkRoleChangeRequest,
@@ -90,6 +92,76 @@ export class UsersController {
     });
   }
 
+  async changeSelfPassword(
+    request: FastifyRequest<{
+      Body: SelfPasswordChangeRequest;
+    }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const userId = request.user.id;
+      await this.usersService.changeSelfPassword(
+        userId,
+        request.body.currentPassword,
+        request.body.newPassword,
+        request.body.confirmPassword,
+      );
+      return reply.success({
+        message: 'Password changed successfully',
+      });
+    } catch (error) {
+      request.log.error({ error }, 'Error changing user password');
+      
+      if (error.code === 'PASSWORD_MISMATCH') {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'PASSWORD_MISMATCH',
+            message: 'New password and confirmation do not match',
+          },
+        });
+      }
+      
+      if (error.code === 'INVALID_CURRENT_PASSWORD') {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'INVALID_CURRENT_PASSWORD',
+            message: 'Current password is incorrect',
+          },
+        });
+      }
+      
+      if (error.code === 'SAME_PASSWORD') {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'SAME_PASSWORD',
+            message: 'New password must be different from current password',
+          },
+        });
+      }
+      
+      if (error.code === 'USER_NOT_FOUND') {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'USER_NOT_FOUND',
+            message: 'User not found',
+          },
+        });
+      }
+
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to change password',
+        },
+      });
+    }
+  }
+
   async deleteUser(
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply,
@@ -105,6 +177,56 @@ export class UsersController {
   async listRoles(request: FastifyRequest, reply: FastifyReply) {
     const roles = await this.usersService.listRoles();
     return reply.success(roles);
+  }
+
+  // ===== PROFILE METHODS =====
+
+  async getProfile(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const userId = request.user.id;
+      const profile = await this.usersService.getProfile(userId);
+      return reply.success(profile);
+    } catch (error) {
+      request.log.error({ error }, 'Error getting user profile');
+      throw error;
+    }
+  }
+
+  async updateProfile(
+    request: FastifyRequest<{
+      Body: UpdateProfileRequest;
+    }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const userId = request.user.id;
+      const updatedProfile = await this.usersService.updateProfile(userId, request.body);
+      return reply.success(updatedProfile);
+    } catch (error) {
+      request.log.error({ error }, 'Error updating user profile');
+      
+      if (error.code === 'USERNAME_TAKEN') {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'USERNAME_TAKEN',
+            message: 'Username is already taken',
+          },
+        });
+      }
+
+      if (error.code === 'PROFILE_NOT_FOUND') {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'PROFILE_NOT_FOUND',
+            message: 'Profile not found',
+          },
+        });
+      }
+
+      throw error;
+    }
   }
 
   // ===== BULK OPERATIONS =====

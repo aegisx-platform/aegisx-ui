@@ -93,9 +93,10 @@ export const UserRoleSchema = Type.Object({
 export const UserProfileSchema = Type.Object({
   id: Type.String({ format: 'uuid' }),
   email: Type.String({ format: 'email' }),
+  username: Type.String(),
   name: Type.String(),
-  firstName: Type.String(),
-  lastName: Type.String(),
+  firstName: Type.Union([Type.String(), Type.Null()]),
+  lastName: Type.Union([Type.String(), Type.Null()]),
   avatar: Type.Union([Type.String({ format: 'uri' }), Type.Null()]),
   role: UserRoleSchema,
   preferences: UserPreferencesSchema,

@@ -30,6 +30,7 @@ const mockUser = {
 const mockProfile: UserProfile = {
   id: 'user-123',
   email: 'test@example.com',
+  username: 'johndoe',
   name: 'John Doe',
   firstName: 'John',
   lastName: 'Doe',

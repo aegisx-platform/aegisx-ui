@@ -50,7 +50,7 @@ import {
       <!-- Profile Picture Section -->
       <div class="flex items-center space-x-6">
         <ax-avatar-upload
-          [avatarUrl]="userProfile?.avatarUrl"
+          [avatarUrl]="userProfile?.avatar"
           [displayName]="getDisplayName()"
           (avatarChange)="onAvatarChange($event)"
           (uploadStart)="onAvatarUploadStart()"
@@ -430,7 +430,7 @@ export class ProfileInfoComponent implements OnChanges {
     if (this.userProfile) {
       this.userProfile = {
         ...this.userProfile,
-        avatarUrl: avatarUrl,
+        avatar: avatarUrl,
       };
 
       // Emit the updated profile

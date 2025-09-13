@@ -1,6 +1,7 @@
 export interface UserProfile {
   id: string;
   email: string;
+  username: string;
   name: string;
   firstName?: string;
   lastName?: string;
@@ -114,6 +115,22 @@ export interface DatabaseUserPreferences {
   notifications_push: boolean;
   notifications_desktop: boolean;
   notifications_sound: boolean;
+  notifications_security: boolean;
+  notifications_updates: boolean;
+  notifications_marketing: boolean;
+  notifications_reminders: boolean;
+  profile_visibility: string;
+  activity_tracking: boolean;
+  analytics_opt_out: boolean;
+  data_sharing: boolean;
+  high_contrast: boolean;
+  font_size: string;
+  reduced_motion: boolean;
+  screen_reader: boolean;
+  animations: boolean;
+  lazy_loading: boolean;
+  caching: boolean;
+  compression: boolean;
   created_at: Date;
   updated_at: Date;
 }

@@ -52,6 +52,7 @@ describe('UserProfileService', () => {
     const mockProfile: UserProfile = {
       id: userId,
       email: 'test@example.com',
+      username: 'johndoe',
       name: 'John Doe',
       firstName: 'John',
       lastName: 'Doe',
@@ -126,6 +127,7 @@ describe('UserProfileService', () => {
     const mockUpdatedProfile: UserProfile = {
       id: userId,
       email: 'test@example.com',
+      username: 'janedoe',
       name: 'Jane Doe',
       firstName: 'Jane',
       lastName: 'Doe',

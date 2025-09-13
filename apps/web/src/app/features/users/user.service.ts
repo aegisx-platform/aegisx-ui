@@ -1,12 +1,12 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
 import {
   HttpClient,
-  HttpParams,
   HttpEventType,
+  HttpParams,
   HttpRequest,
 } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -94,7 +94,7 @@ export interface UserProfile {
   firstName?: string;
   lastName?: string;
   bio?: string;
-  avatarUrl?: string;
+  avatar?: string;
   role: string;
   status: string;
   emailVerified: boolean;
@@ -493,7 +493,7 @@ export class UserService {
   // ===== PROFILE METHODS =====
 
   getProfile() {
-    return this.http.get<ApiResponse<UserProfile>>(`/api/users/profile`).pipe(
+    return this.http.get<ApiResponse<UserProfile>>(`/api/profile`).pipe(
       map((response) => {
         if (response.success && response.data) {
           return response.data;
@@ -505,7 +505,7 @@ export class UserService {
 
   updateProfile(data: UpdateProfileRequest) {
     return this.http
-      .put<ApiResponse<UserProfile>>(`/api/users/profile`, data)
+      .put<ApiResponse<UserProfile>>(`/api/profile`, data)
       .pipe(
         map((response) => {
           if (response.success && response.data) {

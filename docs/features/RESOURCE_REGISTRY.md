@@ -2,8 +2,8 @@
 
 > **🚨 CRITICAL** - This registry MUST be updated before starting any feature development to prevent conflicts and ensure smooth parallel development.
 
-**Last Updated**: 2025-09-12 16:30  
-**Active Features**: 0  
+**Last Updated**: 2025-09-13 06:20  
+**Active Features**: 1  
 **Resolved Conflicts**: 0
 
 ---
@@ -12,7 +12,10 @@
 
 | Table/Column          | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
-| _No reservations yet_ | -       | -         | -      | -     | -             |
+| `users.bio` column    | user-profile | Claude | 🔶 Reserved | For user biography text | 2025-09-13 |
+| `users.avatar_url`    | user-profile | Claude | 🔶 Reserved | Profile picture URL | 2025-09-13 |
+| `user_preferences`    | user-profile | Claude | 🔶 Reserved | User settings/preferences | 2025-09-13 |
+| `user_activity_logs`  | user-profile | Claude | 🔶 Reserved | Account activity history | 2025-09-13 |
 
 ### Available Tables for New Features
 
@@ -27,7 +30,11 @@
 
 | Endpoint Pattern      | Feature | Developer | Status | Notes | Reserved Date |
 | --------------------- | ------- | --------- | ------ | ----- | ------------- |
-| _No reservations yet_ | -       | -         | -      | -     | -             |
+| `/api/profile`        | user-profile | Claude | 🔶 Reserved | User profile CRUD | 2025-09-13 |
+| `/api/profile/password` | user-profile | Claude | ✅ In Use | Password change (existing) | 2025-09-13 |
+| `/api/profile/avatar` | user-profile | Claude | 🔶 Reserved | Avatar upload/update | 2025-09-13 |
+| `/api/profile/preferences` | user-profile | Claude | 🔶 Reserved | User preferences | 2025-09-13 |
+| `/api/profile/activity` | user-profile | Claude | 🔶 Reserved | Activity logs | 2025-09-13 |
 
 ### Available Endpoint Patterns
 
