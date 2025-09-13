@@ -1,7 +1,7 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-09-12 (Session 7)  
-**Current Task:** ✅ COMPLETED: Settings Feature Implementation AND GitHub Actions Production Builds Fixed
+**Last Updated:** 2025-09-13 (Session 8)  
+**Current Task:** ✅ COMPLETED: Multi-Instance Development Setup - Folder-Based Port Management
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 
 ## 🏗️ Project Overview
@@ -14,8 +14,42 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 
 ### Session Overview
 
-- **Date**: 2025-09-12 (Session 7)
-- **Main Focus**: Complete Settings Feature Implementation AND GitHub Actions Production Build Fixes
+- **Date**: 2025-09-13 (Session 8)
+- **Main Focus**: Multi-Instance Development Setup with Folder-Based Port Management
+
+### ✅ Completed Tasks (Session 8)
+
+1. **✅ COMPLETED: Multi-Instance Development Setup System**
+   - **Problem**: When cloning repos for parallel feature development, port conflicts occur between PostgreSQL (5432), Redis (6380), API (3333), Web (4200), and container names clash
+   - **Solution**: Implemented comprehensive folder-based port assignment and container naming system
+   - **Key Features**:
+     - **Automatic Port Assignment**: Uses folder suffix hash for consistent port calculation
+     - **Container Isolation**: Each instance gets unique container names (aegisx\_{suffix}\_postgres)
+     - **Volume Isolation**: Separate database volumes per instance to prevent data mixing
+     - **Environment Generation**: Auto-creates .env.local and docker-compose.override.yml
+     - **Port Registry**: Global tracking of port assignments across all instances
+     - **Conflict Detection**: Automatic port conflict checking and resolution
+   - **Files Created**:
+     - `scripts/setup-env.sh` (165 lines) - Main setup script with port calculation logic
+     - `scripts/port-manager.sh` (290 lines) - Instance management and monitoring tool
+   - **Files Modified**:
+     - `package.json` - Added `setup:env` command and updated `setup` workflow
+     - `CLAUDE.md` - Added comprehensive multi-instance documentation section
+     - `.gitignore` - Added `.env.local` and `docker-compose.override.yml` exclusions
+   - **Port Assignment Strategy**:
+     - Main repo (`aegisx-starter`): Default ports (5432, 6380, 3333, 4200)
+     - Feature repos (`aegisx-starter-{name}`): Hash-based unique ports
+     - Example: `aegisx-starter-mpv` → PostgreSQL: 5433, Redis: 6381, API: 3334
+   - **Management Commands**: List instances, check conflicts, stop instances, cleanup unused resources
+   - **Result**: Developers can now work on multiple features simultaneously with zero port conflicts
+
+2. **✅ COMPLETED: Developer Experience Enhancement**
+   - **One-Command Setup**: `pnpm setup` automatically configures everything
+   - **Predictable Ports**: Same folder name = same ports (consistent across machines)
+   - **Git Safety**: Auto-generated files excluded from version control
+   - **Environment Hierarchy**: .env.local overrides .env without replacing it
+   - **Registry System**: ~/.aegisx-port-registry tracks all active instances
+   - **Documentation**: Complete setup guide with examples and troubleshooting
 
 ### ✅ Completed Tasks (Session 7)
 
