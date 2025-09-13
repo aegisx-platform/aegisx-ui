@@ -103,6 +103,33 @@ echo "  PostgreSQL: $POSTGRES_CONTAINER"
 echo "  Redis: $REDIS_CONTAINER"
 echo "  PgAdmin: $PGADMIN_CONTAINER"
 
+# Check for and handle old conflicting containers
+print_status "🧹 Checking for conflicting containers..."
+
+# Check if old default containers exist and are running
+OLD_CONTAINERS=(aegisx_postgres aegisx_redis aegisx_pgadmin)
+FOUND_CONFLICTS=false
+
+for container in "${OLD_CONTAINERS[@]}"; do
+    if docker ps -q --filter "name=$container" | grep -q .; then
+        print_warning "Found running container: $container"
+        FOUND_CONFLICTS=true
+    elif docker ps -aq --filter "name=$container" | grep -q .; then
+        print_warning "Found stopped container: $container"
+        FOUND_CONFLICTS=true
+    fi
+done
+
+if [ "$FOUND_CONFLICTS" = true ]; then
+    print_warning "Conflicting containers detected. These may block ports needed for this instance."
+    echo "To avoid port conflicts, we recommend stopping old containers:"
+    echo "  docker stop aegisx_postgres aegisx_redis aegisx_pgadmin 2>/dev/null || true"
+    echo "  docker rm aegisx_postgres aegisx_redis aegisx_pgadmin 2>/dev/null || true"
+    echo ""
+    echo "Or use the port manager script: ./scripts/port-manager.sh stop-all"
+    echo ""
+fi
+
 # Generate .env.local file
 print_status "📄 Generating .env.local..."
 
@@ -169,42 +196,63 @@ EOF
 
 print_success ".env.local created with instance-specific configuration"
 
-# Generate docker-compose.override.yml
-print_status "🐳 Generating docker-compose.override.yml..."
+# Generate docker-compose.instance.yml
+print_status "🐳 Generating docker-compose.instance.yml..."
 
-cat > docker-compose.override.yml << EOF
-# Auto-generated Docker Compose override for instance: $INSTANCE_NAME
+cat > docker-compose.instance.yml << EOF
+# Instance-specific Docker Compose file for: $INSTANCE_NAME
 # Generated on: $(date)
 # Folder: $FOLDER_NAME
 
-version: '3.8'
-
 services:
   postgres:
+    image: postgres:15-alpine
     container_name: $POSTGRES_CONTAINER
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: aegisx_db
     ports:
-      - "$POSTGRES_PORT:5432"
+      - '$POSTGRES_PORT:5432'
     volumes:
       - $POSTGRES_VOLUME:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
+    image: redis:7-alpine
     container_name: $REDIS_CONTAINER
     ports:
-      - "$REDIS_PORT:6379"
+      - '$REDIS_PORT:6379'
+    command: redis-server --appendonly yes
     volumes:
       - $REDIS_VOLUME:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
+    image: dpage/pgadmin4:latest
     container_name: $PGADMIN_CONTAINER
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aegisx.local
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "$PGADMIN_PORT:80"
+      - '$PGADMIN_PORT:80'
+    depends_on:
+      - postgres
 
 volumes:
   $POSTGRES_VOLUME:
   $REDIS_VOLUME:
 EOF
 
-print_success "docker-compose.override.yml created with instance-specific ports and names"
+print_success "docker-compose.instance.yml created with instance-specific ports and names"
 
 # Check for port conflicts
 print_status "🔍 Checking for port conflicts..."
@@ -258,7 +306,7 @@ echo "$FOLDER_NAME:$POSTGRES_PORT:$REDIS_PORT:$API_PORT:$WEB_PORT:$ADMIN_PORT:$P
 print_success "Environment setup completed!"
 echo ""
 print_status "🚀 Next steps:"
-echo "1. Start services: docker-compose up -d"
+echo "1. Start services: pnpm run docker:up"
 echo "2. Run migrations: pnpm db:migrate"
 echo "3. Seed database: pnpm db:seed"  
 echo "4. Start development: pnpm dev"

@@ -63,10 +63,14 @@ pnpm dev
 
 ```bash
 # Start current instance services
-docker-compose up -d
+docker-compose -f docker-compose.instance.yml up -d
+# OR use npm scripts
+pnpm run docker:up
 
 # Stop current instance services
-docker-compose down
+docker-compose -f docker-compose.instance.yml down
+# OR use npm scripts
+pnpm run docker:down
 
 # View running containers
 docker ps --filter "name=aegisx"
@@ -109,7 +113,7 @@ cat ~/.aegisx-port-registry
 
 # Current instance config
 cat .env.local
-cat docker-compose.override.yml
+cat docker-compose.instance.yml
 ```
 
 ## 🔧 **Development Workflow**
@@ -184,7 +188,7 @@ pnpm setup
 
 ```bash
 # Regenerate config files
-rm -f .env.local docker-compose.override.yml
+rm -f .env.local docker-compose.instance.yml
 pnpm run setup:env
 
 # Check generated config
@@ -198,7 +202,7 @@ cat .env.local
 pnpm run db:reset
 
 # Complete fresh start
-docker-compose down -v
+pnpm run docker:down -v
 pnpm setup
 ```
 
@@ -207,7 +211,7 @@ pnpm setup
 ### **Auto-Generated Files (Git Ignored)**
 
 - ✅ `.env.local` - Instance-specific environment variables
-- ✅ `docker-compose.override.yml` - Container and port overrides
+- ✅ `docker-compose.instance.yml` - Complete instance-specific compose file
 
 ### **Committed Files**
 
@@ -236,7 +240,7 @@ _Ports calculated using hash algorithm for consistency_
 ./scripts/port-manager.sh stop-all
 ./scripts/port-manager.sh cleanup
 docker system prune -f
-rm -f .env.local docker-compose.override.yml
+rm -f .env.local docker-compose.instance.yml
 pnpm setup
 ```
 

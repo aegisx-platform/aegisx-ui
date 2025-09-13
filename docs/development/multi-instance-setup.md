@@ -120,26 +120,54 @@ POSTGRES_VOLUME=mpv_postgres_data
 REDIS_VOLUME=mpv_redis_data
 ```
 
-### **`docker-compose.override.yml` (Auto-generated)**
+### **`docker-compose.instance.yml` (Auto-generated)**
 
 ```yaml
-# Auto-generated Docker Compose override for instance: mpv
-version: '3.8'
+# Instance-specific Docker Compose file for: mpv
+# Generated on: 2025-09-13 09:15:30 +07 2025
 
 services:
   postgres:
+    image: postgres:15-alpine
     container_name: aegisx_mpv_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: aegisx_db
     ports:
       - '5433:5432'
     volumes:
       - mpv_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
+    image: redis:7-alpine
     container_name: aegisx_mpv_redis
     ports:
       - '6381:6379'
+    command: redis-server --appendonly yes
     volumes:
       - mpv_redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: aegisx_mpv_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aegisx.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5051:80'
+    depends_on:
+      - postgres
 
 volumes:
   mpv_postgres_data:
@@ -209,6 +237,7 @@ Node.js loads `.env.local` first, then falls back to `.env` for missing values.
 # Auto-generated instance files
 .env.local
 docker-compose.override.yml
+docker-compose.instance.yml
 ```
 
 ### **Why These Files Are Git-Ignored**
@@ -247,6 +276,10 @@ lsof -i :5433
 
 # Or stop all instances
 ./scripts/port-manager.sh stop-all
+
+# Remove old default containers that block ports
+docker stop aegisx_postgres aegisx_redis aegisx_pgadmin 2>/dev/null || true
+docker rm aegisx_postgres aegisx_redis aegisx_pgadmin 2>/dev/null || true
 ```
 
 ### **Container Name Conflicts**
@@ -279,8 +312,28 @@ pnpm run setup:env
 
 # Check generated configuration
 cat .env.local
-cat docker-compose.override.yml
+cat docker-compose.instance.yml
 ```
+
+### **Docker Compose Instance File Not Found**
+
+If `pnpm run docker:up` fails with "docker-compose.instance.yml not found":
+
+```bash
+# 1. Generate instance configuration
+pnpm run setup:env
+
+# 2. Check generated files
+ls -la docker-compose.instance.yml .env.local
+
+# 3. Start with instance file
+pnpm run docker:up
+
+# 4. Verify containers are using correct names and ports
+docker ps --filter "name=aegisx" --format "table {{.Names}}\t{{.Ports}}"
+```
+
+**Note**: Each instance uses a completely separate Docker Compose file with unique ports - no conflicts!
 
 ## 📚 **Advanced Usage**
 
