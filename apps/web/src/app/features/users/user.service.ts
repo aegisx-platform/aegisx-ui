@@ -1,5 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -72,6 +74,34 @@ export interface BulkUsersRequest {
 export interface BulkRoleChangeRequest {
   userIds: string[];
   roleId: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  avatarUrl?: string;
+  role: string;
+  status: string;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  bio?: string;
 }
 
 interface ApiResponse<T> {
@@ -396,5 +426,55 @@ export class UserService {
       this.errorSignal.set(error.message || 'Failed to change user roles');
       throw error;
     }
+  }
+
+  // Password change method
+  async changePassword(data: ChangePasswordRequest): Promise<boolean> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    try {
+      const response = await this.http
+        .post<ApiResponse<{ message: string }>>(`/api/profile/password`, data)
+        .toPromise();
+
+      if (response?.success) {
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      const errorMessage =
+        error.error?.error?.message ||
+        error.message ||
+        'Failed to change password';
+      this.errorSignal.set(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  // ===== PROFILE METHODS =====
+
+  getProfile() {
+    return this.http.get<ApiResponse<UserProfile>>(`/api/profile`).pipe(
+      map((response) => {
+        if (response.success && response.data) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to get profile');
+      }),
+    );
+  }
+
+  updateProfile(data: UpdateProfileRequest) {
+    return this.http.put<ApiResponse<UserProfile>>(`/api/profile`, data).pipe(
+      map((response) => {
+        if (response.success && response.data) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to update profile');
+      }),
+    );
   }
 }

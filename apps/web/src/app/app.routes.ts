@@ -52,6 +52,14 @@ export const appRoutes: Route[] = [
     ],
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('./features/user-profile/user-profile.component').then(
+        (m) => m.UserProfileComponent,
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'settings',
     loadComponent: () =>
       import('./features/settings/settings.component').then(
