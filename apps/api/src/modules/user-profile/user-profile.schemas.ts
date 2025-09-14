@@ -1,5 +1,23 @@
 import { Type, Static } from '@sinclair/typebox';
 import { ApiSuccessResponseSchema } from '../../schemas/base.schemas';
+// Import activity tracking schemas
+import {
+  ActivityLogSchema,
+  CreateActivityLogSchema,
+  GetActivityLogsQuerySchema,
+  ActivityLogsResponseSchema,
+  ActivitySessionSchema,
+  ActivitySessionsResponseSchema,
+  ActivityStatsSchema,
+  ActivityStatsResponseSchema,
+  ACTIVITY_ACTIONS
+} from './user-activity.schemas';
+// Import delete account schemas
+import {
+  DeleteAccountRequestSchema,
+  DeleteAccountResponseSchema,
+  DeleteAccountDataSchema,
+} from './delete-account.schemas';
 
 // Enums
 export const ThemeEnum = Type.Union([
@@ -97,6 +115,9 @@ export const UserProfileSchema = Type.Object({
   name: Type.String(),
   firstName: Type.Union([Type.String(), Type.Null()]),
   lastName: Type.Union([Type.String(), Type.Null()]),
+  bio: Type.Union([Type.String(), Type.Null()], {
+    description: 'User biography or description'
+  }),
   avatar: Type.Union([Type.String({ format: 'uri' }), Type.Null()]),
   role: UserRoleSchema,
   preferences: UserPreferencesSchema,
@@ -113,6 +134,10 @@ export const UserProfileUpdateRequestSchema = Type.Object({
   name: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
   firstName: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
   lastName: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
+  bio: Type.Optional(Type.String({ 
+    maxLength: 500, 
+    description: 'User biography or description (max 500 characters)' 
+  })),
   preferences: Type.Optional(Type.Partial(UserPreferencesSchema)),
 });
 
@@ -149,6 +174,26 @@ export const AvatarDeleteResponseSchema = ApiSuccessResponseSchema(
   AvatarDeleteDataSchema,
 );
 
+// Re-export activity tracking schemas (already imported above)
+export {
+  ActivityLogSchema,
+  CreateActivityLogSchema,
+  GetActivityLogsQuerySchema,
+  ActivityLogsResponseSchema,
+  ActivitySessionSchema,
+  ActivitySessionsResponseSchema,
+  ActivityStatsSchema,
+  ActivityStatsResponseSchema,
+  ACTIVITY_ACTIONS
+};
+
+// Re-export delete account schemas (already imported above)
+export {
+  DeleteAccountRequestSchema,
+  DeleteAccountResponseSchema,
+  DeleteAccountDataSchema,
+};
+
 // TypeScript types
 export type NotificationPreferences = Static<
   typeof NotificationPreferencesSchema
@@ -172,6 +217,11 @@ export type AvatarUploadResponse = Static<typeof AvatarUploadResponseSchema>;
 export type AvatarDeleteData = Static<typeof AvatarDeleteDataSchema>;
 export type AvatarDeleteResponse = Static<typeof AvatarDeleteResponseSchema>;
 
+// Delete account types
+export type DeleteAccountRequest = Static<typeof DeleteAccountRequestSchema>;
+export type DeleteAccountResponse = Static<typeof DeleteAccountResponseSchema>;
+export type DeleteAccountData = Static<typeof DeleteAccountDataSchema>;
+
 // Export schemas for registration
 export const userProfileSchemas = {
   // Main schemas
@@ -192,6 +242,21 @@ export const userProfileSchemas = {
   'avatar-delete-response': AvatarDeleteResponseSchema,
   'avatar-upload-data': AvatarUploadDataSchema,
   'avatar-delete-data': AvatarDeleteDataSchema,
+
+  // Activity tracking schemas
+  'activity-log': ActivityLogSchema,
+  'create-activity-log': CreateActivityLogSchema,
+  'get-activity-logs-query': GetActivityLogsQuerySchema,
+  'activity-logs-response': ActivityLogsResponseSchema,
+  'activity-session': ActivitySessionSchema,
+  'activity-sessions-response': ActivitySessionsResponseSchema,
+  'activity-stats': ActivityStatsSchema,
+  'activity-stats-response': ActivityStatsResponseSchema,
+
+  // Delete account schemas
+  'delete-account-request': DeleteAccountRequestSchema,
+  'delete-account-response': DeleteAccountResponseSchema,
+  'delete-account-data': DeleteAccountDataSchema,
 
   // Legacy compatibility
   userProfileResponse: UserProfileResponseSchema,

@@ -52,6 +52,10 @@ export class UserProfileService {
       if (updates.lastName !== undefined) {
         dbUpdates.last_name = updates.lastName.trim();
       }
+      
+      if (updates.bio !== undefined) {
+        dbUpdates.bio = updates.bio.trim() || null;
+      }
 
       // Update user basic info if provided
       if (Object.keys(dbUpdates).length > 0) {

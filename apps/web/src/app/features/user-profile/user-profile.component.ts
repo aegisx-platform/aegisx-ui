@@ -7,12 +7,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 import { ProfileInfoComponent } from './components/profile-info.component';
 import { ProfileSecurityComponent } from './components/profile-security.component';
 import { UserPreferencesComponent } from './components/user-preferences.component';
+import { ActivityLogComponent } from './components/activity-log';
 import { UserService } from '../users/user.service';
+import { AuthService } from '../../core/auth.service';
+import { DeleteAccountDialogComponent, DeleteAccountResult } from './components/delete-account-dialog.component';
 
 @Component({
   selector: 'ax-user-profile',
@@ -31,6 +35,7 @@ import { UserService } from '../users/user.service';
     ProfileInfoComponent,
     ProfileSecurityComponent,
     UserPreferencesComponent,
+    ActivityLogComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -44,24 +49,6 @@ import { UserService } from '../users/user.service';
             <p class="text-gray-600 dark:text-gray-400 mt-1">
               Manage your account information and preferences
             </p>
-          </div>
-          <div class="flex items-center space-x-2">
-            @if (hasUnsavedChanges()) {
-              <ax-alert type="info" class="mr-4">
-                You have unsaved changes
-              </ax-alert>
-            }
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="saveAllChanges()"
-              [disabled]="!hasUnsavedChanges() || isSaving()"
-            >
-              @if (isSaving()) {
-                <mat-icon class="animate-spin mr-2">sync</mat-icon>
-              }
-              Save Changes
-            </button>
           </div>
         </div>
       </div>
@@ -107,13 +94,6 @@ import { UserService } from '../users/user.service';
               <ng-template mat-tab-label>
                 <mat-icon class="mr-2">person</mat-icon>
                 <span>Profile Info</span>
-                @if (profileInfoHasChanges()) {
-                  <mat-icon
-                    class="ml-2 text-orange-500 text-sm"
-                    fontIcon="edit"
-                    matTooltip="This section has unsaved changes"
-                  ></mat-icon>
-                }
               </ng-template>
               <div class="tab-content">
                 <ax-profile-info
@@ -139,19 +119,23 @@ import { UserService } from '../users/user.service';
               <ng-template mat-tab-label>
                 <mat-icon class="mr-2">tune</mat-icon>
                 <span>Preferences</span>
-                @if (preferencesHasChanges()) {
-                  <mat-icon
-                    class="ml-2 text-orange-500 text-sm"
-                    fontIcon="edit"
-                    matTooltip="This section has unsaved changes"
-                  ></mat-icon>
-                }
               </ng-template>
               <div class="tab-content">
                 <ax-user-preferences
                   [userProfile]="userProfile()"
                   (preferencesChange)="onPreferencesChange($event)"
                 ></ax-user-preferences>
+              </div>
+            </mat-tab>
+
+            <!-- Activity Tab -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="mr-2">history</mat-icon>
+                <span>Activity</span>
+              </ng-template>
+              <div class="tab-content p-0">
+                <ax-activity-log></ax-activity-log>
               </div>
             </mat-tab>
 
@@ -163,32 +147,6 @@ import { UserService } from '../users/user.service';
               </ng-template>
               <div class="tab-content">
                 <div class="space-y-6">
-                  <!-- Account Activity -->
-                  <div>
-                    <h3
-                      class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100"
-                    >
-                      Account Activity
-                    </h3>
-                    <div class="text-center py-8">
-                      <mat-icon
-                        class="text-gray-400 mb-4"
-                        style="font-size: 48px; height: 48px; width: 48px;"
-                        >history</mat-icon
-                      >
-                      <h4
-                        class="text-lg font-medium text-gray-600 dark:text-gray-300"
-                      >
-                        Activity Log Coming Soon
-                      </h4>
-                      <p class="text-gray-500 dark:text-gray-400 mt-2">
-                        View your login history and account activities here.
-                      </p>
-                    </div>
-                  </div>
-
-                  <mat-divider></mat-divider>
-
                   <!-- Danger Zone -->
                   <div>
                     <h3
@@ -217,9 +175,9 @@ import { UserService } from '../users/user.service';
                           mat-stroked-button
                           color="warn"
                           (click)="confirmDeleteAccount()"
-                          [disabled]="true"
+                          [disabled]="isLoading()"
                         >
-                          Delete Account (Coming Soon)
+                          Delete Account
                         </button>
                       </div>
                     </div>
@@ -272,16 +230,17 @@ import { UserService } from '../users/user.service';
 export class UserProfileComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private userService = inject(UserService);
+  private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
   private destroy$ = new Subject<void>();
 
   selectedTabIndex = 0;
 
   // State signals
   isLoading = signal(false);
-  isSaving = signal(false);
   error = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
   userProfile = signal<any>(null);
-  profileChanges = signal<any>({});
 
   ngOnInit(): void {
     this.loadProfile();
@@ -314,11 +273,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   onProfileInfoChange(updatedProfile: any): void {
     // Update the profile data directly since ProfileInfoComponent now saves directly
     this.userProfile.set(updatedProfile);
-    // Clear any pending changes since profile was saved
-    this.profileChanges.update((current) => {
-      const { profile, ...rest } = current;
-      return rest;
-    });
   }
 
   onPreferencesChange(updatedPreferences: any): void {
@@ -329,67 +283,74 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       }
       return current;
     });
-    // Clear any pending preferences changes since they were saved
-    this.profileChanges.update((current) => {
-      const { preferences, ...rest } = current;
-      return rest;
+  }
+
+
+
+  confirmDeleteAccount(): void {
+    // Open confirmation dialog
+    this.openDeleteAccountDialog();
+  }
+
+  private openDeleteAccountDialog(): void {
+    const dialogRef = this.dialog.open(DeleteAccountDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      disableClose: true,
+      data: {
+        userEmail: this.userProfile()?.email
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteAccountResult | null) => {
+      if (result) {
+        this.deleteAccount(result);
+      }
     });
   }
 
-  hasUnsavedChanges(): boolean {
-    const changes = this.profileChanges();
-    return Object.keys(changes).length > 0;
-  }
-
-  profileInfoHasChanges(): boolean {
-    return false; // Profile info now saves directly, no pending changes
-  }
-
-  preferencesHasChanges(): boolean {
-    return !!this.profileChanges()?.preferences;
-  }
-
-  async saveAllChanges(): Promise<void> {
-    if (!this.hasUnsavedChanges()) return;
-
-    this.isSaving.set(true);
-
+  private async deleteAccount(dialogResult: DeleteAccountResult): Promise<void> {
     try {
-      const changes = this.profileChanges();
-
-      // Save profile information changes
-      if (changes.profile) {
-        await this.userService.updateProfile(changes.profile).toPromise();
-        // Reload profile to get updated data
-        this.loadProfile();
-      }
-
-      // Save preferences changes
-      if (changes.preferences) {
-        // TODO: Call API to save preferences changes when preferences API is implemented
-        console.log('Saving preferences changes:', changes.preferences);
-      }
-
-      // Clear changes after successful save
-      this.profileChanges.set({});
-
-      this.snackBar.open('Profile updated successfully', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'bottom',
+      this.isLoading.set(true);
+      this.errorMessage.set(null);
+      
+      // Call delete account API with dialog result
+      const response = await this.userService.deleteAccount({
+        confirmation: dialogResult.confirmation,
+        password: dialogResult.password,
+        reason: dialogResult.reason || 'User requested account deletion'
       });
+      
+      if (response.success) {
+        // Show success message with recovery information
+        this.snackBar.open(
+          `Account marked for deletion. Recovery available for ${response.data?.recoveryPeriod}. Logging out...`,
+          'OK',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-warning']
+          }
+        );
+        
+        // Wait a moment for user to see the message, then logout
+        setTimeout(() => {
+          this.authService.logout().subscribe({
+            next: () => {
+              // Logout successful, user will be redirected by AuthService
+            },
+            error: () => {
+              // Even if logout fails, clear local auth and redirect
+              window.location.href = '/auth/login';
+            }
+          });
+        }, 2000);
+      }
+      
     } catch (error: any) {
-      this.snackBar.open(error.message || 'Failed to save changes', 'Close', {
-        duration: 5000,
-        panelClass: ['error-snackbar'],
-      });
+      console.error('Failed to delete account:', error);
+      this.errorMessage.set(error.message || 'Failed to delete account. Please try again.');
     } finally {
-      this.isSaving.set(false);
+      this.isLoading.set(false);
     }
-  }
-
-  confirmDeleteAccount(): void {
-    // TODO: Implement account deletion with confirmation dialog
-    console.log('Delete account confirmation dialog would open here');
   }
 }

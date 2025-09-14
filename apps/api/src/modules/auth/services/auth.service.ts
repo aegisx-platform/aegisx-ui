@@ -41,6 +41,7 @@ export class AuthService {
       const existingUsername = await this.app
         .knex('users')
         .where('username', username)
+        .whereNull('deleted_at') // Exclude deleted users
         .first();
 
       if (existingUsername) {
@@ -112,6 +113,7 @@ export class AuthService {
       const userResult = await this.app
         .knex('users')
         .where('username', email)
+        .whereNull('deleted_at') // Exclude deleted users
         .first();
       if (userResult) {
         const roleResult = await this.app

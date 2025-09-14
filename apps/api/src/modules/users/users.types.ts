@@ -8,6 +8,12 @@ export interface User {
   lastLoginAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  deleted_at?: Date | null;
+  deletion_reason?: string | null;
+  recovery_deadline?: Date | null;
+  avatar?: string | null;
+  bio?: string | null;
+  isEmailVerified?: boolean;
 }
 
 export interface UserWithRole extends User {

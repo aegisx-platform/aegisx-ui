@@ -447,4 +447,64 @@ export class UsersService {
       },
     };
   }
+
+  // Password verification for account deletion
+  async verifyPassword(userId: string, password: string): Promise<boolean> {
+    const user = await this.usersRepository.findByIdWithPasswordForVerification(userId);
+    if (!user) {
+      return false;
+    }
+
+    return bcrypt.compare(password, user.password);
+  }
+
+  // Soft delete account
+  async softDeleteAccount(userId: string, metadata: {
+    reason?: string;
+    ip?: string;
+    userAgent?: string;
+  }): Promise<{
+    deletedAt: string;
+    recoveryDeadline: string;
+  }> {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+    }
+
+    if (user.deleted_at) {
+      throw new AppError('Account is already marked for deletion', 409, 'ACCOUNT_ALREADY_DELETED');
+    }
+
+    const now = new Date();
+    const recoveryDeadline = new Date(now);
+    recoveryDeadline.setDate(recoveryDeadline.getDate() + 30); // 30 days recovery period
+
+    const updateData = {
+      deleted_at: now,
+      recovery_deadline: recoveryDeadline,
+      deletion_reason: metadata.reason || null,
+      deleted_by_ip: metadata.ip || null,
+      deleted_by_user_agent: metadata.userAgent || null,
+    };
+
+    const success = await this.usersRepository.updateUserDeletionData(userId, updateData);
+    
+    if (!success) {
+      throw new AppError('Failed to delete account', 500, 'DELETE_FAILED');
+    }
+
+    return {
+      deletedAt: now.toISOString(),
+      recoveryDeadline: recoveryDeadline.toISOString(),
+    };
+  }
+
+  // Get user by ID (including deleted users) - overloaded method
+  async getUserByIdIncludeDeleted(userId: string, includeDeleted: boolean = false): Promise<UserWithRole | null> {
+    if (includeDeleted) {
+      return this.usersRepository.findByIdIncludeDeleted(userId);
+    }
+    return this.usersRepository.findById(userId);
+  }
 }
