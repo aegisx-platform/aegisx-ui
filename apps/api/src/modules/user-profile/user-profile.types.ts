@@ -5,6 +5,7 @@ export interface UserProfile {
   name: string;
   firstName?: string;
   lastName?: string;
+  bio?: string;
   avatar?: string;
   role: UserRole;
   preferences: UserPreferences;
@@ -51,6 +52,7 @@ export interface UserProfileUpdateRequest {
   name?: string;
   firstName?: string;
   lastName?: string;
+  bio?: string;
   preferences?: UserPreferences;
 }
 
@@ -88,6 +90,7 @@ export interface DatabaseUser {
   first_name: string;
   last_name: string;
   name?: string;
+  bio?: string;
   avatar_url?: string;
   status: string;
   email_verified: boolean;

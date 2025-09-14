@@ -1,5 +1,17 @@
 # Frontend Architecture Patterns
 
+## 🛡️ Authentication System
+
+**[Complete Authentication System Documentation →](./frontend/auth-system.md)**
+
+Modern Angular authentication system with:
+
+- **Signals-based state management** - Reactive auth state
+- **Proactive token refresh** - Auto-refresh before expiry
+- **Smart guards** - Wait for auth state resolution
+- **Secure interceptors** - Auto token attachment & 401 handling
+- **Loading states** - Proper UX feedback
+
 ## Angular Feature Module Pattern
 
 The frontend uses a feature-based module structure with smart and presentational components pattern.

@@ -87,6 +87,31 @@ export interface ChangePasswordRequest {
   confirmPassword: string;
 }
 
+export interface DeleteAccountRequest {
+  confirmation: string;
+  password: string;
+  reason?: string;
+}
+
+export interface DeleteAccountResponse {
+  success: boolean;
+  data?: {
+    message: string;
+    deletedAt: string;
+    recoveryPeriod: string;
+    recoveryDeadline: string;
+  };
+  error?: {
+    code: string;
+    message: string;
+    statusCode: number;
+  };
+  meta?: {
+    timestamp: string;
+    requestId: string;
+  };
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -601,5 +626,33 @@ export class UserService {
           throw new Error(response.error || 'Failed to update preferences');
         }),
       );
+  }
+
+  // Delete account method
+  async deleteAccount(data: DeleteAccountRequest): Promise<DeleteAccountResponse> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    try {
+      const response = await this.http
+        .delete<DeleteAccountResponse>(`/api/profile/delete`, {
+          body: data,
+        })
+        .toPromise();
+
+      if (response?.success) {
+        return response;
+      }
+      throw new Error(response?.error?.message || 'Account deletion failed');
+    } catch (error: any) {
+      const errorMessage =
+        error.error?.error?.message ||
+        error.message ||
+        'Failed to delete account';
+      this.errorSignal.set(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      this.loadingSignal.set(false);
+    }
   }
 }

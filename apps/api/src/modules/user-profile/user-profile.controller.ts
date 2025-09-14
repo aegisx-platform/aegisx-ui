@@ -54,6 +54,10 @@ export class UserProfileController {
         return reply.badRequest('Last name cannot be empty');
       }
 
+      if (updates.bio !== undefined && updates.bio.length > 500) {
+        return reply.badRequest('Bio cannot exceed 500 characters');
+      }
+
       const updatedProfile = await this.deps.userProfileService.updateUserProfile(userId, updates);
 
       if (!updatedProfile) {

@@ -323,6 +323,7 @@ export class ProfileInfoComponent implements OnChanges {
 
       this.profileForm.patchValue(profileData);
       this.originalValues = { ...profileData };
+
     }
   }
 
@@ -404,6 +405,7 @@ export class ProfileInfoComponent implements OnChanges {
 
       // Update original values to reflect saved state
       this.originalValues = { ...changes };
+
 
       // Emit the updated profile to parent component
       this.profileChange.emit(updatedProfile);

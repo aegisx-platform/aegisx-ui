@@ -6,7 +6,6 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Observable, map, take, catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,31 +14,18 @@ export class AuthGuard implements CanActivate {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  canActivate(
+  async canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    const isAuthenticated = this.authService.isAuthenticated();
+  ): Promise<boolean> {
+    // Wait for auth state to be determined
+    const isAuthenticated = await this.authService.waitForAuthState();
 
     if (isAuthenticated && !this.authService.isTokenExpired()) {
       return true;
     }
 
-    // Try to refresh token if expired
-    if (isAuthenticated && this.authService.isTokenExpired()) {
-      return this.authService.refreshToken().pipe(
-        map(() => true),
-        take(1),
-        catchError(() => {
-          this.router.navigate(['/login'], {
-            queryParams: { returnUrl: state.url },
-          });
-          return of(false);
-        }),
-      );
-    }
-
-    // Not authenticated, redirect to login
+    // Not authenticated or token expired, redirect to login
     this.router.navigate(['/login'], {
       queryParams: { returnUrl: state.url },
     });
@@ -54,14 +40,17 @@ export class GuestGuard implements CanActivate {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  canActivate(): boolean {
-    const isAuthenticated = this.authService.isAuthenticated();
+  async canActivate(): Promise<boolean> {
+    // Wait for auth state to be determined
+    const isAuthenticated = await this.authService.waitForAuthState();
 
     if (isAuthenticated && !this.authService.isTokenExpired()) {
+      // User is authenticated, redirect to dashboard
       this.router.navigate(['/dashboard']);
       return false;
     }
 
+    // User is not authenticated or token expired, allow access to login/register
     return true;
   }
 }

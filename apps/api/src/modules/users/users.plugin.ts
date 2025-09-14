@@ -28,6 +28,9 @@ export default fp(
     await fastify.register(usersRoutes, {
       controller: usersController,
     });
+
+    // Decorate fastify instance with service for other plugins
+    fastify.decorate('usersService', usersService);
   },
   {
     name: 'users-plugin',

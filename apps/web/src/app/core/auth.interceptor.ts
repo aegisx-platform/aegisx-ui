@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import {
   HttpInterceptorFn,
   HttpRequest,
@@ -6,7 +6,8 @@ import {
   HttpEvent,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, throwError, EMPTY } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
@@ -15,32 +16,51 @@ export const authInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
   const authService = inject(AuthService);
+  const router = inject(Router);
 
-  // Add auth headers if user is authenticated
-  const authHeaders = authService.getAuthHeaders();
-  const authReq =
-    Object.keys(authHeaders).length > 0
-      ? req.clone({
-          setHeaders: authHeaders,
-        })
-      : req;
+  // Skip auth requests to avoid circular calls
+  if (req.url.includes('/auth/')) {
+    return next(req);
+  }
+
+  // Get token from AuthService
+  const token = authService.getAccessToken();
+
+  // Add auth headers if token exists
+  const authReq = token
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    : req;
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       // Handle 401 errors by trying to refresh token
-      if (error.status === 401 && !req.url.includes('/auth/')) {
+      if (error.status === 401) {
+        console.log('401 error, attempting token refresh...');
+
         return authService.refreshToken().pipe(
-          switchMap(() => {
-            // Retry the original request with new token
-            const retryHeaders = authService.getAuthHeaders();
-            const retryReq = req.clone({
-              setHeaders: retryHeaders,
-            });
-            return next(retryReq);
+          switchMap((response) => {
+            console.log('Token refresh successful, retrying request');
+            const newToken = authService.getAccessToken();
+
+            if (newToken) {
+              // Retry the original request with new token
+              const retryReq = req.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${newToken}`,
+                },
+              });
+              return next(retryReq);
+            }
+            throw error;
           }),
-          catchError(() => {
-            // Refresh failed, redirect to login
-            return throwError(() => error);
+          catchError((refreshError) => {
+            console.log('Token refresh failed, redirecting to login');
+            router.navigate(['/login']);
+            return EMPTY; // Complete the stream silently
           }),
         );
       }
