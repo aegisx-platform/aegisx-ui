@@ -4,8 +4,19 @@ import { UserProfileRepository } from './user-profile.repository';
 import { AvatarService } from './services/avatar.service';
 import { UserProfileService } from './services/user-profile.service';
 import { UserProfileController } from './user-profile.controller';
+import { UserActivityRepository } from './user-activity.repository';
+import { UserActivityService } from './user-activity.service';
+import { UserActivityController } from './user-activity.controller';
+import { DeleteAccountController } from './delete-account.controller';
 import { userProfileRoutes } from './user-profile.routes';
 import { userProfileSchemas } from './user-profile.schemas';
+import { UsersService } from '../users/users.service';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersService: UsersService;
+  }
+}
 
 export interface UserProfilePluginOptions extends FastifyPluginOptions {
   prefix?: string;
@@ -31,6 +42,7 @@ async function userProfilePlugin(
 
   // Initialize dependencies
   const repository = new UserProfileRepository(fastify.knex);
+  const activityRepository = new UserActivityRepository(fastify.knex);
 
   const avatarService = new AvatarService({
     logger: fastify.log,
@@ -42,18 +54,30 @@ async function userProfilePlugin(
     logger: fastify.log,
   });
 
+  const activityService = new UserActivityService(activityRepository);
+
   const controller = new UserProfileController({
     userProfileService: service,
   });
 
+  const activityController = new UserActivityController(activityService);
+  
+  const deleteAccountController = new DeleteAccountController(
+    fastify.usersService,
+    activityService,
+  );
+
   // Register routes
   await fastify.register(userProfileRoutes, {
     controller,
+    activityController,
+    deleteAccountController,
     prefix: options.prefix || '/api',
   });
 
   // Decorate fastify instance with services (optional, for testing or other modules)
   fastify.decorate('userProfileService', service);
+  fastify.decorate('userActivityService', activityService);
   fastify.decorate('avatarService', avatarService);
 
   fastify.log.info('User Profile plugin registered successfully');
@@ -61,5 +85,5 @@ async function userProfilePlugin(
 
 export default fp(userProfilePlugin, {
   name: 'user-profile',
-  dependencies: ['knex-plugin', 'jwt-auth-plugin', 'schemas-plugin'],
+  dependencies: ['knex-plugin', 'jwt-auth-plugin', 'schemas-plugin', 'users-plugin'],
 });
