@@ -243,8 +243,14 @@ export class AppComponent implements OnInit {
   notifications = signal<Notification[]>([]);
   currentYear = new Date().getFullYear();
 
-  // Navigation Items (now from NavigationService)
-  navigation = computed(() => this.navigationService.navigationItems());
+  // Navigation Items (loaded only when layout is shown)
+  navigation = computed(() => {
+    if (this.shouldShowLayout()) {
+      // Load navigation only when layout should be shown
+      return this.navigationService.navigationItems();
+    }
+    return [];
+  });
 
   ngOnInit() {
     // Load theme preference
@@ -267,6 +273,11 @@ export class AppComponent implements OnInit {
           event.url.startsWith(route),
         );
         this.shouldShowLayout.set(!shouldHideLayout);
+
+        // Load navigation only when entering protected routes
+        if (!shouldHideLayout && this.authService.isAuthenticated()) {
+          this.navigationService.loadNavigation().subscribe();
+        }
       });
 
     // Check initial route
@@ -281,6 +292,11 @@ export class AppComponent implements OnInit {
       currentUrl.startsWith(route),
     );
     this.shouldShowLayout.set(!shouldHideLayout);
+
+    // Load navigation for initial protected route
+    if (!shouldHideLayout && this.authService.isAuthenticated()) {
+      this.navigationService.loadNavigation().subscribe();
+    }
 
     // Current user is now loaded from AuthService via computed signal
 

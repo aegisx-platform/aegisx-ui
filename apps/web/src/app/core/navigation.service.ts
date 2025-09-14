@@ -186,8 +186,8 @@ export class NavigationService {
   }));
 
   constructor() {
-    // Auto-load navigation on service initialization
-    this.loadNavigation().subscribe();
+    // Don't auto-load navigation - let layout components load when needed
+    // This prevents navigation API calls on login page
   }
 
   /**
