@@ -56,7 +56,6 @@ if [[ "$FOLDER_NAME" == "aegisx-starter" ]]; then
     API_PORT=3333
     WEB_PORT=4200
     ADMIN_PORT=4201
-    PGLADMIN_PORT=5050
     
     print_status "📍 Detected main repository - using default ports"
 else
@@ -78,7 +77,6 @@ else
         API_PORT=$((3333 + HASH + 1))
         WEB_PORT=$((4200 + HASH))
         ADMIN_PORT=$((4201 + HASH))
-        PGLADMIN_PORT=$((5050 + HASH + 1))
     else
         print_warning "⚠️  Folder name doesn't match expected pattern 'aegisx-starter-{suffix}'"
         print_warning "Using default ports with fallback suffix"
@@ -89,14 +87,12 @@ else
         API_PORT=3333
         WEB_PORT=4200
         ADMIN_PORT=4201
-        PGLADMIN_PORT=5050
     fi
 fi
 
 # Generate container names and volume names
 POSTGRES_CONTAINER="aegisx_${INSTANCE_NAME}_postgres"
 REDIS_CONTAINER="aegisx_${INSTANCE_NAME}_redis"
-PGLADMIN_CONTAINER="aegisx_${INSTANCE_NAME}_pgladmin"
 POSTGRES_VOLUME="${INSTANCE_NAME}_postgres_data"
 REDIS_VOLUME="${INSTANCE_NAME}_redis_data"
 
@@ -106,18 +102,16 @@ echo "  Redis: $REDIS_PORT"
 echo "  API: $API_PORT"
 echo "  Web: $WEB_PORT"
 echo "  Admin: $ADMIN_PORT"
-echo "  PgAdmin: $PGLADMIN_PORT"
 
 print_status "🐳 Container names:"
 echo "  PostgreSQL: $POSTGRES_CONTAINER"
 echo "  Redis: $REDIS_CONTAINER"
-echo "  PgAdmin: $PGLADMIN_CONTAINER"
 
 # Check for and handle old conflicting containers
 print_status "🧹 Checking for conflicting containers..."
 
 # Check if old default containers exist and are running
-OLD_CONTAINERS=(aegisx_postgres aegisx_redis aegisx_pgladmin)
+OLD_CONTAINERS=(aegisx_postgres aegisx_redis)
 FOUND_CONFLICTS=false
 
 for container in "${OLD_CONTAINERS[@]}"; do
@@ -133,8 +127,8 @@ done
 if [ "$FOUND_CONFLICTS" = true ]; then
     print_warning "Conflicting containers detected. These may block ports needed for this instance."
     echo "To avoid port conflicts, we recommend stopping old containers:"
-    echo "  docker stop aegisx_postgres aegisx_redis aegisx_pgladmin 2>/dev/null || true"
-    echo "  docker rm aegisx_postgres aegisx_redis aegisx_pgladmin 2>/dev/null || true"
+    echo "  docker stop aegisx_postgres aegisx_redis 2>/dev/null || true"
+    echo "  docker rm aegisx_postgres aegisx_redis 2>/dev/null || true"
     echo ""
     echo "Or use the port manager script: ./scripts/port-manager.sh stop-all"
     echo ""
@@ -174,14 +168,9 @@ ADMIN_PORT=$ADMIN_PORT
 WEB_URL=http://localhost:$WEB_PORT
 ADMIN_URL=http://localhost:$ADMIN_PORT
 
-# PgAdmin Configuration
-PGLADMIN_PORT=$PGLADMIN_PORT
-PGLADMIN_URL=http://localhost:$PGLADMIN_PORT
-
 # Docker Configuration
 POSTGRES_CONTAINER=$POSTGRES_CONTAINER
 REDIS_CONTAINER=$REDIS_CONTAINER
-PGLADMIN_CONTAINER=$PGLADMIN_CONTAINER
 POSTGRES_VOLUME=$POSTGRES_VOLUME
 REDIS_VOLUME=$REDIS_VOLUME
 EOF
@@ -228,16 +217,6 @@ services:
       timeout: 5s
       retries: 5
 
-  pgladmin:
-    image: dpage/pgladmin4:latest
-    container_name: $PGLADMIN_CONTAINER
-    environment:
-      PGLADMIN_DEFAULT_EMAIL: admin@aegisx.local
-      PGLADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - '$PGLADMIN_PORT:80'
-    depends_on:
-      - postgres
 
 volumes:
   $POSTGRES_VOLUME:
@@ -249,7 +228,7 @@ print_success "docker-compose.instance.yml created with instance-specific ports 
 # Check for port conflicts
 print_status "🔍 Checking for port conflicts..."
 
-PORTS_TO_CHECK=($POSTGRES_PORT $REDIS_PORT $API_PORT $WEB_PORT $ADMIN_PORT $PGLADMIN_PORT)
+PORTS_TO_CHECK=($POSTGRES_PORT $REDIS_PORT $API_PORT $WEB_PORT $ADMIN_PORT)
 CONFLICTS_FOUND=false
 
 for port in "${PORTS_TO_CHECK[@]}"; do
@@ -272,7 +251,7 @@ fi
 print_status "📊 Updating port registry..."
 
 PORT_REGISTRY_FILE="$HOME/.aegisx-port-registry"
-REGISTRY_ENTRY="$INSTANCE_NAME:$POSTGRES_PORT:$REDIS_PORT:$API_PORT:$WEB_PORT:$ADMIN_PORT:$PGLADMIN_PORT:$(date +'%Y-%m-%d_%H:%M')"
+REGISTRY_ENTRY="$INSTANCE_NAME:$POSTGRES_PORT:$REDIS_PORT:$API_PORT:$WEB_PORT:$ADMIN_PORT:$(date +'%Y-%m-%d_%H:%M')"
 
 # Remove existing entry for this instance
 if [ -f "$PORT_REGISTRY_FILE" ]; then
@@ -299,4 +278,3 @@ print_status "🔗 Your applications will be available at:"
 echo "  Web App: http://localhost:$WEB_PORT"
 echo "  Admin App: http://localhost:$ADMIN_PORT"
 echo "  API: http://localhost:$API_PORT"
-echo "  PgAdmin: http://localhost:$PGLADMIN_PORT"

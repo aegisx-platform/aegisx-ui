@@ -148,7 +148,6 @@ flowchart LR
     D --> G[API:<br/>3333 + 33 + 1 = 3367]
     D --> H[Web:<br/>4200 + 33 = 4233]
     D --> I[Admin:<br/>4201 + 33 = 4234]
-    D --> J[PgAdmin:<br/>5050 + 33 + 1 = 5084]
 
     style A fill:#e1f5fe
     style B fill:#f3e5f5
@@ -348,7 +347,6 @@ Redis:      6379-6479   (Base 6379 + 100 instances)
 API:        3333-3433   (Base 3333 + 100 instances)
 Web:        4200-4300   (Base 4200 + 100 instances)
 Admin:      4201-4301   (Base 4201 + 100 instances)
-PgAdmin:    5050-5150   (Base 5050 + 100 instances)
 ```
 
 ## 🐳 Docker Compose Instance Files
@@ -391,17 +389,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: aegisx_auth_fix_pgladmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@aegisx.local
-      PGLADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - '5051:80'
-    depends_on:
-      - postgres
 
 volumes:
   auth_fix_postgres_data:
@@ -474,13 +461,10 @@ ADMIN_PORT=4201
 WEB_URL=http://localhost:4200
 ADMIN_URL=http://localhost:4201
 
-# PgAdmin Configuration
-PGADMIN_PORT=5051
 
 # Docker Configuration
 POSTGRES_CONTAINER=aegisx_auth_fix_postgres
 REDIS_CONTAINER=aegisx_auth_fix_redis
-PGADMIN_CONTAINER=aegisx_auth_fix_pgadmin
 POSTGRES_VOLUME=auth_fix_postgres_data
 REDIS_VOLUME=auth_fix_redis_data
 ```
@@ -610,8 +594,8 @@ docker logs -f aegisx_payment_redis
 lsof -i :5433
 
 # Stop conflicting containers
-docker stop aegisx_postgres aegisx_redis aegisx_pgadmin 2>/dev/null || true
-docker rm aegisx_postgres aegisx_redis aegisx_pgadmin 2>/dev/null || true
+docker stop aegisx_postgres aegisx_redis 2>/dev/null || true
+docker rm aegisx_postgres aegisx_redis 2>/dev/null || true
 
 # Or use port manager
 ./scripts/port-manager.sh stop-all
