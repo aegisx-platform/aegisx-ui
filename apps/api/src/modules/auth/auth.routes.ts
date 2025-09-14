@@ -31,6 +31,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
           409: SchemaRefs.Conflict,
           500: SchemaRefs.ServerError,
         },
+        activityLog: {
+          enabled: true,
+          action: 'register',
+          description: 'User attempted to register a new account',
+          severity: 'info',
+          includeRequestData: false, // Don't log password
+          async: false, // Ensure registration events are logged synchronously
+        },
       },
       handler: authController.register,
     });
@@ -52,6 +60,15 @@ export default async function authRoutes(fastify: FastifyInstance) {
         200: SchemaRefs.module('auth', 'authResponse'),
         401: SchemaRefs.Unauthorized,
         500: SchemaRefs.ServerError,
+      },
+      activityLog: {
+        enabled: true,
+        action: 'login_attempt',
+        description: 'User attempted to log in',
+        severity: 'info',
+        includeRequestData: false, // Don't log password
+        async: false, // Ensure login events are logged synchronously
+        shouldLog: (request, reply) => true, // Log both success and failure
       },
     },
     handler: authController.login,
@@ -86,6 +103,13 @@ export default async function authRoutes(fastify: FastifyInstance) {
         200: SchemaRefs.module('auth', 'logoutResponse'),
         401: SchemaRefs.Unauthorized,
         500: SchemaRefs.ServerError,
+      },
+      activityLog: {
+        enabled: true,
+        action: 'logout',
+        description: 'User logged out',
+        severity: 'info',
+        async: true, // Logout events can be async
       },
     },
     preHandler: [fastify.authenticateJWT],

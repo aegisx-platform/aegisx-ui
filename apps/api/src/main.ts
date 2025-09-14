@@ -19,6 +19,7 @@ import redisPlugin from './plugins/redis.plugin';
 import responseHandlerPlugin from './plugins/response-handler.plugin';
 import schemasPlugin from './plugins/schemas.plugin';
 // import schemaEnforcementPlugin from './plugins/schema-enforcement.plugin';
+import { activityLoggingPlugin } from './plugins/activity-logging';
 import authPlugin from './modules/auth/auth.plugin';
 import authStrategiesPlugin from './modules/auth/strategies/auth.strategies';
 import defaultPlugin from './modules/default/default.plugin';
@@ -151,6 +152,21 @@ async function bootstrap() {
   // 11. Auth strategies
   await app.register(authStrategiesPlugin);
 
+  // 11.5. Activity logging (after auth but before feature modules)
+  await app.register(activityLoggingPlugin, {
+    config: {
+      enabled: process.env.ACTIVITY_LOGGING_ENABLED !== 'false',
+      autoLogErrors: true,
+      enableBatching: process.env.NODE_ENV === 'production',
+      batchSize: 20,
+      batchInterval: 5000,
+      defaultConfig: {
+        async: true,
+        skipSuccessfulGets: true,
+      },
+    },
+  });
+
   // 12. Swagger documentation (before routes so it can capture them)
   await app.register(swaggerPlugin);
 
@@ -167,11 +183,11 @@ async function bootstrap() {
   // Navigation module
   await app.register(navigationPlugin);
 
+  // Users management module (must be before user-profile)
+  await app.register(usersPlugin);
+
   // User Profile module
   await app.register(userProfilePlugin);
-
-  // Users management module
-  await app.register(usersPlugin);
 
   // Settings module
   await app.register(settingsPlugin);

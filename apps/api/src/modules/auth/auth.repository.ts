@@ -46,6 +46,7 @@ export class AuthRepository {
       .leftJoin('roles', 'user_roles.role_id', 'roles.id')
       .select('users.*', 'roles.name as role')
       .where('users.email', email)
+      .whereNull('users.deleted_at') // Exclude deleted users
       .first();
 
     return user ? this.transformUser(user) : null;
@@ -67,6 +68,7 @@ export class AuthRepository {
         'users.updated_at',
       )
       .where('users.id', id)
+      .whereNull('users.deleted_at') // Exclude deleted users
       .first();
 
     return user ? this.transformUser(user) : null;
