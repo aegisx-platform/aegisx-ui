@@ -103,13 +103,25 @@ export class SettingsQueryOptimizer {
       .select(
         'id',
         'key',
+        'namespace',
+        'category',
         'value',
+        'default_value',
         'label',
         'description',
-        'category',
-        'group',
         'data_type',
         'access_level',
+        'is_encrypted',
+        'is_readonly',
+        'is_hidden',
+        'validation_rules',
+        'ui_schema',
+        'sort_order',
+        'group',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
       );
 
     // Group in memory to avoid multiple queries

@@ -43,3 +43,21 @@ export interface UserListOptions {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
+
+export interface BulkOperationResult {
+  totalRequested: number;
+  successCount: number;
+  failureCount: number;
+  results: Array<{
+    userId: string;
+    success: boolean;
+    error?: {
+      code: string;
+      message: string;
+    };
+  }>;
+  summary: {
+    message: string;
+    hasFailures: boolean;
+  };
+}

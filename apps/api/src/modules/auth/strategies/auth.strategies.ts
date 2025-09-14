@@ -7,11 +7,12 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
   // Strategy 1: JWT Authentication
   fastify.decorate(
     'verifyJWT',
-    async function (request: FastifyRequest, _reply: FastifyReply) {
+    async function (request: FastifyRequest, reply: FastifyReply) {
       try {
         await request.jwtVerify();
-      } catch (_err) {
-        throw new Error('INVALID_TOKEN');
+      } catch (err) {
+        request.log.error({ error: err }, 'JWT verification failed');
+        return reply.unauthorized('Invalid or expired token');
       }
     },
   );

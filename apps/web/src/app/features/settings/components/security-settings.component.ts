@@ -5,6 +5,7 @@ import {
   ReactiveFormsModule,
   FormsModule,
   Validators,
+  AbstractControl,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserService } from '../../users/user.service';
 
 @Component({
   selector: 'ax-security-settings',
@@ -233,6 +235,105 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
       <mat-divider class="mb-8"></mat-divider>
 
+      <!-- Password Change -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Change Password
+        </h3>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="onPasswordChange()" class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Current Password</mat-label>
+            <input
+              matInput
+              formControlName="currentPassword"
+              type="password"
+              required
+            />
+            <mat-icon matSuffix>lock</mat-icon>
+            <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+              Current password is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>New Password</mat-label>
+            <input
+              matInput
+              formControlName="newPassword"
+              type="password"
+              required
+            />
+            <mat-icon matSuffix>lock_reset</mat-icon>
+            <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+              New password is required
+            </mat-error>
+            <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+              Password must be at least 8 characters
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Confirm New Password</mat-label>
+            <input
+              matInput
+              formControlName="confirmPassword"
+              type="password"
+              required
+            />
+            <mat-icon matSuffix>lock_reset</mat-icon>
+            <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+              Password confirmation is required
+            </mat-error>
+            <mat-error *ngIf="passwordForm.hasError('passwordMismatch')">
+              Passwords do not match
+            </mat-error>
+          </mat-form-field>
+
+          <div class="flex gap-2">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="passwordForm.invalid || isChangingPassword()"
+              class="flex-1"
+            >
+              @if (isChangingPassword()) {
+                <ng-container>
+                  <mat-icon class="mr-2">refresh</mat-icon>
+                  Changing...
+                </ng-container>
+              } @else {
+                <ng-container>
+                  <mat-icon class="mr-2">security</mat-icon>
+                  Change Password
+                </ng-container>
+              }
+            </button>
+            
+            <button
+              mat-button
+              type="button"
+              (click)="resetPasswordForm()"
+              [disabled]="isChangingPassword()"
+            >
+              Reset
+            </button>
+          </div>
+
+          @if (passwordChangeMessage()) {
+            <div class="p-3 rounded-md" [ngClass]="{
+              'bg-green-100 text-green-700': passwordChangeMessage()?.type === 'success',
+              'bg-red-100 text-red-700': passwordChangeMessage()?.type === 'error'
+            }">
+              {{ passwordChangeMessage()?.text }}
+            </div>
+          }
+        </form>
+      </div>
+
+      <mat-divider class="mb-8"></mat-divider>
+
       <!-- Security Headers -->
       <div>
         <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
@@ -309,9 +410,19 @@ export class SecuritySettingsComponent {
   @Output() settingsChange = new EventEmitter<any>();
 
   private fb = inject(FormBuilder);
+  private userService = inject(UserService);
 
   newIP = '';
   whitelistedIPs = signal<string[]>(['192.168.1.1', '10.0.0.1']);
+  
+  isChangingPassword = signal(false);
+  passwordChangeMessage = signal<{type: 'success' | 'error', text: string} | null>(null);
+
+  passwordForm = this.fb.group({
+    currentPassword: ['', [Validators.required]],
+    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', [Validators.required]],
+  }, { validators: this.passwordMatchValidator });
 
   securityForm = this.fb.group({
     minPasswordLength: [
@@ -382,5 +493,52 @@ export class SecuritySettingsComponent {
         whitelistedIPs: this.whitelistedIPs(),
       },
     });
+  }
+
+  passwordMatchValidator(form: AbstractControl) {
+    const newPassword = form.get('newPassword')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    
+    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+      return { passwordMismatch: true };
+    }
+    
+    return null;
+  }
+
+  async onPasswordChange(): Promise<void> {
+    if (this.passwordForm.invalid) return;
+
+    this.isChangingPassword.set(true);
+    this.passwordChangeMessage.set(null);
+
+    try {
+      const formValue = this.passwordForm.value;
+      
+      await this.userService.changePassword({
+        currentPassword: formValue.currentPassword!,
+        newPassword: formValue.newPassword!,
+        confirmPassword: formValue.confirmPassword!
+      });
+
+      this.passwordChangeMessage.set({
+        type: 'success',
+        text: 'Password changed successfully!'
+      });
+      
+      this.resetPasswordForm();
+    } catch (error: any) {
+      this.passwordChangeMessage.set({
+        type: 'error',
+        text: error.message || 'Failed to change password. Please try again.'
+      });
+    } finally {
+      this.isChangingPassword.set(false);
+    }
+  }
+
+  resetPasswordForm(): void {
+    this.passwordForm.reset();
+    this.passwordChangeMessage.set(null);
   }
 }

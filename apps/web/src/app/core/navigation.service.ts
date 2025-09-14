@@ -112,10 +112,17 @@ export class NavigationService {
       ],
     },
     {
-      id: 'settings',
-      title: 'Settings',
+      id: 'account',
+      title: 'Account',
       type: 'group',
       children: [
+        {
+          id: 'profile',
+          title: 'My Profile',
+          type: 'item',
+          icon: 'heroicons_outline:user-circle',
+          link: '/profile',
+        },
         {
           id: 'settings',
           title: 'Settings',
@@ -136,6 +143,13 @@ export class NavigationService {
           type: 'item',
           icon: 'heroicons_outline:cube',
           link: '/material-demo',
+        },
+        {
+          id: 'test-rbac-websocket',
+          title: 'RBAC WebSocket Test',
+          type: 'item',
+          icon: 'heroicons_outline:wifi',
+          link: '/test-rbac-websocket',
         },
         {
           id: 'docs',

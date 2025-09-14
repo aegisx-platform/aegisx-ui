@@ -5,6 +5,7 @@ import {
   UserUpdateData,
   UserListOptions,
   UserWithRole,
+  BulkOperationResult,
 } from './users.types';
 import { AppError } from '../../core/errors/app-error';
 
@@ -142,6 +143,67 @@ export class UsersService {
     }
   }
 
+  async changeSelfPassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<void> {
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      throw new AppError(
+        'New password and confirmation do not match',
+        400,
+        'PASSWORD_MISMATCH',
+      );
+    }
+
+    // Get user with password hash
+    const user = await this.usersRepository.findByIdWithPassword(userId);
+    if (!user) {
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!isCurrentPasswordValid) {
+      throw new AppError(
+        'Current password is incorrect',
+        400,
+        'INVALID_CURRENT_PASSWORD',
+      );
+    }
+
+    // Ensure new password is different from current
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new AppError(
+        'New password must be different from current password',
+        400,
+        'SAME_PASSWORD',
+      );
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update password
+    const success = await this.usersRepository.updatePassword(
+      userId,
+      hashedNewPassword,
+    );
+
+    if (!success) {
+      throw new AppError('Failed to update password', 500, 'UPDATE_FAILED');
+    }
+
+    // TODO: Invalidate all user sessions except current one
+    // This would require session management implementation
+  }
+
   async deleteUser(id: string, currentUserId: string): Promise<void> {
     // Prevent user from deleting themselves
     if (id === currentUserId) {
@@ -166,7 +228,223 @@ export class UsersService {
     }
   }
 
+  // Profile-specific methods
+  async getProfile(userId: string): Promise<any> {
+    const profile = await this.usersRepository.findProfileById(userId);
+    if (!profile) {
+      throw new AppError('Profile not found', 404, 'PROFILE_NOT_FOUND');
+    }
+    return profile;
+  }
+
+  async updateProfile(userId: string, data: {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    bio?: string;
+  }): Promise<any> {
+    // Check if username is taken (if username is being changed)
+    if (data.username) {
+      const existingUser = await this.usersRepository.findByUsername(data.username);
+      if (existingUser && existingUser.id !== userId) {
+        throw new AppError('Username is already taken', 400, 'USERNAME_TAKEN');
+      }
+    }
+
+    const updatedProfile = await this.usersRepository.updateProfile(userId, data);
+    if (!updatedProfile) {
+      throw new AppError('Profile not found', 404, 'PROFILE_NOT_FOUND');
+    }
+
+    return updatedProfile;
+  }
+
   async listRoles() {
     return this.usersRepository.getRoles();
+  }
+
+  /**
+   * Bulk activate users with proper error handling and business rules
+   */
+  async bulkActivateUsers(
+    userIds: string[],
+    currentUserId: string,
+  ): Promise<BulkOperationResult> {
+    return this.executeBulkOperation(userIds, currentUserId, 'activate', {
+      validateCurrentState: (user) => !user.isActive,
+      stateErrorCode: 'USER_ALREADY_ACTIVE',
+      stateErrorMessage: 'User is already active',
+      operation: async (userId) => {
+        await this.usersRepository.update(userId, { isActive: true });
+      },
+    });
+  }
+
+  /**
+   * Bulk deactivate users with proper error handling and business rules
+   */
+  async bulkDeactivateUsers(
+    userIds: string[],
+    currentUserId: string,
+  ): Promise<BulkOperationResult> {
+    return this.executeBulkOperation(userIds, currentUserId, 'deactivate', {
+      validateCurrentState: (user) => user.isActive,
+      stateErrorCode: 'USER_ALREADY_INACTIVE',
+      stateErrorMessage: 'User is already inactive',
+      operation: async (userId) => {
+        await this.usersRepository.update(userId, { isActive: false });
+      },
+    });
+  }
+
+  /**
+   * Bulk delete users (soft delete) with proper error handling and business rules
+   */
+  async bulkDeleteUsers(
+    userIds: string[],
+    currentUserId: string,
+  ): Promise<BulkOperationResult> {
+    return this.executeBulkOperation(userIds, currentUserId, 'delete', {
+      validateCurrentState: () => true, // Always allow if other validations pass
+      stateErrorCode: '',
+      stateErrorMessage: '',
+      operation: async (userId) => {
+        await this.usersRepository.delete(userId);
+      },
+    });
+  }
+
+  /**
+   * Bulk change user roles with proper error handling and business rules
+   */
+  async bulkChangeUserRoles(
+    userIds: string[],
+    roleId: string,
+    currentUserId: string,
+  ): Promise<BulkOperationResult> {
+    // Validate role exists first
+    const roles = await this.usersRepository.getRoles();
+    const targetRole = roles.find((r) => r.id === roleId);
+    if (!targetRole) {
+      throw new AppError('Target role not found', 400, 'ROLE_NOT_FOUND');
+    }
+
+    return this.executeBulkOperation(userIds, currentUserId, 'role-change', {
+      validateCurrentState: (user) => user.roleId !== roleId,
+      stateErrorCode: 'USER_ALREADY_HAS_ROLE',
+      stateErrorMessage: `User already has role: ${targetRole.name}`,
+      operation: async (userId) => {
+        await this.usersRepository.update(userId, { roleId });
+      },
+    });
+  }
+
+  /**
+   * Generic bulk operation executor with business rule validation
+   */
+  private async executeBulkOperation(
+    userIds: string[],
+    currentUserId: string,
+    operationType: 'activate' | 'deactivate' | 'delete' | 'role-change',
+    options: {
+      validateCurrentState: (user: UserWithRole) => boolean;
+      stateErrorCode: string;
+      stateErrorMessage: string;
+      operation: (userId: string) => Promise<void>;
+    },
+  ): Promise<BulkOperationResult> {
+    const results: BulkOperationResult['results'] = [];
+    let successCount = 0;
+    let failureCount = 0;
+
+    // Remove duplicates and validate input
+    const uniqueUserIds = [...new Set(userIds)];
+
+    for (const userId of uniqueUserIds) {
+      try {
+        // Check if user exists
+        const user = await this.usersRepository.findById(userId);
+        if (!user) {
+          results.push({
+            userId,
+            success: false,
+            error: {
+              code: 'USER_NOT_FOUND',
+              message: 'User not found',
+            },
+          });
+          failureCount++;
+          continue;
+        }
+
+        // Business rule: Cannot modify own account (for deactivate/delete)
+        if (
+          (operationType === 'deactivate' || operationType === 'delete') &&
+          userId === currentUserId
+        ) {
+          results.push({
+            userId,
+            success: false,
+            error: {
+              code:
+                operationType === 'delete'
+                  ? 'CANNOT_DELETE_SELF'
+                  : 'CANNOT_DEACTIVATE_SELF',
+              message:
+                operationType === 'delete'
+                  ? 'Cannot delete your own account'
+                  : 'Cannot deactivate your own account',
+            },
+          });
+          failureCount++;
+          continue;
+        }
+
+        // Business rule: Validate current state
+        if (!options.validateCurrentState(user)) {
+          results.push({
+            userId,
+            success: false,
+            error: {
+              code: options.stateErrorCode,
+              message: options.stateErrorMessage,
+            },
+          });
+          failureCount++;
+          continue;
+        }
+
+        // Execute the operation
+        await options.operation(userId);
+
+        results.push({
+          userId,
+          success: true,
+        });
+        successCount++;
+      } catch (error) {
+        results.push({
+          userId,
+          success: false,
+          error: {
+            code: 'OPERATION_FAILED',
+            message:
+              error instanceof Error ? error.message : 'Unknown error occurred',
+          },
+        });
+        failureCount++;
+      }
+    }
+
+    return {
+      totalRequested: uniqueUserIds.length,
+      successCount,
+      failureCount,
+      results,
+      summary: {
+        message: `Bulk ${operationType} completed with ${successCount} successes and ${failureCount} failures`,
+        hasFailures: failureCount > 0,
+      },
+    };
   }
 }

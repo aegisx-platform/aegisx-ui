@@ -1,5 +1,12 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpEventType,
+  HttpParams,
+  HttpRequest,
+} from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -45,6 +52,92 @@ interface GetUsersParams {
   search?: string;
   role?: string;
   status?: 'active' | 'inactive';
+}
+
+export interface BulkOperationResult {
+  totalRequested: number;
+  successCount: number;
+  failureCount: number;
+  results: Array<{
+    userId: string;
+    success: boolean;
+    error?: {
+      code: string;
+      message: string;
+    };
+  }>;
+  summary: {
+    message: string;
+    hasFailures: boolean;
+  };
+}
+
+export interface BulkUsersRequest {
+  userIds: string[];
+}
+
+export interface BulkRoleChangeRequest {
+  userIds: string[];
+  roleId: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  avatar?: string;
+  role: string;
+  status: string;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  preferences?: UserPreferences;
+}
+
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  bio?: string;
+}
+
+export interface UserPreferences {
+  theme: 'default' | 'dark' | 'light' | 'auto';
+  scheme: 'light' | 'dark' | 'auto';
+  layout: 'classic' | 'compact' | 'enterprise' | 'empty';
+  language: string;
+  timezone: string;
+  dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
+  timeFormat: '12h' | '24h';
+  notifications: {
+    email: boolean;
+    push: boolean;
+    desktop: boolean;
+    sound: boolean;
+  };
+  navigation: {
+    collapsed: boolean;
+    type: 'default' | 'compact' | 'horizontal';
+    position: 'left' | 'right' | 'top';
+  };
+}
+
+export interface AvatarUploadResponse {
+  avatar: string;
+  thumbnails: {
+    small: string;
+    medium: string;
+    large: string;
+  };
 }
 
 interface ApiResponse<T> {
@@ -275,5 +368,238 @@ export class UserService {
     this.selectedUserSignal.set(null);
     this.currentPageSignal.set(1);
     this.errorSignal.set(null);
+  }
+
+  // Bulk operations
+  async bulkActivateUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/activate`,
+          {
+            userIds,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk activate failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to activate users');
+      throw error;
+    }
+  }
+
+  async bulkDeactivateUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/deactivate`,
+          {
+            userIds,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk deactivate failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to deactivate users');
+      throw error;
+    }
+  }
+
+  async bulkDeleteUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(`${this.baseUrl}/bulk/delete`, {
+          userIds,
+        })
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk delete failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to delete users');
+      throw error;
+    }
+  }
+
+  async bulkChangeUserRoles(
+    userIds: string[],
+    roleId: string,
+  ): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/role-change`,
+          {
+            userIds,
+            roleId,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk role change failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to change user roles');
+      throw error;
+    }
+  }
+
+  // Password change method
+  async changePassword(data: ChangePasswordRequest): Promise<boolean> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    try {
+      const response = await this.http
+        .post<ApiResponse<{ message: string }>>(`/api/profile/password`, data)
+        .toPromise();
+
+      if (response?.success) {
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      const errorMessage =
+        error.error?.error?.message ||
+        error.message ||
+        'Failed to change password';
+      this.errorSignal.set(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  // ===== PROFILE METHODS =====
+
+  getProfile() {
+    return this.http.get<ApiResponse<UserProfile>>(`/api/profile`).pipe(
+      map((response) => {
+        if (response.success && response.data) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to get profile');
+      }),
+    );
+  }
+
+  updateProfile(data: UpdateProfileRequest) {
+    return this.http
+      .put<ApiResponse<UserProfile>>(`/api/profile`, data)
+      .pipe(
+        map((response) => {
+          if (response.success && response.data) {
+            return response.data;
+          }
+          throw new Error(response.error || 'Failed to update profile');
+        }),
+      );
+  }
+
+  // ===== AVATAR METHODS =====
+
+  uploadAvatar(
+    formData: FormData,
+    progressCallback?: (progress: number) => void,
+  ): Observable<ApiResponse<AvatarUploadResponse>> {
+    const req = new HttpRequest('POST', `/api/profile/avatar`, formData, {
+      reportProgress: true,
+    });
+
+    return this.http.request<ApiResponse<AvatarUploadResponse>>(req).pipe(
+      map((event) => {
+        if (event.type === HttpEventType.UploadProgress) {
+          // Calculate upload progress percentage
+          const progress = event.total
+            ? Math.round((100 * event.loaded) / event.total)
+            : 0;
+
+          if (progressCallback) {
+            progressCallback(progress);
+          }
+
+          // Return a dummy response for progress events
+          return {
+            success: false,
+            data: undefined,
+          } as ApiResponse<AvatarUploadResponse>;
+        } else if (event.type === HttpEventType.Response) {
+          // This is the actual response
+          const response = event.body as ApiResponse<AvatarUploadResponse>;
+          if (response.success && response.data) {
+            return response;
+          }
+          throw new Error(response.error || 'Failed to upload avatar');
+        }
+
+        // Return dummy response for other event types
+        return {
+          success: false,
+          data: undefined,
+        } as ApiResponse<AvatarUploadResponse>;
+      }),
+      filter((response) => response.success || response.data !== undefined),
+    );
+  }
+
+  deleteAvatar(): Observable<ApiResponse<{ message: string }>> {
+    return this.http
+      .delete<ApiResponse<{ message: string }>>(`/api/profile/avatar`)
+      .pipe(
+        map((response) => {
+          if (response.success) {
+            return response;
+          }
+          throw new Error(response.error || 'Failed to delete avatar');
+        }),
+      );
+  }
+
+  // ===== PREFERENCES METHODS =====
+
+  getPreferences() {
+    return this.http
+      .get<ApiResponse<UserPreferences>>(`/api/profile/preferences`)
+      .pipe(
+        map((response) => {
+          if (response.success && response.data) {
+            return response.data;
+          }
+          throw new Error(response.error || 'Failed to get preferences');
+        }),
+      );
+  }
+
+  updatePreferences(data: Partial<UserPreferences>) {
+    return this.http
+      .put<ApiResponse<UserPreferences>>(`/api/profile/preferences`, data)
+      .pipe(
+        map((response) => {
+          if (response.success && response.data) {
+            return response.data;
+          }
+          throw new Error(response.error || 'Failed to update preferences');
+        }),
+      );
   }
 }

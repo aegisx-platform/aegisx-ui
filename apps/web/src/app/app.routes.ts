@@ -52,6 +52,14 @@ export const appRoutes: Route[] = [
     ],
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('./features/user-profile/user-profile.component').then(
+        (m) => m.UserProfileComponent,
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'settings',
     loadComponent: () =>
       import('./features/settings/settings.component').then(
@@ -148,6 +156,13 @@ export const appRoutes: Route[] = [
         (m) => m.TestMaterialComponent,
       ),
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'test-rbac-websocket',
+    loadComponent: () =>
+      import('./test-rbac-websocket.component').then(
+        (m) => m.TestRbacWebsocketComponent,
+      ),
   },
   {
     path: '**',

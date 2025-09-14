@@ -92,6 +92,15 @@ export class UsersRepository {
     return user ? this.mapToUserWithRole(user) : null;
   }
 
+  async findByIdWithPassword(id: string): Promise<(User & { password: string }) | null> {
+    const user = await this.knex('users')
+      .select('*')
+      .where('id', id)
+      .first();
+
+    return user ? { ...this.mapToUser(user), password: user.password } : null;
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.knex('users').where('email', email).first();
 
@@ -228,6 +237,69 @@ export class UsersRepository {
       role: row.role,
       roleId: row.roleId,
     };
+  }
+
+  // Profile-specific methods
+  async findProfileById(id: string): Promise<any | null> {
+    const user = await this.knex('users')
+      .select(
+        'users.id',
+        'users.email', 
+        'users.username',
+        'users.first_name',
+        'users.last_name',
+        'users.bio',
+        'users.avatar_url',
+        'users.is_active',
+        'users.email_verified',
+        'users.created_at',
+        'users.updated_at',
+        'roles.name as role'
+      )
+      .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
+      .leftJoin('roles', 'user_roles.role_id', 'roles.id')
+      .where('users.id', id)
+      .first();
+
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      bio: user.bio,
+      avatarUrl: user.avatar_url,
+      role: user.role || 'user',
+      status: user.is_active ? 'active' : 'inactive',
+      emailVerified: user.email_verified || false,
+      createdAt: new Date(user.created_at),
+      updatedAt: new Date(user.updated_at),
+    };
+  }
+
+  async updateProfile(id: string, data: {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    bio?: string;
+  }): Promise<any | null> {
+    const updateData: any = {};
+    if (data.firstName !== undefined) updateData.first_name = data.firstName;
+    if (data.lastName !== undefined) updateData.last_name = data.lastName;
+    if (data.username !== undefined) updateData.username = data.username;
+    if (data.bio !== undefined) updateData.bio = data.bio;
+
+    const [user] = await this.knex('users')
+      .where('id', id)
+      .update(updateData)
+      .returning('*');
+
+    if (!user) return null;
+
+    // Return updated profile with role
+    return this.findProfileById(id);
   }
 
   async getRoles() {

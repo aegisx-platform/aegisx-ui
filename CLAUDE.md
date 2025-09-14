@@ -61,6 +61,58 @@ Keep commit messages clean and professional.
 
 See **[Universal Full-Stack Standard](./docs/development/universal-fullstack-standard.md)** for complete database-first development workflow that must be followed for every feature to prevent integration bugs.
 
+### Feature Development Standard (MANDATORY)
+
+**🚨 MUST follow Feature Development Standard for EVERY feature - NO EXCEPTIONS**
+
+- **See [Feature Development Standard](./docs/development/feature-development-standard.md)** for complete feature lifecycle from planning to completion
+- **ALWAYS create feature documentation before coding** using templates from `docs/features/templates/`
+- **Reserve resources** in [Resource Registry](./docs/features/RESOURCE_REGISTRY.md) before starting development
+- **Follow [Multi-Feature Workflow](./docs/development/multi-feature-workflow.md)** when multiple features are being developed simultaneously
+- **Update progress daily** in feature PROGRESS.md files
+- **Check [Feature Status Dashboard](./docs/features/README.md)** for coordination with other developers
+
+### API-First Development Policy (MANDATORY)
+
+**🚨 MUST follow API-First workflow for ALL feature development - NO EXCEPTIONS**
+
+**Before implementing ANY frontend component or making API calls:**
+
+1. **📋 CHECK API SPEC** - Review `docs/features/[feature]/API_CONTRACTS.md` thoroughly
+2. **🔍 VERIFY ENDPOINTS** - Confirm backend routes match the documented API spec exactly
+3. **🧪 TEST API ENDPOINTS** - Test actual API calls before implementing frontend logic
+4. **📝 VALIDATE SCHEMAS** - Ensure request/response schemas match TypeBox definitions
+5. **🔄 UPDATE DOCUMENTATION** - Update API docs if any changes are needed
+
+**API Spec Verification Rules:**
+
+- **NEVER assume endpoint URLs** - Always check the documented API contracts first
+- **NEVER implement frontend without backend API** - API must exist and work before frontend
+- **NEVER guess schema formats** - Use exact TypeBox schemas from documentation
+- **ALWAYS test with real data** - Use actual API responses, not mock data
+
+**If API spec missing or incorrect:**
+
+1. **STOP development immediately**
+2. **Ask user:** "API spec for [feature] is missing/incorrect. Should I update the spec or fix the implementation?"
+3. **Wait for explicit direction**
+4. **Update either spec or implementation as instructed**
+
+**Example API-First Workflow:**
+
+```bash
+# 1. Check feature API contracts
+cat docs/features/user-profile/API_CONTRACTS.md
+
+# 2. Verify backend routes exist
+grep -r "GET /api/profile/preferences" apps/api/src/
+
+# 3. Test API endpoint
+curl -X GET http://localhost:3333/api/profile/preferences
+
+# 4. Only then implement frontend service
+```
+
 ### Quality Assurance Workflow (MANDATORY)
 
 **🚨 MUST run QA Checklist after every code change - NO EXCEPTIONS**
@@ -112,6 +164,69 @@ function createRegisterRequestData() {
 
 **Always use `pnpm` commands, never use `npm` or `yarn` commands for dependencies**
 
+## 🏗️ Multi-Instance Development Setup
+
+**When working on multiple features simultaneously (cloned repos):**
+
+### 📋 Quick Setup (One Command)
+
+```bash
+# Auto-configure ports and containers based on folder name
+pnpm setup
+# This runs: setup-env.sh + docker-compose up + migrations + seeds
+```
+
+### 🔧 Manual Setup Steps
+
+```bash
+# 1. Configure instance-specific environment
+pnpm run setup:env
+
+# 2. Start services with unique ports/containers
+pnpm run docker:up
+
+# 3. Initialize database
+pnpm run db:migrate && pnpm run db:seed
+```
+
+### 📊 Port Assignment Strategy
+
+- **Main repo (aegisx-starter)**: Default ports (5432, 6380, 3333, 4200)
+- **Feature repos (aegisx-starter-{name})**: Auto-assigned unique ports
+- **Examples**:
+  - `aegisx-starter-mpv` → PostgreSQL: 5433, Redis: 6381, API: 3334
+  - `aegisx-starter-rbac` → PostgreSQL: 5434, Redis: 6382, API: 3335
+
+### 🛠️ Instance Management Commands
+
+```bash
+# View all instances and their ports
+./scripts/port-manager.sh list
+
+# Check for port conflicts
+./scripts/port-manager.sh conflicts
+
+# Stop specific instance
+./scripts/port-manager.sh stop aegisx-starter-mpv
+
+# Stop all instances
+./scripts/port-manager.sh stop-all
+
+# Show running services
+./scripts/port-manager.sh running
+
+# Clean up unused containers/volumes
+./scripts/port-manager.sh cleanup
+```
+
+### 🎯 Benefits
+
+- ✅ **Isolated environments** - Each feature has its own database
+- ✅ **No port conflicts** - Auto-assigned unique ports
+- ✅ **Parallel development** - Work on multiple features simultaneously
+- ✅ **Easy switching** - Stop/start instances as needed
+- ✅ **Consistent naming** - Folder name determines configuration
+
 ## Quick Navigation
 
 ### 🚀 Start Here
@@ -122,6 +237,10 @@ function createRegisterRequestData() {
 
 - **[🚨 Current Project Status](./PROJECT_STATUS.md)** - Session recovery & current progress
 - **[📚 Complete Documentation](./docs/)** - Organized documentation hub
+- **[📊 Feature Status Dashboard](./docs/features/README.md)** - Central feature development tracking
+- **[📋 Feature Development Standard](./docs/development/feature-development-standard.md)** - **MANDATORY** feature lifecycle
+- **[🤝 Multi-Feature Workflow](./docs/development/multi-feature-workflow.md)** - Parallel development coordination
+- **[📝 Resource Registry](./docs/features/RESOURCE_REGISTRY.md)** - Reserve resources to prevent conflicts
 - **[📊 Feature Tracking System](./docs/development/feature-tracking.md)** - Track development progress
 - **[🚀 Quick Commands](./docs/development/quick-commands.md)** - Claude command reference (/feature, /status, etc.)
 - **[🏗️ Project Setup](./docs/getting-started/project-setup.md)** - Bootstrap guide
@@ -160,7 +279,7 @@ pnpm install
 cp .env.example .env
 
 # Start databases
-docker-compose up -d postgres redis
+pnpm run docker:up
 
 # Run migrations
 npm run db:migrate
@@ -174,15 +293,43 @@ nx run-many --target=serve --projects=api,web
 
 ## 📋 Most Used Commands
 
-| Command      | Description                      | Actual Command                                  |
-| ------------ | -------------------------------- | ----------------------------------------------- |
-| **Install**  | Install dependencies (USE YARN!) | `pnpm install`                                  |
-| **DB Setup** | Run migrations & seeds           | `pnpm db:migrate && pnpm db:seed`               |
-| **Develop**  | Start dev servers                | `nx run-many --target=serve --projects=api,web` |
-| **Test**     | Run all tests                    | `nx run-many --target=test --all`               |
-| **E2E**      | Run E2E tests                    | `nx e2e e2e`                                    |
-| **Build**    | Build for production             | `nx run-many --target=build --all`              |
-| **Docker**   | Start services                   | `docker-compose up -d`                          |
+| Command       | Description                      | Actual Command                                  |
+| ------------- | -------------------------------- | ----------------------------------------------- |
+| **Install**   | Install dependencies (USE PNPM!) | `pnpm install`                                  |
+| **DB Setup**  | Run migrations & seeds           | `pnpm db:migrate && pnpm db:seed`               |
+| **Develop**   | Start dev servers                | `nx run-many --target=serve --projects=api,web` |
+| **Test**      | Run all tests                    | `nx run-many --target=test --all`               |
+| **E2E**       | Run E2E tests                    | `nx e2e e2e`                                    |
+| **Build**     | Build for production             | `nx run-many --target=build --all`              |
+| **Docker**    | Start services                   | `pnpm run docker:up`                            |
+| **Docker PS** | Show current instance containers | `pnpm run docker:ps`                            |
+
+## 🚀 Feature Development Commands
+
+| Command       | Description              | Actual Command                                              |
+| ------------- | ------------------------ | ----------------------------------------------------------- |
+| **Start**     | Start new feature        | `./scripts/feature-toolkit.sh start [name] [priority]`      |
+| **Status**    | Check feature progress   | `./scripts/feature-toolkit.sh status [name]`                |
+| **Progress**  | Update feature progress  | `./scripts/feature-toolkit.sh progress [name] "[task]" [%]` |
+| **Complete**  | Mark feature complete    | `./scripts/feature-toolkit.sh complete [name]`              |
+| **Dashboard** | Show all features        | `./scripts/feature-toolkit.sh dashboard`                    |
+| **Conflicts** | Check resource conflicts | `./scripts/feature-toolkit.sh conflicts [name]`             |
+
+## 🐳 Multi-Instance Docker Commands
+
+| Command    | Description                   | Actual Command          |
+| ---------- | ----------------------------- | ----------------------- |
+| **Up**     | Start instance services       | `pnpm run docker:up`    |
+| **Down**   | Stop instance services        | `pnpm run docker:down`  |
+| **Status** | Show instance containers      | `pnpm run docker:ps`    |
+| **Reset**  | Reset instance (down+up+data) | `pnpm run docker:reset` |
+
+### Quick Aliases (add to ~/.bashrc or ~/.zshrc)
+
+```bash
+source .feature-aliases  # Load feature command shortcuts
+# Then use: fs, fstat, fprog, fcomp, fdash
+```
 
 ## 🚀 Project Structure
 

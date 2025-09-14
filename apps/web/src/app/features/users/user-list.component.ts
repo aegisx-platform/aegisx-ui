@@ -17,8 +17,10 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AegisxCardComponent } from '@aegisx/ui';
-import { UserService } from './user.service';
+import { UserService, BulkOperationResult } from './user.service';
 import { UserFormDialogComponent } from './user-form-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.component';
 
@@ -43,6 +45,8 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    MatCheckboxModule,
+    MatTooltipModule,
     AegisxCardComponent,
   ],
   template: `
@@ -133,6 +137,79 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
         </div>
       </ax-card>
 
+      <!-- Bulk Actions Bar -->
+      @if (selectedUsers().length > 0) {
+        <ax-card
+          [appearance]="'elevated'"
+          class="mb-3 bg-blue-50 border-blue-200"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <mat-icon class="text-blue-600">fact_check</mat-icon>
+              <span class="font-medium text-blue-800">
+                {{ selectedUsers().length }} user(s) selected
+              </span>
+              <button
+                mat-text-button
+                color="primary"
+                (click)="clearSelection()"
+              >
+                Clear Selection
+              </button>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <button
+                mat-raised-button
+                color="primary"
+                [disabled]="bulkLoading()"
+                (click)="openBulkActivateDialog()"
+                matTooltip="Activate selected users"
+              >
+                <mat-icon>check_circle</mat-icon>
+                Activate
+              </button>
+
+              <button
+                mat-raised-button
+                color="warn"
+                [disabled]="bulkLoading()"
+                (click)="openBulkDeactivateDialog()"
+                matTooltip="Deactivate selected users"
+              >
+                <mat-icon>block</mat-icon>
+                Deactivate
+              </button>
+
+              <button
+                mat-button
+                [matMenuTriggerFor]="bulkMenu"
+                [disabled]="bulkLoading()"
+              >
+                <mat-icon>more_vert</mat-icon>
+                More Actions
+              </button>
+
+              <mat-menu #bulkMenu="matMenu">
+                <button mat-menu-item (click)="openBulkRoleChangeDialog()">
+                  <mat-icon>manage_accounts</mat-icon>
+                  Change Role
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="openBulkDeleteDialog()">
+                  <mat-icon class="text-red-600">delete</mat-icon>
+                  <span class="text-red-600">Delete Users</span>
+                </button>
+              </mat-menu>
+
+              @if (bulkLoading()) {
+                <mat-spinner [diameter]="24"></mat-spinner>
+              }
+            </div>
+          </div>
+        </ax-card>
+      }
+
       <!-- Users Table -->
       <ax-card [appearance]="'elevated'">
         @if (loading()) {
@@ -175,7 +252,11 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
                     color="primary"
                   ></mat-slide-toggle>
                 </th>
-                <td mat-cell *matCellDef="let user">
+                <td
+                  mat-cell
+                  *matCellDef="let user"
+                  (click)="$event.stopPropagation()"
+                >
                   <mat-slide-toggle
                     [checked]="isSelected(user)"
                     (change)="toggleSelection(user)"
@@ -187,7 +268,12 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
               <!-- User Info Column -->
               <ng-container matColumnDef="user">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
-                <td mat-cell *matCellDef="let user">
+                <td
+                  mat-cell
+                  *matCellDef="let user"
+                  class="cursor-pointer"
+                  (click)="viewUser(user)"
+                >
                   <div class="flex items-center space-x-3 py-2">
                     <div
                       class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center"
@@ -229,7 +315,11 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
               <!-- Status Column -->
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let user">
+                <td
+                  mat-cell
+                  *matCellDef="let user"
+                  (click)="$event.stopPropagation()"
+                >
                   <mat-slide-toggle
                     [checked]="user.isActive"
                     (change)="toggleUserStatus(user)"
@@ -259,7 +349,12 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
                 <th mat-header-cell *matHeaderCellDef class="text-right">
                   Actions
                 </th>
-                <td mat-cell *matCellDef="let user" class="text-right">
+                <td
+                  mat-cell
+                  *matCellDef="let user"
+                  class="text-right"
+                  (click)="$event.stopPropagation()"
+                >
                   <button mat-icon-button [matMenuTriggerFor]="menu">
                     <mat-icon>more_vert</mat-icon>
                   </button>
@@ -296,8 +391,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
               <tr
                 mat-row
                 *matRowDef="let row; columns: displayedColumns"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                (click)="viewUser(row)"
+                class="hover:bg-gray-50 dark:hover:bg-gray-800"
               ></tr>
 
               <!-- No data row -->
@@ -407,6 +501,7 @@ export class UserListComponent implements OnInit {
 
   // Selection
   selectedUsers = signal<any[]>([]);
+  bulkLoading = signal(false);
 
   // Table columns
   displayedColumns: string[] = [
@@ -590,49 +685,194 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  // Bulk actions
-  bulkActivate(): void {
-    // Implement bulk activate
-    this.snackBar.open(
-      `${this.selectedUsers().length} users activated`,
-      'Close',
-      { duration: 3000 },
-    );
+  clearSelection(): void {
     this.selectedUsers.set([]);
   }
 
-  bulkDeactivate(): void {
-    // Implement bulk deactivate
-    this.snackBar.open(
-      `${this.selectedUsers().length} users deactivated`,
-      'Close',
-      { duration: 3000 },
-    );
-    this.selectedUsers.set([]);
-  }
-
-  bulkDelete(): void {
+  // Bulk action dialog methods
+  openBulkActivateDialog(): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Delete Multiple Users',
-        message: `Are you sure you want to delete ${this.selectedUsers().length} users?`,
-        confirmText: 'Delete All',
+        title: 'Activate Users',
+        message: `Are you sure you want to activate ${this.selectedUsers().length} user(s)?`,
+        confirmText: 'Activate',
+        confirmColor: 'primary',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.bulkActivate();
+      }
+    });
+  }
+
+  openBulkDeactivateDialog(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Deactivate Users',
+        message: `Are you sure you want to deactivate ${this.selectedUsers().length} user(s)?`,
+        confirmText: 'Deactivate',
         confirmColor: 'warn',
       },
     });
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        // Implement bulk delete
-        this.snackBar.open(
-          `${this.selectedUsers().length} users deleted`,
-          'Close',
-          { duration: 3000 },
-        );
-        this.selectedUsers.set([]);
+        this.bulkDeactivate();
       }
     });
+  }
+
+  openBulkDeleteDialog(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Users',
+        message: `Are you sure you want to delete ${this.selectedUsers().length} user(s)? This action cannot be undone.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.bulkDelete();
+      }
+    });
+  }
+
+  async openBulkRoleChangeDialog(): Promise<void> {
+    try {
+      const roles = await this.userService.getRoles();
+
+      // TODO: Create proper role selection dialog component
+      // For now, using a simple prompt
+      const roleNames = roles.map((r) => `${r.name} (${r.id})`).join('\n');
+      const selectedRole = prompt(
+        `Select a role:\n${roleNames}\n\nEnter role ID:`,
+      );
+
+      if (selectedRole) {
+        await this.bulkChangeRoles(selectedRole);
+      }
+    } catch (error) {
+      this.snackBar.open('Failed to load roles', 'Close', { duration: 3000 });
+    }
+  }
+
+  // Bulk actions
+  async bulkActivate(): Promise<void> {
+    if (this.selectedUsers().length === 0) return;
+
+    this.bulkLoading.set(true);
+    try {
+      const userIds = this.selectedUsers().map((user) => user.id);
+      const result = await this.userService.bulkActivateUsers(userIds);
+
+      this.showBulkOperationResult(result, 'Activate');
+      this.selectedUsers.set([]);
+    } catch (error: any) {
+      this.snackBar.open(error.message || 'Failed to activate users', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+    } finally {
+      this.bulkLoading.set(false);
+    }
+  }
+
+  async bulkDeactivate(): Promise<void> {
+    if (this.selectedUsers().length === 0) return;
+
+    this.bulkLoading.set(true);
+    try {
+      const userIds = this.selectedUsers().map((user) => user.id);
+      const result = await this.userService.bulkDeactivateUsers(userIds);
+
+      this.showBulkOperationResult(result, 'Deactivate');
+      this.selectedUsers.set([]);
+    } catch (error: any) {
+      this.snackBar.open(
+        error.message || 'Failed to deactivate users',
+        'Close',
+        { duration: 3000, panelClass: ['error-snackbar'] },
+      );
+    } finally {
+      this.bulkLoading.set(false);
+    }
+  }
+
+  async bulkDelete(): Promise<void> {
+    if (this.selectedUsers().length === 0) return;
+
+    this.bulkLoading.set(true);
+    try {
+      const userIds = this.selectedUsers().map((user) => user.id);
+      const result = await this.userService.bulkDeleteUsers(userIds);
+
+      this.showBulkOperationResult(result, 'Delete');
+      this.selectedUsers.set([]);
+    } catch (error: any) {
+      this.snackBar.open(error.message || 'Failed to delete users', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+    } finally {
+      this.bulkLoading.set(false);
+    }
+  }
+
+  async bulkChangeRoles(roleId: string): Promise<void> {
+    if (this.selectedUsers().length === 0 || !roleId) return;
+
+    this.bulkLoading.set(true);
+    try {
+      const userIds = this.selectedUsers().map((user) => user.id);
+      const result = await this.userService.bulkChangeUserRoles(
+        userIds,
+        roleId,
+      );
+
+      this.showBulkOperationResult(result, 'Role Change');
+      this.selectedUsers.set([]);
+    } catch (error: any) {
+      this.snackBar.open(
+        error.message || 'Failed to change user roles',
+        'Close',
+        { duration: 3000, panelClass: ['error-snackbar'] },
+      );
+    } finally {
+      this.bulkLoading.set(false);
+    }
+  }
+
+  private showBulkOperationResult(result: any, operationType: string): void {
+    const { successCount, failureCount, summary } = result;
+
+    if (failureCount === 0) {
+      // All successful
+      this.snackBar.open(
+        `${operationType} completed successfully for ${successCount} user(s)`,
+        'Close',
+        { duration: 3000, panelClass: ['success-snackbar'] },
+      );
+    } else if (successCount === 0) {
+      // All failed
+      this.snackBar.open(`${operationType} failed for all users`, 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+    } else {
+      // Partial success
+      this.snackBar.open(
+        `${operationType}: ${successCount} successful, ${failureCount} failed`,
+        'View Details',
+        { duration: 7000, panelClass: ['warning-snackbar'] },
+      );
+    }
   }
 
   exportUsers(): void {
