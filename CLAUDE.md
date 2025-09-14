@@ -46,6 +46,31 @@ Keep commit messages clean and professional.
 - **This includes temporary files, old code, or seemingly unused files**
 - When refactoring or cleaning up, list files to be deleted and wait for confirmation
 
+### Feature Documentation Policy (MANDATORY)
+
+**🚨 ALL new features MUST have comprehensive documentation - NO EXCEPTIONS**
+
+**For EVERY new feature, create a complete documentation package in `/docs/features/[feature-name]/`:**
+
+1. **README.md** - Feature overview and quick start guide
+2. **USER_GUIDE.md** - End-user guide for using the feature
+3. **DEVELOPER_GUIDE.md** - Technical guide for developers
+4. **API_REFERENCE.md** - Complete API documentation (if applicable)
+5. **ARCHITECTURE.md** - System architecture and design decisions
+6. **DEPLOYMENT_GUIDE.md** - Production deployment instructions
+7. **TROUBLESHOOTING.md** - Common issues and solutions
+8. **DOCUMENTATION_INDEX.md** - Navigation & learning guide
+
+**Documentation Standards:**
+- **Professional grade** - Suitable for enterprise environments
+- **Multiple audiences** - End users, developers, administrators, architects
+- **Practical examples** - Working code examples and step-by-step guides
+- **Complete coverage** - All aspects of the feature documented
+- **Cross-referenced** - Easy navigation between related documents
+- **Maintainable** - Well-organized for future updates
+
+**Example Reference:** See `/docs/features/activity-tracking/` for the complete documentation standard that should be followed for all new features.
+
 ### Schema Standards (MANDATORY)
 
 **🚨 ALL API routes MUST use TypeBox schemas - NO EXCEPTIONS**
