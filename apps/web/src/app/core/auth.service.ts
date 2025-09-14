@@ -48,11 +48,13 @@ export class AuthService {
   private _currentUser = signal<User | null>(null);
   private _isAuthenticated = signal<boolean>(false);
   private _accessToken = signal<string | null>(null);
+  private _isLoading = signal<boolean>(false);
 
   // Public readonly signals
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = this._isAuthenticated.asReadonly();
   readonly accessToken = this._accessToken.asReadonly();
+  readonly isLoading = this._isLoading.asReadonly();
 
   // Computed signals
   readonly userDisplayName = computed(() => {
@@ -80,26 +82,39 @@ export class AuthService {
   }
 
   private initializeAuth(): void {
+    this._isLoading.set(true);
     const token = this.getStoredToken();
-    if (token) {
+
+    if (token && !this.isTokenExpiredStatic(token)) {
       this._accessToken.set(token);
       this.loadUserProfile();
+    } else {
+      // Token expired or invalid, clear it
+      if (token) {
+        this.removeStoredToken();
+      }
+      this._isLoading.set(false);
     }
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
+    this._isLoading.set(true);
     return this.http
       .post<AuthResponse>(`${environment.apiUrl}/api/auth/login`, credentials, {
         withCredentials: true, // Include cookies for refresh token
       })
       .pipe(
         tap((response) => {
+          this._isLoading.set(false);
           if (response.success && response.data) {
             this.setAuthData(response.data);
             this.router.navigate(['/dashboard']);
           }
         }),
-        catchError(this.handleAuthError.bind(this)),
+        catchError((error) => {
+          this._isLoading.set(false);
+          return this.handleAuthError(error);
+        }),
       );
   }
 
@@ -165,14 +180,13 @@ export class AuthService {
 
   private loadUserProfile(): void {
     const token = this._accessToken();
-    console.log('Loading user profile with token', token);
     if (token) {
       // Load full profile from API
       this.http.get<any>(`${environment.apiUrl}/api/profile`).subscribe({
         next: (response) => {
+          this._isLoading.set(false);
           if (response.success && response.data) {
             const profile = response.data;
-            console.log('Loaded user profile from API', profile);
             const user: User = {
               id: profile.id,
               email: profile.email,
@@ -188,7 +202,7 @@ export class AuthService {
           }
         },
         error: (error) => {
-          console.error('Error loading user profile', error);
+          this._isLoading.set(false);
           console.warn('Could not load user profile, using token data', error);
           // Fallback to token data
           try {
@@ -204,17 +218,8 @@ export class AuthService {
             this._currentUser.set(user);
             this._isAuthenticated.set(true);
           } catch (tokenError) {
-            console.warn('Could not decode token, using defaults');
-            // Set default user for development
-            this._currentUser.set({
-              id: '1',
-              email: 'admin@aegisx.local',
-              firstName: 'Admin',
-              lastName: 'User',
-              role: 'admin',
-              permissions: ['*.*'],
-            });
-            this._isAuthenticated.set(true);
+            console.warn('Could not decode token, clearing auth state');
+            this.clearAuthData();
           }
         },
       });
@@ -270,6 +275,10 @@ export class AuthService {
   // Helper methods for guards and interceptors
   isTokenExpired(): boolean {
     const token = this._accessToken();
+    return this.isTokenExpiredStatic(token);
+  }
+
+  private isTokenExpiredStatic(token: string | null): boolean {
     if (!token) return true;
 
     try {
@@ -288,5 +297,53 @@ export class AuthService {
   // Method to refresh user profile data (call after profile updates)
   refreshUserProfile(): void {
     this.loadUserProfile();
+  }
+
+  // Helper for guards - wait until auth state is determined
+  waitForAuthState(): Promise<boolean> {
+    return new Promise((resolve) => {
+      // If not loading, resolve immediately
+      if (!this._isLoading()) {
+        resolve(this._isAuthenticated());
+        return;
+      }
+
+      // Wait for loading to complete
+      const checkAuth = () => {
+        if (!this._isLoading()) {
+          resolve(this._isAuthenticated());
+        } else {
+          setTimeout(checkAuth, 50);
+        }
+      };
+      checkAuth();
+    });
+  }
+
+  // Get access token for interceptors
+  getAccessToken(): string | null {
+    const token = this._accessToken();
+
+    // Proactive refresh: ถ้า token ใกล้หมดอายุให้ refresh ไว้เลย
+    if (token && this.tokenExpiresWithin(token, 2)) {
+      // Refresh in background (ไม่ block การทำงาน)
+      this.refreshToken().subscribe({
+        next: () => console.log('Proactive token refresh successful'),
+        error: (error) => console.warn('Proactive token refresh failed', error),
+      });
+    }
+
+    return token;
+  }
+
+  private tokenExpiresWithin(token: string, minutes: number): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiry = payload.exp * 1000;
+      const timeLeft = expiry - Date.now();
+      return timeLeft < minutes * 60 * 1000;
+    } catch {
+      return true; // ถ้า decode ไม่ได้ถือว่าหมดอายุ
+    }
   }
 }
