@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.11](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.10...v1.0.11) (2025-09-15)
+
+### Features
+
+- Complete user activity tracking and profile management system
+- Multi-instance development environment with automatic port assignment
+- Enhanced authentication with systematic token management
+- Avatar upload and display functionality
+- Settings management with backend-frontend integration
+
+### Bug Fixes
+
+- Resolve authentication and navigation optimization issues
+- Fix multipart form data validation for avatar uploads
+- Improve API endpoint integration and error handling
+
 ## [Unreleased]
 
 ### Features
@@ -37,69 +53,69 @@
 
 ### Bug Fixes
 
-* force complete Docker cache clear to resolve nginx validation issues ([34cf95e](https://github.com/aegisx-platform/aegisx-starter/commit/34cf95e9d000d51b33a4af0723f986326c673a00))
+- force complete Docker cache clear to resolve nginx validation issues ([34cf95e](https://github.com/aegisx-platform/aegisx-starter/commit/34cf95e9d000d51b33a4af0723f986326c673a00))
 
 ## [1.0.9](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.8...v1.0.9) (2025-09-12)
 
 ### Bug Fixes
 
-* remove github workflow ([5bc00a4](https://github.com/aegisx-platform/aegisx-starter/commit/5bc00a47ab3d6ecc43598c7570f78f621d310df7))
+- remove github workflow ([5bc00a4](https://github.com/aegisx-platform/aegisx-starter/commit/5bc00a47ab3d6ecc43598c7570f78f621d310df7))
 
 ## [1.0.8](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.7...v1.0.8) (2025-09-12)
 
 ### Bug Fixes
 
-* remove must-revalidate from ssl setup script nginx config template ([d39f422](https://github.com/aegisx-platform/aegisx-starter/commit/d39f4220cbc3bfa1b702334ecb86e98f9aef9fca))
+- remove must-revalidate from ssl setup script nginx config template ([d39f422](https://github.com/aegisx-platform/aegisx-starter/commit/d39f4220cbc3bfa1b702334ecb86e98f9aef9fca))
 
 ## [1.0.7](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.6...v1.0.7) (2025-09-12)
 
 ### Bug Fixes
 
-* force nginx config refresh with content changes ([c20891c](https://github.com/aegisx-platform/aegisx-starter/commit/c20891c45f0083b7f40b96b94ffbdd3e99f480d0))
+- force nginx config refresh with content changes ([c20891c](https://github.com/aegisx-platform/aegisx-starter/commit/c20891c45f0083b7f40b96b94ffbdd3e99f480d0))
 
 ## [1.0.6](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.5...v1.0.6) (2025-09-12)
 
 ### Bug Fixes
 
-* remove must-revalidate from Cache-Control headers in nginx configs ([54d94f4](https://github.com/aegisx-platform/aegisx-starter/commit/54d94f4ff081bfc64e03fbd0b113edfad9fbd6a2))
+- remove must-revalidate from Cache-Control headers in nginx configs ([54d94f4](https://github.com/aegisx-platform/aegisx-starter/commit/54d94f4ff081bfc64e03fbd0b113edfad9fbd6a2))
 
 ## [1.0.5](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.4...v1.0.5) (2025-09-12)
 
 ### Bug Fixes
 
-* **dockerfile:** add space ([1067e61](https://github.com/aegisx-platform/aegisx-starter/commit/1067e611f5d713245e11125566227821c4a2d419))
+- **dockerfile:** add space ([1067e61](https://github.com/aegisx-platform/aegisx-starter/commit/1067e611f5d713245e11125566227821c4a2d419))
 
 ## [1.0.4](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.3...v1.0.4) (2025-09-12)
 
 ### Bug Fixes
 
-* force nginx config refresh for Docker builds ([041d383](https://github.com/aegisx-platform/aegisx-starter/commit/041d3838184c9d40998f737b0fce7250b1430073))
+- force nginx config refresh for Docker builds ([041d383](https://github.com/aegisx-platform/aegisx-starter/commit/041d3838184c9d40998f737b0fce7250b1430073))
 
 ## [1.0.3](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.2...v1.0.3) (2025-09-12)
 
 ### Bug Fixes
 
-* force Docker image pulls and ensure clean nginx configs ([7056b6d](https://github.com/aegisx-platform/aegisx-starter/commit/7056b6d553598209d9344f18c1aea7ad33607bad))
+- force Docker image pulls and ensure clean nginx configs ([7056b6d](https://github.com/aegisx-platform/aegisx-starter/commit/7056b6d553598209d9344f18c1aea7ad33607bad))
 
 ## [1.0.2](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.1...v1.0.2) (2025-09-12)
 
 ### Bug Fixes
 
-* add no-cache flag to all Docker builds to force fresh nginx configs ([ab6bf56](https://github.com/aegisx-platform/aegisx-starter/commit/ab6bf56246cd32d757f481045cf9a22a928a1200))
-* resolve nginx configuration errors and update to pnpm ([7717b13](https://github.com/aegisx-platform/aegisx-starter/commit/7717b139c7770bc91101914c5542a5ea50b1a50f))
+- add no-cache flag to all Docker builds to force fresh nginx configs ([ab6bf56](https://github.com/aegisx-platform/aegisx-starter/commit/ab6bf56246cd32d757f481045cf9a22a928a1200))
+- resolve nginx configuration errors and update to pnpm ([7717b13](https://github.com/aegisx-platform/aegisx-starter/commit/7717b139c7770bc91101914c5542a5ea50b1a50f))
 
 ## [1.0.1](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.0...v1.0.1) (2025-09-12)
 
 ### Bug Fixes
 
-* remove invalid must-revalidate from nginx gzip_proxied directive ([afc433b](https://github.com/aegisx-platform/aegisx-starter/commit/afc433b796e450d02a3498a495d220851615f4fd))
+- remove invalid must-revalidate from nginx gzip_proxied directive ([afc433b](https://github.com/aegisx-platform/aegisx-starter/commit/afc433b796e450d02a3498a495d220851615f4fd))
 
 # 1.0.0 (2025-09-12)
 
 ### Bug Fixes
 
-* add /api prefix to user management routes ([d2bca32](https://github.com/aegisx-platform/aegisx-starter/commit/d2bca32d4051945c468dfb923624330382c0e09d))
-* add reflect-metadata import for tsyringe dependency injection ([9e4a899](https://github.com/aegisx-platform/aegisx-starter/commit/9e4a8996a6f411682c4b3b2fe8da60fa265dbdba))
-* remove tsyringe dependency injection from users module ([d975e6d](https://github.com/aegisx-platform/aegisx-starter/commit/d975e6d0639af0fdf93d3cf8c3c78d7cd619888f))
-* resolve CORS, monitoring endpoints, and user creation issues ([6b82c68](https://github.com/aegisx-platform/aegisx-starter/commit/6b82c6873468254f838affb4bfcdee2ae7752249))
-* standardize API response schemas and fix user management ([1126a8c](https://github.com/aegisx-platform/aegisx-starter/commit/1126a8c3a2ecfa6b8192fd9adb06d5b0336b8a4f))
+- add /api prefix to user management routes ([d2bca32](https://github.com/aegisx-platform/aegisx-starter/commit/d2bca32d4051945c468dfb923624330382c0e09d))
+- add reflect-metadata import for tsyringe dependency injection ([9e4a899](https://github.com/aegisx-platform/aegisx-starter/commit/9e4a8996a6f411682c4b3b2fe8da60fa265dbdba))
+- remove tsyringe dependency injection from users module ([d975e6d](https://github.com/aegisx-platform/aegisx-starter/commit/d975e6d0639af0fdf93d3cf8c3c78d7cd619888f))
+- resolve CORS, monitoring endpoints, and user creation issues ([6b82c68](https://github.com/aegisx-platform/aegisx-starter/commit/6b82c6873468254f838affb4bfcdee2ae7752249))
+- standardize API response schemas and fix user management ([1126a8c](https://github.com/aegisx-platform/aegisx-starter/commit/1126a8c3a2ecfa6b8192fd9adb06d5b0336b8a4f))
