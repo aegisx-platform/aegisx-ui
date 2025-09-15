@@ -37,6 +37,46 @@
 
 Keep commit messages clean and professional.
 
+### 🚨 CRITICAL: Semantic Release Protection Policy
+
+**FORBIDDEN PATTERNS IN COMMIT MESSAGES - WILL TRIGGER v2.x.x RELEASES:**
+
+- **NEVER use "BREAKING CHANGE:" in commit messages**
+- **NEVER use "BREAKING CHANGES:" in commit messages**
+- **NEVER use "BREAKING:" in commit messages**
+- **NEVER copy commit messages from other repositories without reviewing**
+
+**SAFE ALTERNATIVES to use instead:**
+
+- `IMPORTANT:` - For significant changes that need attention
+- `MAJOR UPDATE:` - For substantial feature changes
+- `SIGNIFICANT:` - For notable modifications
+- `API CHANGE:` - For API modifications that maintain compatibility
+- `MIGRATION:` - For database or configuration changes
+- `DEPRECATED:` - For marking features as deprecated
+
+**VERSION STRATEGY:**
+
+- Project maintains **v1.x.x versioning only**
+- Major version (v2.x.x) releases are **FORBIDDEN**
+- All changes must be backward compatible
+- Use minor/patch releases for all updates
+
+**COMMIT MESSAGE REVIEW CHECKLIST:**
+
+1. ✅ No "BREAKING CHANGE" text anywhere in commit
+2. ✅ No "BREAKING CHANGES" text anywhere in commit
+3. ✅ No "BREAKING:" text anywhere in commit
+4. ✅ Use safe alternatives for significant changes
+5. ✅ Conventional commit format: `type(scope): description`
+
+**IF ACCIDENTAL BREAKING CHANGE COMMIT:**
+
+1. **STOP immediately** - Do not push
+2. Use `git commit --amend` to fix message
+3. If already pushed, contact project owner immediately
+4. Follow emergency recovery procedures in `/docs/troubleshooting/semantic-release-recovery.md`
+
 ### File Management Rules
 
 **CRITICAL: File Deletion Policy**
@@ -62,6 +102,7 @@ Keep commit messages clean and professional.
 8. **DOCUMENTATION_INDEX.md** - Navigation & learning guide
 
 **Documentation Standards:**
+
 - **Professional grade** - Suitable for enterprise environments
 - **Multiple audiences** - End users, developers, administrators, architects
 - **Practical examples** - Working code examples and step-by-step guides
