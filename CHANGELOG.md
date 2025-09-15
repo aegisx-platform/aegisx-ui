@@ -1,3 +1,10 @@
+## [1.0.12](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.11...v1.0.12) (2025-09-15)
+
+
+### Bug Fixes
+
+* clean up v2.x.x releases and restore clean v1.0.11 state ([c852c58](https://github.com/aegisx-platform/aegisx-starter/commit/c852c5814b639549468ae432c6d9332767129d33))
+
 # Changelog
 
 ## [1.0.11](https://github.com/aegisx-platform/aegisx-starter/compare/v1.0.10...v1.0.11) (2025-09-15)
