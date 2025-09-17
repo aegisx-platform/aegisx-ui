@@ -96,16 +96,23 @@ main() {
     
     print_info "Executing: $*"
     
-    # Expand shell variables in arguments
-    local expanded_args=()
-    for arg in "$@"; do
-        expanded_args+=("$(eval echo "$arg")")
-    done
-    
-    print_debug "Expanded command: ${expanded_args[*]}"
-    
-    # Execute the command with loaded environment
-    "${expanded_args[@]}"
+    # For shell -c commands, handle them specially
+    if [[ ("$1" == "bash" || "$1" == "sh") && "$2" == "-c" ]]; then
+        print_debug "Executing $1 command: $3"
+        # Execute shell -c with expanded variables (but don't eval since vars are already exported)
+        "$1" -c "$3"
+    else
+        # Expand shell variables in arguments
+        local expanded_args=()
+        for arg in "$@"; do
+            expanded_args+=("$(eval echo "$arg")")
+        done
+        
+        print_debug "Expanded command: ${expanded_args[*]}"
+        
+        # Execute the command with loaded environment
+        "${expanded_args[@]}"
+    fi
 }
 
 # Run main function with all arguments
