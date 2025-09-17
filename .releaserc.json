@@ -1,5 +1,4 @@
 {
-  "repositoryUrl": "https://github.com/aegisx-platform/aegisx-starter.git",
   "branches": [
     "main",
     {
@@ -21,14 +20,24 @@
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md", "package.json", "pnpm-lock.yaml"],
+        "assets": [
+          "CHANGELOG.md",
+          "package.json",
+          "package-lock.json",
+          "yarn.lock"
+        ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
     [
       "@semantic-release/github",
       {
-        "assets": []
+        "assets": [
+          {
+            "path": "dist/**",
+            "name": "dist-${nextRelease.version}.zip"
+          }
+        ]
       }
     ]
   ]
