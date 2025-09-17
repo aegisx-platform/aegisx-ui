@@ -220,8 +220,11 @@ export const FileListQuerySchema = Type.Object({
       [
         Type.Literal('created_at'),
         Type.Literal('updated_at'),
+        Type.Literal('uploaded_at'),
+        Type.Literal('uploadedAt'),
         Type.Literal('file_size'),
         Type.Literal('original_name'),
+        Type.Literal('mime_type'),
       ],
       {
         description: 'Sort field',
