@@ -3,9 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -39,9 +36,6 @@ interface ShowcaseTab {
     MatTabsModule,
     MatIconModule,
     MatButtonModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatListModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -56,23 +50,8 @@ interface ShowcaseTab {
   ],
   template: `
     <div class="component-showcase">
-      <!-- Header -->
-      <mat-toolbar class="showcase-header" color="primary">
-        <span class="showcase-title">
-          <mat-icon class="title-icon">widgets</mat-icon>
-          Component Showcase
-        </span>
-        <span class="spacer"></span>
-
-        <!-- Theme Toggle -->
-        <mat-slide-toggle
-          [(ngModel)]="isDarkTheme"
-          (change)="toggleTheme()"
-          class="theme-toggle"
-        >
-          <mat-icon>{{ isDarkTheme() ? 'dark_mode' : 'light_mode' }}</mat-icon>
-        </mat-slide-toggle>
-
+      <!-- Controls Bar (แทน Header) -->
+      <div class="showcase-controls">
         <!-- Search -->
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search components</mat-label>
@@ -107,7 +86,18 @@ interface ShowcaseTab {
             <mat-option value="demos">Interactive</mat-option>
           </mat-select>
         </mat-form-field>
-      </mat-toolbar>
+
+        <div class="spacer"></div>
+
+        <!-- Theme Toggle -->
+        <mat-slide-toggle
+          [(ngModel)]="isDarkTheme"
+          (change)="toggleTheme()"
+          class="theme-toggle"
+        >
+          <mat-icon>{{ isDarkTheme() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        </mat-slide-toggle>
+      </div>
 
       <!-- Progress Bar for Loading -->
       <mat-progress-bar
@@ -119,115 +109,72 @@ interface ShowcaseTab {
 
       <!-- Main Content -->
       <div class="showcase-content">
-        <!-- Sidebar Navigation (Optional Mobile) -->
-        <mat-sidenav-container class="sidenav-container">
-          <mat-sidenav
-            #drawer
-            mode="over"
-            class="showcase-sidenav"
-            [class.show-mobile]="isMobile()"
+        <!-- Tab Content -->
+        <mat-tab-group
+          [(selectedIndex)]="selectedTabIndexNumber"
+          class="showcase-tabs"
+          animationDuration="300ms"
+          (selectedTabChange)="onTabChange($event)"
+        >
+          <mat-tab
+            *ngFor="let tab of filteredTabs(); trackBy: trackByTabId"
+            [label]="tab.label"
           >
-            <mat-list role="navigation">
-              <h3 matSubheader>Component Categories</h3>
-              <mat-list-item
-                *ngFor="let tab of filteredTabs()"
-                [class.active]="selectedTabIndex() === tab.id"
-                (click)="selectTab(tab.id); drawer.close()"
-              >
-                <mat-icon matListItemIcon>{{ tab.icon }}</mat-icon>
-                <div matListItemTitle>{{ tab.label }}</div>
-                <div matListItemLine>{{ tab.description }}</div>
-                <mat-chip
-                  *ngIf="tab.badgeCount"
-                  class="count-badge"
-                  [color]="selectedTabIndex() === tab.id ? 'accent' : 'primary'"
+            <ng-template matTabLabel>
+              <mat-icon class="tab-icon">{{ tab.icon }}</mat-icon>
+              {{ tab.label }}
+              <mat-chip *ngIf="tab.badgeCount" class="tab-badge">
+                {{ tab.badgeCount }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <!-- Tab Header -->
+              <div class="tab-header">
+                <h2>{{ tab.label }}</h2>
+                <p>{{ tab.description }}</p>
+              </div>
+
+              <!-- Dynamic Component Content -->
+              <div class="component-section" [ngSwitch]="tab.id">
+                <app-material-section
+                  *ngSwitchCase="'material'"
+                  [searchQuery]="searchQuery()"
+                  [theme]="isDarkTheme() ? 'dark' : 'light'"
                 >
-                  {{ tab.badgeCount }}
-                </mat-chip>
-              </mat-list-item>
-            </mat-list>
-          </mat-sidenav>
+                </app-material-section>
 
-          <!-- Main Tab Content -->
-          <mat-sidenav-content class="main-content">
-            <!-- Mobile Menu Button -->
-            <button
-              *ngIf="isMobile()"
-              mat-icon-button
-              class="mobile-menu-btn"
-              (click)="drawer.toggle()"
-            >
-              <mat-icon>menu</mat-icon>
-            </button>
+                <app-aegisx-ui-section
+                  *ngSwitchCase="'aegisx'"
+                  [searchQuery]="searchQuery()"
+                  [theme]="isDarkTheme() ? 'dark' : 'light'"
+                >
+                </app-aegisx-ui-section>
 
-            <!-- Tab Content -->
-            <mat-tab-group
-              [(selectedIndex)]="selectedTabIndexNumber"
-              class="showcase-tabs"
-              animationDuration="300ms"
-              (selectedTabChange)="onTabChange($event)"
-            >
-              <mat-tab
-                *ngFor="let tab of filteredTabs(); trackBy: trackByTabId"
-                [label]="tab.label"
-              >
-                <ng-template matTabLabel>
-                  <mat-icon class="tab-icon">{{ tab.icon }}</mat-icon>
-                  {{ tab.label }}
-                  <mat-chip *ngIf="tab.badgeCount" class="tab-badge">
-                    {{ tab.badgeCount }}
-                  </mat-chip>
-                </ng-template>
+                <app-widgets-section
+                  *ngSwitchCase="'widgets'"
+                  [searchQuery]="searchQuery()"
+                  [theme]="isDarkTheme() ? 'dark' : 'light'"
+                >
+                </app-widgets-section>
 
-                <div class="tab-content">
-                  <!-- Tab Header -->
-                  <div class="tab-header">
-                    <h2>{{ tab.label }}</h2>
-                    <p>{{ tab.description }}</p>
-                  </div>
+                <app-interactive-demos
+                  *ngSwitchCase="'demos'"
+                  [searchQuery]="searchQuery()"
+                  [theme]="isDarkTheme() ? 'dark' : 'light'"
+                >
+                </app-interactive-demos>
 
-                  <!-- Dynamic Component Content -->
-                  <div class="component-section" [ngSwitch]="tab.id">
-                    <app-material-section
-                      *ngSwitchCase="'material'"
-                      [searchQuery]="searchQuery()"
-                      [theme]="isDarkTheme() ? 'dark' : 'light'"
-                    >
-                    </app-material-section>
-
-                    <app-aegisx-ui-section
-                      *ngSwitchCase="'aegisx'"
-                      [searchQuery]="searchQuery()"
-                      [theme]="isDarkTheme() ? 'dark' : 'light'"
-                    >
-                    </app-aegisx-ui-section>
-
-                    <app-widgets-section
-                      *ngSwitchCase="'widgets'"
-                      [searchQuery]="searchQuery()"
-                      [theme]="isDarkTheme() ? 'dark' : 'light'"
-                    >
-                    </app-widgets-section>
-
-                    <app-interactive-demos
-                      *ngSwitchCase="'demos'"
-                      [searchQuery]="searchQuery()"
-                      [theme]="isDarkTheme() ? 'dark' : 'light'"
-                    >
-                    </app-interactive-demos>
-
-                    <!-- Fallback -->
-                    <div *ngSwitchDefault class="coming-soon">
-                      <mat-icon>construction</mat-icon>
-                      <h3>Coming Soon</h3>
-                      <p>This section is under development.</p>
-                    </div>
-                  </div>
+                <!-- Fallback -->
+                <div *ngSwitchDefault class="coming-soon">
+                  <mat-icon>construction</mat-icon>
+                  <h3>Coming Soon</h3>
+                  <p>This section is under development.</p>
                 </div>
-              </mat-tab>
-            </mat-tab-group>
-          </mat-sidenav-content>
-        </mat-sidenav-container>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
       </div>
 
       <!-- Footer -->
