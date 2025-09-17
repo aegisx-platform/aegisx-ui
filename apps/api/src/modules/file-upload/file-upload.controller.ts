@@ -293,10 +293,24 @@ export class FileUploadController {
         search: request.query.search,
       };
 
+      // Map API field names to database column names
+      const sortFieldMap: Record<string, string> = {
+        uploadedAt: 'created_at',
+        uploaded_at: 'created_at',
+        created_at: 'created_at',
+        updated_at: 'updated_at',
+        file_size: 'file_size',
+        original_name: 'original_name',
+        mime_type: 'mime_type',
+      };
+
+      const sortField = request.query.sort || 'created_at';
+      const mappedSortField = sortFieldMap[sortField] || 'created_at';
+
       const pagination = {
         page: request.query.page || 1,
         limit: Math.min(request.query.limit || 20, 100),
-        sort: request.query.sort || 'created_at',
+        sort: mappedSortField,
         order: request.query.order || ('desc' as 'asc' | 'desc'),
       };
 

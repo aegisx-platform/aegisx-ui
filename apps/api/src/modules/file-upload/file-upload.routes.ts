@@ -79,6 +79,49 @@ export async function fileUploadRoutes(
     handler: controller.uploadMultipleFiles.bind(controller),
   });
 
+  // Get user file statistics (before parameterized routes)
+  fastify.get('/stats/user', {
+    schema: {
+      tags: ['File Statistics'],
+      summary: 'Get user file statistics',
+      description: 'Get comprehensive statistics about user uploaded files',
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', const: true },
+            data: {
+              type: 'object',
+              properties: {
+                totalFiles: { type: 'number' },
+                totalSize: { type: 'number' },
+                publicFiles: { type: 'number' },
+                temporaryFiles: { type: 'number' },
+                categories: {
+                  type: 'object',
+                  additionalProperties: { type: 'number' },
+                },
+              },
+            },
+            meta: {
+              type: 'object',
+              properties: {
+                requestId: { type: 'string' },
+                timestamp: { type: 'string' },
+                version: { type: 'string' },
+              },
+            },
+          },
+        },
+        401: StandardRouteResponses[401],
+        500: StandardRouteResponses[500],
+      },
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authenticate],
+    handler: controller.getUserStats.bind(controller),
+  });
+
   // List user files
   fastify.get('/', {
     schema: {
@@ -219,48 +262,6 @@ export async function fileUploadRoutes(
     },
     preHandler: [fastify.authenticate],
     handler: controller.generateSignedUrl.bind(controller),
-  });
-
-  // Get user file statistics
-  fastify.get('/stats/user', {
-    schema: {
-      tags: ['File Statistics'],
-      summary: 'Get user file statistics',
-      description: 'Get comprehensive statistics about user uploaded files',
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            data: {
-              type: 'object',
-              properties: {
-                totalFiles: { type: 'number' },
-                totalSize: { type: 'number' },
-                publicFiles: { type: 'number' },
-                temporaryFiles: { type: 'number' },
-                categories: {
-                  type: 'object',
-                  additionalProperties: { type: 'number' },
-                },
-              },
-            },
-            meta: {
-              type: 'object',
-              properties: {
-                requestId: { type: 'string' },
-                timestamp: { type: 'string' },
-                version: { type: 'string' },
-              },
-            },
-          },
-        },
-        401: StandardRouteResponses[401],
-        500: StandardRouteResponses[500],
-      },
-      security: [{ bearerAuth: [] }],
-    },
-    preHandler: [fastify.authenticate],
-    handler: controller.getUserStats.bind(controller),
   });
 
   // TODO: Add chunked upload endpoints
