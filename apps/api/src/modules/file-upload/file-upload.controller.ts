@@ -181,11 +181,19 @@ export class FileUploadController {
         });
       }
 
+      request.log.info(
+        `Starting multiple file upload: ${fileArray.length} files`,
+      );
+      const uploadStartTime = Date.now();
+
       const result = await this.deps.fileUploadService.uploadMultipleFiles(
         fileArray,
         uploadRequest,
         userId,
       );
+
+      const uploadEndTime = Date.now();
+      const uploadDuration = uploadEndTime - uploadStartTime;
 
       const statusCode =
         result.failed.length === 0
@@ -194,6 +202,10 @@ export class FileUploadController {
             ? 400
             : 207;
 
+      request.log.info(
+        `Multiple file upload completed: ${result.uploaded.length}/${result.summary.total} files uploaded (${uploadDuration}ms)`,
+      );
+
       return reply.code(statusCode).send({
         success: true,
         data: result,
@@ -201,6 +213,7 @@ export class FileUploadController {
           requestId: request.id,
           timestamp: new Date().toISOString(),
           version: '1.0',
+          duration: uploadDuration,
         },
       });
     } catch (error: any) {
@@ -219,6 +232,16 @@ export class FileUploadController {
         statusCode = 413;
         errorCode = 'FILE_TOO_LARGE';
         errorMessage = 'File size exceeds 100MB limit.';
+      } else if (error.message.includes('timeout')) {
+        statusCode = 408;
+        errorCode = 'UPLOAD_TIMEOUT';
+        errorMessage =
+          'Upload operation timed out. Please try with smaller files or fewer files.';
+      } else if (error.message.includes('Buffer read timeout')) {
+        statusCode = 408;
+        errorCode = 'FILE_READ_TIMEOUT';
+        errorMessage =
+          'File reading timed out. The file may be corrupted or too large.';
       }
 
       return reply.code(statusCode).send({
@@ -227,6 +250,8 @@ export class FileUploadController {
           code: errorCode,
           message: errorMessage,
           statusCode: statusCode,
+          details:
+            process.env.NODE_ENV === 'development' ? error.stack : undefined,
         },
         meta: {
           requestId: request.id,

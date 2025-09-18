@@ -768,6 +768,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
             this.snackBar.open('File uploaded successfully!', 'Close', {
               duration: 3000,
             });
+            // Clear the upload state after successful upload
+            this.clearFiles();
           },
           error: (error) => {
             this.uploadError.emit(error.message);
@@ -794,6 +796,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
                   { duration: 3000 },
                 );
               }
+
+              // Clear the upload state after successful upload
+              this.clearFiles();
             },
             error: (error) => {
               this.uploadError.emit(error.message);

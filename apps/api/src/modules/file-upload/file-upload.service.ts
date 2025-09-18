@@ -53,9 +53,31 @@ export class FileUploadService {
   constructor(private deps: FileUploadServiceDependencies) {}
 
   /**
-   * Upload a single file
+   * Upload a single file with image variant generation
    */
   async uploadFile(
+    file: MultipartFile,
+    uploadRequest: FileUploadRequest,
+    userId: string,
+  ): Promise<ProcessedUploadResult> {
+    const result = await this.uploadFileWithoutVariants(
+      file,
+      uploadRequest,
+      userId,
+    );
+
+    // Generate thumbnails for images synchronously for single uploads
+    if (this.isImageFile(file.mimetype)) {
+      await this.generateImageVariants(result.file, await file.toBuffer());
+    }
+
+    return result;
+  }
+
+  /**
+   * Upload a single file without generating image variants (used by multiple upload)
+   */
+  private async uploadFileWithoutVariants(
     file: MultipartFile,
     uploadRequest: FileUploadRequest,
     userId: string,
@@ -64,8 +86,20 @@ export class FileUploadService {
       // Validate file
       this.validateFile(file);
 
-      // Read file buffer
-      const buffer = await file.toBuffer();
+      // Read file buffer with timeout protection
+      const BUFFER_READ_TIMEOUT = 30000; // 30 seconds
+      const bufferPromise = file.toBuffer();
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              `Buffer read timeout: ${file.filename} took longer than ${BUFFER_READ_TIMEOUT}ms`,
+            ),
+          );
+        }, BUFFER_READ_TIMEOUT);
+      });
+
+      const buffer = await Promise.race([bufferPromise, timeoutPromise]);
 
       // Generate file hash for duplicate detection
       const fileHash = this.generateFileHash(buffer);
@@ -84,8 +118,23 @@ export class FileUploadService {
         }
       }
 
-      // Process and classify file
-      const fileInfo = await this.processFileInfo(file, buffer);
+      // Process and classify file with timeout protection
+      const FILE_PROCESSING_TIMEOUT = 30000; // 30 seconds
+      const processPromise = this.processFileInfo(file, buffer);
+      const processTimeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              `File processing timeout: ${file.filename} took longer than ${FILE_PROCESSING_TIMEOUT}ms`,
+            ),
+          );
+        }, FILE_PROCESSING_TIMEOUT);
+      });
+
+      const fileInfo = await Promise.race([
+        processPromise,
+        processTimeoutPromise,
+      ]);
 
       // Generate storage key
       const storageKey = this.generateStorageKey(
@@ -94,8 +143,9 @@ export class FileUploadService {
         file.filename,
       );
 
-      // Upload to storage
-      const uploadResult = await this.deps.storageAdapter.upload({
+      // Upload to storage with timeout protection
+      const STORAGE_UPLOAD_TIMEOUT = 60000; // 60 seconds
+      const uploadPromise = this.deps.storageAdapter.upload({
         key: storageKey,
         buffer,
         mimeType: file.mimetype,
@@ -106,6 +156,21 @@ export class FileUploadService {
           ? new Date(Date.now() + uploadRequest.expiresIn * 60 * 60 * 1000)
           : undefined,
       });
+
+      const storageTimeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              `Storage upload timeout: ${file.filename} took longer than ${STORAGE_UPLOAD_TIMEOUT}ms`,
+            ),
+          );
+        }, STORAGE_UPLOAD_TIMEOUT);
+      });
+
+      const uploadResult = await Promise.race([
+        uploadPromise,
+        storageTimeoutPromise,
+      ]);
 
       // Prepare database record
       const fileData: CreateFileData = {
@@ -134,13 +199,20 @@ export class FileUploadService {
         variants: fileInfo.variants,
       };
 
-      // Save to database
-      const savedFile = await this.deps.fileRepository.createFile(fileData);
+      // Save to database with timeout protection
+      const DB_SAVE_TIMEOUT = 10000; // 10 seconds
+      const savePromise = this.deps.fileRepository.createFile(fileData);
+      const saveTimeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              `Database save timeout: ${file.filename} took longer than ${DB_SAVE_TIMEOUT}ms`,
+            ),
+          );
+        }, DB_SAVE_TIMEOUT);
+      });
 
-      // Generate thumbnails for images
-      if (this.isImageFile(file.mimetype)) {
-        await this.generateImageVariants(savedFile, buffer);
-      }
+      const savedFile = await Promise.race([savePromise, saveTimeoutPromise]);
 
       this.deps.logger.info(`File uploaded successfully: ${savedFile.id}`);
 
@@ -152,13 +224,18 @@ export class FileUploadService {
   }
 
   /**
-   * Upload multiple files
+   * Upload multiple files with concurrent processing and timeout protection
    */
   async uploadMultipleFiles(
     files: MultipartFile[],
     uploadRequest: FileUploadRequest,
     userId: string,
   ): Promise<MultipleUploadResult> {
+    const startTime = Date.now();
+    this.deps.logger.info(
+      `Starting multiple file upload: ${files.length} files for user ${userId}`,
+    );
+
     const uploaded: UploadedFile[] = [];
     const failed: Array<{ filename: string; error: string; code: string }> = [];
     let totalSize = 0;
@@ -170,19 +247,83 @@ export class FileUploadService {
       );
     }
 
-    for (const file of files) {
+    // Process files with controlled concurrency and timeout protection
+    const CONCURRENCY_LIMIT = 3; // Process max 3 files simultaneously
+    const UPLOAD_TIMEOUT = 120000; // 2 minutes per file
+
+    const processFile = async (file: MultipartFile, index: number) => {
+      const fileStartTime = Date.now();
+      this.deps.logger.info(
+        `Processing file ${index + 1}/${files.length}: ${file.filename}`,
+      );
+
       try {
-        const result = await this.uploadFile(file, uploadRequest, userId);
+        // Add timeout wrapper for individual file upload
+        const uploadPromise = this.uploadFileWithoutVariants(
+          file,
+          uploadRequest,
+          userId,
+        );
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => {
+            reject(
+              new Error(
+                `Upload timeout: ${file.filename} took longer than ${UPLOAD_TIMEOUT}ms`,
+              ),
+            );
+          }, UPLOAD_TIMEOUT);
+        });
+
+        const result = await Promise.race([uploadPromise, timeoutPromise]);
+
+        const fileEndTime = Date.now();
+        this.deps.logger.info(
+          `File processed successfully: ${file.filename} (${fileEndTime - fileStartTime}ms)`,
+        );
+
         uploaded.push(result.file);
         totalSize += result.file.fileSize;
+
+        // Generate image variants asynchronously without blocking response
+        if (this.isImageFile(file.mimetype)) {
+          this.generateImageVariantsAsync(result.file, file).catch((error) => {
+            this.deps.logger.error(
+              error,
+              `Failed to generate variants for ${result.file.id}`,
+            );
+          });
+        }
       } catch (error: any) {
+        const fileEndTime = Date.now();
+        this.deps.logger.error(
+          error,
+          `File upload failed: ${file.filename} (${fileEndTime - fileStartTime}ms)`,
+        );
+
         failed.push({
           filename: file.filename,
           error: error.message,
           code: this.getErrorCode(error),
         });
       }
+    };
+
+    // Process files in batches with concurrency control
+    for (let i = 0; i < files.length; i += CONCURRENCY_LIMIT) {
+      const batch = files.slice(i, i + CONCURRENCY_LIMIT);
+      const batchPromises = batch.map((file, batchIndex) =>
+        processFile(file, i + batchIndex),
+      );
+
+      await Promise.allSettled(batchPromises);
     }
+
+    const endTime = Date.now();
+    const totalTime = endTime - startTime;
+
+    this.deps.logger.info(
+      `Multiple file upload completed: ${uploaded.length} uploaded, ${failed.length} failed (${totalTime}ms total)`,
+    );
 
     return {
       uploaded,
@@ -495,67 +636,116 @@ export class FileUploadService {
     };
   }
 
+  /**
+   * Generate image variants asynchronously (fire-and-forget)
+   */
+  private async generateImageVariantsAsync(
+    file: UploadedFile,
+    multipartFile: MultipartFile,
+  ): Promise<void> {
+    try {
+      // Re-read buffer for async processing to avoid memory issues
+      const buffer = await multipartFile.toBuffer();
+      await this.generateImageVariants(file, buffer);
+    } catch (error) {
+      this.deps.logger.error(
+        error,
+        `Failed to generate image variants asynchronously for ${file.id}`,
+      );
+    }
+  }
+
+  /**
+   * Generate image variants with timeout protection
+   */
   private async generateImageVariants(
     file: UploadedFile,
     buffer: Buffer,
   ): Promise<void> {
     if (!this.isImageFile(file.mimeType)) return;
 
+    const VARIANT_TIMEOUT = 30000; // 30 seconds timeout for variant generation
+
     try {
-      const variants: Record<string, any> = {};
-      const sizes = [
-        { name: 'thumbnail', width: 150, height: 150 },
-        { name: 'small', width: 300, height: 300 },
-        { name: 'medium', width: 600, height: 600 },
-      ];
+      const variantPromise = this.processImageVariants(file, buffer);
+      const timeoutPromise = new Promise<void>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Image variant generation timeout for ${file.id}`));
+        }, VARIANT_TIMEOUT);
+      });
 
-      for (const size of sizes) {
-        try {
-          const resizedBuffer = await sharp(buffer)
-            .resize(size.width, size.height, {
-              fit: 'inside',
-              withoutEnlargement: true,
-            })
-            .jpeg({ quality: 80 })
-            .toBuffer();
-
-          const variantKey = `${path.parse(file.filename).name}_${size.name}.jpg`;
-          const storageKey = this.generateStorageKey(
-            file.id,
-            'image',
-            variantKey,
-          );
-
-          await this.deps.storageAdapter.upload({
-            key: storageKey,
-            buffer: resizedBuffer,
-            mimeType: 'image/jpeg',
-            originalName: variantKey,
-            isPublic: file.isPublic,
-          });
-
-          variants[size.name] = {
-            url: `/api/files/${file.id}/download?variant=${size.name}`,
-            width: size.width,
-            height: size.height,
-            size: resizedBuffer.length,
-          };
-        } catch (error) {
-          this.deps.logger.warn(
-            error,
-            `Failed to generate ${size.name} variant for ${file.id}`,
-          );
-        }
-      }
-
-      // Update file with variants
-      if (Object.keys(variants).length > 0) {
-        await this.deps.fileRepository.updateFile(file.id, { variants });
-      }
+      await Promise.race([variantPromise, timeoutPromise]);
     } catch (error) {
       this.deps.logger.error(
         error,
         `Failed to generate image variants for ${file.id}`,
+      );
+    }
+  }
+
+  /**
+   * Process image variants with controlled concurrency
+   */
+  private async processImageVariants(
+    file: UploadedFile,
+    buffer: Buffer,
+  ): Promise<void> {
+    const variants: Record<string, any> = {};
+    const sizes = [
+      { name: 'thumbnail', width: 150, height: 150 },
+      { name: 'small', width: 300, height: 300 },
+      { name: 'medium', width: 600, height: 600 },
+    ];
+
+    // Process variants concurrently
+    const variantPromises = sizes.map(async (size) => {
+      try {
+        const resizedBuffer = await sharp(buffer)
+          .resize(size.width, size.height, {
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: 80 })
+          .toBuffer();
+
+        const variantKey = `${path.parse(file.filename).name}_${size.name}.jpg`;
+        const storageKey = this.generateStorageKey(
+          file.id,
+          'image',
+          variantKey,
+        );
+
+        await this.deps.storageAdapter.upload({
+          key: storageKey,
+          buffer: resizedBuffer,
+          mimeType: 'image/jpeg',
+          originalName: variantKey,
+          isPublic: file.isPublic,
+        });
+
+        variants[size.name] = {
+          url: `/api/files/${file.id}/download?variant=${size.name}`,
+          width: size.width,
+          height: size.height,
+          size: resizedBuffer.length,
+        };
+
+        this.deps.logger.debug(`Generated ${size.name} variant for ${file.id}`);
+      } catch (error) {
+        this.deps.logger.warn(
+          error,
+          `Failed to generate ${size.name} variant for ${file.id}`,
+        );
+      }
+    });
+
+    await Promise.allSettled(variantPromises);
+
+    // Update file with variants
+    if (Object.keys(variants).length > 0) {
+      await this.deps.fileRepository.updateFile(file.id, { variants });
+      this.deps.logger.info(
+        `Updated ${Object.keys(variants).length} variants for ${file.id}`,
       );
     }
   }

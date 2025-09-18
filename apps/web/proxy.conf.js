@@ -16,6 +16,8 @@ module.exports = {
     secure: false,
     changeOrigin: true,
     logLevel: 'debug',
+    timeout: 300000, // 5 minutes timeout for file uploads
+    proxyTimeout: 300000, // 5 minutes proxy timeout
     headers: {
       'X-Proxy-Target': API_URL,
     },
