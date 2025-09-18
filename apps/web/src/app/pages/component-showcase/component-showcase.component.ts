@@ -49,148 +49,154 @@ interface ShowcaseTab {
     InteractiveDemosComponent,
   ],
   template: `
-    <div class="component-showcase p-6">
-      <!-- Controls Bar (แทน Header) -->
-      <div class="showcase-controls">
-        <!-- Search -->
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Search components</mat-label>
-          <mat-icon matPrefix>search</mat-icon>
-          <input
-            matInput
-            placeholder="Search components..."
-            [(ngModel)]="searchQuery"
-            (input)="onSearch($event)"
-          />
-          <button
-            *ngIf="searchQuery()"
-            matSuffix
-            mat-icon-button
-            (click)="clearSearch()"
+    <div class="component-showcase-wrapper">
+      <div class="component-showcase-container">
+        <div class="component-showcase">
+          <!-- Controls Bar (แทน Header) -->
+          <div class="showcase-controls">
+            <!-- Search -->
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search components</mat-label>
+              <mat-icon matPrefix>search</mat-icon>
+              <input
+                matInput
+                placeholder="Search components..."
+                [(ngModel)]="searchQuery"
+                (input)="onSearch($event)"
+              />
+              <button
+                *ngIf="searchQuery()"
+                matSuffix
+                mat-icon-button
+                (click)="clearSearch()"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <!-- Filter -->
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Filter</mat-label>
+              <mat-select
+                [(value)]="selectedFilter"
+                (selectionChange)="onFilterChange($event)"
+              >
+                <mat-option value="all">All Components</mat-option>
+                <mat-option value="material">Material Design</mat-option>
+                <mat-option value="aegisx">AegisX UI</mat-option>
+                <mat-option value="widgets">Widgets</mat-option>
+                <mat-option value="demos">Interactive</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="spacer"></div>
+
+            <!-- Theme Toggle -->
+            <mat-slide-toggle
+              [(ngModel)]="isDarkTheme"
+              (change)="toggleTheme()"
+              class="theme-toggle"
+            >
+              <mat-icon>{{
+                isDarkTheme() ? 'dark_mode' : 'light_mode'
+              }}</mat-icon>
+            </mat-slide-toggle>
+          </div>
+
+          <!-- Progress Bar for Loading -->
+          <mat-progress-bar
+            *ngIf="isLoading()"
+            mode="indeterminate"
+            class="loading-bar"
           >
-            <mat-icon>clear</mat-icon>
-          </button>
-        </mat-form-field>
+          </mat-progress-bar>
 
-        <!-- Filter -->
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Filter</mat-label>
-          <mat-select
-            [(value)]="selectedFilter"
-            (selectionChange)="onFilterChange($event)"
-          >
-            <mat-option value="all">All Components</mat-option>
-            <mat-option value="material">Material Design</mat-option>
-            <mat-option value="aegisx">AegisX UI</mat-option>
-            <mat-option value="widgets">Widgets</mat-option>
-            <mat-option value="demos">Interactive</mat-option>
-          </mat-select>
-        </mat-form-field>
+          <!-- Main Content -->
+          <div class="showcase-content">
+            <!-- Tab Content -->
+            <mat-tab-group
+              [(selectedIndex)]="selectedTabIndexNumber"
+              class="showcase-tabs"
+              animationDuration="300ms"
+              (selectedTabChange)="onTabChange($event)"
+            >
+              <mat-tab
+                *ngFor="let tab of filteredTabs(); trackBy: trackByTabId"
+                [label]="tab.label"
+              >
+                <ng-template matTabLabel>
+                  <mat-icon class="tab-icon">{{ tab.icon }}</mat-icon>
+                  {{ tab.label }}
+                  <mat-chip *ngIf="tab.badgeCount" class="tab-badge">
+                    {{ tab.badgeCount }}
+                  </mat-chip>
+                </ng-template>
 
-        <div class="spacer"></div>
+                <div class="tab-content">
+                  <!-- Tab Header -->
+                  <div class="tab-header">
+                    <h2>{{ tab.label }}</h2>
+                    <p>{{ tab.description }}</p>
+                  </div>
 
-        <!-- Theme Toggle -->
-        <mat-slide-toggle
-          [(ngModel)]="isDarkTheme"
-          (change)="toggleTheme()"
-          class="theme-toggle"
-        >
-          <mat-icon>{{ isDarkTheme() ? 'dark_mode' : 'light_mode' }}</mat-icon>
-        </mat-slide-toggle>
-      </div>
+                  <!-- Dynamic Component Content -->
+                  <div class="component-section" [ngSwitch]="tab.id">
+                    <app-material-section
+                      *ngSwitchCase="'material'"
+                      [searchQuery]="searchQuery()"
+                      [theme]="isDarkTheme() ? 'dark' : 'light'"
+                    >
+                    </app-material-section>
 
-      <!-- Progress Bar for Loading -->
-      <mat-progress-bar
-        *ngIf="isLoading()"
-        mode="indeterminate"
-        class="loading-bar"
-      >
-      </mat-progress-bar>
+                    <app-aegisx-ui-section
+                      *ngSwitchCase="'aegisx'"
+                      [searchQuery]="searchQuery()"
+                      [theme]="isDarkTheme() ? 'dark' : 'light'"
+                    >
+                    </app-aegisx-ui-section>
 
-      <!-- Main Content -->
-      <div class="showcase-content">
-        <!-- Tab Content -->
-        <mat-tab-group
-          [(selectedIndex)]="selectedTabIndexNumber"
-          class="showcase-tabs"
-          animationDuration="300ms"
-          (selectedTabChange)="onTabChange($event)"
-        >
-          <mat-tab
-            *ngFor="let tab of filteredTabs(); trackBy: trackByTabId"
-            [label]="tab.label"
-          >
-            <ng-template matTabLabel>
-              <mat-icon class="tab-icon">{{ tab.icon }}</mat-icon>
-              {{ tab.label }}
-              <mat-chip *ngIf="tab.badgeCount" class="tab-badge">
-                {{ tab.badgeCount }}
-              </mat-chip>
-            </ng-template>
+                    <app-widgets-section
+                      *ngSwitchCase="'widgets'"
+                      [searchQuery]="searchQuery()"
+                      [theme]="isDarkTheme() ? 'dark' : 'light'"
+                    >
+                    </app-widgets-section>
 
-            <div class="tab-content">
-              <!-- Tab Header -->
-              <div class="tab-header">
-                <h2>{{ tab.label }}</h2>
-                <p>{{ tab.description }}</p>
-              </div>
+                    <app-interactive-demos
+                      *ngSwitchCase="'demos'"
+                      [searchQuery]="searchQuery()"
+                      [theme]="isDarkTheme() ? 'dark' : 'light'"
+                    >
+                    </app-interactive-demos>
 
-              <!-- Dynamic Component Content -->
-              <div class="component-section" [ngSwitch]="tab.id">
-                <app-material-section
-                  *ngSwitchCase="'material'"
-                  [searchQuery]="searchQuery()"
-                  [theme]="isDarkTheme() ? 'dark' : 'light'"
-                >
-                </app-material-section>
-
-                <app-aegisx-ui-section
-                  *ngSwitchCase="'aegisx'"
-                  [searchQuery]="searchQuery()"
-                  [theme]="isDarkTheme() ? 'dark' : 'light'"
-                >
-                </app-aegisx-ui-section>
-
-                <app-widgets-section
-                  *ngSwitchCase="'widgets'"
-                  [searchQuery]="searchQuery()"
-                  [theme]="isDarkTheme() ? 'dark' : 'light'"
-                >
-                </app-widgets-section>
-
-                <app-interactive-demos
-                  *ngSwitchCase="'demos'"
-                  [searchQuery]="searchQuery()"
-                  [theme]="isDarkTheme() ? 'dark' : 'light'"
-                >
-                </app-interactive-demos>
-
-                <!-- Fallback -->
-                <div *ngSwitchDefault class="coming-soon">
-                  <mat-icon>construction</mat-icon>
-                  <h3>Coming Soon</h3>
-                  <p>This section is under development.</p>
+                    <!-- Fallback -->
+                    <div *ngSwitchDefault class="coming-soon">
+                      <mat-icon>construction</mat-icon>
+                      <h3>Coming Soon</h3>
+                      <p>This section is under development.</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </mat-tab>
-        </mat-tab-group>
-      </div>
+              </mat-tab>
+            </mat-tab-group>
+          </div>
 
-      <!-- Footer -->
-      <div class="showcase-footer">
-        <p>
-          AegisX Component Showcase -
-          <span class="component-count"
-            >{{ totalComponentCount() }} components</span
-          >
-          | <span class="version">v{{ version }}</span> |
-          <a href="https://material.angular.io" target="_blank"
-            >Angular Material</a
-          >
-          |
-          <a href="#" (click)="showAbout()">About</a>
-        </p>
+          <!-- Footer -->
+          <div class="showcase-footer">
+            <p>
+              AegisX Component Showcase -
+              <span class="component-count"
+                >{{ totalComponentCount() }} components</span
+              >
+              | <span class="version">v{{ version }}</span> |
+              <a href="https://material.angular.io" target="_blank"
+                >Angular Material</a
+              >
+              |
+              <a href="#" (click)="showAbout()">About</a>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   `,
