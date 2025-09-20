@@ -187,7 +187,7 @@ export class FileUploadService {
     const formData = new FormData();
 
     files.forEach((file) => {
-      formData.append('files', file);
+      formData.append('file', file);
     });
 
     if (options.category) formData.append('category', options.category);
