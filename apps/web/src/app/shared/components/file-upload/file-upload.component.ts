@@ -326,11 +326,10 @@ import {
               <!-- File Thumbnail/Preview -->
               <div class="uploaded-file-preview">
                 <img
-                  *ngIf="isImageFile(file.mimeType) && file?.id"
-                  [src]="getThumbnailUrl(file.id)"
+                  *ngIf="isImageFile(file.mimeType) && getFilePreview(file)"
+                  [src]="getFilePreview(file)"
                   [alt]="file.originalName"
                   class="thumbnail-image"
-                  (error)="onThumbnailError($event, file)"
                 />
                 <div
                   *ngIf="!isImageFile(file.mimeType)"
@@ -824,7 +823,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   private _selectedFiles = signal<File[]>([]);
   private _uploadProgress = signal<FileUploadProgress[]>([]);
   private _validationResults = signal<FileValidationResult[]>([]);
-  private _uploadedFiles = signal<UploadedFile[]>([]);
+  private _uploadedFiles = signal<(UploadedFile & { preview?: string })[]>([]);
 
   // Readonly signals
   readonly isDragOver = this._isDragOver.asReadonly();
@@ -1042,9 +1041,23 @@ export class FileUploadComponent implements OnInit, OnDestroy {
           .subscribe({
             next: (response) => {
               const uploadedFiles = response.data.uploaded;
+
+              // Combine uploaded files with their previews from progress
+              const uploadedFilesWithPreviews = uploadedFiles.map(
+                (uploadedFile) => {
+                  const progressItem = this._uploadProgress().find(
+                    (p) => p.file.name === uploadedFile.originalName,
+                  );
+                  return {
+                    ...uploadedFile,
+                    preview: progressItem?.preview,
+                  };
+                },
+              );
+
               this._uploadedFiles.update((files) => [
                 ...files,
-                ...uploadedFiles,
+                ...uploadedFilesWithPreviews,
               ]);
               this.uploadComplete.emit(uploadedFiles);
 
@@ -1112,12 +1125,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     return item?.id || `index-${index}`;
   }
 
-  getThumbnailUrl(fileId: string): string {
-    return this.fileUploadService.getThumbnailUrl(fileId, {
-      size: '150x150',
-      format: 'jpg',
-      quality: 80,
-    });
+  getFilePreview(file: UploadedFile & { preview?: string }): string | null {
+    // Use stored preview if available, fallback to signedUrls if exists
+    return file.preview || file.signedUrls?.thumbnail || null;
   }
 
   isImageFile(mimeType: string): boolean {
@@ -1155,16 +1165,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     return date.toLocaleDateString();
   }
 
-  onThumbnailError(event: any, file: UploadedFile): void {
-    // Fallback to view URL if thumbnail fails
-    if (!file?.id) return;
-    const img = event.target as HTMLImageElement;
-    img.src = this.fileUploadService.getViewUrl(file.id);
-  }
-
   viewFile(file: UploadedFile): void {
     if (!file?.id) return;
-    const viewUrl = this.fileUploadService.getViewUrl(file.id);
+    // Use signedUrls if available, otherwise fallback to API
+    const viewUrl =
+      file.signedUrls?.view || this.fileUploadService.getViewUrl(file.id);
     window.open(viewUrl, '_blank');
   }
 
@@ -1193,17 +1198,22 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   showCustomThumbnailOptions(file: UploadedFile): void {
     if (!file?.id) return;
-    // Show different thumbnail sizes in console
-    const commonSizes = ['64x64', '150x150', '300x300', '500x500'];
-    console.log('Available thumbnail sizes for', file.originalName, ':');
-    commonSizes.forEach((size) => {
-      const url = this.fileUploadService.getThumbnailUrl(file.id, { size });
-      console.log(`${size}: ${url}`);
-    });
-
-    this.snackBar.open('Thumbnail options logged to console', 'Close', {
-      duration: 3000,
-    });
+    // Show different thumbnail sizes using signed URLs if available
+    if (file.signedUrls?.thumbnail) {
+      console.log(
+        'Available thumbnail for',
+        file.originalName,
+        ':',
+        file.signedUrls.thumbnail,
+      );
+      this.snackBar.open('Thumbnail URL logged to console', 'Close', {
+        duration: 3000,
+      });
+    } else {
+      this.snackBar.open('No thumbnail available for this file', 'Close', {
+        duration: 3000,
+      });
+    }
   }
 
   deleteUploadedFile(file: UploadedFile): void {

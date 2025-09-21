@@ -37,8 +37,8 @@ async function userProfilePlugin(
     limits: {
       fileSize: 100 * 1024 * 1024, // 100MB per file
       files: 10, // Allow up to 10 files for file-upload module
-      fieldSize: 1024 * 1024, // 1MB for form fields
-      fields: 10, // Maximum number of non-file fields
+      fieldSize: 10 * 1024 * 1024, // 10MB for form fields (increased for multiple file metadata)
+      fields: 20, // Maximum number of non-file fields (increased for multiple files)
     },
     throwFileSizeLimit: true,
     addToBody: false, // Don't add files to request.body

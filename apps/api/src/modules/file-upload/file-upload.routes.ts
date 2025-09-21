@@ -79,6 +79,7 @@ export async function fileUploadRoutes(
       },
       security: [{ bearerAuth: [] }],
     },
+    bodyLimit: 1024 * 1024 * 1024, // 1GB body limit for multiple file uploads
     preHandler: [fastify.authenticate],
     handler: controller.uploadMultipleFiles.bind(controller),
   });

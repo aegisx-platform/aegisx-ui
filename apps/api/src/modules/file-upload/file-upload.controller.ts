@@ -134,12 +134,27 @@ export class FileUploadController {
     reply: FastifyReply,
   ) {
     try {
+      request.log.info('Starting to process multipart files...');
       const files = request.files();
       const fileArray: MultipartFile[] = [];
+      let fileCount = 0;
 
       for await (const file of files) {
+        fileCount++;
+        request.log.info(`Processing file ${fileCount}: ${file.filename}`);
         fileArray.push(file);
+
+        // Safety limit to prevent infinite loops
+        if (fileCount > 20) {
+          throw new Error(
+            'Too many files in request - possible infinite loop detected',
+          );
+        }
       }
+
+      request.log.info(
+        `Collected ${fileArray.length} files from multipart request`,
+      );
 
       if (fileArray.length === 0) {
         return reply.code(400).send({

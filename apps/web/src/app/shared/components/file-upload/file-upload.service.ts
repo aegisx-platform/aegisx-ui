@@ -229,7 +229,7 @@ export class FileUploadService {
           } else if (event.type === HttpEventType.Response) {
             // Upload completed - update individual file statuses
             const response = event.body as MultipleFileUploadResponse;
-            if (response?.data) {
+            if (response?.data && response.data.uploaded) {
               // Mark successful uploads
               response.data.uploaded.forEach((uploadedFile) => {
                 const file = files.find(
@@ -241,18 +241,22 @@ export class FileUploadService {
               });
 
               // Mark failed uploads
-              response.data.failed.forEach((failedFile) => {
-                const file = files.find((f) => f.name === failedFile.filename);
-                if (file) {
-                  this.updateFileProgress(
-                    file,
-                    0,
-                    'error',
-                    undefined,
-                    failedFile.error,
+              if (response.data.failed) {
+                response.data.failed.forEach((failedFile) => {
+                  const file = files.find(
+                    (f) => f.name === failedFile.filename,
                   );
-                }
-              });
+                  if (file) {
+                    this.updateFileProgress(
+                      file,
+                      0,
+                      'error',
+                      undefined,
+                      failedFile.error,
+                    );
+                  }
+                });
+              }
             }
             return response;
           }
