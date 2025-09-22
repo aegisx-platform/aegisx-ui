@@ -1,189 +1,252 @@
-# crud generator - API Contracts
+# CRUD Generator - CLI & API Contracts
 
-## 📋 API Overview
+## 📋 CLI & API Overview
 
-**Base URL**: `/api/[resource]`  
-**Authentication**: JWT Bearer Token Required  
+**Primary Interface**: CLI Commands  
+**Optional API**: `/api/generator`  
+**Authentication**: CLI (Local), API (JWT Bearer Token)  
 **Content Type**: `application/json`
 
-## 🛠️ Endpoints
+## 🛠️ CLI Commands
 
-### 1. List [Resources]
-
-```http
-GET /api/[resource]
-```
-
-#### Query Parameters
-
-- `page` (number, optional): Page number (default: 1)
-- `limit` (number, optional): Items per page (default: 10, max: 100)
-- `sort` (string, optional): Sort field (default: 'created_at')
-- `order` (string, optional): Sort order ('asc' or 'desc', default: 'desc')
-- `search` (string, optional): Search query
-- `filter` (object, optional): Filter criteria
-
-#### Request Example
+### 1. Generate CRUD Module
 
 ```bash
-GET /api/[resource]?page=1&limit=20&sort=name&order=asc&search=query
+npm run generate:crud <table-name> [options]
 ```
 
-#### Response Schema
+#### Required Parameters
 
-```typescript
-{
-  data: [Resource][];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  };
-}
+- `table-name` (string): Database table name to generate CRUD for
+
+#### Optional Parameters
+
+- `--path` (string): Target directory (default: apps/api/src/modules)
+- `--dry-run` (boolean): Preview without creating files
+- `--skip-tests` (boolean): Skip test file generation
+- `--naming` (string): Naming convention ('camel', 'pascal', 'kebab')
+- `--template` (string): Custom template directory
+- `--force` (boolean): Overwrite existing files
+
+#### CLI Usage Examples
+
+```bash
+# Basic CRUD generation
+npm run generate:crud products
+
+# With custom path
+npm run generate:crud users --path=apps/api/src/custom-modules
+
+# Dry run to preview
+npm run generate:crud orders --dry-run
+
+# Skip tests and use custom naming
+npm run generate:crud categories --skip-tests --naming=pascal
+
+# Force overwrite existing files
+npm run generate:crud inventory --force
 ```
 
-#### Response Example
+#### CLI Output Example
+
+```bash
+$ npm run generate:crud products
+
+🚀 CRUD Generator - Starting generation for 'products'
+📊 Analyzing database table: products
+  ✅ Found table with 8 columns
+  ✅ Primary key: id (uuid)
+  ✅ Foreign keys: category_id → categories(id)
+  ✅ Indexes: name, category_id, created_at
+
+📁 Generating files in: apps/api/src/modules/products/
+  ✅ products.controller.ts
+  ✅ products.service.ts
+  ✅ products.repository.ts
+  ✅ products.routes.ts
+  ✅ products.schemas.ts
+  ✅ products.types.ts
+  ✅ products.plugin.ts
+  ✅ products.spec.ts
+  ✅ index.ts
+
+🔧 Auto-registering plugin in main application...
+  ✅ Updated apps/api/src/main.ts
+
+✅ CRUD module for 'products' generated successfully!
+
+📋 Next steps:
+1. Review generated files in apps/api/src/modules/products/
+2. Customize business logic in products.service.ts
+3. Add additional validation in products.schemas.ts
+4. Test endpoints: GET/POST/PUT/DELETE /api/products
+```
+
+### 2. List Available Tables
+
+```bash
+npm run generate:crud --list-tables
+```
+
+#### Output Example
+
+```bash
+$ npm run generate:crud --list-tables
+
+📊 Available database tables:
+  ✅ users (11 columns) - Has CRUD module
+  ✅ roles (4 columns) - Has CRUD module
+  🆕 products (8 columns) - Ready for generation
+  🆕 categories (5 columns) - Ready for generation
+  🆕 orders (12 columns) - Ready for generation
+  ⚠️  audit_logs (15 columns) - Large table, consider custom implementation
+```
+
+### 3. Template Management
+
+```bash
+npm run generate:crud --list-templates
+npm run generate:crud --create-template <name>
+```
+
+#### Template Commands
+
+```bash
+# List available templates
+npm run generate:crud --list-templates
+
+# Create custom template
+npm run generate:crud --create-template my-custom-template
+
+# Use custom template
+npm run generate:crud products --template=my-custom-template
+```
+
+## 🔧 CLI Configuration
+
+### Configuration File
+
+The generator can be configured via `.crud-generator.json`:
 
 ```json
 {
-  "data": [
-    {
-      "id": "uuid",
-      "name": "Example Resource",
-      "created_at": "2025-09-12T10:30:00Z",
-      "updated_at": "2025-09-12T10:30:00Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 100,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": false
+  "defaultPath": "apps/api/src/modules",
+  "naming": "camel",
+  "database": {
+    "type": "postgresql",
+    "connection": "DATABASE_URL"
   },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
-  }
+  "templates": {
+    "default": "templates/default",
+    "custom": "templates/custom"
+  },
+  "generation": {
+    "skipTests": false,
+    "includeSwagger": true,
+    "autoRegister": true
+  },
+  "excludeTables": ["migrations", "seeds", "knex_migrations", "knex_migrations_lock"]
 }
 ```
 
-### 2. Get Single [Resource]
+### Environment Variables
 
-```http
-GET /api/[resource]/:id
+```bash
+# Database connection (required)
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+
+# Generator configuration
+CRUD_GENERATOR_PATH=apps/api/src/modules
+CRUD_GENERATOR_TEMPLATES=./templates
+CRUD_GENERATOR_AUTO_REGISTER=true
 ```
 
-#### Path Parameters
+## 📊 CLI Data Models
 
-- `id` (string, required): Resource UUID
-
-#### Response Schema
+### CLI Input Schema
 
 ```typescript
-{
-  data: Resource;
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
+interface GenerateCommand {
+  tableName: string;
+  options: {
+    path?: string;
+    dryRun?: boolean;
+    skipTests?: boolean;
+    naming?: 'camel' | 'pascal' | 'kebab';
+    template?: string;
+    force?: boolean;
+  };
 }
 ```
 
-#### Response Example
-
-```json
-{
-  "data": {
-    "id": "uuid",
-    "name": "Example Resource",
-    "description": "Resource description",
-    "created_at": "2025-09-12T10:30:00Z",
-    "updated_at": "2025-09-12T10:30:00Z"
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
-  }
-}
-```
-
-### 3. Create [Resource]
-
-```http
-POST /api/[resource]
-```
-
-#### Request Schema
+### Database Schema Analysis
 
 ```typescript
-{
+interface TableSchema {
+  tableName: string;
+  columns: ColumnInfo[];
+  primaryKey: string[];
+  foreignKeys: ForeignKeyInfo[];
+  indexes: IndexInfo[];
+  constraints: ConstraintInfo[];
+}
+
+interface ColumnInfo {
   name: string;
-  description?: string;
-  // Add other required fields
+  type: string;
+  nullable: boolean;
+  default: any;
+  isPrimaryKey: boolean;
+  isForeignKey: boolean;
+  maxLength?: number;
+  precision?: number;
+  scale?: number;
+}
+
+interface ForeignKeyInfo {
+  column: string;
+  referencedTable: string;
+  referencedColumn: string;
+  onDelete: 'CASCADE' | 'SET NULL' | 'RESTRICT';
+  onUpdate: 'CASCADE' | 'SET NULL' | 'RESTRICT';
 }
 ```
 
-#### Request Example
-
-```json
-{
-  "name": "New Resource",
-  "description": "Resource description"
-}
-```
-
-#### Response Schema
+### Generated File Structure
 
 ```typescript
-{
-  data: Resource;
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
+interface GeneratedModule {
+  files: GeneratedFile[];
+  registrationCode: string;
+  dependencies: string[];
+}
+
+interface GeneratedFile {
+  path: string;
+  content: string;
+  type: 'controller' | 'service' | 'repository' | 'routes' | 'schemas' | 'types' | 'plugin' | 'test' | 'index';
 }
 ```
 
-### 4. Update [Resource]
+## 🌐 Optional API Endpoints (Future)
+
+### 1. Generate via API
 
 ```http
-PUT /api/[resource]/:id
+POST /api/generator/generate
 ```
-
-#### Path Parameters
-
-- `id` (string, required): Resource UUID
 
 #### Request Schema
 
 ```typescript
 {
-  name?: string;
-  description?: string;
-  // Add other updatable fields
-}
-```
-
-#### Request Example
-
-```json
-{
-  "name": "Updated Resource Name",
-  "description": "Updated description"
+  tableName: string;
+  options: {
+    path?: string;
+    skipTests?: boolean;
+    naming?: string;
+    template?: string;
+  };
 }
 ```
 
@@ -191,306 +254,211 @@ PUT /api/[resource]/:id
 
 ```typescript
 {
-  data: Resource;
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
-}
-```
-
-### 5. Delete [Resource]
-
-```http
-DELETE /api/[resource]/:id
-```
-
-#### Path Parameters
-
-- `id` (string, required): Resource UUID
-
-#### Response Schema
-
-```typescript
-{
+  success: boolean;
   data: {
-    id: string;
-    deleted: boolean;
-  }
-  meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
-  }
-}
-```
-
-## 📊 Data Models
-
-### Resource Model
-
-```typescript
-interface Resource {
-  id: string;
-  name: string;
-  description?: string;
-  status: 'active' | 'inactive' | 'deleted';
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by?: string;
-}
-```
-
-### Request Models
-
-```typescript
-interface CreateResourceRequest {
-  name: string;
-  description?: string;
-}
-
-interface UpdateResourceRequest {
-  name?: string;
-  description?: string;
-}
-
-interface ResourceFilters {
-  status?: 'active' | 'inactive';
-  created_after?: string;
-  created_before?: string;
-}
-```
-
-### Response Models
-
-```typescript
-interface ResourceListResponse {
-  data: Resource[];
-  pagination: PaginationMeta;
-  meta: ResponseMeta;
-}
-
-interface ResourceResponse {
-  data: Resource;
-  meta: ResponseMeta;
-}
-
-interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
-
-interface ResponseMeta {
-  requestId: string;
-  timestamp: string;
-  version: string;
-}
-```
-
-## ❌ Error Responses
-
-### Error Schema
-
-```typescript
-{
-  error: {
-    code: string;
-    message: string;
-    details?: any;
+    generatedFiles: string[];
+    registeredPlugin: boolean;
+    warnings: string[];
   };
   meta: {
-    requestId: string;
-    timestamp: string;
-    version: string;
+    tableName: string;
+    generationTime: number;
+    filesCreated: number;
   };
 }
 ```
 
-### Common Error Codes
-
-- `400` Bad Request
-- `401` Unauthorized
-- `403` Forbidden
-- `404` Not Found
-- `409` Conflict
-- `422` Validation Error
-- `500` Internal Server Error
-
-### Error Examples
-
-#### Validation Error (422)
-
-```json
-{
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Validation failed",
-    "details": {
-      "name": ["Name is required"],
-      "description": ["Description must be at least 10 characters"]
-    }
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
-  }
-}
-```
-
-#### Not Found Error (404)
-
-```json
-{
-  "error": {
-    "code": "RESOURCE_NOT_FOUND",
-    "message": "Resource not found"
-  },
-  "meta": {
-    "requestId": "req_123456",
-    "timestamp": "2025-09-12T10:30:00Z",
-    "version": "1.0"
-  }
-}
-```
-
-## 🔐 Authentication & Authorization
-
-### Authentication
-
-All endpoints require JWT Bearer token in Authorization header:
+### 2. Preview Generation
 
 ```http
-Authorization: Bearer <jwt_token>
+POST /api/generator/preview
 ```
 
-### Authorization
-
-Different endpoints may require different permissions:
-
-- `[resource]:read` - View resources
-- `[resource]:create` - Create resources
-- `[resource]:update` - Update resources
-- `[resource]:delete` - Delete resources
-
-## 📝 TypeBox Schemas
-
-### Request Schemas
+#### Request Schema
 
 ```typescript
-export const CreateResourceSchema = Type.Object({
-  name: Type.String({ minLength: 1, maxLength: 255 }),
-  description: Type.Optional(Type.String({ minLength: 1, maxLength: 1000 })),
-});
-
-export const UpdateResourceSchema = Type.Object({
-  name: Type.Optional(Type.String({ minLength: 1, maxLength: 255 })),
-  description: Type.Optional(Type.String({ minLength: 1, maxLength: 1000 })),
-});
-
-export const ResourceFiltersSchema = Type.Object({
-  status: Type.Optional(Type.Union([Type.Literal('active'), Type.Literal('inactive')])),
-  created_after: Type.Optional(Type.String({ format: 'date-time' })),
-  created_before: Type.Optional(Type.String({ format: 'date-time' })),
-});
+{
+  tableName: string;
+  options: GenerateOptions;
+}
 ```
 
-### Response Schemas
+#### Response Schema
 
 ```typescript
-export const ResourceSchema = Type.Object({
-  id: Type.String({ format: 'uuid' }),
-  name: Type.String(),
-  description: Type.Union([Type.String(), Type.Null()]),
-  status: Type.Union([Type.Literal('active'), Type.Literal('inactive'), Type.Literal('deleted')]),
-  created_at: Type.String({ format: 'date-time' }),
-  updated_at: Type.String({ format: 'date-time' }),
-  created_by: Type.String({ format: 'uuid' }),
-  updated_by: Type.Union([Type.String({ format: 'uuid' }), Type.Null()]),
-});
-
-export const ResourceListResponseSchema = Type.Object({
-  data: Type.Array(ResourceSchema),
-  pagination: PaginationSchema,
-  meta: ResponseMetaSchema,
-});
+{
+  success: boolean;
+  data: {
+    previewFiles: {
+      path: string;
+      content: string;
+      type: string;
+    }
+    [];
+    analysis: TableSchema;
+  }
+}
 ```
 
-## 🧪 Test Cases
+### 3. List Tables
 
-### Unit Test Cases
+```http
+GET /api/generator/tables
+```
 
-1. **GET /api/[resource]**
-   - Returns paginated list
-   - Applies filters correctly
-   - Handles empty results
-   - Validates query parameters
+#### Response Schema
 
-2. **GET /api/[resource]/:id**
-   - Returns single resource
-   - Returns 404 for non-existent resource
-   - Validates UUID format
+```typescript
+{
+  success: boolean;
+  data: {
+    tables: {
+      name: string;
+      columns: number;
+      hasModule: boolean;
+      recommended: boolean;
+    }
+    [];
+  }
+}
+```
 
-3. **POST /api/[resource]**
-   - Creates resource successfully
-   - Validates required fields
-   - Returns validation errors
-   - Handles duplicate names
+## ❌ CLI Error Handling
 
-4. **PUT /api/[resource]/:id**
-   - Updates resource successfully
-   - Validates fields
-   - Returns 404 for non-existent resource
-   - Handles partial updates
+### Error Types
 
-5. **DELETE /api/[resource]/:id**
-   - Deletes resource successfully
-   - Returns 404 for non-existent resource
-   - Handles cascade deletions
+1. **Database Connection Error**
 
-### Integration Test Cases
+```bash
+❌ Error: Cannot connect to database
+💡 Check DATABASE_URL environment variable
+💡 Ensure PostgreSQL is running
+```
 
-1. **Complete CRUD workflow**
-2. **Authentication/Authorization**
-3. **Error handling**
-4. **Performance under load**
-5. **Concurrent operations**
+2. **Table Not Found**
+
+```bash
+❌ Error: Table 'products' not found in database
+💡 Available tables: users, roles, categories
+💡 Use --list-tables to see all tables
+```
+
+3. **File Already Exists**
+
+```bash
+⚠️  Warning: Module 'products' already exists
+💡 Use --force to overwrite existing files
+💡 Use --dry-run to preview changes
+```
+
+4. **Invalid Template**
+
+```bash
+❌ Error: Template 'custom-template' not found
+💡 Available templates: default, minimal
+💡 Use --list-templates to see all templates
+```
+
+5. **Permission Error**
+
+```bash
+❌ Error: Permission denied writing to apps/api/src/modules/
+💡 Check file permissions
+💡 Run with appropriate user privileges
+```
+
+### CLI Exit Codes
+
+- `0` - Success
+- `1` - General error
+- `2` - Database connection error
+- `3` - Table not found
+- `4` - File permission error
+- `5` - Template error
+- `6` - Configuration error
+
+## 🧪 CLI Testing
+
+### Test Commands
+
+```bash
+# Run generator tests
+npm run test:generator
+
+# Test with real database
+npm run test:generator:integration
+
+# Test template rendering
+npm run test:templates
+
+# Test CLI interface
+npm run test:cli
+```
+
+### Test Scenarios
+
+1. **Basic Generation Test**
+   - Generate CRUD for test table
+   - Verify all files created
+   - Compile generated TypeScript
+   - Run generated tests
+
+2. **Database Schema Test**
+   - Test with various column types
+   - Test with foreign keys
+   - Test with composite primary keys
+   - Test with indexes and constraints
+
+3. **Template System Test**
+   - Test default templates
+   - Test custom templates
+   - Test template inheritance
+   - Test template error handling
+
+4. **CLI Interface Test**
+   - Test all command options
+   - Test error scenarios
+   - Test help documentation
+   - Test configuration loading
 
 ## 📋 Implementation Checklist
 
-### Backend Implementation
+### CLI Implementation
 
-- [ ] Database migrations
-- [ ] TypeBox schemas defined
-- [ ] Repository layer implemented
-- [ ] Service layer implemented
-- [ ] Controller layer implemented
-- [ ] Route registration
-- [ ] Validation middleware
-- [ ] Error handling
-- [ ] Unit tests written
-- [ ] Integration tests written
+- [ ] Command-line argument parsing (Commander.js)
+- [ ] Database connection and schema reading
+- [ ] Template engine integration (Handlebars)
+- [ ] File generation system
+- [ ] Progress indicators and logging
+- [ ] Error handling and validation
+- [ ] Configuration file support
+- [ ] Help documentation
 
-### Frontend Implementation
+### Template System
 
-- [ ] Service interfaces defined
-- [ ] HTTP client implementation
-- [ ] Type definitions created
-- [ ] Error handling implemented
-- [ ] Loading states managed
-- [ ] Response transformation
-- [ ] Unit tests written
+- [ ] Default templates for all file types
+- [ ] Template inheritance and partials
+- [ ] Custom template support
+- [ ] Template validation
+- [ ] Variable injection system
+- [ ] Conditional rendering
+- [ ] Loop support for arrays
 
-### Documentation
+### Integration
 
-- [ ] API documentation complete
-- [ ] OpenAPI/Swagger specs
-- [ ] Postman collection created
-- [ ] Examples provided
-- [ ] Error scenarios documented
+- [ ] Auto-registration in main application
+- [ ] NPM script integration
+- [ ] Environment variable support
+- [ ] Configuration file loading
+- [ ] Plugin dependency management
+- [ ] Generated code validation
+
+### Testing
+
+- [ ] Unit tests for CLI components
+- [ ] Integration tests with real database
+- [ ] Template rendering tests
+- [ ] Generated code compilation tests
+- [ ] End-to-end CLI workflow tests
+
+This CLI-first approach ensures developers can quickly generate consistent, high-quality CRUD modules while maintaining the flexibility to customize as needed.
