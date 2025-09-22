@@ -1055,7 +1055,13 @@ export class FileUploadController {
         });
       }
 
-      const deleted = await this.deps.fileUploadService.deleteFile(id, userId);
+      // Check if this is a force delete (admin only)
+      const force = request.query?.force === 'true';
+      const deleted = await this.deps.fileUploadService.deleteFile(
+        id,
+        userId,
+        force,
+      );
 
       if (!deleted) {
         return reply.code(404).send({
@@ -1093,6 +1099,58 @@ export class FileUploadController {
         error: {
           code: 'DELETE_FAILED',
           message: error.message || 'Failed to delete file',
+        },
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    }
+  }
+
+  /**
+   * Admin: Clean up soft-deleted files (force delete after retention period)
+   */
+  async cleanupSoftDeletedFiles(
+    request: FastifyRequest<{
+      Querystring: { retentionDays?: string };
+    }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      // TODO: Add admin role check here
+      // if (!request.user?.roles?.includes('admin')) {
+      //   return reply.code(403).send({ error: 'Admin access required' });
+      // }
+
+      const retentionDays = parseInt(request.query.retentionDays || '30');
+      const result =
+        await this.deps.fileUploadService.cleanupSoftDeletedFiles(
+          retentionDays,
+        );
+
+      return reply.send({
+        success: true,
+        data: {
+          cleaned: result.cleaned,
+          errors: result.errors,
+          retentionDays,
+        },
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    } catch (error: any) {
+      request.log.error(error, 'Failed to cleanup soft-deleted files');
+
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'CLEANUP_FAILED',
+          message: error.message || 'Failed to cleanup soft-deleted files',
         },
         meta: {
           requestId: request.id,

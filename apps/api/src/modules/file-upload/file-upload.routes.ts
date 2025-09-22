@@ -293,8 +293,17 @@ export async function fileUploadRoutes(
     schema: {
       tags: ['File Management'],
       summary: 'Delete file',
-      description: 'Delete file and all its variants',
+      description:
+        'Delete file (soft delete by default, force=true for hard delete)',
       params: FileIdParamSchema,
+      querystring: Type.Object({
+        force: Type.Optional(
+          Type.Boolean({
+            description:
+              'Force delete (permanently remove from storage and database)',
+          }),
+        ),
+      }),
       response: {
         200: DeleteFileResponseSchema,
         401: FileUploadErrorSchema,
@@ -305,6 +314,41 @@ export async function fileUploadRoutes(
     },
     preHandler: [fastify.authenticate],
     handler: controller.deleteFile.bind(controller),
+  });
+
+  // Admin: Cleanup soft-deleted files
+  fastify.post('/admin/cleanup-deleted', {
+    schema: {
+      tags: ['Admin'],
+      summary: 'Cleanup soft-deleted files',
+      description:
+        'Permanently delete files that have been soft-deleted for longer than retention period',
+      querystring: Type.Object({
+        retentionDays: Type.Optional(
+          Type.Number({
+            minimum: 1,
+            maximum: 365,
+            default: 30,
+            description: 'Number of days to retain soft-deleted files',
+          }),
+        ),
+      }),
+      response: {
+        200: Type.Object({
+          success: Type.Literal(true),
+          data: Type.Object({
+            cleaned: Type.Number(),
+            errors: Type.Number(),
+            retentionDays: Type.Number(),
+          }),
+          meta: ApiMetaSchema,
+        }),
+        500: FileUploadErrorSchema,
+      },
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authenticate],
+    handler: controller.cleanupSoftDeletedFiles.bind(controller),
   });
 
   // Process image

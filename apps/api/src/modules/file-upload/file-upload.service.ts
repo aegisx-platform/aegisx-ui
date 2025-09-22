@@ -36,6 +36,7 @@ export interface FileUploadServiceDependencies {
 export interface ProcessedUploadResult {
   file: UploadedFile;
   warnings?: string[];
+  duplicates?: Array<{ file: any; similarity: number; reason: string }>;
 }
 
 export interface MultipleUploadResult {
@@ -413,9 +414,13 @@ export class FileUploadService {
   }
 
   /**
-   * Delete file
+   * Delete file (soft delete by default, hard delete for admin)
    */
-  async deleteFile(id: string, userId: string): Promise<boolean> {
+  async deleteFile(
+    id: string,
+    userId: string,
+    force = false,
+  ): Promise<boolean> {
     try {
       // Get file info first
       const file = await this.deps.fileRepository.findById(id, userId);
@@ -423,17 +428,32 @@ export class FileUploadService {
         return false;
       }
 
-      // Delete from storage
-      await this.deps.storageAdapter.deleteFile(file.filepath);
+      if (force) {
+        // Hard delete (admin only) - immediately remove from storage and database
+        await this.deps.storageAdapter.deleteFile(file.filepath);
+        const deleted = await this.deps.fileRepository.hardDeleteFile(
+          id,
+          userId,
+        );
 
-      // Soft delete from database
-      const deleted = await this.deps.fileRepository.deleteFile(id, userId);
+        if (deleted) {
+          this.deps.logger.info(`File hard deleted: ${id}`);
+        }
+        return deleted;
+      } else {
+        // Soft delete - mark as deleted in database, keep in storage for retention period
+        const deleted = await this.deps.fileRepository.softDeleteFile(
+          id,
+          userId,
+        );
 
-      if (deleted) {
-        this.deps.logger.info(`File deleted: ${id}`);
+        if (deleted) {
+          this.deps.logger.info(
+            `File soft deleted: ${id} (will be cleaned up after retention period)`,
+          );
+        }
+        return deleted;
       }
-
-      return deleted;
     } catch (error) {
       this.deps.logger.error(error, `Failed to delete file: ${id}`);
       throw error;
@@ -600,7 +620,7 @@ export class FileUploadService {
 
       for (const file of expiredFiles) {
         try {
-          await this.deleteFile(file.id, ''); // System cleanup, no user check
+          await this.deleteFile(file.id, '', true); // Force delete for expired files
           cleaned++;
         } catch (error) {
           errors++;
@@ -617,6 +637,52 @@ export class FileUploadService {
       return { cleaned, errors };
     } catch (error) {
       this.deps.logger.error(error, 'Failed to cleanup expired files');
+      throw error;
+    }
+  }
+
+  /**
+   * Clean up soft-deleted files past retention period
+   */
+  async cleanupSoftDeletedFiles(retentionDays = 30): Promise<{
+    cleaned: number;
+    errors: number;
+  }> {
+    try {
+      const softDeletedFiles =
+        await this.deps.fileRepository.getSoftDeletedFilesOlderThan(
+          retentionDays,
+        );
+
+      this.deps.logger.info(
+        `Starting cleanup of ${softDeletedFiles.length} soft-deleted files older than ${retentionDays} days`,
+      );
+
+      let cleaned = 0;
+      let errors = 0;
+
+      for (const file of softDeletedFiles) {
+        try {
+          // Hard delete files past retention period
+          await this.deps.storageAdapter.deleteFile(file.filepath);
+          await this.deps.fileRepository.hardDeleteFile(file.id);
+          cleaned++;
+        } catch (error) {
+          errors++;
+          this.deps.logger.error(
+            error,
+            `Failed to cleanup soft-deleted file: ${file.id}`,
+          );
+        }
+      }
+
+      this.deps.logger.info(
+        `Soft-deleted cleanup completed: ${cleaned} files cleaned, ${errors} errors`,
+      );
+
+      return { cleaned, errors };
+    } catch (error) {
+      this.deps.logger.error(error, 'Failed to cleanup soft-deleted files');
       throw error;
     }
   }

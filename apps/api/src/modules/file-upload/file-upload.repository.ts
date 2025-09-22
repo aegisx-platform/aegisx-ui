@@ -330,9 +330,9 @@ export class FileUploadRepository {
   }
 
   /**
-   * Soft delete file
+   * Soft delete file (mark as deleted, keep in database)
    */
-  async deleteFile(id: string, userId?: string): Promise<boolean> {
+  async softDeleteFile(id: string, userId?: string): Promise<boolean> {
     try {
       const query = this.deps
         .db(this.tableName)
@@ -351,14 +351,46 @@ export class FileUploadRepository {
 
       const success = result > 0;
       if (success) {
-        this.deps.logger.info(`File deleted: ${id}`);
+        this.deps.logger.info(`File soft deleted: ${id}`);
       }
 
       return success;
     } catch (error) {
-      this.deps.logger.error(error, `Failed to delete file: ${id}`);
+      this.deps.logger.error(error, `Failed to soft delete file: ${id}`);
       throw error;
     }
+  }
+
+  /**
+   * Hard delete file (permanently remove from database)
+   */
+  async hardDeleteFile(id: string, userId?: string): Promise<boolean> {
+    try {
+      const query = this.deps.db(this.tableName).where('id', id);
+
+      // If userId is provided, ensure user owns the file
+      if (userId) {
+        query.where('uploaded_by', userId);
+      }
+
+      const result = await query.del();
+      const success = result > 0;
+      if (success) {
+        this.deps.logger.info(`File hard deleted: ${id}`);
+      }
+
+      return success;
+    } catch (error) {
+      this.deps.logger.error(error, `Failed to hard delete file: ${id}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Legacy method - defaults to soft delete for backward compatibility
+   */
+  async deleteFile(id: string, userId?: string): Promise<boolean> {
+    return this.softDeleteFile(id, userId);
   }
 
   /**
@@ -375,6 +407,33 @@ export class FileUploadRepository {
       return files.map((file) => this.mapDatabaseFileToSchema(file));
     } catch (error) {
       this.deps.logger.error(error, `Failed to find files by hash: ${hash}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Get soft-deleted files older than retention days
+   */
+  async getSoftDeletedFilesOlderThan(
+    retentionDays: number,
+  ): Promise<UploadedFile[]> {
+    try {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+
+      const files = await this.deps
+        .db(this.tableName)
+        .select('*')
+        .whereNotNull('deleted_at')
+        .where('deleted_at', '<', cutoffDate)
+        .limit(100); // Process in batches
+
+      return files.map((file) => this.mapDatabaseFileToSchema(file));
+    } catch (error) {
+      this.deps.logger.error(
+        error,
+        `Failed to find soft-deleted files older than ${retentionDays} days`,
+      );
       throw error;
     }
   }
