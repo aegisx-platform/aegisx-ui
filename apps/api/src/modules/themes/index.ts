@@ -51,12 +51,6 @@ export default fp(
     fastify.addHook('onReady', async () => {
       fastify.log.info(`Themes domain module registered successfully`);
     });
-
-    // Cleanup event listeners on close
-    fastify.addHook('onClose', async () => {
-      fastify.log.info(`Cleaning up Themes domain module resources`);
-      // Add any cleanup logic here
-    });
   },
   {
     name: 'themes-domain-plugin',
@@ -83,20 +77,6 @@ export type {
   ThemesUpdatedEvent,
   ThemesDeletedEvent,
 } from './schemas/themes.schemas';
-
-// Event type definitions for external consumers
-import { Themes } from './schemas/themes.schemas';
-
-export interface ThemesEventHandlers {
-  onCreated?: (data: Themes) => void | Promise<void>;
-  onUpdated?: (data: Themes) => void | Promise<void>;
-  onDeleted?: (data: { id: number | string }) => void | Promise<void>;
-}
-
-export interface ThemesWebSocketSubscription {
-  subscribe(handlers: ThemesEventHandlers): void;
-  unsubscribe(): void;
-}
 
 // Module name constant
 export const MODULE_NAME = 'themes' as const;
