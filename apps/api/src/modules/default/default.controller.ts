@@ -10,17 +10,28 @@ export class DefaultController {
       return reply.success(apiInfo, 'API information retrieved successfully');
     } catch (error) {
       request.log.error(error, 'Failed to get API info');
-      return reply.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve API information', 500);
+      return reply.error(
+        'INTERNAL_SERVER_ERROR',
+        'Failed to retrieve API information',
+        500,
+      );
     }
   }
 
   async getSystemStatus(request: FastifyRequest, reply: FastifyReply) {
     try {
       const systemStatus = await this.defaultService.getSystemStatus();
-      return reply.success(systemStatus, 'System status retrieved successfully');
+      return reply.success(
+        systemStatus,
+        'System status retrieved successfully',
+      );
     } catch (error) {
       request.log.error(error, 'Failed to get system status');
-      return reply.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve system status', 500);
+      return reply.error(
+        'INTERNAL_SERVER_ERROR',
+        'Failed to retrieve system status',
+        500,
+      );
     }
   }
 
@@ -35,9 +46,39 @@ export class DefaultController {
   }
 
   async getPing(request: FastifyRequest, reply: FastifyReply) {
-    return reply.success({
-      message: 'pong',
-      timestamp: new Date().toISOString()
-    }, 'Ping successful');
+    return reply.success(
+      {
+        message: 'pong',
+        timestamp: new Date().toISOString(),
+      },
+      'Ping successful',
+    );
+  }
+
+  async getWelcome(request: FastifyRequest, reply: FastifyReply) {
+    const welcomeMessage = {
+      message: 'Welcome to AegisX Platform API',
+      description: 'Enterprise-Ready Full Stack Application',
+      version: '1.1.1',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        api: '/api',
+        health: '/api/health',
+        info: '/api/info',
+        status: '/api/status',
+        documentation: '/documentation',
+      },
+      logo: [
+        '     █████╗ ███████╗ ██████╗ ██╗███████╗██╗  ██╗',
+        '    ██╔══██╗██╔════╝██╔════╝ ██║██╔════╝╚██╗██╔╝',
+        '    ███████║█████╗  ██║  ███╗██║███████╗ ╚███╔╝ ',
+        '    ██╔══██║██╔══╝  ██║   ██║██║╚════██║ ██╔██╗ ',
+        '    ██║  ██║███████╗╚██████╔╝██║███████║██╔╝ ██╗',
+        '    ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝╚═╝  ╚═╝',
+      ],
+    };
+
+    return reply.success(welcomeMessage, 'Welcome to AegisX Platform');
   }
 }
