@@ -158,7 +158,7 @@ interface PermissionGroup {
                       <mat-chip
                         class="!bg-purple-100 !text-purple-800 dark:!bg-purple-900 dark:!text-purple-200 !text-xs"
                       >
-                        {{ role.permissions?.length || 0 }} permissions
+                        {{ role.permissions.length || 0 }} permissions
                       </mat-chip>
                     </div>
 

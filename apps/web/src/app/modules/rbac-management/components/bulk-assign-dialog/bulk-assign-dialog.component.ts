@@ -244,7 +244,7 @@ import { RbacService } from '../../services/rbac.service';
                   <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex items-center gap-1">
                       <mat-icon class="text-base">security</mat-icon>
-                      <span>{{ selectedRole()!.permissions?.length || 0 }} permissions</span>
+                      <span>{{ selectedRole()!.permissions.length || 0 }} permissions</span>
                     </div>
                     <div class="flex items-center gap-1">
                       <mat-icon class="text-base">people</mat-icon>

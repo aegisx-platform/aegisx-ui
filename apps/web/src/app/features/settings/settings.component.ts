@@ -6,10 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Subject, takeUntil } from 'rxjs';
 import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
-import { DynamicSettingsComponent } from './components/dynamic-settings.component';
-import { SecuritySettingsComponent } from './components/security-settings.component';
 import { SettingsService } from './settings.service';
 import { GroupedSettings, SettingChangeEvent } from './settings.types';
 
@@ -24,10 +25,11 @@ import { GroupedSettings, SettingChangeEvent } from './settings.types';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatTooltipModule,
+    MatSlideToggleModule,
+    MatFormFieldModule,
+    MatInputModule,
     AegisxCardComponent,
     AegisxAlertComponent,
-    DynamicSettingsComponent,
-    SecuritySettingsComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -91,9 +93,19 @@ import { GroupedSettings, SettingChangeEvent } from './settings.types';
                 <span>Security</span>
               </ng-template>
               <div class="tab-content">
-                <ax-security-settings
-                  (settingsChange)="onSecuritySettingsChange($event)"
-                ></ax-security-settings>
+                <div class="space-y-6">
+                  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <h3
+                      class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                    >
+                      Security Settings
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                      Advanced security configurations will be available in a
+                      future update.
+                    </p>
+                  </div>
+                </div>
               </div>
             </mat-tab>
 
@@ -119,10 +131,98 @@ import { GroupedSettings, SettingChangeEvent } from './settings.types';
                   }
                 </ng-template>
                 <div class="tab-content">
-                  <ax-dynamic-settings
-                    [groupedSettings]="categoryGroup"
-                    (settingsChange)="onSettingChange($event)"
-                  ></ax-dynamic-settings>
+                  <!-- Dynamic Settings Form -->
+                  <div class="space-y-6">
+                    @for (group of categoryGroup.groups; track group.name) {
+                      <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                        <h3
+                          class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                        >
+                          {{ group.name || 'General' }}
+                        </h3>
+                        <div class="grid gap-4">
+                          @for (setting of group.settings; track setting.key) {
+                            <div class="flex flex-col">
+                              <label
+                                class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                              >
+                                {{ setting.label || setting.key }}
+                              </label>
+                              @if (setting.dataType === 'boolean') {
+                                <mat-slide-toggle
+                                  [checked]="
+                                    setting.value === 'true' ||
+                                    setting.value === true
+                                  "
+                                  (change)="
+                                    onSettingChange({
+                                      settingId: setting.id,
+                                      key: setting.key,
+                                      oldValue: setting.value,
+                                      newValue: $event.checked,
+                                      category: setting.category,
+                                    })
+                                  "
+                                >
+                                  {{ setting.description }}
+                                </mat-slide-toggle>
+                              } @else if (setting.dataType === 'number') {
+                                <mat-form-field
+                                  appearance="outline"
+                                  class="!mb-0"
+                                >
+                                  <input
+                                    matInput
+                                    type="number"
+                                    [value]="setting.value"
+                                    (input)="
+                                      onSettingChange({
+                                        settingId: setting.id,
+                                        key: setting.key,
+                                        oldValue: setting.value,
+                                        newValue: $any($event.target).value,
+                                        category: setting.category,
+                                      })
+                                    "
+                                  />
+                                  @if (setting.description) {
+                                    <mat-hint>{{
+                                      setting.description
+                                    }}</mat-hint>
+                                  }
+                                </mat-form-field>
+                              } @else {
+                                <mat-form-field
+                                  appearance="outline"
+                                  class="!mb-0"
+                                >
+                                  <input
+                                    matInput
+                                    type="text"
+                                    [value]="setting.value || ''"
+                                    (input)="
+                                      onSettingChange({
+                                        settingId: setting.id,
+                                        key: setting.key,
+                                        oldValue: setting.value,
+                                        newValue: $any($event.target).value,
+                                        category: setting.category,
+                                      })
+                                    "
+                                  />
+                                  @if (setting.description) {
+                                    <mat-hint>{{
+                                      setting.description
+                                    }}</mat-hint>
+                                  }
+                                </mat-form-field>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
                 </div>
               </mat-tab>
             }

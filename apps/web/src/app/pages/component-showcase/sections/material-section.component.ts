@@ -23,8 +23,6 @@ import {
   ShowcaseDataService,
   ComponentExample,
 } from '../services/showcase-data.service';
-import { CodeViewerComponent } from '../shared/code-viewer.component';
-import { ComponentPreviewComponent } from '../shared/component-preview.component';
 
 interface MaterialSection {
   id: string;
@@ -50,8 +48,6 @@ interface MaterialSection {
     MatProgressBarModule,
     MatButtonToggleModule,
     MaterialDemoComponent,
-    CodeViewerComponent,
-    ComponentPreviewComponent,
   ],
   template: `
     <div class="material-section">

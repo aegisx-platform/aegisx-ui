@@ -224,7 +224,7 @@ import { RbacService } from '../../services/rbac.service';
                 <mat-icon class="text-base">security</mat-icon>
                 <span
                   >{{
-                    selectedRole()!.permissions?.length || 0
+                    selectedRole()!.permissions.length || 0
                   }}
                   permissions</span
                 >
@@ -285,7 +285,7 @@ import { RbacService } from '../../services/rbac.service';
                 <span class="font-medium">Permissions:</span>
                 <span
                   >{{
-                    selectedRole()!.permissions?.length || 0
+                    selectedRole()!.permissions.length || 0
                   }}
                   permissions</span
                 >
