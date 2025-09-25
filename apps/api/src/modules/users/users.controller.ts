@@ -16,13 +16,13 @@ import {
 
 export class UsersController {
   private userEvents: CrudEventHelper;
-  
+
   constructor(
     private usersService: UsersService,
     private eventService: EventService,
   ) {
     // Create CRUD event helper for users
-    this.userEvents = this.eventService.createCrudHelper('users', 'user');
+    this.userEvents = this.eventService.for('users', 'user');
   }
 
   async listUsers(
@@ -69,10 +69,10 @@ export class UsersController {
     reply: FastifyReply,
   ) {
     const user = await this.usersService.createUser(request.body);
-    
+
     // Emit real-time event
     this.userEvents.emitCreated(user);
-    
+
     return reply.code(201).success(user);
   }
 
@@ -87,10 +87,10 @@ export class UsersController {
       request.params.id,
       request.body,
     );
-    
+
     // Emit real-time event
     this.userEvents.emitUpdated(user);
-    
+
     return reply.success(user);
   }
 
@@ -129,7 +129,7 @@ export class UsersController {
       });
     } catch (error) {
       request.log.error({ error }, 'Error changing user password');
-      
+
       if (error.code === 'PASSWORD_MISMATCH') {
         return reply.code(400).send({
           success: false,
@@ -139,7 +139,7 @@ export class UsersController {
           },
         });
       }
-      
+
       if (error.code === 'INVALID_CURRENT_PASSWORD') {
         return reply.code(400).send({
           success: false,
@@ -149,7 +149,7 @@ export class UsersController {
           },
         });
       }
-      
+
       if (error.code === 'SAME_PASSWORD') {
         return reply.code(400).send({
           success: false,
@@ -159,7 +159,7 @@ export class UsersController {
           },
         });
       }
-      
+
       if (error.code === 'USER_NOT_FOUND') {
         return reply.code(404).send({
           success: false,
@@ -187,19 +187,19 @@ export class UsersController {
     try {
       const currentUserId = request.user.id;
       await this.usersService.deleteUser(request.params.id, currentUserId);
-      
+
       // Emit real-time event
       console.log('🗑️ Emitting userDeleted event for ID:', request.params.id);
       this.userEvents.emitDeleted(request.params.id);
       console.log('✅ userDeleted event emitted successfully');
-      
+
       return reply.success({
         id: request.params.id,
         message: 'User deleted successfully',
       });
     } catch (error: any) {
       console.error('❌ Failed to delete user:', error);
-      
+
       if (error.code === 'CANNOT_DELETE_SELF') {
         return reply.code(400).send({
           success: false,
@@ -209,7 +209,7 @@ export class UsersController {
           },
         });
       }
-      
+
       if (error.code === 'USER_NOT_FOUND') {
         return reply.code(404).send({
           success: false,
@@ -256,11 +256,14 @@ export class UsersController {
   ) {
     try {
       const userId = request.user.id;
-      const updatedProfile = await this.usersService.updateProfile(userId, request.body);
+      const updatedProfile = await this.usersService.updateProfile(
+        userId,
+        request.body,
+      );
       return reply.success(updatedProfile);
     } catch (error) {
       request.log.error({ error }, 'Error updating user profile');
-      
+
       if (error.code === 'USERNAME_TAKEN') {
         return reply.code(400).send({
           success: false,
