@@ -8,13 +8,8 @@ import * as dotenv from 'dotenv';
 import 'reflect-metadata'; // Required for tsyringe
 
 // Configuration imports
+import { loadAppConfig, type AppConfig } from '../config/app.config';
 import {
-  getConfigSummary,
-  loadAppConfig,
-  type AppConfig,
-} from '../config/app.config';
-import {
-  getDatabaseConfigSummary,
   loadDatabaseConfig,
   validateDatabaseConfig,
   type DatabaseConfig,
@@ -24,13 +19,13 @@ import {
   validateEnvironmentOrThrow,
 } from '../config/environment.validator';
 import {
-  getSecurityConfigSummary,
   loadSecurityConfig,
   validateSecurityConfig,
   type SecurityConfig,
 } from '../config/security.config';
 
 // Bootstrap imports
+import { WelcomeResponseSchema } from '../modules/default/default.schemas';
 import { loadAllPlugins } from './plugin.loader';
 import {
   createServer,
@@ -38,7 +33,6 @@ import {
   startServer,
   type ServerInfo,
 } from './server.factory';
-import { WelcomeResponseSchema } from '../modules/default/default.schemas';
 
 /**
  * Bootstrap logging utilities
