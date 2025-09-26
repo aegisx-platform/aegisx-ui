@@ -25,7 +25,7 @@ import {
 } from '../config/security.config';
 
 // Bootstrap imports
-import { WelcomeResponseSchema } from '../modules/default/default.schemas';
+import { WelcomeResponseSchema } from '../core/system/default.schemas';
 import { loadAllPlugins } from './plugin.loader';
 import {
   createServer,

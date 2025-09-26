@@ -10,7 +10,7 @@ import { UserActivityController } from './user-activity.controller';
 import { DeleteAccountController } from './delete-account.controller';
 import { userProfileRoutes } from './user-profile.routes';
 import { userProfileSchemas } from './user-profile.schemas';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../core/users/users.service';
 
 declare module 'fastify' {
   interface FastifyInstance {

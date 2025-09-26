@@ -25,21 +25,23 @@ import responseHandlerPlugin from '../plugins/response-handler.plugin';
 import schemasPlugin from '../plugins/schemas.plugin';
 import multipartPlugin from '../plugins/multipart.plugin';
 import { activityLoggingPlugin } from '../plugins/activity-logging';
-import authStrategiesPlugin from '../modules/auth/strategies/auth.strategies';
 import jwtAuthPlugin from '../plugins/jwt-auth.plugin';
 import staticFilesPlugin from '../plugins/static-files.plugin';
 import swaggerPlugin from '../plugins/swagger.plugin';
 
-// Feature modules
-import authPlugin from '../modules/auth/auth.plugin';
-import defaultPlugin from '../modules/default/default.plugin';
+// Core infrastructure modules
+import authStrategiesPlugin from '../core/auth/strategies/auth.strategies';
+import authPlugin from '../core/auth/auth.plugin';
+import { usersPlugin } from '../core/users';
+import rbacPlugin from '../core/rbac/rbac.plugin';
+import { monitoringPlugin as monitoringModulePlugin } from '../core/monitoring';
+import systemPlugin from '../core/system/default.plugin';
+
+// Business feature modules
 import fileUploadPlugin from '../modules/file-upload/file-upload.plugin';
-import { monitoringPlugin as monitoringModulePlugin } from '../modules/monitoring';
 import navigationPlugin from '../modules/navigation/navigation.plugin';
 import settingsPlugin from '../modules/settings/settings.plugin';
 import userProfilePlugin from '../modules/user-profile/user-profile.plugin';
-import { usersPlugin } from '../modules/users';
-import rbacPlugin from '../modules/rbac/rbac.plugin';
 import themesPlugin from '../modules/themes';
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 
@@ -272,16 +274,16 @@ export function createPluginGroups(
 }
 
 /**
- * Create feature plugin group
+ * Create core infrastructure plugin group
  */
-export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
+export function createCorePluginGroup(apiPrefix: string): PluginGroup {
   return {
-    name: 'features',
-    description: 'Feature modules with API prefix',
+    name: 'core-infrastructure',
+    description: 'Core infrastructure modules (auth, users, rbac, monitoring)',
     plugins: [
       {
-        name: 'default',
-        plugin: defaultPlugin,
+        name: 'system',
+        plugin: systemPlugin,
         required: true,
       },
       {
@@ -300,6 +302,28 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
         required: true,
       },
       {
+        name: 'rbac',
+        plugin: rbacPlugin,
+        required: true,
+      },
+      {
+        name: 'monitoring-module',
+        plugin: monitoringModulePlugin,
+        required: true,
+      },
+    ],
+  };
+}
+
+/**
+ * Create business feature plugin group
+ */
+export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
+  return {
+    name: 'business-features',
+    description: 'Business feature modules',
+    plugins: [
+      {
         name: 'navigation',
         plugin: navigationPlugin,
         required: true,
@@ -315,11 +339,6 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
         required: true,
       },
       {
-        name: 'rbac',
-        plugin: rbacPlugin,
-        required: true,
-      },
-      {
         name: 'themes',
         plugin: themesPlugin,
         required: true,
@@ -327,11 +346,6 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'file-upload',
         plugin: fileUploadPlugin,
-        required: true,
-      },
-      {
-        name: 'monitoring-module',
-        plugin: monitoringModulePlugin,
         required: true,
       },
     ],
@@ -348,7 +362,9 @@ export async function loadPluginGroup(
   quiet = false,
 ): Promise<void> {
   if (!quiet) {
-    console.log(`   📦 ${group.name}: ${group.plugins.length} plugins`);
+    console.log(
+      `   📦 Loading ${group.name} (${group.plugins.length} plugins)...`,
+    );
   }
 
   const startTime = Date.now();
@@ -452,7 +468,7 @@ export async function loadPluginGroup(
   if (!quiet) {
     const status = successCount === results.length ? '✅' : '⚠️';
     console.log(
-      `      ${status} ${successCount}/${results.length} loaded (${totalDuration}ms)`,
+      `      ${status} ${group.name} completed - ${successCount}/${results.length} plugins (${totalDuration}ms)`,
     );
   }
 }
@@ -480,11 +496,24 @@ export async function loadAllPlugins(
     await loadPluginGroup(fastify, group, undefined, quiet);
   }
 
-  // Load feature plugins with API prefix
+  // Load core infrastructure and business features together
+  // in single context to resolve dependencies
+  const coreGroup = createCorePluginGroup(appConfig.api.prefix);
   const featureGroup = createFeaturePluginGroup(appConfig.api.prefix);
+
+  // Combine plugins in proper dependency order
+  const allApiPlugins: PluginGroup = {
+    name: 'api-modules',
+    description: 'All API modules (core + features) with API prefix',
+    plugins: [
+      ...coreGroup.plugins, // Core first (users, auth, etc.)
+      ...featureGroup.plugins, // Features second (user-profile, etc.)
+    ],
+  };
+
   await loadPluginGroup(
     fastify,
-    featureGroup,
+    allApiPlugins,
     { prefix: appConfig.api.prefix },
     quiet,
   );
@@ -492,11 +521,11 @@ export async function loadAllPlugins(
   const totalDuration = Date.now() - startTime;
   const totalPlugins =
     pluginGroups.reduce((sum, g) => sum + g.plugins.length, 0) +
-    featureGroup.plugins.length;
+    allApiPlugins.plugins.length;
 
   if (!quiet) {
     console.log(
-      `      🎉 All ${totalPlugins} plugins loaded (${totalDuration}ms)`,
+      `   ✅ Plugin loading completed - ${totalPlugins} plugins loaded successfully (${totalDuration}ms)`,
     );
   }
 }
