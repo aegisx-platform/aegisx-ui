@@ -62,7 +62,7 @@ export async function up(knex: Knex): Promise<void> {
         created_at: new Date()
       }));
 
-      console.log(`🔗 Linking $\{{{@key}}Permissions.length} permissions to {{roleName}} role...`);
+      console.log(`🔗 Linking ${{{@key}}}Permissions.length} permissions to {{roleName}} role...`);
       await knex('role_permissions')
         .insert(rolePermissions)
         .onConflict(['role_id', 'permission_id'])

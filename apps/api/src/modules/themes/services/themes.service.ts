@@ -141,4 +141,287 @@ export class ThemesService extends BaseService<
     // Add deletion validation logic here
     // Example: Prevent deletion if entity has dependent records
   }
+
+  // ===== ENHANCED CRUD METHODS =====
+
+  /**
+   * Get dropdown options for UI components
+   */
+  async getDropdownOptions(options: any = {}): Promise<{
+    options: Array<{
+      value: string | number;
+      label: string;
+      disabled?: boolean;
+    }>;
+    total: number;
+  }> {
+    const {
+      limit = 100,
+      search,
+      labelField = 'name',
+      valueField = 'id',
+    } = options;
+
+    const result = await this.themesRepository.list({
+      limit,
+      search,
+      sortBy: labelField,
+      sortOrder: 'asc',
+    });
+
+    const dropdownOptions = result.data.map((item) => ({
+      value: item[valueField],
+      label: item[labelField] || `${item.id}`,
+      disabled: item.is_active === false,
+    }));
+
+    return {
+      options: dropdownOptions,
+      total: result.pagination.total,
+    };
+  }
+
+  /**
+   * Bulk create multiple themess
+   */
+  async bulkCreate(data: { items: CreateThemes[] }): Promise<{
+    created: Themes[];
+    summary: { successful: number; failed: number; errors: any[] };
+  }> {
+    const results: Themes[] = [];
+    const errors: any[] = [];
+
+    for (const item of data.items) {
+      try {
+        await this.validateCreate(item);
+        const processed = await this.beforeCreate(item);
+        const created = await this.themesRepository.create(processed);
+        await this.afterCreate(created, item);
+        results.push(created);
+      } catch (error) {
+        errors.push({
+          item,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      created: results,
+      summary: {
+        successful: results.length,
+        failed: errors.length,
+        errors,
+      },
+    };
+  }
+
+  /**
+   * Bulk update multiple themess
+   */
+  async bulkUpdate(data: {
+    items: Array<{ id: string | number; data: UpdateThemes }>;
+  }): Promise<{
+    updated: Themes[];
+    summary: { successful: number; failed: number; errors: any[] };
+  }> {
+    const results: Themes[] = [];
+    const errors: any[] = [];
+
+    for (const item of data.items) {
+      try {
+        const updated = await this.update(item.id, item.data);
+        if (updated) {
+          results.push(updated);
+        }
+      } catch (error) {
+        errors.push({
+          item,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      updated: results,
+      summary: {
+        successful: results.length,
+        failed: errors.length,
+        errors,
+      },
+    };
+  }
+
+  /**
+   * Bulk delete multiple themess
+   */
+  async bulkDelete(data: { ids: Array<string | number> }): Promise<{
+    deleted: Array<string | number>;
+    summary: { successful: number; failed: number; errors: any[] };
+  }> {
+    const results: Array<string | number> = [];
+    const errors: any[] = [];
+
+    for (const id of data.ids) {
+      try {
+        const deleted = await this.delete(id);
+        if (deleted) {
+          results.push(id);
+        }
+      } catch (error) {
+        errors.push({
+          id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      deleted: results,
+      summary: {
+        successful: results.length,
+        failed: errors.length,
+        errors,
+      },
+    };
+  }
+
+  /**
+   * Bulk update status for multiple themess
+   */
+  async bulkUpdateStatus(data: {
+    ids: Array<string | number>;
+    status: boolean;
+  }): Promise<{
+    updated: Themes[];
+    summary: { successful: number; failed: number; errors: any[] };
+  }> {
+    const results: Themes[] = [];
+    const errors: any[] = [];
+
+    for (const id of data.ids) {
+      try {
+        const updated = await this.update(id, {
+          is_active: data.status,
+        } as UpdateThemes);
+        if (updated) {
+          results.push(updated);
+        }
+      } catch (error) {
+        errors.push({
+          id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      updated: results,
+      summary: {
+        successful: results.length,
+        failed: errors.length,
+        errors,
+      },
+    };
+  }
+
+  /**
+   * Activate themes
+   */
+  async activate(
+    id: string | number,
+    options: any = {},
+  ): Promise<Themes | null> {
+    return this.update(id, { is_active: true } as UpdateThemes);
+  }
+
+  /**
+   * Deactivate themes
+   */
+  async deactivate(
+    id: string | number,
+    options: any = {},
+  ): Promise<Themes | null> {
+    return this.update(id, { is_active: false } as UpdateThemes);
+  }
+
+  /**
+   * Toggle themes status
+   */
+  async toggle(id: string | number, options: any = {}): Promise<Themes | null> {
+    const current = await this.getById(id);
+    if (!current) return null;
+
+    const newStatus = !current.is_active;
+    return this.update(id, { is_active: newStatus } as UpdateThemes);
+  }
+
+  /**
+   * Get statistics
+   */
+  async getStats(): Promise<any> {
+    return this.themesRepository.getStats();
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   */
+  async validate(data: { data: CreateThemes }): Promise<{
+    valid: boolean;
+    errors: Array<{ field: string; message: string }>;
+  }> {
+    const errors: Array<{ field: string; message: string }> = [];
+
+    try {
+      await this.validateCreate(data.data);
+    } catch (error) {
+      errors.push({
+        field: 'general',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+
+    // Add specific field validations
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  }
+
+  /**
+   * Check field uniqueness
+   */
+  async checkUniqueness(
+    field: string,
+    options: { value: string | number; excludeId?: string | number },
+  ): Promise<{
+    unique: boolean;
+    exists?: any;
+  }> {
+    // Convert value to string for string fields, keep number for numeric fields
+    const searchValue =
+      typeof options.value === 'number' ? options.value : String(options.value);
+
+    // Build query for field lookup
+    let query = this.themesRepository
+      .getJoinQuery()
+      .where(`themes.${field}`, searchValue);
+
+    // Add exclusion for updates
+    if (options.excludeId) {
+      query = query.whereNot('themes.id', options.excludeId);
+    }
+
+    const existing = await query.first();
+
+    return {
+      unique: !existing,
+      exists: existing
+        ? this.themesRepository.transformToEntity(existing)
+        : undefined,
+    };
+  }
 }

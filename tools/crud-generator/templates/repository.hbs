@@ -198,4 +198,603 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
       return this.transformToEntity(row);
     });
   }
+
+{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+
+  // ===== ENHANCED CRUD METHODS =====
+
+  /**
+   * Get dropdown options with minimal data
+   */
+  async getDropdownOptions(query: {
+    search?: string;
+    limit?: number;
+    active?: boolean;
+    exclude?: (string | number)[];
+    include_disabled?: boolean;
+  } = {}): Promise<{
+    options: Array<{
+      value: string | number;
+      label: string;
+      disabled?: boolean;
+      metadata?: Record<string, any>;
+    }>;
+    total: number;
+  }> {
+    const { search, limit = 50, active, exclude, include_disabled } = query;
+    
+    let selectQuery = this.knex('{{tableName}}')
+      .select([
+        '{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} as value',
+        {{#each columns}}
+        {{#if (eq tsType 'string')}}
+        {{#if (contains name 'name')}}
+        '{{name}} as label'{{#unless @last}},{{/unless}}
+        {{/if}}
+        {{/if}}
+        {{/each}}
+      ]);
+
+    // Apply search filter
+    if (search) {
+      selectQuery = selectQuery.where((builder) => {
+        {{#each columns}}
+        {{#if (eq tsType 'string')}}
+        builder.orWhere('{{name}}', 'ILIKE', `%${search}%`);
+        {{/if}}
+        {{/each}}
+      });
+    }
+
+    {{#each columns}}
+    {{#if (eq name 'is_active')}}
+    // Apply active filter
+    if (active !== undefined) {
+      selectQuery = selectQuery.where('is_active', active);
+    }
+    {{/if}}
+    {{/each}}
+
+    // Apply exclude filter
+    if (exclude && exclude.length > 0) {
+      selectQuery = selectQuery.whereNotIn('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', exclude);
+    }
+
+    // Apply limit
+    selectQuery = selectQuery.limit(limit);
+
+    // Get total count
+    const countQuery = this.knex('{{tableName}}').count('* as count').first();
+    
+    const [options, countResult] = await Promise.all([
+      selectQuery,
+      countQuery
+    ]);
+
+    return {
+      options: options.map(row => ({
+        value: row.value,
+        label: row.label || `{{ModuleName}} ${row.value}`,
+        {{#each columns}}
+        {{#if (eq name 'is_active')}}
+        disabled: !row.is_active,
+        {{/if}}
+        {{/each}}
+        metadata: {}
+      })),
+      total: parseInt(countResult?.count as string || '0')
+    };
+  }
+
+  /**
+   * Bulk create with error handling
+   */
+  async bulkCreate(data: {
+    items: Create{{ModuleName}}[];
+    options?: {
+      skipDuplicates?: boolean;
+      continueOnError?: boolean;
+    };
+  }): Promise<{
+    successful: {{ModuleName}}[];
+    failed: Array<{
+      id?: string | number;
+      error: string;
+      data?: any;
+    }>;
+    summary: {
+      total: number;
+      successful: number;
+      failed: number;
+    };
+  }> {
+    const { items, options = {} } = data;
+    const { skipDuplicates = false, continueOnError = true } = options;
+    
+    const successful: {{ModuleName}}[] = [];
+    const failed: Array<{ id?: string | number; error: string; data?: any }> = [];
+
+    if (continueOnError) {
+      // Process items one by one
+      for (const item of items) {
+        try {
+          const transformedData = this.transformToDb(item);
+          const [row] = await this.knex('{{tableName}}').insert(transformedData).returning('*');
+          successful.push(this.transformToEntity(row));
+        } catch (error: any) {
+          failed.push({
+            error: error.message,
+            data: item
+          });
+        }
+      }
+    } else {
+      try {
+        const transformedData = items.map(item => this.transformToDb(item));
+        const rows = await this.knex('{{tableName}}').insert(transformedData).returning('*');
+        successful.push(...rows.map(row => this.transformToEntity(row)));
+      } catch (error: any) {
+        failed.push({
+          error: error.message,
+          data: items
+        });
+      }
+    }
+
+    return {
+      successful,
+      failed,
+      summary: {
+        total: items.length,
+        successful: successful.length,
+        failed: failed.length
+      }
+    };
+  }
+
+  /**
+   * Bulk update with error handling
+   */
+  async bulkUpdate(data: {
+    items: Array<{
+      id: string | number;
+      data: Update{{ModuleName}};
+    }>;
+    options?: {
+      continueOnError?: boolean;
+    };
+  }): Promise<{
+    successful: {{ModuleName}}[];
+    failed: Array<{
+      id?: string | number;
+      error: string;
+      data?: any;
+    }>;
+    summary: {
+      total: number;
+      successful: number;
+      failed: number;
+    };
+  }> {
+    const { items, options = {} } = data;
+    const { continueOnError = true } = options;
+    
+    const successful: {{ModuleName}}[] = [];
+    const failed: Array<{ id?: string | number; error: string; data?: any }> = [];
+
+    for (const item of items) {
+      try {
+        const transformedData = this.transformToDb(item.data);
+        const [row] = await this.knex('{{tableName}}')
+          .where('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', item.id)
+          .update(transformedData)
+          .returning('*');
+        
+        if (row) {
+          successful.push(this.transformToEntity(row));
+        } else {
+          failed.push({
+            id: item.id,
+            error: 'Record not found',
+            data: item.data
+          });
+        }
+      } catch (error: any) {
+        failed.push({
+          id: item.id,
+          error: error.message,
+          data: item.data
+        });
+        
+        if (!continueOnError) break;
+      }
+    }
+
+    return {
+      successful,
+      failed,
+      summary: {
+        total: items.length,
+        successful: successful.length,
+        failed: failed.length
+      }
+    };
+  }
+
+  /**
+   * Bulk delete with error handling
+   */
+  async bulkDelete(data: {
+    ids: (string | number)[];
+    options?: {
+      force?: boolean;
+      continueOnError?: boolean;
+    };
+  }): Promise<{
+    successful: Array<{ id: string | number }>;
+    failed: Array<{
+      id?: string | number;
+      error: string;
+      data?: any;
+    }>;
+    summary: {
+      total: number;
+      successful: number;
+      failed: number;
+    };
+  }> {
+    const { ids, options = {} } = data;
+    const { force = false, continueOnError = true } = options;
+    
+    const successful: Array<{ id: string | number }> = [];
+    const failed: Array<{ id?: string | number; error: string; data?: any }> = [];
+
+    if (continueOnError) {
+      // Process IDs one by one
+      for (const id of ids) {
+        try {
+          const deletedCount = await this.knex('{{tableName}}')
+            .where('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', id)
+            .del();
+          
+          if (deletedCount > 0) {
+            successful.push({ id });
+          } else {
+            failed.push({
+              id,
+              error: 'Record not found'
+            });
+          }
+        } catch (error: any) {
+          failed.push({
+            id,
+            error: error.message
+          });
+        }
+      }
+    } else {
+      try {
+        const deletedCount = await this.knex('{{tableName}}')
+          .whereIn('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', ids)
+          .del();
+        
+        if (deletedCount === ids.length) {
+          successful.push(...ids.map(id => ({ id })));
+        } else {
+          failed.push({
+            error: `Expected to delete ${ids.length} records, but deleted ${deletedCount}`
+          });
+        }
+      } catch (error: any) {
+        failed.push({
+          error: error.message,
+          data: ids
+        });
+      }
+    }
+
+    return {
+      successful,
+      failed,
+      summary: {
+        total: ids.length,
+        successful: successful.length,
+        failed: failed.length
+      }
+    };
+  }
+
+  {{#if hasStatusField}}
+  /**
+   * Bulk status update
+   */
+  async bulkUpdateStatus(data: {
+    ids: (string | number)[];
+    status: boolean | string;
+    options?: {
+      continueOnError?: boolean;
+    };
+  }): Promise<{
+    successful: {{ModuleName}}[];
+    failed: Array<{
+      id?: string | number;
+      error: string;
+      data?: any;
+    }>;
+    summary: {
+      total: number;
+      successful: number;
+      failed: number;
+    };
+  }> {
+    const { ids, status, options = {} } = data;
+    const { continueOnError = true } = options;
+    
+    const successful: {{ModuleName}}[] = [];
+    const failed: Array<{ id?: string | number; error: string; data?: any }> = [];
+
+    for (const id of ids) {
+      try {
+        const [row] = await this.knex('{{tableName}}')
+          .where('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', id)
+          .update({ 
+            {{#each columns}}
+            {{#if (or (eq name 'is_active') (eq name 'status'))}}
+            {{name}}: status,
+            {{/if}}
+            {{/each}}
+            updated_at: this.knex.fn.now() 
+          })
+          .returning('*');
+        
+        if (row) {
+          successful.push(this.transformToEntity(row));
+        } else {
+          failed.push({
+            id,
+            error: 'Record not found'
+          });
+        }
+      } catch (error: any) {
+        failed.push({
+          id,
+          error: error.message
+        });
+        
+        if (!continueOnError) break;
+      }
+    }
+
+    return {
+      successful,
+      failed,
+      summary: {
+        total: ids.length,
+        successful: successful.length,
+        failed: failed.length
+      }
+    };
+  }
+
+  /**
+   * Activate/Deactivate/Toggle status
+   */
+  async updateStatus(
+    id: string | number, 
+    status: boolean | 'toggle',
+    options?: { force?: boolean }
+  ): Promise<{
+    entity: {{ModuleName}};
+    previousStatus: boolean | string;
+    newStatus: boolean | string;
+  } | null> {
+    return this.withTransaction(async (trx) => {
+      // Get current entity
+      const current = await trx('{{tableName}}')
+        .where('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', id)
+        .first();
+      
+      if (!current) return null;
+
+      {{#each columns}}
+      {{#if (or (eq name 'is_active') (eq name 'status'))}}
+      const previousStatus = current.{{name}};
+      let newStatus: boolean | string;
+      
+      if (status === 'toggle') {
+        newStatus = !previousStatus;
+      } else {
+        newStatus = status;
+      }
+
+      const [row] = await trx('{{../tableName}}')
+        .where('{{#each ../primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', id)
+        .update({ 
+          {{name}}: newStatus,
+          updated_at: trx.fn.now() 
+        })
+        .returning('*');
+
+      return {
+        entity: this.transformToEntity(row),
+        previousStatus,
+        newStatus
+      };
+      {{/if}}
+      {{/each}}
+    });
+  }
+  {{/if}}
+
+  /**
+   * Enhanced statistics with growth metrics
+   */
+  async getEnhancedStats(): Promise<{
+    total: number;
+    {{#each columns}}
+    {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
+    {{#if (eq tsType 'boolean')}}
+    {{camelCase name}}Count: number;
+    {{/if}}
+    {{/unless}}
+    {{/each}}
+    percentages?: {
+      {{#each columns}}
+      {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
+      {{#if (eq tsType 'boolean')}}
+      {{camelCase name}}: number;
+      {{/if}}
+      {{/unless}}
+      {{/each}}
+    };
+    growth?: {
+      daily: number;
+      weekly: number;
+      monthly: number;
+    };
+    custom?: Record<string, any>;
+  }> {
+    const stats = await this.getStats();
+    
+    // Calculate percentages
+    const percentages = stats.total > 0 ? {
+      {{#each columns}}
+      {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
+      {{#if (eq tsType 'boolean')}}
+      {{camelCase name}}: Math.round((stats.{{camelCase name}}Count / stats.total) * 100),
+      {{/if}}
+      {{/unless}}
+      {{/each}}
+    } : undefined;
+
+    // Calculate growth (last 30 days)
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const [dailyCount, weeklyCount, monthlyCount] = await Promise.all([
+      this.knex('{{tableName}}').where('created_at', '>=', yesterday).count('* as count').first(),
+      this.knex('{{tableName}}').where('created_at', '>=', lastWeek).count('* as count').first(),
+      this.knex('{{tableName}}').where('created_at', '>=', lastMonth).count('* as count').first()
+    ]);
+
+    const growth = {
+      daily: parseInt(dailyCount?.count as string || '0'),
+      weekly: parseInt(weeklyCount?.count as string || '0'),
+      monthly: parseInt(monthlyCount?.count as string || '0')
+    };
+
+    return {
+      ...stats,
+      percentages,
+      growth,
+      custom: {}
+    };
+  }
+{{/if}}
+
+{{#if (eq package 'full')}}
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data against business rules
+   */
+  async validateData(data: Create{{ModuleName}} | Update{{ModuleName}}, options?: {
+    skipBusinessRules?: boolean;
+    context?: Record<string, any>;
+  }): Promise<{
+    valid: boolean;
+    errors: Array<{
+      field: string;
+      message: string;
+      code: string;
+      severity: 'error' | 'warning' | 'info';
+    }>;
+    warnings?: Array<{
+      field: string;
+      message: string;
+    }>;
+  }> {
+    const errors: Array<{
+      field: string;
+      message: string;
+      code: string;
+      severity: 'error' | 'warning' | 'info';
+    }> = [];
+    const warnings: Array<{
+      field: string;
+      message: string;
+    }> = [];
+
+    // Check for required fields
+    {{#each columns}}
+    {{#if isRequired}}
+    {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
+    if (!data.{{name}}) {
+      errors.push({
+        field: '{{name}}',
+        message: '{{humanize name}} is required',
+        code: 'REQUIRED_FIELD',
+        severity: 'error'
+      });
+    }
+    {{/unless}}
+    {{/if}}
+    {{/each}}
+
+    // Add business-specific validation here
+    
+    return {
+      valid: errors.length === 0,
+      errors,
+      warnings: warnings.length > 0 ? warnings : undefined
+    };
+  }
+
+  /**
+   * Check field uniqueness
+   */
+  async checkUniqueness(
+    field: string,
+    query: {
+      value: string | number;
+      excludeId?: string | number;
+    }
+  ): Promise<{
+    unique: boolean;
+    conflictId?: string | number;
+    suggestions?: string[];
+  }> {
+    const { value, excludeId } = query;
+    
+    let checkQuery = this.knex('{{tableName}}')
+      .where(field, value);
+    
+    if (excludeId) {
+      checkQuery = checkQuery.whereNot('{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}', excludeId);
+    }
+    
+    const existing = await checkQuery.first();
+    
+    if (!existing) {
+      return { unique: true };
+    }
+    
+    // Generate suggestions if not unique
+    const suggestions: string[] = [];
+    if (typeof value === 'string') {
+      for (let i = 1; i <= 3; i++) {
+        suggestions.push(`${value}${i}`);
+      }
+    }
+    
+    return {
+      unique: false,
+      conflictId: existing.{{#each primaryKey}}{{this}}{{#unless @last}} || existing.{{/unless}}{{/each}},
+      suggestions
+    };
+  }
+{{/if}}
 }

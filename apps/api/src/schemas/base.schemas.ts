@@ -166,12 +166,18 @@ export const ServerErrorResponseSchema = Type.Object({
 
 // Base entity schemas
 export const BaseIdSchema = Type.Object({
-  id: Type.String({ format: 'uuid', description: 'Unique identifier' })
+  id: Type.String({ format: 'uuid', description: 'Unique identifier' }),
 });
 
 export const TimestampSchema = Type.Object({
-  created_at: Type.String({ format: 'date-time', description: 'Creation timestamp' }),
-  updated_at: Type.String({ format: 'date-time', description: 'Last update timestamp' })
+  created_at: Type.String({
+    format: 'date-time',
+    description: 'Creation timestamp',
+  }),
+  updated_at: Type.String({
+    format: 'date-time',
+    description: 'Last update timestamp',
+  }),
 });
 
 // Common query parameters
@@ -210,6 +216,250 @@ export const StandardRouteResponses = {
   500: ServerErrorResponseSchema,
 };
 
+// ==== ENHANCED CRUD SCHEMAS ====
+
+// Dropdown/Options Schemas
+export const DropdownOptionSchema = Type.Object({
+  value: Type.Union([Type.String(), Type.Number()]),
+  label: Type.String(),
+  disabled: Type.Optional(Type.Boolean()),
+  metadata: Type.Optional(Type.Record(Type.String(), Type.Any())),
+});
+
+export const DropdownResponseSchema = Type.Object({
+  success: Type.Literal(true),
+  data: Type.Object({
+    options: Type.Array(DropdownOptionSchema),
+    total: Type.Number({ minimum: 0 }),
+  }),
+  meta: Type.Optional(ApiMetaSchema),
+});
+
+export const DropdownQuerySchema = Type.Object({
+  search: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
+  limit: Type.Optional(Type.Number({ minimum: 1, maximum: 1000, default: 50 })),
+  active: Type.Optional(Type.Boolean()),
+  exclude: Type.Optional(
+    Type.Array(Type.Union([Type.String(), Type.Number()])),
+  ),
+  include_disabled: Type.Optional(Type.Boolean()),
+});
+
+// Bulk Operations Schemas
+export const BulkCreateSchema = <T extends import('@sinclair/typebox').TSchema>(
+  itemSchema: T,
+) =>
+  Type.Object({
+    items: Type.Array(itemSchema, { minItems: 1, maxItems: 1000 }),
+    options: Type.Optional(
+      Type.Object({
+        skipDuplicates: Type.Optional(Type.Boolean()),
+        continueOnError: Type.Optional(Type.Boolean()),
+      }),
+    ),
+  });
+
+export const BulkUpdateSchema = <T extends import('@sinclair/typebox').TSchema>(
+  itemSchema: T,
+) =>
+  Type.Object({
+    items: Type.Array(
+      Type.Object({
+        id: Type.Union([Type.String(), Type.Number()]),
+        data: itemSchema,
+      }),
+      { minItems: 1, maxItems: 1000 },
+    ),
+    options: Type.Optional(
+      Type.Object({
+        continueOnError: Type.Optional(Type.Boolean()),
+      }),
+    ),
+  });
+
+export const BulkDeleteSchema = Type.Object({
+  ids: Type.Array(Type.Union([Type.String(), Type.Number()]), {
+    minItems: 1,
+    maxItems: 1000,
+  }),
+  options: Type.Optional(
+    Type.Object({
+      force: Type.Optional(Type.Boolean()),
+      continueOnError: Type.Optional(Type.Boolean()),
+    }),
+  ),
+});
+
+export const BulkStatusSchema = Type.Object({
+  ids: Type.Array(Type.Union([Type.String(), Type.Number()]), {
+    minItems: 1,
+    maxItems: 1000,
+  }),
+  status: Type.Union([Type.Boolean(), Type.String()]),
+  options: Type.Optional(
+    Type.Object({
+      continueOnError: Type.Optional(Type.Boolean()),
+    }),
+  ),
+});
+
+export const BulkResponseSchema = <
+  T extends import('@sinclair/typebox').TSchema,
+>(
+  itemSchema: T,
+) =>
+  Type.Object({
+    success: Type.Literal(true),
+    data: Type.Object({
+      successful: Type.Array(itemSchema),
+      failed: Type.Array(
+        Type.Object({
+          id: Type.Optional(Type.Union([Type.String(), Type.Number()])),
+          error: Type.String(),
+          data: Type.Optional(Type.Any()),
+        }),
+      ),
+      summary: Type.Object({
+        total: Type.Number({ minimum: 0 }),
+        successful: Type.Number({ minimum: 0 }),
+        failed: Type.Number({ minimum: 0 }),
+      }),
+    }),
+    message: Type.Optional(Type.String()),
+    meta: Type.Optional(ApiMetaSchema),
+  });
+
+// Status Management Schemas
+export const StatusToggleSchema = Type.Object({
+  force: Type.Optional(Type.Boolean()),
+});
+
+export const StatusUpdateResponseSchema = <
+  T extends import('@sinclair/typebox').TSchema,
+>(
+  entitySchema: T,
+) =>
+  Type.Object({
+    success: Type.Literal(true),
+    data: Type.Object({
+      entity: entitySchema,
+      previousStatus: Type.Union([Type.Boolean(), Type.String()]),
+      newStatus: Type.Union([Type.Boolean(), Type.String()]),
+    }),
+    message: Type.String(),
+    meta: Type.Optional(ApiMetaSchema),
+  });
+
+// Statistics Schemas
+export const StatisticsSchema = Type.Object({
+  total: Type.Number({ minimum: 0 }),
+  active: Type.Optional(Type.Number({ minimum: 0 })),
+  inactive: Type.Optional(Type.Number({ minimum: 0 })),
+  percentages: Type.Optional(
+    Type.Object({
+      active: Type.Number({ minimum: 0, maximum: 100 }),
+      inactive: Type.Number({ minimum: 0, maximum: 100 }),
+    }),
+  ),
+  growth: Type.Optional(
+    Type.Object({
+      daily: Type.Number(),
+      weekly: Type.Number(),
+      monthly: Type.Number(),
+    }),
+  ),
+  custom: Type.Optional(Type.Record(Type.String(), Type.Any())),
+});
+
+export const StatisticsResponseSchema = Type.Object({
+  success: Type.Literal(true),
+  data: StatisticsSchema,
+  meta: Type.Optional(ApiMetaSchema),
+});
+
+// Advanced Search & Filter Schemas
+export const AdvancedSearchSchema = Type.Object({
+  query: Type.Optional(Type.String({ minLength: 1 })),
+  filters: Type.Optional(Type.Record(Type.String(), Type.Any())),
+  dateRange: Type.Optional(
+    Type.Object({
+      field: Type.String(),
+      from: Type.Optional(Type.String({ format: 'date-time' })),
+      to: Type.Optional(Type.String({ format: 'date-time' })),
+    }),
+  ),
+  sorting: Type.Optional(
+    Type.Array(
+      Type.Object({
+        field: Type.String(),
+        direction: Type.Union([Type.Literal('asc'), Type.Literal('desc')]),
+      }),
+    ),
+  ),
+  pagination: Type.Optional(PaginationQuerySchema),
+});
+
+// Validation Schemas
+export const ValidationRequestSchema = <
+  T extends import('@sinclair/typebox').TSchema,
+>(
+  itemSchema: T,
+) =>
+  Type.Object({
+    data: itemSchema,
+    options: Type.Optional(
+      Type.Object({
+        skipBusinessRules: Type.Optional(Type.Boolean()),
+        context: Type.Optional(Type.Record(Type.String(), Type.Any())),
+      }),
+    ),
+  });
+
+export const ValidationResponseSchema = Type.Object({
+  success: Type.Literal(true),
+  data: Type.Object({
+    valid: Type.Boolean(),
+    errors: Type.Array(
+      Type.Object({
+        field: Type.String(),
+        message: Type.String(),
+        code: Type.String(),
+        severity: Type.Union([
+          Type.Literal('error'),
+          Type.Literal('warning'),
+          Type.Literal('info'),
+        ]),
+      }),
+    ),
+    warnings: Type.Optional(
+      Type.Array(
+        Type.Object({
+          field: Type.String(),
+          message: Type.String(),
+        }),
+      ),
+    ),
+  }),
+  meta: Type.Optional(ApiMetaSchema),
+});
+
+// Field Uniqueness Check Schema
+export const UniquenessCheckSchema = Type.Object({
+  field: Type.String(),
+  value: Type.Union([Type.String(), Type.Number()]),
+  excludeId: Type.Optional(Type.Union([Type.String(), Type.Number()])),
+});
+
+export const UniquenessResponseSchema = Type.Object({
+  success: Type.Literal(true),
+  data: Type.Object({
+    unique: Type.Boolean(),
+    conflictId: Type.Optional(Type.Union([Type.String(), Type.Number()])),
+    suggestions: Type.Optional(Type.Array(Type.String())),
+  }),
+  meta: Type.Optional(ApiMetaSchema),
+});
+
 // TypeScript types
 export type ApiMeta = Static<typeof ApiMetaSchema>;
 export type PaginationMeta = Static<typeof PaginationMetaSchema>;
@@ -228,3 +478,14 @@ export type PaginationQuery = Static<typeof PaginationQuerySchema>;
 export type SearchQuery = Static<typeof SearchQuerySchema>;
 export type UuidParam = Static<typeof UuidParamSchema>;
 export type NumericIdParam = Static<typeof NumericIdParamSchema>;
+
+// Enhanced CRUD Types
+export type DropdownOption = Static<typeof DropdownOptionSchema>;
+export type DropdownResponse = Static<typeof DropdownResponseSchema>;
+export type DropdownQuery = Static<typeof DropdownQuerySchema>;
+export type BulkDelete = Static<typeof BulkDeleteSchema>;
+export type BulkStatus = Static<typeof BulkStatusSchema>;
+export type StatusToggle = Static<typeof StatusToggleSchema>;
+export type Statistics = Static<typeof StatisticsSchema>;
+export type AdvancedSearch = Static<typeof AdvancedSearchSchema>;
+export type UniquenessCheck = Static<typeof UniquenessCheckSchema>;

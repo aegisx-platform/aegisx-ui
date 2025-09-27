@@ -47,28 +47,45 @@ program
     '--multiple-roles',
     'Generate multiple roles (admin, editor, viewer) instead of single role',
   )
+  .option(
+    '--package <type>',
+    'Feature package to generate (standard, enterprise, full)',
+    'standard',
+  )
   .action(async (tableName, options) => {
     try {
+      // Validate package option
+      const validPackages = ['standard', 'enterprise', 'full'];
+      if (!validPackages.includes(options.package)) {
+        console.error(`❌ Invalid package type: ${options.package}`);
+        console.error(`   Valid options: ${validPackages.join(', ')}`);
+        process.exit(1);
+      }
+
       // Determine output directory based on app and target
       let outputDir = options.output;
       if (!outputDir) {
         const appPaths = {
           api: {
-            backend: './apps/api/src/modules',
-            frontend: './apps/api/src/frontend', // if needed
+            backend: path.resolve(process.cwd(), 'apps/api/src/modules'),
+            frontend: path.resolve(process.cwd(), 'apps/api/src/frontend'), // if needed
           },
           web: {
-            backend: './apps/web/src/backend', // if needed
-            frontend: './apps/web/src/app/features',
+            backend: path.resolve(process.cwd(), 'apps/web/src/backend'), // if needed
+            frontend: path.resolve(process.cwd(), 'apps/web/src/app/features'),
           },
           admin: {
-            backend: './apps/admin/src/backend', // if needed
-            frontend: './apps/admin/src/app/features',
+            backend: path.resolve(process.cwd(), 'apps/admin/src/backend'), // if needed
+            frontend: path.resolve(
+              process.cwd(),
+              'apps/admin/src/app/features',
+            ),
           },
         };
 
         outputDir =
-          appPaths[options.app]?.[options.target] || './apps/api/src/modules';
+          appPaths[options.app]?.[options.target] ||
+          path.resolve(process.cwd(), 'apps/api/src/modules');
       }
 
       const useFlat = options.flat === true;
@@ -85,6 +102,7 @@ program
       console.log(
         `👥 Role strategy: ${options.multipleRoles ? 'Multiple roles (admin, editor, viewer)' : 'Single role'}`,
       );
+      console.log(`📦 Feature package: ${options.package.toUpperCase()}`);
       console.log(`📁 Output directory: ${outputDir}`);
 
       if (options.dryRun) {
@@ -115,6 +133,7 @@ program
             noRoles: options.noRoles,
             migrationOnly: options.migrationOnly,
             multipleRoles: options.multipleRoles,
+            package: options.package,
           })
         : await generateDomainModule(tableName, {
             withEvents: options.withEvents,
@@ -128,6 +147,7 @@ program
             noRoles: options.noRoles,
             migrationOnly: options.migrationOnly,
             multipleRoles: options.multipleRoles,
+            package: options.package,
           });
 
       if (options.dryRun) {
@@ -184,21 +204,25 @@ program
       if (!outputDir) {
         const appPaths = {
           api: {
-            backend: './apps/api/src/modules',
-            frontend: './apps/api/src/frontend',
+            backend: path.resolve(process.cwd(), 'apps/api/src/modules'),
+            frontend: path.resolve(process.cwd(), 'apps/api/src/frontend'),
           },
           web: {
-            backend: './apps/web/src/backend',
-            frontend: './apps/web/src/app/features',
+            backend: path.resolve(process.cwd(), 'apps/web/src/backend'),
+            frontend: path.resolve(process.cwd(), 'apps/web/src/app/features'),
           },
           admin: {
-            backend: './apps/admin/src/backend',
-            frontend: './apps/admin/src/app/features',
+            backend: path.resolve(process.cwd(), 'apps/admin/src/backend'),
+            frontend: path.resolve(
+              process.cwd(),
+              'apps/admin/src/app/features',
+            ),
           },
         };
 
         outputDir =
-          appPaths[options.app]?.[options.target] || './apps/api/src/modules';
+          appPaths[options.app]?.[options.target] ||
+          path.resolve(process.cwd(), 'apps/api/src/modules');
       }
 
       const useFlat = options.flat === true;
@@ -302,21 +326,25 @@ program
       if (!outputDir) {
         const appPaths = {
           api: {
-            backend: './apps/api/src/modules',
-            frontend: './apps/api/src/frontend',
+            backend: path.resolve(process.cwd(), 'apps/api/src/modules'),
+            frontend: path.resolve(process.cwd(), 'apps/api/src/frontend'),
           },
           web: {
-            backend: './apps/web/src/backend',
-            frontend: './apps/web/src/app/features',
+            backend: path.resolve(process.cwd(), 'apps/web/src/backend'),
+            frontend: path.resolve(process.cwd(), 'apps/web/src/app/features'),
           },
           admin: {
-            backend: './apps/admin/src/backend',
-            frontend: './apps/admin/src/app/features',
+            backend: path.resolve(process.cwd(), 'apps/admin/src/backend'),
+            frontend: path.resolve(
+              process.cwd(),
+              'apps/admin/src/app/features',
+            ),
           },
         };
 
         outputDir =
-          appPaths[options.app]?.[options.target] || './apps/api/src/modules';
+          appPaths[options.app]?.[options.target] ||
+          path.resolve(process.cwd(), 'apps/api/src/modules');
       }
 
       console.log(`🚀 Adding route: ${routeName} to domain: ${domainName}`);
@@ -404,6 +432,51 @@ program
       console.error('❌ Error validating module:', error.message);
       process.exit(1);
     }
+  });
+
+program
+  .command('packages')
+  .alias('pkg')
+  .description('Show available feature packages')
+  .action(() => {
+    console.log('📦 Available Feature Packages:\n');
+
+    console.log('🟢 STANDARD (default)');
+    console.log('   • Basic CRUD operations (Create, Read, Update, Delete)');
+    console.log('   • Standard REST API endpoints');
+    console.log('   • Role-based access control');
+    console.log('   • TypeBox schema validation');
+    console.log('   • Pagination and filtering');
+    console.log('');
+
+    console.log('🟡 ENTERPRISE');
+    console.log('   • Everything in Standard, plus:');
+    console.log('   • Dropdown/Options API for UI components');
+    console.log('   • Bulk operations (create, update, delete)');
+    console.log('   • Status management (activate, deactivate, toggle)');
+    console.log('   • Statistics and analytics endpoints');
+    console.log('   • Enhanced error handling');
+    console.log('');
+
+    console.log('🔴 FULL');
+    console.log('   • Everything in Enterprise, plus:');
+    console.log('   • Data validation before save');
+    console.log('   • Field uniqueness checking');
+    console.log('   • Advanced search and filtering');
+    console.log('   • Export capabilities');
+    console.log('   • Business rule validation');
+    console.log('');
+
+    console.log('Usage Examples:');
+    console.log('  crud-generator generate users --package standard');
+    console.log('  crud-generator generate products --package enterprise');
+    console.log('  crud-generator generate orders --package full');
+    console.log('');
+
+    console.log('💡 Recommendation:');
+    console.log('   • Use STANDARD for simple data models');
+    console.log('   • Use ENTERPRISE for admin interfaces and dashboards');
+    console.log('   • Use FULL for complex business domains with validation');
   });
 
 program.parse();

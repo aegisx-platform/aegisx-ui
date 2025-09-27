@@ -1,16 +1,25 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import {
+  BulkCreateSchema,
+  BulkDeleteSchema,
+  BulkStatusSchema,
+  BulkUpdateSchema,
+  DropdownQuerySchema,
+  StatusToggleSchema,
+  UniquenessCheckSchema,
+  ValidationRequestSchema,
+} from '../../../schemas/base.schemas';
+import { SchemaRefs } from '../../../schemas/registry';
 import { ThemesController } from '../controllers/themes.controller';
 import {
   CreateThemesSchema,
-  UpdateThemesSchema,
-  ThemesIdParamSchema,
   GetThemesQuerySchema,
   ListThemesQuerySchema,
-  ThemesResponseSchema,
+  ThemesIdParamSchema,
   ThemesListResponseSchema,
+  ThemesResponseSchema,
+  UpdateThemesSchema,
 } from '../schemas/themes.schemas';
-import { ApiErrorResponseSchema as ErrorResponseSchema } from '../../../schemas/base.schemas';
-import { SchemaRefs } from '../../../schemas/registry';
 
 export interface ThemesRoutesOptions extends FastifyPluginOptions {
   controller: ThemesController;
@@ -40,7 +49,7 @@ export async function themesRoutes(
     },
     preValidation: [
       fastify.authenticate,
-      fastify.authorize(['themes.create', 'admin']),
+      fastify.authorize(['themes', 'admin']),
     ], // Authentication & authorization required
     handler: controller.create.bind(controller),
   });
@@ -138,5 +147,414 @@ export async function themesRoutes(
       fastify.authorize(['themes.delete', 'admin']),
     ], // Authentication & authorization required
     handler: controller.delete.bind(controller),
+  });
+
+  // ===== ENHANCED CRUD ROUTES =====
+
+  // Get dropdown options for UI components
+  fastify.get('/dropdown', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Get themes dropdown options',
+      description: 'Get themes options for dropdown/select components',
+      querystring: DropdownQuerySchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                options: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      value: { type: ['string', 'number'] },
+                      label: { type: 'string' },
+                      disabled: { type: 'boolean' },
+                    },
+                  },
+                },
+                total: { type: 'number' },
+              },
+            },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.read', 'admin']),
+    ],
+    handler: controller.getDropdownOptions.bind(controller),
+  });
+
+  // Bulk create themess
+  fastify.post('/bulk', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Bulk create themess',
+      description: 'Create multiple themess in one operation',
+      body: BulkCreateSchema(CreateThemesSchema),
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                created: { type: 'array', items: ThemesResponseSchema },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' },
+                  },
+                },
+              },
+            },
+            message: { type: 'string' },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.create', 'admin']),
+    ],
+    handler: controller.bulkCreate.bind(controller),
+  });
+
+  // Bulk update themess
+  fastify.put('/bulk', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Bulk update themess',
+      description: 'Update multiple themess in one operation',
+      body: BulkUpdateSchema(UpdateThemesSchema),
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                updated: { type: 'array', items: ThemesResponseSchema },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' },
+                  },
+                },
+              },
+            },
+            message: { type: 'string' },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.update', 'admin']),
+    ],
+    handler: controller.bulkUpdate.bind(controller),
+  });
+
+  // Bulk delete themess
+  fastify.delete('/bulk', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Bulk delete themess',
+      description: 'Delete multiple themess in one operation',
+      body: BulkDeleteSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                deleted: {
+                  type: 'array',
+                  items: { type: ['string', 'number'] },
+                },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' },
+                  },
+                },
+              },
+            },
+            message: { type: 'string' },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.delete', 'admin']),
+    ],
+    handler: controller.bulkDelete.bind(controller),
+  });
+
+  // Bulk status update
+  fastify.patch('/bulk/status', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Bulk update themes status',
+      description: 'Update status of multiple themess',
+      body: BulkStatusSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                updated: { type: 'array', items: ThemesResponseSchema },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' },
+                  },
+                },
+              },
+            },
+            message: { type: 'string' },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.update', 'admin']),
+    ],
+    handler: controller.bulkUpdateStatus.bind(controller),
+  });
+
+  // Activate themes
+  fastify.patch('/:id/activate', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Activate themes',
+      description: 'Activate a themes by setting is_active to true',
+      params: ThemesIdParamSchema,
+      body: StatusToggleSchema,
+      response: {
+        200: ThemesResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.update', 'admin']),
+    ],
+    handler: controller.activate.bind(controller),
+  });
+
+  // Deactivate themes
+  fastify.patch('/:id/deactivate', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Deactivate themes',
+      description: 'Deactivate a themes by setting is_active to false',
+      params: ThemesIdParamSchema,
+      body: StatusToggleSchema,
+      response: {
+        200: ThemesResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.update', 'admin']),
+    ],
+    handler: controller.deactivate.bind(controller),
+  });
+
+  // Toggle themes status
+  fastify.patch('/:id/toggle', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Toggle themes status',
+      description: 'Toggle the is_active status of a themes',
+      params: ThemesIdParamSchema,
+      body: StatusToggleSchema,
+      response: {
+        200: ThemesResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.update', 'admin']),
+    ],
+    handler: controller.toggle.bind(controller),
+  });
+
+  // Get statistics
+  fastify.get('/stats', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Get themes statistics',
+      description: 'Get statistical information about themess',
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                total: { type: 'number' },
+                active: { type: 'number' },
+                inactive: { type: 'number' },
+              },
+            },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.read', 'admin']),
+    ],
+    handler: controller.getStats.bind(controller),
+  });
+
+  // ===== FULL PACKAGE ROUTES =====
+
+  // Validate data before save
+  fastify.post('/validate', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Validate themes data',
+      description: 'Validate themes data before saving',
+      body: ValidationRequestSchema(CreateThemesSchema),
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                valid: { type: 'boolean' },
+                errors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      field: { type: 'string' },
+                      message: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.create', 'themes.update', 'admin']),
+    ],
+    handler: controller.validate.bind(controller),
+  });
+
+  // Check field uniqueness
+  fastify.get('/check/:field', {
+    schema: {
+      tags: ['Themes'],
+      summary: 'Check field uniqueness',
+      description: 'Check if a field value is unique',
+      params: {
+        type: 'object',
+        properties: {
+          field: { type: 'string' },
+        },
+        required: ['field'],
+      },
+      querystring: UniquenessCheckSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                unique: { type: 'boolean' },
+                exists: { type: 'object' },
+              },
+            },
+          },
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['themes.read', 'admin']),
+    ],
+    handler: controller.checkUniqueness.bind(controller),
   });
 }

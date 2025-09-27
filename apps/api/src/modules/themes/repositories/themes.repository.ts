@@ -1,16 +1,15 @@
-import {
-  BaseRepository,
-  BaseListQuery,
-  PaginatedListResult,
-} from '../../../shared/repositories/base.repository';
 import { Knex } from 'knex';
 import {
+  BaseListQuery,
+  BaseRepository,
+  PaginatedListResult,
+} from '../../../shared/repositories/base.repository';
+import {
   type CreateThemes,
-  type UpdateThemes,
-  type Themes,
   type GetThemesQuery,
-  type ListThemesQuery,
+  type Themes,
   type ThemesEntity,
+  type UpdateThemes,
 } from '../types/themes.types';
 
 export interface ThemesListQuery extends BaseListQuery {

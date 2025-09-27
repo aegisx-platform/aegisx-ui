@@ -4,7 +4,16 @@ import {
   PaginationQuerySchema, 
   ApiErrorResponseSchema,
   ApiSuccessResponseSchema,
-  PaginatedResponseSchema 
+  PaginatedResponseSchema{{#if (or (eq package 'enterprise') (eq package 'full'))}},
+  DropdownOptionSchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  BulkStatusSchema,
+  StatusToggleSchema,
+  StatisticsSchema{{/if}}{{#if (eq package 'full')}},
+  ValidationRequestSchema,
+  UniquenessCheckSchema{{/if}} 
 } from '../../../schemas/base.schemas';
 
 // Base {{ModuleName}} Schema

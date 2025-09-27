@@ -9,6 +9,18 @@ import {
   {{ModuleName}}ResponseSchema,
   {{ModuleName}}ListResponseSchema,
 } from '../schemas/{{currentRoute.camelName}}.schemas';
+{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+import {
+  DropdownQuerySchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  BulkStatusSchema,
+  StatusToggleSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema
+} from '../../../schemas/base.schemas';
+{{/if}}
 import { ApiErrorResponseSchema as ErrorResponseSchema } from '../../../schemas/base.schemas';
 import { SchemaRefs } from '../../../schemas/registry';
 
@@ -138,5 +150,412 @@ export async function {{currentRoute.camelName}}Routes(
     ], // Authentication & authorization required
     handler: controller.delete.bind(controller)
   });
+
+{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+
+  // ===== ENHANCED CRUD ROUTES =====
+
+  // Get dropdown options for UI components
+  fastify.get('/dropdown', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Get {{moduleName}} dropdown options',
+      description: 'Get {{moduleName}} options for dropdown/select components',
+      querystring: DropdownQuerySchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                options: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      value: { type: ['string', 'number'] },
+                      label: { type: 'string' },
+                      disabled: { type: 'boolean' }
+                    }
+                  }
+                },
+                total: { type: 'number' }
+              }
+            }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.read', 'admin'])
+    ],
+    handler: controller.getDropdownOptions.bind(controller)
+  });
+
+  // Bulk create {{moduleName}}s
+  fastify.post('/bulk', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Bulk create {{moduleName}}s',
+      description: 'Create multiple {{moduleName}}s in one operation',
+      body: BulkCreateSchema(Create{{ModuleName}}Schema),
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                created: { type: 'array', items: {{ModuleName}}ResponseSchema },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.create', 'admin'])
+    ],
+    handler: controller.bulkCreate.bind(controller)
+  });
+
+  // Bulk update {{moduleName}}s
+  fastify.put('/bulk', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Bulk update {{moduleName}}s',
+      description: 'Update multiple {{moduleName}}s in one operation',
+      body: BulkUpdateSchema(Update{{ModuleName}}Schema),
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                updated: { type: 'array', items: {{ModuleName}}ResponseSchema },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.update', 'admin'])
+    ],
+    handler: controller.bulkUpdate.bind(controller)
+  });
+
+  // Bulk delete {{moduleName}}s
+  fastify.delete('/bulk', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Bulk delete {{moduleName}}s',
+      description: 'Delete multiple {{moduleName}}s in one operation',
+      body: BulkDeleteSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                deleted: { type: 'array', items: { type: ['string', 'number'] } },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.delete', 'admin'])
+    ],
+    handler: controller.bulkDelete.bind(controller)
+  });
+
+  {{#if hasStatusField}}
+  // Bulk status update
+  fastify.patch('/bulk/status', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Bulk update {{moduleName}} status',
+      description: 'Update status of multiple {{moduleName}}s',
+      body: BulkStatusSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                updated: { type: 'array', items: {{ModuleName}}ResponseSchema },
+                summary: {
+                  type: 'object',
+                  properties: {
+                    successful: { type: 'number' },
+                    failed: { type: 'number' },
+                    errors: { type: 'array' }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.update', 'admin'])
+    ],
+    handler: controller.bulkUpdateStatus.bind(controller)
+  });
+
+  // Activate {{moduleName}}
+  fastify.patch('/:id/activate', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Activate {{moduleName}}',
+      description: 'Activate a {{moduleName}} by setting is_active to true',
+      params: {{ModuleName}}IdParamSchema,
+      body: StatusToggleSchema,
+      response: {
+        200: {{ModuleName}}ResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.update', 'admin'])
+    ],
+    handler: controller.activate.bind(controller)
+  });
+
+  // Deactivate {{moduleName}}
+  fastify.patch('/:id/deactivate', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Deactivate {{moduleName}}',
+      description: 'Deactivate a {{moduleName}} by setting is_active to false',
+      params: {{ModuleName}}IdParamSchema,
+      body: StatusToggleSchema,
+      response: {
+        200: {{ModuleName}}ResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.update', 'admin'])
+    ],
+    handler: controller.deactivate.bind(controller)
+  });
+
+  // Toggle {{moduleName}} status
+  fastify.patch('/:id/toggle', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Toggle {{moduleName}} status',
+      description: 'Toggle the is_active status of a {{moduleName}}',
+      params: {{ModuleName}}IdParamSchema,
+      body: StatusToggleSchema,
+      response: {
+        200: {{ModuleName}}ResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.update', 'admin'])
+    ],
+    handler: controller.toggle.bind(controller)
+  });
+  {{/if}}
+
+  // Get statistics
+  fastify.get('/stats', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Get {{moduleName}} statistics',
+      description: 'Get statistical information about {{moduleName}}s',
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'object' }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.read', 'admin'])
+    ],
+    handler: controller.getStats.bind(controller)
+  });
+{{/if}}
+
+{{#if (eq package 'full')}}
+
+  // ===== FULL PACKAGE ROUTES =====
+
+  // Validate data before save
+  fastify.post('/validate', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Validate {{moduleName}} data',
+      description: 'Validate {{moduleName}} data before saving',
+      body: ValidationRequestSchema(Create{{ModuleName}}Schema),
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                valid: { type: 'boolean' },
+                errors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      field: { type: 'string' },
+                      message: { type: 'string' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.create', '{{moduleName}}.update', 'admin'])
+    ],
+    handler: controller.validate.bind(controller)
+  });
+
+  // Check field uniqueness
+  fastify.get('/check/:field', {
+    schema: {
+      tags: ['{{ModuleName}}'],
+      summary: 'Check field uniqueness',
+      description: 'Check if a field value is unique',
+      params: {
+        type: 'object',
+        properties: {
+          field: { type: 'string' }
+        },
+        required: ['field']
+      },
+      querystring: UniquenessCheckSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                unique: { type: 'boolean' },
+                exists: { type: 'object' }
+              }
+            }
+          }
+        },
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError
+      }
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['{{moduleName}}.read', 'admin'])
+    ],
+    handler: controller.checkUniqueness.bind(controller)
+  });
+{{/if}}
 
 }

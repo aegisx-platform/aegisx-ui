@@ -12,7 +12,7 @@ async function generateCrudModule(tableName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = './apps/api/src/modules',
+    outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
     configFile = null,
   } = options;
 
@@ -40,7 +40,31 @@ async function generateCrudModule(tableName, options = {}) {
     columns: schema.columns,
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
+    // Enhanced CRUD package configuration
+    package: options.package || 'standard',
+    hasStatusField: schema.columns.some(
+      (col) =>
+        col.name === 'is_active' ||
+        col.name === 'status' ||
+        col.name === 'active',
+    ),
   };
+
+  console.log(`📦 Package context: ${context.package}`);
+  console.log(`📊 Has status field: ${context.hasStatusField}`);
+  console.log(
+    `🔍 Full context debug:`,
+    JSON.stringify(
+      {
+        package: context.package,
+        hasStatusField: context.hasStatusField,
+        packageEqualEnterprise: context.package === 'enterprise',
+        packageEqualFull: context.package === 'full',
+      },
+      null,
+      2,
+    ),
+  );
 
   // Define templates to generate
   const templates = [
@@ -366,7 +390,7 @@ async function generateDomainModule(domainName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = './apps/api/src/modules',
+    outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
     configFile = null,
     directDb = false,
     noRoles = false,
@@ -399,6 +423,14 @@ async function generateDomainModule(domainName, options = {}) {
     columns: schema.columns,
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
+    // Enhanced CRUD package configuration
+    package: options.package || 'standard',
+    hasStatusField: schema.columns.some(
+      (col) =>
+        col.name === 'is_active' ||
+        col.name === 'status' ||
+        col.name === 'active',
+    ),
     routes: [
       {
         name: 'core',
@@ -408,6 +440,22 @@ async function generateDomainModule(domainName, options = {}) {
       },
     ],
   };
+
+  console.log(`📦 Domain Package context: ${context.package}`);
+  console.log(`📊 Domain Has status field: ${context.hasStatusField}`);
+  console.log(
+    `🔍 Full context debug:`,
+    JSON.stringify(
+      {
+        package: context.package,
+        hasStatusField: context.hasStatusField,
+        packageEqualEnterprise: context.package === 'enterprise',
+        packageEqualFull: context.package === 'full',
+      },
+      null,
+      2,
+    ),
+  );
 
   // Define templates to generate for domain structure
   const templates = [
@@ -634,7 +682,7 @@ async function addRouteToDomain(domainName, routeName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = './apps/api/src/modules',
+    outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
   } = options;
 
   console.log(`🔍 Adding route: ${routeName} to domain: ${domainName}`);

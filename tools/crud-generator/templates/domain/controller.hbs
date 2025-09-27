@@ -8,9 +8,23 @@ import {
   Get{{ModuleName}}QuerySchema,
   List{{ModuleName}}QuerySchema
 } from '../schemas/{{currentRoute.camelName}}.schemas';
+{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+import {
+  DropdownQuerySchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  BulkStatusSchema,
+  StatusToggleSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema
+} from '../../../schemas/base.schemas';
+{{/if}}
 
 /**
  * {{ModuleName}} Controller
+ * Package: {{package}}
+ * Has Status Field: {{hasStatusField}}
  * 
  * Following Fastify controller patterns:
  * - Proper request/reply typing with Static<typeof Schema>
@@ -227,6 +241,407 @@ export class {{ModuleName}}Controller {
       });
     }
   }
+
+{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+  
+  // ===== ENHANCED CRUD METHODS =====
+  
+  /**
+   * Get dropdown options
+   * GET /{{moduleName}}/dropdown
+   */
+  async getDropdownOptions(
+    request: FastifyRequest<{ Querystring: Static<typeof DropdownQuerySchema> }>,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info({ query: request.query }, 'Fetching {{moduleName}} dropdown options');
+
+      const result = await this.{{moduleName}}Service.getDropdownOptions(request.query);
+
+      return reply.send({
+        success: true,
+        data: {
+          options: result.options,
+          total: result.total
+        }
+      });
+    } catch (error) {
+      request.log.error(error, 'Error fetching {{moduleName}} dropdown options');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'DROPDOWN_FETCH_FAILED',
+          message: 'Failed to fetch {{moduleName}} dropdown options'
+        }
+      });
+    }
+  }
+
+  /**
+   * Bulk create {{moduleName}}s
+   * POST /{{moduleName}}/bulk
+   */
+  async bulkCreate(
+    request: FastifyRequest<{ Body: Static<typeof BulkCreateSchema<typeof Create{{ModuleName}}Schema>> }>,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info({ count: request.body.items.length }, 'Bulk creating {{moduleName}}s');
+
+      const result = await this.{{moduleName}}Service.bulkCreate(request.body);
+
+      return reply.status(201).send({
+        success: true,
+        data: result,
+        message: `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
+      });
+    } catch (error) {
+      request.log.error(error, 'Error bulk creating {{moduleName}}s');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'BULK_CREATE_FAILED',
+          message: 'Failed to bulk create {{moduleName}}s'
+        }
+      });
+    }
+  }
+
+  /**
+   * Bulk update {{moduleName}}s
+   * PUT /{{moduleName}}/bulk
+   */
+  async bulkUpdate(
+    request: FastifyRequest<{ Body: Static<typeof BulkUpdateSchema<typeof Update{{ModuleName}}Schema>> }>,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info({ count: request.body.items.length }, 'Bulk updating {{moduleName}}s');
+
+      const result = await this.{{moduleName}}Service.bulkUpdate(request.body);
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
+      });
+    } catch (error) {
+      request.log.error(error, 'Error bulk updating {{moduleName}}s');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'BULK_UPDATE_FAILED',
+          message: 'Failed to bulk update {{moduleName}}s'
+        }
+      });
+    }
+  }
+
+  /**
+   * Bulk delete {{moduleName}}s
+   * DELETE /{{moduleName}}/bulk
+   */
+  async bulkDelete(
+    request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info({ count: request.body.ids.length }, 'Bulk deleting {{moduleName}}s');
+
+      const result = await this.{{moduleName}}Service.bulkDelete(request.body);
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
+      });
+    } catch (error) {
+      request.log.error(error, 'Error bulk deleting {{moduleName}}s');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'BULK_DELETE_FAILED',
+          message: 'Failed to bulk delete {{moduleName}}s'
+        }
+      });
+    }
+  }
+
+  {{#if hasStatusField}}
+  /**
+   * Bulk status update
+   * PATCH /{{moduleName}}/bulk/status
+   */
+  async bulkUpdateStatus(
+    request: FastifyRequest<{ Body: Static<typeof BulkStatusSchema> }>,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info({ 
+        count: request.body.ids.length, 
+        status: request.body.status 
+      }, 'Bulk updating {{moduleName}} status');
+
+      const result = await this.{{moduleName}}Service.bulkUpdateStatus(request.body);
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
+      });
+    } catch (error) {
+      request.log.error(error, 'Error bulk updating {{moduleName}} status');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'BULK_STATUS_UPDATE_FAILED',
+          message: 'Failed to bulk update {{moduleName}} status'
+        }
+      });
+    }
+  }
+
+  /**
+   * Activate {{moduleName}}
+   * PATCH /{{moduleName}}/:id/activate
+   */
+  async activate(
+    request: FastifyRequest<{
+      Params: Static<typeof {{ModuleName}}IdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      request.log.info({ {{moduleName}}Id: id }, 'Activating {{moduleName}}');
+
+      const result = await this.{{moduleName}}Service.activate(id, request.body);
+
+      if (!result) {
+        return reply.status(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: '{{ModuleName}} not found'
+          }
+        });
+      }
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: '{{ModuleName}} activated successfully'
+      });
+    } catch (error) {
+      request.log.error(error, 'Error activating {{moduleName}}');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'ACTIVATION_FAILED',
+          message: 'Failed to activate {{moduleName}}'
+        }
+      });
+    }
+  }
+
+  /**
+   * Deactivate {{moduleName}}
+   * PATCH /{{moduleName}}/:id/deactivate
+   */
+  async deactivate(
+    request: FastifyRequest<{
+      Params: Static<typeof {{ModuleName}}IdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      request.log.info({ {{moduleName}}Id: id }, 'Deactivating {{moduleName}}');
+
+      const result = await this.{{moduleName}}Service.deactivate(id, request.body);
+
+      if (!result) {
+        return reply.status(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: '{{ModuleName}} not found'
+          }
+        });
+      }
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: '{{ModuleName}} deactivated successfully'
+      });
+    } catch (error) {
+      request.log.error(error, 'Error deactivating {{moduleName}}');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'DEACTIVATION_FAILED',
+          message: 'Failed to deactivate {{moduleName}}'
+        }
+      });
+    }
+  }
+
+  /**
+   * Toggle {{moduleName}} status
+   * PATCH /{{moduleName}}/:id/toggle
+   */
+  async toggle(
+    request: FastifyRequest<{
+      Params: Static<typeof {{ModuleName}}IdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      request.log.info({ {{moduleName}}Id: id }, 'Toggling {{moduleName}} status');
+
+      const result = await this.{{moduleName}}Service.toggle(id, request.body);
+
+      if (!result) {
+        return reply.status(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: '{{ModuleName}} not found'
+          }
+        });
+      }
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: '{{ModuleName}} status toggled successfully'
+      });
+    } catch (error) {
+      request.log.error(error, 'Error toggling {{moduleName}} status');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'TOGGLE_FAILED',
+          message: 'Failed to toggle {{moduleName}} status'
+        }
+      });
+    }
+  }
+  {{/if}}
+
+  /**
+   * Get statistics
+   * GET /{{moduleName}}/stats
+   */
+  async getStats(
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info('Fetching {{moduleName}} statistics');
+
+      const stats = await this.{{moduleName}}Service.getStats();
+
+      return reply.send({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      request.log.error(error, 'Error fetching {{moduleName}} statistics');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'STATS_FETCH_FAILED',
+          message: 'Failed to fetch {{moduleName}} statistics'
+        }
+      });
+    }
+  }
+{{/if}}
+
+{{#if (eq package 'full')}}
+  
+  // ===== FULL PACKAGE METHODS =====
+  
+  /**
+   * Validate data before save
+   * POST /{{moduleName}}/validate
+   */
+  async validate(
+    request: FastifyRequest<{ Body: Static<typeof ValidationRequestSchema<typeof Create{{ModuleName}}Schema>> }>,
+    reply: FastifyReply
+  ) {
+    try {
+      request.log.info('Validating {{moduleName}} data');
+
+      const result = await this.{{moduleName}}Service.validate(request.body);
+
+      return reply.send({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      request.log.error(error, 'Error validating {{moduleName}} data');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'VALIDATION_FAILED',
+          message: 'Failed to validate {{moduleName}} data'
+        }
+      });
+    }
+  }
+
+  /**
+   * Check field uniqueness
+   * GET /{{moduleName}}/check/:field
+   */
+  async checkUniqueness(
+    request: FastifyRequest<{ 
+      Params: { field: string };
+      Querystring: Static<typeof UniquenessCheckSchema>; 
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { field } = request.params;
+      request.log.info({ field, value: request.query.value }, 'Checking {{moduleName}} field uniqueness');
+
+      const result = await this.{{moduleName}}Service.checkUniqueness(field, request.query);
+
+      return reply.send({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      request.log.error(error, 'Error checking {{moduleName}} field uniqueness');
+      
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'UNIQUENESS_CHECK_FAILED',
+          message: 'Failed to check {{moduleName}} field uniqueness'
+        }
+      });
+    }
+  }
+{{/if}}
 
   // ===== PRIVATE TRANSFORMATION METHODS =====
 
