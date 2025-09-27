@@ -8,7 +8,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-import { ApiConfigService } from '../../core/http';
+import { ApiConfigService } from '../../../core/http';
 
 // WebSocket Message Interface (matches backend)
 export interface WebSocketMessage {
@@ -59,7 +59,7 @@ export class WebSocketService implements OnDestroy {
   private maxReconnectAttempts: number;
   private reconnectTimeout?: any;
   private destroy$ = new Subject<void>();
-  private apiConfig = inject(ApiConfigService);
+  private apiConfig: ApiConfigService = inject(ApiConfigService);
 
   constructor() {
     // Get WebSocket config from ApiConfigService

@@ -12,8 +12,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { UserRealtimeStateService, User } from '../services/user-realtime-state.service';
-import { WebSocketService } from '../services/websocket.service';
+import { UserRealtimeStateService, User } from '../../business/services/user-realtime-state.service';
+import { WebSocketService } from '../../business/services/websocket.service';
 
 @Component({
   selector: 'app-realtime-user-list',

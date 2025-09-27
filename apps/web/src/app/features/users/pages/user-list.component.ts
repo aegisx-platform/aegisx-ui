@@ -22,7 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AegisxCardComponent } from '@aegisx/ui';
 import { UserService, BulkOperationResult } from '../services/user.service';
 import { UserFormDialogComponent } from '../components/user-form-dialog.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 
 @Component({
   selector: 'ax-user-list',

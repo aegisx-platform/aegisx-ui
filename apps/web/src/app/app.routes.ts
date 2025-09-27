@@ -27,7 +27,7 @@ export const appRoutes: Route[] = [
   {
     path: 'realtime-demo',
     loadComponent: () =>
-      import('./pages/realtime-demo/realtime-demo.component').then(
+      import('./dev-tools/pages/realtime-demo/realtime-demo.component').then(
         (m) => m.RealtimeDemoComponent,
       ),
     canActivate: [AuthGuard],
@@ -84,7 +84,7 @@ export const appRoutes: Route[] = [
   {
     path: 'file-upload-demo',
     loadComponent: () =>
-      import('./pages/file-upload/file-upload-demo.page').then(
+      import('./dev-tools/pages/file-upload-demo.page').then(
         (m) => m.FileUploadDemoPage,
       ),
     canActivate: [AuthGuard],
@@ -126,7 +126,7 @@ export const appRoutes: Route[] = [
   {
     path: 'test-ax',
     loadComponent: () =>
-      import('./pages/test-ax/test-ax.component').then(
+      import('./dev-tools/pages/test-ax/test-ax.component').then(
         (m) => m.TestAxComponent,
       ),
     canActivate: [AuthGuard],
@@ -134,24 +134,24 @@ export const appRoutes: Route[] = [
   {
     path: 'icon-test',
     loadComponent: () =>
-      import('./icon-test.component').then((m) => m.IconTestComponent),
+      import('./dev-tools/components/icon-test.component').then((m) => m.IconTestComponent),
   },
   {
     path: 'test-navigation',
     loadComponent: () =>
-      import('./test-navigation.component').then(
+      import('./dev-tools/components/test-navigation.component').then(
         (m) => m.TestNavigationComponent,
       ),
   },
   {
     path: 'debug-icons',
     loadComponent: () =>
-      import('./debug-icons.component').then((m) => m.DebugIconsComponent),
+      import('./dev-tools/components/debug-icons.component').then((m) => m.DebugIconsComponent),
   },
   {
     path: 'debug-navigation',
     loadComponent: () =>
-      import('./debug-navigation.component').then(
+      import('./dev-tools/components/debug-navigation.component').then(
         (m) => m.DebugNavigationComponent,
       ),
     canActivate: [AuthGuard],
@@ -159,14 +159,14 @@ export const appRoutes: Route[] = [
   {
     path: 'demo/navigation',
     loadComponent: () =>
-      import('./demo/navigation-demo.component').then(
+      import('./dev-tools/demo/navigation-demo.component').then(
         (m) => m.NavigationDemoComponent,
       ),
   },
   {
     path: 'material-demo',
     loadComponent: () =>
-      import('./pages/material-demo/material-demo.component').then(
+      import('./dev-tools/pages/material-demo/material-demo.component').then(
         (m) => m.MaterialDemoComponent,
       ),
     canActivate: [AuthGuard],
@@ -182,7 +182,7 @@ export const appRoutes: Route[] = [
   {
     path: 'test-material',
     loadComponent: () =>
-      import('./pages/material-demo/test-material.component').then(
+      import('./dev-tools/components/test-material.component').then(
         (m) => m.TestMaterialComponent,
       ),
     canActivate: [AuthGuard],
@@ -190,7 +190,7 @@ export const appRoutes: Route[] = [
   {
     path: 'test-rbac-websocket',
     loadComponent: () =>
-      import('./test-rbac-websocket.component').then(
+      import('./dev-tools/components/test-rbac-websocket.component').then(
         (m) => m.TestRbacWebsocketComponent,
       ),
   },

@@ -7,8 +7,8 @@ import {
   StateOptions,
   ConflictInfo,
 } from './base-realtime-state-manager';
-import { ApiConfigService } from '../../core/http';
-import { AuthService } from '../../core/auth';
+import { ApiConfigService } from '../../../core/http';
+import { AuthService } from '../../../core/auth';
 
 export interface User extends BaseEntity {
   id: string;
@@ -47,9 +47,9 @@ export interface UpdateUserRequest {
   providedIn: 'root',
 })
 export class UserRealtimeStateService extends BaseRealtimeStateManager<User> {
-  private http = inject(HttpClient);
-  private apiConfig = inject(ApiConfigService);
-  private authService = inject(AuthService);
+  private http: HttpClient = inject(HttpClient);
+  private apiConfig: ApiConfigService = inject(ApiConfigService);
+  private authService: AuthService = inject(AuthService);
 
   constructor() {
     const stateOptions: StateOptions = {

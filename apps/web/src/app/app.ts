@@ -11,7 +11,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './core/auth';
 import { NavigationService } from './core/navigation';
-import { WebSocketService } from './shared/services/websocket.service';
+import { WebSocketService } from './shared/business/services/websocket.service';
 
 interface Notification {
   id: number;

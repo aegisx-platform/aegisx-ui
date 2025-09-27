@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap, finalize } from 'rxjs/operators';
-import { SettingsDemoService } from './settings-demo.service';
+import { SettingsDemoService } from '../../../dev-tools/services/settings-demo.service';
 import {
   GroupedSettings,
   GroupedSettingsResponse,
@@ -29,8 +29,8 @@ import {
   providedIn: 'root',
 })
 export class SettingsService {
-  private http = inject(HttpClient);
-  private demoService = inject(SettingsDemoService);
+  private http: HttpClient = inject(HttpClient);
+  private demoService: SettingsDemoService = inject(SettingsDemoService);
   private readonly baseUrl = '/settings';
 
   // Set to true to use demo service instead of real API

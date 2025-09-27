@@ -28,7 +28,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbComponent, AegisxNavigationItem } from '@aegisx/ui';
-import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
+import { ConfirmDialogComponent } from '../../../../shared/ui/components/confirm-dialog.component';
 import { Role, RoleFilters } from '../../models/rbac.interfaces';
 import { RbacService } from '../../services/rbac.service';
 import { RoleDialogComponent } from '../../dialogs/role-dialog/role-dialog.component';

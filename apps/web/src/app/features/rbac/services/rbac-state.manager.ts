@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import {
   BaseRealtimeStateManager,
   StateManagerConfig,
-} from '../../../shared/state/base-realtime-state.manager';
-import { WebSocketService } from '../../../shared/services/websocket.service';
+} from '../../../shared/business/services/base-realtime-state.manager';
+import { WebSocketService } from '../../../shared/business/services/websocket.service';
 import { Role, Permission, UserRole } from '../models/rbac.interfaces';
 
 @Injectable({

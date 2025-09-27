@@ -30,7 +30,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbComponent, AegisxNavigationItem } from '@aegisx/ui';
-import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
+import { ConfirmDialogComponent } from '../../../../shared/ui/components/confirm-dialog.component';
 import {
   Permission,
   PermissionCategory,

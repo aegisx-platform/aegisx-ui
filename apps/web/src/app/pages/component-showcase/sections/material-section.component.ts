@@ -18,7 +18,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { FormsModule } from '@angular/forms';
 
 // Import the existing material demo component
-import { MaterialDemoComponent } from '../../material-demo/material-demo.component';
+import { MaterialDemoComponent } from '../../../dev-tools/pages/material-demo/material-demo.component';
 import {
   ShowcaseDataService,
   ComponentExample,
