@@ -672,7 +672,7 @@ export class UserPreferencesComponent implements OnInit, OnDestroy {
     return Promise.resolve(!this.isLoading() && !this.error());
   }
 
-  verifySuccessMessage(): Promise<boolean> {
+  verifyOperationResult(): Promise<boolean> {
     // This would be used in tests to verify success state
     return Promise.resolve(true);
   }

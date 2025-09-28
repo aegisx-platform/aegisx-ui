@@ -213,7 +213,12 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     const dropdownOptions = result.data.map(item => ({
       value: item[valueField],
       label: item[labelField] || `${item.id}`,
+      {{#if hasStatusField}}
       disabled: item.is_active === false
+      {{else}}
+      // TODO: Implement status field logic when needed - currently defaults to false
+      disabled: false
+      {{/if}}
     }));
 
     return {
@@ -225,20 +230,41 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
   /**
    * Bulk create multiple {{moduleName}}s
    */
-  async bulkCreate(data: { items: Create{{ModuleName}}[] }): Promise<{
+  async bulkCreate(data: { items: Array<{ original: any; transformed: Create{{ModuleName}} }> | Create{{ModuleName}}[] }): Promise<{
     created: {{ModuleName}}[];
     summary: { successful: number; failed: number; errors: any[] };
   }> {
     const results: {{ModuleName}}[] = [];
     const errors: any[] = [];
 
-    for (const item of data.items) {
+    // Handle both new format (with original data) and old format (backwards compatibility)
+    const itemsToProcess = data.items.map(item => {
+      if (typeof item === 'object' && 'original' in item && 'transformed' in item) {
+        // New format from controller
+        return { original: item.original, toCreate: item.transformed };
+      } else {
+        // Old format - backwards compatibility
+        return { original: item, toCreate: item as Create{{ModuleName}} };
+      }
+    });
+
+    // Process each item individually
+    for (const { original, toCreate } of itemsToProcess) {
       try {
-        await this.validateCreate(item);
-        const processed = await this.beforeCreate(item);
+        // Validate and process
+        await this.validateCreate(toCreate);
+        const processed = await this.beforeCreate(toCreate);
+        
+        // Create in database
         const created = await this.repository.create(processed);
-        await this.afterCreate(created, item);
         results.push(created);
+        
+        // Call afterCreate hook
+        try {
+          await this.afterCreate(created, original);
+        } catch (error) {
+          console.warn('Error in afterCreate:', error);
+        }
 
         {{#if withEvents}}
         if (this.eventHelper) {
@@ -246,9 +272,14 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
         }
         {{/if}}
       } catch (error) {
+        console.log('⚠️ BULK CREATE ERROR - Item failed:', {
+          name: original.name || 'unknown',
+          display_name: original.display_name || 'unknown',
+          error: error instanceof Error ? error.message.substring(0, 100) + '...' : String(error)
+        });
         errors.push({
-          item,
-          error: error instanceof Error ? error.message : String(error)
+          item: original, // Include the original data that failed
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }
@@ -258,8 +289,8 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
       summary: {
         successful: results.length,
         failed: errors.length,
-        errors
-      }
+        errors,
+      },
     };
   }
 
@@ -395,7 +426,15 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
   /**
    * Get statistics
    */
-  async getStats(): Promise<any> {
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    inactive: number;
+    percentages?: {
+      active: number;
+      inactive: number;
+    };
+  }> {
     return this.repository.getStats();
   }
 {{/if}}

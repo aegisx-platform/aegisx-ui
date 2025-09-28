@@ -35,7 +35,7 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
         {{#each columns}}
         {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
         {{#ifEquals tsType 'string'}}
-        '{{tableName}}.{{name}}'{{#unless @last}},{{/unless}}
+        '{{@root.tableName}}.{{name}}'{{#unless @last}},{{/unless}}
         {{/ifEquals}}
         {{/unless}}
         {{/each}}
@@ -95,7 +95,7 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
     {{#each columns}}
     {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
     if (filters.{{name}} !== undefined) {
-      query.where('{{tableName}}.{{name}}', filters.{{name}});
+      query.where('{{@root.tableName}}.{{name}}', filters.{{name}});
     }
     {{/unless}}
     {{/each}}
@@ -105,11 +105,11 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
   protected getSortField(sortBy: string): string {
     const sortFields: Record<string, string> = {
       {{#each columns}}
-      {{camelCase name}}: '{{tableName}}.{{name}}'{{#unless @last}},{{/unless}}
+      {{camelCase name}}: '{{@root.tableName}}.{{name}}'{{#unless @last}},{{/unless}}
       {{/each}}
     };
 
-    return sortFields[sortBy] || '{{tableName}}.{{#each primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}';
+    return sortFields[sortBy] || '{{@root.tableName}}.{{#each @root.primaryKey}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}';
   }
 
   // Extended find method with options
@@ -143,9 +143,9 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
   {{#each columns}}
   {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
   {{#if (eq tsType 'string')}}
-  async findBy{{pascalCase name}}({{camelCase name}}: string): Promise<{{../ModuleName}} | null> {
+  async findBy{{pascalCase name}}({{camelCase name}}: string): Promise<{{@root.ModuleName}} | null> {
     const query = this.getJoinQuery();
-    const row = await query.where('{{../tableName}}.{{name}}', {{camelCase name}}).first();
+    const row = await query.where('{{@root.tableName}}.{{name}}', {{camelCase name}}).first();
     return row ? this.transformToEntity(row) : null;
   }
 
@@ -156,30 +156,38 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
   // Statistics and aggregation methods
   async getStats(): Promise<{
     total: number;
-    {{#each columns}}
-    {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-    {{#if (eq tsType 'boolean')}}
-    {{camelCase name}}Count: number;
-    {{/if}}
-    {{/unless}}
-    {{/each}}
+    active: number;
+    inactive: number;
+    percentages?: {
+      active: number;
+      inactive: number;
+    };
   }> {
     const stats: any = await this.knex('{{tableName}}')
       .select([
-        this.knex.raw('COUNT(*) as total'){{#each columns}}{{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}{{#if (eq tsType 'boolean')}},
-        this.knex.raw('COUNT(*) FILTER (WHERE {{name}} = true) as {{camelCase name}}_count'){{/if}}{{/unless}}{{/each}}
+        this.knex.raw('COUNT(*) as total'),
+        {{#if hasStatusField}}
+        this.knex.raw('COUNT(*) FILTER (WHERE is_active = true) as active_count'),
+        this.knex.raw('COUNT(*) FILTER (WHERE is_active = false OR is_active IS NULL) as inactive_count')
+        {{else}}
+        this.knex.raw('COUNT(*) as active_count'),
+        this.knex.raw('0 as inactive_count')
+        {{/if}}
       ])
       .first();
 
+    const total = parseInt(stats?.total || '0');
+    const active = parseInt(stats?.active_count || '0');
+    const inactive = parseInt(stats?.inactive_count || '0');
+
     return {
-      total: parseInt(stats?.total || '0'),
-      {{#each columns}}
-      {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-      {{#if (eq tsType 'boolean')}}
-      {{camelCase name}}Count: parseInt(stats?.{{camelCase name}}_count || '0'){{#unless @last}},{{/unless}}
-      {{/if}}
-      {{/unless}}
-      {{/each}}
+      total,
+      active,
+      inactive,
+      percentages: total > 0 ? {
+        active: Math.round((active / total) * 100),
+        inactive: Math.round((inactive / total) * 100),
+      } : undefined,
     };
   }
 

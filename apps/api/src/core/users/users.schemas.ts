@@ -129,7 +129,7 @@ const UpdateProfileRequestSchema = Type.Object({
 const UpdateProfileResponseSchema = ApiSuccessResponseSchema(UserProfileSchema);
 
 // Success message response - Using standard success response
-const SuccessMessageResponseSchema = ApiSuccessResponseSchema(
+const OperationResultResponseSchema = ApiSuccessResponseSchema(
   Type.Object({
     message: Type.String(),
   }),
@@ -229,7 +229,7 @@ export const usersSchemas = {
   'get-profile-response': GetProfileResponseSchema,
   'update-profile-request': UpdateProfileRequestSchema,
   'update-profile-response': UpdateProfileResponseSchema,
-  'success-message-response': SuccessMessageResponseSchema,
+  'success-message-response': OperationResultResponseSchema,
   'list-roles-response': ListRolesResponseSchema,
   // Bulk operation schemas
   'bulk-user-ids-request': BulkUserIdsRequestSchema,

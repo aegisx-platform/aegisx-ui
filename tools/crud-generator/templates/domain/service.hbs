@@ -125,18 +125,43 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
    * Delete {{moduleName}}
    */
   async delete(id: string | number): Promise<boolean> {
-    // Get entity before deletion for event emission
-    const {{moduleName}} = await this.getById(id);
-    
-    const deleted = await super.delete(id);
-    
-    {{#if withEvents}}
-    if (deleted && {{moduleName}} && this.eventHelper) {
-      await this.eventHelper.emitDeleted({{moduleName}}.id);
+    try {
+      console.log('Attempting to delete {{moduleName}} with ID:', id);
+      
+      // Check if {{moduleName}} exists first
+      const existing = await this.{{moduleName}}Repository.findById(id);
+      if (!existing) {
+        console.log('{{ModuleName}} not found for deletion:', id);
+        return false;
+      }
+      
+      console.log('Found {{moduleName}} to delete:', existing.{{#if displayNameField}}{{displayNameField}}{{else}}id{{/if}});
+      
+      {{#if withEvents}}
+      // Get entity before deletion for event emission
+      const {{moduleName}} = await this.getById(id);
+      {{/if}}
+      
+      // Direct repository call to avoid base service complexity
+      const deleted = await this.{{moduleName}}Repository.delete(id);
+      
+      console.log('Delete result:', deleted);
+      
+      {{#if withEvents}}
+      if (deleted && {{moduleName}} && this.eventHelper) {
+        await this.eventHelper.emitDeleted({{moduleName}}.id);
+      }
+      {{/if}}
+      
+      if (deleted) {
+        console.log('{{ModuleName}} deleted successfully:', { id, {{#if displayNameField}}{{displayNameField}}: existing.{{displayNameField}}{{else}}name: existing.{{#each columns}}{{#if (or (eq name 'name') (eq name 'title') (eq name 'display_name'))}}{{name}}{{/if}}{{/each}}{{/if}} });
+      }
+      
+      return deleted;
+    } catch (error) {
+      console.error('Error deleting {{moduleName}}:', error);
+      return false;
     }
-    {{/if}}
-    
-    return deleted;
   }
 
   // ===== BUSINESS LOGIC HOOKS =====
@@ -201,7 +226,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     options: Array<{ value: string | number; label: string; disabled?: boolean }>;
     total: number;
   }> {
-    const { limit = 100, search, labelField = 'name', valueField = 'id' } = options;
+    const { limit = 100, search, labelField = '{{#if displayNameField}}{{displayNameField}}{{else}}display_name{{/if}}', valueField = 'id' } = options;
     
     const result = await this.{{moduleName}}Repository.list({
       limit,
@@ -232,22 +257,46 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     const results: {{ModuleName}}[] = [];
     const errors: any[] = [];
 
+    // Validate and process all items first
+    const validItems: Create{{ModuleName}}[] = [];
     for (const item of data.items) {
       try {
         await this.validateCreate(item);
         const processed = await this.beforeCreate(item);
-        const created = await this.{{moduleName}}Repository.create(processed);
-        await this.afterCreate(created, item);
-        results.push(created);
-
-        {{#if withEvents}}
-        if (this.eventHelper) {
-          await this.eventHelper.emitCreated(created);
-        }
-        {{/if}}
+        validItems.push(processed);
       } catch (error) {
         errors.push({
           item,
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
+    }
+
+    // Bulk create valid items
+    if (validItems.length > 0) {
+      try {
+        // Use individual creates instead of createMany for debugging
+        for (const item of validItems) {
+          const created = await this.{{moduleName}}Repository.create(item);
+          results.push(created);
+        }
+        
+        // Call afterCreate for each created item
+        for (let i = 0; i < results.length; i++) {
+          try {
+            await this.afterCreate(results[i], validItems[i]);
+            {{#if withEvents}}
+            if (this.eventHelper) {
+              await this.eventHelper.emitCreated(results[i]);
+            }
+            {{/if}}
+          } catch (error) {
+            console.warn('Error in afterCreate:', error);
+          }
+        }
+      } catch (error) {
+        errors.push({
+          item: 'bulk_operation',
           error: error instanceof Error ? error.message : String(error)
         });
       }
@@ -392,12 +441,37 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
   }
   {{/if}}
 
+  {{#if smartStats}}
   /**
-   * Get statistics
+   * Get smart statistics based on detected field patterns
    */
-  async getStats(): Promise<any> {
+  async getStats(): Promise<{
+    total: number;
+    {{#if hasStatusField}}
+    active?: number;
+    inactive?: number;
+    percentages?: {
+      active: number;
+      inactive: number;
+    };
+    {{/if}}
+    {{#if hasDateField}}
+    recentlyCreated?: number;
+    recentlyUpdated?: number;
+    {{/if}}
+  }> {
     return this.{{moduleName}}Repository.getStats();
   }
+  {{else}}
+  /**
+   * Get basic statistics (count only)
+   */
+  async getStats(): Promise<{
+    total: number;
+  }> {
+    return this.{{moduleName}}Repository.getStats();
+  }
+  {{/if}}
 {{/if}}
 
 {{#if (eq package 'full')}}
@@ -454,7 +528,21 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
       query.excludeId = options.excludeId;
     }
 
-    const existing = await this.{{moduleName}}Repository.findOne(query);
+    // Use field-specific find methods based on available repository methods
+    let existing: any = null;
+    
+    {{#each columns}}
+    {{#if (or (eq name 'name') (eq name 'email') (eq name 'username') (eq name 'slug'))}}
+    if (field === '{{name}}' && options.value) {
+      existing = await this.{{../moduleName}}Repository.findBy{{pascalCase name}}(options.value);
+    }{{#unless @last}} else {{/unless}}
+    {{/if}}
+    {{/each}}
+    
+    // If updating (excludeId provided), ignore the current record
+    if (existing && options.excludeId && existing.id === options.excludeId) {
+      existing = null;
+    }
     
     return {
       unique: !existing,

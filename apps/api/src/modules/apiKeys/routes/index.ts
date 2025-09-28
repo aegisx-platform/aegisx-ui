@@ -119,7 +119,7 @@ export async function apiKeysRoutes(
       description: 'Delete a apiKeys by its unique identifier',
       params: ApiKeysIdParamSchema,
       response: {
-        200: SchemaRefs.SuccessMessage,
+        200: SchemaRefs.OperationResult,
         400: SchemaRefs.ValidationError,
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,

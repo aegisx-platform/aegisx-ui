@@ -158,7 +158,7 @@ export async function rbacRoutes(
         security: [{ bearerAuth: [] }],
         params: SchemaRefs.UuidParam,
         response: {
-          200: SchemaRefs.SuccessMessage,
+          200: SchemaRefs.OperationResult,
           400: SchemaRefs.ValidationError,
           401: SchemaRefs.Unauthorized,
           403: SchemaRefs.Forbidden,
@@ -284,7 +284,7 @@ export async function rbacRoutes(
         security: [{ bearerAuth: [] }],
         params: SchemaRefs.UuidParam,
         response: {
-          200: SchemaRefs.SuccessMessage,
+          200: SchemaRefs.OperationResult,
           401: SchemaRefs.Unauthorized,
           403: SchemaRefs.Forbidden,
           404: SchemaRefs.NotFound,
@@ -363,7 +363,7 @@ export async function rbacRoutes(
           roleId: Type.String({ format: 'uuid' }),
         }),
         response: {
-          200: SchemaRefs.SuccessMessage,
+          200: SchemaRefs.OperationResult,
           401: SchemaRefs.Unauthorized,
           403: SchemaRefs.Forbidden,
           404: SchemaRefs.NotFound,

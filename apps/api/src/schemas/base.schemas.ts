@@ -61,8 +61,8 @@ export const PaginatedResponseSchema = <
     meta: Type.Optional(ApiMetaSchema),
   });
 
-// Success Message Schema (for simple operations like delete)
-export const SuccessMessageSchema = Type.Object({
+// Operation Result Response Schema (for operations like delete, update status)
+export const OperationResultResponseSchema = Type.Object({
   success: Type.Literal(true),
   message: Type.String(),
   data: Type.Optional(
@@ -311,18 +311,20 @@ export const BulkResponseSchema = <
   Type.Object({
     success: Type.Literal(true),
     data: Type.Object({
-      successful: Type.Array(itemSchema),
-      failed: Type.Array(
-        Type.Object({
-          id: Type.Optional(Type.Union([Type.String(), Type.Number()])),
-          error: Type.String(),
-          data: Type.Optional(Type.Any()),
-        }),
+      created: Type.Optional(Type.Array(itemSchema)),
+      updated: Type.Optional(Type.Array(itemSchema)),
+      deleted: Type.Optional(
+        Type.Array(Type.Union([Type.String(), Type.Number()])),
       ),
       summary: Type.Object({
-        total: Type.Number({ minimum: 0 }),
         successful: Type.Number({ minimum: 0 }),
         failed: Type.Number({ minimum: 0 }),
+        errors: Type.Array(
+          Type.Object({
+            item: Type.Object({}, { additionalProperties: true }), // Allow any properties in original data
+            error: Type.String(),
+          }),
+        ),
       }),
     }),
     message: Type.Optional(Type.String()),
@@ -368,6 +370,9 @@ export const StatisticsSchema = Type.Object({
       monthly: Type.Number(),
     }),
   ),
+  // Smart statistics fields
+  recentlyCreated: Type.Optional(Type.Number({ minimum: 0 })),
+  recentlyUpdated: Type.Optional(Type.Number({ minimum: 0 })),
   custom: Type.Optional(Type.Record(Type.String(), Type.Any())),
 });
 
@@ -444,6 +449,24 @@ export const ValidationResponseSchema = Type.Object({
 });
 
 // Field Uniqueness Check Schema
+// Uniqueness Check Schemas
+export const UniquenessParamSchema = Type.Object({
+  field: Type.String({
+    description: 'Field name to check for uniqueness',
+  }),
+});
+
+export const UniquenessQuerySchema = Type.Object({
+  value: Type.Union([Type.String(), Type.Number()], {
+    description: 'Value to check for uniqueness',
+  }),
+  excludeId: Type.Optional(
+    Type.Union([Type.String(), Type.Number()], {
+      description: 'ID to exclude from uniqueness check (for updates)',
+    }),
+  ),
+});
+
 export const UniquenessCheckSchema = Type.Object({
   field: Type.String(),
   value: Type.Union([Type.String(), Type.Number()]),
@@ -454,8 +477,7 @@ export const UniquenessResponseSchema = Type.Object({
   success: Type.Literal(true),
   data: Type.Object({
     unique: Type.Boolean(),
-    conflictId: Type.Optional(Type.Union([Type.String(), Type.Number()])),
-    suggestions: Type.Optional(Type.Array(Type.String())),
+    exists: Type.Optional(Type.Any()),
   }),
   meta: Type.Optional(ApiMetaSchema),
 });

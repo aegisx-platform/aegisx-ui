@@ -42,22 +42,49 @@ async function generateCrudModule(tableName, options = {}) {
     foreignKeys: schema.foreignKeys,
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
+    smartStats: options.smartStats || false,
     hasStatusField: schema.columns.some(
       (col) =>
         col.name === 'is_active' ||
-        col.name === 'status' ||
-        col.name === 'active',
+        col.name === 'enabled' ||
+        col.name === 'is_published' ||
+        col.name === 'is_verified',
+    ),
+    statusColumns: schema.columns.filter(
+      (col) =>
+        col.name === 'is_active' ||
+        col.name === 'enabled' ||
+        col.name === 'is_published' ||
+        col.name === 'is_verified',
+    ),
+    hasDateField: schema.columns.some(
+      (col) =>
+        col.name === 'created_at' ||
+        col.name === 'updated_at' ||
+        col.name === 'published_at' ||
+        col.name === 'deleted_at',
+    ),
+    dateColumns: schema.columns.filter(
+      (col) =>
+        col.name === 'created_at' ||
+        col.name === 'updated_at' ||
+        col.name === 'published_at' ||
+        col.name === 'deleted_at',
     ),
   };
 
   console.log(`📦 Package context: ${context.package}`);
+  console.log(`📊 Smart stats: ${context.smartStats}`);
   console.log(`📊 Has status field: ${context.hasStatusField}`);
+  console.log(`📊 Has date field: ${context.hasDateField}`);
   console.log(
     `🔍 Full context debug:`,
     JSON.stringify(
       {
         package: context.package,
+        smartStats: context.smartStats,
         hasStatusField: context.hasStatusField,
+        hasDateField: context.hasDateField,
         packageEqualEnterprise: context.package === 'enterprise',
         packageEqualFull: context.package === 'full',
       },
@@ -319,6 +346,177 @@ function toPascalCase(str) {
     .replace(/^[a-z]/, (letter) => letter.toUpperCase());
 }
 
+/**
+ * Field categorization helper functions for intelligent parameter generation
+ */
+
+/**
+ * Determine if a field is suitable for search (LIKE/ILIKE operations)
+ */
+function isSearchableField(column) {
+  const { name, dataType, tsType } = column;
+
+  // Only string fields are searchable
+  if (tsType !== 'string') return false;
+
+  // Exclude very short fields that are likely codes/keys
+  if (
+    name.length <= 3 &&
+    ['id', 'key', 'tag'].some((keyword) => name.includes(keyword))
+  ) {
+    return false;
+  }
+
+  // Exclude binary/encrypted/hash fields
+  const excludePatterns = ['hash', 'token', 'secret', 'encrypted', 'binary'];
+  if (excludePatterns.some((pattern) => name.toLowerCase().includes(pattern))) {
+    return false;
+  }
+
+  // Include fields that are likely to contain searchable text
+  const searchablePatterns = [
+    'name',
+    'title',
+    'description',
+    'content',
+    'text',
+    'comment',
+    'note',
+  ];
+  return searchablePatterns.some((pattern) =>
+    name.toLowerCase().includes(pattern),
+  );
+}
+
+/**
+ * Determine if a field is suitable for exact match filtering
+ */
+function isExactMatchField(column) {
+  const { name, dataType, tsType } = column;
+
+  // Boolean fields are always exact match
+  if (tsType === 'boolean') return true;
+
+  // String fields with specific patterns
+  if (tsType === 'string') {
+    const exactMatchPatterns = [
+      'status',
+      'type',
+      'category',
+      'code',
+      'key',
+      'tag',
+      'role',
+    ];
+    return exactMatchPatterns.some((pattern) =>
+      name.toLowerCase().includes(pattern),
+    );
+  }
+
+  // Integer fields that are likely foreign keys or enums
+  if (tsType === 'number' && dataType === 'integer') {
+    const fkPatterns = ['_id', 'id', 'type', 'status'];
+    return fkPatterns.some((pattern) => name.toLowerCase().includes(pattern));
+  }
+
+  return false;
+}
+
+/**
+ * Determine if a field is suitable for range filtering (min/max)
+ */
+function isRangeField(column) {
+  const { name, dataType, tsType } = column;
+
+  // Numeric fields (except small integers that are likely enum/foreign keys)
+  if (tsType === 'number') {
+    const rangePatterns = [
+      'amount',
+      'price',
+      'cost',
+      'count',
+      'quantity',
+      'size',
+      'weight',
+      'score',
+      'rating',
+    ];
+    return (
+      rangePatterns.some((pattern) => name.toLowerCase().includes(pattern)) ||
+      dataType === 'decimal' ||
+      dataType === 'float' ||
+      dataType === 'double'
+    );
+  }
+
+  // Date fields are suitable for range filtering
+  if (
+    tsType === 'Date' ||
+    (dataType && (dataType.includes('timestamp') || dataType.includes('date')))
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Determine if a field should be included in dropdown/list endpoints
+ */
+function isDisplayField(column) {
+  const { name, dataType, tsType } = column;
+
+  // Primary key is always included
+  if (column.isPrimaryKey) return true;
+
+  // Display name patterns
+  const displayPatterns = ['name', 'title', 'label', 'display'];
+  return displayPatterns.some((pattern) =>
+    name.toLowerCase().includes(pattern),
+  );
+}
+
+/**
+ * Get appropriate TypeBox schema constraints for a field based on its purpose
+ */
+function getFieldConstraints(column) {
+  const { name, dataType, tsType } = column;
+
+  if (tsType === 'string') {
+    // Search fields can be shorter
+    if (isSearchableField(column)) {
+      return '{ minLength: 1, maxLength: 100 }';
+    }
+
+    // Exact match fields are typically shorter
+    if (isExactMatchField(column)) {
+      return '{ minLength: 1, maxLength: 50 }';
+    }
+
+    // Default string constraints
+    return '{ minLength: 1, maxLength: 255 }';
+  }
+
+  if (tsType === 'number') {
+    // Range fields might allow negative numbers
+    if (isRangeField(column)) {
+      return '{}'; // No minimum constraint for range fields
+    }
+
+    // Exact match fields are usually positive
+    return '{ minimum: 0 }';
+  }
+
+  return '';
+}
+
+/**
+ * Check if table has any foreign key relationships (for include parameters)
+ */
+function hasForeignKeys(schema) {
+  return schema.foreignKeys && schema.foreignKeys.length > 0;
+}
+
 // Register Handlebars helpers
 Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
   if (!options || typeof options.fn !== 'function') {
@@ -381,6 +579,31 @@ Handlebars.registerHelper('raw', function (text) {
   return new Handlebars.SafeString(text);
 });
 
+// Register field categorization helpers
+Handlebars.registerHelper('isSearchableField', function (column) {
+  return isSearchableField(column);
+});
+
+Handlebars.registerHelper('isExactMatchField', function (column) {
+  return isExactMatchField(column);
+});
+
+Handlebars.registerHelper('isRangeField', function (column) {
+  return isRangeField(column);
+});
+
+Handlebars.registerHelper('isDisplayField', function (column) {
+  return isDisplayField(column);
+});
+
+Handlebars.registerHelper('getFieldConstraints', function (column) {
+  return new Handlebars.SafeString(getFieldConstraints(column));
+});
+
+Handlebars.registerHelper('hasForeignKeys', function (schema) {
+  return hasForeignKeys(schema);
+});
+
 /**
  * Generate domain module with organized structure
  */
@@ -425,11 +648,34 @@ async function generateDomainModule(domainName, options = {}) {
     foreignKeys: schema.foreignKeys,
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
+    smartStats: options.smartStats || false,
     hasStatusField: schema.columns.some(
       (col) =>
         col.name === 'is_active' ||
-        col.name === 'status' ||
-        col.name === 'active',
+        col.name === 'enabled' ||
+        col.name === 'is_published' ||
+        col.name === 'is_verified',
+    ),
+    statusColumns: schema.columns.filter(
+      (col) =>
+        col.name === 'is_active' ||
+        col.name === 'enabled' ||
+        col.name === 'is_published' ||
+        col.name === 'is_verified',
+    ),
+    hasDateField: schema.columns.some(
+      (col) =>
+        col.name === 'created_at' ||
+        col.name === 'updated_at' ||
+        col.name === 'published_at' ||
+        col.name === 'deleted_at',
+    ),
+    dateColumns: schema.columns.filter(
+      (col) =>
+        col.name === 'created_at' ||
+        col.name === 'updated_at' ||
+        col.name === 'published_at' ||
+        col.name === 'deleted_at',
     ),
     routes: [
       {
@@ -442,13 +688,17 @@ async function generateDomainModule(domainName, options = {}) {
   };
 
   console.log(`📦 Domain Package context: ${context.package}`);
+  console.log(`📊 Domain Smart stats: ${context.smartStats}`);
   console.log(`📊 Domain Has status field: ${context.hasStatusField}`);
+  console.log(`📊 Domain Has date field: ${context.hasDateField}`);
   console.log(
     `🔍 Full context debug:`,
     JSON.stringify(
       {
         package: context.package,
+        smartStats: context.smartStats,
         hasStatusField: context.hasStatusField,
+        hasDateField: context.hasDateField,
         packageEqualEnterprise: context.package === 'enterprise',
         packageEqualFull: context.package === 'full',
       },

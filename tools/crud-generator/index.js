@@ -14,6 +14,26 @@ const {
 } = require('./src/generator');
 const { version } = require('./package.json');
 
+// Helper function to find project root (where package.json with nx exists)
+function findProjectRoot(startDir = __dirname) {
+  let currentDir = startDir;
+  while (currentDir !== path.dirname(currentDir)) {
+    const packageJsonPath = path.join(currentDir, 'package.json');
+    try {
+      const packageJson = require(packageJsonPath);
+      if (packageJson.devDependencies?.nx || packageJson.dependencies?.nx) {
+        return currentDir;
+      }
+    } catch (e) {
+      // Continue searching
+    }
+    currentDir = path.dirname(currentDir);
+  }
+  return PROJECT_ROOT; // Fallback to current working directory
+}
+
+const PROJECT_ROOT = findProjectRoot();
+
 const program = new Command();
 
 program
@@ -52,6 +72,12 @@ program
     'Feature package to generate (standard, enterprise, full)',
     'standard',
   )
+  .option(
+    '--smart-stats',
+    'Enable smart statistics detection based on table fields',
+    false,
+  )
+  .option('--no-format', 'Skip auto-formatting generated files', false)
   .action(async (tableName, options) => {
     try {
       // Validate package option
@@ -67,25 +93,22 @@ program
       if (!outputDir) {
         const appPaths = {
           api: {
-            backend: path.resolve(process.cwd(), 'apps/api/src/modules'),
-            frontend: path.resolve(process.cwd(), 'apps/api/src/frontend'), // if needed
+            backend: path.resolve(PROJECT_ROOT, 'apps/api/src/modules'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/api/src/frontend'), // if needed
           },
           web: {
-            backend: path.resolve(process.cwd(), 'apps/web/src/backend'), // if needed
-            frontend: path.resolve(process.cwd(), 'apps/web/src/app/features'),
+            backend: path.resolve(PROJECT_ROOT, 'apps/web/src/backend'), // if needed
+            frontend: path.resolve(PROJECT_ROOT, 'apps/web/src/app/features'),
           },
           admin: {
-            backend: path.resolve(process.cwd(), 'apps/admin/src/backend'), // if needed
-            frontend: path.resolve(
-              process.cwd(),
-              'apps/admin/src/app/features',
-            ),
+            backend: path.resolve(PROJECT_ROOT, 'apps/admin/src/backend'), // if needed
+            frontend: path.resolve(PROJECT_ROOT, 'apps/admin/src/app/features'),
           },
         };
 
         outputDir =
           appPaths[options.app]?.[options.target] ||
-          path.resolve(process.cwd(), 'apps/api/src/modules');
+          path.resolve(PROJECT_ROOT, 'apps/api/src/modules');
       }
 
       const useFlat = options.flat === true;
@@ -103,6 +126,9 @@ program
         `👥 Role strategy: ${options.multipleRoles ? 'Multiple roles (admin, editor, viewer)' : 'Single role'}`,
       );
       console.log(`📦 Feature package: ${options.package.toUpperCase()}`);
+      console.log(
+        `📊 Smart stats: ${options.smartStats ? 'Enabled' : 'Disabled'}`,
+      );
       console.log(`📁 Output directory: ${outputDir}`);
 
       if (options.dryRun) {
@@ -134,6 +160,7 @@ program
             migrationOnly: options.migrationOnly,
             multipleRoles: options.multipleRoles,
             package: options.package,
+            smartStats: options.smartStats,
           })
         : await generateDomainModule(tableName, {
             withEvents: options.withEvents,
@@ -148,6 +175,7 @@ program
             migrationOnly: options.migrationOnly,
             multipleRoles: options.multipleRoles,
             package: options.package,
+            smartStats: options.smartStats,
           });
 
       if (options.dryRun) {
@@ -161,6 +189,43 @@ program
         result.files.forEach((file) => {
           console.log(`  ✓ ${file.path}`);
         });
+
+        // Auto-format generated TypeScript files
+        const tsFiles = result.files
+          .filter((file) => file.path.endsWith('.ts'))
+          .map((file) => file.path);
+
+        if (tsFiles.length > 0) {
+          console.log('\n🎨 Formatting generated TypeScript files...');
+          try {
+            const { execSync } = require('child_process');
+            const filePaths = tsFiles.join(' ');
+
+            // Try different prettier commands
+            try {
+              execSync(`npx prettier --write ${filePaths}`, {
+                cwd: PROJECT_ROOT,
+                stdio: 'inherit',
+              });
+              console.log('✅ Code formatting completed!');
+            } catch (prettierError) {
+              // Fallback to pnpm prettier if npx fails
+              try {
+                execSync(`pnpm exec prettier --write ${filePaths}`, {
+                  cwd: PROJECT_ROOT,
+                  stdio: 'inherit',
+                });
+                console.log('✅ Code formatting completed!');
+              } catch (fallbackError) {
+                console.log('⚠️  Could not run prettier. Please run manually:');
+                console.log(`   npx prettier --write ${filePaths}`);
+              }
+            }
+          } catch (error) {
+            console.log('⚠️  Formatting skipped - prettier not available');
+            console.log('   Install prettier to enable auto-formatting');
+          }
+        }
       }
 
       if (result.warnings.length > 0) {
@@ -204,25 +269,22 @@ program
       if (!outputDir) {
         const appPaths = {
           api: {
-            backend: path.resolve(process.cwd(), 'apps/api/src/modules'),
-            frontend: path.resolve(process.cwd(), 'apps/api/src/frontend'),
+            backend: path.resolve(PROJECT_ROOT, 'apps/api/src/modules'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/api/src/frontend'),
           },
           web: {
-            backend: path.resolve(process.cwd(), 'apps/web/src/backend'),
-            frontend: path.resolve(process.cwd(), 'apps/web/src/app/features'),
+            backend: path.resolve(PROJECT_ROOT, 'apps/web/src/backend'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/web/src/app/features'),
           },
           admin: {
-            backend: path.resolve(process.cwd(), 'apps/admin/src/backend'),
-            frontend: path.resolve(
-              process.cwd(),
-              'apps/admin/src/app/features',
-            ),
+            backend: path.resolve(PROJECT_ROOT, 'apps/admin/src/backend'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/admin/src/app/features'),
           },
         };
 
         outputDir =
           appPaths[options.app]?.[options.target] ||
-          path.resolve(process.cwd(), 'apps/api/src/modules');
+          path.resolve(PROJECT_ROOT, 'apps/api/src/modules');
       }
 
       const useFlat = options.flat === true;
@@ -276,6 +338,43 @@ program
         result.files.forEach((file) => {
           console.log(`  ✓ ${file.path}`);
         });
+
+        // Auto-format generated TypeScript files
+        const tsFiles = result.files
+          .filter((file) => file.path.endsWith('.ts'))
+          .map((file) => file.path);
+
+        if (tsFiles.length > 0) {
+          console.log('\n🎨 Formatting generated TypeScript files...');
+          try {
+            const { execSync } = require('child_process');
+            const filePaths = tsFiles.join(' ');
+
+            // Try different prettier commands
+            try {
+              execSync(`npx prettier --write ${filePaths}`, {
+                cwd: PROJECT_ROOT,
+                stdio: 'inherit',
+              });
+              console.log('✅ Code formatting completed!');
+            } catch (prettierError) {
+              // Fallback to pnpm prettier if npx fails
+              try {
+                execSync(`pnpm exec prettier --write ${filePaths}`, {
+                  cwd: PROJECT_ROOT,
+                  stdio: 'inherit',
+                });
+                console.log('✅ Code formatting completed!');
+              } catch (fallbackError) {
+                console.log('⚠️  Could not run prettier. Please run manually:');
+                console.log(`   npx prettier --write ${filePaths}`);
+              }
+            }
+          } catch (error) {
+            console.log('⚠️  Formatting skipped - prettier not available');
+            console.log('   Install prettier to enable auto-formatting');
+          }
+        }
       }
 
       if (result.warnings.length > 0) {
@@ -326,25 +425,22 @@ program
       if (!outputDir) {
         const appPaths = {
           api: {
-            backend: path.resolve(process.cwd(), 'apps/api/src/modules'),
-            frontend: path.resolve(process.cwd(), 'apps/api/src/frontend'),
+            backend: path.resolve(PROJECT_ROOT, 'apps/api/src/modules'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/api/src/frontend'),
           },
           web: {
-            backend: path.resolve(process.cwd(), 'apps/web/src/backend'),
-            frontend: path.resolve(process.cwd(), 'apps/web/src/app/features'),
+            backend: path.resolve(PROJECT_ROOT, 'apps/web/src/backend'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/web/src/app/features'),
           },
           admin: {
-            backend: path.resolve(process.cwd(), 'apps/admin/src/backend'),
-            frontend: path.resolve(
-              process.cwd(),
-              'apps/admin/src/app/features',
-            ),
+            backend: path.resolve(PROJECT_ROOT, 'apps/admin/src/backend'),
+            frontend: path.resolve(PROJECT_ROOT, 'apps/admin/src/app/features'),
           },
         };
 
         outputDir =
           appPaths[options.app]?.[options.target] ||
-          path.resolve(process.cwd(), 'apps/api/src/modules');
+          path.resolve(PROJECT_ROOT, 'apps/api/src/modules');
       }
 
       console.log(`🚀 Adding route: ${routeName} to domain: ${domainName}`);
@@ -377,6 +473,43 @@ program
         result.files.forEach((file) => {
           console.log(`  ✓ ${file.path}`);
         });
+
+        // Auto-format generated TypeScript files
+        const tsFiles = result.files
+          .filter((file) => file.path.endsWith('.ts'))
+          .map((file) => file.path);
+
+        if (tsFiles.length > 0) {
+          console.log('\n🎨 Formatting generated TypeScript files...');
+          try {
+            const { execSync } = require('child_process');
+            const filePaths = tsFiles.join(' ');
+
+            // Try different prettier commands
+            try {
+              execSync(`npx prettier --write ${filePaths}`, {
+                cwd: PROJECT_ROOT,
+                stdio: 'inherit',
+              });
+              console.log('✅ Code formatting completed!');
+            } catch (prettierError) {
+              // Fallback to pnpm prettier if npx fails
+              try {
+                execSync(`pnpm exec prettier --write ${filePaths}`, {
+                  cwd: PROJECT_ROOT,
+                  stdio: 'inherit',
+                });
+                console.log('✅ Code formatting completed!');
+              } catch (fallbackError) {
+                console.log('⚠️  Could not run prettier. Please run manually:');
+                console.log(`   npx prettier --write ${filePaths}`);
+              }
+            }
+          } catch (error) {
+            console.log('⚠️  Formatting skipped - prettier not available');
+            console.log('   Install prettier to enable auto-formatting');
+          }
+        }
       }
 
       if (result.warnings.length > 0) {

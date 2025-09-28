@@ -1,28 +1,34 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
-import { {{ModuleName}}Service } from './{{moduleName}}.service';
+import { {{ModuleName}}Service } from '../services/{{moduleName}}.service';
+import {
+  Create{{ModuleName}},
+  Update{{ModuleName}},
+} from '../types/{{moduleName}}.types';
 import {
   Create{{ModuleName}}Schema,
   Update{{ModuleName}}Schema,
   {{ModuleName}}IdParamSchema,
   Get{{ModuleName}}QuerySchema,
-  List{{ModuleName}}QuerySchema
-} from './{{moduleName}}.schemas';
+  List{{ModuleName}}QuerySchema,
+} from '../schemas/{{moduleName}}.schemas';
 import {
   DropdownQuerySchema,
   BulkCreateSchema,
   BulkUpdateSchema,
   BulkDeleteSchema,
+  /* DEBUG: hasStatusField={{hasStatusField}} */{{#if hasStatusField}}
   BulkStatusSchema,
-  StatusToggleSchema,
+  StatusToggleSchema,{{/if}}{{#if (eq package 'full')}}
   ValidationRequestSchema,
-  UniquenessCheckSchema
-} from '../../schemas/base.schemas';
+  UniquenessCheckSchema,{{/if}}
+} from '../../../schemas/base.schemas';
 
 /**
  * {{ModuleName}} Controller
  * Package: {{package}}
  * Has Status Field: {{hasStatusField}}
+ * DEBUG hasStatusField={{hasStatusField}}
  * 
  * Following Fastify controller patterns:
  * - Proper request/reply typing with Static<typeof Schema>
@@ -51,21 +57,20 @@ export class {{ModuleName}}Controller {
       
       request.log.info({ {{moduleName}}Id: {{moduleName}}.id }, '{{ModuleName}} created successfully');
 
-      return reply.status(201).send({
-        success: true,
-        data: {{moduleName}},
-        message: '{{ModuleName}} created successfully'
-      });
+      return reply
+        .code(201)
+        .success({{moduleName}}, '{{ModuleName}} created successfully');
     } catch (error) {
       request.log.error(error, 'Error creating {{moduleName}}');
       
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'CREATION_FAILED',
-          message: error instanceof Error ? error.message : 'Failed to create {{moduleName}}'
-        }
-      });
+      return reply
+        .code(500)
+        .error(
+          'INTERNAL_SERVER_ERROR',
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
+        );
     }
   }
 
@@ -86,30 +91,18 @@ export class {{ModuleName}}Controller {
 
       const {{moduleName}} = await this.{{moduleName}}Service.findById(id, request.query);
 
-      if (!{{moduleName}}) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: {{moduleName}}
-      });
+      return reply.success({{moduleName}});
     } catch (error) {
       request.log.error({ error, {{moduleName}}Id: request.params.id }, 'Error fetching {{moduleName}}');
       
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'FETCH_FAILED',
-          message: 'Failed to fetch {{moduleName}}'
-        }
-      });
+      return reply
+        .code(500)
+        .error(
+          'INTERNAL_SERVER_ERROR',
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
+        );
     }
   }
 
@@ -128,11 +121,12 @@ export class {{ModuleName}}Controller {
 
       request.log.info({ count: result.data.length, total: result.pagination.total }, '{{ModuleName}} list fetched');
 
-      return reply.send({
-        success: true,
-        data: result.data,
-        pagination: result.pagination
-      });
+      return reply.paginated(
+        result.data,
+        result.pagination.page,
+        result.pagination.limit,
+        result.pagination.total,
+      );
     } catch (error) {
       request.log.error({ error, query: request.query }, 'Error fetching {{moduleName}} list');
       
@@ -211,32 +205,19 @@ export class {{ModuleName}}Controller {
       const deleted = await this.{{moduleName}}Service.delete(id);
 
       if (!deleted) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
+        return reply.code(404).error('NOT_FOUND', '{{ModuleName}} not found');
       }
 
       request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} deleted successfully');
 
-      return reply.send({
-        success: true,
-        message: '{{ModuleName}} deleted successfully',
-        data: { id, deleted: true }
-      });
+      // Return operation result using standard success response
+      return reply.success({
+        id,
+        deleted: true
+      }, '{{ModuleName}} deleted successfully');
     } catch (error) {
       request.log.error({ error, {{moduleName}}Id: request.params.id }, 'Error deleting {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'DELETE_FAILED',
-          message: error instanceof Error ? error.message : 'Failed to delete {{moduleName}}'
-        }
-      });
+      return reply.code(500).error('INTERNAL_SERVER_ERROR', error instanceof Error ? error.message : 'An unexpected error occurred');
     }
   }
 
@@ -282,30 +263,32 @@ export class {{ModuleName}}Controller {
    * POST /{{moduleName}}/bulk
    */
   async bulkCreate(
-    request: FastifyRequest<{ Body: Static<typeof BulkCreateSchema<typeof Create{{ModuleName}}Schema>> }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Body: {
+        items: Create{{ModuleName}}[];
+        options?: { skipDuplicates?: boolean; continueOnError?: boolean };
+      };
+    }>,
+    reply: FastifyReply,
   ) {
-    try {
-      request.log.info({ count: request.body.items.length }, 'Bulk creating {{moduleName}}s');
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk creating {{moduleName}}s',
+    );
 
-      const result = await this.{{moduleName}}Service.bulkCreate(request.body);
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map((item) => this.transformCreateSchema(item)),
+    };
 
-      return reply.status(201).send({
-        success: true,
-        data: result,
-        message: `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk creating {{moduleName}}s');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_CREATE_FAILED',
-          message: 'Failed to bulk create {{moduleName}}s'
-        }
-      });
-    }
+    const result = await this.{{moduleName}}Service.bulkCreate(transformedData);
+
+    return reply
+      .code(201)
+      .success(
+        result,
+        `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+      );
   }
 
   /**
@@ -313,30 +296,30 @@ export class {{ModuleName}}Controller {
    * PUT /{{moduleName}}/bulk
    */
   async bulkUpdate(
-    request: FastifyRequest<{ Body: Static<typeof BulkUpdateSchema<typeof Update{{ModuleName}}Schema>> }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Body: { items: Array<{ id: string | number; data: Update{{ModuleName}} }> };
+    }>,
+    reply: FastifyReply,
   ) {
-    try {
-      request.log.info({ count: request.body.items.length }, 'Bulk updating {{moduleName}}s');
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk updating {{moduleName}}s',
+    );
 
-      const result = await this.{{moduleName}}Service.bulkUpdate(request.body);
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map((item) => ({
+        id: item.id,
+        data: this.transformUpdateSchema(item.data),
+      })),
+    };
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk updating {{moduleName}}s');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_UPDATE_FAILED',
-          message: 'Failed to bulk update {{moduleName}}s'
-        }
-      });
-    }
+    const result = await this.{{moduleName}}Service.bulkUpdate(transformedData);
+
+    return reply.success(
+      result,
+      `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
   }
 
   /**
@@ -345,29 +328,19 @@ export class {{ModuleName}}Controller {
    */
   async bulkDelete(
     request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
-    try {
-      request.log.info({ count: request.body.ids.length }, 'Bulk deleting {{moduleName}}s');
+    request.log.info(
+      { count: request.body.ids.length },
+      'Bulk deleting {{moduleName}}s',
+    );
 
-      const result = await this.{{moduleName}}Service.bulkDelete(request.body);
+    const result = await this.{{moduleName}}Service.bulkDelete(request.body);
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk deleting {{moduleName}}s');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_DELETE_FAILED',
-          message: 'Failed to bulk delete {{moduleName}}s'
-        }
-      });
-    }
+    return reply.success(
+      result,
+      `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
   }
 
   {{#if hasStatusField}}

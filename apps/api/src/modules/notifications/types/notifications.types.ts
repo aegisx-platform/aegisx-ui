@@ -6,10 +6,7 @@ import {
   type NotificationsIdParam,
   type GetNotificationsQuery,
   type ListNotificationsQuery,
-  type NotificationsCreatedEvent,
-  type NotificationsUpdatedEvent,
-  type NotificationsDeletedEvent
-} from './notifications.schemas';
+} from '../schemas/notifications.schemas';
 
 export {
   type Notifications,
@@ -18,9 +15,6 @@ export {
   type NotificationsIdParam,
   type GetNotificationsQuery,
   type ListNotificationsQuery,
-  type NotificationsCreatedEvent,
-  type NotificationsUpdatedEvent,
-  type NotificationsDeletedEvent
 };
 
 // Additional type definitions
@@ -36,20 +30,11 @@ export interface NotificationsRepository {
       totalPages: number;
     };
   }>;
-  update(id: number | string, data: UpdateNotifications): Promise<Notifications | null>;
+  update(
+    id: number | string,
+    data: UpdateNotifications,
+  ): Promise<Notifications | null>;
   delete(id: number | string): Promise<boolean>;
-}
-
-// Real-time event type definitions
-export interface NotificationsEventHandlers {
-  onCreated?: (data: Notifications) => void | Promise<void>;
-  onUpdated?: (data: Notifications) => void | Promise<void>;
-  onDeleted?: (data: { id: number | string }) => void | Promise<void>;
-}
-
-export interface NotificationsWebSocketSubscription {
-  subscribe(handlers: NotificationsEventHandlers): void;
-  unsubscribe(): void;
 }
 
 // Database entity type (matches database table structure exactly)

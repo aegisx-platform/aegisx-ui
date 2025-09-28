@@ -4,7 +4,21 @@ import {
   PaginationQuerySchema, 
   ApiErrorResponseSchema,
   ApiSuccessResponseSchema,
-  PaginatedResponseSchema 
+  PaginatedResponseSchema,
+  {{#if (or (eq package 'enterprise') (eq package 'full'))}}
+  DropdownQuerySchema,
+  DropdownResponseSchema,
+  BulkResponseSchema,
+  StatisticsResponseSchema,
+  {{/if}}
+  {{#if (eq package 'full')}}
+  ValidationResponseSchema,
+  UniquenessResponseSchema,
+  {{/if}}
+  {{#if hasStatusField}}
+  StatusUpdateResponseSchema,
+  {{/if}}
+  SchemaRefs
 } from '../../schemas/base.schemas';
 
 // Base {{ModuleName}} Schema
@@ -68,23 +82,23 @@ export const List{{ModuleName}}QuerySchema = Type.Object({
   // Search and filtering
   search: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
   
-  // Include related data
+  // Include related data (only if table has foreign keys)
+  {{#if (hasForeignKeys schema)}}
   include: Type.Optional(Type.Union([
     Type.String(),
     Type.Array(Type.String())
   ])),
+  {{/if}}
   
-  // Add column-specific filters dynamically
+  // Smart field-based filters
   {{#each columns}}
   {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-  {{#if (eq tsType 'boolean')}}
-  {{name}}: Type.Optional(Type.Boolean()),
+  {{#if (isExactMatchField this)}}
+  {{name}}: Type.Optional({{#if (eq tsType 'boolean')}}Type.Boolean(){{else if (eq tsType 'string')}}Type.String({{{getFieldConstraints this}}}){{else if (eq tsType 'number')}}Type.Number({{{getFieldConstraints this}}}){{/if}}),
   {{/if}}
-  {{#if (eq tsType 'string')}}
-  {{name}}: Type.Optional(Type.String({ minLength: 1, maxLength: 255 })),
-  {{/if}}
-  {{#if (eq tsType 'number')}}
-  {{name}}: Type.Optional(Type.Number({ minimum: 0 })),
+  {{#if (isRangeField this)}}
+  {{name}}_min: Type.Optional({{#if (eq tsType 'number')}}Type.Number({{{getFieldConstraints this}}}){{else if (eq tsType 'Date')}}Type.String({ format: 'date-time' }){{/if}}),
+  {{name}}_max: Type.Optional({{#if (eq tsType 'number')}}Type.Number({{{getFieldConstraints this}}}){{else if (eq tsType 'Date')}}Type.String({ format: 'date-time' }){{/if}}),
   {{/if}}
   {{/unless}}
   {{/each}}

@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { {{ModuleName}}Controller } from './{{moduleName}}.controller';
+import { {{ModuleName}}Controller } from '../controllers/{{moduleName}}.controller';
 import {
   Create{{ModuleName}}Schema,
   Update{{ModuleName}}Schema,
@@ -8,25 +8,27 @@ import {
   List{{ModuleName}}QuerySchema,
   {{ModuleName}}ResponseSchema,
   {{ModuleName}}ListResponseSchema,
-} from './{{moduleName}}.schemas';
-import { 
-  ApiErrorResponseSchema as ErrorResponseSchema,
+} from '../schemas/{{moduleName}}.schemas';
+{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+import {
   DropdownQuerySchema,
   DropdownResponseSchema,
   BulkCreateSchema,
   BulkUpdateSchema,
   BulkDeleteSchema,
+  BulkResponseSchema,{{#if hasStatusField}}
   BulkStatusSchema,
-  BulkResponseSchema,
-  StatusToggleSchema,
-  StatusUpdateResponseSchema,
-  StatisticsResponseSchema,
+  StatusToggleSchema,{{/if}}{{#if (eq package 'full')}}
   ValidationRequestSchema,
   ValidationResponseSchema,
-  UniquenessCheckSchema,
-  UniquenessResponseSchema
+  UniquenessParamSchema,
+  UniquenessQuerySchema,
+  UniquenessResponseSchema,{{/if}}
+  StatisticsResponseSchema
 } from '../../../schemas/base.schemas';
-import { SchemaRefs } from '../../schemas/registry';
+{{/if}}
+import { ApiErrorResponseSchema as ErrorResponseSchema } from '../../../schemas/base.schemas';
+import { SchemaRefs } from '../../../schemas/registry';
 
 export interface {{ModuleName}}RoutesOptions extends FastifyPluginOptions {
   controller: {{ModuleName}}Controller;
@@ -140,7 +142,7 @@ export async function {{moduleName}}Routes(
       description: 'Delete a {{moduleName}} by its unique identifier',
       params: {{ModuleName}}IdParamSchema,
       response: {
-        200: SchemaRefs.SuccessMessage,
+        200: {{ModuleName}}ResponseSchema,
         400: SchemaRefs.ValidationError,
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,
@@ -233,7 +235,7 @@ export async function {{moduleName}}Routes(
       description: 'Delete multiple {{moduleName}}s in a single request',
       body: BulkDeleteSchema,
       response: {
-        200: BulkResponseSchema(SchemaRefs.SuccessMessage),
+        200: BulkResponseSchema(SchemaRefs.OperationResult),
         400: SchemaRefs.ValidationError,
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,
@@ -397,10 +399,8 @@ export async function {{moduleName}}Routes(
       tags: ['{{ModuleName}}'],
       summary: 'Check field uniqueness',
       description: 'Check if a field value is unique for {{moduleName}}',
-      params: {
-        field: { type: 'string' }
-      },
-      querystring: UniquenessCheckSchema,
+      params: UniquenessParamSchema,
+      querystring: UniquenessQuerySchema,
       response: {
         200: UniquenessResponseSchema,
         400: SchemaRefs.ValidationError,

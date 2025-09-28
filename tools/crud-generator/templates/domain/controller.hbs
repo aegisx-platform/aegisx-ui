@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
 import { {{ModuleName}}Service } from '../services/{{currentRoute.camelName}}.service';
+import { Create{{ModuleName}}, Update{{ModuleName}} } from '../types/{{currentRoute.camelName}}.types';
 import {
   Create{{ModuleName}}Schema,
   Update{{ModuleName}}Schema,
@@ -13,11 +14,11 @@ import {
   DropdownQuerySchema,
   BulkCreateSchema,
   BulkUpdateSchema,
-  BulkDeleteSchema,
+  BulkDeleteSchema,{{#if hasStatusField}}
   BulkStatusSchema,
-  StatusToggleSchema,
+  StatusToggleSchema,{{/if}}{{#if (eq package 'full')}}
   ValidationRequestSchema,
-  UniquenessCheckSchema
+  UniquenessCheckSchema{{/if}}
 } from '../../../schemas/base.schemas';
 {{/if}}
 
@@ -43,32 +44,16 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest<{ Body: Static<typeof Create{{ModuleName}}Schema> }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ body: request.body }, 'Creating {{moduleName}}');
+    request.log.info({ body: request.body }, 'Creating {{moduleName}}');
 
-      // Transform API schema to domain model
-      const createData = this.transformCreateSchema(request.body);
-      
-      const {{moduleName}} = await this.{{moduleName}}Service.create(createData);
-      
-      request.log.info({ {{moduleName}}Id: {{moduleName}}.id }, '{{ModuleName}} created successfully');
+    // Transform API schema to domain model
+    const createData = this.transformCreateSchema(request.body);
+    
+    const {{moduleName}} = await this.{{moduleName}}Service.create(createData);
+    
+    request.log.info({ {{moduleName}}Id: {{moduleName}}.id }, '{{ModuleName}} created successfully');
 
-      return reply.status(201).send({
-        success: true,
-        data: {{moduleName}},
-        message: '{{ModuleName}} created successfully'
-      });
-    } catch (error) {
-      request.log.error(error, 'Error creating {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'CREATION_FAILED',
-          message: error instanceof Error ? error.message : 'Failed to create {{moduleName}}'
-        }
-      });
-    }
+    return reply.code(201).success({{moduleName}}, '{{ModuleName}} created successfully');
   }
 
   /**
@@ -82,37 +67,12 @@ export class {{ModuleName}}Controller {
     }>,
     reply: FastifyReply
   ) {
-    try {
-      const { id } = request.params;
-      request.log.info({ {{moduleName}}Id: id }, 'Fetching {{moduleName}}');
+    const { id } = request.params;
+    request.log.info({ {{moduleName}}Id: id }, 'Fetching {{moduleName}}');
 
-      const {{moduleName}} = await this.{{moduleName}}Service.findById(id, request.query);
+    const {{moduleName}} = await this.{{moduleName}}Service.findById(id, request.query);
 
-      if (!{{moduleName}}) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: {{moduleName}}
-      });
-    } catch (error) {
-      request.log.error({ error, {{moduleName}}Id: request.params.id }, 'Error fetching {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'FETCH_FAILED',
-          message: 'Failed to fetch {{moduleName}}'
-        }
-      });
-    }
+    return reply.success({{moduleName}});
   }
 
   /**
@@ -123,29 +83,18 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest<{ Querystring: Static<typeof List{{ModuleName}}QuerySchema> }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ query: request.query }, 'Fetching {{moduleName}} list');
+    request.log.info({ query: request.query }, 'Fetching {{moduleName}} list');
 
-      const result = await this.{{moduleName}}Service.findMany(request.query);
+    const result = await this.{{moduleName}}Service.findMany(request.query);
 
-      request.log.info({ count: result.data.length, total: result.pagination.total }, '{{ModuleName}} list fetched');
+    request.log.info({ count: result.data.length, total: result.pagination.total }, '{{ModuleName}} list fetched');
 
-      return reply.send({
-        success: true,
-        data: result.data,
-        pagination: result.pagination
-      });
-    } catch (error) {
-      request.log.error({ error, query: request.query }, 'Error fetching {{moduleName}} list');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'LIST_FETCH_FAILED',
-          message: 'Failed to fetch {{moduleName}} list'
-        }
-      });
-    }
+    return reply.paginated(
+      result.data,
+      result.pagination.page,
+      result.pagination.limit,
+      result.pagination.total
+    );
   }
 
   /**
@@ -159,43 +108,17 @@ export class {{ModuleName}}Controller {
     }>,
     reply: FastifyReply
   ) {
-    try {
-      const { id } = request.params;
-      request.log.info({ {{moduleName}}Id: id, body: request.body }, 'Updating {{moduleName}}');
+    const { id } = request.params;
+    request.log.info({ {{moduleName}}Id: id, body: request.body }, 'Updating {{moduleName}}');
 
-      // Transform API schema to domain model
-      const updateData = this.transformUpdateSchema(request.body);
-      
-      const {{moduleName}} = await this.{{moduleName}}Service.update(id, updateData);
+    // Transform API schema to domain model
+    const updateData = this.transformUpdateSchema(request.body);
+    
+    const {{moduleName}} = await this.{{moduleName}}Service.update(id, updateData);
 
-      if (!{{moduleName}}) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
+    request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} updated successfully');
 
-      request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} updated successfully');
-
-      return reply.send({
-        success: true,
-        data: {{moduleName}},
-        message: '{{ModuleName}} updated successfully'
-      });
-    } catch (error) {
-      request.log.error({ error, {{moduleName}}Id: request.params.id }, 'Error updating {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'UPDATE_FAILED',
-          message: error instanceof Error ? error.message : 'Failed to update {{moduleName}}'
-        }
-      });
-    }
+    return reply.success({{moduleName}}, '{{ModuleName}} updated successfully');
   }
 
   /**
@@ -206,40 +129,22 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest<{ Params: Static<typeof {{ModuleName}}IdParamSchema> }>,
     reply: FastifyReply
   ) {
-    try {
-      const { id } = request.params;
-      request.log.info({ {{moduleName}}Id: id }, 'Deleting {{moduleName}}');
+    const { id } = request.params;
+    request.log.info({ {{moduleName}}Id: id }, 'Deleting {{moduleName}}');
 
-      const deleted = await this.{{moduleName}}Service.delete(id);
+    const deleted = await this.{{moduleName}}Service.delete(id);
 
-      if (!deleted) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
-
-      request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} deleted successfully');
-
-      return reply.send({
-        success: true,
-        message: '{{ModuleName}} deleted successfully',
-        data: { id, deleted: true }
-      });
-    } catch (error) {
-      request.log.error({ error, {{moduleName}}Id: request.params.id }, 'Error deleting {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'DELETE_FAILED',
-          message: error instanceof Error ? error.message : 'Failed to delete {{moduleName}}'
-        }
-      });
+    if (!deleted) {
+      return reply.code(404).error('NOT_FOUND', '{{ModuleName}} not found');
     }
+
+    request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} deleted successfully');
+
+    // Return operation result using standard success response
+    return reply.success({
+      id,
+      deleted: true
+    }, '{{ModuleName}} deleted successfully');
   }
 
 {{#if (or (eq package 'enterprise') (eq package 'full'))}}
@@ -254,29 +159,14 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest<{ Querystring: Static<typeof DropdownQuerySchema> }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ query: request.query }, 'Fetching {{moduleName}} dropdown options');
+    request.log.info({ query: request.query }, 'Fetching {{moduleName}} dropdown options');
 
-      const result = await this.{{moduleName}}Service.getDropdownOptions(request.query);
+    const result = await this.{{moduleName}}Service.getDropdownOptions(request.query);
 
-      return reply.send({
-        success: true,
-        data: {
-          options: result.options,
-          total: result.total
-        }
-      });
-    } catch (error) {
-      request.log.error(error, 'Error fetching {{moduleName}} dropdown options');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'DROPDOWN_FETCH_FAILED',
-          message: 'Failed to fetch {{moduleName}} dropdown options'
-        }
-      });
-    }
+    return reply.success({
+      options: result.options,
+      total: result.total
+    });
   }
 
   /**
@@ -284,30 +174,19 @@ export class {{ModuleName}}Controller {
    * POST /{{moduleName}}/bulk
    */
   async bulkCreate(
-    request: FastifyRequest<{ Body: Static<typeof BulkCreateSchema<typeof Create{{ModuleName}}Schema>> }>,
+    request: FastifyRequest<{ Body: { items: Create{{ModuleName}}[]; options?: { skipDuplicates?: boolean; continueOnError?: boolean } } }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ count: request.body.items.length }, 'Bulk creating {{moduleName}}s');
+    request.log.info({ count: request.body.items.length }, 'Bulk creating {{moduleName}}s');
 
-      const result = await this.{{moduleName}}Service.bulkCreate(request.body);
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map(item => this.transformCreateSchema(item))
+    };
 
-      return reply.status(201).send({
-        success: true,
-        data: result,
-        message: `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk creating {{moduleName}}s');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_CREATE_FAILED',
-          message: 'Failed to bulk create {{moduleName}}s'
-        }
-      });
-    }
+    const result = await this.{{moduleName}}Service.bulkCreate(transformedData);
+
+    return reply.code(201).success(result, `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
   }
 
   /**
@@ -315,30 +194,22 @@ export class {{ModuleName}}Controller {
    * PUT /{{moduleName}}/bulk
    */
   async bulkUpdate(
-    request: FastifyRequest<{ Body: Static<typeof BulkUpdateSchema<typeof Update{{ModuleName}}Schema>> }>,
+    request: FastifyRequest<{ Body: { items: Array<{ id: string | number; data: Update{{ModuleName}} }> } }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ count: request.body.items.length }, 'Bulk updating {{moduleName}}s');
+    request.log.info({ count: request.body.items.length }, 'Bulk updating {{moduleName}}s');
 
-      const result = await this.{{moduleName}}Service.bulkUpdate(request.body);
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map(item => ({
+        id: item.id,
+        data: this.transformUpdateSchema(item.data)
+      }))
+    };
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk updating {{moduleName}}s');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_UPDATE_FAILED',
-          message: 'Failed to bulk update {{moduleName}}s'
-        }
-      });
-    }
+    const result = await this.{{moduleName}}Service.bulkUpdate(transformedData);
+
+    return reply.success(result, `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
   }
 
   /**
@@ -349,27 +220,11 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ count: request.body.ids.length }, 'Bulk deleting {{moduleName}}s');
+    request.log.info({ count: request.body.ids.length }, 'Bulk deleting {{moduleName}}s');
 
-      const result = await this.{{moduleName}}Service.bulkDelete(request.body);
+    const result = await this.{{moduleName}}Service.bulkDelete(request.body);
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk deleting {{moduleName}}s');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_DELETE_FAILED',
-          message: 'Failed to bulk delete {{moduleName}}s'
-        }
-      });
-    }
+    return reply.success(result, `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
   }
 
   {{#if hasStatusField}}
@@ -381,30 +236,22 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest<{ Body: Static<typeof BulkStatusSchema> }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info({ 
-        count: request.body.ids.length, 
-        status: request.body.status 
-      }, 'Bulk updating {{moduleName}} status');
+    request.log.info({ 
+      count: request.body.ids.length, 
+      status: request.body.status 
+    }, 'Bulk updating {{moduleName}} status');
 
-      const result = await this.{{moduleName}}Service.bulkUpdateStatus(request.body);
+    // Convert status to boolean if it's a string
+    const statusData = {
+      ...request.body,
+      status: typeof request.body.status === 'string' 
+        ? request.body.status === 'true' || request.body.status === '1'
+        : Boolean(request.body.status)
+    };
+    
+    const result = await this.{{moduleName}}Service.bulkUpdateStatus(statusData);
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`
-      });
-    } catch (error) {
-      request.log.error(error, 'Error bulk updating {{moduleName}} status');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'BULK_STATUS_UPDATE_FAILED',
-          message: 'Failed to bulk update {{moduleName}} status'
-        }
-      });
-    }
+    return reply.success(result, `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
   }
 
   /**
@@ -418,38 +265,12 @@ export class {{ModuleName}}Controller {
     }>,
     reply: FastifyReply
   ) {
-    try {
-      const { id } = request.params;
-      request.log.info({ {{moduleName}}Id: id }, 'Activating {{moduleName}}');
+    const { id } = request.params;
+    request.log.info({ {{moduleName}}Id: id }, 'Activating {{moduleName}}');
 
-      const result = await this.{{moduleName}}Service.activate(id, request.body);
+    const result = await this.{{moduleName}}Service.activate(id, request.body);
 
-      if (!result) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: result,
-        message: '{{ModuleName}} activated successfully'
-      });
-    } catch (error) {
-      request.log.error(error, 'Error activating {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'ACTIVATION_FAILED',
-          message: 'Failed to activate {{moduleName}}'
-        }
-      });
-    }
+    return reply.success(result, '{{ModuleName}} activated successfully');
   }
 
   /**
@@ -463,38 +284,12 @@ export class {{ModuleName}}Controller {
     }>,
     reply: FastifyReply
   ) {
-    try {
-      const { id } = request.params;
-      request.log.info({ {{moduleName}}Id: id }, 'Deactivating {{moduleName}}');
+    const { id } = request.params;
+    request.log.info({ {{moduleName}}Id: id }, 'Deactivating {{moduleName}}');
 
-      const result = await this.{{moduleName}}Service.deactivate(id, request.body);
+    const result = await this.{{moduleName}}Service.deactivate(id, request.body);
 
-      if (!result) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: result,
-        message: '{{ModuleName}} deactivated successfully'
-      });
-    } catch (error) {
-      request.log.error(error, 'Error deactivating {{moduleName}}');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'DEACTIVATION_FAILED',
-          message: 'Failed to deactivate {{moduleName}}'
-        }
-      });
-    }
+    return reply.success(result, '{{ModuleName}} deactivated successfully');
   }
 
   /**
@@ -508,38 +303,12 @@ export class {{ModuleName}}Controller {
     }>,
     reply: FastifyReply
   ) {
-    try {
-      const { id } = request.params;
-      request.log.info({ {{moduleName}}Id: id }, 'Toggling {{moduleName}} status');
+    const { id } = request.params;
+    request.log.info({ {{moduleName}}Id: id }, 'Toggling {{moduleName}} status');
 
-      const result = await this.{{moduleName}}Service.toggle(id, request.body);
+    const result = await this.{{moduleName}}Service.toggle(id, request.body);
 
-      if (!result) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: '{{ModuleName}} not found'
-          }
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: result,
-        message: '{{ModuleName}} status toggled successfully'
-      });
-    } catch (error) {
-      request.log.error(error, 'Error toggling {{moduleName}} status');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'TOGGLE_FAILED',
-          message: 'Failed to toggle {{moduleName}} status'
-        }
-      });
-    }
+    return reply.success(result, '{{ModuleName}} status toggled successfully');
   }
   {{/if}}
 
@@ -551,26 +320,11 @@ export class {{ModuleName}}Controller {
     request: FastifyRequest,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info('Fetching {{moduleName}} statistics');
+    request.log.info('Fetching {{moduleName}} statistics');
 
-      const stats = await this.{{moduleName}}Service.getStats();
+    const stats = await this.{{moduleName}}Service.getStats();
 
-      return reply.send({
-        success: true,
-        data: stats
-      });
-    } catch (error) {
-      request.log.error(error, 'Error fetching {{moduleName}} statistics');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'STATS_FETCH_FAILED',
-          message: 'Failed to fetch {{moduleName}} statistics'
-        }
-      });
-    }
+    return reply.success(stats);
   }
 {{/if}}
 
@@ -583,29 +337,14 @@ export class {{ModuleName}}Controller {
    * POST /{{moduleName}}/validate
    */
   async validate(
-    request: FastifyRequest<{ Body: Static<typeof ValidationRequestSchema<typeof Create{{ModuleName}}Schema>> }>,
+    request: FastifyRequest<{ Body: { data: Static<typeof Create{{ModuleName}}Schema> } }>,
     reply: FastifyReply
   ) {
-    try {
-      request.log.info('Validating {{moduleName}} data');
+    request.log.info('Validating {{moduleName}} data');
 
-      const result = await this.{{moduleName}}Service.validate(request.body);
+    const result = await this.{{moduleName}}Service.validate(request.body);
 
-      return reply.send({
-        success: true,
-        data: result
-      });
-    } catch (error) {
-      request.log.error(error, 'Error validating {{moduleName}} data');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'VALIDATION_FAILED',
-          message: 'Failed to validate {{moduleName}} data'
-        }
-      });
-    }
+    return reply.success(result);
   }
 
   /**
@@ -619,27 +358,15 @@ export class {{ModuleName}}Controller {
     }>,
     reply: FastifyReply
   ) {
-    try {
-      const { field } = request.params;
-      request.log.info({ field, value: request.query.value }, 'Checking {{moduleName}} field uniqueness');
+    const { field } = request.params;
+    request.log.info({ field, value: request.query.value }, 'Checking {{moduleName}} field uniqueness');
 
-      const result = await this.{{moduleName}}Service.checkUniqueness(field, request.query);
+    const result = await this.{{moduleName}}Service.checkUniqueness(field, {
+      value: String(request.query.value),
+      excludeId: request.query.excludeId
+    });
 
-      return reply.send({
-        success: true,
-        data: result
-      });
-    } catch (error) {
-      request.log.error(error, 'Error checking {{moduleName}} field uniqueness');
-      
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'UNIQUENESS_CHECK_FAILED',
-          message: 'Failed to check {{moduleName}} field uniqueness'
-        }
-      });
-    }
+    return reply.success(result);
   }
 {{/if}}
 
