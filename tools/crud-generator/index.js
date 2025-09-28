@@ -195,35 +195,29 @@ program
           .filter((file) => file.path.endsWith('.ts'))
           .map((file) => file.path);
 
-        if (tsFiles.length > 0) {
+        if (tsFiles.length > 0 && !options.noFormat) {
           console.log('\n🎨 Formatting generated TypeScript files...');
           try {
             const { execSync } = require('child_process');
-            const filePaths = tsFiles.join(' ');
 
-            // Try different prettier commands
-            try {
-              execSync(`npx prettier --write ${filePaths}`, {
-                cwd: PROJECT_ROOT,
-                stdio: 'inherit',
-              });
-              console.log('✅ Code formatting completed!');
-            } catch (prettierError) {
-              // Fallback to pnpm prettier if npx fails
+            // Format files individually to avoid command line length issues
+            for (const file of tsFiles) {
               try {
-                execSync(`pnpm exec prettier --write ${filePaths}`, {
+                execSync(`npx prettier --write "${file}"`, {
                   cwd: PROJECT_ROOT,
-                  stdio: 'inherit',
+                  stdio: 'pipe',
+                  timeout: 10000, // 10 second timeout
                 });
-                console.log('✅ Code formatting completed!');
-              } catch (fallbackError) {
-                console.log('⚠️  Could not run prettier. Please run manually:');
-                console.log(`   npx prettier --write ${filePaths}`);
+              } catch (error) {
+                console.log(`⚠️  Could not format ${file}`);
               }
             }
+            console.log('✅ Code formatting completed!');
           } catch (error) {
             console.log('⚠️  Formatting skipped - prettier not available');
-            console.log('   Install prettier to enable auto-formatting');
+            console.log(
+              '💡 Run manually: npx prettier --write ' + tsFiles.join(' '),
+            );
           }
         }
       }
@@ -237,7 +231,14 @@ program
     } catch (error) {
       console.error('\n❌ Error generating CRUD module:');
       console.error(error.message);
+      // Cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
       process.exit(1);
+    } finally {
+      // Always cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
     }
   });
 
@@ -344,35 +345,29 @@ program
           .filter((file) => file.path.endsWith('.ts'))
           .map((file) => file.path);
 
-        if (tsFiles.length > 0) {
+        if (tsFiles.length > 0 && !options.noFormat) {
           console.log('\n🎨 Formatting generated TypeScript files...');
           try {
             const { execSync } = require('child_process');
-            const filePaths = tsFiles.join(' ');
 
-            // Try different prettier commands
-            try {
-              execSync(`npx prettier --write ${filePaths}`, {
-                cwd: PROJECT_ROOT,
-                stdio: 'inherit',
-              });
-              console.log('✅ Code formatting completed!');
-            } catch (prettierError) {
-              // Fallback to pnpm prettier if npx fails
+            // Format files individually to avoid command line length issues
+            for (const file of tsFiles) {
               try {
-                execSync(`pnpm exec prettier --write ${filePaths}`, {
+                execSync(`npx prettier --write "${file}"`, {
                   cwd: PROJECT_ROOT,
-                  stdio: 'inherit',
+                  stdio: 'pipe',
+                  timeout: 10000, // 10 second timeout
                 });
-                console.log('✅ Code formatting completed!');
-              } catch (fallbackError) {
-                console.log('⚠️  Could not run prettier. Please run manually:');
-                console.log(`   npx prettier --write ${filePaths}`);
+              } catch (error) {
+                console.log(`⚠️  Could not format ${file}`);
               }
             }
+            console.log('✅ Code formatting completed!');
           } catch (error) {
             console.log('⚠️  Formatting skipped - prettier not available');
-            console.log('   Install prettier to enable auto-formatting');
+            console.log(
+              '💡 Run manually: npx prettier --write ' + tsFiles.join(' '),
+            );
           }
         }
       }
@@ -386,7 +381,14 @@ program
     } catch (error) {
       console.error('\n❌ Error generating domain module:');
       console.error(error.message);
+      // Cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
       process.exit(1);
+    } finally {
+      // Always cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
     }
   });
 
@@ -479,35 +481,29 @@ program
           .filter((file) => file.path.endsWith('.ts'))
           .map((file) => file.path);
 
-        if (tsFiles.length > 0) {
+        if (tsFiles.length > 0 && !options.noFormat) {
           console.log('\n🎨 Formatting generated TypeScript files...');
           try {
             const { execSync } = require('child_process');
-            const filePaths = tsFiles.join(' ');
 
-            // Try different prettier commands
-            try {
-              execSync(`npx prettier --write ${filePaths}`, {
-                cwd: PROJECT_ROOT,
-                stdio: 'inherit',
-              });
-              console.log('✅ Code formatting completed!');
-            } catch (prettierError) {
-              // Fallback to pnpm prettier if npx fails
+            // Format files individually to avoid command line length issues
+            for (const file of tsFiles) {
               try {
-                execSync(`pnpm exec prettier --write ${filePaths}`, {
+                execSync(`npx prettier --write "${file}"`, {
                   cwd: PROJECT_ROOT,
-                  stdio: 'inherit',
+                  stdio: 'pipe',
+                  timeout: 10000, // 10 second timeout
                 });
-                console.log('✅ Code formatting completed!');
-              } catch (fallbackError) {
-                console.log('⚠️  Could not run prettier. Please run manually:');
-                console.log(`   npx prettier --write ${filePaths}`);
+              } catch (error) {
+                console.log(`⚠️  Could not format ${file}`);
               }
             }
+            console.log('✅ Code formatting completed!');
           } catch (error) {
             console.log('⚠️  Formatting skipped - prettier not available');
-            console.log('   Install prettier to enable auto-formatting');
+            console.log(
+              '💡 Run manually: npx prettier --write ' + tsFiles.join(' '),
+            );
           }
         }
       }
@@ -521,7 +517,14 @@ program
     } catch (error) {
       console.error('\n❌ Error adding route:');
       console.error(error.message);
+      // Cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
       process.exit(1);
+    } finally {
+      // Always cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
     }
   });
 
@@ -540,7 +543,14 @@ program
       });
     } catch (error) {
       console.error('❌ Error listing tables:', error.message);
+      // Cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
       process.exit(1);
+    } finally {
+      // Always cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
     }
   });
 
@@ -563,7 +573,14 @@ program
       }
     } catch (error) {
       console.error('❌ Error validating module:', error.message);
+      // Cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
       process.exit(1);
+    } finally {
+      // Always cleanup database connection
+      const { knex } = require('./src/knex-connection');
+      await knex.destroy();
     }
   });
 

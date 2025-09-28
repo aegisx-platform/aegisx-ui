@@ -129,3 +129,31 @@ export type GetNotificationsQuery = Static<typeof GetNotificationsQuerySchema>;
 export type ListNotificationsQuery = Static<
   typeof ListNotificationsQuerySchema
 >;
+
+// WebSocket Event Schemas
+export const NotificationsCreatedEventSchema = Type.Object({
+  type: Type.Literal('notifications.created'),
+  data: NotificationsSchema,
+});
+
+export const NotificationsUpdatedEventSchema = Type.Object({
+  type: Type.Literal('notifications.updated'),
+  data: NotificationsSchema,
+});
+
+export const NotificationsDeletedEventSchema = Type.Object({
+  type: Type.Literal('notifications.deleted'),
+  data: Type.Object({
+    id: Type.Union([Type.String(), Type.Number()]),
+  }),
+});
+
+export type NotificationsCreatedEvent = Static<
+  typeof NotificationsCreatedEventSchema
+>;
+export type NotificationsUpdatedEvent = Static<
+  typeof NotificationsUpdatedEventSchema
+>;
+export type NotificationsDeletedEvent = Static<
+  typeof NotificationsDeletedEventSchema
+>;

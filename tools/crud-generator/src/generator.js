@@ -30,6 +30,28 @@ async function generateCrudModule(tableName, options = {}) {
   );
 
   // Generate context for templates
+  // Find the best field for dropdown labels
+  const findDefaultLabelField = (columns) => {
+    // First preference: string type, non-primary key fields
+    const stringField = columns.find(
+      (col) =>
+        col.jsType === 'string' &&
+        !col.isPrimaryKey &&
+        ['name', 'title', 'label', 'description'].includes(col.name),
+    );
+    if (stringField) return stringField.name;
+
+    // Second preference: any string field (non-primary key)
+    const anyStringField = columns.find(
+      (col) => col.jsType === 'string' && !col.isPrimaryKey,
+    );
+    if (anyStringField) return anyStringField.name;
+
+    // Fallback: column 2 if exists, otherwise column 1
+    if (columns.length > 1) return columns[1].name;
+    return columns[0]?.name || 'id';
+  };
+
   const context = {
     tableName,
     moduleName: toCamelCase(tableName),
@@ -40,6 +62,7 @@ async function generateCrudModule(tableName, options = {}) {
     columns: schema.columns,
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
+    defaultLabelField: findDefaultLabelField(schema.columns),
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,
@@ -634,6 +657,28 @@ async function generateDomainModule(domainName, options = {}) {
     `📋 Found ${schema.columns.length} columns in table ${domainName}`,
   );
 
+  // Find the best field for dropdown labels
+  const findDefaultLabelField = (columns) => {
+    // First preference: string type, non-primary key fields
+    const stringField = columns.find(
+      (col) =>
+        col.jsType === 'string' &&
+        !col.isPrimaryKey &&
+        ['name', 'title', 'label', 'description'].includes(col.name),
+    );
+    if (stringField) return stringField.name;
+
+    // Second preference: any string field (non-primary key)
+    const anyStringField = columns.find(
+      (col) => col.jsType === 'string' && !col.isPrimaryKey,
+    );
+    if (anyStringField) return anyStringField.name;
+
+    // Fallback: column 2 if exists, otherwise column 1
+    if (columns.length > 1) return columns[1].name;
+    return columns[0]?.name || 'id';
+  };
+
   // Generate context for templates (same as flat generator + domain routes)
   const context = {
     tableName: domainName,
@@ -646,6 +691,7 @@ async function generateDomainModule(domainName, options = {}) {
     columns: schema.columns,
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
+    defaultLabelField: findDefaultLabelField(schema.columns),
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,

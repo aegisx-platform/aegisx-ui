@@ -1,5 +1,7 @@
 import { BaseService } from '../../../shared/services/base.service';
 import { NotificationsRepository } from '../repositories/notifications.repository';
+import { EventService } from '../../../shared/websocket/event.service';
+import { CrudEventHelper } from '../../../shared/websocket/crud-event-helper';
 import {
   type Notifications,
   type CreateNotifications,
@@ -22,8 +24,18 @@ export class NotificationsService extends BaseService<
   CreateNotifications,
   UpdateNotifications
 > {
-  constructor(private notificationsRepository: NotificationsRepository) {
+  private eventHelper?: CrudEventHelper;
+
+  constructor(
+    private notificationsRepository: NotificationsRepository,
+    private eventService?: EventService,
+  ) {
     super(notificationsRepository);
+
+    // Initialize event helper using Fastify pattern
+    if (eventService) {
+      this.eventHelper = eventService.for('notifications', 'notifications');
+    }
   }
 
   /**
@@ -39,6 +51,11 @@ export class NotificationsService extends BaseService<
       // Handle query options (includes, etc.)
       if (options.include) {
         // Add relationship loading logic here
+      }
+
+      // Emit read event for monitoring/analytics
+      if (this.eventHelper) {
+        await this.eventHelper.emitCustom('read', notifications);
       }
     }
 
@@ -59,6 +76,14 @@ export class NotificationsService extends BaseService<
   }> {
     const result = await this.getList(options);
 
+    // Emit bulk read event
+    if (this.eventHelper) {
+      await this.eventHelper.emitCustom('bulk_read', {
+        count: result.data.length,
+        filters: options,
+      });
+    }
+
     return result;
   }
 
@@ -67,6 +92,11 @@ export class NotificationsService extends BaseService<
    */
   async create(data: CreateNotifications): Promise<Notifications> {
     const notifications = await super.create(data);
+
+    // Emit created event for real-time updates
+    if (this.eventHelper) {
+      await this.eventHelper.emitCreated(notifications);
+    }
 
     return notifications;
   }
@@ -79,6 +109,10 @@ export class NotificationsService extends BaseService<
     data: UpdateNotifications,
   ): Promise<Notifications | null> {
     const notifications = await super.update(id, data);
+
+    if (notifications && this.eventHelper) {
+      await this.eventHelper.emitUpdated(notifications);
+    }
 
     return notifications;
   }
@@ -99,10 +133,17 @@ export class NotificationsService extends BaseService<
 
       console.log('Found notifications to delete:', existing.id);
 
+      // Get entity before deletion for event emission
+      const notifications = await this.getById(id);
+
       // Direct repository call to avoid base service complexity
       const deleted = await this.notificationsRepository.delete(id);
 
       console.log('Delete result:', deleted);
+
+      if (deleted && notifications && this.eventHelper) {
+        await this.eventHelper.emitDeleted(notifications.id);
+      }
 
       if (deleted) {
         console.log('Notifications deleted successfully:', {
@@ -183,7 +224,7 @@ export class NotificationsService extends BaseService<
     const {
       limit = 100,
       search,
-      labelField = 'display_name',
+      labelField = 'user_id',
       valueField = 'id',
     } = options;
 
@@ -197,7 +238,7 @@ export class NotificationsService extends BaseService<
     const dropdownOptions = result.data.map((item) => ({
       value: item[valueField],
       label: item[labelField] || `${item.id}`,
-      disabled: item.is_active === false,
+      disabled: false,
     }));
 
     return {
@@ -244,6 +285,9 @@ export class NotificationsService extends BaseService<
         for (let i = 0; i < results.length; i++) {
           try {
             await this.afterCreate(results[i], validItems[i]);
+            if (this.eventHelper) {
+              await this.eventHelper.emitCreated(results[i]);
+            }
           } catch (error) {
             console.warn('Error in afterCreate:', error);
           }

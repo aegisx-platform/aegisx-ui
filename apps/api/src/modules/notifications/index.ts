@@ -36,6 +36,7 @@ export default fp(
     );
     const notificationsService = new NotificationsService(
       notificationsRepository,
+      (fastify as any).eventService,
     );
     const notificationsController = new NotificationsController(
       notificationsService,
@@ -54,10 +55,16 @@ export default fp(
     fastify.addHook('onReady', async () => {
       fastify.log.info(`Notifications domain module registered successfully`);
     });
+
+    // Cleanup event listeners on close
+    fastify.addHook('onClose', async () => {
+      fastify.log.info(`Cleaning up Notifications domain module resources`);
+      // Add any cleanup logic here
+    });
   },
   {
     name: 'notifications-domain-plugin',
-    dependencies: ['knex-plugin'],
+    dependencies: ['knex-plugin', 'websocket-plugin'],
   },
 );
 
@@ -76,7 +83,24 @@ export type {
   NotificationsIdParam,
   GetNotificationsQuery,
   ListNotificationsQuery,
+  NotificationsCreatedEvent,
+  NotificationsUpdatedEvent,
+  NotificationsDeletedEvent,
 } from './schemas/notifications.schemas';
+
+// Event type definitions for external consumers
+import { Notifications } from './schemas/notifications.schemas';
+
+export interface NotificationsEventHandlers {
+  onCreated?: (data: Notifications) => void | Promise<void>;
+  onUpdated?: (data: Notifications) => void | Promise<void>;
+  onDeleted?: (data: { id: number | string }) => void | Promise<void>;
+}
+
+export interface NotificationsWebSocketSubscription {
+  subscribe(handlers: NotificationsEventHandlers): void;
+  unsubscribe(): void;
+}
 
 // Module name constant
 export const MODULE_NAME = 'notifications' as const;

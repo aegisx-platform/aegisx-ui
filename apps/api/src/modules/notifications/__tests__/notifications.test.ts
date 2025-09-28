@@ -7,7 +7,7 @@ import { NotificationsCreate, NotificationsUpdate } from '../schemas/notificatio
  * 
  * Integration tests for notifications domain functionality.
  * 
- * Generated on: 2025-09-28T03:17:16.575Z
+ * Generated on: 2025-09-28T05:09:32.799Z
  */
 
 describe('Notifications Domain', () => {
@@ -29,7 +29,7 @@ describe('Notifications Domain', () => {
       // TODO: Add actual test data based on your schema
       name: `Test Notifications ${Date.now()}`,
       description: 'Test description',
-      status: 'active'
+      
     });
 
     describe('POST /core', () => {
@@ -93,7 +93,7 @@ describe('Notifications Domain', () => {
       it('should filter core by query parameters', async () => {
         const response = await app.inject({
           method: 'GET',
-          url: '/core?status=active&name=Test'
+          url: '/core?name=Test'
         });
 
         expect(response.statusCode).toBe(200);
@@ -204,6 +204,17 @@ describe('Notifications Domain', () => {
       });
     });
 
+    describe('WebSocket Events', () => {
+      it('should handle WebSocket connections', async () => {
+        // TODO: Add WebSocket testing logic
+        // This requires setting up WebSocket test client
+      });
+
+      it('should emit events on CRUD operations', async () => {
+        // TODO: Add event emission testing
+        // This requires event listener setup
+      });
+    });
   });
 
   describe('Notifications Service', () => {

@@ -226,7 +226,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     options: Array<{ value: string | number; label: string; disabled?: boolean }>;
     total: number;
   }> {
-    const { limit = 100, search, labelField = '{{#if displayNameField}}{{displayNameField}}{{else}}display_name{{/if}}', valueField = 'id' } = options;
+    const { limit = 100, search, labelField = '{{defaultLabelField}}', valueField = 'id' } = options;
     
     const result = await this.{{moduleName}}Repository.list({
       limit,
@@ -238,7 +238,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     const dropdownOptions = result.data.map(item => ({
       value: item[valueField],
       label: item[labelField] || `${item.id}`,
-      disabled: item.is_active === false
+      {{#if hasStatusField}}disabled: item.is_active === false{{else}}disabled: false{{/if}}
     }));
 
     return {

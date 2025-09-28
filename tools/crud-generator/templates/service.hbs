@@ -201,7 +201,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     options: Array<{ value: string | number; label: string; disabled?: boolean }>;
     total: number;
   }> {
-    const { limit = 100, search, labelField = 'name', valueField = 'id' } = options;
+    const { limit = 100, search, labelField = '{{defaultLabelField}}', valueField = 'id' } = options;
     
     const result = await this.repository.list({
       limit,
@@ -213,12 +213,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     const dropdownOptions = result.data.map(item => ({
       value: item[valueField],
       label: item[labelField] || `${item.id}`,
-      {{#if hasStatusField}}
-      disabled: item.is_active === false
-      {{else}}
-      // TODO: Implement status field logic when needed - currently defaults to false
-      disabled: false
-      {{/if}}
+      {{#if hasStatusField}}disabled: item.is_active === false{{else}}disabled: false{{/if}}
     }));
 
     return {
@@ -274,7 +269,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
       } catch (error) {
         console.log('⚠️ BULK CREATE ERROR - Item failed:', {
           name: original.name || 'unknown',
-          display_name: original.display_name || 'unknown',
+          {{#if displayNameField}}{{displayNameField}}: original.{{displayNameField}} || 'unknown',{{else}}id: original.id || 'unknown',{{/if}}
           error: error instanceof Error ? error.message.substring(0, 100) + '...' : String(error)
         });
         errors.push({
