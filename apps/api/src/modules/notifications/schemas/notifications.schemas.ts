@@ -5,6 +5,7 @@ import {
   ApiErrorResponseSchema,
   ApiSuccessResponseSchema,
   PaginatedResponseSchema,
+  PartialPaginatedResponseSchema,
   DropdownOptionSchema,
   BulkCreateSchema,
   BulkUpdateSchema,
@@ -95,6 +96,23 @@ export const ListNotificationsQuerySchema = Type.Object({
   // Search and filtering
   search: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
 
+  // 🛡️ Secure field selection with validation
+  fields: Type.Optional(
+    Type.Array(
+      Type.String({
+        pattern: '^[a-zA-Z_][a-zA-Z0-9_]*$', // Only alphanumeric + underscore
+        minLength: 1,
+        maxLength: 50,
+      }),
+      {
+        minItems: 1,
+        maxItems: 20, // Prevent excessive field requests
+        description:
+          'Specific fields to return. Example: ["id", "title", "created_at"]. Field access is role-based for security.',
+      },
+    ),
+  ),
+
   // Include related data (only if table has foreign keys)
   include: Type.Optional(
     Type.Union([Type.String(), Type.Array(Type.String())]),
@@ -120,6 +138,11 @@ export const NotificationsResponseSchema =
 export const NotificationsListResponseSchema =
   PaginatedResponseSchema(NotificationsSchema);
 
+// Partial Schemas for field selection support
+export const PartialNotificationsSchema = Type.Partial(NotificationsSchema);
+export const FlexibleNotificationsListResponseSchema =
+  PartialPaginatedResponseSchema(NotificationsSchema);
+
 // Export types
 export type Notifications = Static<typeof NotificationsSchema>;
 export type CreateNotifications = Static<typeof CreateNotificationsSchema>;
@@ -130,30 +153,8 @@ export type ListNotificationsQuery = Static<
   typeof ListNotificationsQuerySchema
 >;
 
-// WebSocket Event Schemas
-export const NotificationsCreatedEventSchema = Type.Object({
-  type: Type.Literal('notifications.created'),
-  data: NotificationsSchema,
-});
-
-export const NotificationsUpdatedEventSchema = Type.Object({
-  type: Type.Literal('notifications.updated'),
-  data: NotificationsSchema,
-});
-
-export const NotificationsDeletedEventSchema = Type.Object({
-  type: Type.Literal('notifications.deleted'),
-  data: Type.Object({
-    id: Type.Union([Type.String(), Type.Number()]),
-  }),
-});
-
-export type NotificationsCreatedEvent = Static<
-  typeof NotificationsCreatedEventSchema
->;
-export type NotificationsUpdatedEvent = Static<
-  typeof NotificationsUpdatedEventSchema
->;
-export type NotificationsDeletedEvent = Static<
-  typeof NotificationsDeletedEventSchema
+// Partial types for field selection
+export type PartialNotifications = Static<typeof PartialNotificationsSchema>;
+export type FlexibleNotificationsList = Static<
+  typeof FlexibleNotificationsListResponseSchema
 >;

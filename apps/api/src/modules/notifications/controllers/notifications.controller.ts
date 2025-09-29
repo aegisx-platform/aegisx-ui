@@ -85,6 +85,7 @@ export class NotificationsController {
   /**
    * Get paginated list of notificationss
    * GET /notifications
+   * Supports: ?fields=id,name&limit=100 (Security hardened)
    */
   async findMany(
     request: FastifyRequest<{
@@ -94,19 +95,101 @@ export class NotificationsController {
   ) {
     request.log.info({ query: request.query }, 'Fetching notifications list');
 
-    const result = await this.notificationsService.findMany(request.query);
+    // 🛡️ Security: Extract and validate parameters
+    const { fields, ...queryParams } = request.query;
+
+    // 🛡️ Security: Define allowed fields by role
+    const SAFE_FIELDS = {
+      public: ['id', 'user_id', 'created_at'],
+      user: [
+        'id',
+        'user_id',
+        'id',
+        'user_id',
+        'type',
+        'title',
+        'message',
+        'data',
+        'action_url',
+        'read',
+        'read_at',
+        'archived',
+        'archived_at',
+        'priority',
+        'expires_at',
+        'created_at',
+        'updated_at',
+        'created_at',
+      ],
+      admin: [
+        'id',
+        'user_id',
+        'type',
+        'title',
+        'message',
+        'data',
+        'action_url',
+        'read',
+        'read_at',
+        'archived',
+        'archived_at',
+        'priority',
+        'expires_at',
+        'created_at',
+        'updated_at',
+      ],
+    };
+
+    // 🛡️ Security: Get user role (default to public for safety)
+    const userRole = request.user?.role || 'public';
+    const allowedFields = SAFE_FIELDS[userRole] || SAFE_FIELDS.public;
+
+    // 🛡️ Security: Filter requested fields against whitelist
+    const safeFields = fields
+      ? fields.filter((field) => allowedFields.includes(field))
+      : undefined;
+
+    // 🛡️ Security: Log suspicious requests
+    if (fields && fields.some((field) => !allowedFields.includes(field))) {
+      request.log.warn(
+        {
+          user: request.user?.id,
+          requestedFields: fields,
+          allowedFields,
+          ip: request.ip,
+        },
+        'Suspicious field access attempt detected',
+      );
+    }
+
+    // Get notifications list with field filtering
+    const result = await this.notificationsService.findMany({
+      ...queryParams,
+      fields: safeFields,
+    });
 
     request.log.info(
-      { count: result.data.length, total: result.pagination.total },
+      {
+        count: result.data.length,
+        total: result.pagination.total,
+        fieldsRequested: fields?.length || 0,
+        fieldsAllowed: safeFields?.length || 'all',
+      },
       'Notifications list fetched',
     );
 
-    return reply.paginated(
-      result.data,
-      result.pagination.page,
-      result.pagination.limit,
-      result.pagination.total,
-    );
+    // Use raw send to match FlexibleSchema
+    return reply.send({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: 'v1',
+        requestId: request.id,
+        environment: process.env.NODE_ENV || 'development',
+      },
+    });
   }
 
   /**

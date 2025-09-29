@@ -7,7 +7,7 @@ import { NotificationsCreate, NotificationsUpdate } from '../schemas/notificatio
  * 
  * Integration tests for notifications domain functionality.
  * 
- * Generated on: 2025-09-28T06:06:07.098Z
+ * Generated on: 2025-09-29T00:13:29.911Z
  */
 
 describe('Notifications Domain', () => {
@@ -204,17 +204,6 @@ describe('Notifications Domain', () => {
       });
     });
 
-    describe('WebSocket Events', () => {
-      it('should handle WebSocket connections', async () => {
-        // TODO: Add WebSocket testing logic
-        // This requires setting up WebSocket test client
-      });
-
-      it('should emit events on CRUD operations', async () => {
-        // TODO: Add event emission testing
-        // This requires event listener setup
-      });
-    });
   });
 
   describe('Notifications Service', () => {

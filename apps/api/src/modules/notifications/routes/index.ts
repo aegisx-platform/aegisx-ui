@@ -9,6 +9,7 @@ import {
   ListNotificationsQuerySchema,
   NotificationsResponseSchema,
   NotificationsListResponseSchema,
+  FlexibleNotificationsListResponseSchema,
 } from '../schemas/notifications.schemas';
 import {
   DropdownQuerySchema,
@@ -88,12 +89,12 @@ export async function notificationsRoutes(
   fastify.get('/', {
     schema: {
       tags: ['Notifications'],
-      summary: 'Get all notificationss with pagination',
+      summary: 'Get all notificationss with pagination and field selection',
       description:
-        'Retrieve a paginated list of notificationss with optional filtering',
+        'Retrieve notificationss with field selection: ?fields=id,title,created_at for custom field selection',
       querystring: ListNotificationsQuerySchema,
       response: {
-        200: NotificationsListResponseSchema,
+        200: FlexibleNotificationsListResponseSchema,
         400: SchemaRefs.ValidationError,
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,
@@ -294,5 +295,26 @@ export async function notificationsRoutes(
       fastify.authorize(['notifications.read', 'admin']),
     ],
     handler: controller.checkUniqueness.bind(controller),
+  });
+
+  // Get statistics
+  fastify.get('/stats', {
+    schema: {
+      tags: ['Notifications'],
+      summary: 'Get notifications statistics',
+      description: 'Get notifications statistics and counts',
+      response: {
+        200: StatisticsResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['notifications.read', 'admin']),
+    ],
+    handler: controller.getStats.bind(controller),
   });
 }

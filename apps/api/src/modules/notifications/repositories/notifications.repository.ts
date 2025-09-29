@@ -218,7 +218,90 @@ export class NotificationsRepository extends BaseRepository<
   async list(
     query: NotificationsListQuery = {},
   ): Promise<PaginatedListResult<Notifications>> {
-    return super.list(query);
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      fields, // Extract fields parameter
+      ...filters
+    } = query;
+
+    // Base query
+    const baseQuery = this.getJoinQuery();
+
+    // Handle field selection if specified
+    if (fields && Array.isArray(fields) && fields.length > 0) {
+      // Map field names to table columns with proper prefixing
+      const validFields = fields
+        .filter(
+          (field) =>
+            typeof field === 'string' && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field),
+        )
+        .map((field) => `notifications.${field}`);
+
+      if (validFields.length > 0) {
+        baseQuery.clearSelect().select(validFields);
+      }
+    }
+
+    // Apply search functionality
+    if (search && this.searchFields.length > 0) {
+      baseQuery.where((builder) => {
+        this.searchFields.forEach((field, index) => {
+          if (index === 0) {
+            builder.whereILike(field, `%${search}%`);
+          } else {
+            builder.orWhereILike(field, `%${search}%`);
+          }
+        });
+      });
+    }
+
+    // Apply custom filters (without fields parameter)
+    this.applyCustomFilters(baseQuery, filters);
+
+    // Get total count (use separate query without field selection)
+    const countQuery = this.getJoinQuery();
+    if (search && this.searchFields.length > 0) {
+      countQuery.where((builder) => {
+        this.searchFields.forEach((field, index) => {
+          if (index === 0) {
+            builder.whereILike(field, `%${search}%`);
+          } else {
+            builder.orWhereILike(field, `%${search}%`);
+          }
+        });
+      });
+    }
+    this.applyCustomFilters(countQuery, filters);
+    countQuery.clearSelect().count('* as total');
+    const [{ total }] = await countQuery;
+
+    // Apply sorting and pagination
+    const data = await baseQuery
+      .orderBy(this.getSortField(sortBy), sortOrder)
+      .limit(limit)
+      .offset((page - 1) * limit);
+
+    // Transform data if transformer is available
+    const transformedData = data.map((row) => this.transformToEntity(row));
+
+    const totalCount = parseInt(total as string);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+      data: transformedData,
+      pagination: {
+        page,
+        limit,
+        total: totalCount,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
   }
 
   // Business-specific methods for unique/important fields
