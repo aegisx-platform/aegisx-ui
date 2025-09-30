@@ -389,4 +389,60 @@ export async function usersRoutes(
     },
     controller.bulkChangeUserRoles.bind(controller),
   );
+
+  // Get users dropdown options
+  typedFastify.get(
+    '/users/dropdown',
+    {
+      preValidation: [
+        fastify.authenticate,
+        fastify.authorize(['admin', 'manager', 'user']),
+      ],
+      schema: {
+        description: 'Get users dropdown options',
+        tags: ['Users'],
+        summary: 'Get users options for dropdown/select components',
+        security: [{ bearerAuth: [] }],
+        querystring: {
+          type: 'object',
+          properties: {
+            search: { type: 'string', minLength: 1, maxLength: 100 },
+            limit: { type: 'number', minimum: 1, maximum: 1000, default: 50 },
+            active: { type: 'boolean' },
+            exclude: { type: 'array', items: { type: 'string' } },
+            include_disabled: { type: 'boolean' },
+          },
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  options: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        value: { type: 'string' },
+                        label: { type: 'string' },
+                        disabled: { type: 'boolean' },
+                      },
+                    },
+                  },
+                  total: { type: 'number' },
+                },
+              },
+            },
+          },
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          500: SchemaRefs.ServerError,
+        },
+      },
+    },
+    controller.getDropdownOptions.bind(controller),
+  );
 }

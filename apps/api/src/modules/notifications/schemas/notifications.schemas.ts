@@ -6,15 +6,6 @@ import {
   ApiSuccessResponseSchema,
   PaginatedResponseSchema,
   PartialPaginatedResponseSchema,
-  DropdownOptionSchema,
-  BulkCreateSchema,
-  BulkUpdateSchema,
-  BulkDeleteSchema,
-  BulkStatusSchema,
-  StatusToggleSchema,
-  StatisticsSchema,
-  ValidationRequestSchema,
-  UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
 
 // Base Notifications Schema

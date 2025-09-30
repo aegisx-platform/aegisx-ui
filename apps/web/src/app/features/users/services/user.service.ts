@@ -28,6 +28,22 @@ export interface Role {
   description?: string;
 }
 
+// Types for dropdown/select options (for CRUD generation)
+export interface UserOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  email?: string;
+}
+
+export interface SimpleUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  isActive: boolean;
+}
+
 export interface CreateUserRequest {
   email: string;
   username: string;
@@ -217,6 +233,25 @@ export class UserService {
     return this.currentPageSignal() > 1;
   });
 
+  // Computed for dropdown/select options (for CRUD generation)
+  readonly userOptions = computed(() => {
+    return this.usersSignal().map(user => ({
+      value: user.id,
+      label: `${user.firstName} ${user.lastName} (${user.email})`,
+      disabled: !user.isActive
+    }));
+  });
+
+  readonly activeUserOptions = computed(() => {
+    return this.usersSignal()
+      .filter(user => user.isActive)
+      .map(user => ({
+        value: user.id,
+        label: `${user.firstName} ${user.lastName}`,
+        email: user.email
+      }));
+  });
+
   // Actions using HttpClient
   async loadUsers(params?: GetUsersParams): Promise<void> {
     this.loadingSignal.set(true);
@@ -339,6 +374,34 @@ export class UserService {
       console.error('Failed to fetch roles:', error);
       return [];
     }
+  }
+
+  // Method for CRUD generation - get users for dropdown
+  async loadUsersForDropdown(): Promise<void> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<User[]>>(`${this.baseUrl}/dropdown`)
+        .toPromise();
+
+      if (response?.success && response.data) {
+        this.usersSignal.set(response.data);
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch users for dropdown:', error);
+      // Fallback to regular load with minimal params
+      await this.loadUsers({ limit: 100 });
+    }
+  }
+
+  // Simple method to get user display name
+  getUserDisplayName(userId: string): string {
+    const user = this.usersSignal().find(u => u.id === userId);
+    return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
+  }
+
+  // Method to find user by ID from loaded list
+  getUserById(userId: string): User | undefined {
+    return this.usersSignal().find(u => u.id === userId);
   }
 
   async deleteUser(id: string): Promise<boolean> {

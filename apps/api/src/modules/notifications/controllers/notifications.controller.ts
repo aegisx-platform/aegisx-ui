@@ -12,18 +12,10 @@ import {
   GetNotificationsQuerySchema,
   ListNotificationsQuerySchema,
 } from '../schemas/notifications.schemas';
-import {
-  DropdownQuerySchema,
-  BulkCreateSchema,
-  BulkUpdateSchema,
-  BulkDeleteSchema,
-  ValidationRequestSchema,
-  UniquenessCheckSchema,
-} from '../../../schemas/base.schemas';
 
 /**
  * Notifications Controller
- * Package: full
+ * Package: standard
  * Has Status Field: false
  *
  * Following Fastify controller patterns:
@@ -46,7 +38,7 @@ export class NotificationsController {
     request.log.info({ body: request.body }, 'Creating notifications');
 
     // Transform API schema to domain model
-    const createData = this.transformCreateSchema(request.body);
+    const createData = this.transformCreateSchema(request.body, request);
 
     const notifications = await this.notificationsService.create(createData);
 
@@ -210,7 +202,7 @@ export class NotificationsController {
     );
 
     // Transform API schema to domain model
-    const updateData = this.transformUpdateSchema(request.body);
+    const updateData = this.transformUpdateSchema(request.body, request);
 
     const notifications = await this.notificationsService.update(
       id,
@@ -259,176 +251,6 @@ export class NotificationsController {
     );
   }
 
-  // ===== ENHANCED CRUD METHODS =====
-
-  /**
-   * Get dropdown options
-   * GET /notifications/dropdown
-   */
-  async getDropdownOptions(
-    request: FastifyRequest<{
-      Querystring: Static<typeof DropdownQuerySchema>;
-    }>,
-    reply: FastifyReply,
-  ) {
-    request.log.info(
-      { query: request.query },
-      'Fetching notifications dropdown options',
-    );
-
-    const result = await this.notificationsService.getDropdownOptions(
-      request.query,
-    );
-
-    return reply.success({
-      options: result.options,
-      total: result.total,
-    });
-  }
-
-  /**
-   * Bulk create notificationss
-   * POST /notifications/bulk
-   */
-  async bulkCreate(
-    request: FastifyRequest<{
-      Body: {
-        items: CreateNotifications[];
-        options?: { skipDuplicates?: boolean; continueOnError?: boolean };
-      };
-    }>,
-    reply: FastifyReply,
-  ) {
-    request.log.info(
-      { count: request.body.items.length },
-      'Bulk creating notificationss',
-    );
-
-    // Transform API schema to domain model for each item
-    const transformedData = {
-      items: request.body.items.map((item) => this.transformCreateSchema(item)),
-    };
-
-    const result = await this.notificationsService.bulkCreate(transformedData);
-
-    return reply
-      .code(201)
-      .success(
-        result,
-        `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
-      );
-  }
-
-  /**
-   * Bulk update notificationss
-   * PUT /notifications/bulk
-   */
-  async bulkUpdate(
-    request: FastifyRequest<{
-      Body: {
-        items: Array<{ id: string | number; data: UpdateNotifications }>;
-      };
-    }>,
-    reply: FastifyReply,
-  ) {
-    request.log.info(
-      { count: request.body.items.length },
-      'Bulk updating notificationss',
-    );
-
-    // Transform API schema to domain model for each item
-    const transformedData = {
-      items: request.body.items.map((item) => ({
-        id: item.id,
-        data: this.transformUpdateSchema(item.data),
-      })),
-    };
-
-    const result = await this.notificationsService.bulkUpdate(transformedData);
-
-    return reply.success(
-      result,
-      `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
-    );
-  }
-
-  /**
-   * Bulk delete notificationss
-   * DELETE /notifications/bulk
-   */
-  async bulkDelete(
-    request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
-    reply: FastifyReply,
-  ) {
-    request.log.info(
-      { count: request.body.ids.length },
-      'Bulk deleting notificationss',
-    );
-
-    const result = await this.notificationsService.bulkDelete(request.body);
-
-    return reply.success(
-      result,
-      `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
-    );
-  }
-
-  /**
-   * Get statistics
-   * GET /notifications/stats
-   */
-  async getStats(request: FastifyRequest, reply: FastifyReply) {
-    request.log.info('Fetching notifications statistics');
-
-    const stats = await this.notificationsService.getStats();
-
-    return reply.success(stats);
-  }
-
-  // ===== FULL PACKAGE METHODS =====
-
-  /**
-   * Validate data before save
-   * POST /notifications/validate
-   */
-  async validate(
-    request: FastifyRequest<{
-      Body: { data: Static<typeof CreateNotificationsSchema> };
-    }>,
-    reply: FastifyReply,
-  ) {
-    request.log.info('Validating notifications data');
-
-    const result = await this.notificationsService.validate(request.body);
-
-    return reply.success(result);
-  }
-
-  /**
-   * Check field uniqueness
-   * GET /notifications/check/:field
-   */
-  async checkUniqueness(
-    request: FastifyRequest<{
-      Params: { field: string };
-      Querystring: Static<typeof UniquenessCheckSchema>;
-    }>,
-    reply: FastifyReply,
-  ) {
-    const { field } = request.params;
-    request.log.info(
-      { field, value: request.query.value },
-      'Checking notifications field uniqueness',
-    );
-
-    const result = await this.notificationsService.checkUniqueness(field, {
-      value: String(request.query.value),
-      excludeId: request.query.excludeId,
-    });
-
-    return reply.success(result);
-  }
-
   // ===== PRIVATE TRANSFORMATION METHODS =====
 
   /**
@@ -436,8 +258,9 @@ export class NotificationsController {
    */
   private transformCreateSchema(
     schema: Static<typeof CreateNotificationsSchema>,
+    request: FastifyRequest,
   ) {
-    return {
+    const result: any = {
       // Transform snake_case API fields to camelCase domain fields
       user_id: schema.user_id,
       type: schema.type,
@@ -452,6 +275,10 @@ export class NotificationsController {
       priority: schema.priority,
       expires_at: schema.expires_at,
     };
+
+    // Auto-fill created_by from JWT if table has this field
+
+    return result;
   }
 
   /**
@@ -459,6 +286,7 @@ export class NotificationsController {
    */
   private transformUpdateSchema(
     schema: Static<typeof UpdateNotificationsSchema>,
+    request: FastifyRequest,
   ) {
     const updateData: any = {};
 
@@ -498,6 +326,8 @@ export class NotificationsController {
     if (schema.expires_at !== undefined) {
       updateData.expires_at = schema.expires_at;
     }
+
+    // Auto-fill updated_by from JWT if table has this field
 
     return updateData;
   }

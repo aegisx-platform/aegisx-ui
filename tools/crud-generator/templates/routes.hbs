@@ -8,6 +8,7 @@ import {
   List{{ModuleName}}QuerySchema,
   {{ModuleName}}ResponseSchema,
   {{ModuleName}}ListResponseSchema,
+  Flexible{{ModuleName}}ListResponseSchema,
 } from '../schemas/{{moduleName}}.schemas';
 {{#if (or (eq package 'enterprise') (eq package 'full'))}}
 import {
@@ -91,11 +92,11 @@ export async function {{moduleName}}Routes(
   fastify.get('/', {
     schema: {
       tags: ['{{ModuleName}}'],
-      summary: 'Get all {{moduleName}}s with pagination',
-      description: 'Retrieve a paginated list of {{moduleName}}s with optional filtering',
+      summary: 'Get all {{moduleName}}s with pagination and formats',
+      description: 'Retrieve {{moduleName}}s with flexible formatting: ?format=dropdown for UI components, ?format=minimal for lightweight data, ?fields=id,name for custom field selection',
       querystring: List{{ModuleName}}QuerySchema,
       response: {
-        200: {{ModuleName}}ListResponseSchema,
+        200: Flexible{{ModuleName}}ListResponseSchema,
         400: SchemaRefs.ValidationError,
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,

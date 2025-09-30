@@ -501,6 +501,30 @@ function isDisplayField(column) {
 }
 
 /**
+ * 🛡️ Security: Determine if a field contains sensitive data
+ */
+function isSensitiveField(column) {
+  const { name } = column;
+  const sensitivePatterns = [
+    'password', 'pass', 'pwd',
+    'secret', 'api_key', 'token',
+    'private_key', 'hash', 'salt',
+    'social_security', 'ssn', 'tax_id',
+    'credit_card', 'bank_account',
+    'internal_notes', 'admin_notes',
+    'deleted_at', 'deleted_by'
+  ];
+  
+  const lowerName = name.toLowerCase();
+  return sensitivePatterns.some(pattern => 
+    lowerName.includes(pattern) || 
+    lowerName.endsWith('_hash') || 
+    lowerName.endsWith('_secret') ||
+    lowerName.startsWith('private_')
+  );
+}
+
+/**
  * Get appropriate TypeBox schema constraints for a field based on its purpose
  */
 function getFieldConstraints(column) {
@@ -626,6 +650,11 @@ Handlebars.registerHelper('getFieldConstraints', function (column) {
 
 Handlebars.registerHelper('hasForeignKeys', function (schema) {
   return hasForeignKeys(schema);
+});
+
+// 🛡️ Security helper: Check if field contains sensitive data
+Handlebars.registerHelper('isSensitiveField', function (column) {
+  return isSensitiveField(column);
 });
 
 /**

@@ -13,6 +13,7 @@ import {
   BulkUserIdsRequest,
   BulkRoleChangeRequest,
 } from './users.schemas';
+import { DropdownQuery } from '../../schemas/base.schemas';
 
 export class UsersController {
   private userEvents: CrudEventHelper;
@@ -473,6 +474,27 @@ export class UsersController {
           operation: 'bulk_role_change',
         },
         'Error in bulk role change',
+      );
+      throw error;
+    }
+  }
+
+  async getDropdownOptions(
+    request: FastifyRequest<{ Querystring: DropdownQuery }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info({ query: request.query }, 'Fetching users dropdown options');
+
+    try {
+      const result = await this.usersService.getDropdownOptions(request.query);
+      return reply.success({
+        options: result.options,
+        total: result.total,
+      });
+    } catch (error) {
+      request.log.error(
+        { error, query: request.query },
+        'Error fetching users dropdown options'
       );
       throw error;
     }

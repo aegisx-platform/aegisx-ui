@@ -1,4 +1,4 @@
-import { Knex } from 'knex';
+import type { Knex } from 'knex';
 
 export interface BaseListQuery {
   page?: number;
@@ -147,8 +147,12 @@ export abstract class BaseRepository<T, CreateDto = any, UpdateDto = any> {
   protected applyCustomFilters(query: Knex.QueryBuilder, filters: any): void {
     // Default implementation - override in child classes
     // Apply common filters like status, active/inactive, etc.
+    
+    // List of reserved parameters that should not be treated as filters
+    const reservedParams = ['fields', 'format', 'include'];
+    
     Object.keys(filters).forEach(key => {
-      if (filters[key] !== undefined && filters[key] !== null) {
+      if (filters[key] !== undefined && filters[key] !== null && !reservedParams.includes(key)) {
         // Simple equality filter by default
         query.where(`${this.tableName}.${key}`, filters[key]);
       }

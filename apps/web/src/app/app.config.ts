@@ -8,6 +8,7 @@ import {
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import {
   AegisxConfigService,
   AegisxNavigationService,
@@ -46,6 +47,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideAnimations(),
     provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor])),
+    provideNativeDateAdapter(),
 
     // Error handling and monitoring
     provideGlobalErrorHandler(),

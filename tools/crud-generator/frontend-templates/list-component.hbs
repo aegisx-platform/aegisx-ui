@@ -1,0 +1,656 @@
+import { Component, OnInit, computed, signal, inject, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
+// Angular Material imports
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+
+import { {{PascalCase}}Service } from '../services/{{kebabCase moduleName}}.service';
+import { {{PascalCase}}, List{{PascalCase}}Query } from '../types/{{typesFileName}}';
+import { {{PascalCase}}CreateDialogComponent } from './{{kebabCase moduleName}}-create.dialog';
+import { {{PascalCase}}EditDialogComponent, {{PascalCase}}EditDialogData } from './{{kebabCase moduleName}}-edit.dialog';
+import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from './{{kebabCase moduleName}}-view.dialog';
+
+@Component({
+  selector: 'app-{{kebabCase moduleName}}-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatCheckboxModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatToolbarModule,
+    MatSelectModule,
+    MatOptionModule,
+  ],
+  template: `
+    <div class="{{kebabCase moduleName}}-list-container">
+      <!-- Header -->
+      <mat-toolbar color="primary" class="page-header">
+        <h1 class="page-title">{{title}}</h1>
+        <span class="spacer"></span>
+        <button 
+          mat-raised-button 
+          color="accent" 
+          (click)="openCreateDialog()"
+          [disabled]="{{camelCase moduleName}}Service.loading()"
+        >
+          <mat-icon>add</mat-icon>
+          Add {{title}}
+        </button>
+      </mat-toolbar>
+
+      <mat-card class="search-card">
+        <mat-card-content>
+          <!-- Search and Filters -->
+          <div class="search-container">
+{{#if searchFields}}
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search {{title}}</mat-label>
+              <input 
+                matInput 
+                placeholder="Search by {{searchFieldsDisplay}}"
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+              >
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+{{/if}}
+
+{{#each filters}}
+            {{#if (eq this.inputType "checkbox")}}
+            <div class="checkbox-filter">
+              <mat-checkbox 
+                [(ngModel)]="filters().{{this.name}}"
+                (change)="applyFilters()"
+              >
+                {{this.label}}
+              </mat-checkbox>
+            </div>
+            {{else}}
+            <mat-form-field appearance="outline">
+              <mat-label>{{this.label}}</mat-label>
+              {{#if this.isSelect}}
+              <mat-select [(ngModel)]="filters().{{this.name}}" (selectionChange)="applyFilters()">
+                <mat-option value="">All</mat-option>
+                {{#each this.options}}
+                <mat-option value="{{this.value}}">{{this.label}}</mat-option>
+                {{/each}}
+              </mat-select>
+              {{else}}
+              <input 
+                matInput 
+                type="{{this.inputType}}"
+                [(ngModel)]="filters().{{this.name}}"
+                (input)="applyFilters()"
+              >
+              {{/if}}
+            </mat-form-field>
+            {{/if}}
+{{/each}}
+
+            <button 
+              mat-stroked-button 
+              (click)="clearFilters()"
+              [disabled]="!hasActiveFilters()"
+            >
+              <mat-icon>clear</mat-icon>
+              Clear Filters
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Loading State -->
+      <div *ngIf="{{camelCase moduleName}}Service.loading()" class="loading-container">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>Loading {{title}}...</p>
+      </div>
+
+      <!-- Error State -->
+      <mat-card *ngIf="{{camelCase moduleName}}Service.error()" class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon color="warn">error</mat-icon>
+            <p>\{{ {{camelCase moduleName}}Service.error() \}}</p>
+            <button mat-button color="primary" (click)="retry()">
+              <mat-icon>refresh</mat-icon>
+              Retry
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Data Table -->
+      <mat-card *ngIf="!{{camelCase moduleName}}Service.loading() && !{{camelCase moduleName}}Service.error()" class="table-card">
+        <mat-card-content>
+          <!-- Bulk Actions -->
+          <div *ngIf="hasSelected()" class="bulk-actions">
+            <span class="selection-info">\{{ selectedItems().length \}} selected</span>
+            <div class="bulk-buttons">
+{{#if includeEnhanced}}
+              <button 
+                mat-stroked-button 
+                color="warn"
+                (click)="bulkDelete()"
+                [disabled]="{{camelCase moduleName}}Service.loading()"
+              >
+                <mat-icon>delete</mat-icon>
+                Delete Selected
+              </button>
+{{/if}}
+              <button 
+                mat-stroked-button 
+                (click)="clearSelection()"
+              >
+                <mat-icon>clear</mat-icon>
+                Clear Selection
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-container">
+            <table mat-table [dataSource]="{{camelCase moduleName}}Service.{{camelCase moduleName}}List()" class="{{kebabCase moduleName}}-table">
+              <!-- Selection Column -->
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox
+                    [checked]="isAllSelected()"
+                    [indeterminate]="hasSelected() && !isAllSelected()"
+                    (change)="toggleSelectAll()"
+                  ></mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let {{camelCase moduleName}}">
+                  <mat-checkbox
+                    [checked]="isSelected({{camelCase moduleName}}.id)"
+                    (change)="toggleSelect({{camelCase moduleName}}.id)"
+                  ></mat-checkbox>
+                </td>
+              </ng-container>
+
+{{#each displayColumns}}
+              <!-- {{this.name}} Column -->
+              <ng-container matColumnDef="{{this.name}}">
+                <th mat-header-cell *matHeaderCellDef>{{this.label}}</th>
+                <td mat-cell *matCellDef="let {{this.camelCase}}">
+                  {{#if this.isDate}}
+                  \{{ {{this.camelCase}}.{{this.name}} | date:'short' \}}
+                  {{else if this.isBoolean}}
+                  <mat-icon [color]="{{this.camelCase}}.{{this.name}} ? 'primary' : 'warn'">
+                    \{{ {{this.camelCase}}.{{this.name}} ? 'check_circle' : 'cancel' \}}
+                  </mat-icon>
+                  {{else if this.isTruncated}}
+                  <span [title]="{{this.camelCase}}.{{this.name}}">
+                    \{{ {{this.camelCase}}.{{this.name}} | slice:0:{{this.truncateLength}} \}}{{#if this.showEllipsis}}<span *ngIf="{{this.camelCase}}.{{this.name}}.length > {{this.truncateLength}}">...</span>{{/if}}
+                  </span>
+                  {{else}}
+                  \{{ {{this.camelCase}}.{{this.name}} \}}
+                  {{/if}}
+                </td>
+              </ng-container>
+
+{{/each}}
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let {{camelCase moduleName}}">
+                  <button 
+                    mat-icon-button 
+                    (click)="openViewDialog({{camelCase moduleName}})"
+                    matTooltip="View Details"
+                  >
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button 
+                    mat-icon-button 
+                    (click)="openEditDialog({{camelCase moduleName}})"
+                    matTooltip="Edit"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button 
+                    mat-icon-button 
+                    color="warn"
+                    (click)="delete{{PascalCase}}({{camelCase moduleName}})"
+                    matTooltip="Delete"
+                    [disabled]="{{camelCase moduleName}}Service.loading()"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="{{camelCase moduleName}}Service.{{camelCase moduleName}}List().length === 0" class="empty-state">
+            <mat-icon class="empty-icon">inbox</mat-icon>
+            <h3>No {{title}} found</h3>
+            <p>Create your first {{title}} to get started</p>
+            <button mat-raised-button color="primary" (click)="openCreateDialog()">
+              <mat-icon>add</mat-icon>
+              Add {{title}}
+            </button>
+          </div>
+
+          <!-- Pagination -->
+          <mat-paginator
+            *ngIf="{{camelCase moduleName}}Service.{{camelCase moduleName}}List().length > 0"
+            [length]="{{camelCase moduleName}}Service.total{{PascalCase}}()"
+            [pageSize]="{{camelCase moduleName}}Service.pageSize()"
+            [pageSizeOptions]="[5, 10, 25, 50, 100]"
+            [pageIndex]="{{camelCase moduleName}}Service.currentPage() - 1"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+          ></mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  `,
+  styles: [`
+    .{{kebabCase moduleName}}-list-container {
+      padding: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: 16px;
+      border-radius: 4px;
+    }
+
+    .page-title {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+
+    .search-card {
+      margin-bottom: 16px;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-field {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .checkbox-filter {
+      display: flex;
+      align-items: center;
+      min-width: 120px;
+      margin: 8px 0;
+    }
+
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .loading-container p {
+      margin-top: 16px;
+      color: #666;
+    }
+
+    .error-card {
+      margin-bottom: 16px;
+    }
+
+    .error-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .error-content mat-icon {
+      font-size: 24px;
+    }
+
+    .error-content p {
+      flex: 1;
+      margin: 0;
+    }
+
+    .table-card {
+      margin-bottom: 16px;
+    }
+
+    .bulk-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 16px;
+    }
+
+    .selection-info {
+      font-weight: 500;
+      color: #1976d2;
+    }
+
+    .bulk-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .{{kebabCase moduleName}}-table {
+      width: 100%;
+      min-width: 600px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      color: #ccc;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 8px 0;
+      color: #666;
+    }
+
+    .empty-state p {
+      margin: 0 0 24px 0;
+      color: #999;
+    }
+
+    @media (max-width: 768px) {
+      .{{kebabCase moduleName}}-list-container {
+        padding: 8px;
+      }
+
+      .search-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-field {
+        min-width: unset;
+      }
+
+      .bulk-actions {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+      }
+
+      .bulk-buttons {
+        justify-content: center;
+      }
+    }
+  `]
+})
+export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
+  protected {{camelCase moduleName}}Service = inject({{PascalCase}}Service);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+
+  // Search and filtering
+  searchTerm = '';
+  private searchTimeout: any;
+  
+  private filtersSignal = signal<Partial<List{{PascalCase}}Params>>({});
+  readonly filters = this.filtersSignal.asReadonly();
+
+  // Selection
+  private selectedIdsSignal = signal<Set<string>>(new Set());
+  readonly selectedItems = computed(() => Array.from(this.selectedIdsSignal()));
+
+  // Table configuration
+  displayedColumns: string[] = [
+    'select',
+{{#each displayColumns}}
+    '{{this.name}}',
+{{/each}}
+    'actions'
+  ];
+
+  ngOnInit() {
+    this.load{{PascalCase}}s();
+  }
+
+  ngOnDestroy() {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+  }
+
+  // ===== DATA LOADING =====
+
+  async load{{PascalCase}}s() {
+    const params: List{{PascalCase}}Params = {
+      page: this.{{camelCase moduleName}}Service.currentPage(),
+      limit: this.{{camelCase moduleName}}Service.pageSize(),
+      ...this.filters(),
+    };
+
+{{#if searchFields}}
+    if (this.searchTerm.trim()) {
+      params.search = this.searchTerm.trim();
+    }
+{{/if}}
+
+    await this.{{camelCase moduleName}}Service.load{{PascalCase}}List(params);
+  }
+
+  async retry() {
+    this.{{camelCase moduleName}}Service.clearError();
+    await this.load{{PascalCase}}s();
+  }
+
+  // ===== SEARCH AND FILTERING =====
+
+{{#if searchFields}}
+  onSearchChange() {
+    // Debounce search
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+    
+    this.searchTimeout = setTimeout(() => {
+      this.{{camelCase moduleName}}Service.setCurrentPage(1);
+      this.load{{PascalCase}}s();
+    }, 300);
+  }
+{{/if}}
+
+  applyFilters() {
+    this.{{camelCase moduleName}}Service.setCurrentPage(1);
+    this.load{{PascalCase}}s();
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
+    this.filtersSignal.set({});
+    this.{{camelCase moduleName}}Service.setCurrentPage(1);
+    this.load{{PascalCase}}s();
+  }
+
+  hasActiveFilters(): boolean {
+    return this.searchTerm.length > 0 || Object.keys(this.filters()).length > 0;
+  }
+
+  // ===== PAGINATION =====
+
+  onPageChange(event: PageEvent) {
+    this.{{camelCase moduleName}}Service.setCurrentPage(event.pageIndex + 1);
+    this.{{camelCase moduleName}}Service.setPageSize(event.pageSize);
+    this.load{{PascalCase}}s();
+  }
+
+  // ===== SELECTION =====
+
+  isSelected(id: string): boolean {
+    return this.selectedIdsSignal().has(id);
+  }
+
+  hasSelected(): boolean {
+    return this.selectedIdsSignal().size > 0;
+  }
+
+  isAllSelected(): boolean {
+    const total = this.{{camelCase moduleName}}Service.{{camelCase moduleName}}List().length;
+    return total > 0 && this.selectedIdsSignal().size === total;
+  }
+
+  toggleSelect(id: string) {
+    this.selectedIdsSignal.update(selected => {
+      const newSet = new Set(selected);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  }
+
+  toggleSelectAll() {
+    if (this.isAllSelected()) {
+      this.selectedIdsSignal.set(new Set());
+    } else {
+      const allIds = this.{{camelCase moduleName}}Service.{{camelCase moduleName}}List().map(item => item.id);
+      this.selectedIdsSignal.set(new Set(allIds));
+    }
+  }
+
+  clearSelection() {
+    this.selectedIdsSignal.set(new Set());
+  }
+
+  // ===== DIALOG OPERATIONS =====
+
+  openCreateDialog() {
+    const dialogRef = this.dialog.open({{PascalCase}}CreateDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Refresh the list to show the new item
+        this.load{{PascalCase}}s();
+      }
+    });
+  }
+
+  openEditDialog({{camelCase moduleName}}: {{PascalCase}}) {
+    const dialogRef = this.dialog.open({{PascalCase}}EditDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      disableClose: true,
+      data: { {{camelCase moduleName}} } as {{PascalCase}}EditDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // The service automatically updates the list with optimistic updates
+        // No need to refresh unless there was an error
+      }
+    });
+  }
+
+  openViewDialog({{camelCase moduleName}}: {{PascalCase}}) {
+    const dialogRef = this.dialog.open({{PascalCase}}ViewDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      data: { {{camelCase moduleName}} } as {{PascalCase}}ViewDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.action === 'edit') {
+        // User clicked edit from view dialog
+        this.openEditDialog(result.data);
+      }
+    });
+  }
+
+  // ===== ACTIONS =====
+
+  async delete{{PascalCase}}({{camelCase moduleName}}: {{PascalCase}}) {
+    if (confirm(`Are you sure you want to delete this {{camelCase moduleName}}?`)) {
+      try {
+        await this.{{camelCase moduleName}}Service.delete{{PascalCase}}({{camelCase moduleName}}.id);
+        this.snackBar.open('{{title}} deleted successfully', 'Close', {
+          duration: 3000,
+        });
+      } catch (error) {
+        this.snackBar.open('Failed to delete {{title}}', 'Close', {
+          duration: 5000,
+        });
+      }
+    }
+  }
+
+{{#if includeEnhanced}}
+  async bulkDelete() {
+    const selectedIds = Array.from(this.selectedIdsSignal());
+    if (selectedIds.length === 0) return;
+
+    const confirmed = confirm(`Are you sure you want to delete ${selectedIds.length} {{title}}?`);
+    if (!confirmed) return;
+
+    try {
+      await this.{{camelCase moduleName}}Service.bulkDelete{{PascalCase}}(selectedIds);
+      this.clearSelection();
+      this.snackBar.open(`${selectedIds.length} {{title}} deleted successfully`, 'Close', {
+        duration: 3000,
+      });
+    } catch (error) {
+      this.snackBar.open('Failed to delete {{title}}', 'Close', {
+        duration: 5000,
+      });
+    }
+  }
+{{/if}}
+}

@@ -71,9 +71,12 @@ export class UsersRepository {
     const [{ count }] = await countQuery.count('users.id as count');
     const total = parseInt(count as string, 10);
 
+    // Map camelCase sortBy to snake_case database column
+    const dbSortBy = this.mapSortFieldToDbColumn(sortBy);
+
     // Apply sorting and pagination
     const users = await query
-      .orderBy(`users.${sortBy}`, sortOrder)
+      .orderBy(`users.${dbSortBy}`, sortOrder)
       .limit(limit)
       .offset(offset);
 
@@ -422,5 +425,46 @@ export class UsersRepository {
       deletion_reason: user.deletion_reason,
       recovery_deadline: user.recovery_deadline,
     };
+  }
+
+  /**
+   * Maps camelCase API field names to snake_case database column names for sorting
+   */
+  private mapSortFieldToDbColumn(sortField: string): string {
+    const fieldMapping: Record<string, string> = {
+      // CamelCase API fields -> snake_case DB columns
+      firstName: 'first_name',
+      lastName: 'last_name',
+      isActive: 'is_active',
+      lastLoginAt: 'last_login_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      emailVerified: 'email_verified',
+      emailVerifiedAt: 'email_verified_at',
+      twoFactorEnabled: 'two_factor_enabled',
+      twoFactorSecret: 'two_factor_secret',
+      twoFactorBackupCodes: 'two_factor_backup_codes',
+      deletedAt: 'deleted_at',
+      avatarUrl: 'avatar_url',
+      dateOfBirth: 'date_of_birth',
+      deletionReason: 'deletion_reason',
+      recoveryDeadline: 'recovery_deadline',
+      deletedByIp: 'deleted_by_ip',
+      deletedByUserAgent: 'deleted_by_user_agent',
+      // Fields that are the same in both formats
+      id: 'id',
+      email: 'email',
+      username: 'username',
+      password: 'password',
+      name: 'name',
+      status: 'status',
+      bio: 'bio',
+      timezone: 'timezone',
+      language: 'language',
+      phone: 'phone',
+    };
+
+    // Return mapped column or original field name if no mapping exists
+    return fieldMapping[sortField] || sortField;
   }
 }

@@ -74,6 +74,19 @@ export const appRoutes: Route[] = [
     },
   },
   {
+    path: 'notifications',
+    loadChildren: () =>
+      import('./features/notifications/notifications.routes').then(
+        (m) => m.notificationsRoutes,
+      ),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Notifications',
+      description: 'Notification Management System',
+      requiredPermissions: ['notifications.read', 'admin.*'],
+    },
+  },
+  {
     path: 'file-upload',
     loadComponent: () =>
       import('./pages/file-upload/file-upload.page').then(

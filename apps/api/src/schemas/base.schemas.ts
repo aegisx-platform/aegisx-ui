@@ -61,6 +61,26 @@ export const PaginatedResponseSchema = <
     meta: Type.Optional(ApiMetaSchema),
   });
 
+// Partial Paginated Response Schema (for field selection support)
+export const PartialPaginatedResponseSchema = <
+  T extends import('@sinclair/typebox').TSchema,
+>(
+  itemSchema: T,
+) =>
+  Type.Object({
+    success: Type.Literal(true),
+    data: Type.Array(Type.Partial(itemSchema)),
+    pagination: Type.Object({
+      page: Type.Number({ minimum: 1 }),
+      limit: Type.Number({ minimum: 1, maximum: 1000 }),
+      total: Type.Number({ minimum: 0 }),
+      totalPages: Type.Number({ minimum: 0 }),
+      hasNext: Type.Boolean(),
+      hasPrev: Type.Boolean(),
+    }),
+    meta: Type.Optional(ApiMetaSchema),
+  });
+
 // Operation Result Response Schema (for operations like delete, update status)
 export const OperationResultResponseSchema = Type.Object({
   success: Type.Literal(true),

@@ -30,10 +30,20 @@ export const Create{{ModuleName}}Schema = Type.Object({
 {{#unless isPrimaryKey}}
 {{#unless (eq name 'created_at')}}
 {{#unless (eq name 'updated_at')}}
+{{#unless (eq name 'created_by')}}
+{{#unless (eq name 'updated_by')}}
   {{name}}: {{{raw typeboxType}}},
 {{/unless}}
 {{/unless}}
 {{/unless}}
+{{/unless}}
+{{/unless}}
+{{/each}}
+{{#each columns}}
+{{#if (eq name 'created_by')}}
+  // created_by is auto-filled from JWT token
+  created_by: Type.Optional(Type.String({ format: 'uuid', description: 'User who created this record (auto-filled from JWT)' })),
+{{/if}}
 {{/each}}
 });
 
@@ -44,10 +54,20 @@ export const Update{{ModuleName}}Schema = Type.Partial(
 {{#unless isPrimaryKey}}
 {{#unless (eq name 'created_at')}}
 {{#unless (eq name 'updated_at')}}
+{{#unless (eq name 'created_by')}}
+{{#unless (eq name 'updated_by')}}
     {{name}}: {{{raw typeboxType}}},
 {{/unless}}
 {{/unless}}
 {{/unless}}
+{{/unless}}
+{{/unless}}
+{{/each}}
+{{#each columns}}
+{{#if (eq name 'updated_by')}}
+    // updated_by is auto-filled from JWT token
+    updated_by: Type.String({ format: 'uuid', description: 'User who updated this record (auto-filled from JWT)' }),
+{{/if}}
 {{/each}}
   })
 );

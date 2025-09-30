@@ -544,4 +544,51 @@ export class UsersService {
     }
     return this.usersRepository.findById(userId);
   }
+
+  async getDropdownOptions(options: any = {}): Promise<{
+    options: Array<{
+      value: string;
+      label: string;
+      disabled?: boolean;
+    }>;
+    total: number;
+  }> {
+    const {
+      limit = 100,
+      search,
+      active = true,
+      exclude = [],
+    } = options;
+
+    // Build query for active users
+    const query: any = {
+      limit,
+      sortBy: 'first_name',
+      sortOrder: 'asc',
+    };
+
+    if (search) {
+      query.search = search;
+    }
+
+    if (active) {
+      query.status = 'active';
+    }
+
+    const result = await this.usersRepository.findAll(query);
+
+    // Transform to dropdown format
+    const dropdownOptions = result.users
+      .filter(user => !exclude.includes(user.id))
+      .map(user => ({
+        value: user.id,
+        label: `${user.firstName} ${user.lastName} (${user.email})`,
+        disabled: (user as any).status !== 'active',
+      }));
+
+    return {
+      options: dropdownOptions,
+      total: result.total,
+    };
+  }
 }

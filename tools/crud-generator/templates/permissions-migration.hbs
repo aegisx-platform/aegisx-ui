@@ -1,4 +1,4 @@
-import { Knex } from 'knex';
+import type { Knex } from 'knex';
 
 /**
  * Migration: Add {{ModuleName}} permissions and roles
@@ -12,7 +12,6 @@ export async function up(knex: Knex): Promise<void> {
   const permissions = [
     {{#each permissions}}
     {
-      name: '{{name}}',
       description: '{{description}}', 
       resource: '{{resource}}',
       action: '{{action}}',
@@ -25,7 +24,7 @@ export async function up(knex: Knex): Promise<void> {
   console.log(`📝 Inserting ${permissions.length} permissions for {{moduleName}}...`);
   await knex('permissions')
     .insert(permissions)
-    .onConflict('name')
+    .onConflict(['resource', 'action'])
     .ignore();
 
   // Insert roles for {{moduleName}}
@@ -52,7 +51,8 @@ export async function up(knex: Knex): Promise<void> {
   const {{@key}}Role = await knex('roles').where('name', '{{roleName}}').first();
   if ({{@key}}Role) {
     const {{@key}}Permissions = await knex('permissions')
-      .whereIn('name', {{{permissionNames}}})
+      .where('resource', '{{../moduleName}}')
+      .whereIn('action', {{{permissionActions}}})
       .select('id');
     
     if ({{@key}}Permissions.length > 0) {
@@ -62,7 +62,7 @@ export async function up(knex: Knex): Promise<void> {
         created_at: new Date()
       }));
 
-      console.log(`🔗 Linking ${{{@key}}}Permissions.length} permissions to {{roleName}} role...`);
+      console.log(`🔗 Linking ${ {{@key}}Permissions.length} permissions to {{roleName}} role...`);
       await knex('role_permissions')
         .insert(rolePermissions)
         .onConflict(['role_id', 'permission_id'])
