@@ -129,11 +129,41 @@ export class NotificationsRepository extends BaseRepository<
     query: any,
     filters: NotificationsListQuery,
   ): void {
-    // Apply base filters first
-    super.applyCustomFilters(query, filters);
+    // List of reserved parameters that should not be treated as filters
+    const reservedParams = ['fields', 'format', 'include'];
+
+    // List of UUID fields that need special handling
+    const uuidFields = ['id', 'user_id'];
+
+    // Apply general filters with UUID field validation
+    Object.keys(filters).forEach((key) => {
+      if (
+        filters[key] !== undefined &&
+        filters[key] !== null &&
+        !reservedParams.includes(key)
+      ) {
+        const value = filters[key];
+
+        // Skip empty strings for UUID fields
+        if (
+          uuidFields.includes(key) &&
+          (value === '' || value === null || value === undefined)
+        ) {
+          return;
+        }
+
+        // Skip empty strings for regular string fields too
+        if (typeof value === 'string' && value.trim() === '') {
+          return;
+        }
+
+        // Apply the filter
+        query.where(`notifications.${key}`, value);
+      }
+    });
 
     // Apply specific Notifications filters based on intelligent field categorization
-    if (filters.type !== undefined) {
+    if (filters.type !== undefined && filters.type !== '') {
       query.where('notifications.type', filters.type);
     }
     if (filters.read !== undefined) {

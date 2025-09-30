@@ -88,15 +88,44 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
 
   // Apply custom filters
   protected applyCustomFilters(query: any, filters: {{ModuleName}}ListQuery): void {
-    // Apply base filters first
-    super.applyCustomFilters(query, filters);
+    // List of reserved parameters that should not be treated as filters
+    const reservedParams = ['fields', 'format', 'include'];
+    
+    // List of UUID fields that need special handling
+    const uuidFields = [{{#each columns}}{{#if (eq sqlType 'uuid')}}'{{name}}'{{#unless @last}}, {{/unless}}{{/if}}{{/each}}];
+    
+    // Apply general filters with UUID field validation
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && !reservedParams.includes(key)) {
+        const value = filters[key];
+        
+        // Skip empty strings for UUID fields
+        if (uuidFields.includes(key) && (value === '' || value === null || value === undefined)) {
+          return;
+        }
+        
+        // Skip empty strings for regular string fields too
+        if (typeof value === 'string' && value.trim() === '') {
+          return;
+        }
+        
+        // Apply the filter
+        query.where(`{{tableName}}.${key}`, value);
+      }
+    });
 
     // Apply specific {{ModuleName}} filters
     {{#each columns}}
     {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
+    {{#if (eq tsType 'string')}}
+    if (filters.{{name}} !== undefined && filters.{{name}} !== '') {
+      query.where('{{@root.tableName}}.{{name}}', filters.{{name}});
+    }
+    {{else}}
     if (filters.{{name}} !== undefined) {
       query.where('{{@root.tableName}}.{{name}}', filters.{{name}});
     }
+    {{/if}}
     {{/unless}}
     {{/each}}
   }
