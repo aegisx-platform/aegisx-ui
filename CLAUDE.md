@@ -180,6 +180,54 @@ const force = request.query.force || false;
 - Modifying TypeScript types without updating schemas
 - Type assertions without schema validation
 
+### UUID Validation Policy (MANDATORY)
+
+**🚨 UUID fields MUST be validated to prevent PostgreSQL casting errors - NO EXCEPTIONS**
+
+**Built-in UUID Protection:**
+
+- **Automatic Validation**: All repositories inherit UUID validation from BaseRepository
+- **Smart Detection**: Auto-detects UUID fields based on patterns (`*_id`, `id`, `*uuid*`)
+- **PostgreSQL Error Prevention**: Invalid UUIDs filtered out before database queries
+- **Multiple Strategies**: STRICT (400 errors), GRACEFUL (filter invalid), WARN (log + continue)
+
+**CRUD Generator Integration:**
+
+```typescript
+// Generated repositories automatically include UUID validation
+export class ArticlesRepository extends BaseRepository<Articles, CreateArticles, UpdateArticles> {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'articles',
+      [...searchFields],
+      ['id', 'author_id'], // 🛡️ Explicit UUID fields for validation
+    );
+  }
+}
+```
+
+**Manual Configuration:**
+
+```typescript
+// For custom repositories, declare UUID fields explicitly
+repository.setUUIDFields(['user_id', 'category_id']);
+
+// Configure validation strategy
+repository.setUUIDValidationConfig({
+  strategy: UUIDValidationStrategy.STRICT, // Throw 400 errors
+  allowAnyVersion: true,
+  logInvalidAttempts: true,
+});
+```
+
+**Benefits:**
+
+- **No PostgreSQL Errors**: Prevents `invalid input syntax for type uuid` errors
+- **Better UX**: Invalid UUIDs handled gracefully instead of 500 errors
+- **Automatic Protection**: All new CRUD modules get UUID validation by default
+- **Zero Configuration**: Works automatically with naming conventions
+
 ### Universal Development Standard (MANDATORY)
 
 **🚨 MUST follow Universal Full-Stack Standard for ALL feature development - NO EXCEPTIONS**

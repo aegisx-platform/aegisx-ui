@@ -84,6 +84,20 @@ export class NavigationService {
           link: '/users',
         },
         {
+          id: 'articles',
+          title: 'Article Management',
+          type: 'item',
+          icon: 'heroicons_outline:document-text',
+          link: '/articles',
+        },
+        {
+          id: 'notifications',
+          title: 'Notifications',
+          type: 'item',
+          icon: 'heroicons_outline:bell',
+          link: '/notifications',
+        },
+        {
           id: 'rbac',
           title: 'RBAC Management',
           type: 'item',

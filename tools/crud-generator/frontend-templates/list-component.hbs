@@ -19,12 +19,16 @@ import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatBadgeModule } from '@angular/material/badge';
 
 import { {{PascalCase}}Service } from '../services/{{kebabCase moduleName}}.service';
 import { {{PascalCase}}, List{{PascalCase}}Query } from '../types/{{typesFileName}}';
 import { {{PascalCase}}CreateDialogComponent } from './{{kebabCase moduleName}}-create.dialog';
 import { {{PascalCase}}EditDialogComponent, {{PascalCase}}EditDialogData } from './{{kebabCase moduleName}}-edit.dialog';
 import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from './{{kebabCase moduleName}}-view.dialog';
+import { DateRangeFilterComponent } from '../../../shared/components/date-range-filter/date-range-filter.component';
 
 @Component({
   selector: 'app-{{kebabCase moduleName}}-list',
@@ -46,6 +50,10 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
     MatToolbarModule,
     MatSelectModule,
     MatOptionModule,
+    MatChipsModule,
+    MatExpansionModule,
+    MatBadgeModule,
+    DateRangeFilterComponent,
   ],
   template: `
     <div class="{{kebabCase moduleName}}-list-container">
@@ -53,110 +61,267 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
       <mat-toolbar color="primary" class="page-header">
         <h1 class="page-title">{{title}}</h1>
         <span class="spacer"></span>
-        <button 
-          mat-raised-button 
-          color="accent" 
-          (click)="openCreateDialog()"
-          [disabled]="{{camelCase moduleName}}Service.loading()"
-        >
-          <mat-icon>add</mat-icon>
-          Add {{title}}
-        </button>
       </mat-toolbar>
 
+      <!-- Quick Search Section -->
       <mat-card class="search-card">
         <mat-card-content>
-          <!-- Search and Filters -->
-          <div class="search-container">
+          <div class="search-wrapper">
 {{#if searchFields}}
-            <div class="search-group">
-              <mat-form-field appearance="outline" class="search-field">
-                <mat-label>Search {{title}}</mat-label>
-                <input 
-                  matInput 
-                  placeholder="Search by {{searchFieldsDisplay}}"
-                  [(ngModel)]="searchTerm"
-                  (input)="onSearchChange()"
-                  (keyup.enter)="onSearchButtonClick()"
-                >
-                <mat-icon matSuffix>search</mat-icon>
-              </mat-form-field>
-              <div class="search-buttons">
-                <button 
-                  mat-raised-button 
-                  color="primary" 
-                  (click)="onSearchButtonClick()"
-                  [disabled]="{{camelCase moduleName}}Service.loading()"
-                  class="search-btn"
-                >
-                  <mat-icon>search</mat-icon>
-                  Search
-                </button>
-                <button 
-                  mat-stroked-button 
-                  (click)="clearSearch()"
-                  [disabled]="!searchTerm.trim() || {{camelCase moduleName}}Service.loading()"
-                  class="clear-search-btn"
-                >
-                  <mat-icon>clear</mat-icon>
-                  Clear
-                </button>
-              </div>
-            </div>
-{{/if}}
-
-{{#each filters}}
-            {{#if (eq this.inputType "checkbox")}}
-            <div class="checkbox-filter">
-              <mat-checkbox 
-                [(ngModel)]="filters().{{this.name}}"
-                (change)="applyFilters()"
-              >
-                {{this.label}}
-              </mat-checkbox>
-            </div>
-            {{else}}
-            <mat-form-field appearance="outline">
-              <mat-label>{{this.label}}</mat-label>
-              {{#if this.isSelect}}
-              <mat-select [(ngModel)]="filters().{{this.name}}" (selectionChange)="applyFilters()">
-                <mat-option value="">All</mat-option>
-                {{#each this.options}}
-                <mat-option value="{{this.value}}">{{this.label}}</mat-option>
-                {{/each}}
-              </mat-select>
-              {{else}}
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search {{title}}</mat-label>
               <input 
                 matInput 
-                type="{{this.inputType}}"
-                [(ngModel)]="filters().{{this.name}}"
-                (input)="applyFilters()"
+                placeholder="Search by {{searchFieldsDisplay}}"
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+                (keyup.enter)="onSearchButtonClick()"
               >
-              {{/if}}
+              <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
-            {{/if}}
-{{/each}}
-
+{{/if}}
             <button 
-              mat-stroked-button 
-              (click)="clearFilters()"
-              [disabled]="!hasActiveFilters()"
+              mat-raised-button 
+              color="primary" 
+              (click)="openCreateDialog()"
+              [disabled]="{{camelCase moduleName}}Service.loading()"
+              class="add-btn"
             >
-              <mat-icon>clear</mat-icon>
-              Clear Filters
+              <mat-icon>add</mat-icon>
+              Add {{title}}
             </button>
           </div>
         </mat-card-content>
       </mat-card>
 
+      <!-- Quick Filters -->
+      <mat-card class="quick-filters-card">
+        <mat-card-content>
+          <div class="quick-filters">
+            <button 
+              mat-stroked-button 
+              [class.active]="quickFilter === 'all'"
+              (click)="setQuickFilter('all')"
+              class="filter-chip"
+            >
+              All
+            </button>
+            
+            <!-- Published Quick Filter -->
+            <button 
+              mat-stroked-button 
+              [class.active]="quickFilter === 'published_true'"
+              (click)="setQuickFilter('published_true')"
+              class="filter-chip"
+            >
+              Published
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Active Filters -->
+      @if (getActiveFilterChips().length > 0) {
+      <div class="active-filters">
+        <span class="active-filters-label">Active Filters:</span>
+        <div class="filter-chips">
+          <mat-chip 
+            *ngFor="let chip of getActiveFilterChips()" 
+            (removed)="removeFilter(chip.key)"
+            class="filter-chip"
+            removable
+          >
+            <strong>\{{ chip.label \}}:</strong> \{{ chip.value \}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </div>
+        <button 
+          mat-stroked-button 
+          color="warn"
+          (click)="clearAllFilters()"
+          class="clear-all-btn"
+        >
+          <mat-icon>clear_all</mat-icon>
+          Clear All
+        </button>
+      </div>
+      }
+
+      <!-- Advanced Filters -->
+      <mat-card class="advanced-filters-card">
+        <mat-expansion-panel class="filters-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>tune</mat-icon>
+              Advanced Filters
+            </mat-panel-title>
+            <mat-panel-description>
+              Filter by specific criteria
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="advanced-filters">
+            <!-- Filter Fields -->
+            <div class="filter-grid">
+              <!-- Title Filter -->
+              <div class="filter-group">
+                <label class="filter-label">Title</label>
+                <mat-form-field appearance="outline" class="filter-field">
+                  <mat-label>Title</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [value]="filters().title || ''"
+                    (input)="onFilterChange('title', $event)"
+                    placeholder="Enter title"
+                  />
+                </mat-form-field>
+              </div>
+              
+              <!-- Author ID Filter -->
+              <div class="filter-group">
+                <label class="filter-label">Author ID</label>
+                <mat-form-field appearance="outline" class="filter-field">
+                  <mat-label>Author ID</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [value]="filters().author_id || ''"
+                    (input)="onFilterChange('author_id', $event)"
+                    [class.mat-form-field-invalid]="validationErrors()['author_id']"
+                    placeholder="Enter author ID"
+                  />
+                  <mat-hint>Leave empty to show all</mat-hint>
+                  @if (validationErrors()['author_id']) {
+                  <mat-error>
+                    \{{ validationErrors()['author_id'] \}}
+                  </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              
+              <!-- Published Filter -->
+              <div class="filter-group">
+                <label class="filter-label">Published</label>
+                <mat-form-field appearance="outline" class="filter-field">
+                  <mat-label>Published</mat-label>
+                  <mat-select 
+                    [value]="filters().published"
+                    (selectionChange)="onFilterChange('published', $event.value)"
+                  >
+                    <mat-option value="">All</mat-option>
+                    <mat-option [value]="true">Yes</mat-option>
+                    <mat-option [value]="false">No</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              
+              <!-- View Count Range Filter -->
+              <div class="filter-group">
+                <label class="filter-label">View Count (Min)</label>
+                <mat-form-field appearance="outline" class="filter-field">
+                  <mat-label>Min Views</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [value]="filters().view_count_min || ''"
+                    (input)="onFilterChange('view_count_min', $event)"
+                    placeholder="Minimum views"
+                  />
+                </mat-form-field>
+              </div>
+              
+              <div class="filter-group">
+                <label class="filter-label">View Count (Max)</label>
+                <mat-form-field appearance="outline" class="filter-field">
+                  <mat-label>Max Views</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [value]="filters().view_count_max || ''"
+                    (input)="onFilterChange('view_count_max', $event)"
+                    placeholder="Maximum views"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Date Filters Section -->
+            <div class="date-filters-section">
+              <h4 class="section-header">
+                <mat-icon>event</mat-icon>
+                Date Filters
+              </h4>
+              
+              <div class="date-filters-grid">
+                <!-- Published Date Filter -->
+                <div class="date-filter-group">
+                  <label class="filter-label">Published Date</label>
+                  <app-date-range-filter
+                    fieldName="published_at"
+                    label="Published Date"
+                    [isDateTime]="true"
+                    (filterChange)="onDateFilterChange($event)"
+                  ></app-date-range-filter>
+                </div>
+                
+                <!-- Created Date Filter -->
+                <div class="date-filter-group">
+                  <label class="filter-label">Created Date</label>
+                  <app-date-range-filter
+                    fieldName="created_at"
+                    label="Created Date"
+                    [isDateTime]="true"
+                    (filterChange)="onDateFilterChange($event)"
+                  ></app-date-range-filter>
+                </div>
+                
+                <!-- Updated Date Filter -->
+                <div class="date-filter-group">
+                  <label class="filter-label">Updated Date</label>
+                  <app-date-range-filter
+                    fieldName="updated_at"
+                    label="Updated Date"
+                    [isDateTime]="true"
+                    (filterChange)="onDateFilterChange($event)"
+                  ></app-date-range-filter>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="filter-actions">
+              <button 
+                mat-stroked-button 
+                (click)="resetFilters()"
+                class="reset-btn"
+              >
+                Reset Filters
+              </button>
+              <button 
+                mat-raised-button 
+                color="primary" 
+                (click)="applyFiltersImmediate()"
+                class="apply-btn"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-card>
+
       <!-- Loading State -->
-      <div *ngIf="{{camelCase moduleName}}Service.loading()" class="loading-container">
+      @if ({{camelCase moduleName}}Service.loading()) {
+      <div class="loading-container">
         <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
         <p>Loading {{title}}...</p>
       </div>
+      }
 
       <!-- Error State -->
-      <mat-card *ngIf="{{camelCase moduleName}}Service.error()" class="error-card">
+      @if ({{camelCase moduleName}}Service.error()) {
+      <mat-card class="error-card">
         <mat-card-content>
           <div class="error-content">
             <mat-icon color="warn">error</mat-icon>
@@ -168,12 +333,15 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
           </div>
         </mat-card-content>
       </mat-card>
+      }
 
       <!-- Data Table -->
-      <mat-card *ngIf="!{{camelCase moduleName}}Service.loading() && !{{camelCase moduleName}}Service.error()" class="table-card">
+      @if (!{{camelCase moduleName}}Service.loading() && !{{camelCase moduleName}}Service.error()) {
+      <mat-card class="table-card">
         <mat-card-content>
           <!-- Bulk Actions -->
-          <div *ngIf="hasSelected()" class="bulk-actions">
+          @if (hasSelected()) {
+          <div class="bulk-actions">
             <span class="selection-info">\{{ selectedItems().length \}} selected</span>
             <div class="bulk-buttons">
 {{#if includeEnhanced}}
@@ -196,6 +364,7 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
               </button>
             </div>
           </div>
+          }
 
           <!-- Table -->
           <div class="table-container">
@@ -217,28 +386,60 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
                 </td>
               </ng-container>
 
-{{#each displayColumns}}
-              <!-- {{this.name}} Column -->
-              <ng-container matColumnDef="{{this.name}}">
-                <th mat-header-cell *matHeaderCellDef>{{this.label}}</th>
-                <td mat-cell *matCellDef="let {{this.camelCase}}">
-                  {{#if this.isDate}}
-                  \{{ {{this.camelCase}}.{{this.name}} | date:'short' \}}
-                  {{else if this.isBoolean}}
-                  <mat-icon [color]="{{this.camelCase}}.{{this.name}} ? 'primary' : 'warn'">
-                    \{{ {{this.camelCase}}.{{this.name}} ? 'check_circle' : 'cancel' \}}
-                  </mat-icon>
-                  {{else if this.isTruncated}}
-                  <span [title]="{{this.camelCase}}.{{this.name}}">
-                    \{{ {{this.camelCase}}.{{this.name}} | slice:0:{{this.truncateLength}} \}}{{#if this.showEllipsis}}<span *ngIf="{{this.camelCase}}.{{this.name}}.length > {{this.truncateLength}}">...</span>{{/if}}
+              <!-- Title Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let article">
+                  <span [title]="article.title">
+                    \{{ article.title | slice:0:50 \}}
+                    @if (article.title && article.title.length > 50) {
+                      <span>...</span>
+                    }
                   </span>
-                  {{else}}
-                  \{{ {{this.camelCase}}.{{this.name}} \}}
-                  {{/if}}
                 </td>
               </ng-container>
 
-{{/each}}
+              <!-- Author Column -->
+              <ng-container matColumnDef="author_id">
+                <th mat-header-cell *matHeaderCellDef>Author</th>
+                <td mat-cell *matCellDef="let article">
+                  \{{ article.author_id \}}
+                </td>
+              </ng-container>
+
+              <!-- Published Column -->
+              <ng-container matColumnDef="published">
+                <th mat-header-cell *matHeaderCellDef>Published</th>
+                <td mat-cell *matCellDef="let article">
+                  <mat-icon [color]="article.published ? 'primary' : 'warn'">
+                    \{{ article.published ? 'check_circle' : 'cancel' \}}
+                  </mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- Published Date Column -->
+              <ng-container matColumnDef="published_at">
+                <th mat-header-cell *matHeaderCellDef>Published Date</th>
+                <td mat-cell *matCellDef="let article">
+                  \{{ article.published_at | date:'short' \}}
+                </td>
+              </ng-container>
+
+              <!-- View Count Column -->
+              <ng-container matColumnDef="view_count">
+                <th mat-header-cell *matHeaderCellDef>Views</th>
+                <td mat-cell *matCellDef="let article">
+                  \{{ article.view_count \}}
+                </td>
+              </ng-container>
+
+              <!-- Created Date Column -->
+              <ng-container matColumnDef="created_at">
+                <th mat-header-cell *matHeaderCellDef>Created</th>
+                <td mat-cell *matCellDef="let article">
+                  \{{ article.created_at | date:'short' \}}
+                </td>
+              </ng-container>
               <!-- Actions Column -->
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
@@ -275,7 +476,8 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
           </div>
 
           <!-- Empty State -->
-          <div *ngIf="{{camelCase moduleName}}Service.{{camelCase moduleName}}List().length === 0" class="empty-state">
+          @if ({{camelCase moduleName}}Service.{{camelCase moduleName}}List().length === 0) {
+          <div class="empty-state">
             <mat-icon class="empty-icon">inbox</mat-icon>
             <h3>No {{title}} found</h3>
             <p>Create your first {{title}} to get started</p>
@@ -284,10 +486,11 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
               Add {{title}}
             </button>
           </div>
+          }
 
           <!-- Pagination -->
+          @if ({{camelCase moduleName}}Service.{{camelCase moduleName}}List().length > 0) {
           <mat-paginator
-            *ngIf="{{camelCase moduleName}}Service.{{camelCase moduleName}}List().length > 0"
             [length]="{{camelCase moduleName}}Service.total{{PascalCase}}()"
             [pageSize]="{{camelCase moduleName}}Service.pageSize()"
             [pageSizeOptions]="[5, 10, 25, 50, 100]"
@@ -295,8 +498,10 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
             (page)="onPageChange($event)"
             showFirstLastButtons
           ></mat-paginator>
+          }
         </mat-card-content>
       </mat-card>
+      }
     </div>
   `,
   styles: [`
@@ -320,34 +525,130 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
       flex: 1 1 auto;
     }
 
-    .search-card {
+    .search-card, .quick-filters-card, .advanced-filters-card {
       margin-bottom: 16px;
     }
 
-    .search-container {
+    .search-wrapper {
       display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .search-group {
-      display: flex;
-      align-items: center;
       gap: 12px;
-      flex: 1;
-      min-width: 300px;
+      align-items: flex-start;
+      flex-wrap: wrap;
     }
 
     .search-field {
       flex: 1;
-      min-width: 250px;
+      min-width: 300px;
     }
 
-    .search-buttons {
+    .add-btn {
+      height: 56px;
+      padding: 0 24px;
+      white-space: nowrap;
+      min-width: 140px;
+    }
+
+    .quick-filters {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
       align-items: center;
+    }
+
+    .filter-chip {
+      transition: all 0.2s ease;
+    }
+
+    .filter-chip.active {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .active-filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      border-left: 4px solid #1976d2;
+    }
+
+    .active-filters-label {
+      font-weight: 500;
+      color: #1976d2;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      flex: 1;
+    }
+
+    .filter-chips mat-chip {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .clear-all-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .filters-panel {
+      box-shadow: none !important;
+    }
+
+    .advanced-filters {
+      padding: 16px 0;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .filter-label {
+      font-weight: 500;
+      color: #424242;
+      font-size: 14px;
+    }
+
+    .filter-field {
+      width: 100%;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .reset-btn {
+      min-width: 120px;
+    }
+
+    .apply-btn {
+      min-width: 140px;
     }
 
     .search-btn {
@@ -449,6 +750,40 @@ import { {{PascalCase}}ViewDialogComponent, {{PascalCase}}ViewDialogData } from 
       color: #999;
     }
 
+    /* Date Filters Styles */
+    .date-filters-section {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .section-header mat-icon {
+      font-size: 20px;
+      color: #1976d2;
+    }
+
+    .date-filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .date-filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     @media (max-width: 768px) {
       .{{kebabCase moduleName}}-list-container {
         padding: 8px;
@@ -500,9 +835,17 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
   // Search and filtering
   searchTerm = '';
   private searchTimeout: any;
+  private filterTimeout: any;
   
-  private filtersSignal = signal<Partial<List{{PascalCase}}Params>>({});
+  private filtersSignal = signal<Partial<List{{PascalCase}}Query>>({});
   readonly filters = this.filtersSignal.asReadonly();
+
+  // Quick filter state
+  protected quickFilter = 'all';
+
+  // Validation state
+  private validationErrorsSignal = signal<Record<string, string>>({});
+  readonly validationErrors = this.validationErrorsSignal.asReadonly();
 
   // Selection
   private selectedIdsSignal = signal<Set<string>>(new Set());
@@ -511,9 +854,12 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
   // Table configuration
   displayedColumns: string[] = [
     'select',
-{{#each displayColumns}}
-    '{{this.name}}',
-{{/each}}
+    'title',
+    'author_id',
+    'published',
+    'published_at',
+    'view_count',
+    'created_at',
     'actions'
   ];
 
@@ -525,12 +871,15 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
   }
 
   // ===== DATA LOADING =====
 
   async load{{PascalCase}}s() {
-    const params: List{{PascalCase}}Params = {
+    const params: List{{PascalCase}}Query = {
       page: this.{{camelCase moduleName}}Service.currentPage(),
       limit: this.{{camelCase moduleName}}Service.pageSize(),
       ...this.filters(),
@@ -550,6 +899,49 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
     await this.load{{PascalCase}}s();
   }
 
+  // ===== VALIDATION METHODS =====
+
+  private isValidUuid(value: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(value);
+  }
+
+  private validateTechnicalFields(): { field: string; message: string }[] {
+    const errors: { field: string; message: string }[] = [];
+    const filters = this.filters();
+
+    // Validate author_id UUID field
+    if (filters.author_id && !this.isValidUuid(filters.author_id as string)) {
+      errors.push({
+        field: 'author_id',
+        message: 'Please enter a valid UUID format'
+      });
+    }
+
+    return errors;
+  }
+
+  private showFieldErrors(errors: { field: string; message: string }[]) {
+    const errorMap: Record<string, string> = {};
+    errors.forEach(error => {
+      errorMap[error.field] = error.message;
+    });
+    this.validationErrorsSignal.set(errorMap);
+
+    // Show snackbar for user feedback
+    if (errors.length > 0) {
+      this.snackBar.open(
+        'Please check your search criteria and try again',
+        'Close',
+        { duration: 3000, panelClass: ['error-snackbar'] }
+      );
+    }
+  }
+
+  private clearValidationErrors() {
+    this.validationErrorsSignal.set({});
+  }
+
   // ===== SEARCH AND FILTERING =====
 
 {{#if searchFields}}
@@ -566,10 +958,21 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
   }
 
   onSearchButtonClick() {
-    // Manual search - immediate execution
+    // Manual search - validate before execution
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
+
+    // Validate technical fields first
+    const validationErrors = this.validateTechnicalFields();
+    
+    if (validationErrors.length > 0) {
+      this.showFieldErrors(validationErrors);
+      return; // Don't proceed with search
+    }
+
+    // Clear any previous validation errors
+    this.clearValidationErrors();
     
     this.{{camelCase moduleName}}Service.setCurrentPage(1);
     this.load{{PascalCase}}s();
@@ -586,7 +989,69 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
   }
 {{/if}}
 
+  // ===== DATE FILTERING =====
+
+  onDateFilterChange(dateFilter: { [key: string]: string | null | undefined }) {
+    console.log('Date filter change:', dateFilter); // Debug log
+    
+    // Update filters with date filter values
+    this.filtersSignal.update(filters => ({
+      ...filters,
+      ...dateFilter
+    }));
+    
+    console.log('Updated filters:', this.filters()); // Debug log
+    
+    // Apply filters with debounce
+    this.applyFilters();
+  }
+
+  // Handle filter field changes
+  onFilterChange(field: string, event: any) {
+    const value = event.target ? event.target.value : event;
+    
+    // Convert string numbers to numbers for numeric fields
+    let processedValue = value;
+    if (field.includes('_min') || field.includes('_max') || field === 'view_count') {
+      processedValue = value === '' ? undefined : Number(value);
+    }
+    
+    // Convert string booleans for boolean fields
+    if (field === 'published') {
+      processedValue = value === '' ? undefined : value;
+    }
+    
+    // Clear quick filter when advance filters are used
+    if (this.quickFilter !== 'all') {
+      this.quickFilter = 'all';
+    }
+    
+    this.filtersSignal.update(filters => ({
+      ...filters,
+      [field]: processedValue
+    }));
+    
+    this.applyFilters();
+  }
+
   applyFilters() {
+    // Debounce filter changes to prevent multiple API calls
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+    
+    this.filterTimeout = setTimeout(() => {
+      this.{{camelCase moduleName}}Service.setCurrentPage(1);
+      this.load{{PascalCase}}s();
+    }, 300);
+  }
+
+  // Immediate filter application (for button clicks)
+  applyFiltersImmediate() {
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+    
     this.{{camelCase moduleName}}Service.setCurrentPage(1);
     this.load{{PascalCase}}s();
   }
@@ -595,9 +1060,13 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
     
     this.searchTerm = '';
     this.filtersSignal.set({});
+    this.clearValidationErrors();
     this.{{camelCase moduleName}}Service.setCurrentPage(1);
     this.load{{PascalCase}}s();
   }
@@ -700,6 +1169,183 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
         this.openEditDialog(result.data);
       }
     });
+  }
+
+  // ===== QUICK FILTERS =====
+
+  protected setQuickFilter(filter: string) {
+    // Clear any pending filter operations
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+    
+    this.quickFilter = filter;
+    
+    // Clear all filters first
+    this.searchTerm = '';
+    this.filtersSignal.set({});
+    this.clearValidationErrors();
+    
+    switch (filter) {
+      case 'published_true':
+        this.filtersSignal.set({ published: true });
+        break;
+      case 'all':
+      default:
+        // Already cleared above
+        break;
+    }
+    
+    // Quick filters should apply immediately
+    this.{{camelCase moduleName}}Service.setCurrentPage(1);
+    this.load{{PascalCase}}s();
+  }
+
+  // ===== ACTIVE FILTER CHIPS =====
+
+  protected getActiveFilterChips(): Array<{ key: string; label: string; value: string }> {
+    const chips: Array<{ key: string; label: string; value: string }> = [];
+    const filters = this.filters();
+    
+    // Add quick filter chip if not 'all'
+    if (this.quickFilter !== 'all') {
+      const quickFilterLabels: Record<string, string> = {
+        'published_true': 'Status: Published',
+      };
+      chips.push({ 
+        key: '_quickFilter', 
+        label: 'Quick Filter', 
+        value: quickFilterLabels[this.quickFilter] || this.quickFilter 
+      });
+    }
+    
+    if (this.searchTerm) {
+      chips.push({ key: 'search', label: 'Search', value: this.searchTerm });
+    }
+    
+    // Date field filters
+    if (filters.published_at) {
+      chips.push({ key: 'published_at', label: 'Published Date', value: this.formatDate(filters.published_at as string) });
+    } else if (filters.published_at_min || filters.published_at_max) {
+      const from = filters.published_at_min ? this.formatDate(filters.published_at_min as string) : '...';
+      const to = filters.published_at_max ? this.formatDate(filters.published_at_max as string) : '...';
+      chips.push({ key: 'published_at_range', label: 'Published Date Range', value: `${from} - ${to}` });
+    }
+    
+    if (filters.created_at) {
+      chips.push({ key: 'created_at', label: 'Created Date', value: this.formatDate(filters.created_at as string) });
+    } else if (filters.created_at_min || filters.created_at_max) {
+      const from = filters.created_at_min ? this.formatDate(filters.created_at_min as string) : '...';
+      const to = filters.created_at_max ? this.formatDate(filters.created_at_max as string) : '...';
+      chips.push({ key: 'created_at_range', label: 'Created Date Range', value: `${from} - ${to}` });
+    }
+    
+    if (filters.updated_at) {
+      chips.push({ key: 'updated_at', label: 'Updated Date', value: this.formatDate(filters.updated_at as string) });
+    } else if (filters.updated_at_min || filters.updated_at_max) {
+      const from = filters.updated_at_min ? this.formatDate(filters.updated_at_min as string) : '...';
+      const to = filters.updated_at_max ? this.formatDate(filters.updated_at_max as string) : '...';
+      chips.push({ key: 'updated_at_range', label: 'Updated Date Range', value: `${from} - ${to}` });
+    }
+    
+    // Regular field filters
+    if (filters.title !== undefined && filters.title !== '') {
+      chips.push({ key: 'title', label: 'Title', value: String(filters.title) });
+    }
+    
+    if (filters.author_id !== undefined && filters.author_id !== '') {
+      chips.push({ key: 'author_id', label: 'Author ID', value: String(filters.author_id) });
+    }
+    
+    if (filters.published !== undefined && filters.published !== null) {
+      chips.push({ key: 'published', label: 'Published', value: filters.published ? 'Yes' : 'No' });
+    }
+    
+    if (filters.view_count_min !== undefined && filters.view_count_min !== null) {
+      chips.push({ key: 'view_count_min', label: 'Min Views', value: String(filters.view_count_min) });
+    }
+    
+    if (filters.view_count_max !== undefined && filters.view_count_max !== null) {
+      chips.push({ key: 'view_count_max', label: 'Max Views', value: String(filters.view_count_max) });
+    }
+    
+    return chips;
+  }
+
+  protected removeFilter(key: string) {
+    // Clear any pending filter operations
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+    
+    if (key === '_quickFilter') {
+      // Reset quick filter to 'all'
+      this.setQuickFilter('all');
+      return;
+    }
+    
+    if (key === 'search') {
+      this.searchTerm = '';
+    } else if (key.includes('_range')) {
+      // Handle date range removal
+      const fieldName = key.replace('_range', '');
+      this.filtersSignal.update(filters => {
+        const updated = { ...filters } as any;
+        delete updated[fieldName];
+        delete updated[`${fieldName}_min`];
+        delete updated[`${fieldName}_max`];
+        return updated;
+      });
+    } else {
+      this.filtersSignal.update(filters => {
+        const updated = { ...filters } as any;
+        delete updated[key];
+        return updated;
+      });
+    }
+    this.clearValidationErrors();
+    this.{{camelCase moduleName}}Service.setCurrentPage(1);
+    this.load{{PascalCase}}s();
+  }
+
+  protected clearAllFilters() {
+    // Clear any pending filter operations
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+    
+    this.searchTerm = '';
+    this.filtersSignal.set({});
+    this.quickFilter = 'all';
+    this.clearValidationErrors();
+    this.{{camelCase moduleName}}Service.setCurrentPage(1);
+    this.load{{PascalCase}}s();
+  }
+
+  protected resetFilters() {
+    // Clear any pending filter operations
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+    
+    this.filtersSignal.set({});
+    this.clearValidationErrors();
+    
+    // Reset filters should apply immediately
+    this.{{camelCase moduleName}}Service.setCurrentPage(1);
+    this.load{{PascalCase}}s();
+  }
+
+  // ===== DATE FILTER HANDLERS =====
+
+  protected updateDateFilter(filterUpdate: any) {
+    this.filtersSignal.update(current => ({ ...current, ...filterUpdate }));
+    this.applyFilters();
+  }
+
+  private formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
   }
 
   // ===== ACTIONS =====

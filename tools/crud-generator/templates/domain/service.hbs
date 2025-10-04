@@ -231,8 +231,7 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
     const result = await this.{{moduleName}}Repository.list({
       limit,
       search,
-      sortBy: labelField,
-      sortOrder: 'asc'
+      sort: `${labelField}:asc`
     });
 
     const dropdownOptions = result.data.map(item => ({

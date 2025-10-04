@@ -94,46 +94,80 @@ export const List{{ModuleName}}QuerySchema = Type.Object({
   // Pagination parameters
   page: Type.Optional(Type.Number({ minimum: 1, default: 1 })),
   limit: Type.Optional(Type.Number({ minimum: 1, maximum: 1000, default: 20 })),
-  sortBy: Type.Optional(Type.String()),
-  sortOrder: Type.Optional(Type.Union([
-    Type.Literal('asc'), 
-    Type.Literal('desc')
-  ], { default: 'desc' })),
   
+  // Modern multiple sort support
+  sort: Type.Optional(Type.String({
+    pattern: '^[a-zA-Z_][a-zA-Z0-9_]*(:(asc|desc))?(,[a-zA-Z_][a-zA-Z0-9_]*(:(asc|desc))?)*$',
+    description: 'Multiple sort: field1:desc,field2:asc,field3:desc. Example: {{#each columns}}{{#if @first}}{{name}}:asc{{/if}}{{/each}},created_at:desc',
+    examples: [{{#each columns}}{{#if @first}}'{{name}}:asc'{{/if}}{{/each}}, 'created_at:desc'{{#each columns}}{{#if (eq @index 1)}}, '{{name}}:asc,created_at:desc'{{/if}}{{/each}}]
+  })),
+
   // Search and filtering
-  search: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
-  
+  search: Type.Optional(Type.String({ 
+    minLength: 1, 
+    maxLength: 100,
+    description: 'Search in text fields'
+  })),
+
   // 🛡️ Secure field selection with validation
-  fields: Type.Optional(Type.Array(
-    Type.String({ 
-      pattern: '^[a-zA-Z_][a-zA-Z0-9_]*$', // Only alphanumeric + underscore
-      minLength: 1,
-      maxLength: 50 
-    }), 
-    { 
-      minItems: 1,
-      maxItems: 20, // Prevent excessive field requests
-      description: 'Specific fields to return. Example: ["id", "title", "created_at"]. Field access is role-based for security.'
-    }
-  )),
-  
-  // Include related data (only if table has foreign keys)
-  {{#if (hasForeignKeys schema)}}
-  include: Type.Optional(Type.Union([
-    Type.String(),
-    Type.Array(Type.String())
-  ])),
-  {{/if}}
-  
-  // Smart field-based filters
+  fields: Type.Optional(
+    Type.Array(
+      Type.String({
+        pattern: '^[a-zA-Z_][a-zA-Z0-9_]*$', // Only alphanumeric + underscore
+        minLength: 1,
+        maxLength: 50,
+      }),
+      {
+        minItems: 1,
+        maxItems: 20, // Prevent excessive field requests
+        description:
+          'Specific fields to return. Example: ["id", {{#each columns}}{{#if (eq @index 1)}}"{{name}}"{{/if}}{{/each}}, "created_at"]. Field access is role-based for security.',
+        examples: [['id'{{#each columns}}{{#if (eq @index 1)}}, '{{name}}'{{/if}}{{/each}}], ['id'{{#each columns}}{{#if (le @index 2)}}{{#unless (eq @index 0)}}, '{{name}}'{{/unless}}{{/if}}{{/each}}, 'created_at']]
+      },
+    ),
+  ),
+
+  // Smart field-based filters based on database schema
   {{#each columns}}
-  {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-  {{#if (isExactMatchField this)}}
-  {{name}}: Type.Optional({{#if (eq tsType 'boolean')}}Type.Boolean(){{else if (eq tsType 'string')}}Type.String({{{getFieldConstraints this}}}){{else if (eq tsType 'number')}}Type.Number({{{getFieldConstraints this}}}){{/if}}),
-  {{/if}}
-  {{#if (isRangeField this)}}
-  {{name}}_min: Type.Optional({{#if (eq tsType 'number')}}Type.Number({{{getFieldConstraints this}}}){{else if (eq tsType 'Date')}}Type.String({ format: 'date-time' }){{/if}}),
-  {{name}}_max: Type.Optional({{#if (eq tsType 'number')}}Type.Number({{{getFieldConstraints this}}}){{else if (eq tsType 'Date')}}Type.String({ format: 'date-time' }){{/if}}),
+  {{#unless isPrimaryKey}}
+  {{#if (contains dataType 'timestamp date')}}
+  // Date/DateTime filtering for {{name}} - supports both equals and range
+  {{name}}: Type.Optional(Type.String({ 
+    format: 'date-time',
+    description: 'Filter by exact {{name}} (equals mode)'
+  })),
+  {{name}}_min: Type.Optional(Type.String({ 
+    format: 'date-time',
+    description: 'Filter by {{name}} minimum (range mode)'
+  })),
+  {{name}}_max: Type.Optional(Type.String({ 
+    format: 'date-time',
+    description: 'Filter by {{name}} maximum (range mode)'
+  })),
+  {{else if (eq tsType 'boolean')}}
+  // Boolean filtering for {{name}}
+  {{name}}: Type.Optional(Type.Boolean({ 
+    description: 'Filter by {{name}} status' 
+  })),
+  {{else if (eq tsType 'number')}}
+  // Numeric filtering for {{name}} - supports both equals and range
+  {{name}}: Type.Optional(Type.Number({ 
+    minimum: 0,
+    description: 'Filter by exact {{name}} (equals mode)'
+  })),
+  {{name}}_min: Type.Optional(Type.Number({ 
+    minimum: 0,
+    description: 'Filter by {{name}} minimum (range mode)'
+  })),
+  {{name}}_max: Type.Optional(Type.Number({ 
+    minimum: 0,
+    description: 'Filter by {{name}} maximum (range mode)'
+  })),
+  {{else if (eq tsType 'string')}}
+  // String filtering for {{name}}
+  {{name}}: Type.Optional(Type.String({ 
+    description: 'Filter by exact {{name}} match'
+  })),
   {{/if}}
   {{/unless}}
   {{/each}}

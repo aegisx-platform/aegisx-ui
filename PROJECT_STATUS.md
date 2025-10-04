@@ -1,7 +1,7 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-09-28 (Session 22)  
-**Current Task:** 🎯 Frontend CRUD Generator Development (Standard HTTP-only)
+**Last Updated:** 2025-10-04 (Session 24)  
+**Current Task:** 🛡️ UUID Validation System Implementation Complete
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 
 ## 🏗️ Project Overview
@@ -14,12 +14,113 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 
 ### Session Overview
 
-- **Date**: 2025-09-28 (Session 22)
-- **Main Focus**: Frontend CRUD Generator Development (Standard HTTP-only)
+- **Date**: 2025-10-04 (Session 24)
+- **Main Focus**: UUID Validation System for PostgreSQL Error Prevention
 
-### 🎯 Current Session Tasks (Session 22)
+### 🎯 Current Session Tasks (Session 24)
 
-1. **✅ COMPLETED: Backend CRUD Generator Enhanced & Tested**
+1. **✅ COMPLETED: UUID Validation System Implementation**
+   - **Problem**: Invalid UUID parameters causing PostgreSQL casting errors (e.g., `author_id=ee` → `invalid input syntax for type uuid: "ee"`)
+   - **Solution**: Comprehensive UUID validation system preventing PostgreSQL errors and improving user experience
+   - **Key Achievements**:
+     - **UUID Validation Utilities**: Created comprehensive `uuid.utils.ts` with validation functions supporting multiple strategies (STRICT/GRACEFUL/WARN)
+     - **Base Repository Enhancement**: Integrated UUID validation into `applyCustomFilters()` with auto-detection of UUID fields
+     - **Smart Detection**: Auto-detects UUID fields based on patterns (`*_id`, `id`, `*uuid*`) and actual value formats
+     - **Configurable Strategies**: Support for strict validation (throw errors) or graceful handling (filter out invalid UUIDs)
+     - **CRUD Generator Integration**: Updated templates to automatically include UUID validation for all generated modules
+     - **Production Testing**: Verified actual API endpoint handling with invalid UUIDs - no more PostgreSQL errors
+   - **Technical Implementation**:
+     - **Validation Functions**: `isValidUUID()`, `validateUUID()`, `smartValidateUUIDs()`, `detectUUIDFields()` with regex-based validation
+     - **Multiple Strategies**: STRICT (400 errors), GRACEFUL (filter invalid), WARN (log + continue)
+     - **Pattern Recognition**: Automatic detection of UUID fields using naming conventions and value analysis
+     - **Base Repository**: Enhanced `BaseRepository.applyCustomFilters()` with pre-validation UUID filtering
+     - **Template Updates**: CRUD generator templates now declare UUID fields explicitly for validation
+   - **Validation Logic**:
+     ```typescript
+     // Smart UUID validation with auto-detection
+     const validatedFilters = smartValidateUUIDs(filters, explicitUUIDFields, {
+       strategy: UUIDValidationStrategy.GRACEFUL,
+       allowAnyVersion: true,
+       logInvalidAttempts: true,
+     });
+     ```
+   - **Testing Results**:
+     - **Before Fix**: `curl "?author_id=ee"` → PostgreSQL error `invalid input syntax for type uuid: "ee"` → 500 Internal Server Error
+     - **After Fix**: `curl "?author_id=ee"` → Invalid UUID filtered out → 401 Unauthorized (authentication required) → No PostgreSQL error
+     - **Unit Tests**: 11 comprehensive tests covering all validation scenarios, edge cases, and strategies
+     - **Real API Testing**: Verified with actual server running on port 3383 - UUID validation working correctly
+   - **Files Enhanced/Created**:
+     - `apps/api/src/shared/utils/uuid.utils.ts` - Complete UUID validation utility system (217 lines)
+     - `apps/api/src/shared/repositories/base.repository.ts` - Enhanced with UUID validation in filters
+     - `apps/api/src/modules/articles/repositories/articles.repository.ts` - Added explicit UUID field declaration
+     - `tools/crud-generator/templates/repository.hbs` - Enhanced template with auto-detection of UUID fields
+     - `apps/api/src/shared/utils/__tests__/uuid.utils.test.ts` - Comprehensive test suite (11 tests, all passing)
+   - **Benefits**:
+     - **PostgreSQL Error Prevention**: No more UUID casting errors that caused 500 Internal Server Errors
+     - **Better User Experience**: Invalid UUIDs handled gracefully instead of crashing the API
+     - **Automatic Protection**: All repositories get UUID validation without manual configuration
+     - **Future-Proof**: CRUD generator templates ensure all new modules have UUID validation built-in
+     - **Configurable Behavior**: Choose between strict validation or graceful handling based on requirements
+   - **Result**: Production-ready UUID validation system preventing PostgreSQL errors and providing better error handling
+
+### ✅ Previous Session Tasks (Session 23)
+
+1. **✅ COMPLETED: Pattern-Based Reserved Parameters System Implementation**
+   - **Problem**: CRUD Generator's base repository used hardcoded reserved parameter lists, requiring manual updates for each new field type
+   - **Solution**: Implemented comprehensive pattern-based reserved parameter recognition system
+   - **Key Achievements**:
+     - **Pattern-Based Recognition**: Replaced hardcoded array with intelligent `isReservedParam()` function that recognizes field name patterns automatically
+     - **Range Filtering Support**: Automatic recognition of `_min` and `_max` suffixes for numeric and date range filtering
+     - **Array Filtering Support**: Automatic recognition of `_in` and `_not_in` suffixes for array-based filtering
+     - **Date/DateTime Filtering**: Smart recognition of `_at` suffix patterns for date/datetime exact matching
+     - **Generic Implementation**: Works with any field names without requiring manual configuration
+     - **Backward Compatibility**: Maintains compatibility with existing CRUD modules while adding new capabilities
+     - **Template System Updated**: Enhanced CRUD generator templates to remove legacy `sortBy`/`sortOrder` parameters in favor of modern multiple sort functionality
+   - **Technical Implementation**:
+     - **Base Repository Enhancement**: Updated `/apps/api/src/shared/repositories/base.repository.ts` with pattern-based `isReservedParam()` function
+     - **Template System**: Updated `/tools/crud-generator/templates/schemas.hbs` to use modern `sort` parameter with multiple sort support
+     - **Pattern Recognition Logic**: Implemented automatic detection for filtering patterns: `field_min`, `field_max`, `field_in`, `field_not_in`, `field_at`
+     - **Core System Parameters**: Maintained recognition of system parameters like `page`, `limit`, `sort`, `search`, `fields`
+   - **Pattern-Based Logic**:
+
+     ```typescript
+     const isReservedParam = (key: string): boolean => {
+       // Core system parameters
+       const coreParams = ['fields', 'format', 'include', 'page', 'limit', 'sort', 'sortBy', 'sortOrder', 'sort_by', 'sort_order'];
+       if (coreParams.includes(key)) return true;
+
+       // Range filtering patterns (handled by custom logic in child classes)
+       if (key.endsWith('_min') || key.endsWith('_max')) return true;
+
+       // Array filtering patterns (handled by custom logic in child classes)
+       if (key.endsWith('_in') || key.endsWith('_not_in')) return true;
+
+       // Date/DateTime exact filtering patterns (handled by custom logic in child classes)
+       if (key.endsWith('_at') && !key.includes('_min') && !key.includes('_max')) {
+         return true;
+       }
+
+       return false;
+     };
+     ```
+
+   - **Benefits**:
+     - **Zero Manual Maintenance**: No more manual addition of field names to reserved parameter lists
+     - **Automatic Scaling**: Works with any new field names following established patterns
+     - **Developer Friendly**: Developers can use any field names without worrying about reserved parameter conflicts
+     - **Pattern Consistency**: Enforces consistent naming patterns across all CRUD APIs
+     - **Future-Proof**: New pattern types can be added easily without breaking existing functionality
+   - **Testing Results**:
+     - **Known Field Testing**: Successfully tested with existing `view_count_min/max` parameters - returned 200 status with proper filtering
+     - **Unknown Field Testing**: Successfully tested with hypothetical `custom_field_min/max` parameters - returned 200 status with pattern recognition
+     - **Legacy Parameter Removal**: Confirmed `sortBy` and `sortOrder` parameters removed from Swagger documentation
+     - **Multiple Sort Testing**: Verified modern `sort=field1:desc,field2:asc` parameter works correctly
+   - **Files Enhanced**:
+     - `/apps/api/src/shared/repositories/base.repository.ts` - Implemented pattern-based reserved parameter recognition
+     - `/tools/crud-generator/templates/schemas.hbs` - Updated to use modern sort parameters and remove legacy ones
+   - **Result**: Universal pattern-based system that automatically handles any field filtering patterns without manual intervention, as requested by user: "มันต้อง generate ให้ทุกๆ service ฝั่ง api ไม่ใช่หรอจะมากำหนดได้ยังไงคุณจะรู้ได้ไงผมจะตั้งชื่ออะไร"
+
+2. **✅ COMPLETED: Backend CRUD Generator Enhanced & Tested (Previous)**
    - **Problem**: Backend CRUD generator needed cleanup and comprehensive testing before frontend development
    - **Solution**: Enhanced backend generator with duplicate cleanup, generated complete notifications API, and created documentation
    - **Key Achievements**:
@@ -45,7 +146,7 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
    - **Database Cleanup**: Removed 35+ duplicate migration files and unused userRoles module
    - **Result**: Production-ready backend CRUD generator with complete notifications API as reference implementation
 
-2. **🎯 IN PROGRESS: Frontend CRUD Generator Development (Standard HTTP-only)**
+3. **🎯 IN PROGRESS: Frontend CRUD Generator Development (Standard HTTP-only)**
    - **Goal**: Create Angular frontend generator that uses API types from backend for type consistency
    - **Approach**: Start with Standard CRUD Generator (HTTP-only), then add WebSocket later
    - **Backend Reference**: Using notifications API as complete test case with all 12 endpoints

@@ -54,7 +54,7 @@ export interface {{PascalCase}}FormData {
     MatTooltipModule,
   ],
   template: `
-    <form [formGroup]="{{camelCase moduleName}}Form" class="{{kebabCase moduleName}}-form">
+    <form [formGroup]="{{formName}}" class="{{kebabCase}}-form">
       {{#each formFields}}
       
       {{#if (eq type 'dropdown')}}
@@ -75,7 +75,7 @@ export interface {{PascalCase}}FormData {
           </mat-option>
         </mat-select>
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
@@ -95,7 +95,7 @@ export interface {{PascalCase}}FormData {
           {{/each}}
         </mat-select>
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
@@ -122,12 +122,12 @@ export interface {{PascalCase}}FormData {
         >
         {{/if}}
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
         {{#if maxLength}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('maxlength')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('maxlength')">
           {{label}} must be less than {{maxLength}} characters
         </mat-error>
         {{/if}}
@@ -145,17 +145,17 @@ export interface {{PascalCase}}FormData {
           placeholder="{{placeholder}}"
         >
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
         {{#if min}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('min')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('min')">
           {{label}} must be at least {{min}}
         </mat-error>
         {{/if}}
         {{#if max}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('max')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('max')">
           {{label}} must be at most {{max}}
         </mat-error>
         {{/if}}
@@ -184,7 +184,7 @@ export interface {{PascalCase}}FormData {
         <mat-datepicker-toggle matSuffix [for]="{{name}}Picker"></mat-datepicker-toggle>
         <mat-datepicker #{{name}}Picker></mat-datepicker>
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
@@ -202,7 +202,7 @@ export interface {{PascalCase}}FormData {
           rows="3"
         ></textarea>
         <mat-hint>Enter valid JSON object (optional)</mat-hint>
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('invalidJson')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('invalidJson')">
           Invalid JSON format
         </mat-error>
       </mat-form-field>
@@ -219,7 +219,7 @@ export interface {{PascalCase}}FormData {
           placeholder="{{placeholder}}"
         >
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
@@ -237,7 +237,7 @@ export interface {{PascalCase}}FormData {
           placeholder="{{placeholder}}"
         >
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
@@ -256,7 +256,7 @@ export interface {{PascalCase}}FormData {
         >
         <mat-hint>Timezone will be handled automatically</mat-hint>
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
@@ -277,11 +277,11 @@ export interface {{PascalCase}}FormData {
           <mat-icon>refresh</mat-icon>
         </button>
         {{#if required}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('required')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('required')">
           {{label}} is required
         </mat-error>
         {{/if}}
-        <mat-error *ngIf="{{../camelCase ../moduleName}}Form.get('{{name}}')?.hasError('pattern')">
+        <mat-error *ngIf="{{formName}}.get('{{name}}')?.hasError('pattern')">
           Invalid UUID format
         </mat-error>
       </mat-form-field>
@@ -304,7 +304,7 @@ export interface {{PascalCase}}FormData {
           color="primary" 
           type="button"
           (click)="onSubmit()"
-          [disabled]="{{camelCase moduleName}}Form.invalid || loading || (mode === 'edit' && !hasChanges())"
+          [disabled]="{{formName}}.invalid || loading || (mode === 'edit' && !hasChanges())"
         >
           <mat-spinner diameter="20" class="inline-spinner" *ngIf="loading"></mat-spinner>
           \{{ mode === 'create' ? 'Create' : 'Update' }} {{title}}
@@ -313,7 +313,7 @@ export interface {{PascalCase}}FormData {
     </form>
   `,
   styles: [`
-    .{{kebabCase moduleName}}-form {
+    .{{kebabCase}}-form {
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -388,7 +388,7 @@ export class {{PascalCase}}FormComponent implements OnInit, OnChanges {
   }
   {{/if}}
 
-  {{camelCase moduleName}}Form: FormGroup = this.fb.group({
+  {{formName}}: FormGroup = this.fb.group({
     {{#each formFields}}
     {{name}}: [
       {{#if defaultValue}}'{{defaultValue}}'{{else}}{{#if (eq type 'boolean')}}false{{else}}''{{/if}}{{/if}},
@@ -448,19 +448,19 @@ export class {{PascalCase}}FormComponent implements OnInit, OnChanges {
       {{/each}}
     };
     
-    this.{{camelCase moduleName}}Form.patchValue(formValue);
-    this.originalFormValue = this.{{camelCase moduleName}}Form.value;
+    this.{{formName}}.patchValue(formValue);
+    this.originalFormValue = this.{{formName}}.value;
   }
 
   hasChanges(): boolean {
     if (this.mode === 'create') return true;
-    const currentValue = this.{{camelCase moduleName}}Form.value;
+    const currentValue = this.{{formName}}.value;
     return JSON.stringify(currentValue) !== JSON.stringify(this.originalFormValue);
   }
 
   onSubmit() {
-    if (this.{{camelCase moduleName}}Form.valid) {
-      const formData = { ...this.{{camelCase moduleName}}Form.value } as {{PascalCase}}FormData;
+    if (this.{{formName}}.valid) {
+      const formData = { ...this.{{formName}}.value } as {{PascalCase}}FormData;
       
       {{#if hasJsonFields}}
       // Parse JSON fields
@@ -506,7 +506,8 @@ export class {{PascalCase}}FormComponent implements OnInit, OnChanges {
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
-    this.{{camelCase moduleName}}Form.get(fieldName)?.setValue(uuid);
+    const formControl = this.{{formName}};
+    formControl.get(fieldName)?.setValue(uuid);
   }
   {{/if}}
 }

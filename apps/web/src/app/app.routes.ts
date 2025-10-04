@@ -87,6 +87,19 @@ export const appRoutes: Route[] = [
     },
   },
   {
+    path: 'articles',
+    loadChildren: () =>
+      import('./features/articles/articles.routes').then(
+        (m) => m.articlesRoutes,
+      ),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Articles',
+      description: 'Article Management System',
+      requiredPermissions: ['articles.read', 'admin.*'],
+    },
+  },
+  {
     path: 'file-upload',
     loadComponent: () =>
       import('./pages/file-upload/file-upload.page').then(

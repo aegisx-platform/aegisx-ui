@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const Handlebars = require('handlebars');
-const { getDatabaseSchema } = require('./database');
+const { getDatabaseSchema, getEnhancedSchema } = require('./database');
 const { generateRolesAndPermissions } = require('./role-generator');
 
 /**
@@ -485,6 +485,33 @@ function isRangeField(column) {
 }
 
 /**
+ * Determine if a field is a date/datetime field
+ */
+function isDateField(column) {
+  const { dataType, tsType } = column;
+
+  return (
+    tsType === 'Date' ||
+    (dataType &&
+      (dataType.includes('timestamp') ||
+        dataType.includes('date') ||
+        dataType.includes('datetime')))
+  );
+}
+
+/**
+ * Determine if a date field is datetime (has time component)
+ */
+function isDateTime(column) {
+  const { dataType } = column;
+
+  return (
+    dataType &&
+    (dataType.includes('timestamp') || dataType.includes('datetime'))
+  );
+}
+
+/**
  * Determine if a field should be included in dropdown/list endpoints
  */
 function isDisplayField(column) {
@@ -506,21 +533,33 @@ function isDisplayField(column) {
 function isSensitiveField(column) {
   const { name } = column;
   const sensitivePatterns = [
-    'password', 'pass', 'pwd',
-    'secret', 'api_key', 'token',
-    'private_key', 'hash', 'salt',
-    'social_security', 'ssn', 'tax_id',
-    'credit_card', 'bank_account',
-    'internal_notes', 'admin_notes',
-    'deleted_at', 'deleted_by'
+    'password',
+    'pass',
+    'pwd',
+    'secret',
+    'api_key',
+    'token',
+    'private_key',
+    'hash',
+    'salt',
+    'social_security',
+    'ssn',
+    'tax_id',
+    'credit_card',
+    'bank_account',
+    'internal_notes',
+    'admin_notes',
+    'deleted_at',
+    'deleted_by',
   ];
-  
+
   const lowerName = name.toLowerCase();
-  return sensitivePatterns.some(pattern => 
-    lowerName.includes(pattern) || 
-    lowerName.endsWith('_hash') || 
-    lowerName.endsWith('_secret') ||
-    lowerName.startsWith('private_')
+  return sensitivePatterns.some(
+    (pattern) =>
+      lowerName.includes(pattern) ||
+      lowerName.endsWith('_hash') ||
+      lowerName.endsWith('_secret') ||
+      lowerName.startsWith('private_'),
   );
 }
 
@@ -640,6 +679,14 @@ Handlebars.registerHelper('isRangeField', function (column) {
   return isRangeField(column);
 });
 
+Handlebars.registerHelper('isDateField', function (column) {
+  return isDateField(column);
+});
+
+Handlebars.registerHelper('isDateTime', function (column) {
+  return isDateTime(column);
+});
+
 Handlebars.registerHelper('isDisplayField', function (column) {
   return isDisplayField(column);
 });
@@ -655,6 +702,45 @@ Handlebars.registerHelper('hasForeignKeys', function (schema) {
 // 🛡️ Security helper: Check if field contains sensitive data
 Handlebars.registerHelper('isSensitiveField', function (column) {
   return isSensitiveField(column);
+});
+
+// Schema-driven filtering helpers
+Handlebars.registerHelper('hasEqualsFilter', function (column) {
+  return (
+    column.filteringStrategy &&
+    column.filteringStrategy.filters.includes('equals')
+  );
+});
+
+Handlebars.registerHelper('hasRangeFilter', function (column) {
+  return (
+    column.filteringStrategy &&
+    column.filteringStrategy.filters.includes('range')
+  );
+});
+
+Handlebars.registerHelper('hasInArrayFilter', function (column) {
+  return (
+    column.filteringStrategy &&
+    column.filteringStrategy.filters.includes('in_array')
+  );
+});
+
+Handlebars.registerHelper('hasContainsFilter', function (column) {
+  return (
+    column.filteringStrategy &&
+    column.filteringStrategy.filters.includes('contains')
+  );
+});
+
+Handlebars.registerHelper('getFilterFormat', function (column) {
+  return (column.filteringStrategy && column.filteringStrategy.format) || '';
+});
+
+Handlebars.registerHelper('getFilterCategory', function (column) {
+  return (
+    (column.filteringStrategy && column.filteringStrategy.category) || 'unknown'
+  );
 });
 
 /**
@@ -676,7 +762,7 @@ async function generateDomainModule(domainName, options = {}) {
 
   console.log(`🔍 Analyzing table: ${domainName}`);
 
-  // Get database schema for the table (same as flat generator)
+  // Get database schema for the table
   const schema = await getDatabaseSchema(domainName);
 
   if (!schema) {

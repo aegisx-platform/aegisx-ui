@@ -121,6 +121,15 @@ async function getDatabaseSchema(tableName) {
         }
       }
 
+      const fieldType = determineFieldType(
+        col,
+        isFK,
+        !!enumData || !!constraintValues,
+      );
+
+      // Get filtering strategy for this field
+      const filteringStrategy = getFieldFilteringStrategy(col, fieldType);
+
       return {
         name: col.column_name,
         type: col.data_type,
@@ -150,11 +159,8 @@ async function getDatabaseSchema(tableName) {
           : null,
         constraintValues: constraintValues,
         // Smart field detection
-        fieldType: determineFieldType(
-          col,
-          isFK,
-          !!enumData || !!constraintValues,
-        ),
+        fieldType: fieldType,
+        filteringStrategy: filteringStrategy,
         tsType: mapPostgresToTypeScript(col.data_type, col.udt_name),
         typeboxType: mapPostgresToTypeBox(
           col.data_type,
@@ -175,6 +181,7 @@ async function getDatabaseSchema(tableName) {
       })),
     };
   } catch (error) {
+    console.error(`Full error for table ${tableName}:`, error);
     throw new Error(
       `Failed to get schema for table ${tableName}: ${error.message}`,
     );
@@ -204,6 +211,83 @@ async function listTables() {
     throw new Error(`Failed to list tables: ${error.message}`);
   }
 }
+
+/**
+ * Field filtering strategy mapping based on PostgreSQL types
+ */
+const FIELD_FILTERING_STRATEGIES = {
+  // Date/Time fields - support equals and range
+  date: {
+    category: 'date',
+    filters: ['equals', 'range'],
+    format: 'date',
+  },
+  timestamp: {
+    category: 'datetime',
+    filters: ['equals', 'range'],
+    format: 'date-time',
+  },
+  timestamptz: {
+    category: 'datetime',
+    filters: ['equals', 'range'],
+    format: 'date-time',
+  },
+  time: {
+    category: 'time',
+    filters: ['equals', 'range'],
+    format: 'time',
+  },
+
+  // Numeric fields - support equals and range
+  number: {
+    category: 'numeric',
+    filters: ['equals', 'range', 'in_array'],
+  },
+  decimal: {
+    category: 'numeric',
+    filters: ['equals', 'range'],
+  },
+  bigint: {
+    category: 'numeric',
+    filters: ['equals', 'range', 'in_array'],
+  },
+
+  // Text fields - support various text searches
+  varchar: {
+    category: 'string',
+    filters: ['equals', 'contains', 'starts_with', 'ends_with'],
+  },
+  char: {
+    category: 'string',
+    filters: ['equals', 'contains'],
+  },
+  textarea: {
+    category: 'text',
+    filters: ['contains', 'fulltext'],
+  },
+
+  // Boolean fields
+  boolean: {
+    category: 'boolean',
+    filters: ['equals', 'null_check'],
+  },
+
+  // UUID fields
+  uuid: {
+    category: 'uuid',
+    filters: ['equals', 'in_array', 'null_check'],
+  },
+
+  // Special fields
+  'enum-select': {
+    category: 'enum',
+    filters: ['equals', 'in_array', 'not_in_array'],
+  },
+  'foreign-key-dropdown': {
+    category: 'foreign_key',
+    filters: ['equals', 'in_array', 'null_check'],
+  },
+};
 
 /**
  * Comprehensive PostgreSQL type to form field mapping
@@ -308,11 +392,12 @@ const FIELD_NAME_PATTERNS = {
 
 /**
  * Determine smart field type based on database metadata and conventions
- * Enhanced version with comprehensive PostgreSQL support
+ * Enhanced version with comprehensive PostgreSQL support and field classification
  */
 function determineFieldType(column, isForeignKey, isEnum) {
   const colName = column.column_name.toLowerCase();
   const dataType = column.data_type.toLowerCase();
+  const udtName = column.udt_name?.toLowerCase() || '';
 
   // Primary key fields
   if (colName === 'id') {
@@ -343,7 +428,7 @@ function determineFieldType(column, isForeignKey, isEnum) {
     const fieldType = POSTGRES_TYPE_MAPPING[dataType];
 
     // Special handling for array types
-    if (dataType.includes('[]') || column.udt_name?.includes('_')) {
+    if (dataType.includes('[]') || udtName.includes('_')) {
       return 'array';
     }
 
@@ -360,6 +445,11 @@ function determineFieldType(column, isForeignKey, isEnum) {
     }
 
     return fieldType;
+  }
+
+  // Check udt_name for enum types
+  if (udtName && POSTGRES_TYPE_MAPPING[udtName]) {
+    return POSTGRES_TYPE_MAPPING[udtName];
   }
 
   // Fallback to name-based detection
@@ -411,6 +501,61 @@ function getFieldTypeFromName(columnName) {
   }
 
   return null;
+}
+
+/**
+ * Get filtering strategy for a field based on its PostgreSQL type and field type
+ */
+function getFieldFilteringStrategy(column, fieldType) {
+  const dataType = column.data_type?.toLowerCase() || '';
+  const udtName = column.udt_name?.toLowerCase() || '';
+
+  // Check if the field type has a predefined filtering strategy
+  if (FIELD_FILTERING_STRATEGIES[fieldType]) {
+    return FIELD_FILTERING_STRATEGIES[fieldType];
+  }
+
+  // Check PostgreSQL type mapping
+  const mappedType =
+    POSTGRES_TYPE_MAPPING[dataType] || POSTGRES_TYPE_MAPPING[udtName];
+  if (mappedType && FIELD_FILTERING_STRATEGIES[mappedType]) {
+    return FIELD_FILTERING_STRATEGIES[mappedType];
+  }
+
+  // Fallback based on data type patterns
+  if (dataType.includes('timestamp') || dataType.includes('date')) {
+    return FIELD_FILTERING_STRATEGIES['timestamp'];
+  }
+
+  if (
+    dataType.includes('int') ||
+    dataType.includes('numeric') ||
+    dataType.includes('decimal')
+  ) {
+    return FIELD_FILTERING_STRATEGIES['number'];
+  }
+
+  if (
+    dataType.includes('varchar') ||
+    dataType.includes('text') ||
+    dataType.includes('char')
+  ) {
+    return FIELD_FILTERING_STRATEGIES['varchar'];
+  }
+
+  if (dataType.includes('bool')) {
+    return FIELD_FILTERING_STRATEGIES['boolean'];
+  }
+
+  if (dataType.includes('uuid')) {
+    return FIELD_FILTERING_STRATEGIES['uuid'];
+  }
+
+  // Default strategy for unknown types
+  return {
+    category: 'unknown',
+    filters: ['equals'],
+  };
 }
 
 /**
@@ -790,7 +935,10 @@ module.exports = {
   mapPostgresToTypeScript,
   mapPostgresToTypeBox,
   determineFieldType,
+  getFieldFilteringStrategy,
   getDropdownEndpoint,
   hasDropdownEndpoint,
   getDropdownDisplayFields,
+  FIELD_FILTERING_STRATEGIES,
+  POSTGRES_TYPE_MAPPING,
 };

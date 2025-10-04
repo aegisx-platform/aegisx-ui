@@ -1,16 +1,14 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 // Import types from the shared types file
 import {
-  Notification,
-  CreateNotificationRequest,
-  UpdateNotificationRequest,
-  ListNotificationQuery,
   ApiResponse,
   BulkResponse,
+  CreateNotificationRequest,
+  ListNotificationQuery,
+  Notification,
+  UpdateNotificationRequest,
 } from '../types/notification.types';
 
 // ===== SERVICE CONFIGURATION =====
@@ -66,6 +64,7 @@ export class NotificationService {
    * Load notifications list with pagination and filters
    */
   async loadNotificationList(params?: ListNotificationQuery): Promise<void> {
+    console.log('Loading notifications list with params:', params);
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -87,29 +86,83 @@ export class NotificationService {
         httpParams = httpParams.set('title', params.title.toString());
       if (params?.message !== undefined)
         httpParams = httpParams.set('message', params.message.toString());
+
+      // Date filtering parameters
+      if (params?.created_at !== undefined)
+        httpParams = httpParams.set('created_at', params.created_at.toString());
+      if (params?.created_at_min !== undefined)
+        httpParams = httpParams.set(
+          'created_at_min',
+          params.created_at_min.toString(),
+        );
+      if (params?.created_at_max !== undefined)
+        httpParams = httpParams.set(
+          'created_at_max',
+          params.created_at_max.toString(),
+        );
+      if (params?.updated_at !== undefined)
+        httpParams = httpParams.set('updated_at', params.updated_at.toString());
+      if (params?.updated_at_min !== undefined)
+        httpParams = httpParams.set(
+          'updated_at_min',
+          params.updated_at_min.toString(),
+        );
+      if (params?.updated_at_max !== undefined)
+        httpParams = httpParams.set(
+          'updated_at_max',
+          params.updated_at_max.toString(),
+        );
+      if (params?.read_at !== undefined)
+        httpParams = httpParams.set('read_at', params.read_at.toString());
+      if (params?.read_at_min !== undefined)
+        httpParams = httpParams.set(
+          'read_at_min',
+          params.read_at_min.toString(),
+        );
+      if (params?.read_at_max !== undefined)
+        httpParams = httpParams.set(
+          'read_at_max',
+          params.read_at_max.toString(),
+        );
+      if (params?.archived_at !== undefined)
+        httpParams = httpParams.set(
+          'archived_at',
+          params.archived_at.toString(),
+        );
+      if (params?.archived_at_min !== undefined)
+        httpParams = httpParams.set(
+          'archived_at_min',
+          params.archived_at_min.toString(),
+        );
+      if (params?.archived_at_max !== undefined)
+        httpParams = httpParams.set(
+          'archived_at_max',
+          params.archived_at_max.toString(),
+        );
+      if (params?.expires_at !== undefined)
+        httpParams = httpParams.set('expires_at', params.expires_at.toString());
+      if (params?.expires_at_min !== undefined)
+        httpParams = httpParams.set(
+          'expires_at_min',
+          params.expires_at_min.toString(),
+        );
+      if (params?.expires_at_max !== undefined)
+        httpParams = httpParams.set(
+          'expires_at_max',
+          params.expires_at_max.toString(),
+        );
+
+      // Other filtering parameters
       if (params?.data !== undefined)
         httpParams = httpParams.set('data', params.data.toString());
       if (params?.action_url !== undefined)
         httpParams = httpParams.set('action_url', params.action_url.toString());
       if (params?.read !== undefined)
         httpParams = httpParams.set('read', params.read.toString());
-      if (params?.read_at !== undefined)
-        httpParams = httpParams.set('read_at', params.read_at.toString());
       if (params?.archived !== undefined)
         httpParams = httpParams.set('archived', params.archived.toString());
-      if (params?.archived_at !== undefined)
-        httpParams = httpParams.set(
-          'archived_at',
-          params.archived_at.toString(),
-        );
       if (params?.priority !== undefined)
         httpParams = httpParams.set('priority', params.priority.toString());
-      if (params?.expires_at !== undefined)
-        httpParams = httpParams.set('expires_at', params.expires_at.toString());
-      if (params?.created_at !== undefined)
-        httpParams = httpParams.set('created_at', params.created_at.toString());
-      if (params?.updated_at !== undefined)
-        httpParams = httpParams.set('updated_at', params.updated_at.toString());
 
       const response = await this.http
         .get<ApiResponse<Notification[]>>(this.baseUrl, { params: httpParams })
@@ -125,6 +178,7 @@ export class NotificationService {
         }
       }
     } catch (error: any) {
+      console.error('Failed to load notifications list:', error);
       this.errorSignal.set(
         error.message || 'Failed to load notifications list',
       );
@@ -398,81 +452,6 @@ export class NotificationService {
       throw error;
     } finally {
       this.loadingSignal.set(false);
-    }
-  }
-
-  // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
-
-  /**
-   * Validate notifications data before save
-   */
-  async validateNotification(
-    data: CreateNotificationRequest,
-  ): Promise<{ valid: boolean; errors?: any[] }> {
-    try {
-      const response = await this.http
-        .post<
-          ApiResponse<{ valid: boolean; errors?: any[] }>
-        >(`${this.baseUrl}/validate`, { data })
-        .toPromise();
-
-      if (response?.success && response.data) {
-        return response.data;
-      }
-      return { valid: false, errors: ['Validation failed'] };
-    } catch (error: any) {
-      console.error('Failed to validate notifications:', error);
-      return { valid: false, errors: [error.message || 'Validation error'] };
-    }
-  }
-
-  /**
-   * Check field uniqueness
-   */
-  async checkUniqueness(
-    field: string,
-    value: string,
-    excludeId?: string,
-  ): Promise<{ unique: boolean }> {
-    try {
-      let params = new HttpParams().set('value', value);
-
-      if (excludeId) {
-        params = params.set('excludeId', excludeId);
-      }
-
-      const response = await this.http
-        .get<
-          ApiResponse<{ unique: boolean }>
-        >(`${this.baseUrl}/check/${field}`, { params })
-        .toPromise();
-
-      if (response?.success && response.data) {
-        return response.data;
-      }
-      return { unique: false };
-    } catch (error: any) {
-      console.error('Failed to check uniqueness:', error);
-      return { unique: false };
-    }
-  }
-
-  /**
-   * Get notifications statistics
-   */
-  async getStats(): Promise<{ total: number } | null> {
-    try {
-      const response = await this.http
-        .get<ApiResponse<{ total: number }>>(`${this.baseUrl}/stats`)
-        .toPromise();
-
-      if (response?.success && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error: any) {
-      console.error('Failed to get notifications stats:', error);
-      return null;
     }
   }
 

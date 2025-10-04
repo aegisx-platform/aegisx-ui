@@ -4,7 +4,8 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config();
 if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: '.env.local', override: true });
+  // Load from project root .env.local
+  dotenv.config({ path: '../../.env.local', override: true });
 }
 
 const config = {

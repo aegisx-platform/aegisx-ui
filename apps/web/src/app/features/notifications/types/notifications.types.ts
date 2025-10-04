@@ -92,18 +92,6 @@ export interface ListNotificationQuery {
   expires_at?: string;
   created_at?: string;
   updated_at?: string;
-
-  // Date filtering parameters (equals, min, max for each date field)
-  created_at_min?: string;
-  created_at_max?: string;
-  updated_at_min?: string;
-  updated_at_max?: string;
-  read_at_min?: string;
-  read_at_max?: string;
-  archived_at_min?: string;
-  archived_at_max?: string;
-  expires_at_min?: string;
-  expires_at_max?: string;
 }
 
 // Legacy alias for backwards compatibility

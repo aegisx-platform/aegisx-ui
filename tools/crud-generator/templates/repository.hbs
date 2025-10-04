@@ -10,16 +10,23 @@ import {
 } from './{{moduleName}}.types';
 
 export interface {{ModuleName}}ListQuery extends BaseListQuery {
-  // Add specific filters for {{ModuleName}}
+  // Smart field-based filters for {{ModuleName}}
   {{#each columns}}
-  {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-  {{#ifEquals tsType 'boolean'}}
+  {{#unless isPrimaryKey}}
+  {{#if (eq tsType 'boolean')}}
   {{name}}?: boolean;
-  {{else}}{{#ifEquals tsType 'string'}}
+  {{else if (eq tsType 'string')}}
   {{name}}?: string;
-  {{else}}{{#ifEquals tsType 'number'}}
+  {{else if (eq tsType 'number')}}
   {{name}}?: number;
-  {{/ifEquals}}{{/ifEquals}}{{/ifEquals}}
+  {{/if}}
+  {{#if (isDateField this)}}
+  {{name}}_min?: Date;
+  {{name}}_max?: Date;
+  {{else if (isRangeField this)}}
+  {{name}}_min?: number;
+  {{name}}_max?: number;
+  {{/if}}
   {{/unless}}
   {{/each}}
 }
@@ -38,6 +45,14 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
         '{{@root.tableName}}.{{name}}'{{#unless @last}},{{/unless}}
         {{/ifEquals}}
         {{/unless}}
+        {{/each}}
+      ],
+      [
+        // 🛡️ Explicit UUID fields for validation
+        {{#each columns}}
+        {{#if (or isPrimaryKey (contains name '_id') (contains dataType 'uuid'))}}
+        '{{name}}'{{#unless @last}},{{/unless}}
+        {{/if}}
         {{/each}}
       ]
     );
@@ -95,7 +110,20 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
   // Apply custom filters
   protected applyCustomFilters(query: any, filters: {{ModuleName}}ListQuery): void {
     // List of reserved parameters that should not be treated as filters
-    const reservedParams = ['fields', 'format', 'include'];
+    const reservedParams = [
+      'fields', 'format', 'include',
+      // Pagination and sorting parameters
+      'page', 'limit', 'sort',
+      // Date filtering parameters (handled by custom logic)
+      {{#each columns}}
+      {{#if (isDateField this)}}
+      '{{name}}_min', '{{name}}_max',
+      {{/if}}
+      {{#if (isRangeField this)}}
+      '{{name}}_min', '{{name}}_max',
+      {{/if}}
+      {{/each}}
+    ];
     
     // List of UUID fields that need special handling
     const uuidFields = [{{#each columns}}{{#if (eq sqlType 'uuid')}}'{{name}}'{{#unless @last}}, {{/unless}}{{/if}}{{/each}}];
@@ -129,10 +157,37 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
 
     // Apply specific {{ModuleName}} filters
     {{#each columns}}
-    {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-    {{#if (eq tsType 'string')}}
+    {{#unless isPrimaryKey}}
+    {{#if (isDateField this)}}
+    // Date field: {{name}}
+    if (filters.{{name}} !== undefined && filters.{{name}} !== '') {
+      const dateValue = new Date(filters.{{name}});
+      {{#if (isDateTime this)}}
+      // DateTime field - use exact match
+      query.where('{{@root.tableName}}.{{name}}', dateValue);
+      {{else}}
+      // Date field - match full day (create new Date objects to avoid mutation)
+      const startOfDay = new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate(), 0, 0, 0, 0);
+      const endOfDay = new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate(), 23, 59, 59, 999);
+      query.whereBetween('{{@root.tableName}}.{{name}}', [startOfDay, endOfDay]);
+      {{/if}}
+    }
+    if (filters.{{name}}_min !== undefined && filters.{{name}}_min !== '') {
+      query.where('{{@root.tableName}}.{{name}}', '>=', new Date(filters.{{name}}_min));
+    }
+    if (filters.{{name}}_max !== undefined && filters.{{name}}_max !== '') {
+      query.where('{{@root.tableName}}.{{name}}', '<=', new Date(filters.{{name}}_max));
+    }
+    {{else if (eq tsType 'string')}}
     if (filters.{{name}} !== undefined && filters.{{name}} !== '') {
       query.where('{{@root.tableName}}.{{name}}', filters.{{name}});
+    }
+    {{else if (isRangeField this)}}
+    if (filters.{{name}}_min !== undefined) {
+      query.where('{{@root.tableName}}.{{name}}', '>=', filters.{{name}}_min);
+    }
+    if (filters.{{name}}_max !== undefined) {
+      query.where('{{@root.tableName}}.{{name}}', '<=', filters.{{name}}_max);
     }
     {{else}}
     if (filters.{{name}} !== undefined) {
@@ -143,11 +198,35 @@ export class {{ModuleName}}Repository extends BaseRepository<{{ModuleName}}, Cre
     {{/each}}
   }
 
+  // Apply multiple sort parsing
+  protected applyMultipleSort(query: any, sort?: string): void {
+    if (sort) {
+      if (sort.includes(',')) {
+        // Multiple sort format: field1:desc,field2:asc,field3:desc
+        const sortPairs = sort.split(',');
+        sortPairs.forEach(pair => {
+          const [field, direction] = pair.split(':');
+          const mappedField = this.getSortField(field.trim());
+          const sortDirection = direction?.trim().toLowerCase() === 'asc' ? 'asc' : 'desc';
+          query.orderBy(mappedField, sortDirection);
+        });
+      } else {
+        // Single sort field
+        const mappedField = this.getSortField(sort);
+        query.orderBy(mappedField, 'desc');
+      }
+    } else {
+      // Default sort
+      query.orderBy(this.getSortField('created_at'), 'desc');
+    }
+  }
+
   // Custom sort fields mapping
   protected getSortField(sortBy: string): string {
     const sortFields: Record<string, string> = {
       {{#each columns}}
-      {{camelCase name}}: '{{@root.tableName}}.{{name}}'{{#unless @last}},{{/unless}}
+      {{camelCase name}}: '{{@root.tableName}}.{{name}}',
+      {{name}}: '{{@root.tableName}}.{{name}}'{{#unless @last}},{{/unless}}
       {{/each}}
     };
 
