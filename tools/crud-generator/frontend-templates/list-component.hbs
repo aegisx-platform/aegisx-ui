@@ -1470,14 +1470,22 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
       case 'active':
         {{#if hasStatusField}}
         this.filtersSignal.set({ status: 'active' });
-        {{else}}
+        {{else if hasActiveField}}
+        this.filtersSignal.set({ active: true });
+        {{else if hasIsAvailableField}}
+        this.filtersSignal.set({ is_available: true });
+        {{else if hasAvailableField}}
         this.filtersSignal.set({ available: true });
         {{/if}}
         break;
       case 'published':
         {{#if hasStatusField}}
         this.filtersSignal.set({ status: 'published' });
-        {{else}}
+        {{else if hasActiveField}}
+        this.filtersSignal.set({ active: true });
+        {{else if hasIsAvailableField}}
+        this.filtersSignal.set({ is_available: true });
+        {{else if hasAvailableField}}
         this.filtersSignal.set({ available: true });
         {{/if}}
         break;
@@ -1752,8 +1760,14 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
     return this.{{camelCase moduleName}}Service.{{camelCase moduleName}}List().filter(item => {
       {{#if hasStatusField}}
       return item.status === 'active' || item.status === 'published';
-      {{else}}
+      {{else if hasActiveField}}
+      return item.active === true;
+      {{else if hasIsAvailableField}}
+      return item.is_available === true;
+      {{else if hasAvailableField}}
       return item.available === true;
+      {{else}}
+      return true; // Default to count all if no relevant field exists
       {{/if}}
     }).length;
   }
@@ -1762,8 +1776,14 @@ export class {{PascalCase}}ListComponent implements OnInit, OnDestroy {
     return this.{{camelCase moduleName}}Service.{{camelCase moduleName}}List().filter(item => {
       {{#if hasStatusField}}
       return item.status === 'draft';
-      {{else}}
+      {{else if hasActiveField}}
+      return item.active === false;
+      {{else if hasIsAvailableField}}
+      return item.is_available === false;
+      {{else if hasAvailableField}}
       return item.available === false;
+      {{else}}
+      return false; // Default to count none if no relevant field exists
       {{/if}}
     }).length;
   }

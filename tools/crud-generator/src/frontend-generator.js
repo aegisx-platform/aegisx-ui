@@ -1334,6 +1334,7 @@ class FrontendGenerator {
           'available',
           'is_featured',
           'is_available',
+          'active',
         ].includes(fieldName);
       const isNumeric = fieldType.includes('number');
       const isUuid = fieldName.endsWith('_id') || fieldName === 'id';
@@ -1543,6 +1544,10 @@ class FrontendGenerator {
       const hasPublishedField = 'published' in queryType;
       const hasPublishedAtField = 'published_at' in queryType;
 
+      // Field detection helpers for template
+      const entityType = types[singularPascalName] || {};
+      const fieldNames = Object.keys(entityType);
+
       const context = {
         moduleName,
         PascalCase: singularPascalName,
@@ -1564,6 +1569,14 @@ class FrontendGenerator {
         hasPublishedAtField,
         includeEnhanced: options.enhanced || apiInfo.hasEnhancedOps,
         includeFull: options.full || apiInfo.hasFullOps,
+        // Field detection helpers
+        hasStatusField: fieldNames.includes('status'),
+        hasActiveField: fieldNames.includes('active'),
+        hasIsActiveField: fieldNames.includes('is_active'),
+        hasAvailableField: fieldNames.includes('available'),
+        hasIsAvailableField: fieldNames.includes('is_available'),
+        hasEnabledField: fieldNames.includes('enabled'),
+        hasIsEnabledField: fieldNames.includes('is_enabled'),
       };
 
       // Load and compile template

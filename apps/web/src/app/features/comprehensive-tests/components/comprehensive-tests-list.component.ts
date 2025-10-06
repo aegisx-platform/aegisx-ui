@@ -450,24 +450,6 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
                   </mat-select>
                 </mat-form-field>
               </div>
-
-              <!-- Priority Filter -->
-              <div class="filter-group">
-                <label class="filter-label">Priority</label>
-                <mat-form-field appearance="outline" class="filter-field">
-                  <mat-label>Priority</mat-label>
-                  <mat-select
-                    [value]="filters().priority"
-                    (selectionChange)="onFilterChange('priority', $event.value)"
-                  >
-                    <mat-option value="">All</mat-option>
-                    <mat-option value="low">Low</mat-option>
-                    <mat-option value="medium">Medium</mat-option>
-                    <mat-option value="high">High</mat-option>
-                    <mat-option value="urgent">Urgent</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
             </div>
 
             <!-- Date Filters Section -->
@@ -1835,7 +1817,7 @@ export class ComprehensiveTestListComponent implements OnInit, OnDestroy {
 
     switch (filter) {
       case 'active':
-        this.filtersSignal.set({ is_active: true });
+        this.filtersSignal.set({ status: 'active' });
         break;
       case 'published':
         this.filtersSignal.set({ status: 'published' });
@@ -1978,14 +1960,6 @@ export class ComprehensiveTestListComponent implements OnInit, OnDestroy {
         key: 'status',
         label: 'Status',
         value: String(filters.status),
-      });
-    }
-
-    if (filters.priority !== undefined && filters.priority !== '') {
-      chips.push({
-        key: 'priority',
-        label: 'Priority',
-        value: String(filters.priority),
       });
     }
 
@@ -2204,14 +2178,17 @@ export class ComprehensiveTestListComponent implements OnInit, OnDestroy {
   getActiveCount(): number {
     return this.comprehensiveTestsService
       .comprehensiveTestsList()
-      .filter((item) => item.is_active === true || item.status === 'active')
-      .length;
+      .filter((item) => {
+        return item.status === 'active' || item.status === 'published';
+      }).length;
   }
 
   getDraftCount(): number {
     return this.comprehensiveTestsService
       .comprehensiveTestsList()
-      .filter((item) => item.status === 'draft').length;
+      .filter((item) => {
+        return item.status === 'draft';
+      }).length;
   }
 
   getRecentCount(): number {

@@ -444,6 +444,81 @@ export class NotificationService {
     }
   }
 
+  // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
+
+  /**
+   * Validate notifications data before save
+   */
+  async validateNotification(
+    data: CreateNotificationRequest,
+  ): Promise<{ valid: boolean; errors?: any[] }> {
+    try {
+      const response = await this.http
+        .post<
+          ApiResponse<{ valid: boolean; errors?: any[] }>
+        >(`${this.baseUrl}/validate`, { data })
+        .toPromise();
+
+      if (response) {
+        return response.data;
+      }
+      return { valid: false, errors: ['Validation failed'] };
+    } catch (error: any) {
+      console.error('Failed to validate notifications:', error);
+      return { valid: false, errors: [error.message || 'Validation error'] };
+    }
+  }
+
+  /**
+   * Check field uniqueness
+   */
+  async checkUniqueness(
+    field: string,
+    value: string,
+    excludeId?: string,
+  ): Promise<{ unique: boolean }> {
+    try {
+      let params = new HttpParams().set('value', value);
+
+      if (excludeId) {
+        params = params.set('excludeId', excludeId);
+      }
+
+      const response = await this.http
+        .get<
+          ApiResponse<{ unique: boolean }>
+        >(`${this.baseUrl}/check/${field}`, { params })
+        .toPromise();
+
+      if (response) {
+        return response.data;
+      }
+      return { unique: false };
+    } catch (error: any) {
+      console.error('Failed to check uniqueness:', error);
+      return { unique: false };
+    }
+  }
+
+  /**
+   * Get notifications statistics
+   */
+  async getStats(): Promise<{ total: number } | null> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<{ total: number }>>(`${this.baseUrl}/stats`)
+        .toPromise();
+
+      if (response) {
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      console.error('Failed to get notifications stats:', error);
+      return null;
+    }
+  }
+
   // ===== UTILITY METHODS =====
 
   /**

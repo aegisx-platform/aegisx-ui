@@ -365,13 +365,14 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
                 <label class="filter-label">Active</label>
                 <mat-form-field appearance="outline" class="filter-field">
                   <mat-label>Active</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    [value]="filters().active || ''"
-                    (input)="onFilterChange('active', $event)"
-                    placeholder="Enter active"
-                  />
+                  <mat-select
+                    [value]="filters().active"
+                    (selectionChange)="onFilterChange('active', $event.value)"
+                  >
+                    <mat-option value="">All</mat-option>
+                    <mat-option [value]="true">Yes</mat-option>
+                    <mat-option [value]="false">No</mat-option>
+                  </mat-select>
                 </mat-form-field>
               </div>
             </div>
@@ -1602,11 +1603,11 @@ export class AuthorListComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (filters.active !== undefined) {
+    if (filters.active !== undefined && filters.active !== null) {
       chips.push({
         key: 'active',
         label: 'Active',
-        value: String(filters.active),
+        value: filters.active ? 'Yes' : 'No',
       });
     }
 

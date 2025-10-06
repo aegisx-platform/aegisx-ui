@@ -12,10 +12,20 @@ import {
   GetComprehensiveTestsQuerySchema,
   ListComprehensiveTestsQuerySchema,
 } from '../schemas/comprehensive-tests.schemas';
+import {
+  DropdownQuerySchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  BulkStatusSchema,
+  StatusToggleSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema,
+} from '../../../schemas/base.schemas';
 
 /**
  * ComprehensiveTests Controller
- * Package: standard
+ * Package: full
  * Has Status Field: true
  *
  * Following Fastify controller patterns:
@@ -286,6 +296,294 @@ export class ComprehensiveTestsController {
       },
       'ComprehensiveTests deleted successfully',
     );
+  }
+
+  // ===== ENHANCED CRUD METHODS =====
+
+  /**
+   * Get dropdown options
+   * GET /comprehensiveTests/dropdown
+   */
+  async getDropdownOptions(
+    request: FastifyRequest<{
+      Querystring: Static<typeof DropdownQuerySchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { query: request.query },
+      'Fetching comprehensiveTests dropdown options',
+    );
+
+    const result = await this.comprehensiveTestsService.getDropdownOptions(
+      request.query,
+    );
+
+    return reply.success({
+      options: result.options,
+      total: result.total,
+    });
+  }
+
+  /**
+   * Bulk create comprehensiveTestss
+   * POST /comprehensiveTests/bulk
+   */
+  async bulkCreate(
+    request: FastifyRequest<{
+      Body: {
+        items: CreateComprehensiveTests[];
+        options?: { skipDuplicates?: boolean; continueOnError?: boolean };
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk creating comprehensiveTestss',
+    );
+
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map((item) =>
+        this.transformCreateSchema(item, request),
+      ),
+    };
+
+    const result =
+      await this.comprehensiveTestsService.bulkCreate(transformedData);
+
+    return reply
+      .code(201)
+      .success(
+        result,
+        `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+      );
+  }
+
+  /**
+   * Bulk update comprehensiveTestss
+   * PUT /comprehensiveTests/bulk
+   */
+  async bulkUpdate(
+    request: FastifyRequest<{
+      Body: {
+        items: Array<{ id: string | number; data: UpdateComprehensiveTests }>;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk updating comprehensiveTestss',
+    );
+
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map((item) => ({
+        id: item.id,
+        data: this.transformUpdateSchema(item.data, request),
+      })),
+    };
+
+    const result =
+      await this.comprehensiveTestsService.bulkUpdate(transformedData);
+
+    return reply.success(
+      result,
+      `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
+  }
+
+  /**
+   * Bulk delete comprehensiveTestss
+   * DELETE /comprehensiveTests/bulk
+   */
+  async bulkDelete(
+    request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { count: request.body.ids.length },
+      'Bulk deleting comprehensiveTestss',
+    );
+
+    const result = await this.comprehensiveTestsService.bulkDelete(
+      request.body,
+    );
+
+    return reply.success(
+      result,
+      `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
+  }
+
+  /**
+   * Bulk status update
+   * PATCH /comprehensiveTests/bulk/status
+   */
+  async bulkUpdateStatus(
+    request: FastifyRequest<{ Body: Static<typeof BulkStatusSchema> }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      {
+        count: request.body.ids.length,
+        status: request.body.status,
+      },
+      'Bulk updating comprehensiveTests status',
+    );
+
+    // Convert status to boolean if it's a string
+    const statusData = {
+      ...request.body,
+      status:
+        typeof request.body.status === 'string'
+          ? request.body.status === 'true' || request.body.status === '1'
+          : Boolean(request.body.status),
+    };
+
+    const result =
+      await this.comprehensiveTestsService.bulkUpdateStatus(statusData);
+
+    return reply.success(
+      result,
+      `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
+  }
+
+  /**
+   * Activate comprehensiveTests
+   * PATCH /comprehensiveTests/:id/activate
+   */
+  async activate(
+    request: FastifyRequest<{
+      Params: Static<typeof ComprehensiveTestsIdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    request.log.info(
+      { comprehensiveTestsId: id },
+      'Activating comprehensiveTests',
+    );
+
+    const result = await this.comprehensiveTestsService.activate(
+      id,
+      request.body,
+    );
+
+    return reply.success(result, 'ComprehensiveTests activated successfully');
+  }
+
+  /**
+   * Deactivate comprehensiveTests
+   * PATCH /comprehensiveTests/:id/deactivate
+   */
+  async deactivate(
+    request: FastifyRequest<{
+      Params: Static<typeof ComprehensiveTestsIdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    request.log.info(
+      { comprehensiveTestsId: id },
+      'Deactivating comprehensiveTests',
+    );
+
+    const result = await this.comprehensiveTestsService.deactivate(
+      id,
+      request.body,
+    );
+
+    return reply.success(result, 'ComprehensiveTests deactivated successfully');
+  }
+
+  /**
+   * Toggle comprehensiveTests status
+   * PATCH /comprehensiveTests/:id/toggle
+   */
+  async toggle(
+    request: FastifyRequest<{
+      Params: Static<typeof ComprehensiveTestsIdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    request.log.info(
+      { comprehensiveTestsId: id },
+      'Toggling comprehensiveTests status',
+    );
+
+    const result = await this.comprehensiveTestsService.toggle(
+      id,
+      request.body,
+    );
+
+    return reply.success(
+      result,
+      'ComprehensiveTests status toggled successfully',
+    );
+  }
+
+  /**
+   * Get statistics
+   * GET /comprehensiveTests/stats
+   */
+  async getStats(request: FastifyRequest, reply: FastifyReply) {
+    request.log.info('Fetching comprehensiveTests statistics');
+
+    const stats = await this.comprehensiveTestsService.getStats();
+
+    return reply.success(stats);
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   * POST /comprehensiveTests/validate
+   */
+  async validate(
+    request: FastifyRequest<{
+      Body: { data: Static<typeof CreateComprehensiveTestsSchema> };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info('Validating comprehensiveTests data');
+
+    const result = await this.comprehensiveTestsService.validate(request.body);
+
+    return reply.success(result);
+  }
+
+  /**
+   * Check field uniqueness
+   * GET /comprehensiveTests/check/:field
+   */
+  async checkUniqueness(
+    request: FastifyRequest<{
+      Params: { field: string };
+      Querystring: Static<typeof UniquenessCheckSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { field } = request.params;
+    request.log.info(
+      { field, value: request.query.value },
+      'Checking comprehensiveTests field uniqueness',
+    );
+
+    const result = await this.comprehensiveTestsService.checkUniqueness(field, {
+      value: String(request.query.value),
+      excludeId: request.query.excludeId,
+    });
+
+    return reply.success(result);
   }
 
   // ===== PRIVATE TRANSFORMATION METHODS =====
