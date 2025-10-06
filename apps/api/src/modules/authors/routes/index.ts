@@ -11,6 +11,20 @@ import {
   AuthorsListResponseSchema,
   FlexibleAuthorsListResponseSchema,
 } from '../schemas/authors.schemas';
+import {
+  DropdownQuerySchema,
+  DropdownResponseSchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  BulkResponseSchema,
+  ValidationRequestSchema,
+  ValidationResponseSchema,
+  UniquenessParamSchema,
+  UniquenessQuerySchema,
+  UniquenessResponseSchema,
+  StatisticsResponseSchema,
+} from '../../../schemas/base.schemas';
 import { ApiErrorResponseSchema as ErrorResponseSchema } from '../../../schemas/base.schemas';
 import { SchemaRefs } from '../../../schemas/registry';
 
@@ -140,5 +154,142 @@ export async function authorsRoutes(
       fastify.authorize(['authors.delete', 'admin']),
     ], // Authentication & authorization required
     handler: controller.delete.bind(controller),
+  });
+
+  // ===== ENHANCED CRUD ROUTES =====
+
+  // Get dropdown options for UI components
+  fastify.get('/dropdown', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Get authors dropdown options',
+      description: 'Get authors options for dropdown/select components',
+      querystring: DropdownQuerySchema,
+      response: {
+        200: DropdownResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.read', 'admin']),
+    ],
+    handler: controller.getDropdownOptions.bind(controller),
+  });
+
+  // Bulk create authorss
+  fastify.post('/bulk', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Bulk create authorss',
+      description: 'Create multiple authorss in one operation',
+      body: BulkCreateSchema(CreateAuthorsSchema),
+      response: {
+        201: BulkResponseSchema(AuthorsResponseSchema),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.create', 'admin']),
+    ],
+    handler: controller.bulkCreate.bind(controller),
+  });
+
+  // Bulk update authorss
+  fastify.put('/bulk', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Bulk update authorss',
+      description: 'Update multiple authorss in one operation',
+      body: BulkUpdateSchema(UpdateAuthorsSchema),
+      response: {
+        200: BulkResponseSchema(AuthorsResponseSchema),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.update', 'admin']),
+    ],
+    handler: controller.bulkUpdate.bind(controller),
+  });
+
+  // Bulk delete authorss
+  fastify.delete('/bulk', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Bulk delete authorss',
+      description: 'Delete multiple authorss in one operation',
+      body: BulkDeleteSchema,
+      response: {
+        200: BulkResponseSchema(AuthorsResponseSchema),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.delete', 'admin']),
+    ],
+    handler: controller.bulkDelete.bind(controller),
+  });
+
+  // ===== FULL PACKAGE ROUTES =====
+
+  // Validate data before save
+  fastify.post('/validate', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Validate authors data',
+      description: 'Validate authors data before saving',
+      body: ValidationRequestSchema(CreateAuthorsSchema),
+      response: {
+        200: ValidationResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.create', 'authors.update', 'admin']),
+    ],
+    handler: controller.validate.bind(controller),
+  });
+
+  // Check field uniqueness
+  fastify.get('/check/:field', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Check field uniqueness',
+      description: 'Check if a field value is unique',
+      params: UniquenessParamSchema,
+      querystring: UniquenessQuerySchema,
+      response: {
+        200: UniquenessResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.read', 'admin']),
+    ],
+    handler: controller.checkUniqueness.bind(controller),
   });
 }

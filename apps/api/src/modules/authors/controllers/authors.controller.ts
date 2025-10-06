@@ -9,10 +9,18 @@ import {
   GetAuthorsQuerySchema,
   ListAuthorsQuerySchema,
 } from '../schemas/authors.schemas';
+import {
+  DropdownQuerySchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema,
+} from '../../../schemas/base.schemas';
 
 /**
  * Authors Controller
- * Package: standard
+ * Package: full
  * Has Status Field: false
  *
  * Following Fastify controller patterns:
@@ -212,6 +220,174 @@ export class AuthorsController {
       },
       'Authors deleted successfully',
     );
+  }
+
+  // ===== ENHANCED CRUD METHODS =====
+
+  /**
+   * Get dropdown options
+   * GET /authors/dropdown
+   */
+  async getDropdownOptions(
+    request: FastifyRequest<{
+      Querystring: Static<typeof DropdownQuerySchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { query: request.query },
+      'Fetching authors dropdown options',
+    );
+
+    const result = await this.authorsService.getDropdownOptions(request.query);
+
+    return reply.success({
+      options: result.options,
+      total: result.total,
+    });
+  }
+
+  /**
+   * Bulk create authorss
+   * POST /authors/bulk
+   */
+  async bulkCreate(
+    request: FastifyRequest<{
+      Body: {
+        items: CreateAuthors[];
+        options?: { skipDuplicates?: boolean; continueOnError?: boolean };
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk creating authorss',
+    );
+
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map((item) =>
+        this.transformCreateSchema(item, request),
+      ),
+    };
+
+    const result = await this.authorsService.bulkCreate(transformedData);
+
+    return reply
+      .code(201)
+      .success(
+        result,
+        `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+      );
+  }
+
+  /**
+   * Bulk update authorss
+   * PUT /authors/bulk
+   */
+  async bulkUpdate(
+    request: FastifyRequest<{
+      Body: { items: Array<{ id: string | number; data: UpdateAuthors }> };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk updating authorss',
+    );
+
+    // Transform API schema to domain model for each item
+    const transformedData = {
+      items: request.body.items.map((item) => ({
+        id: item.id,
+        data: this.transformUpdateSchema(item.data, request),
+      })),
+    };
+
+    const result = await this.authorsService.bulkUpdate(transformedData);
+
+    return reply.success(
+      result,
+      `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
+  }
+
+  /**
+   * Bulk delete authorss
+   * DELETE /authors/bulk
+   */
+  async bulkDelete(
+    request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      { count: request.body.ids.length },
+      'Bulk deleting authorss',
+    );
+
+    const result = await this.authorsService.bulkDelete(request.body);
+
+    return reply.success(
+      result,
+      `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
+  }
+
+  /**
+   * Get statistics
+   * GET /authors/stats
+   */
+  async getStats(request: FastifyRequest, reply: FastifyReply) {
+    request.log.info('Fetching authors statistics');
+
+    const stats = await this.authorsService.getStats();
+
+    return reply.success(stats);
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   * POST /authors/validate
+   */
+  async validate(
+    request: FastifyRequest<{
+      Body: { data: Static<typeof CreateAuthorsSchema> };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info('Validating authors data');
+
+    const result = await this.authorsService.validate(request.body);
+
+    return reply.success(result);
+  }
+
+  /**
+   * Check field uniqueness
+   * GET /authors/check/:field
+   */
+  async checkUniqueness(
+    request: FastifyRequest<{
+      Params: { field: string };
+      Querystring: Static<typeof UniquenessCheckSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { field } = request.params;
+    request.log.info(
+      { field, value: request.query.value },
+      'Checking authors field uniqueness',
+    );
+
+    const result = await this.authorsService.checkUniqueness(field, {
+      value: String(request.query.value),
+      excludeId: request.query.excludeId,
+    });
+
+    return reply.success(result);
   }
 
   // ===== PRIVATE TRANSFORMATION METHODS =====

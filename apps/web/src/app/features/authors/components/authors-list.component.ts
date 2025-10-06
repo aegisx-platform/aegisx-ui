@@ -29,6 +29,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { AuthorService } from '../services/authors.service';
 import { Author, ListAuthorQuery } from '../types/authors.types';
@@ -66,6 +67,7 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
     MatChipsModule,
     MatExpansionModule,
     MatBadgeModule,
+    MatSlideToggleModule,
     DateRangeFilterComponent,
   ],
   template: `
@@ -117,6 +119,60 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
             >
               All
             </button>
+
+            <!-- Active Items Filter -->
+            <button
+              mat-stroked-button
+              [class.active]="quickFilter === 'active'"
+              (click)="setQuickFilter('active')"
+              class="filter-chip"
+            >
+              Active
+            </button>
+
+            <!-- Published Status Filter -->
+            <button
+              mat-stroked-button
+              [class.active]="quickFilter === 'published'"
+              (click)="setQuickFilter('published')"
+              class="filter-chip"
+            >
+              Published
+            </button>
+
+            <!-- Additional quick filters - uncomment as needed -->
+            <!-- Featured Items:
+            <button 
+              mat-stroked-button 
+              [class.active]="quickFilter === 'featured'"
+              (click)="setQuickFilter('featured')"
+              class="filter-chip"
+            >
+              Featured
+            </button>
+            -->
+
+            <!-- Available Items:
+            <button 
+              mat-stroked-button 
+              [class.active]="quickFilter === 'available'"
+              (click)="setQuickFilter('available')"
+              class="filter-chip"
+            >
+              Available
+            </button>
+            -->
+
+            <!-- Draft Status:
+            <button 
+              mat-stroked-button 
+              [class.active]="quickFilter === 'draft'"
+              (click)="setQuickFilter('draft')"
+              class="filter-chip"
+            >
+              Draft
+            </button>
+            -->
           </div>
         </mat-card-content>
       </mat-card>
@@ -147,6 +203,131 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
           </button>
         </div>
       }
+
+      <!-- Summary Dashboard -->
+      <mat-card class="summary-dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>dashboard</mat-icon>
+            Authors Overview
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-icon">
+                <mat-icon color="primary">view_list</mat-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">
+                  {{ authorsService.totalAuthor() }}
+                </div>
+                <div class="summary-label">Total Authors</div>
+              </div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-icon">
+                <mat-icon color="accent">check_circle</mat-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ getActiveCount() }}</div>
+                <div class="summary-label">Active Items</div>
+              </div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-icon">
+                <mat-icon color="warn">schedule</mat-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ getDraftCount() }}</div>
+                <div class="summary-label">Draft Items</div>
+              </div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-icon">
+                <mat-icon>today</mat-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ getRecentCount() }}</div>
+                <div class="summary-label">Added This Week</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Export Tools -->
+      <mat-card class="export-tools-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>file_download</mat-icon>
+            Export Data
+          </mat-card-title>
+          <mat-card-subtitle
+            >Export all Authors data in various formats</mat-card-subtitle
+          >
+        </mat-card-header>
+        <mat-card-content>
+          <div class="export-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="exportAllData('csv')"
+              [disabled]="authorsService.loading()"
+              matTooltip="Export all data as CSV file"
+            >
+              <mat-icon>table_chart</mat-icon>
+              Export CSV
+            </button>
+
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="exportAllData('excel')"
+              [disabled]="authorsService.loading()"
+              matTooltip="Export all data as Excel file"
+            >
+              <mat-icon>grid_on</mat-icon>
+              Export Excel
+            </button>
+
+            <button
+              mat-raised-button
+              (click)="exportAllData('pdf')"
+              [disabled]="authorsService.loading()"
+              matTooltip="Export all data as PDF file"
+            >
+              <mat-icon>picture_as_pdf</mat-icon>
+              Export PDF
+            </button>
+
+            <!-- Export with Filters Toggle -->
+            <mat-slide-toggle
+              [(ngModel)]="includeFiltersInExport"
+              color="primary"
+              matTooltip="Include current filters in export"
+            >
+              Apply Current Filters
+            </mat-slide-toggle>
+          </div>
+
+          <div class="export-info">
+            <mat-icon class="info-icon">info</mat-icon>
+            <span class="info-text">
+              Exports will include
+              {{ includeFiltersInExport ? 'filtered' : 'all' }} data ({{
+                includeFiltersInExport
+                  ? authorsService.authorsList().length
+                  : authorsService.totalAuthor()
+              }}
+              records)
+            </span>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Advanced Filters -->
       <mat-card class="advanced-filters-card">
@@ -298,15 +479,80 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
                   >{{ selectedItems().length }} selected</span
                 >
                 <div class="bulk-buttons">
+                  <!-- Bulk Delete -->
                   <button
                     mat-stroked-button
                     color="warn"
                     (click)="bulkDelete()"
                     [disabled]="authorsService.loading()"
+                    matTooltip="Delete selected items"
                   >
                     <mat-icon>delete</mat-icon>
-                    Delete Selected
+                    Delete
                   </button>
+
+                  <!-- Bulk Status Update -->
+                  <button
+                    mat-stroked-button
+                    [matMenuTriggerFor]="bulkStatusMenu"
+                    [disabled]="authorsService.loading()"
+                    matTooltip="Update status for selected items"
+                  >
+                    <mat-icon>edit</mat-icon>
+                    Update Status
+                  </button>
+                  <mat-menu #bulkStatusMenu="matMenu">
+                    <button mat-menu-item (click)="bulkUpdateStatus('active')">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>Set Active</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      (click)="bulkUpdateStatus('inactive')"
+                    >
+                      <mat-icon>cancel</mat-icon>
+                      <span>Set Inactive</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      (click)="bulkUpdateStatus('published')"
+                    >
+                      <mat-icon>publish</mat-icon>
+                      <span>Publish</span>
+                    </button>
+                    <button mat-menu-item (click)="bulkUpdateStatus('draft')">
+                      <mat-icon>draft</mat-icon>
+                      <span>Set Draft</span>
+                    </button>
+                  </mat-menu>
+
+                  <!-- Bulk Export -->
+                  <button
+                    mat-stroked-button
+                    color="accent"
+                    [matMenuTriggerFor]="bulkExportMenu"
+                    [disabled]="authorsService.loading()"
+                    matTooltip="Export selected items"
+                  >
+                    <mat-icon>download</mat-icon>
+                    Export
+                  </button>
+                  <mat-menu #bulkExportMenu="matMenu">
+                    <button mat-menu-item (click)="exportSelected('csv')">
+                      <mat-icon>table_chart</mat-icon>
+                      <span>Export as CSV</span>
+                    </button>
+                    <button mat-menu-item (click)="exportSelected('excel')">
+                      <mat-icon>grid_on</mat-icon>
+                      <span>Export as Excel</span>
+                    </button>
+                    <button mat-menu-item (click)="exportSelected('pdf')">
+                      <mat-icon>picture_as_pdf</mat-icon>
+                      <span>Export as PDF</span>
+                    </button>
+                  </mat-menu>
+
+                  <!-- Clear Selection -->
                   <button mat-stroked-button (click)="clearSelection()">
                     <mat-icon>clear</mat-icon>
                     Clear Selection
@@ -496,6 +742,8 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
 
       .search-card,
       .quick-filters-card,
+      .summary-dashboard-card,
+      .export-tools-card,
       .advanced-filters-card {
         margin-bottom: 16px;
       }
@@ -755,6 +1003,82 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
         gap: 8px;
       }
 
+      /* Summary Dashboard Styles */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 16px 0;
+      }
+
+      .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.02);
+      }
+
+      .summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .summary-content {
+        flex: 1;
+      }
+
+      .summary-value {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 1.2;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .summary-label {
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(0, 0, 0, 0.6);
+        margin-top: 2px;
+      }
+
+      /* Export Tools Styles */
+      .export-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .export-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .info-icon {
+        font-size: 18px;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .info-text {
+        color: rgba(0, 0, 0, 0.7);
+      }
+
       @media (max-width: 768px) {
         .authors-list-container {
           padding: 8px;
@@ -795,6 +1119,21 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
         .bulk-buttons {
           justify-content: center;
         }
+
+        .summary-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .summary-item {
+          padding: 12px;
+        }
+
+        .export-actions {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+        }
       }
     `,
   ],
@@ -822,6 +1161,9 @@ export class AuthorListComponent implements OnInit, OnDestroy {
   // Selection
   private selectedIdsSignal = signal<Set<string>>(new Set());
   readonly selectedItems = computed(() => Array.from(this.selectedIdsSignal()));
+
+  // Export functionality
+  protected includeFiltersInExport = false;
 
   // Table configuration
   displayedColumns: string[] = [
@@ -1153,6 +1495,21 @@ export class AuthorListComponent implements OnInit, OnDestroy {
     this.clearValidationErrors();
 
     switch (filter) {
+      case 'active':
+        this.filtersSignal.set({ active: true });
+        break;
+      case 'published':
+        this.filtersSignal.set({ active: true });
+        break;
+      // case 'featured':
+      //   this.filtersSignal.set({ is_featured: true });
+      //   break;
+      // case 'available':
+      //   this.filtersSignal.set({ is_available: true });
+      //   break;
+      // case 'draft':
+      //   this.filtersSignal.set({ status: 'draft' });
+      //   break;
       case 'all':
       default:
         // Already cleared above
@@ -1177,7 +1534,11 @@ export class AuthorListComponent implements OnInit, OnDestroy {
     // Add quick filter chip if not 'all'
     if (this.quickFilter !== 'all') {
       const quickFilterLabels: Record<string, string> = {
-        published_true: 'Status: Published',
+        active: 'Active Items',
+        published: 'Published Status',
+        // 'featured': 'Featured Items',
+        // 'available': 'Available Items',
+        // 'draft': 'Draft Status',
       };
       chips.push({
         key: '_quickFilter',
@@ -1369,5 +1730,106 @@ export class AuthorListComponent implements OnInit, OnDestroy {
         duration: 5000,
       });
     }
+  }
+
+  async bulkUpdateStatus(status: string) {
+    const selectedIds = Array.from(this.selectedIdsSignal());
+    if (selectedIds.length === 0) return;
+
+    try {
+      // Create bulk update data with status field
+      const items = selectedIds.map((id) => ({
+        id,
+        data: { status } as any,
+      }));
+
+      await this.authorsService.bulkUpdateAuthor(items);
+      this.clearSelection();
+      this.snackBar.open(
+        `${selectedIds.length} Authors status updated successfully`,
+        'Close',
+        {
+          duration: 3000,
+        },
+      );
+    } catch (error) {
+      this.snackBar.open('Failed to update Authors status', 'Close', {
+        duration: 5000,
+      });
+    }
+  }
+
+  async exportSelected(format: 'csv' | 'excel' | 'pdf') {
+    const selectedIds = Array.from(this.selectedIdsSignal());
+    if (selectedIds.length === 0) {
+      this.snackBar.open('Please select items to export', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      // For now, show a placeholder message since export endpoints need to be implemented
+      this.snackBar.open(
+        `Export feature coming soon (${format.toUpperCase()})`,
+        'Close',
+        {
+          duration: 3000,
+        },
+      );
+      console.log('Export selected:', { selectedIds, format });
+    } catch (error) {
+      this.snackBar.open('Failed to export Authors', 'Close', {
+        duration: 5000,
+      });
+    }
+  }
+
+  async exportAllData(format: 'csv' | 'excel' | 'pdf') {
+    try {
+      const params = this.includeFiltersInExport ? this.filters() : {};
+      // For now, show a placeholder message since export endpoints need to be implemented
+      this.snackBar.open(
+        `Export feature coming soon (${format.toUpperCase()})`,
+        'Close',
+        {
+          duration: 3000,
+        },
+      );
+      console.log('Export all data:', {
+        format,
+        params,
+        recordCount: this.authorsService.totalAuthor(),
+      });
+    } catch (error) {
+      this.snackBar.open('Failed to export Authors', 'Close', {
+        duration: 5000,
+      });
+    }
+  }
+
+  // ===== SUMMARY DASHBOARD METHODS =====
+
+  getActiveCount(): number {
+    return this.authorsService.authorsList().filter((item) => {
+      return item.active === true;
+    }).length;
+  }
+
+  getDraftCount(): number {
+    return this.authorsService.authorsList().filter((item) => {
+      return item.active === false;
+    }).length;
+  }
+
+  getRecentCount(): number {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    return this.authorsService
+      .authorsList()
+      .filter(
+        (item) => item.created_at && new Date(item.created_at) >= oneWeekAgo,
+      ).length;
   }
 }
