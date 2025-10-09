@@ -94,7 +94,8 @@ program
         const appPaths = {
           api: {
             backend: path.resolve(PROJECT_ROOT, 'apps/api/src/modules'),
-            frontend: path.resolve(PROJECT_ROOT, 'apps/api/src/frontend'), // if needed
+            // API doesn't have frontend - redirect to web instead
+            frontend: path.resolve(PROJECT_ROOT, 'apps/web/src/app/features'),
           },
           web: {
             backend: path.resolve(PROJECT_ROOT, 'apps/web/src/backend'), // if needed
