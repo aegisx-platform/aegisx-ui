@@ -1,5 +1,7 @@
 import { BaseService } from '../../../shared/services/base.service';
 import { BooksRepository } from '../repositories/books.repository';
+import { EventService } from '../../../shared/websocket/event.service';
+import { CrudEventHelper } from '../../../shared/websocket/crud-event-helper';
 import {
   type Books,
   type CreateBooks,
@@ -18,8 +20,18 @@ import {
  * - Business logic hooks for validation and processing
  */
 export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
-  constructor(private booksRepository: BooksRepository) {
+  private eventHelper?: CrudEventHelper;
+
+  constructor(
+    private booksRepository: BooksRepository,
+    private eventService?: EventService,
+  ) {
     super(booksRepository);
+
+    // Initialize event helper using Fastify pattern
+    if (eventService) {
+      this.eventHelper = eventService.for('books', 'books');
+    }
   }
 
   /**
@@ -35,6 +47,11 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
       // Handle query options (includes, etc.)
       if (options.include) {
         // Add relationship loading logic here
+      }
+
+      // Emit read event for monitoring/analytics
+      if (this.eventHelper) {
+        await this.eventHelper.emitCustom('read', books);
       }
     }
 
@@ -55,6 +72,14 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
   }> {
     const result = await this.getList(options);
 
+    // Emit bulk read event
+    if (this.eventHelper) {
+      await this.eventHelper.emitCustom('bulk_read', {
+        count: result.data.length,
+        filters: options,
+      });
+    }
+
     return result;
   }
 
@@ -64,6 +89,11 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
   async create(data: CreateBooks): Promise<Books> {
     const books = await super.create(data);
 
+    // Emit created event for real-time updates
+    if (this.eventHelper) {
+      await this.eventHelper.emitCreated(books);
+    }
+
     return books;
   }
 
@@ -72,6 +102,10 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
    */
   async update(id: string | number, data: UpdateBooks): Promise<Books | null> {
     const books = await super.update(id, data);
+
+    if (books && this.eventHelper) {
+      await this.eventHelper.emitUpdated(books);
+    }
 
     return books;
   }
@@ -92,10 +126,17 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
 
       console.log('Found books to delete:', existing.id);
 
+      // Get entity before deletion for event emission
+      const books = await this.getById(id);
+
       // Direct repository call to avoid base service complexity
       const deleted = await this.booksRepository.delete(id);
 
       console.log('Delete result:', deleted);
+
+      if (deleted && books && this.eventHelper) {
+        await this.eventHelper.emitDeleted(books.id);
+      }
 
       if (deleted) {
         console.log('Books deleted successfully:', {
@@ -234,6 +275,9 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
         for (let i = 0; i < results.length; i++) {
           try {
             await this.afterCreate(results[i], validItems[i]);
+            if (this.eventHelper) {
+              await this.eventHelper.emitCreated(results[i]);
+            }
           } catch (error) {
             console.warn('Error in afterCreate:', error);
           }
@@ -396,7 +440,9 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
     // If specific fields requested, use only those
     const fieldsToExport =
       fields && fields.length > 0
-        ? fields.filter((field) => exportableFields.hasOwnProperty(field))
+        ? fields.filter((field) =>
+            Object.prototype.hasOwnProperty.call(exportableFields, field),
+          )
         : Object.keys(exportableFields);
 
     // Format each field
@@ -417,5 +463,70 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
     });
 
     return formatted;
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   */
+  async validate(data: { data: CreateBooks }): Promise<{
+    valid: boolean;
+    errors: Array<{ field: string; message: string }>;
+  }> {
+    const errors: Array<{ field: string; message: string }> = [];
+
+    try {
+      await this.validateCreate(data.data);
+    } catch (error) {
+      errors.push({
+        field: 'general',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+
+    // Add specific field validations
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  }
+
+  /**
+   * Check field uniqueness
+   */
+  async checkUniqueness(
+    field: string,
+    options: { value: string; excludeId?: string | number },
+  ): Promise<{
+    unique: boolean;
+    exists?: any;
+  }> {
+    const query: any = { [field]: options.value };
+
+    // Add exclusion for updates
+    if (options.excludeId) {
+      query.excludeId = options.excludeId;
+    }
+
+    // Use field-specific find methods based on repository's isDisplayField logic
+    let existing: any = null;
+
+    if (field === 'title' && options.value) {
+      existing = await this.booksRepository.findByTitle(options.value);
+    } else if (
+      existing &&
+      options.excludeId &&
+      existing.id === options.excludeId
+    ) {
+      // If updating (excludeId provided), ignore the current record
+      existing = null;
+    }
+
+    return {
+      unique: !existing,
+      exists: existing || undefined,
+    };
   }
 }

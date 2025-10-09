@@ -13,6 +13,8 @@ import {
   BulkStatusSchema,
   StatusToggleSchema,
   StatisticsSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
 
 // Base Books Schema
@@ -141,3 +143,25 @@ export type ListBooksQuery = Static<typeof ListBooksQuerySchema>;
 // Partial types for field selection
 export type PartialBooks = Static<typeof PartialBooksSchema>;
 export type FlexibleBooksList = Static<typeof FlexibleBooksListResponseSchema>;
+
+// WebSocket Event Schemas
+export const BooksCreatedEventSchema = Type.Object({
+  type: Type.Literal('books.created'),
+  data: BooksSchema,
+});
+
+export const BooksUpdatedEventSchema = Type.Object({
+  type: Type.Literal('books.updated'),
+  data: BooksSchema,
+});
+
+export const BooksDeletedEventSchema = Type.Object({
+  type: Type.Literal('books.deleted'),
+  data: Type.Object({
+    id: Type.Union([Type.String(), Type.Number()]),
+  }),
+});
+
+export type BooksCreatedEvent = Static<typeof BooksCreatedEventSchema>;
+export type BooksUpdatedEvent = Static<typeof BooksUpdatedEventSchema>;
+export type BooksDeletedEvent = Static<typeof BooksDeletedEventSchema>;

@@ -23,9 +23,9 @@ import knexPlugin from '../plugins/knex.plugin';
 import loggingPlugin from '../plugins/logging.plugin';
 import pluginMonitoring from '../plugins/monitoring.plugin';
 import multipartPlugin from '../plugins/multipart.plugin';
+import pdfFontsPlugin from '../plugins/pdf-fonts.plugin';
 import pdfPreviewPlugin from '../plugins/pdf-preview.plugin';
 import pdfTemplatePlugin from '../plugins/pdf-template.plugin';
-import pdfFontsPlugin from '../plugins/pdf-fonts.plugin';
 import redisPlugin from '../plugins/redis.plugin';
 import responseHandlerPlugin from '../plugins/response-handler.plugin';
 import schemasPlugin from '../plugins/schemas.plugin';
@@ -42,13 +42,10 @@ import { usersPlugin } from '../core/users';
 
 // Business feature modules
 import apiKeysPlugin from '../modules/apiKeys';
-import articlesPlugin from '../modules/articles';
 import authorsPlugin from '../modules/authors';
 import booksPlugin from '../modules/books';
-import comprehensiveTestsPlugin from '../modules/comprehensiveTests';
 import fileUploadPlugin from '../modules/file-upload/file-upload.plugin';
 import navigationPlugin from '../modules/navigation/navigation.plugin';
-import notificationsPlugin from '../modules/notifications';
 import settingsPlugin from '../modules/settings/settings.plugin';
 import systemSettingsPlugin from '../modules/systemSettings';
 import themesPlugin from '../modules/themes';
@@ -354,11 +351,6 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
         required: true,
       },
       {
-        name: 'articles',
-        plugin: articlesPlugin,
-        required: true,
-      },
-      {
         name: 'authors',
         plugin: authorsPlugin,
         required: true,
@@ -366,11 +358,6 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'books',
         plugin: booksPlugin,
-        required: true,
-      },
-      {
-        name: 'comprehensive-tests',
-        plugin: comprehensiveTestsPlugin,
         required: true,
       },
       {
@@ -391,11 +378,6 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'system-settings',
         plugin: systemSettingsPlugin,
-        required: true,
-      },
-      {
-        name: 'notifications',
-        plugin: notificationsPlugin,
         required: true,
       },
       {

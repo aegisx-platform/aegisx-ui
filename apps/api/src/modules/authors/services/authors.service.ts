@@ -1,5 +1,7 @@
 import { BaseService } from '../../../shared/services/base.service';
 import { AuthorsRepository } from '../repositories/authors.repository';
+import { EventService } from '../../../shared/websocket/event.service';
+import { CrudEventHelper } from '../../../shared/websocket/crud-event-helper';
 import {
   type Authors,
   type CreateAuthors,
@@ -22,8 +24,18 @@ export class AuthorsService extends BaseService<
   CreateAuthors,
   UpdateAuthors
 > {
-  constructor(private authorsRepository: AuthorsRepository) {
+  private eventHelper?: CrudEventHelper;
+
+  constructor(
+    private authorsRepository: AuthorsRepository,
+    private eventService?: EventService,
+  ) {
     super(authorsRepository);
+
+    // Initialize event helper using Fastify pattern
+    if (eventService) {
+      this.eventHelper = eventService.for('authors', 'authors');
+    }
   }
 
   /**
@@ -39,6 +51,11 @@ export class AuthorsService extends BaseService<
       // Handle query options (includes, etc.)
       if (options.include) {
         // Add relationship loading logic here
+      }
+
+      // Emit read event for monitoring/analytics
+      if (this.eventHelper) {
+        await this.eventHelper.emitCustom('read', authors);
       }
     }
 
@@ -59,6 +76,14 @@ export class AuthorsService extends BaseService<
   }> {
     const result = await this.getList(options);
 
+    // Emit bulk read event
+    if (this.eventHelper) {
+      await this.eventHelper.emitCustom('bulk_read', {
+        count: result.data.length,
+        filters: options,
+      });
+    }
+
     return result;
   }
 
@@ -67,6 +92,11 @@ export class AuthorsService extends BaseService<
    */
   async create(data: CreateAuthors): Promise<Authors> {
     const authors = await super.create(data);
+
+    // Emit created event for real-time updates
+    if (this.eventHelper) {
+      await this.eventHelper.emitCreated(authors);
+    }
 
     return authors;
   }
@@ -79,6 +109,10 @@ export class AuthorsService extends BaseService<
     data: UpdateAuthors,
   ): Promise<Authors | null> {
     const authors = await super.update(id, data);
+
+    if (authors && this.eventHelper) {
+      await this.eventHelper.emitUpdated(authors);
+    }
 
     return authors;
   }
@@ -99,10 +133,17 @@ export class AuthorsService extends BaseService<
 
       console.log('Found authors to delete:', existing.id);
 
+      // Get entity before deletion for event emission
+      const authors = await this.getById(id);
+
       // Direct repository call to avoid base service complexity
       const deleted = await this.authorsRepository.delete(id);
 
       console.log('Delete result:', deleted);
+
+      if (deleted && authors && this.eventHelper) {
+        await this.eventHelper.emitDeleted(authors.id);
+      }
 
       if (deleted) {
         console.log('Authors deleted successfully:', {
@@ -241,6 +282,9 @@ export class AuthorsService extends BaseService<
         for (let i = 0; i < results.length; i++) {
           try {
             await this.afterCreate(results[i], validItems[i]);
+            if (this.eventHelper) {
+              await this.eventHelper.emitCreated(results[i]);
+            }
           } catch (error) {
             console.warn('Error in afterCreate:', error);
           }
@@ -371,13 +415,7 @@ export class AuthorsService extends BaseService<
     };
 
     // Get filtered data
-    console.log('🔍 Export Query:', JSON.stringify(query, null, 2));
     const result = await this.authorsRepository.list(query);
-    console.log('📊 Export Result:', {
-      dataCount: result.data.length,
-      totalRecords: result.pagination.total,
-      sampleRecord: result.data[0] || 'No records found'
-    });
 
     // Return raw data - ExportService will handle formatting
     return result.data;
@@ -387,7 +425,6 @@ export class AuthorsService extends BaseService<
    * Format single record for export
    */
   private formatExportRecord(record: Authors, fields?: string[]): any {
-    console.log('🔧 Formatting record:', { id: record.id, name: record.name });
     const formatted: any = {};
 
     // Define all exportable fields
@@ -407,7 +444,9 @@ export class AuthorsService extends BaseService<
     // If specific fields requested, use only those
     const fieldsToExport =
       fields && fields.length > 0
-        ? fields.filter((field) => exportableFields.hasOwnProperty(field))
+        ? fields.filter((field) =>
+            Object.prototype.hasOwnProperty.call(exportableFields, field),
+          )
         : Object.keys(exportableFields);
 
     // Format each field
@@ -427,7 +466,71 @@ export class AuthorsService extends BaseService<
       formatted[exportKey] = value;
     });
 
-    console.log('✅ Formatted export record:', formatted);
     return formatted;
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   */
+  async validate(data: { data: CreateAuthors }): Promise<{
+    valid: boolean;
+    errors: Array<{ field: string; message: string }>;
+  }> {
+    const errors: Array<{ field: string; message: string }> = [];
+
+    try {
+      await this.validateCreate(data.data);
+    } catch (error) {
+      errors.push({
+        field: 'general',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+
+    // Add specific field validations
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  }
+
+  /**
+   * Check field uniqueness
+   */
+  async checkUniqueness(
+    field: string,
+    options: { value: string; excludeId?: string | number },
+  ): Promise<{
+    unique: boolean;
+    exists?: any;
+  }> {
+    const query: any = { [field]: options.value };
+
+    // Add exclusion for updates
+    if (options.excludeId) {
+      query.excludeId = options.excludeId;
+    }
+
+    // Use field-specific find methods based on repository's isDisplayField logic
+    let existing: any = null;
+
+    if (field === 'name' && options.value) {
+      existing = await this.authorsRepository.findByName(options.value);
+    } else if (
+      existing &&
+      options.excludeId &&
+      existing.id === options.excludeId
+    ) {
+      // If updating (excludeId provided), ignore the current record
+      existing = null;
+    }
+
+    return {
+      unique: !existing,
+      exists: existing || undefined,
+    };
   }
 }

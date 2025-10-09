@@ -18,6 +18,11 @@ import {
   BulkUpdateSchema,
   BulkDeleteSchema,
   BulkResponseSchema,
+  ValidationRequestSchema,
+  ValidationResponseSchema,
+  UniquenessParamSchema,
+  UniquenessQuerySchema,
+  UniquenessResponseSchema,
   StatisticsResponseSchema,
 } from '../../../schemas/base.schemas';
 import { ExportQuerySchema } from '../../../schemas/export.schemas';
@@ -261,11 +266,57 @@ export async function authorsRoutes(
         500: SchemaRefs.ServerError,
       },
     },
-    // Temporarily disabled for debugging
-    // preValidation: [
-    //   fastify.authenticate,
-    //   fastify.authorize(['authors.read', 'authors.export', 'admin']),
-    // ],
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.read', 'authors.export', 'admin']),
+    ],
     handler: controller.export.bind(controller),
+  });
+
+  // ===== FULL PACKAGE ROUTES =====
+
+  // Validate data before save
+  fastify.post('/validate', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Validate authors data',
+      description: 'Validate authors data before saving',
+      body: ValidationRequestSchema(CreateAuthorsSchema),
+      response: {
+        200: ValidationResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.create', 'authors.update', 'admin']),
+    ],
+    handler: controller.validate.bind(controller),
+  });
+
+  // Check field uniqueness
+  fastify.get('/check/:field', {
+    schema: {
+      tags: ['Authors'],
+      summary: 'Check field uniqueness',
+      description: 'Check if a field value is unique',
+      params: UniquenessParamSchema,
+      querystring: UniquenessQuerySchema,
+      response: {
+        200: UniquenessResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['authors.read', 'admin']),
+    ],
+    handler: controller.checkUniqueness.bind(controller),
   });
 }

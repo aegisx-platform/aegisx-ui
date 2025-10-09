@@ -13,6 +13,8 @@ import {
   BulkStatusSchema,
   StatusToggleSchema,
   StatisticsSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
 
 // Base Authors Schema
@@ -129,3 +131,25 @@ export type PartialAuthors = Static<typeof PartialAuthorsSchema>;
 export type FlexibleAuthorsList = Static<
   typeof FlexibleAuthorsListResponseSchema
 >;
+
+// WebSocket Event Schemas
+export const AuthorsCreatedEventSchema = Type.Object({
+  type: Type.Literal('authors.created'),
+  data: AuthorsSchema,
+});
+
+export const AuthorsUpdatedEventSchema = Type.Object({
+  type: Type.Literal('authors.updated'),
+  data: AuthorsSchema,
+});
+
+export const AuthorsDeletedEventSchema = Type.Object({
+  type: Type.Literal('authors.deleted'),
+  data: Type.Object({
+    id: Type.Union([Type.String(), Type.Number()]),
+  }),
+});
+
+export type AuthorsCreatedEvent = Static<typeof AuthorsCreatedEventSchema>;
+export type AuthorsUpdatedEvent = Static<typeof AuthorsUpdatedEventSchema>;
+export type AuthorsDeletedEvent = Static<typeof AuthorsDeletedEventSchema>;

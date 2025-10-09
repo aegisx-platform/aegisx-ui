@@ -74,19 +74,6 @@ export const appRoutes: Route[] = [
     },
   },
   {
-    path: 'notifications',
-    loadChildren: () =>
-      import('./features/notifications/notifications.routes').then(
-        (m) => m.notificationsRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Notifications',
-      description: 'Notification Management System',
-      requiredPermissions: ['notifications.read', 'admin.*'],
-    },
-  },
-  {
     path: 'books',
     loadChildren: () =>
       import('./features/books/books.routes').then((m) => m.booksRoutes),
@@ -106,32 +93,6 @@ export const appRoutes: Route[] = [
       title: 'Authors',
       description: 'Authors Management System',
       requiredPermissions: ['authors.read', 'admin.*'],
-    },
-  },
-  {
-    path: 'articles',
-    loadChildren: () =>
-      import('./features/articles/articles.routes').then(
-        (m) => m.articlesRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Articles',
-      description: 'Articles Management System',
-      requiredPermissions: ['articles.read', 'admin.*'],
-    },
-  },
-  {
-    path: 'comprehensive-tests',
-    loadChildren: () =>
-      import('./features/comprehensive-tests/comprehensive-tests.routes').then(
-        (m) => m.comprehensive_testsRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Comprehensive Tests',
-      description: 'Comprehensive Tests Management System',
-      requiredPermissions: ['comprehensive_tests.read', 'admin.*'],
     },
   },
   {
@@ -258,54 +219,6 @@ export const appRoutes: Route[] = [
       import('./dev-tools/pages/realtime-demo/realtime-demo.component').then(
         (m) => m.RealtimeDemoComponent,
       ),
-  },
-  {
-    path: 'authors',
-    loadChildren: () =>
-      import('./features/authors/authors.routes').then((m) => m.authorsRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Authors',
-      description: 'Author Management System',
-      requiredPermissions: ['authors.read', 'admin.*'],
-    },
-  },
-  {
-    path: 'books',
-    loadChildren: () =>
-      import('./features/books/books.routes').then((m) => m.booksRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Books',
-      description: 'Book Management System',
-      requiredPermissions: ['books.read', 'admin.*'],
-    },
-  },
-  {
-    path: 'articles',
-    loadChildren: () =>
-      import('./features/articles/articles.routes').then(
-        (m) => m.articlesRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Articles',
-      description: 'Article Management System',
-      requiredPermissions: ['articles.read', 'admin.*'],
-    },
-  },
-  {
-    path: 'comprehensive-tests',
-    loadChildren: () =>
-      import('./features/comprehensive-tests/comprehensive-tests.routes').then(
-        (m) => m.comprehensive_testsRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Comprehensive Tests',
-      description: 'Comprehensive Tests Management System',
-      requiredPermissions: ['comprehensive_tests.read', 'admin.*'],
-    },
   },
   {
     path: '**',

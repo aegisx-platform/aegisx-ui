@@ -1,24 +1,28 @@
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import {
-  BulkDeleteSchema,
-  DropdownQuerySchema
-} from '../../../schemas/base.schemas';
-import { ExportQuerySchema } from '../../../schemas/export.schemas';
-import { ExportField, ExportService } from '../../../services/export.service';
-import {
-  AuthorsIdParamSchema,
-  CreateAuthorsSchema,
-  GetAuthorsQuerySchema,
-  ListAuthorsQuerySchema,
-  UpdateAuthorsSchema,
-} from '../schemas/authors.schemas';
 import { AuthorsService } from '../services/authors.service';
 import { CreateAuthors, UpdateAuthors } from '../types/authors.types';
+import {
+  CreateAuthorsSchema,
+  UpdateAuthorsSchema,
+  AuthorsIdParamSchema,
+  GetAuthorsQuerySchema,
+  ListAuthorsQuerySchema,
+} from '../schemas/authors.schemas';
+import { ExportQuerySchema } from '../../../schemas/export.schemas';
+import { ExportService, ExportField } from '../../../services/export.service';
+import {
+  DropdownQuerySchema,
+  BulkCreateSchema,
+  BulkUpdateSchema,
+  BulkDeleteSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema,
+} from '../../../schemas/base.schemas';
 
 /**
  * Authors Controller
- * Package: enterprise
+ * Package: full
  * Has Status Field: false
  *
  * Following Fastify controller patterns:
@@ -31,7 +35,7 @@ export class AuthorsController {
   constructor(
     private authorsService: AuthorsService,
     private exportService: ExportService,
-  ) { }
+  ) {}
 
   /**
    * Create new authors
@@ -413,15 +417,15 @@ export class AuthorsController {
       // Prepare metadata
       const metadata = includeMetadata
         ? {
-          // exportedBy:
-          //   (request.user as any)?.username ||
-          //   (request.user as any)?.email ||
-          //   'System',
-          exportedAt: new Date(),
-          filtersApplied: applyFilters ? filters : undefined,
-          // totalRecords: exportData.length,
-          selectedRecords: ids?.length,
-        }
+            exportedBy:
+              (request.user as any)?.username ||
+              (request.user as any)?.email ||
+              'System',
+            exportedAt: new Date(),
+            filtersApplied: applyFilters ? filters : undefined,
+            totalRecords: exportData.length,
+            selectedRecords: ids?.length,
+          }
         : undefined;
 
       // Generate export file
@@ -449,15 +453,15 @@ export class AuthorsController {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            title: 'Authors Export - รายงานผู้แต่ง',
+            title: 'Authors Export - รายงาน',
             metadata,
             pdfOptions: {
               template: 'professional',
               pageSize: 'A4',
-              orientation: 'portrait',
+              orientation: 'landscape',
               subtitle: 'Generated with Thai Font Support',
-              logo: process.env.PDF_LOGO_URL
-            }
+              logo: process.env.PDF_LOGO_URL,
+            },
           });
           break;
         default:
@@ -469,7 +473,8 @@ export class AuthorsController {
       // Set response headers for file download
       const mimeTypes = {
         csv: 'text/csv',
-        excel: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        excel:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         pdf: 'application/pdf',
       };
 
@@ -515,6 +520,50 @@ export class AuthorsController {
         },
       });
     }
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   * POST /authors/validate
+   */
+  async validate(
+    request: FastifyRequest<{
+      Body: { data: Static<typeof CreateAuthorsSchema> };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info('Validating authors data');
+
+    const result = await this.authorsService.validate(request.body);
+
+    return reply.success(result);
+  }
+
+  /**
+   * Check field uniqueness
+   * GET /authors/check/:field
+   */
+  async checkUniqueness(
+    request: FastifyRequest<{
+      Params: { field: string };
+      Querystring: Static<typeof UniquenessCheckSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { field } = request.params;
+    request.log.info(
+      { field, value: request.query.value },
+      'Checking authors field uniqueness',
+    );
+
+    const result = await this.authorsService.checkUniqueness(field, {
+      value: String(request.query.value),
+      excludeId: request.query.excludeId,
+    });
+
+    return reply.success(result);
   }
 
   // ===== PRIVATE EXPORT HELPER METHODS =====

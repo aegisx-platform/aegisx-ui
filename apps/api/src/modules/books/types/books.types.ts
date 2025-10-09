@@ -6,6 +6,9 @@ import {
   type BooksIdParam,
   type GetBooksQuery,
   type ListBooksQuery,
+  type BooksCreatedEvent,
+  type BooksUpdatedEvent,
+  type BooksDeletedEvent,
 } from '../schemas/books.schemas';
 
 export {
@@ -15,6 +18,9 @@ export {
   type BooksIdParam,
   type GetBooksQuery,
   type ListBooksQuery,
+  type BooksCreatedEvent,
+  type BooksUpdatedEvent,
+  type BooksDeletedEvent,
 };
 
 // Additional type definitions
@@ -32,6 +38,18 @@ export interface BooksRepository {
   }>;
   update(id: number | string, data: UpdateBooks): Promise<Books | null>;
   delete(id: number | string): Promise<boolean>;
+}
+
+// Real-time event type definitions
+export interface BooksEventHandlers {
+  onCreated?: (data: Books) => void | Promise<void>;
+  onUpdated?: (data: Books) => void | Promise<void>;
+  onDeleted?: (data: { id: number | string }) => void | Promise<void>;
+}
+
+export interface BooksWebSocketSubscription {
+  subscribe(handlers: BooksEventHandlers): void;
+  unsubscribe(): void;
 }
 
 // Database entity type (matches database table structure exactly)

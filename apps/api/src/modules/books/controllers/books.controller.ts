@@ -16,11 +16,13 @@ import {
   BulkCreateSchema,
   BulkUpdateSchema,
   BulkDeleteSchema,
+  ValidationRequestSchema,
+  UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
 
 /**
  * Books Controller
- * Package: enterprise
+ * Package: full
  * Has Status Field: false
  *
  * Following Fastify controller patterns:
@@ -457,15 +459,15 @@ export class BooksController {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            title: 'Books Export - รายงานหนังสือ',
+            title: 'Books Export - รายงาน',
             metadata,
             pdfOptions: {
               template: 'professional',
               pageSize: 'A4',
               orientation: 'landscape',
               subtitle: 'Generated with Thai Font Support',
-              logo: process.env.PDF_LOGO_URL
-            }
+              logo: process.env.PDF_LOGO_URL,
+            },
           });
           break;
         default:
@@ -524,6 +526,50 @@ export class BooksController {
         },
       });
     }
+  }
+
+  // ===== FULL PACKAGE METHODS =====
+
+  /**
+   * Validate data before save
+   * POST /books/validate
+   */
+  async validate(
+    request: FastifyRequest<{
+      Body: { data: Static<typeof CreateBooksSchema> };
+    }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info('Validating books data');
+
+    const result = await this.booksService.validate(request.body);
+
+    return reply.success(result);
+  }
+
+  /**
+   * Check field uniqueness
+   * GET /books/check/:field
+   */
+  async checkUniqueness(
+    request: FastifyRequest<{
+      Params: { field: string };
+      Querystring: Static<typeof UniquenessCheckSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { field } = request.params;
+    request.log.info(
+      { field, value: request.query.value },
+      'Checking books field uniqueness',
+    );
+
+    const result = await this.booksService.checkUniqueness(field, {
+      value: String(request.query.value),
+      excludeId: request.query.excludeId,
+    });
+
+    return reply.success(result);
   }
 
   // ===== PRIVATE EXPORT HELPER METHODS =====

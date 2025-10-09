@@ -1,10 +1,10 @@
 import * as ExcelJS from 'exceljs';
+import type { Borders } from 'exceljs';
 import * as csv from 'fast-csv';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { PDFMakeService, PdfExportField } from './pdfmake.service';
-
 
 export interface ExportField {
   key: string;
@@ -83,106 +83,82 @@ export class ExportService {
    * Export data to Excel format
    */
   async exportToExcel(options: ExportOptions): Promise<Buffer> {
-    const {
-      data,
-      fields,
-      filename = 'export.xlsx',
-      title = 'Data Export',
-      metadata,
-    } = options;
+    const { data, fields, title = 'Data Export', metadata } = options;
 
     const workbook = new ExcelJS.Workbook();
-
-    // Set workbook properties
-    workbook.creator = metadata?.exportedBy || 'AegisX System';
-    workbook.created = metadata?.exportedAt || new Date();
-    workbook.modified = new Date();
-
     const worksheet = workbook.addWorksheet('Data');
 
-    // Add title if provided
-    if (title) {
-      worksheet.addRow([title]);
-      worksheet.getCell('A1').font = { size: 16, bold: true };
-      worksheet.addRow([]); // Empty row
-    }
-
-    // Add metadata if provided
-    if (metadata) {
-      if (metadata.exportedAt) {
-        worksheet.addRow(['Exported:', metadata.exportedAt.toISOString()]);
-      }
-      if (metadata.exportedBy) {
-        worksheet.addRow(['Exported by:', metadata.exportedBy]);
-      }
-      if (metadata.totalRecords) {
-        worksheet.addRow(['Total records:', metadata.totalRecords]);
-      }
-      if (metadata.filters && Object.keys(metadata.filters).length > 0) {
-        worksheet.addRow([
-          'Filters applied:',
-          JSON.stringify(metadata.filters),
-        ]);
-      }
-      worksheet.addRow([]); // Empty row
-    }
-
-    // Prepare headers and data
     const headers = this.getHeaders(fields, data);
     const processedData = this.processDataForExport(data, fields);
 
+    // Add title if provided
+    if (title) {
+      worksheet.mergeCells(
+        'A1',
+        `${String.fromCharCode(64 + headers.length)}1`,
+      );
+      const titleCell = worksheet.getCell('A1');
+      titleCell.value = title;
+      titleCell.font = { size: 16, bold: true };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getRow(1).height = 30;
+    }
+
+    // Add metadata if provided
+    let currentRow = title ? 3 : 1;
+    if (metadata) {
+      if (metadata.exportedBy) {
+        worksheet.getCell(`A${currentRow}`).value =
+          `Exported by: ${metadata.exportedBy}`;
+        currentRow++;
+      }
+      if (metadata.exportedAt) {
+        worksheet.getCell(`A${currentRow}`).value =
+          `Exported at: ${metadata.exportedAt.toLocaleString()}`;
+        currentRow++;
+      }
+      if (metadata.totalRecords !== undefined) {
+        worksheet.getCell(`A${currentRow}`).value =
+          `Total records: ${metadata.totalRecords}`;
+        currentRow++;
+      }
+      currentRow++; // Add spacing
+    }
+
     // Add headers
-    const headerRow = worksheet.addRow(headers);
-    headerRow.font = { bold: true };
-    headerRow.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFE3F2FD' },
-    };
+    const headerRow = worksheet.getRow(currentRow);
+    headers.forEach((header, index) => {
+      const cell = headerRow.getCell(index + 1);
+      cell.value = header;
+      cell.font = { bold: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE3F2FD' },
+      };
+      cell.border = this.getCellBorder();
+    });
 
     // Add data rows
     processedData.forEach((row) => {
-      const dataRow = worksheet.addRow(Object.values(row));
-
-      // Format cells based on field types
-      if (fields) {
-        fields.forEach((field, index) => {
-          const cell = dataRow.getCell(index + 1);
-
-          switch (field.type) {
-            case 'number':
-              cell.numFmt = '#,##0.00';
-              break;
-            case 'date':
-              cell.numFmt = 'dd/mm/yyyy';
-              break;
-            case 'boolean':
-              cell.value = cell.value ? 'Yes' : 'No';
-              break;
-          }
-        });
-      }
+      currentRow++;
+      const dataRow = worksheet.getRow(currentRow);
+      headers.forEach((header, index) => {
+        const cell = dataRow.getCell(index + 1);
+        cell.value = row[header];
+        cell.border = this.getCellBorder();
+      });
     });
 
     // Auto-fit columns
     worksheet.columns.forEach((column) => {
-      const lengths = column.values?.map((v) =>
-        v ? v.toString().length : 10,
-      ) || [10];
-      const maxLength = Math.max(
-        ...lengths.filter((v) => typeof v === 'number'),
-      );
+      let maxLength = 0;
+      column.eachCell?.({ includeEmpty: true }, (cell) => {
+        const cellValue = cell.value ? cell.value.toString() : '';
+        maxLength = Math.max(maxLength, cellValue.length);
+      });
       column.width = Math.min(maxLength + 2, 50);
     });
-
-    // Add borders to data range
-    const dataRange = `A${title ? 4 : 1}:${String.fromCharCode(65 + headers.length - 1)}${worksheet.rowCount}`;
-    worksheet.getCell(dataRange).border = {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' },
-    };
 
     return (await workbook.xlsx.writeBuffer()) as Buffer;
   }
@@ -201,11 +177,11 @@ export class ExportService {
     } = options;
 
     // Convert ExportField[] to PdfExportField[]
-    const pdfFields: PdfExportField[] | undefined = fields?.map(field => ({
+    const pdfFields: PdfExportField[] | undefined = fields?.map((field) => ({
       key: field.key,
       label: field.label,
       type: field.type,
-      format: field.format
+      format: field.format,
     }));
 
     // Use PDFMakeService for advanced PDF generation
@@ -221,7 +197,7 @@ export class ExportService {
       showSummary: pdfOptions?.showSummary,
       groupBy: pdfOptions?.groupBy,
       logo: pdfOptions?.logo,
-      preview: pdfOptions?.preview
+      preview: pdfOptions?.preview,
     });
   }
 
@@ -241,9 +217,12 @@ export class ExportService {
   }
 
   /**
-   * Process data for export based on field definitions
+   * Process data for export based on fields
    */
-  private processDataForExport(data: any[], fields?: ExportField[]): any[] {
+  private processDataForExport(
+    data: any[],
+    fields: ExportField[] | undefined,
+  ): any[] {
     if (!fields || fields.length === 0) {
       return data;
     }
@@ -254,30 +233,21 @@ export class ExportService {
       fields.forEach((field) => {
         let value = item[field.key];
 
-        // Apply custom formatter if provided
+        // Apply custom format if provided
         if (field.format && typeof field.format === 'function') {
           value = field.format(value);
         } else {
-          // Apply default formatting based on type
-          switch (field.type) {
-            case 'date':
-              if (value instanceof Date) {
-                value = value.toISOString().split('T')[0];
-              } else if (typeof value === 'string') {
-                const date = new Date(value);
-                if (!isNaN(date.getTime())) {
-                  value = date.toISOString().split('T')[0];
-                }
-              }
-              break;
-            case 'boolean':
-              value = value ? 'Yes' : 'No';
-              break;
-            case 'json':
-              if (typeof value === 'object' && value !== null) {
-                value = JSON.stringify(value);
-              }
-              break;
+          // Default formatting based on type
+          if (value === null || value === undefined) {
+            value = '';
+          } else if (field.type === 'date' && value instanceof Date) {
+            value = value.toLocaleDateString();
+          } else if (field.type === 'boolean') {
+            value = value ? 'Yes' : 'No';
+          } else if (field.type === 'json' && typeof value === 'object') {
+            value = JSON.stringify(value);
+          } else {
+            value = String(value);
           }
         }
 
@@ -288,6 +258,14 @@ export class ExportService {
     });
   }
 
+  private getCellBorder(): Partial<Borders> {
+    return {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+  }
 
   /**
    * Ensure temp directory exists
@@ -295,28 +273,6 @@ export class ExportService {
   private ensureTempDir(): void {
     if (!fs.existsSync(this.tempDir)) {
       fs.mkdirSync(this.tempDir, { recursive: true });
-    }
-  }
-
-  /**
-   * Clean up temp files older than 1 hour
-   */
-  async cleanup(): Promise<void> {
-    try {
-      const files = fs.readdirSync(this.tempDir);
-      const now = Date.now();
-      const maxAge = 60 * 60 * 1000; // 1 hour
-
-      for (const file of files) {
-        const filePath = path.join(this.tempDir, file);
-        const stats = fs.statSync(filePath);
-
-        if (now - stats.mtime.getTime() > maxAge) {
-          fs.unlinkSync(filePath);
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to cleanup export temp files:', error);
     }
   }
 }

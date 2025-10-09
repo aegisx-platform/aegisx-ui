@@ -98,20 +98,6 @@ export class NavigationService {
           link: '/authors',
         },
         {
-          id: 'notifications',
-          title: 'Notifications',
-          type: 'item',
-          icon: 'heroicons_outline:bell',
-          link: '/notifications',
-        },
-        {
-          id: 'comprehensive-tests',
-          title: 'Comprehensive Tests',
-          type: 'item',
-          icon: 'heroicons_outline:beaker',
-          link: '/comprehensive-tests',
-        },
-        {
           id: 'rbac',
           title: 'RBAC Management',
           type: 'item',
