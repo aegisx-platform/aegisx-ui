@@ -98,6 +98,17 @@ export class NavigationService {
           link: '/authors',
         },
         {
+          id: 'pdf-templates',
+          title: 'PDF Templates',
+          type: 'item',
+          icon: 'heroicons_outline:document-duplicate',
+          link: '/pdf-templates',
+          badge: {
+            content: 'New',
+            type: 'info',
+          },
+        },
+        {
           id: 'rbac',
           title: 'RBAC Management',
           type: 'item',

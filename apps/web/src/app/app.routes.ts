@@ -96,6 +96,19 @@ export const appRoutes: Route[] = [
     },
   },
   {
+    path: 'pdf-templates',
+    loadChildren: () =>
+      import('./features/pdf-templates/pdf-templates.routes').then(
+        (m) => m.pdf_templatesRoutes,
+      ),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'PDF Templates',
+      description: 'PDF Template Management System',
+      requiredPermissions: ['templates.read', 'admin.*'],
+    },
+  },
+  {
     path: 'file-upload',
     loadComponent: () =>
       import('./pages/file-upload/file-upload.page').then(
