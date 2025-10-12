@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 import { PdfTemplateService } from '../services/pdf-templates.service';
 import {
@@ -37,6 +37,7 @@ export interface PdfTemplateEditDialogData {
     MatProgressSpinnerModule,
     MatTooltipModule,
     PdfTemplateFormComponent,
+    PdfViewerModule,
   ],
   template: `
     <div class="edit-dialog-container">
@@ -127,12 +128,19 @@ export interface PdfTemplateEditDialogData {
                   </button>
                 </div>
               } @else if (pdfPreviewUrl()) {
-                <iframe
-                  [src]="pdfPreviewUrl()"
-                  frameborder="0"
-                  class="pdf-iframe"
-                >
-                </iframe>
+                <pdf-viewer
+                  [src]="pdfPreviewUrl()!"
+                  [render-text]="true"
+                  [original-size]="false"
+                  [show-all]="true"
+                  [fit-to-page]="false"
+                  [zoom]="1.0"
+                  [show-borders]="false"
+                  [autoresize]="true"
+                  [external-link-target]="'blank'"
+                  class="pdf-viewer"
+                  style="display: block; width: 100%; height: 100%;"
+                ></pdf-viewer>
               } @else {
                 <div class="preview-placeholder">
                   <mat-icon>picture_as_pdf</mat-icon>
@@ -264,10 +272,11 @@ export interface PdfTemplateEditDialogData {
         overflow: hidden;
       }
 
-      .pdf-iframe {
+      .pdf-viewer {
         width: 100%;
         height: 100%;
-        border: none;
+        display: block;
+        overflow: auto;
       }
 
       .preview-loading,
@@ -347,13 +356,12 @@ export class PdfTemplateEditDialogComponent implements OnInit {
   private pdfTemplatesService = inject(PdfTemplateService);
   private snackBar = inject(MatSnackBar);
   private dialogRef = inject(MatDialogRef<PdfTemplateEditDialogComponent>);
-  private sanitizer = inject(DomSanitizer);
   public data = inject<PdfTemplateEditDialogData>(MAT_DIALOG_DATA);
 
   loading = signal<boolean>(false);
   loadingPreview = signal<boolean>(false);
   previewError = signal<string | null>(null);
-  pdfPreviewUrl = signal<SafeResourceUrl | null>(null);
+  pdfPreviewUrl = signal<string | null>(null); // Changed from SafeResourceUrl to string for ng2-pdf-viewer
   previewVisible = signal<boolean>(true); // Show preview by default
 
   // Resize panel state
@@ -520,8 +528,7 @@ export class PdfTemplateEditDialogComponent implements OnInit {
 
         const url = URL.createObjectURL(pdfBlob);
         console.log('[Preview] Created blob URL:', url);
-        const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-        this.pdfPreviewUrl.set(safeUrl);
+        this.pdfPreviewUrl.set(url); // ng2-pdf-viewer accepts string URLs directly
       } else {
         console.error('[Preview] Empty or null blob received');
         this.previewError.set('Failed to generate preview - empty response');
