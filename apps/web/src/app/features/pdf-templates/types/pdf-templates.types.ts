@@ -17,6 +17,7 @@ export interface PdfTemplate {
   version?: string | null;
   is_active?: boolean | null;
   is_default?: boolean | null;
+  is_template_starter?: boolean | null;
   usage_count?: number | null;
   assets?: Record<string, any> | null;
   permissions?: Record<string, any> | null;
@@ -42,6 +43,7 @@ export interface CreatePdfTemplateRequest {
   version?: string | null;
   is_active?: boolean | null;
   is_default?: boolean | null;
+  is_template_starter?: boolean | null;
   usage_count?: number | null;
   assets?: Record<string, any> | null;
   permissions?: Record<string, any> | null;
@@ -65,6 +67,7 @@ export interface UpdatePdfTemplateRequest {
   version?: string | null;
   is_active?: boolean | null;
   is_default?: boolean | null;
+  is_template_starter?: boolean | null;
   usage_count?: number | null;
   assets?: Record<string, any> | null;
   permissions?: Record<string, any> | null;
@@ -112,6 +115,8 @@ export interface ListPdfTemplateQuery {
   is_active?: boolean;
   // Boolean filtering for is_default
   is_default?: boolean;
+  // Boolean filtering for is_template_starter
+  is_template_starter?: boolean;
   // Numeric filtering for usage_count
   usage_count?: number; // Exact match
   usage_count_min?: number; // Range start

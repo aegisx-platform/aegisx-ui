@@ -441,8 +441,22 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               success: { type: 'boolean' },
-              data: { type: 'object' },
+              renderId: { type: 'string' },
+              previewUrl: { type: 'string' },
+              filename: { type: 'string' },
+              renderTime: { type: 'number' },
+              metadata: {
+                type: 'object',
+                properties: {
+                  templateName: { type: 'string' },
+                  templateVersion: { type: 'string' },
+                  renderedAt: { type: 'string' },
+                  expiresAt: { type: 'string' },
+                },
+              },
             },
+            required: ['success'],
+            additionalProperties: true,
           },
         },
       },
@@ -461,10 +475,8 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
           request.body.data,
         );
 
-        return reply.send({
-          success: true,
-          data: result,
-        });
+        // Return the response directly - it already has success: true
+        return reply.send(result);
       } catch (error) {
         request.log.error(
           { error, templateId: request.params.id },
@@ -870,6 +882,88 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
         });
       } catch (error) {
         request.log.error({ error }, 'Failed to get template helpers');
+
+        return reply.code(500).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Get Template Starters
+   * GET /api/pdf-templates/starters
+   */
+  fastify.get(
+    '/starters',
+    {
+      schema: {
+        description: 'Get PDF template starters for creating new templates',
+        tags: ['PDF Templates'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'array' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const starters = await templateService.getTemplateStarters();
+
+        return reply.send({
+          success: true,
+          data: starters,
+        });
+      } catch (error) {
+        request.log.error({ error }, 'Failed to get template starters');
+
+        return reply.code(500).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Get Active Templates for Use (excludes template starters)
+   * GET /api/pdf-templates/for-use
+   */
+  fastify.get(
+    '/for-use',
+    {
+      schema: {
+        description: 'Get active PDF templates for actual use (excludes template starters)',
+        tags: ['PDF Templates'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'array' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const templates = await templateService.getActiveTemplatesForUse();
+
+        return reply.send({
+          success: true,
+          data: templates,
+        });
+      } catch (error) {
+        request.log.error({ error }, 'Failed to get active templates for use');
 
         return reply.code(500).send({
           success: false,

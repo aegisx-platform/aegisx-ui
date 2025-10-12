@@ -122,38 +122,39 @@ export class PdfTemplateRepository extends BaseRepository<
         sortOrder = 'desc',
       } = query;
 
-      let dbQuery = this.knex(this.tableName).select('*');
+      // Build base query for filters
+      const buildFilteredQuery = (query: any) => {
+        if (category) {
+          query = query.where('category', category);
+        }
+        if (type) {
+          query = query.where('type', type);
+        }
+        if (isActive !== undefined) {
+          query = query.where('is_active', isActive);
+        }
+        if (search) {
+          query = query.where((builder) => {
+            builder
+              .whereILike('name', `%${search}%`)
+              .orWhereILike('display_name', `%${search}%`)
+              .orWhereILike('description', `%${search}%`);
+          });
+        }
+        return query;
+      };
 
-      // Apply filters
-      if (category) {
-        dbQuery = dbQuery.where('category', category);
-      }
-
-      if (type) {
-        dbQuery = dbQuery.where('type', type);
-      }
-
-      if (isActive !== undefined) {
-        dbQuery = dbQuery.where('is_active', isActive);
-      }
-
-      if (search) {
-        dbQuery = dbQuery.where((builder) => {
-          builder
-            .whereILike('name', `%${search}%`)
-            .orWhereILike('display_name', `%${search}%`)
-            .orWhereILike('description', `%${search}%`);
-        });
-      }
-
-      // Get total count
-      const totalQuery = dbQuery.clone();
-      const [{ count }] = await totalQuery.count('* as count');
+      // Get total count with filters
+      let countQuery = this.knex(this.tableName);
+      countQuery = buildFilteredQuery(countQuery);
+      const [{ count }] = await countQuery.count('* as count');
       const total = parseInt(count.toString());
 
-      // Apply sorting and pagination
+      // Get paginated data with filters
+      let dataQuery = this.knex(this.tableName).select('*');
+      dataQuery = buildFilteredQuery(dataQuery);
       const offset = (page - 1) * limit;
-      const templates = await dbQuery
+      const templates = await dataQuery
         .orderBy(sortBy, sortOrder)
         .limit(limit)
         .offset(offset);
@@ -216,6 +217,43 @@ export class PdfTemplateRepository extends BaseRepository<
     } catch (error) {
       console.error('Error getting types:', error);
       throw new Error(`Failed to get types: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get template starters
+   */
+  async getTemplateStarters(): Promise<PdfTemplate[]> {
+    try {
+      const starters = await this.knex(this.tableName)
+        .where('is_template_starter', true)
+        .where('is_active', true)
+        .orderBy('display_name', 'asc');
+
+      return starters.map(this.transformToEntity.bind(this));
+    } catch (error) {
+      console.error('Error getting template starters:', error);
+      throw new Error(`Failed to get template starters: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get active templates for actual use (excludes template starters)
+   */
+  async getActiveTemplatesForUse(): Promise<PdfTemplate[]> {
+    try {
+      const templates = await this.knex(this.tableName)
+        .where('is_active', true)
+        .where(function() {
+          this.where('is_template_starter', false)
+            .orWhereNull('is_template_starter');
+        })
+        .orderBy('display_name', 'asc');
+
+      return templates.map(this.transformToEntity.bind(this));
+    } catch (error) {
+      console.error('Error getting active templates for use:', error);
+      throw new Error(`Failed to get active templates for use: ${error.message}`);
     }
   }
 

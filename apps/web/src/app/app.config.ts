@@ -15,6 +15,7 @@ import {
   IconService,
   provideAx,
 } from '@aegisx/ui';
+import { NGX_MONACO_EDITOR_CONFIG } from 'ngx-monaco-editor-v2';
 import { appRoutes } from './app.routes';
 import { provideGlobalErrorHandler } from './core/error-handling';
 import { httpErrorInterceptorProvider } from './core/http';
@@ -91,5 +92,40 @@ export const appConfig: ApplicationConfig = {
     AegisxConfigService,
     AegisxNavigationService,
     IconService,
+
+    // Monaco Editor configuration
+    {
+      provide: NGX_MONACO_EDITOR_CONFIG,
+      useValue: {
+        baseUrl: '/assets/monaco-editor/min/vs',
+        defaultOptions: {
+          scrollBeyondLastLine: false,
+          theme: 'vs-dark',
+          language: 'json',
+          fontSize: 16,
+          automaticLayout: true,
+          lineHeight: 24,
+          fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
+          fontWeight: '500',
+          minimap: { enabled: true },
+          wordWrap: 'on',
+          lineNumbers: 'on',
+          folding: true
+        },
+        onMonacoLoad: () => {
+          console.log('Monaco Editor loaded successfully');
+          // Configure JSON language features
+          if ((window as any).monaco) {
+            const monaco = (window as any).monaco;
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+              validate: true,
+              allowComments: false,
+              schemas: [],
+              enableSchemaRequest: false
+            });
+          }
+        }
+      }
+    }
   ],
 };

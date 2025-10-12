@@ -273,11 +273,6 @@ export function createPluginGroups(
           plugin: staticFilesPlugin,
           required: true,
         },
-        {
-          name: 'pdf-export',
-          plugin: pdfExportPlugin,
-          required: true,
-        },
       ],
     },
   ];
@@ -376,6 +371,11 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'file-upload',
         plugin: fileUploadPlugin,
+        required: true,
+      },
+      {
+        name: 'pdf-export',
+        plugin: pdfExportPlugin,
         required: true,
       },
     ],

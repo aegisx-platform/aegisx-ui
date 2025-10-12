@@ -346,7 +346,7 @@ export class HandlebarsTemplateService {
         styles: compiled.styles || {},
         defaultStyle: {
           fontSize: 10,
-          font: 'THSarabun', // Default to Thai font for better Thai text support
+          font: 'Sarabun', // Default to Thai font for better Thai text support
           lineHeight: 1.3
         }
       };

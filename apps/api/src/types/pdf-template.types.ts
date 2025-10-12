@@ -21,6 +21,7 @@ export interface PdfTemplate {
   version: string;
   is_active: boolean;
   is_default: boolean;
+  is_template_starter?: boolean;
   usage_count: number;
   assets?: PdfTemplateAsset[];
   permissions?: string[];
@@ -46,6 +47,7 @@ export interface CreatePdfTemplate {
   version?: string;
   is_active?: boolean;
   is_default?: boolean;
+  is_template_starter?: boolean;
   assets?: PdfTemplateAsset[];
   permissions?: string[];
 }

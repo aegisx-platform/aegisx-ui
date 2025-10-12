@@ -41,26 +41,130 @@ export interface PdfTemplateViewDialogData {
       <mat-dialog-content>
         <div class="details-container">
 
+          <!-- Basic Information Section -->
+          <div class="info-section">
+            <h3 class="section-title">Basic Information</h3>
+
+            <div class="detail-row">
+              <label class="detail-label">Name</label>
+              <div class="detail-value">
+                <span>{{ data.pdfTemplates.name }}</span>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Display Name</label>
+              <div class="detail-value">
+                <span>{{ data.pdfTemplates.display_name }}</span>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Description</label>
+              <div class="detail-value">
+                <span class="text-content">{{ data.pdfTemplates.description || 'No description provided' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- Template Configuration Section -->
+          <div class="info-section">
+            <h3 class="section-title">Template Configuration</h3>
+
+            <div class="detail-row">
+              <label class="detail-label">Category</label>
+              <div class="detail-value">
+                <mat-chip class="category-chip">{{ data.pdfTemplates.category || 'Uncategorized' }}</mat-chip>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Type</label>
+              <div class="detail-value">
+                <mat-chip class="type-chip">{{ data.pdfTemplates.type || 'Standard' }}</mat-chip>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Page Size</label>
+              <div class="detail-value">
+                <span>{{ data.pdfTemplates.page_size }}</span>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Orientation</label>
+              <div class="detail-value">
+                <span>{{ data.pdfTemplates.orientation }}</span>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Version</label>
+              <div class="detail-value">
+                <code class="version-code">{{ data.pdfTemplates.version }}</code>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- Status & Usage Section -->
+          <div class="info-section">
+            <h3 class="section-title">Status & Usage</h3>
+
+            <div class="detail-row">
+              <label class="detail-label">Active Status</label>
+              <div class="detail-value">
+                <mat-chip [class.active-chip]="data.pdfTemplates.is_active"
+                          [class.inactive-chip]="!data.pdfTemplates.is_active">
+                  <mat-icon>{{ data.pdfTemplates.is_active ? 'check_circle' : 'cancel' }}</mat-icon>
+                  {{ data.pdfTemplates.is_active ? 'Active' : 'Inactive' }}
+                </mat-chip>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Template Starter</label>
+              <div class="detail-value">
+                <mat-chip [class.starter-chip]="data.pdfTemplates.is_template_starter"
+                          [class.not-starter-chip]="!data.pdfTemplates.is_template_starter">
+                  <mat-icon>{{ data.pdfTemplates.is_template_starter ? 'stars' : 'star_border' }}</mat-icon>
+                  {{ data.pdfTemplates.is_template_starter ? 'Yes' : 'No' }}
+                </mat-chip>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <label class="detail-label">Usage Count</label>
+              <div class="detail-value">
+                <span class="usage-count">{{ data.pdfTemplates.usage_count || 0 }} times</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Metadata Section -->
           <mat-divider class="metadata-divider"></mat-divider>
-          
+
           <div class="metadata-section">
             <h3 class="metadata-title">Record Information</h3>
-            
+
             <div class="detail-row">
               <label class="detail-label">Created At</label>
               <div class="detail-value">
                 <span>{{ data.pdfTemplates.created_at | date:'full' }}</span>
               </div>
             </div>
-            
+
             <div class="detail-row">
               <label class="detail-label">Updated At</label>
               <div class="detail-value">
                 <span>{{ data.pdfTemplates.updated_at | date:'full' }}</span>
               </div>
             </div>
-            
+
             <div class="detail-row">
               <label class="detail-label">ID</label>
               <div class="detail-value">
@@ -202,6 +306,67 @@ export interface PdfTemplateViewDialogData {
       font-family: 'Courier New', monospace;
       font-size: 12px;
       color: #3f51b5;
+    }
+
+    .version-code {
+      background: #fff3e0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #f57c00;
+    }
+
+    .info-section {
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .section-divider {
+      margin: 24px 0;
+    }
+
+    .category-chip, .type-chip {
+      background: #e3f2fd !important;
+      color: #1976d2 !important;
+    }
+
+    .active-chip {
+      background: #c8e6c9 !important;
+      color: #2e7d32 !important;
+    }
+
+    .inactive-chip {
+      background: #ffcdd2 !important;
+      color: #c62828 !important;
+    }
+
+    .starter-chip {
+      background: #ffe0b2 !important;
+      color: #e65100 !important;
+    }
+
+    .not-starter-chip {
+      background: #f5f5f5 !important;
+      color: #757575 !important;
+    }
+
+    mat-chip mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 4px;
+    }
+
+    .usage-count {
+      font-weight: 500;
+      color: #1976d2;
     }
 
     mat-dialog-content {

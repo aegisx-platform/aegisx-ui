@@ -39,6 +39,7 @@ export const PdfTemplateSchema = Type.Object({
   version: Type.String(),
   is_active: Type.Boolean(),
   is_default: Type.Boolean(),
+  is_template_starter: Type.Boolean(),
   usage_count: Type.Number(),
   assets: Type.Optional(Type.Array(Type.Any())),
   permissions: Type.Optional(Type.Array(Type.String())),

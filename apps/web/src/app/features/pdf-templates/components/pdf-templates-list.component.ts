@@ -25,12 +25,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
+import { MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { PdfTemplateService } from '../services/pdf-templates.service';
 import {
@@ -46,12 +47,6 @@ import {
   PdfTemplateViewDialogComponent,
   PdfTemplateViewDialogData,
 } from './pdf-templates-view.dialog';
-import { DateRangeFilterComponent } from '../../../shared/components/date-range-filter/date-range-filter.component';
-import {
-  SharedExportComponent,
-  ExportOptions,
-  ExportService,
-} from '../../../shared/components/shared-export/shared-export.component';
 import {
   PdfTemplatePreviewDialog,
   PdfTemplatePreviewDialogData,
@@ -86,8 +81,7 @@ import {
     MatBadgeModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    DateRangeFilterComponent,
-    SharedExportComponent,
+    MatDividerModule,
   ],
   template: `
     <div class="pdf-templates-list-container">
@@ -133,98 +127,90 @@ import {
         </mat-card>
       }
 
-      <!-- Quick Search Section -->
-      <mat-card class="search-card">
+      <!-- Search & Filters Section -->
+      <mat-card class="search-filters-card">
         <mat-card-content>
-          <div class="search-wrapper">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="openCreateDialog()"
-              [disabled]="
-                pdfTemplatesService.loading() ||
-                pdfTemplatesService.permissionError()
-              "
-              [matTooltip]="
-                pdfTemplatesService.permissionError()
-                  ? 'You do not have permission to create Pdf Templates'
-                  : ''
-              "
-              class="add-btn"
-            >
-              <mat-icon>add</mat-icon>
-              Add Pdf Templates
-            </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
+          <div class="search-filters-wrapper">
+            <!-- Search Field -->
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search</mat-label>
+              <input
+                matInput
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="onSearch($event)"
+                placeholder="Search by name, display name, category..."
+              >
+              <mat-icon matPrefix>search</mat-icon>
+              @if (searchTerm) {
+                <button
+                  matSuffix
+                  mat-icon-button
+                  (click)="clearSearch()"
+                  matTooltip="Clear search"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </mat-form-field>
 
-      <!-- Quick Filters -->
-      <mat-card class="quick-filters-card">
-        <mat-card-content>
-          <div class="quick-filters">
-            <button
-              mat-stroked-button
-              [class.active]="quickFilter === 'all'"
-              (click)="setQuickFilter('all')"
-              class="filter-chip"
-            >
-              All
-            </button>
+            <!-- Category Filter -->
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Category</mat-label>
+              <mat-select
+                [(ngModel)]="selectedCategory"
+                (ngModelChange)="onCategoryFilterChange($event)">
+                <mat-option [value]="''">All Categories</mat-option>
+                <mat-option value="invoice">Invoice</mat-option>
+                <mat-option value="receipt">Receipt</mat-option>
+                <mat-option value="report">Report</mat-option>
+                <mat-option value="letter">Letter</mat-option>
+                <mat-option value="certificate">Certificate</mat-option>
+                <mat-option value="other">Other</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-            <!-- Active Items Filter -->
-            <button
-              mat-stroked-button
-              [class.active]="quickFilter === 'active'"
-              (click)="setQuickFilter('active')"
-              class="filter-chip"
-            >
-              Active
-            </button>
+            <!-- Status Filter -->
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Status</mat-label>
+              <mat-select
+                [(ngModel)]="quickFilter"
+                (ngModelChange)="setQuickFilter($event)">
+                <mat-option value="all">All Status</mat-option>
+                <mat-option value="active">Active</mat-option>
+                <mat-option value="inactive">Inactive</mat-option>
+                <mat-option value="starters">Template Starters</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-            <!-- Published Status Filter -->
-            <button
-              mat-stroked-button
-              [class.active]="quickFilter === 'published'"
-              (click)="setQuickFilter('published')"
-              class="filter-chip"
-            >
-              Published
-            </button>
-
-            <!-- Additional quick filters - uncomment as needed -->
-            <!-- Featured Items:
-            <button 
-              mat-stroked-button 
-              [class.active]="quickFilter === 'featured'"
-              (click)="setQuickFilter('featured')"
-              class="filter-chip"
-            >
-              Featured
-            </button>
-            -->
-
-            <!-- Available Items:
-            <button 
-              mat-stroked-button 
-              [class.active]="quickFilter === 'available'"
-              (click)="setQuickFilter('available')"
-              class="filter-chip"
-            >
-              Available
-            </button>
-            -->
-
-            <!-- Draft Status:
-            <button 
-              mat-stroked-button 
-              [class.active]="quickFilter === 'draft'"
-              (click)="setQuickFilter('draft')"
-              class="filter-chip"
-            >
-              Draft
-            </button>
-            -->
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button
+                mat-stroked-button
+                (click)="clearAllFilters()"
+                class="reset-btn"
+              >
+                <mat-icon>clear</mat-icon>
+                <span>Reset</span>
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="openCreateDialog()"
+                [disabled]="
+                  pdfTemplatesService.loading() ||
+                  pdfTemplatesService.permissionError()
+                "
+                [matTooltip]="
+                  pdfTemplatesService.permissionError()
+                    ? 'You do not have permission to create Pdf Templates'
+                    : ''
+                "
+                class="add-btn"
+              >
+                <mat-icon>add</mat-icon>
+                Add Pdf Templates
+              </button>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -260,12 +246,13 @@ import {
       <mat-card class="summary-dashboard-card">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon>dashboard</mat-icon>
-            Pdf Templates Overview
+            <mat-icon>analytics</mat-icon>
+            Template Statistics
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="summary-grid">
+            <!-- Total Templates -->
             <div class="summary-item">
               <div class="summary-icon">
                 <mat-icon color="primary">view_list</mat-icon>
@@ -274,126 +261,78 @@ import {
                 <div class="summary-value">
                   {{ pdfTemplatesService.totalPdfTemplate() }}
                 </div>
-                <div class="summary-label">Total Pdf Templates</div>
+                <div class="summary-label">Total Templates</div>
               </div>
             </div>
 
-            <div class="summary-item">
+            <!-- Active Templates -->
+            <div class="summary-item clickable" (click)="setQuickFilter('active')">
               <div class="summary-icon">
                 <mat-icon color="accent">check_circle</mat-icon>
               </div>
               <div class="summary-content">
                 <div class="summary-value">{{ getActiveCount() }}</div>
-                <div class="summary-label">Active Items</div>
+                <div class="summary-label">Active</div>
               </div>
             </div>
 
-            <div class="summary-item">
+            <!-- Template Starters -->
+            <div class="summary-item clickable" (click)="setQuickFilter('starters')">
               <div class="summary-icon">
-                <mat-icon color="warn">schedule</mat-icon>
+                <mat-icon style="color: #ff9800;">stars</mat-icon>
               </div>
               <div class="summary-content">
-                <div class="summary-value">{{ getDraftCount() }}</div>
-                <div class="summary-label">Draft Items</div>
+                <div class="summary-value">{{ getTemplateStartersCount() }}</div>
+                <div class="summary-label">Starter Templates</div>
               </div>
             </div>
 
+            <!-- Total Usage -->
             <div class="summary-item">
               <div class="summary-icon">
-                <mat-icon>today</mat-icon>
+                <mat-icon style="color: #9c27b0;">trending_up</mat-icon>
               </div>
               <div class="summary-content">
-                <div class="summary-value">{{ getRecentCount() }}</div>
-                <div class="summary-label">Added This Week</div>
+                <div class="summary-value">{{ getTotalUsageCount() }}</div>
+                <div class="summary-label">Total Usage</div>
+              </div>
+            </div>
+
+            <!-- Templates by Category -->
+            <div class="summary-item category-breakdown">
+              <div class="summary-header">
+                <mat-icon color="primary">category</mat-icon>
+                <span class="breakdown-title">By Category</span>
+              </div>
+              <div class="category-list">
+                @for (cat of getCategoryBreakdown(); track cat.category) {
+                  <div class="category-item" (click)="onCategoryFilterChange(cat.category)">
+                    <span class="category-name">{{ cat.label }}</span>
+                    <span class="category-count">{{ cat.count }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Most Used Template -->
+            <div class="summary-item most-used">
+              <div class="summary-header">
+                <mat-icon style="color: #4caf50;">emoji_events</mat-icon>
+                <span class="breakdown-title">Most Used</span>
+              </div>
+              <div class="most-used-content">
+                @if (getMostUsedTemplate(); as template) {
+                  <div class="template-info">
+                    <div class="template-name">{{ template.display_name }}</div>
+                    <div class="template-usage">{{ template.usage_count }} uses</div>
+                  </div>
+                } @else {
+                  <div class="no-data">No usage data</div>
+                }
               </div>
             </div>
           </div>
         </mat-card-content>
-      </mat-card>
-
-      <!-- Export Tools -->
-      <mat-card class="export-tools-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>file_download</mat-icon>
-            Export Data
-          </mat-card-title>
-          <mat-card-subtitle
-            >Export Pdf Templates data in various formats</mat-card-subtitle
-          >
-        </mat-card-header>
-        <mat-card-content>
-          <app-export
-            [exportService]="exportServiceAdapter"
-            [currentFilters]="filters()"
-            [selectedItems]="selectedItems()"
-            [availableFields]="availableExportFields"
-            [moduleName]="'pdf-templates'"
-            (exportStarted)="onExportStarted($event)"
-            (exportCompleted)="onExportCompleted($event)"
-          ></app-export>
-
-          <!-- Export Information -->
-          <div class="export-info">
-            <mat-icon class="info-icon">info</mat-icon>
-            <span class="info-text">
-              Total Pdf Templates:
-              {{ pdfTemplatesService.totalPdfTemplate() }} records
-              @if (hasActiveFilters()) {
-                ({{ activeFiltersCount() }} filters active)
-              }
-              @if (selectedItems().length > 0) {
-                | {{ selectedItems().length }} selected
-              }
-            </span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Advanced Filters -->
-      <mat-card class="advanced-filters-card">
-        <mat-expansion-panel class="filters-panel">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <mat-icon>tune</mat-icon>
-              Advanced Filters
-            </mat-panel-title>
-            <mat-panel-description>
-              Filter by specific criteria
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-
-          <div class="advanced-filters">
-            <!-- Unified Filter Header -->
-            <div class="filters-header">
-              <mat-icon>tune</mat-icon>
-              <span>Filter Your Results</span>
-            </div>
-
-            <!-- Unified Filter Grid -->
-            <div class="unified-filter-grid"></div>
-            <!-- End Unified Filter Grid -->
-
-            <!-- Action Buttons -->
-            <div class="filter-actions">
-              <button
-                mat-stroked-button
-                (click)="resetFilters()"
-                class="reset-btn"
-              >
-                Reset Filters
-              </button>
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="applyFiltersImmediate()"
-                class="apply-btn"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </mat-expansion-panel>
       </mat-card>
 
       <!-- Loading State -->
@@ -481,32 +420,6 @@ import {
                     </button>
                   </mat-menu>
 
-                  <!-- Bulk Export -->
-                  <button
-                    mat-stroked-button
-                    color="accent"
-                    [matMenuTriggerFor]="bulkExportMenu"
-                    [disabled]="pdfTemplatesService.loading()"
-                    matTooltip="Export selected items"
-                  >
-                    <mat-icon>download</mat-icon>
-                    Export
-                  </button>
-                  <mat-menu #bulkExportMenu="matMenu">
-                    <button mat-menu-item (click)="exportSelected('csv')">
-                      <mat-icon>table_chart</mat-icon>
-                      <span>Export as CSV</span>
-                    </button>
-                    <button mat-menu-item (click)="exportSelected('excel')">
-                      <mat-icon>grid_on</mat-icon>
-                      <span>Export as Excel</span>
-                    </button>
-                    <button mat-menu-item (click)="exportSelected('pdf')">
-                      <mat-icon>picture_as_pdf</mat-icon>
-                      <span>Export as PDF</span>
-                    </button>
-                  </mat-menu>
-
                   <!-- Clear Selection -->
                   <button mat-stroked-button (click)="clearSelection()">
                     <mat-icon>clear</mat-icon>
@@ -554,28 +467,19 @@ import {
                 <ng-container matColumnDef="display_name">
                   <th mat-header-cell *matHeaderCellDef>Display_name</th>
                   <td mat-cell *matCellDef="let pdfTemplates">
-                    <span class="text-cell">{{
-                      pdfTemplates.display_name || '-'
-                    }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- description Column -->
-                <ng-container matColumnDef="description">
-                  <th mat-header-cell *matHeaderCellDef>Description</th>
-                  <td mat-cell *matCellDef="let pdfTemplates">
-                    <span
-                      [title]="pdfTemplates.description"
-                      class="truncated-cell"
-                    >
-                      {{ pdfTemplates.description | slice: 0 : 50 }}
-                      @if (
-                        pdfTemplates.description &&
-                        pdfTemplates.description.length > 50
-                      ) {
-                        <span>...</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="text-cell">{{
+                        pdfTemplates.display_name || '-'
+                      }}</span>
+                      @if (pdfTemplates.is_template_starter) {
+                        <mat-icon
+                          class="template-starter-icon"
+                          matTooltip="Template Starter"
+                          color="accent">
+                          stars
+                        </mat-icon>
                       }
-                    </span>
+                    </div>
                   </td>
                 </ng-container>
 
@@ -766,45 +670,50 @@ import {
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Actions</th>
                   <td mat-cell *matCellDef="let pdfTemplates">
-                    <button
-                      mat-icon-button
-                      (click)="openPreviewDialog(pdfTemplates)"
-                      matTooltip="Preview PDF"
-                      color="primary"
-                    >
-                      <mat-icon>preview</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      (click)="openViewDialog(pdfTemplates)"
-                      matTooltip="View Details"
-                    >
-                      <mat-icon>visibility</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      (click)="openEditDialog(pdfTemplates)"
-                      matTooltip="Edit"
-                    >
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      (click)="openDuplicateDialog(pdfTemplates)"
-                      matTooltip="Duplicate"
-                      color="accent"
-                    >
-                      <mat-icon>content_copy</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deletePdfTemplate(pdfTemplates)"
-                      matTooltip="Delete"
-                      [disabled]="pdfTemplatesService.loading()"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                    <div class="action-buttons">
+                      <!-- Primary Action: Preview -->
+                      <button
+                        mat-icon-button
+                        (click)="openPreviewDialog(pdfTemplates)"
+                        matTooltip="Preview PDF"
+                        color="primary"
+                      >
+                        <mat-icon>preview</mat-icon>
+                      </button>
+
+                      <!-- More Actions Menu -->
+                      <button
+                        mat-icon-button
+                        [matMenuTriggerFor]="actionMenu"
+                        matTooltip="More Actions"
+                      >
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #actionMenu="matMenu">
+                        <button mat-menu-item (click)="openViewDialog(pdfTemplates)">
+                          <mat-icon>visibility</mat-icon>
+                          <span>View Details</span>
+                        </button>
+                        <button mat-menu-item (click)="openEditDialog(pdfTemplates)">
+                          <mat-icon>edit</mat-icon>
+                          <span>Edit</span>
+                        </button>
+                        <button mat-menu-item (click)="openDuplicateDialog(pdfTemplates)">
+                          <mat-icon>content_copy</mat-icon>
+                          <span>Duplicate</span>
+                        </button>
+                        <mat-divider></mat-divider>
+                        <button
+                          mat-menu-item
+                          (click)="deletePdfTemplate(pdfTemplates)"
+                          [disabled]="pdfTemplatesService.loading()"
+                          class="delete-action"
+                        >
+                          <mat-icon color="warn">delete</mat-icon>
+                          <span>Delete</span>
+                        </button>
+                      </mat-menu>
+                    </div>
                   </td>
                 </ng-container>
 
@@ -871,6 +780,25 @@ import {
         flex: 1 1 auto;
       }
 
+      /* Template Starter Icon */
+      .template-starter-icon {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+      }
+
+      /* Action Buttons Container */
+      .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* Delete Action in Menu */
+      .delete-action {
+        color: #f44336 !important;
+      }
+
       /* Permission Error Banner */
       .permission-error-banner {
         margin-bottom: 16px;
@@ -934,15 +862,12 @@ import {
         min-width: 120px;
       }
 
-      .search-card,
-      .quick-filters-card,
-      .summary-dashboard-card,
-      .export-tools-card,
-      .advanced-filters-card {
+      .search-filters-card,
+      .summary-dashboard-card {
         margin-bottom: 16px;
       }
 
-      .search-wrapper {
+      .search-filters-wrapper {
         display: flex;
         gap: 12px;
         align-items: flex-start;
@@ -954,27 +879,27 @@ import {
         min-width: 300px;
       }
 
+      .filter-field {
+        width: 200px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      .reset-btn,
       .add-btn {
         height: 56px;
         padding: 0 24px;
         white-space: nowrap;
-        min-width: 140px;
+        min-width: 120px;
       }
 
-      .quick-filters {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      .filter-chip {
-        transition: all 0.2s ease;
-      }
-
-      .filter-chip.active {
-        background-color: #1976d2;
-        color: white;
+      .reset-btn mat-icon,
+      .add-btn mat-icon {
+        margin-right: 4px;
       }
 
       .active-filters {
@@ -1266,32 +1191,110 @@ import {
         margin-top: 2px;
       }
 
-      /* Export Tools Styles */
-      .export-actions {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
+      .summary-item.clickable {
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
-      .export-info {
+      .summary-item.clickable:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.04);
+      }
+
+      /* Category Breakdown Styles */
+      .summary-item.category-breakdown {
+        flex-direction: column;
+        align-items: flex-start;
+        grid-column: span 2;
+      }
+
+      .summary-header {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.02);
-        border-radius: 4px;
-        font-size: 14px;
+        margin-bottom: 12px;
       }
 
-      .info-icon {
-        font-size: 18px;
+      .breakdown-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .category-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .category-item:hover {
+        background: #f5f5f5;
+        border-color: #1976d2;
+      }
+
+      .category-name {
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .category-count {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1976d2;
+        background: rgba(25, 118, 210, 0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+      }
+
+      /* Most Used Template Styles */
+      .summary-item.most-used {
+        flex-direction: column;
+        align-items: flex-start;
+        grid-column: span 2;
+      }
+
+      .most-used-content {
+        width: 100%;
+      }
+
+      .template-info {
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .template-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.87);
+        margin-bottom: 4px;
+      }
+
+      .template-usage {
+        font-size: 12px;
         color: rgba(0, 0, 0, 0.6);
       }
 
-      .info-text {
-        color: rgba(0, 0, 0, 0.7);
+      .no-data {
+        text-align: center;
+        padding: 16px;
+        color: rgba(0, 0, 0, 0.38);
+        font-size: 13px;
       }
 
       @media (max-width: 768px) {
@@ -1344,10 +1347,9 @@ import {
           padding: 12px;
         }
 
-        .export-actions {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 8px;
+        .summary-item.category-breakdown,
+        .summary-item.most-used {
+          grid-column: span 1;
         }
       }
     `,
@@ -1360,6 +1362,7 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
 
   // Search and filtering
   searchTerm = '';
+  selectedCategory = ''; // Category filter selection
   private searchTimeout: any;
   private filterTimeout: any;
 
@@ -1381,62 +1384,12 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
       .filter((item) => this.selectedIdsSignal().has(item.id)),
   );
 
-  // Export configuration
-  exportServiceAdapter: ExportService = {
-    export: (options: ExportOptions) =>
-      this.pdfTemplatesService.exportPdfTemplate(options),
-  };
-
-  availableExportFields = [
-    { key: 'id', label: 'Id' },
-    { key: 'name', label: 'Name' },
-    { key: 'display_name', label: 'Display name' },
-    { key: 'description', label: 'Description' },
-    { key: 'category', label: 'Category' },
-    { key: 'type', label: 'Type' },
-    { key: 'template_data', label: 'Template data' },
-    { key: 'sample_data', label: 'Sample data' },
-    { key: 'schema', label: 'Schema' },
-    { key: 'page_size', label: 'Page size' },
-    { key: 'orientation', label: 'Orientation' },
-    { key: 'styles', label: 'Styles' },
-    { key: 'fonts', label: 'Fonts' },
-    { key: 'version', label: 'Version' },
-    { key: 'is_active', label: 'Is active' },
-    { key: 'is_default', label: 'Is default' },
-    { key: 'usage_count', label: 'Usage count' },
-    { key: 'assets', label: 'Assets' },
-    { key: 'permissions', label: 'Permissions' },
-    { key: 'created_by', label: 'Created by' },
-    { key: 'updated_by', label: 'Updated by' },
-    { key: 'created_at', label: 'Created at' },
-    { key: 'updated_at', label: 'Updated at' },
-  ];
-
-  // Table configuration
+  // Table configuration - simplified to show only essential columns
   displayedColumns: string[] = [
     'select',
     'name',
     'display_name',
-    'description',
     'category',
-    'type',
-    'template_data',
-    'sample_data',
-    'schema',
-    'page_size',
-    'orientation',
-    'styles',
-    'fonts',
-    'version',
-    'is_active',
-    'is_default',
-    'usage_count',
-    'assets',
-    'permissions',
-    'created_by',
-    'updated_by',
-    'created_at',
     'actions',
   ];
 
@@ -1507,6 +1460,58 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
   }
 
   // ===== SEARCH AND FILTERING =====
+
+  onSearch(term: string) {
+    // Debounce search to prevent multiple API calls
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      // Update filters with search term
+      this.filtersSignal.update((filters) => ({
+        ...filters,
+        search: term || undefined,
+      }));
+
+      // Reset to page 1 and reload
+      this.pdfTemplatesService.setCurrentPage(1);
+      this.loadPdfTemplates();
+    }, 300);
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+
+    // Remove search from filters
+    this.filtersSignal.update((filters) => {
+      const { search, ...rest } = filters;
+      return rest;
+    });
+
+    // Reset to page 1 and reload
+    this.pdfTemplatesService.setCurrentPage(1);
+    this.loadPdfTemplates();
+  }
+
+  // ===== CATEGORY FILTERING =====
+
+  onCategoryFilterChange(category: string) {
+    // Clear quick filter when category filter is used
+    if (this.quickFilter !== 'all') {
+      this.quickFilter = 'all';
+    }
+
+    // Update filters with category
+    this.filtersSignal.update((filters) => ({
+      ...filters,
+      category: category || undefined,
+    }));
+
+    // Reset to page 1 and reload
+    this.pdfTemplatesService.setCurrentPage(1);
+    this.loadPdfTemplates();
+  }
 
   // ===== DATE FILTERING =====
 
@@ -1659,8 +1664,11 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(PdfTemplateCreateDialogComponent, {
-      width: '600px',
-      maxWidth: '90vw',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      panelClass: 'full-screen-dialog',
       disableClose: true,
     });
 
@@ -1674,16 +1682,19 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
 
   openEditDialog(pdfTemplates: PdfTemplate) {
     const dialogRef = this.dialog.open(PdfTemplateEditDialogComponent, {
-      width: '600px',
-      maxWidth: '90vw',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      panelClass: 'full-screen-dialog',
       disableClose: true,
       data: { pdfTemplates } as PdfTemplateEditDialogData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // The service automatically updates the list with optimistic updates
-        // No need to refresh unless there was an error
+        // Refresh the list to ensure array fields are properly displayed
+        this.loadPdfTemplates();
       }
     });
   }
@@ -1715,23 +1726,20 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
 
     // Clear all filters first
     this.searchTerm = '';
+    this.selectedCategory = '';
     this.filtersSignal.set({});
     this.clearValidationErrors();
 
     switch (filter) {
       case 'active':
+        this.filtersSignal.set({ is_active: true });
         break;
-      case 'published':
+      case 'inactive':
+        this.filtersSignal.set({ is_active: false });
         break;
-      // case 'featured':
-      //   this.filtersSignal.set({ is_featured: true });
-      //   break;
-      // case 'available':
-      //   this.filtersSignal.set({ is_available: true });
-      //   break;
-      // case 'draft':
-      //   this.filtersSignal.set({ status: 'draft' });
-      //   break;
+      case 'starters':
+        this.filtersSignal.set({ is_template_starter: true });
+        break;
       case 'all':
       default:
         // Already cleared above
@@ -1757,7 +1765,6 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
     if (this.quickFilter !== 'all') {
       const quickFilterLabels: Record<string, string> = {
         active: 'Active Items',
-        published: 'Published Status',
         // 'featured': 'Featured Items',
         // 'available': 'Available Items',
         // 'draft': 'Draft Status',
@@ -1771,6 +1778,23 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
 
     if (this.searchTerm) {
       chips.push({ key: 'search', label: 'Search', value: this.searchTerm });
+    }
+
+    // Category filter
+    if (this.selectedCategory) {
+      const categoryLabels: Record<string, string> = {
+        invoice: 'Invoice',
+        receipt: 'Receipt',
+        report: 'Report',
+        letter: 'Letter',
+        certificate: 'Certificate',
+        other: 'Other',
+      };
+      chips.push({
+        key: 'category',
+        label: 'Category',
+        value: categoryLabels[this.selectedCategory] || this.selectedCategory,
+      });
     }
 
     // Date field filters - only add if fields exist in schema
@@ -1838,6 +1862,13 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
 
     if (key === 'search') {
       this.searchTerm = '';
+    } else if (key === 'category') {
+      this.selectedCategory = '';
+      this.filtersSignal.update((filters) => {
+        const updated = { ...filters } as any;
+        delete updated.category;
+        return updated;
+      });
     } else if (key.includes('_range')) {
       // Handle date range removal
       const fieldName = key.replace('_range', '');
@@ -1867,6 +1898,7 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
     }
 
     this.searchTerm = '';
+    this.selectedCategory = '';
     this.filtersSignal.set({});
     this.quickFilter = 'all';
     this.clearValidationErrors();
@@ -1982,90 +2014,74 @@ export class PdfTemplateListComponent implements OnInit, OnDestroy {
     }
   }
 
-  async exportSelected(format: 'csv' | 'excel' | 'pdf') {
-    const selectedIds = Array.from(this.selectedIdsSignal());
-    if (selectedIds.length === 0) {
-      this.snackBar.open('Please select items to export', 'Close', {
-        duration: 3000,
-      });
-      return;
-    }
-
-    try {
-      // For now, show a placeholder message since export endpoints need to be implemented
-      this.snackBar.open(
-        `Export feature coming soon (${format.toUpperCase()})`,
-        'Close',
-        {
-          duration: 3000,
-        },
-      );
-      console.log('Export selected:', { selectedIds, format });
-    } catch (error) {
-      this.snackBar.open('Failed to export Pdf Templates', 'Close', {
-        duration: 5000,
-      });
-    }
-  }
-
-  // ===== EXPORT EVENT HANDLERS =====
-
-  onExportStarted(options: ExportOptions) {
-    console.log('Export started:', options);
-    this.snackBar.open(
-      `Preparing ${options.format.toUpperCase()} export...`,
-      '',
-      {
-        duration: 2000,
-      },
-    );
-  }
-
-  onExportCompleted(result: { success: boolean; format: string }) {
-    if (result.success) {
-      this.snackBar.open(
-        `${result.format.toUpperCase()} export completed successfully!`,
-        'Close',
-        {
-          duration: 3000,
-          panelClass: ['success-snackbar'],
-        },
-      );
-    } else {
-      this.snackBar.open(
-        `${result.format.toUpperCase()} export failed`,
-        'Close',
-        {
-          duration: 5000,
-          panelClass: ['error-snackbar'],
-        },
-      );
-    }
-  }
-
   // ===== SUMMARY DASHBOARD METHODS =====
 
+  /**
+   * Get count of active templates
+   */
   getActiveCount(): number {
     return this.pdfTemplatesService.pdfTemplatesList().filter((item) => {
-      return true; // Default to count all if no relevant field exists
+      return item.is_active === true;
     }).length;
   }
 
-  getDraftCount(): number {
+  /**
+   * Get count of template starters
+   */
+  getTemplateStartersCount(): number {
     return this.pdfTemplatesService.pdfTemplatesList().filter((item) => {
-      return false; // Default to count none if no relevant field exists
+      return item.is_template_starter === true;
     }).length;
   }
 
-  getRecentCount(): number {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  /**
+   * Get total usage count across all templates
+   */
+  getTotalUsageCount(): number {
+    return this.pdfTemplatesService.pdfTemplatesList().reduce((total, item) => {
+      return total + (item.usage_count || 0);
+    }, 0);
+  }
 
-    return this.pdfTemplatesService
-      .pdfTemplatesList()
-      .filter(
-        (item) => item.created_at && new Date(item.created_at) >= oneWeekAgo,
-      ).length;
+  /**
+   * Get breakdown of templates by category
+   */
+  getCategoryBreakdown(): Array<{ category: string; label: string; count: number }> {
+    const categories = ['invoice', 'receipt', 'report', 'letter', 'certificate', 'other'];
+    const labels: Record<string, string> = {
+      invoice: 'Invoice',
+      receipt: 'Receipt',
+      report: 'Report',
+      letter: 'Letter',
+      certificate: 'Certificate',
+      other: 'Other',
+    };
+
+    const breakdown = categories
+      .map(category => ({
+        category,
+        label: labels[category],
+        count: this.pdfTemplatesService.pdfTemplatesList().filter(
+          item => item.category === category
+        ).length,
+      }))
+      .filter(item => item.count > 0); // Only show categories with templates
+
+    return breakdown;
+  }
+
+  /**
+   * Get the most used template
+   */
+  getMostUsedTemplate(): any {
+    const templates = this.pdfTemplatesService.pdfTemplatesList();
+    if (templates.length === 0) return null;
+
+    return templates.reduce((max, item) => {
+      const itemUsage = item.usage_count || 0;
+      const maxUsage = max.usage_count || 0;
+      return itemUsage > maxUsage ? item : max;
+    }, templates[0]);
   }
 
   // ===== ADVANCED FEATURE METHODS =====

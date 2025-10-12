@@ -240,6 +240,15 @@ export class PdfTemplateService {
         throw new Error(`Template '${request.templateName}' is not active`);
       }
 
+      // Block template starters from being used for actual rendering (but allow preview)
+      const isPreview = request.options?.renderType === 'preview';
+      if (template.is_template_starter && !isPreview) {
+        throw new Error(
+          `Template '${request.templateName}' is a template starter and cannot be used directly for rendering. ` +
+          `Please create a new template based on this starter first.`
+        );
+      }
+
       // Create render record
       const renderRecord = await this.repository.createRender({
         template_id: template.id,
@@ -295,31 +304,43 @@ export class PdfTemplateService {
       }
 
       // Generate PDF
-      let pdfBuffer: Buffer;
+      let pdfBuffer: Buffer | undefined;
       let fileUrl: string | undefined;
       let previewUrl: string | undefined;
 
       if (request.options?.renderType === 'preview') {
-        // Generate preview
-        const previewResult = await this.pdfMakeService.generatePreview({
-          data: [request.data],
-          title: template.display_name,
-          template: 'custom',
-          customTemplate: {
-            name: template.name,
-            layout: { name: 'lightHorizontalLines' },
-            styles: documentDefinition.styles || {},
-            pageMargins: documentDefinition.pageMargins || [40, 60, 40, 60],
-          },
-          pageSize: documentDefinition.pageSize as any,
-          orientation: documentDefinition.pageOrientation as any,
-        });
+        console.log('[Preview] Starting preview generation...');
+        console.log('[Preview] Document definition:', JSON.stringify(documentDefinition).substring(0, 200));
 
-        if (!previewResult.success) {
-          throw new Error(previewResult.error || 'Preview generation failed');
-        }
+        // Generate preview using PDFMakeService directly (with proper Thai fonts)
+        console.log('[Preview] Calling PDFMakeService.generatePdfFromDocDefinition...');
+        pdfBuffer = await this.pdfMakeService.generatePdfFromDocDefinition(documentDefinition);
+        console.log('[Preview] PDF Buffer generated, size:', pdfBuffer.length);
 
-        previewUrl = previewResult.previewUrl;
+        // Save preview to temp directory
+        const filename = request.options.filename || `preview_${template.name}_${Date.now()}.pdf`;
+        const previewId = `preview_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+        const filePath = path.join(this.renderDir, previewId);
+
+        console.log('[Preview] Saving to:', filePath);
+        fs.writeFileSync(filePath, pdfBuffer);
+        console.log('[Preview] File saved successfully');
+
+        previewUrl = `/api/pdf-preview/${previewId}`;
+        console.log('[Preview] Preview URL:', previewUrl);
+
+        // Set cleanup after 15 minutes
+        setTimeout(() => {
+          try {
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
+          } catch (error) {
+            console.error('Error cleaning up preview file:', error);
+          }
+        }, 15 * 60 * 1000);
+
+        console.log('[Preview] Preview generation completed');
       } else {
         // Generate full PDF
         pdfBuffer = await this.generatePdfFromDefinition(documentDefinition);
@@ -354,7 +375,7 @@ export class PdfTemplateService {
 
       // Update render record with completion
       await this.repository.updateRender(renderId, {
-        page_count: this.estimatePageCount(pdfBuffer),
+        page_count: pdfBuffer ? this.estimatePageCount(pdfBuffer) : undefined,
         file_size: pdfBuffer?.length,
         render_time_ms: renderTime,
         status: 'completed',
@@ -369,7 +390,7 @@ export class PdfTemplateService {
         fileUrl,
         previewUrl,
         filename: request.options?.filename,
-        pageCount: this.estimatePageCount(pdfBuffer),
+        pageCount: pdfBuffer ? this.estimatePageCount(pdfBuffer) : undefined,
         fileSize: pdfBuffer?.length,
         renderTime,
         metadata: {
@@ -383,6 +404,8 @@ export class PdfTemplateService {
             : undefined,
         },
       };
+
+      console.log('[PDF Template Service] Response object:', JSON.stringify(response, null, 2));
 
       // Return PDF buffer directly for normal renders without file saving
       if (
@@ -447,6 +470,30 @@ export class PdfTemplateService {
     } catch (error) {
       console.error('Error getting types:', error);
       throw new Error(`Failed to get types: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get template starters
+   */
+  async getTemplateStarters(): Promise<PdfTemplate[]> {
+    try {
+      return await this.repository.getTemplateStarters();
+    } catch (error) {
+      console.error('Error getting template starters:', error);
+      throw new Error(`Failed to get template starters: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get active templates for actual use (excludes template starters)
+   */
+  async getActiveTemplatesForUse(): Promise<PdfTemplate[]> {
+    try {
+      return await this.repository.getActiveTemplatesForUse();
+    } catch (error) {
+      console.error('Error getting active templates for use:', error);
+      throw new Error(`Failed to get active templates for use: ${error.message}`);
     }
   }
 
@@ -613,26 +660,35 @@ export class PdfTemplateService {
   }
 
   private async generatePdfFromDefinition(docDefinition: any): Promise<Buffer> {
+    console.log('[generatePdfFromDefinition] Starting...');
     return new Promise((resolve, reject) => {
       try {
+        console.log('[generatePdfFromDefinition] Requiring pdfmake...');
         const PdfMake = require('pdfmake/build/pdfmake');
+        console.log('[generatePdfFromDefinition] PdfMake loaded');
 
         // Try to load Thai fonts
         try {
+          console.log('[generatePdfFromDefinition] Loading VFS fonts...');
           const vfsFonts = require('pdfmake/build/vfs_fonts');
           if (vfsFonts?.pdfMake?.vfs) {
             PdfMake.vfs = vfsFonts.pdfMake.vfs;
+            console.log('[generatePdfFromDefinition] VFS fonts loaded');
           }
         } catch (error) {
-          console.warn('VFS fonts not available, using default fonts');
+          console.warn('[generatePdfFromDefinition] VFS fonts not available, using default fonts');
         }
 
+        console.log('[generatePdfFromDefinition] Creating PDF document...');
         const pdfDoc = PdfMake.createPdf(docDefinition);
+        console.log('[generatePdfFromDefinition] PDF document created, getting buffer...');
 
         pdfDoc.getBuffer((buffer: Buffer) => {
+          console.log('[generatePdfFromDefinition] Buffer received, size:', buffer.length);
           resolve(buffer);
         });
       } catch (error) {
+        console.error('[generatePdfFromDefinition] ERROR:', error);
         reject(new Error(`PDF generation failed: ${error.message}`));
       }
     });

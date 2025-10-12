@@ -196,8 +196,19 @@ export async function pdfPreviewRoutes(fastify: FastifyInstance) {
           });
         }
 
-        // Get preview file path
-        const previewFilePath = pdfMakeService.getPreviewFile(previewId);
+        // Try to get preview file path from PDFMake service (export system)
+        let previewFilePath = pdfMakeService.getPreviewFile(previewId);
+
+        // If not found, try template render directory (template system)
+        if (!previewFilePath || !fs.existsSync(previewFilePath)) {
+          const path = require('path');
+          const renderDir = path.join(process.cwd(), 'temp', 'pdf-renders');
+          const templatePreviewPath = path.join(renderDir, previewId);
+
+          if (fs.existsSync(templatePreviewPath)) {
+            previewFilePath = templatePreviewPath;
+          }
+        }
 
         if (!previewFilePath || !fs.existsSync(previewFilePath)) {
           return reply.code(404).send({

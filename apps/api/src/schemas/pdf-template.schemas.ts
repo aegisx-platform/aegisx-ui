@@ -118,9 +118,13 @@ export const CreatePdfTemplateSchema = Type.Object({
     default: true,
     description: 'Whether template is active'
   })),
-  is_default: Type.Optional(Type.Boolean({ 
+  is_default: Type.Optional(Type.Boolean({
     default: false,
     description: 'Whether this is a default template'
+  })),
+  is_template_starter: Type.Optional(Type.Boolean({
+    default: false,
+    description: 'Whether this template can be used as a starter template'
   })),
   assets: Type.Optional(Type.Array(PdfTemplateAssetSchema, {
     description: 'Associated assets (images, fonts, etc.)'

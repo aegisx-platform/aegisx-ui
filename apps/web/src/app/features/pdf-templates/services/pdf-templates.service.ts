@@ -23,7 +23,7 @@ const API_BASE_URL = '';
 })
 export class PdfTemplateService {
   private http = inject(HttpClient);
-  private baseUrl = `${API_BASE_URL}/pdf-template`; // Note: singular, not plural
+  private baseUrl = `${API_BASE_URL}/pdf-templates`; // Plural to match backend
 
   // ===== SIGNALS FOR STATE MANAGEMENT =====
 
@@ -580,17 +580,29 @@ export class PdfTemplateService {
     data?: Record<string, any>,
   ): Promise<Blob | null> {
     try {
-      const response = await this.http
-        .post(
-          `${this.baseUrl}/${id}/preview`,
-          { data },
-          {
-            responseType: 'blob',
-          },
-        )
+      // First, get preview metadata (previewUrl)
+      const previewResponse = await this.http
+        .post<any>(`${this.baseUrl}/${id}/preview`, { data })
         .toPromise();
 
-      return response || null;
+      if (!previewResponse?.previewUrl) {
+        throw new Error('Invalid response: ' + JSON.stringify(previewResponse));
+      }
+
+      // Then fetch the actual PDF file using previewUrl
+      // Remove /api prefix if present to avoid double /api/api
+      let pdfUrl = previewResponse.previewUrl;
+      if (pdfUrl.startsWith('/api/')) {
+        pdfUrl = pdfUrl.substring(4); // Remove '/api' prefix
+      }
+
+      const pdfBlob = await this.http
+        .get(pdfUrl, {
+          responseType: 'blob',
+        })
+        .toPromise();
+
+      return pdfBlob || null;
     } catch (error: any) {
       console.error('Failed to preview template:', error);
       throw error;
@@ -758,6 +770,38 @@ export class PdfTemplateService {
       return response?.data || [];
     } catch (error: any) {
       console.error('Failed to get helpers:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get template starters for creating new templates
+   */
+  async getTemplateStarters(): Promise<PdfTemplate[]> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<PdfTemplate[]>>(`${this.baseUrl}/starters`)
+        .toPromise();
+
+      return response?.data || [];
+    } catch (error: any) {
+      console.error('Failed to get template starters:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get active templates for actual use (excludes template starters)
+   */
+  async getTemplatesForUse(): Promise<PdfTemplate[]> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<PdfTemplate[]>>(`${this.baseUrl}/for-use`)
+        .toPromise();
+
+      return response?.data || [];
+    } catch (error: any) {
+      console.error('Failed to get templates for use:', error);
       return [];
     }
   }

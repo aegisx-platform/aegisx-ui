@@ -1,8 +1,8 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { pdfPreviewRoutes } from './routes/pdf-preview.routes';
-import { pdfTemplateRoutes } from './routes/pdf-template.routes';
-import { pdfFontsRoutes } from './routes/pdf-fonts.routes';
+import { pdfPreviewRoutes } from './routes/pdf-preview.routes.js';
+import { pdfTemplateRoutes } from './routes/pdf-template.routes.js';
+import { pdfFontsRoutes } from './routes/pdf-fonts.routes.js';
 
 /**
  * PDF Export Module
@@ -17,7 +17,7 @@ const pdfExportPlugin: FastifyPluginAsync = async (
 ) => {
   // Register all PDF-related routes
   await fastify.register(pdfPreviewRoutes, { prefix: '/pdf-preview' });
-  await fastify.register(pdfTemplateRoutes, { prefix: '/pdf-template' });
+  await fastify.register(pdfTemplateRoutes, { prefix: '/pdf-templates' });
   await fastify.register(pdfFontsRoutes, { prefix: '/pdf-fonts' });
 
   // Log plugin registration

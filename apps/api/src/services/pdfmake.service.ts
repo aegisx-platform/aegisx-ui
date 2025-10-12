@@ -187,6 +187,47 @@ export class PDFMakeService {
   }
 
   /**
+   * Generate PDF from document definition directly
+   * Used by Template System to generate PDFs with proper font support
+   */
+  async generatePdfFromDocDefinition(docDefinition: any): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      try {
+        console.log('[PDFMakeService] Generating PDF from document definition...');
+        // Get fonts for PdfPrinter
+        const fonts = this.fontManager.getFontsForPDFMake();
+        const printer = new PdfPrinter(fonts);
+
+        // Create PDF document using server-side approach
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const chunks: Buffer[] = [];
+
+        pdfDoc.on('data', (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+
+        pdfDoc.on('end', () => {
+          const result = Buffer.concat(chunks);
+          console.log('[PDFMakeService] PDF generated successfully, size:', result.length);
+          resolve(result);
+        });
+
+        pdfDoc.on('error', (error: Error) => {
+          console.error('[PDFMakeService] PDF document generation error:', error);
+          reject(new Error(`PDF generation failed: ${error.message}`));
+        });
+
+        // Finalize the PDF
+        pdfDoc.end();
+
+      } catch (error) {
+        console.error('[PDFMakeService] PDF generation error:', error);
+        reject(new Error(`PDF generation failed: ${error.message}`));
+      }
+    });
+  }
+
+  /**
    * Generate PDF preview for server-side preview
    */
   async generatePreview(options: PdfExportOptions): Promise<PdfPreviewResponse> {
