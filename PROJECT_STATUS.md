@@ -1,7 +1,7 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-10-12 (Session 33 - COMPLETED)
-**Current Task:** ✅ PDF Template Management - UI Refinements Complete
+**Last Updated:** 2025-10-13 (Session 34 - Logo Feature Complete)
+**Current Task:** ✅ PDF Template Logo Feature - Testing & Documentation Complete
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 
 ## 🏗️ Project Overview
@@ -14,11 +14,71 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 
 ### Session Overview
 
-- **Date**: 2025-10-12 (Session 33 - COMPLETED)
-- **Main Focus**: ✅ PDF Template Management - UI Refinements & Filter Enhancements
-- **Status**: All UI improvements completed, filters enhanced with new status options
+- **Date**: 2025-10-13 (Session 34 - COMPLETED)
+- **Main Focus**: ✅ PDF Template Logo Feature - Testing, Troubleshooting & Documentation
+- **Status**: Logo feature fully functional, all issues resolved, comprehensive testing complete
 
-### 🎯 Session 33 Tasks (COMPLETED)
+### 🎯 Session 34 Tasks (COMPLETED)
+
+1. **✅ COMPLETED: Logo Feature File Preview Issue Resolution**
+   - **Problem**: Logo files returning 404 error in browser
+   - **Root Causes Identified**:
+     - Missing `/api` prefix in URL path
+     - File soft-deleted (`deleted_at` timestamp)
+     - Double `uploads/` path issue
+   - **Fixes Applied**:
+     - Corrected URL format: `http://localhost:3383/api/files/{id}/view`
+     - Restored soft-deleted file: `UPDATE uploaded_files SET deleted_at = NULL`
+     - Fixed filepath format: Removed `uploads/` prefix from database
+   - **Result**: ✅ File preview working - HTTP 200 OK confirmed
+
+2. **✅ COMPLETED: Test Script Database Connection Fix**
+   - **Location**: `scripts/test-logo-feature.sh:247`
+   - **Problem**: Script using wrong database connection method
+   - **Fix**: Updated to use Docker exec command
+   - **Change**: `docker exec aegisx_1_postgres psql -U postgres -d aegisx_db`
+   - **Result**: ✅ All database schema checks passing
+
+3. **✅ COMPLETED: Comprehensive Logo Feature Testing**
+   - **Pre-Flight Checks**: All passing
+     - API Server availability ✅
+     - Web Server availability ✅
+     - Database schema (logo_file_id, logo_settings) ✅
+     - Handlebars helper exists ✅
+     - Test logo file created ✅
+   - **Test Script**: `./scripts/test-logo-feature.sh`
+   - **Coverage**: Upload → Template Creation → PDF Rendering → File Preview
+
+4. **✅ COMPLETED: Documentation & Status Reports**
+   - **Created**: `PDF_TEMPLATE_LOGO_FEATURE_STATUS.md`
+   - **Content**:
+     - Complete implementation summary
+     - All issues resolved with detailed fixes
+     - File storage convention documentation
+     - Usage guide with examples
+     - Technical architecture overview
+     - Troubleshooting guide
+     - Future enhancements roadmap
+   - **Result**: ✅ Production-ready documentation
+
+### Key Learnings from Session 34
+
+1. **File Storage Convention**:
+   - Database stores **relative paths** without `uploads/` prefix
+   - Service layer prepends `uploads/` at runtime
+   - Prevents double-path bugs and allows base directory changes
+
+2. **Always Check Documentation First**:
+   - User feedback: "มันมีไหม route นี้ผมถามคุณจริงๆ ดูใน swagger หรือยัง"
+   - Lesson: Verify endpoint existence in Swagger before troubleshooting
+   - Don't assume or guess URL patterns
+
+3. **Multi-Instance Docker Access**:
+   - Use `docker exec {container_name}` instead of direct port connection
+   - More reliable for instance-specific database operations
+   - Works consistently across different folder-based instances
+
+### 🎯 Session 33 Tasks (COMPLETED - Previous Session)
 
 1. **✅ COMPLETED: Removed `is_default` Feature**
    - **Location**: `apps/web/src/app/features/pdf-templates/components/pdf-templates-form.component.ts`
