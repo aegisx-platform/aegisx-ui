@@ -1,5 +1,16 @@
 // ===== CORE ENTITY TYPES =====
 
+export interface LogoSettings {
+  width?: number;
+  height?: number;
+  position?: 'header' | 'footer' | 'custom';
+  alignment?: 'left' | 'center' | 'right';
+  marginTop?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
+}
+
 export interface PdfTemplate {
   id: string;
   name: string;
@@ -21,6 +32,8 @@ export interface PdfTemplate {
   usage_count?: number | null;
   assets?: Record<string, any> | null;
   permissions?: Record<string, any> | null;
+  logo_file_id?: string | null;
+  logo_settings?: LogoSettings | null;
   created_by?: string | null;
   updated_by?: string | null;
   created_at: string;
@@ -47,6 +60,8 @@ export interface CreatePdfTemplateRequest {
   usage_count?: number | null;
   assets?: Record<string, any> | null;
   permissions?: Record<string, any> | null;
+  logo_file_id?: string | null;
+  logo_settings?: LogoSettings | null;
   created_by?: string | null;
   updated_by?: string | null;
 }
@@ -71,6 +86,8 @@ export interface UpdatePdfTemplateRequest {
   usage_count?: number | null;
   assets?: Record<string, any> | null;
   permissions?: Record<string, any> | null;
+  logo_file_id?: string | null;
+  logo_settings?: LogoSettings | null;
   created_by?: string | null;
   updated_by?: string | null;
 }
