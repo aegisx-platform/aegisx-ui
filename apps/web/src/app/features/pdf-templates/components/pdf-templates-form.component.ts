@@ -31,6 +31,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
 import { FileUploadService } from '../../../shared/ui/components/file-upload/file-upload.service';
+import { PdfTemplateGeneratorService } from '../services/pdf-template-generator.service';
+import {
+  InsertTemplate,
+  PdfTemplateInsertService,
+} from '../services/pdf-template-insert.service';
+import { PdfTemplateValidationService } from '../services/pdf-template-validation.service';
 
 import { PdfTemplate } from '../types/pdf-templates.types';
 
@@ -39,19 +45,6 @@ export type PdfTemplateFormMode = 'create' | 'edit';
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
 export interface PdfTemplateFormData {
   // Dynamic form data based on database schema
-}
-
-/**
- * Quick Insert Template Definition
- */
-export interface InsertTemplate {
-  icon: string;
-  label: string;
-  description: string;
-  tooltip: string;
-  template?: any;
-  getTemplate?: () => any;
-  requiresLogo?: boolean;
 }
 
 @Component({
@@ -175,21 +168,16 @@ export interface InsertTemplate {
           <span class="toolbar-subtitle">Add common template structures</span>
         </div>
         <div class="toolbar-buttons">
-          @for (template of insertTemplates; track template.label) {
+          @for (template of insertTemplates; track template.name) {
             <button
               mat-stroked-button
               type="button"
               (click)="insertTemplate(template)"
-              [disabled]="
-                template.requiresLogo &&
-                !uploadedLogo() &&
-                !pdfTemplatesForm.value.logo_file_id
-              "
-              [matTooltip]="template.tooltip"
+              [matTooltip]="template.description"
               class="insert-btn"
             >
               <mat-icon>{{ template.icon }}</mat-icon>
-              <span>{{ template.label }}</span>
+              <span>{{ template.name }}</span>
             </button>
           }
         </div>
@@ -695,6 +683,9 @@ export interface InsertTemplate {
 export class PdfTemplateFormComponent implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
   private fileUploadService = inject(FileUploadService);
+  private generatorService = inject(PdfTemplateGeneratorService);
+  private insertService = inject(PdfTemplateInsertService);
+  private validationService = inject(PdfTemplateValidationService);
 
   @Input() mode: PdfTemplateFormMode = 'create';
   @Input() initialData?: Partial<PdfTemplate>;
@@ -707,525 +698,29 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
   // ViewChild for Monaco Editor (template_data editor)
   @ViewChild('templateDataEditor') templateDataEditor?: MonacoEditorComponent;
 
-  private originalFormValue: any;
+  private originalFormValue: Record<string, unknown> | null = null;
 
   // Logo upload state
   uploadingLogo = signal(false);
-  uploadedLogo = signal<any>(null);
+  uploadedLogo = signal<{
+    fileSize?: number;
+    originalName?: string;
+    mimeType?: string;
+  } | null>(null);
   logoPreviewUrl = signal<string | null>(null);
   logoError = signal<string | null>(null);
 
   // Example text for handlebars helper
   readonly logoHelperExample = '{{logo logo_file_id}}';
 
-  // Quick Insert Templates
-  readonly insertTemplates: InsertTemplate[] = [
-    // === STARTER TEMPLATE ===
-    {
-      icon: 'add_circle',
-      label: 'Starter',
-      description: 'Complete starter template',
-      tooltip: 'Insert complete starter template with all basic structures',
-      getTemplate: () => this.getStarterTemplate(),
-    },
+  // Get Quick Insert Templates from service
+  readonly insertTemplates = this.insertService.getAllTemplates();
 
-    // === STRUCTURE & LAYOUT ===
-    {
-      icon: 'image',
-      label: 'Logo',
-      description: 'Insert logo image',
-      tooltip: 'Insert centered logo (requires uploaded logo)',
-      requiresLogo: true,
-      getTemplate: () => this.getLogoTemplate(),
-    },
-    {
-      icon: 'title',
-      label: 'Header',
-      description: 'Insert document header',
-      tooltip: 'Insert styled header text',
-      template: {
-        text: '{{documentTitle}}',
-        style: 'header',
-        alignment: 'center',
-        margin: [0, 0, 0, 20],
-      },
-    },
-    {
-      icon: 'view_column',
-      label: 'Columns',
-      description: 'Insert column layout',
-      tooltip: 'Insert 2-column layout',
-      template: {
-        columns: [
-          {
-            width: '*',
-            text: '{{leftColumn}}',
-            style: 'body',
-          },
-          {
-            width: '*',
-            text: '{{rightColumn}}',
-            style: 'body',
-          },
-        ],
-        columnGap: 10,
-        margin: [0, 5, 0, 5],
-      },
-    },
-    {
-      icon: 'layers',
-      label: 'Stack',
-      description: 'Insert stacked elements',
-      tooltip: 'Insert vertical stack of elements',
-      template: {
-        stack: [
-          { text: '{{line1}}', style: 'body' },
-          { text: '{{line2}}', style: 'body' },
-          { text: '{{line3}}', style: 'body' },
-        ],
-        margin: [0, 5, 0, 5],
-      },
-    },
-
-    // === TEXT & CONTENT ===
-    {
-      icon: 'text_fields',
-      label: 'Text',
-      description: 'Insert text block',
-      tooltip: 'Insert text block with Handlebars placeholder',
-      template: {
-        text: '{{variableName}}',
-        style: 'body',
-        margin: [0, 5, 0, 5],
-      },
-    },
-    {
-      icon: 'format_bold',
-      label: 'Styled Text',
-      description: 'Insert styled text',
-      tooltip: 'Insert text with inline styles',
-      template: {
-        text: [
-          { text: 'Bold ', bold: true },
-          { text: 'Italic ', italics: true },
-          { text: 'Underline', decoration: 'underline' },
-        ],
-        margin: [0, 5, 0, 5],
-      },
-    },
-    {
-      icon: 'link',
-      label: 'Link',
-      description: 'Insert hyperlink',
-      tooltip: 'Insert clickable link',
-      template: {
-        text: '{{linkText}}',
-        link: '{{url}}',
-        color: 'blue',
-        decoration: 'underline',
-      },
-    },
-
-    // === TABLES ===
-    {
-      icon: 'table_chart',
-      label: 'Table',
-      description: 'Insert table structure',
-      tooltip: 'Insert table with header and data rows',
-      template: {
-        table: {
-          headerRows: 1,
-          widths: ['*', '*', '*'],
-          body: [
-            [
-              { text: 'Header 1', style: 'tableHeader' },
-              { text: 'Header 2', style: 'tableHeader' },
-              { text: 'Header 3', style: 'tableHeader' },
-            ],
-            ['{{row.col1}}', '{{row.col2}}', '{{row.col3}}'],
-          ],
-        },
-        layout: 'lightHorizontalLines',
-        margin: [0, 10, 0, 10],
-      },
-    },
-    {
-      icon: 'table_rows',
-      label: 'Table (No Border)',
-      description: 'Insert borderless table',
-      tooltip: 'Insert table without borders',
-      template: {
-        table: {
-          widths: ['auto', '*'],
-          body: [
-            ['{{label1}}:', '{{value1}}'],
-            ['{{label2}}:', '{{value2}}'],
-            ['{{label3}}:', '{{value3}}'],
-          ],
-        },
-        layout: 'noBorders',
-        margin: [0, 5, 0, 5],
-      },
-    },
-    {
-      icon: 'view_headline',
-      label: 'Table (Multiple Rows)',
-      description: 'Insert table with multiple rows using {{#each}}',
-      tooltip: 'Insert table that renders multiple rows from array data',
-      getTemplate: () => ({
-        table: {
-          headerRows: 1,
-          widths: ['auto', '*', 'auto', 'auto'],
-          body: '__HANDLEBARS_BODY_PLACEHOLDER__',
-        },
-        layout: 'lightHorizontalLines',
-        margin: [0, 10, 0, 10],
-        __handlebarsBody: `[
-  [
-    { "text": "No.", "style": "tableHeader" },
-    { "text": "Description", "style": "tableHeader" },
-    { "text": "Qty", "style": "tableHeader" },
-    { "text": "Amount", "style": "tableHeader" }
-  ],
-  {{#each items}}
-  [
-    "{{@index + 1}}",
-    "{{this.description}}",
-    "{{this.qty}}",
-    "{{this.amount}}"
-  ]{{#unless @last}},{{/unless}}
-  {{/each}}
-]`,
-      }),
-    },
-    {
-      icon: 'style',
-      label: 'Table (Styled Rows)',
-      description: 'Insert table with styled cells',
-      tooltip: 'Insert table with alignment and styling in each cell',
-      getTemplate: () => ({
-        table: {
-          headerRows: 1,
-          widths: ['auto', '*', 80, 100],
-          body: '__HANDLEBARS_BODY_PLACEHOLDER__',
-        },
-        layout: {
-          hLineWidth:
-            'function(i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 0.5; }',
-          vLineWidth: 'function(i) { return 0; }',
-          hLineColor: 'function(i) { return "#cccccc"; }',
-        },
-        margin: [0, 10, 0, 10],
-        __handlebarsBody: `[
-  [
-    { "text": "No.", "style": "tableHeader", "alignment": "center" },
-    { "text": "Description", "style": "tableHeader" },
-    { "text": "Quantity", "style": "tableHeader", "alignment": "center" },
-    { "text": "Amount", "style": "tableHeader", "alignment": "right" }
-  ],
-  {{#each items}}
-  [
-    { "text": "{{@index + 1}}", "alignment": "center" },
-    { "text": "{{this.description}}" },
-    { "text": "{{this.qty}}", "alignment": "center" },
-    { "text": "{{this.amount}}", "alignment": "right", "bold": true }
-  ]{{#unless @last}},{{/unless}}
-  {{/each}}
-]`,
-      }),
-    },
-    {
-      icon: 'receipt_long',
-      label: 'Invoice Table',
-      description: 'Insert invoice table with totals',
-      tooltip: 'Insert complete invoice table with items and summary',
-      getTemplate: () => [
-        {
-          table: {
-            headerRows: 1,
-            widths: ['auto', '*', 'auto', 'auto', 'auto'],
-            body: '__HANDLEBARS_BODY_PLACEHOLDER__',
-          },
-          layout: 'lightHorizontalLines',
-          margin: [0, 0, 0, 20],
-          __handlebarsBody: `[
-  [
-    { "text": "No.", "style": "tableHeader" },
-    { "text": "Item Description", "style": "tableHeader" },
-    { "text": "Qty", "style": "tableHeader" },
-    { "text": "Unit Price", "style": "tableHeader" },
-    { "text": "Total", "style": "tableHeader" }
-  ],
-  {{#each items}}
-  [
-    "{{@index + 1}}",
-    "{{this.description}}",
-    { "text": "{{this.qty}}", "alignment": "center" },
-    { "text": "{{this.unitPrice}}", "alignment": "right" },
-    { "text": "{{this.total}}", "alignment": "right", "bold": true }
-  ]{{#unless @last}},{{/unless}}
-  {{/each}}
-]`,
-        },
-        {
-          columns: [
-            { width: '*', text: '' },
-            {
-              width: 'auto',
-              table: {
-                widths: [120, 100],
-                body: [
-                  ['Subtotal:', { text: '{{subtotal}}', alignment: 'right' }],
-                  ['Tax (7%):', { text: '{{tax}}', alignment: 'right' }],
-                  ['Discount:', { text: '{{discount}}', alignment: 'right' }],
-                  [
-                    { text: 'Total:', bold: true, fontSize: 12 },
-                    {
-                      text: '{{total}}',
-                      bold: true,
-                      fontSize: 12,
-                      alignment: 'right',
-                      color: '#2196F3',
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-            },
-          ],
-        },
-      ],
-    },
-
-    // === LISTS ===
-    {
-      icon: 'format_list_bulleted',
-      label: 'List',
-      description: 'Insert bulleted list',
-      tooltip: 'Insert unordered list with items',
-      template: {
-        ul: ['{{item1}}', '{{item2}}', '{{item3}}'],
-        margin: [0, 5, 0, 5],
-      },
-    },
-    {
-      icon: 'format_list_numbered',
-      label: 'Numbered List',
-      description: 'Insert numbered list',
-      tooltip: 'Insert ordered list with items',
-      template: {
-        ol: ['{{item1}}', '{{item2}}', '{{item3}}'],
-        margin: [0, 5, 0, 5],
-      },
-    },
-
-    // === IMAGES ===
-    {
-      icon: 'photo',
-      label: 'Image',
-      description: 'Insert image placeholder',
-      tooltip: 'Insert image with fit options',
-      template: {
-        image: '{{imageUrl}}',
-        width: 200,
-        height: 200,
-        fit: [200, 200],
-        margin: [0, 10, 0, 10],
-      },
-    },
-    {
-      icon: 'crop_portrait',
-      label: 'QR Code',
-      description: 'Insert QR code',
-      tooltip: 'Insert QR code placeholder',
-      template: {
-        qr: '{{qrData}}',
-        fit: 100,
-        margin: [0, 10, 0, 10],
-      },
-    },
-
-    // === CANVAS & GRAPHICS ===
-    {
-      icon: 'horizontal_rule',
-      label: 'Line',
-      description: 'Insert horizontal line',
-      tooltip: 'Insert separator line',
-      template: {
-        canvas: [
-          {
-            type: 'line',
-            x1: 0,
-            y1: 0,
-            x2: 515,
-            y2: 0,
-            lineWidth: 1,
-            lineColor: '#cccccc',
-          },
-        ],
-        margin: [0, 10, 0, 10],
-      },
-    },
-    {
-      icon: 'rectangle',
-      label: 'Rectangle',
-      description: 'Insert rectangle shape',
-      tooltip: 'Insert rectangle with fill',
-      template: {
-        canvas: [
-          {
-            type: 'rect',
-            x: 0,
-            y: 0,
-            w: 100,
-            h: 50,
-            lineWidth: 1,
-            lineColor: '#000000',
-            color: '#f0f0f0',
-          },
-        ],
-        margin: [0, 10, 0, 10],
-      },
-    },
-    {
-      icon: 'circle',
-      label: 'Circle',
-      description: 'Insert circle shape',
-      tooltip: 'Insert circle',
-      template: {
-        canvas: [
-          {
-            type: 'ellipse',
-            x: 50,
-            y: 50,
-            r1: 40,
-            r2: 40,
-            lineWidth: 1,
-            lineColor: '#000000',
-          },
-        ],
-        margin: [0, 10, 0, 10],
-      },
-    },
-    {
-      icon: 'polyline',
-      label: 'Polyline',
-      description: 'Insert polyline',
-      tooltip: 'Insert connected line segments',
-      template: {
-        canvas: [
-          {
-            type: 'polyline',
-            points: [
-              { x: 0, y: 0 },
-              { x: 50, y: 30 },
-              { x: 100, y: 0 },
-            ],
-            lineWidth: 2,
-            lineColor: '#000000',
-          },
-        ],
-        margin: [0, 10, 0, 10],
-      },
-    },
-
-    // === SVG ===
-    {
-      icon: 'code',
-      label: 'SVG',
-      description: 'Insert SVG graphic',
-      tooltip: 'Insert SVG element',
-      template: {
-        svg: '<svg width="100" height="100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>',
-        width: 100,
-        height: 100,
-        margin: [0, 10, 0, 10],
-      },
-    },
-
-    // === TOC & REFERENCE ===
-    {
-      icon: 'toc',
-      label: 'TOC',
-      description: 'Insert table of contents',
-      tooltip: 'Insert table of contents placeholder',
-      template: {
-        toc: {
-          title: { text: 'Table of Contents', style: 'header' },
-          textStyle: { fontSize: 12 },
-        },
-        margin: [0, 10, 0, 20],
-      },
-    },
-    {
-      icon: 'bookmark',
-      label: 'Anchor',
-      description: 'Insert anchor point',
-      tooltip: 'Insert anchor for internal links',
-      template: {
-        text: '{{anchorText}}',
-        id: '{{anchorId}}',
-        margin: [0, 5, 0, 5],
-      },
-    },
-
-    // === LAYOUT CONTROLS ===
-    {
-      icon: 'space_bar',
-      label: 'Spacer',
-      description: 'Insert vertical space',
-      tooltip: 'Insert empty space between elements',
-      template: {
-        text: '',
-        margin: [0, 20, 0, 0],
-      },
-    },
-    {
-      icon: 'description',
-      label: 'Page Break',
-      description: 'Insert page break',
-      tooltip: 'Force new page',
-      template: {
-        text: '',
-        pageBreak: 'after',
-      },
-    },
-    {
-      icon: 'vertical_align_top',
-      label: 'Absolute Position',
-      description: 'Insert absolutely positioned element',
-      tooltip: 'Insert element at specific position',
-      template: {
-        text: '{{content}}',
-        absolutePosition: { x: 40, y: 40 },
-      },
-    },
-    {
-      icon: 'flip_to_front',
-      label: 'Relative Position',
-      description: 'Insert relatively positioned element',
-      tooltip: 'Insert element with relative positioning',
-      template: {
-        text: '{{content}}',
-        relativePosition: { x: 10, y: 10 },
-      },
-    },
-  ];
-
-  // JSON validator
+  // JSON validator - delegate to validation service
   private jsonValidator(
     control: AbstractControl,
-  ): { [key: string]: any } | null {
-    if (!control.value) {
-      return null; // Allow empty for optional fields
-    }
-
-    try {
-      JSON.parse(control.value);
-      return null;
-    } catch (e) {
-      return { invalidJson: true };
-    }
+  ): { [key: string]: unknown } | null {
+    return this.validationService.jsonValidator()(control);
   }
 
   /**
@@ -1393,7 +888,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
       const rawFormData = this.pdfTemplatesForm.value;
 
       // Parse JSON strings back to objects
-      const formData: any = {
+      const formData: Record<string, unknown> = {
         name: rawFormData.name,
         display_name: rawFormData.display_name,
         description: rawFormData.description || undefined,
@@ -1417,10 +912,10 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
       try {
         if (this.detectHandlebars(rawFormData.template_data_raw)) {
           // Has Handlebars - send as string (backend will handle compilation)
-          formData.template_data = rawFormData.template_data_raw;
+          formData['template_data'] = rawFormData.template_data_raw;
         } else {
           // Pure JSON - parse and send as object
-          formData.template_data = JSON.parse(rawFormData.template_data_raw);
+          formData['template_data'] = JSON.parse(rawFormData.template_data_raw);
         }
       } catch (_e) {
         console.error('Failed to parse template_data:', _e);
@@ -1430,7 +925,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
       // Parse optional JSON fields
       if (rawFormData.sample_data_raw) {
         try {
-          formData.sample_data = JSON.parse(rawFormData.sample_data_raw);
+          formData['sample_data'] = JSON.parse(rawFormData.sample_data_raw);
         } catch (e) {
           console.warn('Failed to parse sample_data:', e);
         }
@@ -1438,7 +933,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
 
       if (rawFormData.schema_raw) {
         try {
-          formData.schema = JSON.parse(rawFormData.schema_raw);
+          formData['schema'] = JSON.parse(rawFormData.schema_raw);
         } catch (e) {
           console.warn('Failed to parse schema:', e);
         }
@@ -1446,7 +941,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
 
       if (rawFormData.styles_raw) {
         try {
-          formData.styles = JSON.parse(rawFormData.styles_raw);
+          formData['styles'] = JSON.parse(rawFormData.styles_raw);
         } catch (e) {
           console.warn('Failed to parse styles:', e);
         }
@@ -1454,7 +949,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
 
       if (rawFormData.fonts_raw) {
         try {
-          formData.fonts = JSON.parse(rawFormData.fonts_raw);
+          formData['fonts'] = JSON.parse(rawFormData.fonts_raw);
         } catch (e) {
           console.warn('Failed to parse fonts:', e);
         }
@@ -1818,7 +1313,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
   /**
    * Infer JSON Schema from data object
    */
-  private inferSchemaFromData(data: any): any {
+  private inferSchemaFromData(data: unknown): Record<string, unknown> {
     if (data === null) {
       return { type: 'null' };
     }
@@ -1842,7 +1337,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
     switch (type) {
       case 'string':
         // Check if it's a date string
-        if (this.isDateString(data)) {
+        if (typeof data === 'string' && this.isDateString(data)) {
           return {
             type: 'string',
             format: 'date',
@@ -1859,14 +1354,15 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
         return { type: 'boolean' };
 
       case 'object': {
-        const properties: Record<string, any> = {};
+        const properties: Record<string, Record<string, unknown>> = {};
         const required: string[] = [];
+        const objData = data as Record<string, unknown>;
 
-        for (const key in data) {
-          if (Object.prototype.hasOwnProperty.call(data, key)) {
-            properties[key] = this.inferSchemaFromData(data[key]);
+        for (const key in objData) {
+          if (Object.prototype.hasOwnProperty.call(objData, key)) {
+            properties[key] = this.inferSchemaFromData(objData[key]);
             // Mark non-null values as required
-            if (data[key] !== null && data[key] !== undefined) {
+            if (objData[key] !== null && objData[key] !== undefined) {
               required.push(key);
             }
           }
@@ -1991,7 +1487,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
   /**
    * Get complete starter template with all basic structures
    */
-  private getStarterTemplate(): any {
+  private getStarterTemplate(): Record<string, unknown> {
     const hasLogo =
       this.uploadedLogo() || this.pdfTemplatesForm.value.logo_file_id;
 
@@ -2230,7 +1726,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
   /**
    * Get logo template with current logo_file_id
    */
-  private getLogoTemplate(): any {
+  private getLogoTemplate(): Record<string, unknown> {
     return {
       columns: [
         { width: '*', text: '' },
@@ -2249,7 +1745,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
    * Insert template structure at cursor position using Monaco Editor API
    */
   insertTemplate(insertTemplate: InsertTemplate) {
-    console.log('[Insert Template] Button clicked:', insertTemplate.label);
+    console.log('[Insert Template] Button clicked:', insertTemplate.name);
 
     // Check if editor is available
     if (!this.templateDataEditor) {
@@ -2259,8 +1755,14 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
     }
 
     // Check if logo is required but not uploaded
+    const logoTemplateNames = [
+      'Logo',
+      'Logo (Left)',
+      'Logo (Right)',
+      'Logo (Center)',
+    ];
     if (
-      insertTemplate.requiresLogo &&
+      logoTemplateNames.includes(insertTemplate.name) &&
       !this.uploadedLogo() &&
       !this.pdfTemplatesForm.value.logo_file_id
     ) {
@@ -2271,13 +1773,12 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Get template structure
-    const templateStructure = insertTemplate.getTemplate
-      ? insertTemplate.getTemplate()
-      : insertTemplate.template;
-
-    if (!templateStructure) {
-      console.error('[Insert Template] No template structure found');
+    // Get template structure - parse JSON template string
+    let templateStructure: Record<string, unknown>;
+    try {
+      templateStructure = JSON.parse(insertTemplate.template);
+    } catch (error) {
+      console.error('[Insert Template] Failed to parse template:', error);
       return;
     }
 
@@ -2289,8 +1790,8 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
 
     // Check if this is a starter template (has root-level content/pageSize)
     const isStarterTemplate =
-      insertTemplate.label === 'Starter' &&
-      (templateStructure.content || templateStructure.pageSize);
+      insertTemplate.name === 'Starter' &&
+      (templateStructure['content'] || templateStructure['pageSize']);
 
     const currentValue =
       this.pdfTemplatesForm.get('template_data_raw')?.value || '';
@@ -2317,7 +1818,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
           this.pdfTemplatesForm.patchValue({ template_data_raw: templateText });
           console.log(
             '[Insert Template] Replaced with starter template:',
-            insertTemplate.label,
+            insertTemplate.name,
           );
           this.logoError.set(null);
           return;
@@ -2335,7 +1836,7 @@ export class PdfTemplateFormComponent implements OnInit, OnChanges {
 
     console.log(
       '[Insert Template] Inserted template at cursor:',
-      insertTemplate.label,
+      insertTemplate.name,
     );
     this.logoError.set(null);
   }
