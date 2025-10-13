@@ -1,28 +1,28 @@
+import { HttpClient, HttpEventType, HttpParams } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient, HttpParams, HttpEventType } from '@angular/common/http';
-import { Observable, map, catchError, throwError, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, throwError } from 'rxjs';
 import { AuthService } from '../../../../core/auth';
 import { ApiConfigService } from '../../../../core/http';
 import {
-  FileUploadOptions,
-  FileUpdateRequest,
-  ImageProcessingOptions,
-  SignedUrlRequest,
-  FileListQuery,
-  DownloadQuery,
-  ThumbnailQuery,
-  ViewQuery,
-  UploadedFile,
-  FileUploadResponse,
-  MultipleFileUploadResponse,
-  FileListResponse,
-  SignedUrlResponse,
-  ImageProcessingResponse,
   DeleteFileResponse,
-  FileStatistics,
-  FileUploadProgress,
-  FileValidationResult,
+  DownloadQuery,
   FILE_UPLOAD_LIMITS,
+  FileListQuery,
+  FileListResponse,
+  FileStatistics,
+  FileUpdateRequest,
+  FileUploadOptions,
+  FileUploadProgress,
+  FileUploadResponse,
+  FileValidationResult,
+  ImageProcessingOptions,
+  ImageProcessingResponse,
+  MultipleFileUploadResponse,
+  SignedUrlRequest,
+  SignedUrlResponse,
+  ThumbnailQuery,
+  UploadedFile,
+  ViewQuery,
 } from './file-upload.types';
 
 @Injectable({
@@ -418,31 +418,20 @@ export class FileUploadService {
    * Get file view URL for inline display
    */
   getViewUrl(fileId: string, options?: ViewQuery): string {
-    // Build the full URL using current location
-    const baseUrl = this.apiConfig.getApiBaseUrl() || '';
-    let fullUrl: string;
+    // Use relative URL to go through Angular proxy
+    const url = `${this.apiUrl}/${fileId}/view`;
 
-    if (baseUrl && baseUrl.startsWith('http')) {
-      // Absolute URL
-      fullUrl = `${baseUrl}${this.apiUrl}/${fileId}/view`;
-    } else {
-      // Relative URL - build from current location
-      const protocol = window.location.protocol;
-      const host = window.location.host;
-      const apiPath = baseUrl || '/api';
-      fullUrl = `${protocol}//${host}${apiPath}${this.apiUrl}/${fileId}/view`;
-    }
-
-    const url = new URL(fullUrl);
-
+    // Add query parameters if provided
+    const params = new URLSearchParams();
     if (options?.variant) {
-      url.searchParams.set('variant', options.variant);
+      params.set('variant', options.variant);
     }
     if (options?.cache !== undefined) {
-      url.searchParams.set('cache', options.cache.toString());
+      params.set('cache', options.cache.toString());
     }
 
-    return url.toString();
+    const queryString = params.toString();
+    return queryString ? `${url}?${queryString}` : url;
   }
 
   /**
@@ -450,7 +439,7 @@ export class FileUploadService {
    */
   getThumbnailUrl(fileId: string, options?: ThumbnailQuery): string {
     // Build the full URL using current location
-    const baseUrl = this.apiConfig.getApiBaseUrl() || '';
+    const baseUrl = this.apiConfig.getApiBaseUrl() || '/api';
     let fullUrl: string;
 
     if (baseUrl && baseUrl.startsWith('http')) {
@@ -460,8 +449,7 @@ export class FileUploadService {
       // Relative URL - build from current location
       const protocol = window.location.protocol;
       const host = window.location.host;
-      const apiPath = baseUrl || '/api';
-      fullUrl = `${protocol}//${host}${apiPath}${this.apiUrl}/${fileId}/thumbnail`;
+      fullUrl = `${protocol}//${host}${baseUrl}${this.apiUrl}/${fileId}/thumbnail`;
     }
 
     const url = new URL(fullUrl);

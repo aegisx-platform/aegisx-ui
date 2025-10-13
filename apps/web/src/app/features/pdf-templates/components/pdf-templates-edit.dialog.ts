@@ -1,14 +1,14 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import {
-  MatDialogRef,
   MAT_DIALOG_DATA,
   MatDialogModule,
+  MatDialogRef,
 } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
@@ -82,6 +82,7 @@ export interface PdfTemplateEditDialogData {
             [loading]="loading()"
             (formSubmit)="onFormSubmit($event)"
             (formCancel)="onCancel()"
+            (logoChanged)="onLogoChanged()"
           ></app-pdf-templates-form>
         </div>
 
@@ -145,7 +146,8 @@ export interface PdfTemplateEditDialogData {
                   [showSpreadButton]="true"
                   [showPropertiesButton]="true"
                   [height]="'100%'"
-                  [backgroundColor]="'#525659'"
+                  [theme]="'light'"
+                  [backgroundColor]="'#e4e4e4'"
                   class="pdf-viewer"
                 ></ngx-extended-pdf-viewer>
               } @else {
@@ -493,6 +495,16 @@ export class PdfTemplateEditDialogComponent implements OnInit {
     document.body.style.userSelect = 'none';
 
     event.preventDefault();
+  }
+
+  /**
+   * Handle logo changed event - refresh preview
+   */
+  onLogoChanged() {
+    console.log('[Edit Dialog] Logo changed, refreshing preview...');
+    if (this.previewVisible()) {
+      this.refreshPreview();
+    }
   }
 
   async refreshPreview() {

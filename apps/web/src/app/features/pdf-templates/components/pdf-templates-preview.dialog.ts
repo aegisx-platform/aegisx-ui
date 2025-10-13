@@ -1,15 +1,15 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Inject, OnInit, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { PdfTemplateService } from '../services/pdf-templates.service';
 import { PdfTemplate } from '../types/pdf-templates.types';
 
@@ -27,6 +27,7 @@ export interface PdfTemplatePreviewDialogData {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTabsModule,
+    NgxExtendedPdfViewerModule,
   ],
   template: `
     <div class="preview-dialog">
@@ -62,8 +63,27 @@ export interface PdfTemplatePreviewDialogData {
 
         @if (pdfUrl() && !loading() && !error()) {
           <div class="pdf-container">
-            <iframe [src]="pdfUrl()" class="pdf-viewer" title="PDF Preview">
-            </iframe>
+            <ngx-extended-pdf-viewer
+              [src]="pdfUrl()!"
+              [textLayer]="true"
+              [showHandToolButton]="true"
+              [showSidebarButton]="true"
+              [showFindButton]="true"
+              [showPagingButtons]="true"
+              [showZoomButtons]="true"
+              [showPresentationModeButton]="true"
+              [showOpenFileButton]="false"
+              [showPrintButton]="true"
+              [showDownloadButton]="true"
+              [showSecondaryToolbarButton]="true"
+              [showRotateButton]="true"
+              [showSpreadButton]="true"
+              [showPropertiesButton]="true"
+              [height]="'100%'"
+              class="pdf-viewer"
+              [theme]="'light'"
+              [backgroundColor]="'#e4e4e4'"
+            ></ngx-extended-pdf-viewer>
           </div>
         }
       </mat-dialog-content>
@@ -171,14 +191,13 @@ export interface PdfTemplatePreviewDialogData {
 export class PdfTemplatePreviewDialog implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
-  pdfUrl = signal<SafeResourceUrl | null>(null);
+  pdfUrl = signal<string | null>(null);
   private pdfBlob: Blob | null = null;
 
   constructor(
     public dialogRef: MatDialogRef<PdfTemplatePreviewDialog>,
     @Inject(MAT_DIALOG_DATA) public data: PdfTemplatePreviewDialogData,
     private pdfTemplateService: PdfTemplateService,
-    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit() {
@@ -202,7 +221,7 @@ export class PdfTemplatePreviewDialog implements OnInit {
       if (blob) {
         this.pdfBlob = blob;
         const url = URL.createObjectURL(blob);
-        this.pdfUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+        this.pdfUrl.set(url);
       } else {
         this.error.set('Failed to generate preview');
       }
@@ -231,10 +250,7 @@ export class PdfTemplatePreviewDialog implements OnInit {
     // Clean up object URL
     const url = this.pdfUrl();
     if (url) {
-      const urlString = (url as any).changingThisBreaksApplicationSecurity;
-      if (urlString) {
-        URL.revokeObjectURL(urlString);
-      }
+      URL.revokeObjectURL(url);
     }
   }
 }
