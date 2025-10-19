@@ -56,12 +56,6 @@ import {
   BookViewDialogData,
 } from './books-view.dialog';
 
-interface AdvancedFilters {
-  available?: boolean;
-  genre: string;
-  author_id?: string;
-}
-
 @Component({
   selector: 'app-books-list',
   standalone: true,
