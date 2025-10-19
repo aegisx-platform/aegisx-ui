@@ -327,10 +327,12 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
   }
 
   /**
-   * Get basic statistics (count only)
+   * Get smart statistics based on detected field patterns
    */
   async getStats(): Promise<{
     total: number;
+    recentlyCreated?: number;
+    recentlyUpdated?: number;
   }> {
     return this.booksRepository.getStats();
   }
@@ -396,7 +398,9 @@ export class BooksService extends BaseService<Books, CreateBooks, UpdateBooks> {
     // If specific fields requested, use only those
     const fieldsToExport =
       fields && fields.length > 0
-        ? fields.filter((field) => exportableFields.hasOwnProperty(field))
+        ? fields.filter((field) =>
+            Object.prototype.hasOwnProperty.call(exportableFields, field),
+          )
         : Object.keys(exportableFields);
 
     // Format each field

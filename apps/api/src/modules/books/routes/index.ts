@@ -247,6 +247,27 @@ export async function booksRoutes(
     handler: controller.bulkDelete.bind(controller),
   });
 
+  // Get books statistics
+  fastify.get('/stats', {
+    schema: {
+      tags: ['Books'],
+      summary: 'Get books statistics',
+      description: 'Get statistical information about bookss',
+      response: {
+        200: StatisticsResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.authorize(['books.read', 'admin']),
+    ],
+    handler: controller.getStats.bind(controller),
+  });
+
   // Export books data
   fastify.get('/export', {
     schema: {

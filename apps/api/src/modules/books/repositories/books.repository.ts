@@ -1,16 +1,15 @@
-import {
-  BaseRepository,
-  BaseListQuery,
-  PaginatedListResult,
-} from '../../../shared/repositories/base.repository';
 import type { Knex } from 'knex';
 import {
-  type CreateBooks,
-  type UpdateBooks,
+  BaseListQuery,
+  BaseRepository,
+  PaginatedListResult,
+} from '../../../shared/repositories/base.repository';
+import {
   type Books,
-  type GetBooksQuery,
-  type ListBooksQuery,
   type BooksEntity,
+  type CreateBooks,
+  type GetBooksQuery,
+  type UpdateBooks,
 } from '../types/books.types';
 
 export interface BooksListQuery extends BaseListQuery {
@@ -163,8 +162,16 @@ export class BooksRepository extends BaseRepository<
         });
       } else {
         // Single sort field
-        const mappedField = this.getSortField(sort);
-        query.orderBy(mappedField, 'desc');
+        const [field, direction] = sort.split(':');
+        const mappedField = this.getSortField(field.trim());
+        const sortDirection =
+          direction?.trim().toLowerCase() === 'asc' ? 'asc' : 'desc';
+        query.orderBy(mappedField, sortDirection);
+        console.log('Sort direction:', field, direction);
+        console.log(
+          'Single sort query:======================',
+          query.toString(),
+        );
       }
     } else {
       // Default sort
@@ -228,16 +235,35 @@ export class BooksRepository extends BaseRepository<
     return row ? this.transformToEntity(row) : null;
   }
 
-  // Basic Statistics - count only
+  // Smart Statistics based on detected field patterns
   async getStats(): Promise<{
     total: number;
+    recentlyCreated?: number;
+    recentlyUpdated?: number;
   }> {
-    const stats: any = await this.knex('books')
-      .select([this.knex.raw('COUNT(*) as total')])
-      .first();
+    const baseQuery = this.knex('books');
+
+    // Build select fields based on detected patterns
+    const selectFields = [this.knex.raw('COUNT(*) as total')];
+
+    // Add date-based statistics if date fields detected
+    selectFields.push(
+      this.knex.raw(
+        "COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days') as recently_created",
+      ),
+      this.knex.raw(
+        "COUNT(*) FILTER (WHERE updated_at >= NOW() - INTERVAL '7 days') as recently_updated",
+      ),
+    );
+
+    const stats: any = await baseQuery.select(selectFields).first();
+
+    const total = parseInt(stats?.total || '0');
 
     return {
-      total: parseInt(stats?.total || '0'),
+      total,
+      recentlyCreated: parseInt(stats?.recently_created || '0'),
+      recentlyUpdated: parseInt(stats?.recently_updated || '0'),
     };
   }
 

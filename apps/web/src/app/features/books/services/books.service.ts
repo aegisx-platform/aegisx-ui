@@ -1,17 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 // Import types from the shared types file
 import {
-  Book,
-  CreateBookRequest,
-  UpdateBookRequest,
-  ListBookQuery,
   ApiResponse,
+  Book,
   BulkResponse,
+  CreateBookRequest,
+  ListBookQuery,
   PaginatedResponse,
+  UpdateBookRequest,
 } from '../types/books.types';
 
 // ===== SERVICE CONFIGURATION =====
@@ -37,6 +35,11 @@ export class BookService {
   private pageSizeSignal = signal<number>(10);
   private totalBookSignal = signal<number>(0);
 
+  // ===== STATS SIGNALS =====
+  private availableCountSignal = signal<number>(0);
+  private unavailableCountSignal = signal<number>(0);
+  private thisWeekCountSignal = signal<number>(0);
+
   // ===== PUBLIC READONLY SIGNALS =====
 
   readonly booksList = this.booksListSignal.asReadonly();
@@ -48,6 +51,9 @@ export class BookService {
   readonly currentPage = this.currentPageSignal.asReadonly();
   readonly totalBook = this.totalBookSignal.asReadonly();
   readonly pageSize = this.pageSizeSignal.asReadonly();
+  readonly availableCount = this.availableCountSignal.asReadonly();
+  readonly unavailableCount = this.unavailableCountSignal.asReadonly();
+  readonly thisWeekCount = this.thisWeekCountSignal.asReadonly();
 
   // ===== COMPUTED SIGNALS =====
 
@@ -125,8 +131,9 @@ export class BookService {
       if (params?.description)
         httpParams = httpParams.set('description', params.description);
       // String filtering for author_id
-      if (params?.author_id)
+      if (params?.author_id) {
         httpParams = httpParams.set('author_id', params.author_id);
+      }
       // String filtering for isbn
       if (params?.isbn) httpParams = httpParams.set('isbn', params.isbn);
       // Numeric filtering for pages
@@ -144,10 +151,13 @@ export class BookService {
       if (params?.price_max !== undefined)
         httpParams = httpParams.set('price_max', params.price_max.toString());
       // String filtering for genre
-      if (params?.genre) httpParams = httpParams.set('genre', params.genre);
+      if (params?.genre) {
+        httpParams = httpParams.set('genre', params.genre);
+      }
       // Boolean filtering for available
-      if (params?.available !== undefined)
+      if (params?.available !== undefined) {
         httpParams = httpParams.set('available', params.available.toString());
+      }
       // Date/DateTime filtering for created_at
       if (params?.created_at)
         httpParams = httpParams.set('created_at', params.created_at);
@@ -175,6 +185,9 @@ export class BookService {
           this.currentPageSignal.set(response.pagination.page);
           this.pageSizeSignal.set(response.pagination.limit);
         }
+
+        // Update stats
+        this.updateStats();
       }
     } catch (error: any) {
       this.handleError(error, 'Failed to load books list');
@@ -631,5 +644,25 @@ export class BookService {
     this.errorSignal.set(null);
     this.clearPermissionError();
     this.totalBookSignal.set(0);
+  }
+
+  /**
+   * Calculate and update stats
+   */
+  updateStats(): void {
+    const books = this.booksListSignal();
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const available = books.filter((b) => b.available).length;
+    const unavailable = books.filter((b) => !b.available).length;
+    const thisWeek = books.filter((b) => {
+      const createdAt = new Date(b.created_at);
+      return createdAt >= oneWeekAgo && createdAt <= now;
+    }).length;
+
+    this.availableCountSignal.set(available);
+    this.unavailableCountSignal.set(unavailable);
+    this.thisWeekCountSignal.set(thisWeek);
   }
 }

@@ -135,9 +135,9 @@ describe('Database Migrations', () => {
 
     test('should create proper indexes', async () => {
       const indexes = await knex.raw(`
-        SELECT indexname 
-        FROM pg_indexes 
-        WHERE tablename = 'users' 
+        SELECT indexname
+        FROM pg_indexes
+        WHERE tablename = 'users'
         AND indexname NOT LIKE '%_pkey'
         ORDER BY indexname
       `);
@@ -150,11 +150,11 @@ describe('Database Migrations', () => {
 
     test('should create foreign key constraints', async () => {
       const constraints = await knex.raw(`
-        SELECT 
-          tc.table_name, 
+        SELECT
+          tc.table_name,
           tc.constraint_name,
           ccu.table_name AS foreign_table_name
-        FROM information_schema.table_constraints AS tc 
+        FROM information_schema.table_constraints AS tc
         JOIN information_schema.constraint_column_usage AS ccu
           ON tc.constraint_name = ccu.constraint_name
         WHERE tc.constraint_type = 'FOREIGN KEY'

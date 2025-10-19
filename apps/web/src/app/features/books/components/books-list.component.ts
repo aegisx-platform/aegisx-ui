@@ -1,41 +1,48 @@
-import {
-  Component,
-  OnInit,
-  computed,
-  signal,
-  inject,
-  OnDestroy,
-} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { fromEventPattern } from 'rxjs';
 
-// Angular Material imports
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+// Material imports for table
+import { SelectionModel } from '@angular/cdk/collections';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { MatCardModule } from '@angular/material/card';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import {
+  MatSort,
+  MatSortModule,
+  Sort,
+  SortDirection,
+} from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { AxDialogService } from '@aegisx/ui';
+import {
+  ExportOptions,
+  ExportService,
+  SharedExportComponent,
+} from '../../../shared/components/shared-export/shared-export.component';
 import { BookService } from '../services/books.service';
 import { Book, ListBookQuery } from '../types/books.types';
 import { BookCreateDialogComponent } from './books-create.dialog';
-import { AuthorService } from '../../authors/services/authors.service';
 import {
   BookEditDialogComponent,
   BookEditDialogData,
@@ -44,12 +51,12 @@ import {
   BookViewDialogComponent,
   BookViewDialogData,
 } from './books-view.dialog';
-import { DateRangeFilterComponent } from '../../../shared/components/date-range-filter/date-range-filter.component';
-import {
-  SharedExportComponent,
-  ExportOptions,
-  ExportService,
-} from '../../../shared/components/shared-export/shared-export.component';
+
+interface AdvancedFilters {
+  available?: boolean;
+  genre: string;
+  author_id?: string;
+}
 
 @Component({
   selector: 'app-books-list',
@@ -58,1300 +65,801 @@ import {
     CommonModule,
     RouterModule,
     FormsModule,
-    MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatCheckboxModule,
-    MatMenuModule,
     MatProgressSpinnerModule,
-    MatCardModule,
-    MatToolbarModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatChipsModule,
-    MatExpansionModule,
-    MatBadgeModule,
-    MatSlideToggleModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatCheckboxModule,
     MatTooltipModule,
-    DateRangeFilterComponent,
+    MatCardModule,
+    MatMenuModule,
     SharedExportComponent,
   ],
   template: `
-    <div class="books-list-container">
-      <!-- Header -->
-      <mat-toolbar color="primary" class="page-header">
-        <h1 class="page-title">Books</h1>
-        <span class="spacer"></span>
-      </mat-toolbar>
-
-      <!-- Permission Error Banner -->
-      @if (booksService.permissionError()) {
-        <mat-card class="permission-error-banner">
-          <mat-card-content>
-            <div class="permission-error-content">
-              <div class="error-icon-section">
-                <mat-icon class="error-icon">lock</mat-icon>
-              </div>
-              <div class="error-message-section">
-                <h3 class="error-title">Access Denied</h3>
-                <p class="error-message">
-                  You don't have permission to access or modify Books.
-                  @if (booksService.lastErrorStatus() === 403) {
-                    <span class="error-details">
-                      Please contact your administrator to request the necessary
-                      permissions.
-                    </span>
-                  }
-                </p>
-              </div>
-              <div class="error-actions-section">
-                <button
-                  mat-raised-button
-                  color="warn"
-                  (click)="booksService.clearPermissionError()"
-                  class="dismiss-btn"
-                >
-                  <mat-icon>close</mat-icon>
-                  Dismiss
-                </button>
-              </div>
+    <div class="min-h-screen bg-gray-50 p-6">
+      <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header with Stats Summary -->
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h1 class="text-2xl font-semibold text-gray-900">Books</h1>
+              <span
+                class="px-2.5 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-md"
+              >
+                {{ booksService.totalBook() }} total
+              </span>
             </div>
-          </mat-card-content>
-        </mat-card>
-      }
-
-      <!-- Quick Search Section -->
-      <mat-card class="search-card">
-        <mat-card-content>
-          <div class="search-wrapper">
-            <mat-form-field appearance="outline" class="search-field">
-              <mat-label>Search Books</mat-label>
-              <input
-                matInput
-                placeholder="Search by title, name, description"
-                [(ngModel)]="searchTerm"
-                (input)="onSearchChange()"
-                (keyup.enter)="onSearchButtonClick()"
-              />
-              <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="openCreateDialog()"
-              [disabled]="
-                booksService.loading() || booksService.permissionError()
-              "
-              [matTooltip]="
-                booksService.permissionError()
-                  ? 'You do not have permission to create Books'
-                  : ''
-              "
-              class="add-btn"
-            >
-              <mat-icon>add</mat-icon>
-              Add Books
-            </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Quick Filters -->
-      <mat-card class="quick-filters-card">
-        <mat-card-content>
-          <div class="quick-filters">
-            <button
-              mat-stroked-button
-              [class.active]="quickFilter === 'all'"
-              (click)="setQuickFilter('all')"
-              class="filter-chip"
-            >
-              All
-            </button>
-
-            <!-- Active Items Filter -->
-            <button
-              mat-stroked-button
-              [class.active]="quickFilter === 'active'"
-              (click)="setQuickFilter('active')"
-              class="filter-chip"
-            >
-              Active
-            </button>
-
-            <!-- Published Status Filter -->
-            <button
-              mat-stroked-button
-              [class.active]="quickFilter === 'published'"
-              (click)="setQuickFilter('published')"
-              class="filter-chip"
-            >
-              Published
-            </button>
-
-            <!-- Additional quick filters - uncomment as needed -->
-            <!-- Featured Items:
-            <button 
-              mat-stroked-button 
-              [class.active]="quickFilter === 'featured'"
-              (click)="setQuickFilter('featured')"
-              class="filter-chip"
-            >
-              Featured
-            </button>
-            -->
-
-            <!-- Available Items:
-            <button 
-              mat-stroked-button 
-              [class.active]="quickFilter === 'available'"
-              (click)="setQuickFilter('available')"
-              class="filter-chip"
-            >
-              Available
-            </button>
-            -->
-
-            <!-- Draft Status:
-            <button 
-              mat-stroked-button 
-              [class.active]="quickFilter === 'draft'"
-              (click)="setQuickFilter('draft')"
-              class="filter-chip"
-            >
-              Draft
-            </button>
-            -->
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Active Filters -->
-      @if (getActiveFilterChips().length > 0) {
-        <div class="active-filters">
-          <span class="active-filters-label">Active Filters:</span>
-          <div class="filter-chips">
-            <mat-chip
-              *ngFor="let chip of getActiveFilterChips()"
-              (removed)="removeFilter(chip.key)"
-              class="filter-chip"
-              removable
-            >
-              <strong>{{ chip.label }}:</strong> {{ chip.value }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+            <p class="text-sm text-gray-600">Manage your book collection</p>
           </div>
           <button
-            mat-stroked-button
-            color="warn"
-            (click)="clearAllFilters()"
-            class="clear-all-btn"
+            (click)="openCreateDialog()"
+            [disabled]="
+              booksService.loading() || booksService.permissionError()
+            "
+            class="px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
           >
-            <mat-icon>clear_all</mat-icon>
-            Clear All
+            <mat-icon class="!text-lg !w-5 !h-5">add</mat-icon>
+            Add book
           </button>
         </div>
-      }
 
-      <!-- Summary Dashboard -->
-      <mat-card class="summary-dashboard-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>dashboard</mat-icon>
-            Books Overview
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="summary-icon">
-                <mat-icon color="primary">view_list</mat-icon>
+        <!-- Permission Error -->
+        @if (booksService.permissionError()) {
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+              <mat-icon class="text-red-600 !text-xl !w-5 !h-5">error</mat-icon>
+              <div class="flex-1">
+                <h3 class="text-sm font-medium text-red-900">Access Denied</h3>
+                <p class="mt-1 text-sm text-red-700">
+                  You don't have permission to access or modify books.
+                </p>
               </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ booksService.totalBook() }}</div>
-                <div class="summary-label">Total Books</div>
-              </div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-icon">
-                <mat-icon color="accent">check_circle</mat-icon>
-              </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getActiveCount() }}</div>
-                <div class="summary-label">Active Items</div>
-              </div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-icon">
-                <mat-icon color="warn">schedule</mat-icon>
-              </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getDraftCount() }}</div>
-                <div class="summary-label">Draft Items</div>
-              </div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-icon">
-                <mat-icon>today</mat-icon>
-              </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getRecentCount() }}</div>
-                <div class="summary-label">Added This Week</div>
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Export Tools -->
-      <mat-card class="export-tools-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>file_download</mat-icon>
-            Export Data
-          </mat-card-title>
-          <mat-card-subtitle
-            >Export Books data in various formats</mat-card-subtitle
-          >
-        </mat-card-header>
-        <mat-card-content>
-          <app-export
-            [exportService]="exportServiceAdapter"
-            [currentFilters]="filters()"
-            [selectedItems]="selectedItems()"
-            [availableFields]="availableExportFields"
-            [moduleName]="'books'"
-            (exportStarted)="onExportStarted($event)"
-            (exportCompleted)="onExportCompleted($event)"
-          ></app-export>
-
-          <!-- Export Information -->
-          <div class="export-info">
-            <mat-icon class="info-icon">info</mat-icon>
-            <span class="info-text">
-              Total Books: {{ booksService.totalBook() }} records
-              @if (hasActiveFilters()) {
-                ({{ activeFiltersCount() }} filters active)
-              }
-              @if (selectedItems().length > 0) {
-                | {{ selectedItems().length }} selected
-              }
-            </span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Advanced Filters -->
-      <mat-card class="advanced-filters-card">
-        <mat-expansion-panel class="filters-panel">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <mat-icon>tune</mat-icon>
-              Advanced Filters
-            </mat-panel-title>
-            <mat-panel-description>
-              Filter by specific criteria
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-
-          <div class="advanced-filters">
-            <!-- Unified Filter Header -->
-            <div class="filters-header">
-              <mat-icon>tune</mat-icon>
-              <span>Filter Your Results</span>
-            </div>
-
-            <!-- Unified Filter Grid -->
-            <div class="unified-filter-grid">
-              <!-- Boolean: Available -->
-              <div class="filter-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Available</mat-label>
-                  <mat-select
-                    [value]="filters().available"
-                    (selectionChange)="
-                      onFilterChange('available', $event.value)
-                    "
-                  >
-                    <mat-option value="">All</mat-option>
-                    <mat-option [value]="true">Yes</mat-option>
-                    <mat-option [value]="false">No</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-
-              <!-- Foreign Key: Author Id -->
-              <div class="filter-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Author Id</mat-label>
-                  <mat-select
-                    [value]="filters().author_id || ''"
-                    (selectionChange)="
-                      onFilterChange('author_id', $event.value)
-                    "
-                    [disabled]="loadingAuthor()"
-                  >
-                    <mat-option value="">All Authors</mat-option>
-                    <mat-option *ngIf="loadingAuthor()" disabled>
-                      <mat-spinner diameter="16"></mat-spinner>
-                      Loading authors...
-                    </mat-option>
-                    <mat-option
-                      *ngFor="let item of authorOptions()"
-                      [value]="item.value"
-                    >
-                      {{ item.label }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-hint
-                    *ngIf="!loadingAuthor() && authorOptions().length === 0"
-                  >
-                    No authors available
-                  </mat-hint>
-                  <mat-hint
-                    *ngIf="!loadingAuthor() && authorOptions().length > 0"
-                  >
-                    Select authors to filter
-                  </mat-hint>
-                </mat-form-field>
-              </div>
-
-              <!-- String: Title -->
-              <div class="filter-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Title</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    [value]="filters().title || ''"
-                    (input)="onFilterChange('title', $event)"
-                    placeholder="Enter title"
-                  />
-                </mat-form-field>
-              </div>
-              <!-- String: Isbn -->
-              <div class="filter-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Isbn</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    [value]="filters().isbn || ''"
-                    (input)="onFilterChange('isbn', $event)"
-                    placeholder="Enter isbn"
-                  />
-                </mat-form-field>
-              </div>
-              <!-- String: Genre -->
-              <div class="filter-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Genre</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    [value]="filters().genre || ''"
-                    (input)="onFilterChange('genre', $event)"
-                    placeholder="Enter genre"
-                  />
-                </mat-form-field>
-              </div>
-
-              <!-- Date: Published Date -->
-              <div class="filter-item filter-item-date">
-                <app-date-range-filter
-                  fieldName="published_date"
-                  label="Published Date"
-                  [isDateTime]="false"
-                  (filterChange)="onDateFilterChange($event)"
-                ></app-date-range-filter>
-              </div>
-
-              <!-- DateTime: Updated At -->
-              <div class="filter-item filter-item-date">
-                <app-date-range-filter
-                  fieldName="updated_at"
-                  label="Updated At"
-                  [isDateTime]="true"
-                  (filterChange)="onDateFilterChange($event)"
-                ></app-date-range-filter>
-              </div>
-            </div>
-            <!-- End Unified Filter Grid -->
-
-            <!-- Action Buttons -->
-            <div class="filter-actions">
               <button
-                mat-stroked-button
-                (click)="resetFilters()"
-                class="reset-btn"
+                (click)="booksService.clearPermissionError()"
+                class="text-red-400 hover:text-red-600"
               >
-                Reset Filters
-              </button>
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="applyFiltersImmediate()"
-                class="apply-btn"
-              >
-                Apply Filters
+                <mat-icon class="!text-xl !w-5 !h-5">close</mat-icon>
               </button>
             </div>
           </div>
-        </mat-expansion-panel>
-      </mat-card>
+        }
 
-      <!-- Loading State -->
-      @if (booksService.loading()) {
-        <div class="loading-container">
-          <mat-progress-spinner
-            mode="indeterminate"
-            diameter="50"
-          ></mat-progress-spinner>
-          <p>Loading Books...</p>
-        </div>
-      }
-
-      <!-- Error State -->
-      @if (booksService.error()) {
-        <mat-card class="error-card">
-          <mat-card-content>
-            <div class="error-content">
-              <mat-icon color="warn">error</mat-icon>
-              <p>{{ booksService.error() }}</p>
-              <button mat-button color="primary" (click)="retry()">
-                <mat-icon>refresh</mat-icon>
-                Retry
-              </button>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      }
-
-      <!-- Data Table -->
-      @if (!booksService.loading() && !booksService.error()) {
-        <mat-card class="table-card">
-          <mat-card-content>
-            <!-- Bulk Actions -->
-            @if (hasSelected()) {
-              <div class="bulk-actions">
-                <span class="selection-info"
-                  >{{ selectedItems().length }} selected</span
+        <!-- Minimal Stats Cards - Separated -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Total Books Card -->
+          <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full"
+              >
+                <mat-icon class="!w-5 !h-5 text-blue-600"
+                  >library_books</mat-icon
                 >
-                <div class="bulk-buttons">
-                  <!-- Bulk Delete -->
-                  <button
-                    mat-stroked-button
-                    color="warn"
-                    (click)="bulkDelete()"
-                    [disabled]="booksService.loading()"
-                    matTooltip="Delete selected items"
-                  >
-                    <mat-icon>delete</mat-icon>
-                    Delete
-                  </button>
-
-                  <!-- Bulk Status Update -->
-                  <button
-                    mat-stroked-button
-                    [matMenuTriggerFor]="bulkStatusMenu"
-                    [disabled]="booksService.loading()"
-                    matTooltip="Update status for selected items"
-                  >
-                    <mat-icon>edit</mat-icon>
-                    Update Status
-                  </button>
-                  <mat-menu #bulkStatusMenu="matMenu">
-                    <button mat-menu-item (click)="bulkUpdateStatus('active')">
-                      <mat-icon>check_circle</mat-icon>
-                      <span>Set Active</span>
-                    </button>
-                    <button
-                      mat-menu-item
-                      (click)="bulkUpdateStatus('inactive')"
-                    >
-                      <mat-icon>cancel</mat-icon>
-                      <span>Set Inactive</span>
-                    </button>
-                    <button
-                      mat-menu-item
-                      (click)="bulkUpdateStatus('published')"
-                    >
-                      <mat-icon>publish</mat-icon>
-                      <span>Publish</span>
-                    </button>
-                    <button mat-menu-item (click)="bulkUpdateStatus('draft')">
-                      <mat-icon>draft</mat-icon>
-                      <span>Set Draft</span>
-                    </button>
-                  </mat-menu>
-
-                  <!-- Bulk Export -->
-                  <button
-                    mat-stroked-button
-                    color="accent"
-                    [matMenuTriggerFor]="bulkExportMenu"
-                    [disabled]="booksService.loading()"
-                    matTooltip="Export selected items"
-                  >
-                    <mat-icon>download</mat-icon>
-                    Export
-                  </button>
-                  <mat-menu #bulkExportMenu="matMenu">
-                    <button mat-menu-item (click)="exportSelected('csv')">
-                      <mat-icon>table_chart</mat-icon>
-                      <span>Export as CSV</span>
-                    </button>
-                    <button mat-menu-item (click)="exportSelected('excel')">
-                      <mat-icon>grid_on</mat-icon>
-                      <span>Export as Excel</span>
-                    </button>
-                    <button mat-menu-item (click)="exportSelected('pdf')">
-                      <mat-icon>picture_as_pdf</mat-icon>
-                      <span>Export as PDF</span>
-                    </button>
-                  </mat-menu>
-
-                  <!-- Clear Selection -->
-                  <button mat-stroked-button (click)="clearSelection()">
-                    <mat-icon>clear</mat-icon>
-                    Clear Selection
-                  </button>
+              </div>
+              <div>
+                <div class="text-xs text-gray-500">Total Books</div>
+                <div class="text-xl font-bold text-gray-900">
+                  {{ booksService.totalBook() }}
                 </div>
               </div>
-            }
-
-            <!-- Table -->
-            <div class="table-container">
-              <table
-                mat-table
-                [dataSource]="booksService.booksList()"
-                class="books-table"
-              >
-                <!-- Selection Column -->
-                <ng-container matColumnDef="select">
-                  <th mat-header-cell *matHeaderCellDef>
-                    <mat-checkbox
-                      [checked]="isAllSelected()"
-                      [indeterminate]="hasSelected() && !isAllSelected()"
-                      (change)="toggleSelectAll()"
-                    ></mat-checkbox>
-                  </th>
-                  <td mat-cell *matCellDef="let books">
-                    <mat-checkbox
-                      [checked]="isSelected(books.id)"
-                      (change)="toggleSelect(books.id)"
-                    ></mat-checkbox>
-                  </td>
-                </ng-container>
-
-                <!-- title Column -->
-                <ng-container matColumnDef="title">
-                  <th mat-header-cell *matHeaderCellDef>Title</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="text-cell">{{ books.title || '-' }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- description Column -->
-                <ng-container matColumnDef="description">
-                  <th mat-header-cell *matHeaderCellDef>Description</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span [title]="books.description" class="truncated-cell">
-                      {{ books.description | slice: 0 : 50 }}
-                      @if (books.description && books.description.length > 50) {
-                        <span>...</span>
-                      }
-                    </span>
-                  </td>
-                </ng-container>
-
-                <!-- author_id Column -->
-                <ng-container matColumnDef="author_id">
-                  <th mat-header-cell *matHeaderCellDef>Author_id</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="text-cell">{{ books.author_id || '-' }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- isbn Column -->
-                <ng-container matColumnDef="isbn">
-                  <th mat-header-cell *matHeaderCellDef>Isbn</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="code-cell">{{ books.isbn || '-' }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- pages Column -->
-                <ng-container matColumnDef="pages">
-                  <th mat-header-cell *matHeaderCellDef>Pages</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="numeric-cell">{{ books.pages || '-' }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- published_date Column -->
-                <ng-container matColumnDef="published_date">
-                  <th mat-header-cell *matHeaderCellDef>Published_date</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="text-cell">{{
-                      books.published_date || '-'
-                    }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- price Column -->
-                <ng-container matColumnDef="price">
-                  <th mat-header-cell *matHeaderCellDef>Price</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="price-cell">{{
-                      books.price ? (books.price | currency) : '-'
-                    }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- genre Column -->
-                <ng-container matColumnDef="genre">
-                  <th mat-header-cell *matHeaderCellDef>Genre</th>
-                  <td mat-cell *matCellDef="let books">
-                    <span class="text-cell">{{ books.genre || '-' }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- available Column -->
-                <ng-container matColumnDef="available">
-                  <th mat-header-cell *matHeaderCellDef>Available</th>
-                  <td mat-cell *matCellDef="let books">
-                    <mat-icon
-                      [color]="books.available ? 'primary' : 'warn'"
-                      class="status-icon"
-                    >
-                      {{ books.available ? 'check_circle' : 'cancel' }}
-                    </mat-icon>
-                  </td>
-                </ng-container>
-
-                <!-- Created Date Column -->
-                <ng-container matColumnDef="created_at">
-                  <th mat-header-cell *matHeaderCellDef>Created</th>
-                  <td mat-cell *matCellDef="let books">
-                    {{ books.created_at | date: 'short' }}
-                  </td>
-                </ng-container>
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Actions</th>
-                  <td mat-cell *matCellDef="let books">
-                    <button
-                      mat-icon-button
-                      (click)="openViewDialog(books)"
-                      matTooltip="View Details"
-                    >
-                      <mat-icon>visibility</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      (click)="openEditDialog(books)"
-                      matTooltip="Edit"
-                    >
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deleteBook(books)"
-                      matTooltip="Delete"
-                      [disabled]="booksService.loading()"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr
-                  mat-row
-                  *matRowDef="let row; columns: displayedColumns"
-                ></tr>
-              </table>
             </div>
+          </div>
 
-            <!-- Empty State -->
-            @if (booksService.booksList().length === 0) {
-              <div class="empty-state">
-                <mat-icon class="empty-icon">inbox</mat-icon>
-                <h3>No Books found</h3>
-                <p>Create your first Books to get started</p>
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="openCreateDialog()"
+          <!-- Available Card -->
+          <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full"
+              >
+                <mat-icon class="!w-5 !h-5 text-green-600"
+                  >check_circle</mat-icon
                 >
-                  <mat-icon>add</mat-icon>
-                  Add Books
+              </div>
+              <div>
+                <div class="text-xs text-gray-500">Available</div>
+                <div class="text-xl font-bold text-gray-900">
+                  {{ stats().available }}
+                  <span class="text-xs text-green-600"
+                    >{{ getPercentage(stats().available) }}%</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unavailable Card -->
+          <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full"
+              >
+                <mat-icon class="!w-5 !h-5 text-red-600">block</mat-icon>
+              </div>
+              <div>
+                <div class="text-xs text-gray-500">Unavailable</div>
+                <div class="text-xl font-bold text-gray-900">
+                  {{ stats().unavailable }}
+                  <span class="text-xs text-red-600"
+                    >{{ getPercentage(stats().unavailable) }}%</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- This Week Card -->
+          <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex items-center justify-center w-10 h-10 bg-orange-100 rounded-full"
+              >
+                <mat-icon class="!w-5 !h-5 text-orange-600"
+                  >trending_up</mat-icon
+                >
+              </div>
+              <div>
+                <div class="text-xs text-gray-500">This Week</div>
+                <div class="text-xl font-bold text-gray-900">
+                  {{ stats().recentWeek }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <!-- Filters Panel -->
+        <div class="bg-slate-100 rounded-lg border border-gray-200 p-5">
+          <!-- Main Filter Row -->
+          <div class="flex flex-col md:flex-row gap-3 md:items-center">
+            <!-- Search Input with Buttons (single row, no wrap) -->
+            <div class="flex flex-row flex-nowrap gap-2 items-center md:w-2/5">
+              <div class="relative flex-1 min-w-0">
+                <mat-icon
+                  class="absolute left-3 top-3 !text-lg !w-5 !h-5 text-gray-400"
+                  >search</mat-icon
+                >
+                <input
+                  type="text"
+                  [(ngModel)]="searchTerm"
+                  (keyup.enter)="search()"
+                  placeholder="Search by title, author, ISBN..."
+                  aria-label="Search books"
+                  [class.pr-10]="searchTerm || booksService.loading()"
+                  class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  *ngIf="searchTerm"
+                  (click)="clearSearch()"
+                  aria-label="Clear search"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <mat-icon class="!text-lg !w-5 !h-5">close</mat-icon>
                 </button>
               </div>
-            }
+              <button
+                (click)="search()"
+                class="flex-shrink-0 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
+                aria-label="Search"
+                [matTooltip]="
+                  searchTerm.trim()
+                    ? 'Search books'
+                    : 'Enter search term to search'
+                "
+              >
+                <mat-icon class="!text-lg !w-5 !h-5">search</mat-icon>
+                Search
+              </button>
+              <button
+                (click)="refresh()"
+                class="flex-shrink-0 px-3 py-2.5 border border-gray-300 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-50 transition-colors flex items-center gap-2"
+                [class.opacity-50]="booksService.loading()"
+                [class.cursor-wait]="booksService.loading()"
+                aria-label="Refresh"
+                [matTooltip]="
+                  booksService.loading() ? 'Loading...' : 'Reload all books'
+                "
+              >
+                <mat-icon class="!text-lg !w-5 !h-5">refresh</mat-icon>
+              </button>
+            </div>
+            <!-- Quick Filters - flex grow -->
+            <div class="flex items-center gap-2 flex-wrap flex-1">
+              <button
+                (click)="setQuickFilter('all')"
+                [class]="
+                  quickFilter === 'all'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                "
+                class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
+              >
+                All
+              </button>
+              <button
+                (click)="setQuickFilter('active')"
+                [class]="
+                  quickFilter === 'active'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                "
+                class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
+              >
+                Available
+              </button>
+              <button
+                (click)="setQuickFilter('unavailable')"
+                [class]="
+                  quickFilter === 'unavailable'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                "
+                class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
+              >
+                Unavailable
+              </button>
 
-            <!-- Pagination -->
-            @if (booksService.booksList().length > 0) {
-              <mat-paginator
-                [length]="booksService.totalBook()"
-                [pageSize]="booksService.pageSize()"
-                [pageSizeOptions]="[5, 10, 25, 50, 100]"
-                [pageIndex]="booksService.currentPage() - 1"
-                (page)="onPageChange($event)"
-                showFirstLastButtons
-              ></mat-paginator>
+              <!-- Divider -->
+              <div class="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
+
+              <!-- Advanced Filters Toggle -->
+              <button
+                (click)="showAdvancedFilters.set(!showAdvancedFilters())"
+                [class]="
+                  showAdvancedFilters()
+                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                    : 'bg-white text-gray-700 border-gray-300'
+                "
+                class="px-3 py-2 text-sm font-medium rounded-md border hover:bg-gray-50 transition-colors flex items-center gap-1"
+              >
+                <mat-icon class="!text-base !w-4 !h-4">tune</mat-icon>
+                More filters
+                @if (hasActiveFilters()) {
+                  <span
+                    class="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full"
+                  >
+                    {{ getActiveFilterCount() }}
+                  </span>
+                }
+              </button>
+
+              <!-- Spacer to push items to right -->
+              <div class="flex-1"></div>
+
+              <!-- Export Button -->
+              <app-export
+                [exportService]="exportServiceAdapter"
+                [currentFilters]="getExportFilters()"
+                [selectedItems]="selectedItems()"
+                [availableFields]="availableExportFields"
+                [moduleName]="'books'"
+                (exportStarted)="onExportStarted($event)"
+                (exportCompleted)="onExportCompleted($event)"
+              ></app-export>
+
+              <!-- Clear All (show when filters active) -->
+              @if (
+                searchTerm ||
+                advancedFilters.available !== undefined ||
+                advancedFilters.genre ||
+                advancedFilters.author_id
+              ) {
+                <button
+                  (click)="clearAllFilters()"
+                  class="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center gap-1"
+                >
+                  <mat-icon class="!text-base !w-4 !h-4">clear</mat-icon>
+                  Clear
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Advanced Filters Panel -->
+          @if (showAdvancedFilters()) {
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                    >Status</label
+                  >
+                  <select
+                    [(ngModel)]="advancedFilters.available"
+                    (change)="applyFilterImmediate()"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option [ngValue]="undefined">All statuses</option>
+                    <option [ngValue]="true">Available only</option>
+                    <option [ngValue]="false">Unavailable only</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                    >Genre</label
+                  >
+                  <input
+                    type="text"
+                    [(ngModel)]="advancedFilters.genre"
+                    (keyup.enter)="applyFilterImmediate()"
+                    placeholder="e.g., Fiction, Science"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                    >Author ID</label
+                  >
+                  <input
+                    type="text"
+                    [(ngModel)]="advancedFilters.author_id"
+                    (keyup.enter)="applyFilterImmediate()"
+                    placeholder="Search by author"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <!-- Apply Filters Button -->
+              <div class="mt-4 flex justify-end gap-2">
+                <button
+                  (click)="clearAllFilters()"
+                  class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Clear All
+                </button>
+                <button
+                  (click)="applyFilterImmediate()"
+                  [disabled]="booksService.loading()"
+                  class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Loading State -->
+        @if (booksService.loading()) {
+          <!-- Loading Spinner -->
+          <div
+            class="bg-white rounded-lg border border-gray-200 p-12 text-center"
+          >
+            <mat-spinner class="!mx-auto" [diameter]="40"></mat-spinner>
+            <p class="text-sm text-gray-600 mt-4">Loading books...</p>
+          </div>
+        }
+
+        <!-- Error State -->
+        @if (booksService.error()) {
+          <!-- Error Message -->
+          <div
+            class="bg-white rounded-lg border border-gray-200 p-12 text-center"
+          >
+            <mat-icon class="!text-4xl !w-12 !h-12 text-red-600 mx-auto"
+              >error_outline</mat-icon
+            >
+            <h3 class="text-lg font-medium text-gray-900 mt-4">
+              Error Loading Books
+            </h3>
+            <p class="text-sm text-gray-600 mt-2">{{ booksService.error() }}</p>
+            <button
+              (click)="refresh()"
+              class="mt-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+            >
+              Try Again
+            </button>
+          </div>
+        }
+
+        <!-- Table Section: always in DOM -->
+        <div
+          class="bg-white rounded-lg border border-gray-200 overflow-hidden tremor-table"
+        >
+          <!-- Bulk Actions -->
+          @if (selection.selected.length > 0) {
+            <div
+              class="bg-blue-50 border-b border-blue-200 px-5 py-3 flex items-center justify-between"
+            >
+              <span class="text-sm font-medium text-blue-900"
+                >{{ selection.selected.length }} selected</span
+              >
+              <button
+                (click)="bulkDelete()"
+                class="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-md hover:bg-red-700"
+              >
+                Delete selected
+              </button>
+            </div>
+          }
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto">
+            <table mat-table [dataSource]="dataSource" matSort class="w-full">
+              <!-- ...existing columns and rows... -->
+              <!-- Checkbox Column -->
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef class="w-12">
+                  <mat-checkbox
+                    (change)="$event ? toggleAllRows() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  ></mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)"
+                  ></mat-checkbox>
+                </td>
+              </ng-container>
+              <!-- ...other columns unchanged... -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+                <td mat-cell *matCellDef="let book">
+                  <div class="text-md font-semibold text-gray-900">
+                    {{ book.title }}
+                  </div>
+                  @if (book.description) {
+                    <div class="text-sm text-gray-500 mt-0.5">
+                      {{ book.description | slice: 0 : 50 }}...
+                    </div>
+                  }
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="author_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Author
+                </th>
+                <td
+                  mat-cell
+                  *matCellDef="let book"
+                  class="text-md text-gray-900"
+                >
+                  {{ book.author_id }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="isbn">
+                <th mat-header-cell *matHeaderCellDef>ISBN</th>
+                <td mat-cell *matCellDef="let book">
+                  <span class="text-md font-mono text-gray-600">{{
+                    book.isbn
+                  }}</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="genre">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Genre</th>
+                <td mat-cell *matCellDef="let book">
+                  @if (book.genre) {
+                    <span
+                      class="inline-flex px-2.5 py-1 text-md font-medium bg-gray-100 text-gray-700 rounded"
+                      >{{ book.genre }}</span
+                    >
+                  }
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="pages">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Pages</th>
+                <td
+                  mat-cell
+                  *matCellDef="let book"
+                  class="text-md text-gray-600"
+                >
+                  {{ book.pages }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="available">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Status
+                </th>
+                <td mat-cell *matCellDef="let book">
+                  @if (book.available) {
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 text-md font-medium text-green-700 bg-green-50 rounded"
+                      ><span class="w-2 h-2 bg-green-600 rounded-full"></span
+                      >Active</span
+                    >
+                  } @else {
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 text-md font-medium text-gray-700 bg-gray-100 rounded"
+                      ><span class="w-2 h-2 bg-gray-400 rounded-full"></span
+                      >Inactive</span
+                    >
+                  }
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="text-right w-20">
+                  Actions
+                </th>
+                <td mat-cell *matCellDef="let book" class="text-right">
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="actionMenu"
+                    matTooltip="Actions"
+                    matTooltipPosition="above"
+                    aria-label="More actions"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #actionMenu="matMenu" [hasBackdrop]="false">
+                    <button mat-menu-item (click)="onEditBook(book)">
+                      <mat-icon>edit</mat-icon><span>Edit</span>
+                    </button>
+                    <button mat-menu-item (click)="onViewBook(book)">
+                      <mat-icon>visibility</mat-icon><span>View Details</span>
+                    </button>
+                    <button mat-menu-item (click)="onDeleteBook(book)">
+                      <mat-icon class="text-red-600">delete</mat-icon
+                      ><span>Delete</span>
+                    </button>
+                  </mat-menu>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                class="hover:bg-gray-50"
+                [attr.data-book-id]="row.id"
+              ></tr>
+            </table>
+          </div>
+
+          <!-- Paginator -->
+          <mat-paginator
+            [length]="booksService.totalBook()"
+            [pageSize]="25"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            [pageIndex]="0"
+            showFirstLastButtons
+            class="border-t border-gray-200"
+          ></mat-paginator>
+        </div>
+
+        <!-- Empty State: show below table if no data and not loading/error -->
+        @if (
+          !booksService.loading() &&
+          !booksService.error() &&
+          dataSource.data.length === 0
+        ) {
+          <!-- Empty State Message -->
+          <div
+            class="bg-white rounded-lg border border-gray-200 p-12 text-center"
+          >
+            <mat-icon class="!text-4xl !w-12 !h-12 text-gray-400 mx-auto"
+              >menu_book</mat-icon
+            >
+            <h3 class="text-lg font-medium text-gray-900 mt-4">
+              No books found
+            </h3>
+            <p class="text-sm text-gray-600 mt-2">
+              @if (
+                searchTerm ||
+                advancedFilters.available !== undefined ||
+                advancedFilters.genre ||
+                advancedFilters.author_id
+              ) {
+                Try adjusting your search or filters
+              } @else {
+                Get started by adding your first book
+              }
+            </p>
+            @if (
+              searchTerm ||
+              advancedFilters.available !== undefined ||
+              advancedFilters.genre ||
+              advancedFilters.author_id
+            ) {
+              <button
+                (click)="clearAllFilters()"
+                class="mt-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+              >
+                Clear filters
+              </button>
+            } @else {
+              <button
+                (click)="openCreateDialog()"
+                class="mt-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+              >
+                Add your first book
+              </button>
             }
-          </mat-card-content>
-        </mat-card>
-      }
+          </div>
+        }
+        <!-- Removed extra closing div -->
+      </div>
     </div>
   `,
   styles: [
     `
-      .books-list-container {
-        padding: 16px;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
+      /* Tremor-style Material Table */
+      ::ng-deep .tremor-table {
+        .mat-mdc-table {
+          background: white;
+        }
 
-      .page-header {
-        margin-bottom: 16px;
-        border-radius: 4px;
-      }
+        .mat-mdc-header-row {
+          background-color: #f3f4f6;
+          border-bottom: 2px solid #d1d5db;
+        }
 
-      .page-title {
-        margin: 0;
-        font-weight: 500;
-      }
+        .mat-mdc-header-cell {
+          color: #1f2937;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          padding: 0.75rem 1.25rem;
+          border-bottom: none;
+        }
 
-      .spacer {
-        flex: 1 1 auto;
-      }
+        .mat-mdc-cell {
+          padding: 0.5rem 1rem;
+          border-bottom: 1px solid #e5e7eb;
+          color: #111827;
+        }
 
-      /* Permission Error Banner */
-      .permission-error-banner {
-        margin-bottom: 16px;
-        background: #ffebee;
-        border-left: 4px solid #f44336;
-      }
+        .mat-mdc-row {
+          transition: background-color 0.2s ease;
+        }
 
-      .permission-error-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
+        .mat-mdc-row:nth-child(odd) {
+          background-color: #ffffff;
+        }
 
-      .error-icon-section {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+        .mat-mdc-row:nth-child(even) {
+          background-color: #f9fafb;
+        }
 
-      .error-icon {
-        font-size: 48px;
-        width: 48px;
-        height: 48px;
-        color: #f44336;
-      }
+        .mat-mdc-row:hover {
+          background-color: #f3f4f6 !important;
+        }
 
-      .error-message-section {
-        flex: 1;
-        min-width: 200px;
-      }
+        .mat-sort-header-arrow {
+          color: #6b7280;
+        }
 
-      .error-title {
-        margin: 0 0 8px 0;
-        font-size: 18px;
-        font-weight: 500;
-        color: #c62828;
-      }
+        .mat-mdc-checkbox .mdc-checkbox__background {
+          border-color: #d1d5db;
+        }
 
-      .error-message {
-        margin: 0;
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.87);
-        line-height: 1.5;
-      }
-
-      .error-details {
-        display: block;
-        margin-top: 4px;
-        font-size: 13px;
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      .error-actions-section {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .dismiss-btn {
-        min-width: 120px;
-      }
-
-      .search-card,
-      .quick-filters-card,
-      .summary-dashboard-card,
-      .export-tools-card,
-      .advanced-filters-card {
-        margin-bottom: 16px;
-      }
-
-      .search-wrapper {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .search-field {
-        flex: 1;
-        min-width: 300px;
-      }
-
-      .add-btn {
-        height: 56px;
-        padding: 0 24px;
-        white-space: nowrap;
-        min-width: 140px;
-      }
-
-      .quick-filters {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      .filter-chip {
-        transition: all 0.2s ease;
-      }
-
-      .filter-chip.active {
-        background-color: #1976d2;
-        color: white;
-      }
-
-      .active-filters {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 16px;
-        padding: 12px 16px;
-        background-color: #f5f5f5;
-        border-radius: 8px;
-        border-left: 4px solid #1976d2;
-      }
-
-      .active-filters-label {
-        font-weight: 500;
-        color: #1976d2;
-        margin-right: 8px;
-        flex-shrink: 0;
-      }
-
-      .filter-chips {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-        flex: 1;
-      }
-
-      .filter-chips mat-chip {
-        background-color: #e3f2fd;
-        color: #1976d2;
-      }
-
-      .clear-all-btn {
-        margin-left: auto;
-        flex-shrink: 0;
-      }
-
-      .filters-panel {
-        box-shadow: none !important;
-      }
-
-      .advanced-filters {
-        padding: 20px;
-      }
-
-      /* Unified Filter Header */
-      .filters-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px;
-        margin-bottom: 24px;
-        font-size: 18px;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-      }
-
-      .filters-header mat-icon {
-        font-size: 24px;
-      }
-
-      /* Unified Filter Grid */
-      .unified-filter-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .filter-item {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .filter-item mat-form-field {
-        width: 100%;
-      }
-
-      /* Range Filter (Number/Date) - Takes 2 columns */
-      .filter-item-range {
-        grid-column: span 2;
-      }
-
-      .filter-item-date {
-        grid-column: span 2;
-      }
-
-      @media (max-width: 968px) {
-        .filter-item-range,
-        .filter-item-date {
-          grid-column: span 1;
+        .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+          background-color: #2563eb;
+          border-color: #2563eb;
         }
       }
 
-      @media (max-width: 768px) {
-        .unified-filter-grid {
-          grid-template-columns: 1fr;
-        }
+      /* Paginator Tremor Style */
+      ::ng-deep .mat-mdc-paginator {
+        background: white;
+        color: #374151;
+        font-size: 0.875rem;
       }
 
-      .range-label {
-        font-weight: 500;
-        color: #424242;
-        font-size: 14px;
-        margin-bottom: 8px;
+      ::ng-deep .mat-mdc-paginator-page-size-label,
+      ::ng-deep .mat-mdc-paginator-range-label {
+        color: #6b7280;
+        font-size: 0.875rem;
       }
 
-      .range-container {
-        display: flex;
-        gap: 8px;
-        align-items: center;
+      ::ng-deep .mat-mdc-icon-button {
+        color: #6b7280;
       }
 
-      .range-container mat-form-field {
-        flex: 1;
+      ::ng-deep .mat-mdc-icon-button:hover:not([disabled]) {
+        color: #111827;
+        background-color: #f3f4f6;
       }
 
-      .range-separator {
-        color: #666;
-        font-weight: 500;
-        padding: 0 4px;
-        margin-top: 8px;
-      }
-
-      .filter-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        align-items: center;
-      }
-
-      .reset-btn {
-        min-width: 120px;
-      }
-
-      .apply-btn {
-        min-width: 140px;
-      }
-
-      .search-btn {
-        min-width: 100px;
-      }
-
-      .clear-search-btn {
-        min-width: 80px;
-      }
-
-      .checkbox-filter {
-        display: flex;
-        align-items: center;
-        min-width: 120px;
-        margin: 8px 0;
-      }
-
-      .loading-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 40px;
-      }
-
-      .loading-container p {
-        margin-top: 16px;
-        color: #666;
-      }
-
-      .error-card {
-        margin-bottom: 16px;
-      }
-
-      .error-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .error-content mat-icon {
-        font-size: 24px;
-      }
-
-      .error-content p {
-        flex: 1;
-        margin: 0;
-      }
-
-      .table-card {
-        margin-bottom: 16px;
-      }
-
-      .bulk-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 0;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 16px;
-      }
-
-      .selection-info {
-        font-weight: 500;
-        color: #1976d2;
-      }
-
-      .bulk-buttons {
-        display: flex;
-        gap: 8px;
-      }
-
-      .table-container {
-        overflow-x: auto;
-      }
-
-      .books-table {
-        width: 100%;
-        min-width: 600px;
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 40px;
-      }
-
-      .empty-icon {
-        font-size: 48px;
-        color: #ccc;
-        margin-bottom: 16px;
-      }
-
-      .empty-state h3 {
-        margin: 0 0 8px 0;
-        color: #666;
-      }
-
-      .empty-state p {
-        margin: 0 0 24px 0;
-        color: #999;
-      }
-
-      /* Summary Dashboard Styles */
-      .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin: 16px 0;
-      }
-
-      .summary-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 8px;
-        background: rgba(0, 0, 0, 0.02);
-      }
-
-      .summary-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.05);
-      }
-
-      .summary-content {
-        flex: 1;
-      }
-
-      .summary-value {
-        font-size: 24px;
-        font-weight: 600;
-        line-height: 1.2;
-        color: rgba(0, 0, 0, 0.87);
-      }
-
-      .summary-label {
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: rgba(0, 0, 0, 0.6);
-        margin-top: 2px;
-      }
-
-      /* Export Tools Styles */
-      .export-actions {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
-
-      .export-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.02);
-        border-radius: 4px;
-        font-size: 14px;
-      }
-
-      .info-icon {
-        font-size: 18px;
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      .info-text {
-        color: rgba(0, 0, 0, 0.7);
-      }
-
-      @media (max-width: 768px) {
-        .books-list-container {
-          padding: 8px;
-        }
-
-        .search-container {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .search-group {
-          flex-direction: column;
-          align-items: stretch;
-          min-width: unset;
-          gap: 8px;
-        }
-
-        .search-field {
-          min-width: unset;
-        }
-
-        .search-buttons {
-          justify-content: center;
-        }
-
-        .search-btn,
-        .clear-search-btn {
-          flex: 1;
-          min-width: unset;
-        }
-
-        .bulk-actions {
-          flex-direction: column;
-          gap: 8px;
-          align-items: stretch;
-        }
-
-        .bulk-buttons {
-          justify-content: center;
-        }
-
-        .summary-grid {
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-
-        .summary-item {
-          padding: 12px;
-        }
-
-        .export-actions {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 8px;
-        }
+      ::ng-deep .mat-mdc-icon-button[disabled] {
+        color: #d1d5db;
       }
     `,
   ],
 })
-export class BookListComponent implements OnInit, OnDestroy {
-  protected booksService = inject(BookService);
+export class BooksListComponent {
+  booksService = inject(BookService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private axDialog = inject(AxDialogService);
+  private cdr = inject(ChangeDetectorRef);
 
-  // Foreign key services for dropdown filters
-  private authorService = inject(AuthorService);
+  // Mat-Table setup
+  displayedColumns: string[] = [
+    'select',
+    'title',
+    'author_id',
+    'isbn',
+    'genre',
+    'pages',
+    'available',
+    'actions',
+  ];
+  dataSource = new MatTableDataSource<Book>([]);
+  selection = new SelectionModel<Book>(true, []);
 
-  // Search and filtering
-  searchTerm = '';
-  private searchTimeout: any;
-  private filterTimeout: any;
-
-  private filtersSignal = signal<Partial<ListBookQuery>>({});
-  readonly filters = this.filtersSignal.asReadonly();
-
-  // Quick filter state
-  protected quickFilter = 'all';
-
-  // Validation state
-  private validationErrorsSignal = signal<Record<string, string>>({});
-  readonly validationErrors = this.validationErrorsSignal.asReadonly();
-
-  // Foreign key dropdown options state
-  authorOptions = signal<any[]>([]);
-  loadingAuthor = signal<boolean>(false);
-
-  // Selection
+  // Selection for export feature (like authors)
   private selectedIdsSignal = signal<Set<string>>(new Set());
   readonly selectedItems = computed(() =>
     this.booksService
       .booksList()
       .filter((item) => this.selectedIdsSignal().has(item.id)),
   );
+
+  // --- Signals for sort, page, search ---
+  sortState = signal<{ active: string; direction: SortDirection }>({
+    active: '',
+    direction: '',
+  });
+  pageState = signal<{ index: number; size: number }>({ index: 0, size: 25 });
+  searchTermSignal = signal('');
+
+  // Holds current MatSort subscription
+  private matSortSubscription?: import('rxjs').Subscription;
+
+  /**
+   * Angular Material sort event subscription
+   * Ensures only one subscription at a time
+   */
+  @ViewChild(MatSort)
+  set matSort(sort: MatSort | undefined) {
+    this.unsubscribeMatSort();
+    if (sort) {
+      this.matSortSubscription = this.subscribeMatSort(sort);
+    }
+  }
+
+  /**
+   * Subscribe to MatSort.sortChange and update sortState
+   */
+  private subscribeMatSort(sort: MatSort): import('rxjs').Subscription {
+    return fromEventPattern<Sort>((h) => sort.sortChange.subscribe(h))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((s) => {
+        console.log('[BooksList] DEBUG sortChange:', s);
+        // Reset page to 0 on sort change
+        if (this.paginator) this.paginator.pageIndex = 0;
+        this.sortState.set({ active: s.active, direction: s.direction });
+      });
+  }
+
+  /**
+   * Unsubscribe previous MatSort subscription if exists
+   */
+  private unsubscribeMatSort() {
+    if (this.matSortSubscription) {
+      this.matSortSubscription.unsubscribe();
+      this.matSortSubscription = undefined;
+    }
+  }
+
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
+  private destroyRef = inject(DestroyRef);
+
+  // Search & Filter
+  // Deprecated: use searchTermSignal instead
+  searchTerm = '';
+  quickFilter: 'all' | 'active' | 'unavailable' = 'all';
+  showAdvancedFilters = signal(false);
+  advancedFiltersSignal = signal<AdvancedFilters>({
+    available: undefined,
+    genre: '',
+    author_id: '',
+  });
+
+  // Stats from API (should come from dedicated stats endpoint)
+  stats = computed(() => ({
+    total: this.booksService.totalBook(),
+    available: this.booksService.availableCount(),
+    unavailable: this.booksService.unavailableCount(),
+    recentWeek: this.booksService.thisWeekCount(),
+  }));
 
   // Export configuration
   exportServiceAdapter: ExportService = {
@@ -1361,690 +869,260 @@ export class BookListComponent implements OnInit, OnDestroy {
   availableExportFields = [
     { key: 'id', label: 'Id' },
     { key: 'title', label: 'Title' },
-    { key: 'description', label: 'Description' },
-    { key: 'author_id', label: 'Author id' },
-    { key: 'isbn', label: 'Isbn' },
-    { key: 'pages', label: 'Pages' },
-    { key: 'published_date', label: 'Published date' },
-    { key: 'price', label: 'Price' },
+    { key: 'author_id', label: 'Author ID' },
+    { key: 'isbn', label: 'ISBN' },
     { key: 'genre', label: 'Genre' },
+    { key: 'pages', label: 'Pages' },
     { key: 'available', label: 'Available' },
     { key: 'created_at', label: 'Created at' },
     { key: 'updated_at', label: 'Updated at' },
   ];
 
-  // Table configuration
-  displayedColumns: string[] = [
-    'select',
-    'title',
-    'description',
-    'author_id',
-    'isbn',
-    'pages',
-    'published_date',
-    'price',
-    'genre',
-    'available',
-    'created_at',
-    'actions',
-  ];
+  queryParams: Partial<ListBookQuery> = {
+    page: 1,
+    limit: 25,
+  };
 
-  ngOnInit() {
-    this.loadBooks();
-    // Load foreign key dropdown options
-    this.loadAuthor();
+  subscriptionsInitialized = false;
+
+  get advancedFilters() {
+    return this.advancedFiltersSignal();
   }
 
-  ngOnDestroy() {
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
+  set advancedFilters(val: AdvancedFilters) {
+    this.advancedFiltersSignal.set(val);
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+    // Subscribe paginator changes to update pageState
+    if (this.paginator) {
+      fromEventPattern<{ pageIndex: number; pageSize: number }>((h) =>
+        this.paginator.page.subscribe(h),
+      )
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((event) => {
+          this.pageState.set({ index: event.pageIndex, size: event.pageSize });
+        });
     }
   }
 
-  // ===== DATA LOADING =====
+  // --- Effect: reload books on sort/page/search/filter change ---
+  constructor() {
+    effect(async () => {
+      const sort = this.sortState();
+      const page = this.pageState();
+      const search = this.searchTermSignal();
+      const filters = this.advancedFilters;
 
-  async loadBooks() {
-    const params: ListBookQuery = {
-      page: this.booksService.currentPage(),
-      limit: this.booksService.pageSize(),
-      ...this.filters(),
-    };
-
-    if (this.searchTerm.trim()) {
-      params.search = this.searchTerm.trim();
-    }
-
-    await this.booksService.loadBookList(params);
-  }
-
-  async retry() {
-    this.booksService.clearError();
-    await this.loadBooks();
-  }
-
-  // ===== FOREIGN KEY DROPDOWN DATA LOADING =====
-
-  private async loadAuthor() {
-    this.loadingAuthor.set(true);
-    try {
-      const response = await this.authorService.getDropdownOptions();
-      this.authorOptions.set(response || []);
-    } catch (error) {
-      console.error('Failed to load author:', error);
-      this.authorOptions.set([]);
-    } finally {
-      this.loadingAuthor.set(false);
-    }
-  }
-
-  // ===== VALIDATION METHODS =====
-
-  private isValidUuid(value: string): boolean {
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(value);
-  }
-
-  private validateTechnicalFields(): { field: string; message: string }[] {
-    const errors: { field: string; message: string }[] = [];
-    const filters = this.filters();
-
-    return errors;
-  }
-
-  private showFieldErrors(errors: { field: string; message: string }[]) {
-    const errorMap: Record<string, string> = {};
-    errors.forEach((error) => {
-      errorMap[error.field] = error.message;
-    });
-    this.validationErrorsSignal.set(errorMap);
-
-    // Show snackbar for user feedback
-    if (errors.length > 0) {
-      this.snackBar.open(
-        'Please check your search criteria and try again',
-        'Close',
-        { duration: 3000, panelClass: ['error-snackbar'] },
+      const params: Partial<ListBookQuery> = {
+        page: (page?.index ?? 0) + 1,
+        limit: page?.size ?? 25,
+        sort:
+          sort.active && sort.direction
+            ? `${sort.active}:${sort.direction}`
+            : undefined,
+        search: search?.trim() || undefined,
+        available: filters.available,
+        genre: filters.genre?.trim() || undefined,
+        author_id: filters.author_id?.trim() || undefined,
+      };
+      Object.keys(params).forEach(
+        (k) =>
+          params[k as keyof typeof params] === undefined &&
+          delete params[k as keyof typeof params],
       );
-    }
+
+      console.log('[BooksList] DEBUG params to API:', params);
+
+      await this.booksService.loadBookList(params);
+      this.dataSource.data = this.booksService.booksList();
+      if (this.paginator) {
+        this.paginator.length = this.booksService.totalBook();
+      }
+    });
   }
 
-  private clearValidationErrors() {
-    this.validationErrorsSignal.set({});
+  // Search & Filter Methods
+
+  search() {
+    // Set searchTermSignal, reset page
+    this.searchTermSignal.set(this.searchTerm.trim());
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
-  // ===== SEARCH AND FILTERING =====
-
-  onSearchChange() {
-    // Debounce search for auto-search
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-
-    this.searchTimeout = setTimeout(() => {
-      this.booksService.setCurrentPage(1);
-      this.loadBooks();
-    }, 300);
+  refresh() {
+    this.searchTerm = '';
+    this.searchTermSignal.set('');
+    this.quickFilter = 'all';
+    this.advancedFilters = {
+      available: undefined,
+      genre: '',
+      author_id: '',
+    };
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
-  onSearchButtonClick() {
-    // Manual search - validate before execution
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-
-    // Validate technical fields first
-    const validationErrors = this.validateTechnicalFields();
-
-    if (validationErrors.length > 0) {
-      this.showFieldErrors(validationErrors);
-      return; // Don't proceed with search
-    }
-
-    // Clear any previous validation errors
-    this.clearValidationErrors();
-
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
+  applyFilterImmediate() {
+    // Always trigger effect by updating searchTermSignal (even if empty)
+    this.searchTermSignal.set(this.searchTerm.trim());
+    // Force advancedFiltersSignal to emit (important for object mutation via ngModel)
+    this.advancedFiltersSignal.set({ ...this.advancedFilters });
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   clearSearch() {
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-
     this.searchTerm = '';
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
+    this.applyFilterImmediate();
   }
 
-  // ===== DATE FILTERING =====
-
-  onDateFilterChange(dateFilter: { [key: string]: string | null | undefined }) {
-    console.log('Date filter change:', dateFilter); // Debug log
-
-    // Update filters with date filter values
-    this.filtersSignal.update((filters) => ({
-      ...filters,
-      ...dateFilter,
-    }));
-
-    console.log('Updated filters:', this.filters()); // Debug log
-
-    // Apply filters with debounce
-    this.applyFilters();
+  setQuickFilter(filter: 'all' | 'active' | 'unavailable') {
+    this.quickFilter = filter;
+    if (filter === 'all') {
+      this.advancedFiltersSignal.set({
+        ...this.advancedFilters,
+        available: undefined,
+      });
+    } else if (filter === 'active') {
+      this.advancedFiltersSignal.set({
+        ...this.advancedFilters,
+        available: true,
+      });
+    } else if (filter === 'unavailable') {
+      this.advancedFiltersSignal.set({
+        ...this.advancedFilters,
+        available: false,
+      });
+    }
+    // Always trigger effect by updating searchTermSignal (even if empty)
+    this.searchTermSignal.set(this.searchTerm.trim());
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
-  // Handle filter field changes
-  onFilterChange(field: string, event: any) {
-    const value = event.target ? event.target.value : event;
-
-    // Convert string numbers to numbers for numeric fields
-    let processedValue = value;
-    if (
-      field.includes('_min') ||
-      field.includes('_max') ||
-      field === 'view_count'
-    ) {
-      processedValue = value === '' ? undefined : Number(value);
-    }
-
-    // Convert string booleans for boolean fields
-    if (field === 'published') {
-      processedValue = value === '' ? undefined : value;
-    }
-
-    // Clear quick filter when advance filters are used
-    if (this.quickFilter !== 'all') {
-      this.quickFilter = 'all';
-    }
-
-    this.filtersSignal.update((filters) => ({
-      ...filters,
-      [field]: processedValue,
-    }));
-
-    this.applyFilters();
-  }
-
-  applyFilters() {
-    // Debounce filter changes to prevent multiple API calls
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    this.filterTimeout = setTimeout(() => {
-      this.booksService.setCurrentPage(1);
-      this.loadBooks();
-    }, 300);
-  }
-
-  // Immediate filter application (for button clicks)
-  applyFiltersImmediate() {
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
-  }
-
-  clearFilters() {
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
+  clearAllFilters() {
     this.searchTerm = '';
-    this.filtersSignal.set({});
-    this.clearValidationErrors();
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
+    this.searchTermSignal.set('');
+    this.quickFilter = 'all';
+    this.advancedFilters = {
+      available: undefined,
+      genre: '',
+      author_id: '',
+    };
+    this.showAdvancedFilters.set(false);
+    this.applyFilterImmediate();
   }
 
+  // Helper methods for filter UI
   hasActiveFilters(): boolean {
-    return this.searchTerm.length > 0 || Object.keys(this.filters()).length > 0;
+    return (
+      this.searchTerm.trim() !== '' ||
+      this.advancedFilters.available !== undefined ||
+      this.advancedFilters.genre.trim() !== '' ||
+      (this.advancedFilters.author_id?.trim() || '') !== ''
+    );
   }
 
-  activeFiltersCount(): number {
+  getActiveFilterCount(): number {
     let count = 0;
-    if (this.searchTerm.length > 0) count++;
-    count += Object.keys(this.filters()).length;
+    if (this.searchTerm.trim()) count++;
+    if (this.advancedFilters.available !== undefined) count++;
+    if (this.advancedFilters.genre.trim()) count++;
+    if (this.advancedFilters.author_id?.trim()) count++;
     return count;
   }
 
-  // ===== PAGINATION =====
-
-  onPageChange(event: PageEvent) {
-    this.booksService.setCurrentPage(event.pageIndex + 1);
-    this.booksService.setPageSize(event.pageSize);
-    this.loadBooks();
+  // Selection Methods
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
   }
 
-  // ===== SELECTION =====
-
-  isSelected(id: string): boolean {
-    return this.selectedIdsSignal().has(id);
-  }
-
-  hasSelected(): boolean {
-    return this.selectedIdsSignal().size > 0;
-  }
-
-  isAllSelected(): boolean {
-    const total = this.booksService.booksList().length;
-    return total > 0 && this.selectedIdsSignal().size === total;
-  }
-
-  toggleSelect(id: string) {
-    this.selectedIdsSignal.update((selected) => {
-      const newSet = new Set(selected);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  }
-
-  toggleSelectAll() {
+  toggleAllRows() {
     if (this.isAllSelected()) {
-      this.selectedIdsSignal.set(new Set());
-    } else {
-      const allIds = this.booksService.booksList().map((item) => item.id);
-      this.selectedIdsSignal.set(new Set(allIds));
+      this.selection.clear();
+      return;
     }
+    this.selection.select(...this.dataSource.data);
   }
 
-  clearSelection() {
-    this.selectedIdsSignal.set(new Set());
-  }
-
-  // ===== DIALOG OPERATIONS =====
-
+  // CRUD Operations
   openCreateDialog() {
     const dialogRef = this.dialog.open(BookCreateDialogComponent, {
       width: '600px',
-      maxWidth: '90vw',
-      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        // Refresh the list to show the new item
-        this.loadBooks();
+        // effect will reload
       }
     });
   }
 
-  openEditDialog(books: Book) {
+  onViewBook(book: Book) {
+    this.dialog.open(BookViewDialogComponent, {
+      width: '600px',
+      data: { books: book } as BookViewDialogData,
+    });
+  }
+
+  onEditBook(book: Book) {
     const dialogRef = this.dialog.open(BookEditDialogComponent, {
       width: '600px',
-      maxWidth: '90vw',
-      disableClose: true,
-      data: { books } as BookEditDialogData,
+      data: { books: book } as BookEditDialogData,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        // The service automatically updates the list with optimistic updates
-        // No need to refresh unless there was an error
+        // effect will reload
       }
     });
   }
 
-  openViewDialog(books: Book) {
-    const dialogRef = this.dialog.open(BookViewDialogComponent, {
-      width: '700px',
-      maxWidth: '90vw',
-      data: { books } as BookViewDialogData,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.action === 'edit') {
-        // User clicked edit from view dialog
-        this.openEditDialog(result.data);
+  onDeleteBook(book: Book) {
+    this.axDialog.confirmDelete(book.title).subscribe(async (confirmed) => {
+      if (confirmed) {
+        try {
+          await this.booksService.deleteBook(book.id);
+          this.snackBar.open('Book deleted successfully', 'Close', {
+            duration: 3000,
+          });
+          // effect will reload
+        } catch {
+          this.snackBar.open('Failed to delete book', 'Close', {
+            duration: 3000,
+          });
+        }
       }
     });
   }
 
-  // ===== QUICK FILTERS =====
+  bulkDelete() {
+    const count = this.selection.selected.length;
+    this.axDialog
+      .confirmBulkDelete(count, 'books')
+      .subscribe(async (confirmed) => {
+        if (confirmed) {
+          try {
+            const deletePromises = this.selection.selected.map((book) =>
+              this.booksService.deleteBook(book.id),
+            );
 
-  protected setQuickFilter(filter: string) {
-    // Clear any pending filter operations
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    this.quickFilter = filter;
-
-    // Clear all filters first
-    this.searchTerm = '';
-    this.filtersSignal.set({});
-    this.clearValidationErrors();
-
-    switch (filter) {
-      case 'active':
-        this.filtersSignal.set({ available: true });
-        break;
-      case 'published':
-        this.filtersSignal.set({ available: true });
-        break;
-      // case 'featured':
-      //   this.filtersSignal.set({ is_featured: true });
-      //   break;
-      // case 'available':
-      //   this.filtersSignal.set({ is_available: true });
-      //   break;
-      // case 'draft':
-      //   this.filtersSignal.set({ status: 'draft' });
-      //   break;
-      case 'all':
-      default:
-        // Already cleared above
-        break;
-    }
-
-    // Quick filters should apply immediately
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
-  }
-
-  // ===== ACTIVE FILTER CHIPS =====
-
-  protected getActiveFilterChips(): Array<{
-    key: string;
-    label: string;
-    value: string;
-  }> {
-    const chips: Array<{ key: string; label: string; value: string }> = [];
-    const filters = this.filters();
-
-    // Add quick filter chip if not 'all'
-    if (this.quickFilter !== 'all') {
-      const quickFilterLabels: Record<string, string> = {
-        active: 'Active Items',
-        published: 'Published Status',
-        // 'featured': 'Featured Items',
-        // 'available': 'Available Items',
-        // 'draft': 'Draft Status',
-      };
-      chips.push({
-        key: '_quickFilter',
-        label: 'Quick Filter',
-        value: quickFilterLabels[this.quickFilter] || this.quickFilter,
+            await Promise.all(deletePromises);
+            this.snackBar.open(
+              `${count} book(s) deleted successfully`,
+              'Close',
+              { duration: 3000 },
+            );
+            this.selection.clear();
+            // effect will reload
+          } catch {
+            this.snackBar.open('Failed to delete some books', 'Close', {
+              duration: 3000,
+            });
+          }
+        }
       });
-    }
-
-    if (this.searchTerm) {
-      chips.push({ key: 'search', label: 'Search', value: this.searchTerm });
-    }
-
-    // Date field filters - only add if fields exist in schema
-
-    if (filters.created_at) {
-      chips.push({
-        key: 'created_at',
-        label: 'Created Date',
-        value: this.formatDate(filters.created_at as string),
-      });
-    } else if (filters.created_at_min || filters.created_at_max) {
-      const from = filters.created_at_min
-        ? this.formatDate(filters.created_at_min as string)
-        : '...';
-      const to = filters.created_at_max
-        ? this.formatDate(filters.created_at_max as string)
-        : '...';
-      chips.push({
-        key: 'created_at_range',
-        label: 'Created Date Range',
-        value: `${from} - ${to}`,
-      });
-    }
-
-    if (filters.updated_at) {
-      chips.push({
-        key: 'updated_at',
-        label: 'Updated Date',
-        value: this.formatDate(filters.updated_at as string),
-      });
-    } else if (filters.updated_at_min || filters.updated_at_max) {
-      const from = filters.updated_at_min
-        ? this.formatDate(filters.updated_at_min as string)
-        : '...';
-      const to = filters.updated_at_max
-        ? this.formatDate(filters.updated_at_max as string)
-        : '...';
-      chips.push({
-        key: 'updated_at_range',
-        label: 'Updated Date Range',
-        value: `${from} - ${to}`,
-      });
-    }
-
-    // String field filters
-    if (filters.title !== undefined && filters.title !== '') {
-      chips.push({
-        key: 'title',
-        label: 'Title',
-        value: String(filters.title),
-      });
-    }
-
-    if (filters.isbn !== undefined && filters.isbn !== '') {
-      chips.push({ key: 'isbn', label: 'Isbn', value: String(filters.isbn) });
-    }
-
-    if (filters.genre !== undefined && filters.genre !== '') {
-      chips.push({
-        key: 'genre',
-        label: 'Genre',
-        value: String(filters.genre),
-      });
-    }
-
-    // Number field filters
-
-    // Foreign Key filters
-    if (filters.author_id !== undefined && filters.author_id !== '') {
-      chips.push({
-        key: 'author_id',
-        label: 'Author Id',
-        value: String(filters.author_id),
-      });
-    }
-
-    return chips;
-  }
-
-  protected removeFilter(key: string) {
-    // Clear any pending filter operations
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    if (key === '_quickFilter') {
-      // Reset quick filter to 'all'
-      this.setQuickFilter('all');
-      return;
-    }
-
-    if (key === 'search') {
-      this.searchTerm = '';
-    } else if (key.includes('_range')) {
-      // Handle date range removal
-      const fieldName = key.replace('_range', '');
-      this.filtersSignal.update((filters) => {
-        const updated = { ...filters } as any;
-        delete updated[fieldName];
-        delete updated[`${fieldName}_min`];
-        delete updated[`${fieldName}_max`];
-        return updated;
-      });
-    } else {
-      this.filtersSignal.update((filters) => {
-        const updated = { ...filters } as any;
-        delete updated[key];
-        return updated;
-      });
-    }
-    this.clearValidationErrors();
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
-  }
-
-  protected clearAllFilters() {
-    // Clear any pending filter operations
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    this.searchTerm = '';
-    this.filtersSignal.set({});
-    this.quickFilter = 'all';
-    this.clearValidationErrors();
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
-  }
-
-  protected resetFilters() {
-    // Clear any pending filter operations
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    this.filtersSignal.set({});
-    this.clearValidationErrors();
-
-    // Reset filters should apply immediately
-    this.booksService.setCurrentPage(1);
-    this.loadBooks();
-  }
-
-  // ===== DATE FILTER HANDLERS =====
-
-  protected updateDateFilter(filterUpdate: any) {
-    this.filtersSignal.update((current) => ({ ...current, ...filterUpdate }));
-    this.applyFilters();
-  }
-
-  private formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  }
-
-  // ===== ACTIONS =====
-
-  async deleteBook(books: Book) {
-    if (confirm(`Are you sure you want to delete this books?`)) {
-      try {
-        await this.booksService.deleteBook(books.id);
-        this.snackBar.open('Books deleted successfully', 'Close', {
-          duration: 3000,
-        });
-      } catch (error: any) {
-        const errorMessage = this.booksService.permissionError()
-          ? 'You do not have permission to delete Books'
-          : error?.message || 'Failed to delete Books';
-        this.snackBar.open(errorMessage, 'Close', {
-          duration: 5000,
-          panelClass: ['error-snackbar'],
-        });
-      }
-    }
-  }
-
-  async bulkDelete() {
-    const selectedIds = Array.from(this.selectedIdsSignal());
-    if (selectedIds.length === 0) return;
-
-    const confirmed = confirm(
-      `Are you sure you want to delete ${selectedIds.length} Books?`,
-    );
-    if (!confirmed) return;
-
-    try {
-      await this.booksService.bulkDeleteBook(selectedIds);
-      this.clearSelection();
-      this.snackBar.open(
-        `${selectedIds.length} Books deleted successfully`,
-        'Close',
-        {
-          duration: 3000,
-        },
-      );
-    } catch (error: any) {
-      const errorMessage = this.booksService.permissionError()
-        ? 'You do not have permission to delete Books'
-        : error?.message || 'Failed to delete Books';
-      this.snackBar.open(errorMessage, 'Close', {
-        duration: 5000,
-        panelClass: ['error-snackbar'],
-      });
-    }
-  }
-
-  async bulkUpdateStatus(status: string) {
-    const selectedIds = Array.from(this.selectedIdsSignal());
-    if (selectedIds.length === 0) return;
-
-    try {
-      // Create bulk update data with status field
-      const items = selectedIds.map((id) => ({
-        id,
-        data: { status } as any,
-      }));
-
-      await this.booksService.bulkUpdateBook(items);
-      this.clearSelection();
-      this.snackBar.open(
-        `${selectedIds.length} Books status updated successfully`,
-        'Close',
-        {
-          duration: 3000,
-        },
-      );
-    } catch (error: any) {
-      const errorMessage = this.booksService.permissionError()
-        ? 'You do not have permission to update Books'
-        : error?.message || 'Failed to update Books status';
-      this.snackBar.open(errorMessage, 'Close', {
-        duration: 5000,
-        panelClass: ['error-snackbar'],
-      });
-    }
-  }
-
-  async exportSelected(format: 'csv' | 'excel' | 'pdf') {
-    const selectedIds = Array.from(this.selectedIdsSignal());
-    if (selectedIds.length === 0) {
-      this.snackBar.open('Please select items to export', 'Close', {
-        duration: 3000,
-      });
-      return;
-    }
-
-    try {
-      // For now, show a placeholder message since export endpoints need to be implemented
-      this.snackBar.open(
-        `Export feature coming soon (${format.toUpperCase()})`,
-        'Close',
-        {
-          duration: 3000,
-        },
-      );
-      console.log('Export selected:', { selectedIds, format });
-    } catch (error) {
-      this.snackBar.open('Failed to export Books', 'Close', {
-        duration: 5000,
-      });
-    }
   }
 
   // ===== EXPORT EVENT HANDLERS =====
@@ -2082,28 +1160,38 @@ export class BookListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ===== SUMMARY DASHBOARD METHODS =====
+  // ===== FILTER HELPERS =====
 
-  getActiveCount(): number {
-    return this.booksService.booksList().filter((item) => {
-      return item.available === true;
-    }).length;
+  filters() {
+    return this.advancedFilters;
   }
 
-  getDraftCount(): number {
-    return this.booksService.booksList().filter((item) => {
-      return item.available === false;
-    }).length;
+  getExportFilters(): Record<string, unknown> {
+    return {
+      searchTerm: this.searchTerm,
+      available: this.advancedFilters.available,
+      genre: this.advancedFilters.genre,
+      author_id: this.advancedFilters.author_id,
+    };
   }
 
-  getRecentCount(): number {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  activeFiltersCount(): number {
+    let count = 0;
+    if (this.searchTerm.length > 0) count++;
+    if (this.advancedFilters.available !== undefined) count++;
+    if (this.advancedFilters.genre !== '') count++;
+    if (this.advancedFilters.author_id !== '') count++;
+    return count;
+  }
 
-    return this.booksService
-      .booksList()
-      .filter(
-        (item) => item.created_at && new Date(item.created_at) >= oneWeekAgo,
-      ).length;
+  // Stats Methods
+  getPercentage(count: number): number {
+    const total = this.stats().total;
+    return total > 0 ? Math.round((count / total) * 100) : 0;
+  }
+
+  // TrackBy function for performance
+  trackByBookId(_index: number, book: Book): string {
+    return book.id;
   }
 }
