@@ -127,9 +127,16 @@ async function generateMigrationFile(moduleName, options = {}) {
           ? 'editor'
           : 'viewer'
       : 'main';
+
+    // Extract actions from permission names (e.g., 'authors.create' -> 'create')
+    const actions = role.permissions.map((permName) => {
+      const parts = permName.split('.');
+      return parts[parts.length - 1]; // Get last part after dot
+    });
+
     rolePermissions[key] = {
       roleName: role.name,
-      permissionNames: JSON.stringify(role.permissions),
+      permissionActions: JSON.stringify(actions), // Array of actions like ['create', 'read', 'update', 'delete']
     };
   });
 
