@@ -314,21 +314,10 @@ export class DateRangeFilterComponent implements OnInit {
       };
 
       if (this.fromDate) {
-        // For date fields: use start of day (00:00:00)
+        // For date fields: just use the date (formatDateForAPI will return YYYY-MM-DD)
         // For datetime fields: use the exact selected datetime
-        const startDate = this.isDateTime
-          ? this.fromDate
-          : new Date(
-              this.fromDate.getFullYear(),
-              this.fromDate.getMonth(),
-              this.fromDate.getDate(),
-              0,
-              0,
-              0,
-              0,
-            );
         filter[`${this.fieldName}_min`] = formatDateForAPI(
-          startDate,
+          this.fromDate,
           this.isDateTime,
         );
       } else {
@@ -336,21 +325,10 @@ export class DateRangeFilterComponent implements OnInit {
       }
 
       if (this.toDate) {
-        // For date fields: use end of day (23:59:59.999)
+        // For date fields: just use the date (formatDateForAPI will return YYYY-MM-DD)
         // For datetime fields: use the exact selected datetime
-        const endDate = this.isDateTime
-          ? this.toDate
-          : new Date(
-              this.toDate.getFullYear(),
-              this.toDate.getMonth(),
-              this.toDate.getDate(),
-              23,
-              59,
-              59,
-              999,
-            );
         filter[`${this.fieldName}_max`] = formatDateForAPI(
-          endDate,
+          this.toDate,
           this.isDateTime,
         );
       } else {
