@@ -8,14 +8,18 @@ async function generateFrontendDirect() {
     const toolsDir = __dirname;
     const projectRoot = path.resolve(toolsDir, '..', '..');
 
-    // Get module name from command line argument or default to articles
+    // Get module name and template version from command line arguments
     const moduleName = process.argv[2] || 'articles';
+    const templateVersion = process.argv[3] || 'v2'; // Default to v2
 
     console.log(`🚀 Starting direct frontend generation for ${moduleName}`);
     console.log('📁 Tools directory:', toolsDir);
     console.log('📁 Project root:', projectRoot);
+    console.log(`📋 Template version: ${templateVersion.toUpperCase()}`);
 
-    const generator = new FrontendGenerator(toolsDir, projectRoot);
+    const generator = new FrontendGenerator(toolsDir, projectRoot, {
+      templateVersion: templateVersion,
+    });
 
     // Generate frontend with fallback (no database required)
     const options = {
@@ -39,6 +43,7 @@ async function generateFrontendDirect() {
     generatedFiles.forEach((file) => {
       console.log(`  ✓ ${file}`);
     });
+    process.exit(0); // Exit successfully
   } catch (error) {
     console.error('\n❌ Error in direct frontend generation:');
     console.error(error.message);

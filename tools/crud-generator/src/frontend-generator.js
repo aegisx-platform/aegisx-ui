@@ -65,6 +65,11 @@ Handlebars.registerHelper('capitalizeFirst', function (str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 });
 
+Handlebars.registerHelper('lowercase', function (str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.toLowerCase();
+});
+
 // Removed custom 'each' helper to avoid conflicts with built-in Handlebars helper
 
 // Conditional helpers
@@ -144,18 +149,28 @@ Handlebars.registerHelper('getFormName', function () {
 });
 
 class FrontendGenerator {
-  constructor() {
-    this.toolsDir = path.resolve(__dirname, '..');
-    this.templatesDir = path.join(this.toolsDir, 'frontend-templates');
+  constructor(toolsDir = null, projectRoot = null, options = {}) {
+    this.toolsDir = toolsDir || path.resolve(__dirname, '..');
+    this.projectRoot = projectRoot || path.resolve(this.toolsDir, '..', '..');
+
+    // Template version selection: v1, v2, or default to v2
+    const templateVersion = options.templateVersion || 'v2';
+    const templateDirName =
+      templateVersion === 'v1' ? 'frontend-templates' : 'frontend-templates-v2';
+
+    this.templatesDir = path.join(this.toolsDir, templateDirName);
+    this.templateVersion = templateVersion;
     this.outputDir = path.resolve(
-      this.toolsDir,
-      '..',
-      '..',
+      this.projectRoot,
       'apps',
       'web',
       'src',
       'app',
       'features',
+    );
+
+    console.log(
+      `📋 Using ${templateVersion.toUpperCase()} templates from: ${templateDirName}`,
     );
   }
 
@@ -585,6 +600,102 @@ class FrontendGenerator {
   }
 
   /**
+   * Generate HTML for a single table column
+   */
+  generateColumnHtml(column, entityVar, isFirst) {
+    const {
+      name,
+      label,
+      isDate,
+      isBoolean,
+      isTruncated,
+      truncateLength,
+      showEllipsis,
+    } = column;
+
+    let cellContent = '';
+
+    if (isFirst) {
+      // First column gets special treatment with expand/collapse button
+      cellContent = `
+                <div class="flex items-center gap-2">
+                  @if (${entityVar}.description) {
+                    <button
+                      type="button"
+                      (click)="toggleExpandRow(${entityVar}); $event.stopPropagation()"
+                      class="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0"
+                      [attr.aria-label]="
+                        isRowExpanded(${entityVar})
+                          ? 'Collapse description'
+                          : 'Expand description'
+                      "
+                    >
+                      <mat-icon class="text-lg leading-none">{{
+                        isRowExpanded(${entityVar}) ? 'expand_less' : 'expand_more'
+                      }}</mat-icon>
+                    </button>
+                  } @else {
+                    <div class="w-6 flex-shrink-0"></div>
+                  }
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-gray-900">
+                      ${
+                        isTruncated
+                          ? `{{ ${entityVar}.${name} | slice: 0 : ${truncateLength} }}${showEllipsis ? '...' : ''}`
+                          : isDate
+                            ? `{{ ${entityVar}.${name} | date: 'short' }}`
+                            : `{{ ${entityVar}.${name} }}`
+                      }
+                    </div>
+                    @if (${entityVar}.description && !isRowExpanded(${entityVar})) {
+                      <div class="text-xs text-gray-500 mt-0.5 truncate">
+                        {{ ${entityVar}.description | slice: 0 : 80 }}...
+                      </div>
+                    }
+                  </div>
+                </div>`;
+    } else if (isBoolean) {
+      cellContent = `
+                @if (${entityVar}.${name}) {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-md font-medium text-green-700 bg-green-50 rounded"
+                    ><span class="w-2 h-2 bg-green-600 rounded-full"></span
+                    >Active</span
+                  >
+                } @else {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-md font-medium text-gray-700 bg-gray-100 rounded"
+                    ><span class="w-2 h-2 bg-gray-400 rounded-full"></span
+                    >Inactive</span
+                  >
+                }`;
+    } else if (isDate) {
+      cellContent = `
+                <span class="text-md text-gray-600">
+                  {{ ${entityVar}.${name} | date: 'short' }}
+                </span>`;
+    } else if (isTruncated) {
+      cellContent = `
+                <span class="text-md text-gray-600">
+                  {{ ${entityVar}.${name} | slice: 0 : ${truncateLength} }}${showEllipsis ? '...' : ''}
+                </span>`;
+    } else {
+      cellContent = `
+                <span class="text-md text-gray-600">
+                  {{ ${entityVar}.${name} }}
+                </span>`;
+    }
+
+    return `            <!-- ${label} Column -->
+            <ng-container matColumnDef="${name}">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>${label}</th>
+              <td mat-cell *matCellDef="let ${entityVar}"${isFirst ? ' class="!py-3"' : ''}>${cellContent}
+              </td>
+            </ng-container>
+`;
+  }
+
+  /**
    * Generate display columns for table
    */
   generateDisplayColumns(types, entityName, context = {}) {
@@ -603,10 +714,11 @@ class FrontendGenerator {
       const column = {
         name: fieldName,
         label: this.fieldNameToLabel(fieldName),
-        isDate: fieldType === 'string' && fieldName.includes('_at'),
-        isBoolean: fieldType === 'boolean',
+        isDate:
+          fieldType.includes(':date') && !fieldType.includes(':date-time'),
+        isBoolean: fieldType.includes('boolean'),
         isTruncated:
-          fieldType === 'string' &&
+          fieldType.includes('string') &&
           ['description', 'message', 'content'].includes(fieldName),
         truncateLength: 50,
         showEllipsis: true,
@@ -958,6 +1070,59 @@ class FrontendGenerator {
     });
 
     return fields;
+  }
+
+  /**
+   * Group view fields into sections for better organization
+   */
+  groupViewFields(fields) {
+    if (!Array.isArray(fields) || fields.length === 0) {
+      return [];
+    }
+
+    const basicFields = [];
+    const metadataFields = [];
+
+    fields.forEach((field) => {
+      if (!field || !field.name) return; // Skip invalid fields
+
+      if (['id', 'created_at', 'updated_at'].includes(field.name)) {
+        metadataFields.push({
+          ...field,
+          type: field.name === 'id' ? 'code' : 'datetime',
+          trueLabel: 'Active',
+          falseLabel: 'Inactive',
+        });
+      } else if (field.type === 'boolean') {
+        basicFields.push({
+          ...field,
+          trueLabel: 'Yes',
+          falseLabel: 'No',
+        });
+      } else {
+        basicFields.push(field);
+      }
+    });
+
+    const groups = [];
+
+    if (basicFields.length > 0) {
+      groups.push({
+        title: 'Basic Information',
+        fields: basicFields,
+        isMetadata: false,
+      });
+    }
+
+    if (metadataFields.length > 0) {
+      groups.push({
+        title: 'Record Information',
+        fields: metadataFields,
+        isMetadata: true,
+      });
+    }
+
+    return groups;
   }
 
   /**
@@ -1642,10 +1807,13 @@ class FrontendGenerator {
 
       const context = {
         moduleName,
+        singularName: singularCamelName,
         PascalCase: singularPascalName,
         camelCase: camelName,
         kebabCase: kebabName,
         singularCamelName: singularCamelName,
+        singularPascalName: singularPascalName,
+        pascalName: pascalName,
         typesFileName,
         title: this.fieldNameToLabel(moduleName),
         types,
@@ -1671,14 +1839,6 @@ class FrontendGenerator {
         hasIsEnabledField: fieldNames.includes('is_enabled'),
       };
 
-      // Load and compile template
-      const templatePath = path.join(this.templatesDir, 'list-component.hbs');
-      const templateContent = fs.readFileSync(templatePath, 'utf8');
-      const template = Handlebars.compile(templateContent);
-
-      // Generate code
-      const generatedCode = template(context);
-
       // Prepare output directory
       const outputDir = path.join(
         this.outputDir,
@@ -1687,15 +1847,122 @@ class FrontendGenerator {
       );
       this.ensureDirectoryExists(outputDir);
 
-      // Write file
-      const outputFile = path.join(
-        outputDir,
-        `${this.toKebabCase(moduleName)}-list.component.ts`,
-      );
-      fs.writeFileSync(outputFile, generatedCode);
+      const generatedFiles = [];
+      const componentBaseName = `${this.toKebabCase(moduleName)}-list.component`;
+      const isV2 = this.templateVersion === 'v2';
 
-      console.log(`✅ List component generated: ${outputFile}`);
-      return outputFile;
+      // 1. Generate TypeScript component file (.ts)
+      const tsTemplateName = isV2
+        ? 'list-component-v2.hbs'
+        : 'list-component.hbs';
+      const tsTemplatePath = path.join(this.templatesDir, tsTemplateName);
+      const tsTemplateContent = fs.readFileSync(tsTemplatePath, 'utf8');
+      const tsTemplate = Handlebars.compile(tsTemplateContent);
+      const tsCode = tsTemplate(context);
+      const tsFile = path.join(outputDir, `${componentBaseName}.ts`);
+      fs.writeFileSync(tsFile, tsCode);
+      generatedFiles.push(tsFile);
+
+      // 2. Generate HTML template file (.html)
+      if (isV2) {
+        // V2: Compile HTML template with Handlebars to process all {{#each}} loops
+        const htmlTemplatePath = path.join(
+          this.templatesDir,
+          'list-component.html-v2.hbs',
+        );
+        const htmlTemplateContent = fs.readFileSync(htmlTemplatePath, 'utf8');
+
+        // Pre-generate column HTML from displayColumns
+        const columnsHtml = context.displayColumns
+          .map((column, index) => {
+            const isFirst = index === 0;
+            return this.generateColumnHtml(column, singularCamelName, isFirst);
+          })
+          .join('\n');
+
+        // Create HTML context with pre-generated columns
+        const htmlContext = {
+          ...context,
+          columnsHtml: columnsHtml,
+        };
+
+        // Compile and generate HTML with Handlebars
+        const htmlTemplate = Handlebars.compile(htmlTemplateContent);
+        const htmlContent = htmlTemplate(htmlContext);
+
+        const htmlFile = path.join(outputDir, `${componentBaseName}.html`);
+        fs.writeFileSync(htmlFile, htmlContent);
+        generatedFiles.push(htmlFile);
+      } else {
+        // V1: Use inline template in TypeScript (no separate HTML file)
+        // V1 template has HTML inline, so no separate file needed
+      }
+
+      // 3. Generate SCSS styles file (.scss)
+      if (isV2) {
+        // V2: Use separate SCSS file
+        const scssTemplatePath = path.join(
+          this.templatesDir,
+          'list-component.scss-v2.hbs',
+        );
+        const scssTemplateContent = fs.readFileSync(scssTemplatePath, 'utf8');
+        const scssTemplate = Handlebars.compile(scssTemplateContent);
+        const scssCode = scssTemplate(context);
+        const scssFile = path.join(outputDir, `${componentBaseName}.scss`);
+        fs.writeFileSync(scssFile, scssCode);
+        generatedFiles.push(scssFile);
+      } else {
+        // V1: Styles inline in TypeScript (no separate file)
+      }
+
+      // 4. Generate child components (filters and header) for V2
+      if (isV2) {
+        // Generate list-filters component
+        const filtersTemplatePath = path.join(
+          this.templatesDir,
+          'list-filters-component-v2.hbs',
+        );
+        if (fs.existsSync(filtersTemplatePath)) {
+          const filtersTemplateContent = fs.readFileSync(
+            filtersTemplatePath,
+            'utf8',
+          );
+          const filtersTemplate = Handlebars.compile(filtersTemplateContent);
+          const filtersCode = filtersTemplate(context);
+          const filtersFile = path.join(
+            outputDir,
+            `${kebabName}-list-filters.component.ts`,
+          );
+          fs.writeFileSync(filtersFile, filtersCode);
+          generatedFiles.push(filtersFile);
+        }
+
+        // Generate list-header component
+        const headerTemplatePath = path.join(
+          this.templatesDir,
+          'list-header-component-v2.hbs',
+        );
+        if (fs.existsSync(headerTemplatePath)) {
+          const headerTemplateContent = fs.readFileSync(
+            headerTemplatePath,
+            'utf8',
+          );
+          const headerTemplate = Handlebars.compile(headerTemplateContent);
+          const headerCode = headerTemplate(context);
+          const headerFile = path.join(
+            outputDir,
+            `${kebabName}-list-header.component.ts`,
+          );
+          fs.writeFileSync(headerFile, headerCode);
+          generatedFiles.push(headerFile);
+        }
+      }
+
+      console.log(
+        `✅ List component generated: ${generatedFiles.length} files`,
+      );
+      generatedFiles.forEach((file) => console.log(`   - ${file}`));
+      return generatedFiles;
     } catch (error) {
       console.error(`❌ Error generating list component:`, error.message);
       throw error;
@@ -1744,6 +2011,7 @@ class FrontendGenerator {
 
       const baseContext = {
         moduleName,
+        singularName: singularCamelName,
         PascalCase: singularPascalName,
         camelCase: camelName,
         kebabCase: kebabName,
@@ -1792,8 +2060,13 @@ class FrontendGenerator {
         ),
       };
 
+      // Determine which template to use based on version
+      const createDialogTemplate =
+        this.templateVersion === 'v2'
+          ? 'create-dialog-v2.hbs'
+          : 'create-dialog.hbs';
       const createTemplateContent = fs.readFileSync(
-        path.join(this.templatesDir, 'create-dialog.hbs'),
+        path.join(this.templatesDir, createDialogTemplate),
         'utf8',
       );
       const createTemplate = Handlebars.compile(createTemplateContent);
@@ -1833,8 +2106,13 @@ class FrontendGenerator {
         ),
       };
 
+      // Determine which template to use based on version
+      const editDialogTemplate =
+        this.templateVersion === 'v2'
+          ? 'edit-dialog-v2.hbs'
+          : 'edit-dialog.hbs';
       const editTemplateContent = fs.readFileSync(
-        path.join(this.templatesDir, 'edit-dialog.hbs'),
+        path.join(this.templatesDir, editDialogTemplate),
         'utf8',
       );
       const editTemplate = Handlebars.compile(editTemplateContent);
@@ -1902,16 +2180,24 @@ class FrontendGenerator {
       generatedFiles.push(sharedFormFile);
 
       // 4. Generate View Dialog
+      const viewFields = this.generateViewFields(types, singularPascalName, {
+        camelCase: camelName,
+        moduleName,
+      });
+
       const viewContext = {
         ...baseContext,
-        viewFields: this.generateViewFields(types, singularPascalName, {
-          camelCase: camelName,
-          moduleName,
-        }),
+        viewFields: viewFields,
+        fieldGroups: this.groupViewFields(viewFields),
       };
 
+      // Determine which template to use based on version
+      const viewDialogTemplate =
+        this.templateVersion === 'v2'
+          ? 'view-dialog-v2.hbs'
+          : 'view-dialog.hbs';
       const viewTemplateContent = fs.readFileSync(
-        path.join(this.templatesDir, 'view-dialog.hbs'),
+        path.join(this.templatesDir, viewDialogTemplate),
         'utf8',
       );
       const viewTemplate = Handlebars.compile(viewTemplateContent);
