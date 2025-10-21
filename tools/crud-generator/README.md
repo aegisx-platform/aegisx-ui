@@ -31,33 +31,177 @@ Modern CRUD API generator with TypeBox schemas, WebSocket events, and multi-pack
 
 ## 🚀 Quick Start
 
-### Basic Usage
+### Interactive Mode (Recommended)
 
 ```bash
-# Generate standard CRUD API
-node index.js generate tableName
+# Launch interactive wizard - asks step-by-step
+npx aegisx-crud generate
+
+# Interactive mode will guide you through:
+# 1. Table selection (from your database)
+# 2. Generation type (fullstack, backend, frontend, permissions)
+# 3. Template selection (backend: domain/standard, frontend: v2/v1)
+# 4. Feature selection (events, bulk operations, export, import)
+# 5. Advanced options (dry-run, force, etc.)
+# 6. Confirmation before generation
+```
+
+### Quick Mode (Direct Command)
+
+```bash
+# Generate standard CRUD API (no interaction)
+npx aegisx-crud generate tableName
 
 # Generate with events (WebSocket)
-node index.js generate tableName --events
+npx aegisx-crud generate tableName --events
 
 # Preview without creating files
-node index.js generate tableName --dry-run
+npx aegisx-crud generate tableName --dry-run
 
 # Force regeneration (removes duplicates)
-node index.js generate tableName --force
+npx aegisx-crud generate tableName --force
 ```
 
 ### Package Options
 
 ```bash
 # Standard package (basic CRUD)
-node index.js generate tableName --package standard
+npx aegisx-crud generate tableName --package standard
 
 # Enterprise package (advanced features)
-node index.js generate tableName --package enterprise
+npx aegisx-crud generate tableName --package enterprise
 
 # Full package (all features)
-node index.js generate tableName --package full
+npx aegisx-crud generate tableName --package full
+```
+
+### Template Management
+
+```bash
+# List available templates
+npx aegisx-crud templates list        # List all templates
+npx aegisx-crud templates list backend   # List backend only
+npx aegisx-crud templates list frontend  # List frontend only
+
+# Set default template (interactive)
+npx aegisx-crud templates set-default
+
+# Add custom template
+npx aegisx-crud templates add
+
+# Remove custom template
+npx aegisx-crud templates remove
+
+# Configuration
+npx aegisx-crud config init     # Create .crudgen.json config file
+npx aegisx-crud config show     # Show current configuration
+```
+
+## 🎨 Template System
+
+The CRUD generator supports multiple code generation templates with easy switching.
+
+### Available Templates
+
+#### Backend Templates
+
+1. **Domain Template (Default)** ✅
+   - Organized by feature domains
+   - Clean separation of concerns
+   - Recommended for all new projects
+   - Location: `templates/backend/domain/`
+
+2. **Standard Template**
+   - Flat structure
+   - All files in single directory
+   - Good for simple APIs
+   - Location: `templates/backend/standard/`
+
+#### Frontend Templates
+
+1. **V2 Template (Default)** ✅
+   - Angular 19 + Signals
+   - Material Design components
+   - Modern reactive patterns
+   - Location: `templates/frontend/v2/`
+
+2. **V1 Template** (Deprecated)
+   - Legacy Angular structure
+   - Traditional components
+   - Maintained for compatibility
+   - Location: `templates/frontend/v1/`
+
+### Using Templates
+
+Templates are automatically selected during interactive mode, or you can configure defaults:
+
+```bash
+# View current templates
+npx aegisx-crud templates list
+
+# Configure default templates
+npx aegisx-crud templates set-default
+
+# View configuration
+npx aegisx-crud config show
+```
+
+### Custom Templates
+
+Create your own templates by:
+
+1. **Add custom template directory**:
+
+```bash
+npx aegisx-crud templates add
+# Follow prompts to specify template name, path, and description
+```
+
+2. **Configure in .crudgen.json**:
+
+```json
+{
+  "defaultTemplates": {
+    "backend": "domain",
+    "frontend": "v2"
+  },
+  "customTemplates": {
+    "backend": {
+      "my-custom": {
+        "path": "/path/to/custom/backend/template",
+        "description": "My custom backend template"
+      }
+    },
+    "frontend": {
+      "my-angular": {
+        "path": "/path/to/custom/frontend/template",
+        "description": "My custom Angular template"
+      }
+    }
+  }
+}
+```
+
+3. **Use in generation**:
+
+```bash
+# Interactive mode will show your custom templates
+npx aegisx-crud generate
+```
+
+### Template Structure
+
+Each template directory must include a `template.config.json`:
+
+```json
+{
+  "name": "domain",
+  "version": "2.0.0",
+  "description": "Domain-based structure (Recommended)",
+  "default": true,
+  "type": "backend",
+  "framework": "fastify"
+}
 ```
 
 ## 📊 Smart Field Selection
@@ -135,8 +279,11 @@ export class NotificationsService extends BaseService {
 ### Generate Complete API
 
 ```bash
-# Generate full notifications CRUD with events
-node index.js generate notifications --package full --events
+# Generate full notifications CRUD with events (interactive)
+npx aegisx-crud generate
+
+# Or quick mode
+npx aegisx-crud generate notifications --package full --events
 
 # Generated structure:
 apps/api/src/modules/notifications/
@@ -208,7 +355,7 @@ apps/api/src/database/migrations/
 
 ```bash
 # Force regenerate (removes all duplicates)
-node index.js generate notifications --force
+npx aegisx-crud generate notifications --force
 
 # Console output:
 # ⚠️  Found existing permissions migration(s) for notifications
@@ -220,7 +367,7 @@ node index.js generate notifications --force
 
 ```bash
 # Write directly to database (skip migration)
-node index.js generate notifications --direct-db
+npx aegisx-crud generate notifications --direct-db
 
 # ⚠️  Development only - not recommended for production
 ```
@@ -229,7 +376,7 @@ node index.js generate notifications --direct-db
 
 ```bash
 # Generate multiple granular roles
-node index.js generate notifications --multiple-roles
+npx aegisx-crud generate notifications --multiple-roles
 
 # Creates:
 # - notifications_admin (full access)
@@ -252,31 +399,53 @@ node index.js generate notifications --multiple-roles
 --package full
 ```
 
-### 2. Always Use Migration Files
+### 2. Start with Interactive Mode
+
+```bash
+# ✅ Recommended for new users
+npx aegisx-crud generate
+# Interactive wizard guides you through all options
+
+# ⚡ Quick mode for experienced users
+npx aegisx-crud generate notifications --package full --events
+```
+
+### 3. Always Use Migration Files
 
 ```bash
 # ✅ Recommended (production-safe)
-node index.js generate notifications
+npx aegisx-crud generate notifications
 
 # ❌ Avoid in production
-node index.js generate notifications --direct-db
+npx aegisx-crud generate notifications --direct-db
 ```
 
-### 3. Enable Events for Real-time Apps
+### 4. Enable Events for Real-time Apps
 
 ```bash
 # For dashboards, live updates
-node index.js generate notifications --events
+npx aegisx-crud generate notifications --events
 ```
 
-### 4. Preview Before Generation
+### 5. Preview Before Generation
 
 ```bash
 # Always preview first
-node index.js generate notifications --dry-run
+npx aegisx-crud generate notifications --dry-run
 
 # Then execute
-node index.js generate notifications
+npx aegisx-crud generate notifications
+```
+
+### 6. Configure Templates Once
+
+```bash
+# Set your preferred defaults
+npx aegisx-crud config init
+npx aegisx-crud templates set-default
+
+# Future generations use your preferences
+npx aegisx-crud generate
 ```
 
 ## 🚀 Integration with Frontend
