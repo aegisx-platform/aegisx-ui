@@ -3,6 +3,23 @@ const path = require('path');
 const Handlebars = require('handlebars');
 const { getDatabaseSchema, getEnhancedSchema } = require('./database');
 const { generateRolesAndPermissions } = require('./role-generator');
+const TemplateManager = require('./core/template-manager');
+const TemplateRenderer = require('./core/template-renderer');
+
+// Initialize template manager (will use defaults if config doesn't exist)
+let templateManager = null;
+let templateRenderer = null;
+
+async function initializeTemplateSystem() {
+  if (!templateManager) {
+    templateManager = new TemplateManager({
+      templatesBasePath: path.join(__dirname, '../templates'),
+    });
+    await templateManager.initialize();
+    templateRenderer = new TemplateRenderer(templateManager);
+  }
+  return { templateManager, templateRenderer };
+}
 
 // Register Handlebars helpers
 Handlebars.registerHelper('titleCase', function (str) {
@@ -55,6 +72,9 @@ async function generateCrudModule(tableName, options = {}) {
     outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
     configFile = null,
   } = options;
+
+  // Initialize template system
+  await initializeTemplateSystem();
 
   console.log(`🔍 Analyzing table: ${tableName}`);
 
@@ -394,8 +414,41 @@ async function generateCrudModule(tableName, options = {}) {
 
 /**
  * Render Handlebars template with context
+ * Supports both legacy path-based and new TemplateManager-based rendering
  */
 async function renderTemplate(templateName, context) {
+  // Try to use new template manager if initialized
+  if (templateManager && templateRenderer) {
+    try {
+      // Determine template type based on path
+      if (templateName.startsWith('domain/')) {
+        // Domain templates (backend)
+        return await templateRenderer.renderBackend(templateName, {
+          ...context,
+          templateVersion: 'domain',
+        });
+      } else if (templateName.startsWith('shared/')) {
+        // Shared templates (backend standard)
+        return await templateRenderer.renderBackend(templateName, {
+          ...context,
+          templateVersion: 'standard',
+        });
+      } else {
+        // Standard backend templates
+        return await templateRenderer.renderBackend(templateName, {
+          ...context,
+          templateVersion: 'standard',
+        });
+      }
+    } catch (error) {
+      console.warn(
+        `⚠️  Template manager failed, falling back to legacy path: ${error.message}`,
+      );
+      // Fall through to legacy rendering
+    }
+  }
+
+  // Legacy path-based rendering (backward compatibility)
   const templatePath = path.join(__dirname, '../templates', templateName);
   const templateContent = await fs.readFile(templatePath, 'utf8');
   const template = Handlebars.compile(templateContent);
@@ -1144,6 +1197,9 @@ async function generateDomainModule(domainName, options = {}) {
     migrationOnly = false,
     multipleRoles = false,
   } = options;
+
+  // Initialize template system
+  await initializeTemplateSystem();
 
   console.log(`🔍 Analyzing table: ${domainName}`);
 
