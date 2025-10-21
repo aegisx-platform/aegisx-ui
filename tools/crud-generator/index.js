@@ -13,6 +13,8 @@ const {
   addRouteToDomain,
 } = require('./src/generator');
 const { version } = require('./package.json');
+const TemplateManager = require('./src/core/template-manager');
+const { promptGenerate } = require('./src/prompts/generate-prompts');
 
 // Helper function to find project root (where package.json with nx exists)
 function findProjectRoot(startDir = __dirname) {
@@ -42,12 +44,9 @@ program
   .version(version || '1.0.0');
 
 program
-  .command('generate')
+  .command('generate [table-name]')
   .alias('g')
-  .description(
-    'Generate CRUD module from database table (defaults to domain structure)',
-  )
-  .argument('<table-name>', 'Database table name to generate CRUD for')
+  .description('Generate CRUD module (interactive mode if no table specified)')
   .option('-e, --with-events', 'Include real-time events integration')
   .option('-d, --dry-run', 'Preview files without creating them')
   .option('-f, --force', 'Force overwrite existing files without confirmation')
@@ -80,6 +79,30 @@ program
   .option('--no-format', 'Skip auto-formatting generated files', false)
   .action(async (tableName, options) => {
     try {
+      // Interactive mode if no table name provided
+      if (!tableName) {
+        const templateManager = new TemplateManager({
+          templatesBasePath: path.join(__dirname, 'templates'),
+        });
+        await templateManager.initialize();
+
+        const interactiveOptions = await promptGenerate(templateManager);
+
+        if (!interactiveOptions) {
+          // User cancelled
+          return;
+        }
+
+        // Use interactive options
+        tableName = interactiveOptions.tableName;
+        options = {
+          ...options,
+          ...interactiveOptions,
+          backendTemplate: interactiveOptions.backendTemplate,
+          frontendTemplate: interactiveOptions.frontendTemplate,
+        };
+      }
+
       // Validate package option
       const validPackages = ['standard', 'enterprise', 'full'];
       if (!validPackages.includes(options.package)) {
