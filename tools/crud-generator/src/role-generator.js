@@ -22,6 +22,7 @@ async function generateMigrationFile(moduleName, options = {}) {
   } = options;
 
   // ✅ Check for existing migrations with same pattern
+  let shouldSkip = false;
   try {
     const existingFiles = await fs.readdir(outputDir);
     const existingPermissionMigrations = existingFiles.filter(
@@ -37,10 +38,134 @@ async function generateMigrationFile(moduleName, options = {}) {
         console.log(`   📄 ${file}`);
       });
 
-      if (!dryRun) {
-        // Remove existing duplicate migrations
+      // Generate new content to compare
+      const permissions = [
+        {
+          name: `${moduleName}.create`,
+          description: `Create ${moduleName}`,
+          resource: moduleName,
+          action: 'create',
+        },
+        {
+          name: `${moduleName}.read`,
+          description: `Read ${moduleName}`,
+          resource: moduleName,
+          action: 'read',
+        },
+        {
+          name: `${moduleName}.update`,
+          description: `Update ${moduleName}`,
+          resource: moduleName,
+          action: 'update',
+        },
+        {
+          name: `${moduleName}.delete`,
+          description: `Delete ${moduleName}`,
+          resource: moduleName,
+          action: 'delete',
+        },
+      ];
+
+      const roles = multipleRoles
+        ? [
+            {
+              name: `${moduleName}_admin`,
+              description: `Full access to ${moduleName}`,
+              permissions: permissions.map((p) => p.name),
+            },
+            {
+              name: `${moduleName}_editor`,
+              description: `Create, read, and update ${moduleName}`,
+              permissions: [
+                `${moduleName}.create`,
+                `${moduleName}.read`,
+                `${moduleName}.update`,
+              ],
+            },
+            {
+              name: `${moduleName}_viewer`,
+              description: `Read-only access to ${moduleName}`,
+              permissions: [`${moduleName}.read`],
+            },
+          ]
+        : [
+            {
+              name: `${moduleName}`,
+              description: `Access to ${moduleName}`,
+              permissions: permissions.map((p) => p.name),
+            },
+          ];
+
+      const rolePermissions = {};
+      roles.forEach((role) => {
+        const key = multipleRoles
+          ? role.name.includes('admin')
+            ? 'admin'
+            : role.name.includes('editor')
+              ? 'editor'
+              : 'viewer'
+          : 'main';
+
+        const actions = role.permissions.map((permName) => {
+          const parts = permName.split('.');
+          return parts[parts.length - 1];
+        });
+
+        rolePermissions[key] = {
+          roleName: role.name,
+          permissionActions: JSON.stringify(actions),
+        };
+      });
+
+      const newContext = {
+        moduleName,
+        ModuleName: moduleName.charAt(0).toUpperCase() + moduleName.slice(1),
+        permissions,
+        roles,
+        rolePermissions,
+        timestamp: new Date().toISOString(),
+      };
+
+      const newContent = await renderMigrationTemplate(newContext);
+
+      // Compare with existing file (ignore timestamp differences)
+      const existingFilePath = path.join(
+        outputDir,
+        existingPermissionMigrations[0],
+      );
+      const existingContent = await fs.readFile(existingFilePath, 'utf8');
+
+      // Normalize content by removing timestamps and whitespace for comparison
+      const normalizeContent = (content) =>
+        content
+          .replace(
+            /Generated.*on.*\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/g,
+            '',
+          )
+          .replace(/\s+/g, ' ')
+          .trim();
+
+      const normalizedNew = normalizeContent(newContent);
+      const normalizedExisting = normalizeContent(existingContent);
+
+      if (normalizedNew === normalizedExisting) {
         console.log(
-          `🧹 Removing ${existingPermissionMigrations.length} duplicate migration(s)...`,
+          `✅ Migration content is identical, skipping generation for ${moduleName}`,
+        );
+        shouldSkip = true;
+        return {
+          permissions,
+          roles,
+          migrationFile: existingFilePath,
+          content: existingContent,
+          skipped: true,
+        };
+      }
+
+      if (!dryRun) {
+        // Content is different, remove old and create new
+        console.log(
+          `🔄 Migration content differs, updating ${existingPermissionMigrations.length} migration(s)...`,
         );
         for (const file of existingPermissionMigrations) {
           const filePath = path.join(outputDir, file);
@@ -49,13 +174,21 @@ async function generateMigrationFile(moduleName, options = {}) {
         }
       } else {
         console.log(
-          `📋 Would remove ${existingPermissionMigrations.length} duplicate migration(s)`,
+          `📋 Would update ${existingPermissionMigrations.length} migration(s)`,
         );
       }
     }
   } catch (error) {
     // Directory might not exist yet, continue
-    console.log(`📁 Creating migrations directory: ${outputDir}`);
+    if (error.code === 'ENOENT') {
+      console.log(`📁 Creating migrations directory: ${outputDir}`);
+    } else {
+      console.error(`⚠️  Error checking existing migrations:`, error.message);
+    }
+  }
+
+  if (shouldSkip) {
+    return;
   }
 
   // Generate data structure same as before
