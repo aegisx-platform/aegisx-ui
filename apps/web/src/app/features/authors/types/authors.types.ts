@@ -146,6 +146,88 @@ export interface BulkResponse {
   };
 }
 
+// ===== IMPORT TYPES =====
+
+export interface ImportOptions {
+  skipDuplicates?: boolean;
+  continueOnError?: boolean;
+  updateExisting?: boolean;
+  dryRun?: boolean;
+}
+
+export interface ImportError {
+  field: string;
+  message: string;
+  code?: string;
+  severity: 'error' | 'warning' | 'info';
+}
+
+export interface ImportRowPreview {
+  rowNumber: number;
+  status: 'valid' | 'warning' | 'error' | 'duplicate';
+  action: 'create' | 'update' | 'skip';
+  data: Partial<Author>;
+  errors: ImportError[];
+  warnings: ImportError[];
+}
+
+export interface ImportSummary {
+  total: number;
+  valid: number;
+  invalid: number;
+  duplicates: number;
+  willCreate?: number;
+  willUpdate?: number;
+  willSkip?: number;
+  successful?: number;
+  failed?: number;
+  skipped?: number;
+  created?: number;
+  updated?: number;
+}
+
+export interface ValidateImportResponse {
+  sessionId: string;
+  filename: string;
+  totalRows: number;
+  validRows: number;
+  invalidRows: number;
+  summary: ImportSummary;
+  preview: ImportRowPreview[];
+  expiresAt: string;
+}
+
+export interface ExecuteImportRequest {
+  sessionId: string;
+  options?: ImportOptions;
+}
+
+export interface ImportProgress {
+  total: number;
+  current: number;
+  percentage: number;
+}
+
+export interface ImportJob {
+  jobId: string;
+  sessionId: string;
+  filename: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'partial';
+  progress: ImportProgress;
+  summary: ImportSummary;
+  errors: Array<{
+    rowNumber: number;
+    field: string;
+    message: string;
+    data?: any;
+  }>;
+  startedAt: string;
+  completedAt?: string;
+  estimatedCompletion?: string;
+  duration?: number;
+  userId?: string;
+}
+
 // ===== UTILITY TYPES =====
 
 export type AuthorField = keyof Author;

@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
 import { AuthorsService } from '../services/authors.service';
+import { AuthorsImportService } from '../services/authors-import.service';
 import { CreateAuthors, UpdateAuthors } from '../types/authors.types';
 import {
   CreateAuthorsSchema,
@@ -8,6 +9,8 @@ import {
   AuthorsIdParamSchema,
   GetAuthorsQuerySchema,
   ListAuthorsQuerySchema,
+  ExecuteImportRequestSchema,
+  ImportOptions,
 } from '../schemas/authors.schemas';
 import { ExportQuerySchema } from '../../../schemas/export.schemas';
 import { ExportService, ExportField } from '../../../services/export.service';
@@ -19,6 +22,23 @@ import {
   ValidationRequestSchema,
   UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
+
+// Extend FastifyRequest for @aegisx/fastify-multipart
+declare module 'fastify' {
+  interface FastifyRequest {
+    parseMultipart(): Promise<{
+      files: Array<{
+        filename: string;
+        mimetype: string;
+        encoding: string;
+        size: number;
+        toBuffer(): Promise<Buffer>;
+        createReadStream(): NodeJS.ReadableStream;
+      }>;
+      fields: Record<string, string>;
+    }>;
+  }
+}
 
 /**
  * Authors Controller
@@ -32,10 +52,15 @@ import {
  * - Logging integration with Fastify's logger
  */
 export class AuthorsController {
+  private importService: AuthorsImportService;
+
   constructor(
     private authorsService: AuthorsService,
     private exportService: ExportService,
-  ) {}
+  ) {
+    // Initialize import service
+    this.importService = new AuthorsImportService(authorsService);
+  }
 
   /**
    * Create new authors
@@ -702,5 +727,225 @@ export class AuthorsController {
     // Auto-fill updated_by from JWT if table has this field
 
     return updateData;
+  }
+
+  // ===== BULK IMPORT METHODS =====
+
+  /**
+   * Download import template
+   * GET /authors/import/template
+   */
+  async downloadImportTemplate(
+    request: FastifyRequest<{
+      Querystring: {
+        format?: 'csv' | 'excel';
+        includeExample?: boolean;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { format = 'excel', includeExample = true } = request.query;
+    request.log.info({ format, includeExample }, 'Generating import template');
+
+    try {
+      const buffer = await this.importService.generateTemplate({
+        format,
+        includeExample,
+      });
+
+      const mimeTypes = {
+        csv: 'text/csv',
+        excel:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      };
+
+      const fileExtensions = {
+        csv: 'csv',
+        excel: 'xlsx',
+      };
+
+      const filename = `authors-import-template.${fileExtensions[format]}`;
+
+      reply
+        .header('Content-Type', mimeTypes[format])
+        .header('Content-Disposition', `attachment; filename="${filename}"`)
+        .header('Content-Length', buffer.length);
+
+      request.log.info(
+        { format, filename, fileSize: buffer.length },
+        'Import template generated successfully',
+      );
+
+      return reply.send(buffer);
+    } catch (error: any) {
+      request.log.error(error, 'Failed to generate import template');
+      return reply
+        .code(500)
+        .error(
+          'TEMPLATE_GENERATION_FAILED',
+          error.message || 'Failed to generate import template',
+        );
+    }
+  }
+
+  /**
+   * Validate import file
+   * POST /authors/import/validate
+   */
+  async validateImport(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      // Use @aegisx/fastify-multipart clean API
+      const { files, fields } = await request.parseMultipart();
+
+      if (!files || files.length === 0) {
+        return reply
+          .code(400)
+          .error('NO_FILE_PROVIDED', 'No file provided in request');
+      }
+
+      const file = files[0]; // Get first file
+
+      // Parse options from string field
+      let options: ImportOptions = {};
+      if (fields.options) {
+        try {
+          options = JSON.parse(fields.options);
+        } catch (error) {
+          return reply
+            .code(400)
+            .error('INVALID_OPTIONS', 'Invalid options JSON format');
+        }
+      }
+
+      request.log.info(
+        {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          size: file.size,
+          options,
+        },
+        'Validating import file',
+      );
+
+      // Convert file to buffer
+      const fileBuffer = await file.toBuffer();
+
+      // Validate file
+      const result = await this.importService.validateImportFile(
+        fileBuffer,
+        file.filename,
+        options,
+      );
+
+      request.log.info(
+        {
+          sessionId: result.sessionId,
+          totalRows: result.totalRows,
+          validRows: result.validRows,
+          invalidRows: result.invalidRows,
+        },
+        'Import file validated successfully',
+      );
+
+      return reply.success(result, 'Import file validated successfully');
+    } catch (error: any) {
+      request.log.error(error, 'Failed to validate import file');
+
+      // Handle specific multipart errors
+      if (error.code === 'FST_FILE_TOO_LARGE') {
+        return reply
+          .code(413)
+          .error('FILE_TOO_LARGE', 'File size exceeds 10MB limit');
+      }
+
+      return reply
+        .code(500)
+        .error(
+          'VALIDATION_FAILED',
+          error.message || 'Failed to validate import file',
+        );
+    }
+  }
+
+  /**
+   * Execute import
+   * POST /authors/import/execute
+   */
+  async executeImport(
+    request: FastifyRequest<{
+      Body: Static<typeof ExecuteImportRequestSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { sessionId, options } = request.body;
+    const userId = (request.user as any)?.id;
+
+    request.log.info({ sessionId, options, userId }, 'Executing import');
+
+    try {
+      const job = await this.importService.executeImport(
+        sessionId,
+        options || {},
+        userId,
+      );
+
+      request.log.info(
+        { jobId: job.jobId, status: job.status },
+        'Import job started successfully',
+      );
+
+      return reply.code(202).success(job, 'Import job started successfully');
+    } catch (error: any) {
+      request.log.error(error, 'Failed to execute import');
+      return reply
+        .code(500)
+        .error(
+          'IMPORT_EXECUTION_FAILED',
+          error.message || 'Failed to execute import',
+        );
+    }
+  }
+
+  /**
+   * Get import job status
+   * GET /authors/import/status/:jobId
+   */
+  async getImportStatus(
+    request: FastifyRequest<{
+      Params: { jobId: string };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { jobId } = request.params;
+
+    request.log.info({ jobId }, 'Fetching import job status');
+
+    try {
+      const status = await this.importService.getJobStatus(jobId);
+
+      request.log.info(
+        {
+          jobId,
+          status: status.status,
+          progress: status.progress.percentage,
+        },
+        'Import job status retrieved',
+      );
+
+      return reply.success(status);
+    } catch (error: any) {
+      request.log.error(error, 'Failed to get import status');
+
+      if (error.message.includes('not found')) {
+        return reply.code(404).error('JOB_NOT_FOUND', 'Import job not found');
+      }
+
+      return reply
+        .code(500)
+        .error(
+          'STATUS_FETCH_FAILED',
+          error.message || 'Failed to get import status',
+        );
+    }
   }
 }

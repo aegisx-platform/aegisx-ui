@@ -63,6 +63,7 @@ import {
   AuthorViewDialogComponent,
   AuthorViewDialogData,
 } from './authors-view.dialog';
+import { AuthorImportDialogComponent } from './authors-import.dialog';
 
 // Import child components
 import { AuthorsListFiltersComponent } from './authors-list-filters.component';
@@ -592,6 +593,21 @@ export class AuthorsListComponent {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
+        this.reloadTrigger.update((n) => n + 1);
+      }
+    });
+  }
+
+  openImportDialog() {
+    const dialogRef = this.dialog.open(AuthorImportDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        // Reload data after successful import
         this.reloadTrigger.update((n) => n + 1);
       }
     });

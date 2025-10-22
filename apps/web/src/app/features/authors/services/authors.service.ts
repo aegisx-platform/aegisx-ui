@@ -12,6 +12,10 @@ import {
   ApiResponse,
   BulkResponse,
   PaginatedResponse,
+  ImportOptions,
+  ValidateImportResponse,
+  ExecuteImportRequest,
+  ImportJob,
 } from '../types/authors.types';
 
 // ===== SERVICE CONFIGURATION =====
@@ -472,78 +476,102 @@ export class AuthorService {
     }
   }
 
-  // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
+  // ===== BULK IMPORT OPERATIONS =====
 
   /**
-   * Validate authors data before save
+   * Download import template
    */
-  async validateAuthor(
-    data: CreateAuthorRequest,
-  ): Promise<{ valid: boolean; errors?: any[] }> {
+  downloadImportTemplate(
+    format: 'csv' | 'excel' = 'excel',
+    includeExample: boolean = true,
+  ): Observable<Blob> {
+    const httpParams = new HttpParams()
+      .set('format', format)
+      .set('includeExample', includeExample.toString());
+
+    return this.http.get(`${this.baseUrl}/import/template`, {
+      params: httpParams,
+      responseType: 'blob',
+    });
+  }
+
+  /**
+   * Validate import file
+   */
+  async validateImportFile(
+    file: File,
+    options?: ImportOptions,
+  ): Promise<ApiResponse<ValidateImportResponse> | null> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      if (options) {
+        formData.append('options', JSON.stringify(options));
+      }
+
       const response = await this.http
         .post<
-          ApiResponse<{ valid: boolean; errors?: any[] }>
-        >(`${this.baseUrl}/validate`, { data })
+          ApiResponse<ValidateImportResponse>
+        >(`${this.baseUrl}/import/validate`, formData)
         .toPromise();
 
-      if (response) {
-        return response.data;
-      }
-      return { valid: false, errors: ['Validation failed'] };
+      return response || null;
     } catch (error: any) {
-      console.error('Failed to validate authors:', error);
-      return { valid: false, errors: [error.message || 'Validation error'] };
+      this.handleError(error, 'Failed to validate import file');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
     }
   }
 
   /**
-   * Check field uniqueness
+   * Execute import with validated session
    */
-  async checkUniqueness(
-    field: string,
-    value: string,
-    excludeId?: string,
-  ): Promise<{ unique: boolean }> {
-    try {
-      let params = new HttpParams().set('value', value);
+  async executeImport(
+    sessionId: string,
+    options?: ImportOptions,
+  ): Promise<ApiResponse<ImportJob> | null> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
 
-      if (excludeId) {
-        params = params.set('excludeId', excludeId);
-      }
+    try {
+      const requestBody: ExecuteImportRequest = {
+        sessionId,
+        options,
+      };
 
       const response = await this.http
-        .get<
-          ApiResponse<{ unique: boolean }>
-        >(`${this.baseUrl}/check/${field}`, { params })
+        .post<
+          ApiResponse<ImportJob>
+        >(`${this.baseUrl}/import/execute`, requestBody)
         .toPromise();
 
-      if (response) {
-        return response.data;
-      }
-      return { unique: false };
+      return response || null;
     } catch (error: any) {
-      console.error('Failed to check uniqueness:', error);
-      return { unique: false };
+      this.handleError(error, 'Failed to execute import');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
     }
   }
 
   /**
-   * Get authors statistics
+   * Get import job status
    */
-  async getStats(): Promise<{ total: number } | null> {
+  async getImportStatus(jobId: string): Promise<ApiResponse<ImportJob> | null> {
     try {
       const response = await this.http
-        .get<ApiResponse<{ total: number }>>(`${this.baseUrl}/stats`)
+        .get<ApiResponse<ImportJob>>(`${this.baseUrl}/import/status/${jobId}`)
         .toPromise();
 
-      if (response) {
-        return response.data;
-      }
-      return null;
+      return response || null;
     } catch (error: any) {
-      console.error('Failed to get authors stats:', error);
-      return null;
+      console.error('Failed to get import status:', error);
+      throw error;
     }
   }
 

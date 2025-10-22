@@ -28,6 +28,7 @@ import {
 import { ExportQuerySchema } from '../../../schemas/export.schemas';
 import { ApiErrorResponseSchema as ErrorResponseSchema } from '../../../schemas/base.schemas';
 import { SchemaRefs } from '../../../schemas/registry';
+import { authorsImportRoutes } from './import.routes';
 
 export interface AuthorsRoutesOptions extends FastifyPluginOptions {
   controller: AuthorsController;
@@ -52,6 +53,7 @@ export async function authorsRoutes(
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,
         409: SchemaRefs.Conflict,
+        422: SchemaRefs.UnprocessableEntity,
         500: SchemaRefs.ServerError,
       },
     },
@@ -124,6 +126,7 @@ export async function authorsRoutes(
         403: SchemaRefs.Forbidden,
         404: SchemaRefs.NotFound,
         409: SchemaRefs.Conflict,
+        422: SchemaRefs.UnprocessableEntity,
         500: SchemaRefs.ServerError,
       },
     },
@@ -147,6 +150,7 @@ export async function authorsRoutes(
         401: SchemaRefs.Unauthorized,
         403: SchemaRefs.Forbidden,
         404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
         500: SchemaRefs.ServerError,
       },
     },
@@ -318,5 +322,11 @@ export async function authorsRoutes(
       fastify.authorize(['authors.read', 'admin']),
     ],
     handler: controller.checkUniqueness.bind(controller),
+  });
+
+  // ===== BULK IMPORT ROUTES =====
+  // Register import routes
+  await fastify.register(authorsImportRoutes, {
+    controller,
   });
 }

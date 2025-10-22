@@ -104,12 +104,9 @@ export const ListAuthorsQuerySchema = Type.Object({
   // Smart field-based filters
   name: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
   email: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
-  birth_date_min: Type.Optional(Type.String({ format: 'date' })),
-  birth_date_max: Type.Optional(Type.String({ format: 'date' })),
+  bio: Type.Optional(Type.String({ minLength: 1, maxLength: 255 })),
   country: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
   active: Type.Optional(Type.Boolean()),
-  updated_at_min: Type.Optional(Type.String({ format: 'date-time' })),
-  updated_at_max: Type.Optional(Type.String({ format: 'date-time' })),
 });
 
 // Response Schemas using base wrappers
@@ -135,24 +132,149 @@ export type FlexibleAuthorsList = Static<
   typeof FlexibleAuthorsListResponseSchema
 >;
 
-// WebSocket Event Schemas
-export const AuthorsCreatedEventSchema = Type.Object({
-  type: Type.Literal('authors.created'),
-  data: AuthorsSchema,
+// ===== BULK IMPORT SCHEMAS =====
+
+// Import Options Schema
+export const ImportOptionsSchema = Type.Object({
+  skipDuplicates: Type.Optional(Type.Boolean({ default: true })),
+  continueOnError: Type.Optional(Type.Boolean({ default: true })),
+  updateExisting: Type.Optional(Type.Boolean({ default: false })),
+  dryRun: Type.Optional(Type.Boolean({ default: true })),
 });
 
-export const AuthorsUpdatedEventSchema = Type.Object({
-  type: Type.Literal('authors.updated'),
-  data: AuthorsSchema,
+// Import Row Preview Schema
+export const ImportRowPreviewSchema = Type.Object({
+  rowNumber: Type.Number(),
+  status: Type.Union([
+    Type.Literal('valid'),
+    Type.Literal('warning'),
+    Type.Literal('error'),
+    Type.Literal('duplicate'),
+  ]),
+  action: Type.Union([
+    Type.Literal('create'),
+    Type.Literal('update'),
+    Type.Literal('skip'),
+  ]),
+  data: Type.Any(), // Record<string, any>
+  errors: Type.Array(
+    Type.Object({
+      field: Type.String(),
+      message: Type.String(),
+      code: Type.String(),
+      severity: Type.Union([
+        Type.Literal('error'),
+        Type.Literal('warning'),
+        Type.Literal('info'),
+      ]),
+    }),
+  ),
+  warnings: Type.Array(
+    Type.Object({
+      field: Type.String(),
+      message: Type.String(),
+      code: Type.Optional(Type.String()),
+    }),
+  ),
 });
 
-export const AuthorsDeletedEventSchema = Type.Object({
-  type: Type.Literal('authors.deleted'),
-  data: Type.Object({
-    id: Type.Union([Type.String(), Type.Number()]),
-  }),
+// Import Summary Schema
+export const ImportSummarySchema = Type.Object({
+  toCreate: Type.Number(),
+  toUpdate: Type.Number(),
+  toSkip: Type.Number(),
+  errors: Type.Number(),
+  warnings: Type.Number(),
 });
 
-export type AuthorsCreatedEvent = Static<typeof AuthorsCreatedEventSchema>;
-export type AuthorsUpdatedEvent = Static<typeof AuthorsUpdatedEventSchema>;
-export type AuthorsDeletedEvent = Static<typeof AuthorsDeletedEventSchema>;
+// Validate Import Response Schema
+export const ValidateImportResponseSchema = Type.Object({
+  sessionId: Type.String(),
+  filename: Type.String(),
+  totalRows: Type.Number(),
+  validRows: Type.Number(),
+  invalidRows: Type.Number(),
+  summary: ImportSummarySchema,
+  preview: Type.Array(ImportRowPreviewSchema),
+  expiresAt: Type.String({ format: 'date-time' }),
+});
+
+// Execute Import Request Schema
+export const ExecuteImportRequestSchema = Type.Object({
+  sessionId: Type.String(),
+  options: Type.Optional(
+    Type.Object({
+      skipDuplicates: Type.Optional(Type.Boolean()),
+      continueOnError: Type.Optional(Type.Boolean()),
+      updateExisting: Type.Optional(Type.Boolean()),
+    }),
+  ),
+});
+
+// Import Progress Schema
+export const ImportProgressSchema = Type.Object({
+  current: Type.Number(),
+  total: Type.Number(),
+  percentage: Type.Number(),
+});
+
+// Import Job Summary Schema
+export const ImportJobSummarySchema = Type.Object({
+  processed: Type.Number(),
+  successful: Type.Number(),
+  failed: Type.Number(),
+  skipped: Type.Number(),
+  created: Type.Optional(Type.Number()),
+  updated: Type.Optional(Type.Number()),
+});
+
+// Import Error Schema
+export const ImportErrorSchema = Type.Object({
+  rowNumber: Type.Number(),
+  data: Type.Any(),
+  error: Type.String(),
+  code: Type.Optional(Type.String()),
+});
+
+// Import Job Schema
+export const ImportJobSchema = Type.Object({
+  jobId: Type.String(),
+  status: Type.Union([
+    Type.Literal('pending'),
+    Type.Literal('processing'),
+    Type.Literal('completed'),
+    Type.Literal('failed'),
+    Type.Literal('partial'),
+    Type.Literal('cancelled'),
+  ]),
+  progress: ImportProgressSchema,
+  summary: ImportJobSummarySchema,
+  errors: Type.Optional(Type.Array(ImportErrorSchema)),
+  startedAt: Type.String({ format: 'date-time' }),
+  completedAt: Type.Optional(Type.String({ format: 'date-time' })),
+  estimatedCompletion: Type.Optional(Type.String({ format: 'date-time' })),
+  duration: Type.Optional(Type.Number()),
+  errorReportUrl: Type.Optional(Type.String()),
+});
+
+// Response Schemas
+export const ValidateImportApiResponseSchema = ApiSuccessResponseSchema(
+  ValidateImportResponseSchema,
+);
+export const ExecuteImportApiResponseSchema =
+  ApiSuccessResponseSchema(ImportJobSchema);
+export const ImportStatusApiResponseSchema =
+  ApiSuccessResponseSchema(ImportJobSchema);
+
+// Export Import Types
+export type ImportOptions = Static<typeof ImportOptionsSchema>;
+export type ImportRowPreview = Static<typeof ImportRowPreviewSchema>;
+export type ImportSummary = Static<typeof ImportSummarySchema>;
+export type ValidateImportResponse = Static<
+  typeof ValidateImportResponseSchema
+>;
+export type ExecuteImportRequest = Static<typeof ExecuteImportRequestSchema>;
+export type ImportProgress = Static<typeof ImportProgressSchema>;
+export type ImportJobSummary = Static<typeof ImportJobSummarySchema>;
+export type ImportError = Static<typeof ImportErrorSchema>;
+export type ImportJob = Static<typeof ImportJobSchema>;
