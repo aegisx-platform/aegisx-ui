@@ -58,8 +58,10 @@ export class AuthorsController {
     private authorsService: AuthorsService,
     private exportService: ExportService,
   ) {
-    // Initialize import service
-    this.importService = new AuthorsImportService(authorsService);
+    // Initialize import service with knex and repository
+    const knex = (authorsService as any).authorsRepository.knex;
+    const repository = (authorsService as any).authorsRepository;
+    this.importService = new AuthorsImportService(knex, repository);
   }
 
   /**
@@ -750,7 +752,8 @@ export class AuthorsController {
     try {
       const buffer = await this.importService.generateTemplate({
         format,
-        includeExample,
+        includeExamples: includeExample,
+        exampleRowCount: 3,
       });
 
       const mimeTypes = {
@@ -830,24 +833,54 @@ export class AuthorsController {
       // Convert file to buffer
       const fileBuffer = await file.toBuffer();
 
-      // Validate file
-      const result = await this.importService.validateImportFile(
-        fileBuffer,
-        file.filename,
-        options,
-      );
+      // Determine file type from extension
+      const fileExt = file.filename.toLowerCase().split('.').pop();
+      const fileType =
+        fileExt === 'csv' ? ('csv' as const) : ('excel' as const);
+
+      // Validate file using new interface
+      const result = await this.importService.validateFile({
+        file: fileBuffer,
+        fileName: file.filename,
+        fileType,
+      });
 
       request.log.info(
         {
           sessionId: result.sessionId,
-          totalRows: result.totalRows,
-          validRows: result.validRows,
-          invalidRows: result.invalidRows,
+          totalRows: result.summary.totalRows,
+          validRows: result.summary.validRows,
+          invalidRows: result.summary.invalidRows,
         },
         'Import file validated successfully',
       );
 
-      return reply.success(result, 'Import file validated successfully');
+      // Map new response format to expected format
+      const mappedResult = {
+        sessionId: result.sessionId,
+        filename: result.fileName,
+        totalRows: result.summary.totalRows,
+        validRows: result.summary.validRows,
+        invalidRows: result.summary.invalidRows,
+        summary: {
+          toCreate: result.summary.validRows,
+          toUpdate: 0,
+          toSkip: result.summary.invalidRows,
+          errors: result.summary.totalErrors,
+          warnings: result.summary.totalWarnings,
+        },
+        preview: result.errors.map((error) => ({
+          rowNumber: error.row,
+          status: 'error' as const,
+          action: 'skip' as const,
+          data: error.data,
+          errors: error.errors,
+          warnings: error.warnings,
+        })),
+        expiresAt: result.expiresAt.toISOString(),
+      };
+
+      return reply.success(mappedResult, 'Import file validated successfully');
     } catch (error: any) {
       request.log.error(error, 'Failed to validate import file');
 
@@ -883,18 +916,37 @@ export class AuthorsController {
     request.log.info({ sessionId, options, userId }, 'Executing import');
 
     try {
-      const job = await this.importService.executeImport(
+      const result = await this.importService.executeImport({
         sessionId,
-        options || {},
-        userId,
-      );
+        skipWarnings: options?.continueOnError || false,
+      });
+
+      // Map new response format to expected format
+      const mappedJob = {
+        jobId: result.jobId,
+        status: result.status,
+        progress: {
+          current: 0,
+          total: 0,
+          percentage: 0,
+        },
+        summary: {
+          processed: 0,
+          successful: 0,
+          failed: 0,
+          skipped: 0,
+          created: 0,
+          updated: 0,
+        },
+        startedAt: new Date().toISOString(),
+      };
 
       request.log.info(
-        { jobId: job.jobId, status: job.status },
+        { jobId: result.jobId, status: result.status },
         'Import job started successfully',
       );
 
-      return reply.code(202).success(job, 'Import job started successfully');
+      return reply.code(202).success(mappedJob, 'Import job started successfully');
     } catch (error: any) {
       request.log.error(error, 'Failed to execute import');
       return reply
@@ -923,16 +975,38 @@ export class AuthorsController {
     try {
       const status = await this.importService.getJobStatus(jobId);
 
+      // Map new response format to expected format
+      const mappedStatus = {
+        jobId: status.jobId,
+        status: status.status,
+        progress: {
+          current: status.processedRecords,
+          total: status.totalRecords,
+          percentage: status.progress,
+        },
+        summary: {
+          processed: status.processedRecords,
+          successful: status.successCount,
+          failed: status.failedCount,
+          skipped: 0,
+          created: status.successCount,
+          updated: 0,
+        },
+        startedAt: status.startedAt?.toISOString(),
+        completedAt: status.completedAt?.toISOString(),
+        errors: [],
+      };
+
       request.log.info(
         {
           jobId,
           status: status.status,
-          progress: status.progress.percentage,
+          progress: status.progress,
         },
         'Import job status retrieved',
       );
 
-      return reply.success(status);
+      return reply.success(mappedStatus);
     } catch (error: any) {
       request.log.error(error, 'Failed to get import status');
 
