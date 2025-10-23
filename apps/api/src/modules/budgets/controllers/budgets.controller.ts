@@ -1,17 +1,17 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
-import { AuthorsService } from '../services/authors.service';
-import { AuthorsImportService } from '../services/authors-import.service';
-import { CreateAuthors, UpdateAuthors } from '../types/authors.types';
+import { BudgetsService } from '../services/budgets.service';
+import { BudgetsImportService } from '../services/budgets-import.service';
+import { CreateBudgets, UpdateBudgets } from '../types/budgets.types';
 import {
-  CreateAuthorsSchema,
-  UpdateAuthorsSchema,
-  AuthorsIdParamSchema,
-  GetAuthorsQuerySchema,
-  ListAuthorsQuerySchema,
+  CreateBudgetsSchema,
+  UpdateBudgetsSchema,
+  BudgetsIdParamSchema,
+  GetBudgetsQuerySchema,
+  ListBudgetsQuerySchema,
   ExecuteImportRequestSchema,
-  ImportOptions,
-} from '../schemas/authors.schemas';
+  ImportJobIdParamSchema,
+} from '../schemas/budgets.schemas';
 import { ExportQuerySchema } from '../../../schemas/export.schemas';
 import { ExportService, ExportField } from '../../../services/export.service';
 import {
@@ -19,6 +19,8 @@ import {
   BulkCreateSchema,
   BulkUpdateSchema,
   BulkDeleteSchema,
+  BulkStatusSchema,
+  StatusToggleSchema,
   ValidationRequestSchema,
   UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
@@ -41,9 +43,9 @@ declare module 'fastify' {
 }
 
 /**
- * Authors Controller
+ * Budgets Controller
  * Package: full
- * Has Status Field: false
+ * Has Status Field: true
  *
  * Following Fastify controller patterns:
  * - Proper request/reply typing with Static<typeof Schema>
@@ -51,101 +53,97 @@ declare module 'fastify' {
  * - Structured error handling
  * - Logging integration with Fastify's logger
  */
-export class AuthorsController {
-  private importService: AuthorsImportService;
+export class BudgetsController {
+  private importService: BudgetsImportService;
 
   constructor(
-    private authorsService: AuthorsService,
+    private budgetsService: BudgetsService,
     private exportService: ExportService,
   ) {
     // Initialize import service with knex and repository
-    const knex = (authorsService as any).authorsRepository.knex;
-    const repository = (authorsService as any).authorsRepository;
-    this.importService = new AuthorsImportService(knex, repository);
+    const knex = (budgetsService as any).budgetsRepository.knex;
+    const repository = (budgetsService as any).budgetsRepository;
+    this.importService = new BudgetsImportService(knex, repository);
   }
 
   /**
-   * Create new authors
-   * POST /authors
+   * Create new budgets
+   * POST /budgets
    */
   async create(
-    request: FastifyRequest<{ Body: Static<typeof CreateAuthorsSchema> }>,
+    request: FastifyRequest<{ Body: Static<typeof CreateBudgetsSchema> }>,
     reply: FastifyReply,
   ) {
-    request.log.info({ body: request.body }, 'Creating authors');
+    request.log.info({ body: request.body }, 'Creating budgets');
 
     // Transform API schema to domain model
     const createData = this.transformCreateSchema(request.body, request);
 
-    const authors = await this.authorsService.create(createData);
+    const budgets = await this.budgetsService.create(createData);
 
-    request.log.info({ authorsId: authors.id }, 'Authors created successfully');
+    request.log.info({ budgetsId: budgets.id }, 'Budgets created successfully');
 
-    return reply.code(201).success(authors, 'Authors created successfully');
+    return reply.code(201).success(budgets, 'Budgets created successfully');
   }
 
   /**
-   * Get authors by ID
-   * GET /authors/:id
+   * Get budgets by ID
+   * GET /budgets/:id
    */
   async findOne(
     request: FastifyRequest<{
-      Params: Static<typeof AuthorsIdParamSchema>;
-      Querystring: Static<typeof GetAuthorsQuerySchema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Querystring: Static<typeof GetBudgetsQuerySchema>;
     }>,
     reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ authorsId: id }, 'Fetching authors');
+    request.log.info({ budgetsId: id }, 'Fetching budgets');
 
-    const authors = await this.authorsService.findById(id, request.query);
+    const budgets = await this.budgetsService.findById(id, request.query);
 
-    return reply.success(authors);
+    return reply.success(budgets);
   }
 
   /**
-   * Get paginated list of authorss
-   * GET /authors
+   * Get paginated list of budgetss
+   * GET /budgets
    * Supports: ?fields=id,name&limit=100 (Security hardened)
    */
   async findMany(
     request: FastifyRequest<{
-      Querystring: Static<typeof ListAuthorsQuerySchema>;
+      Querystring: Static<typeof ListBudgetsQuerySchema>;
     }>,
     reply: FastifyReply,
   ) {
-    request.log.info({ query: request.query }, 'Fetching authors list');
+    request.log.info({ query: request.query }, 'Fetching budgets list');
 
     // 🛡️ Security: Extract and validate parameters
     const { fields, ...queryParams } = request.query;
 
     // 🛡️ Security: Define allowed fields by role
     const SAFE_FIELDS = {
-      public: ['id', 'name', 'created_at'],
+      public: ['id', 'budget_code', 'created_at'],
       user: [
         'id',
-        'name',
+        'budget_code',
         'id',
-        'name',
-        'email',
-        'bio',
-        'birth_date',
-        'country',
-        'active',
+        'budget_code',
+        'budget_type',
+        'budget_category',
+        'budget_description',
+        'is_active',
         'created_at',
-        'updated_at',
         'created_at',
       ],
       admin: [
         'id',
-        'name',
-        'email',
-        'bio',
-        'birth_date',
-        'country',
-        'active',
+        'budget_code',
+        'budget_type',
+        'budget_category',
+        'budget_description',
+        'is_active',
         'created_at',
-        'updated_at',
       ],
     };
 
@@ -171,8 +169,8 @@ export class AuthorsController {
       );
     }
 
-    // Get authors list with field filtering
-    const result = await this.authorsService.findMany({
+    // Get budgets list with field filtering
+    const result = await this.budgetsService.findMany({
       ...queryParams,
       fields: safeFields,
     });
@@ -184,7 +182,7 @@ export class AuthorsController {
         fieldsRequested: fields?.length || 0,
         fieldsAllowed: safeFields?.length || 'all',
       },
-      'Authors list fetched',
+      'Budgets list fetched',
     );
 
     // Use raw send to match FlexibleSchema
@@ -202,47 +200,47 @@ export class AuthorsController {
   }
 
   /**
-   * Update authors
-   * PUT /authors/:id
+   * Update budgets
+   * PUT /budgets/:id
    */
   async update(
     request: FastifyRequest<{
-      Params: Static<typeof AuthorsIdParamSchema>;
-      Body: Static<typeof UpdateAuthorsSchema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Body: Static<typeof UpdateBudgetsSchema>;
     }>,
     reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ authorsId: id, body: request.body }, 'Updating authors');
+    request.log.info({ budgetsId: id, body: request.body }, 'Updating budgets');
 
     // Transform API schema to domain model
     const updateData = this.transformUpdateSchema(request.body, request);
 
-    const authors = await this.authorsService.update(id, updateData);
+    const budgets = await this.budgetsService.update(id, updateData);
 
-    request.log.info({ authorsId: id }, 'Authors updated successfully');
+    request.log.info({ budgetsId: id }, 'Budgets updated successfully');
 
-    return reply.success(authors, 'Authors updated successfully');
+    return reply.success(budgets, 'Budgets updated successfully');
   }
 
   /**
-   * Delete authors
-   * DELETE /authors/:id
+   * Delete budgets
+   * DELETE /budgets/:id
    */
   async delete(
-    request: FastifyRequest<{ Params: Static<typeof AuthorsIdParamSchema> }>,
+    request: FastifyRequest<{ Params: Static<typeof BudgetsIdParamSchema> }>,
     reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ authorsId: id }, 'Deleting authors');
+    request.log.info({ budgetsId: id }, 'Deleting budgets');
 
-    const deleted = await this.authorsService.delete(id);
+    const deleted = await this.budgetsService.delete(id);
 
     if (!deleted) {
-      return reply.code(404).error('NOT_FOUND', 'Authors not found');
+      return reply.code(404).error('NOT_FOUND', 'Budgets not found');
     }
 
-    request.log.info({ authorsId: id }, 'Authors deleted successfully');
+    request.log.info({ budgetsId: id }, 'Budgets deleted successfully');
 
     // Return operation result using standard success response
     return reply.success(
@@ -250,7 +248,7 @@ export class AuthorsController {
         id,
         deleted: true,
       },
-      'Authors deleted successfully',
+      'Budgets deleted successfully',
     );
   }
 
@@ -258,7 +256,7 @@ export class AuthorsController {
 
   /**
    * Get dropdown options
-   * GET /authors/dropdown
+   * GET /budgets/dropdown
    */
   async getDropdownOptions(
     request: FastifyRequest<{
@@ -268,10 +266,10 @@ export class AuthorsController {
   ) {
     request.log.info(
       { query: request.query },
-      'Fetching authors dropdown options',
+      'Fetching budgets dropdown options',
     );
 
-    const result = await this.authorsService.getDropdownOptions(request.query);
+    const result = await this.budgetsService.getDropdownOptions(request.query);
 
     return reply.success({
       options: result.options,
@@ -280,13 +278,13 @@ export class AuthorsController {
   }
 
   /**
-   * Bulk create authorss
-   * POST /authors/bulk
+   * Bulk create budgetss
+   * POST /budgets/bulk
    */
   async bulkCreate(
     request: FastifyRequest<{
       Body: {
-        items: CreateAuthors[];
+        items: CreateBudgets[];
         options?: { skipDuplicates?: boolean; continueOnError?: boolean };
       };
     }>,
@@ -294,7 +292,7 @@ export class AuthorsController {
   ) {
     request.log.info(
       { count: request.body.items.length },
-      'Bulk creating authorss',
+      'Bulk creating budgetss',
     );
 
     // Transform API schema to domain model for each item
@@ -304,7 +302,7 @@ export class AuthorsController {
       ),
     };
 
-    const result = await this.authorsService.bulkCreate(transformedData);
+    const result = await this.budgetsService.bulkCreate(transformedData);
 
     return reply
       .code(201)
@@ -315,18 +313,18 @@ export class AuthorsController {
   }
 
   /**
-   * Bulk update authorss
-   * PUT /authors/bulk
+   * Bulk update budgetss
+   * PUT /budgets/bulk
    */
   async bulkUpdate(
     request: FastifyRequest<{
-      Body: { items: Array<{ id: string | number; data: UpdateAuthors }> };
+      Body: { items: Array<{ id: string | number; data: UpdateBudgets }> };
     }>,
     reply: FastifyReply,
   ) {
     request.log.info(
       { count: request.body.items.length },
-      'Bulk updating authorss',
+      'Bulk updating budgetss',
     );
 
     // Transform API schema to domain model for each item
@@ -337,7 +335,7 @@ export class AuthorsController {
       })),
     };
 
-    const result = await this.authorsService.bulkUpdate(transformedData);
+    const result = await this.budgetsService.bulkUpdate(transformedData);
 
     return reply.success(
       result,
@@ -346,8 +344,8 @@ export class AuthorsController {
   }
 
   /**
-   * Bulk delete authorss
-   * DELETE /authors/bulk
+   * Bulk delete budgetss
+   * DELETE /budgets/bulk
    */
   async bulkDelete(
     request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
@@ -355,10 +353,10 @@ export class AuthorsController {
   ) {
     request.log.info(
       { count: request.body.ids.length },
-      'Bulk deleting authorss',
+      'Bulk deleting budgetss',
     );
 
-    const result = await this.authorsService.bulkDelete(request.body);
+    const result = await this.budgetsService.bulkDelete(request.body);
 
     return reply.success(
       result,
@@ -367,20 +365,110 @@ export class AuthorsController {
   }
 
   /**
+   * Bulk status update
+   * PATCH /budgets/bulk/status
+   */
+  async bulkUpdateStatus(
+    request: FastifyRequest<{ Body: Static<typeof BulkStatusSchema> }>,
+    reply: FastifyReply,
+  ) {
+    request.log.info(
+      {
+        count: request.body.ids.length,
+        status: request.body.status,
+      },
+      'Bulk updating budgets status',
+    );
+
+    // Convert status to boolean if it's a string
+    const statusData = {
+      ...request.body,
+      status:
+        typeof request.body.status === 'string'
+          ? request.body.status === 'true' || request.body.status === '1'
+          : Boolean(request.body.status),
+    };
+
+    const result = await this.budgetsService.bulkUpdateStatus(statusData);
+
+    return reply.success(
+      result,
+      `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
+  }
+
+  /**
+   * Activate budgets
+   * PATCH /budgets/:id/activate
+   */
+  async activate(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    request.log.info({ budgetsId: id }, 'Activating budgets');
+
+    const result = await this.budgetsService.activate(id, request.body);
+
+    return reply.success(result, 'Budgets activated successfully');
+  }
+
+  /**
+   * Deactivate budgets
+   * PATCH /budgets/:id/deactivate
+   */
+  async deactivate(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    request.log.info({ budgetsId: id }, 'Deactivating budgets');
+
+    const result = await this.budgetsService.deactivate(id, request.body);
+
+    return reply.success(result, 'Budgets deactivated successfully');
+  }
+
+  /**
+   * Toggle budgets status
+   * PATCH /budgets/:id/toggle
+   */
+  async toggle(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Body: Static<typeof StatusToggleSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    request.log.info({ budgetsId: id }, 'Toggling budgets status');
+
+    const result = await this.budgetsService.toggle(id, request.body);
+
+    return reply.success(result, 'Budgets status toggled successfully');
+  }
+
+  /**
    * Get statistics
-   * GET /authors/stats
+   * GET /budgets/stats
    */
   async getStats(request: FastifyRequest, reply: FastifyReply) {
-    request.log.info('Fetching authors statistics');
+    request.log.info('Fetching budgets statistics');
 
-    const stats = await this.authorsService.getStats();
+    const stats = await this.budgetsService.getStats();
 
     return reply.success(stats);
   }
 
   /**
-   * Export authors data
-   * GET /authors/export
+   * Export budgets data
+   * GET /budgets/export
    */
   async export(
     request: FastifyRequest<{ Querystring: Static<typeof ExportQuerySchema> }>,
@@ -403,7 +491,7 @@ export class AuthorsController {
         hasFilters: !!filters,
         fieldsCount: fields?.length || 0,
       },
-      'Exporting authors data',
+      'Exporting budgets data',
     );
 
     try {
@@ -421,7 +509,7 @@ export class AuthorsController {
       }
 
       // Get data from service
-      const exportData = await this.authorsService.getExportData(
+      const exportData = await this.budgetsService.getExportData(
         queryParams,
         fields,
       );
@@ -471,7 +559,7 @@ export class AuthorsController {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            title: 'Authors Export',
+            title: 'Budgets Export',
             metadata,
           });
           break;
@@ -480,7 +568,7 @@ export class AuthorsController {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            title: 'Authors Export - รายงาน',
+            title: 'Budgets Export - รายงาน',
             metadata,
             pdfOptions: {
               template: 'professional',
@@ -526,7 +614,7 @@ export class AuthorsController {
           fileSize: buffer.length,
           recordCount: exportData.length,
         },
-        'Authors export completed successfully',
+        'Budgets export completed successfully',
       );
 
       return reply.send(buffer);
@@ -553,24 +641,24 @@ export class AuthorsController {
 
   /**
    * Validate data before save
-   * POST /authors/validate
+   * POST /budgets/validate
    */
   async validate(
     request: FastifyRequest<{
-      Body: { data: Static<typeof CreateAuthorsSchema> };
+      Body: { data: Static<typeof CreateBudgetsSchema> };
     }>,
     reply: FastifyReply,
   ) {
-    request.log.info('Validating authors data');
+    request.log.info('Validating budgets data');
 
-    const result = await this.authorsService.validate(request.body);
+    const result = await this.budgetsService.validate(request.body);
 
     return reply.success(result);
   }
 
   /**
    * Check field uniqueness
-   * GET /authors/check/:field
+   * GET /budgets/check/:field
    */
   async checkUniqueness(
     request: FastifyRequest<{
@@ -582,10 +670,10 @@ export class AuthorsController {
     const { field } = request.params;
     request.log.info(
       { field, value: request.query.value },
-      'Checking authors field uniqueness',
+      'Checking budgets field uniqueness',
     );
 
-    const result = await this.authorsService.checkUniqueness(field, {
+    const result = await this.budgetsService.checkUniqueness(field, {
       value: String(request.query.value),
       excludeId: request.query.excludeId,
     });
@@ -604,47 +692,37 @@ export class AuthorsController {
       {
         key: 'id',
         label: 'Id',
+        type: 'number' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'budget_code',
+        label: 'Budget code',
         type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
       },
       {
-        key: 'name',
-        label: 'Name',
+        key: 'budget_type',
+        label: 'Budget type',
         type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
       },
       {
-        key: 'email',
-        label: 'Email',
+        key: 'budget_category',
+        label: 'Budget category',
         type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
       },
       {
-        key: 'bio',
-        label: 'Bio',
+        key: 'budget_description',
+        label: 'Budget description',
         type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
       },
       {
-        key: 'birth_date',
-        label: 'Birth date',
-        type: 'date' as 'string' | 'number' | 'date' | 'boolean' | 'json',
-      },
-      {
-        key: 'country',
-        label: 'Country',
-        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
-      },
-      {
-        key: 'active',
-        label: 'Active',
+        key: 'is_active',
+        label: 'Is active',
         type: 'boolean' as 'string' | 'number' | 'date' | 'boolean' | 'json',
       },
       {
         key: 'created_at',
         label: 'Created at',
-        type: 'date' as 'string' | 'number' | 'date' | 'boolean' | 'json',
-      },
-      {
-        key: 'updated_at',
-        label: 'Updated at',
-        type: 'date' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
       },
     ];
 
@@ -664,7 +742,7 @@ export class AuthorsController {
     selectedCount?: number,
   ): string {
     const timestamp = new Date().toISOString().split('T')[0];
-    const module = 'authors';
+    const module = 'budgets';
 
     let suffix = '';
     if (selectedCount && selectedCount > 0) {
@@ -680,17 +758,16 @@ export class AuthorsController {
    * Transform API create schema to domain model
    */
   private transformCreateSchema(
-    schema: Static<typeof CreateAuthorsSchema>,
+    schema: Static<typeof CreateBudgetsSchema>,
     request: FastifyRequest,
   ) {
     const result: any = {
       // Transform snake_case API fields to camelCase domain fields
-      name: schema.name,
-      email: schema.email,
-      bio: schema.bio,
-      birth_date: schema.birth_date,
-      country: schema.country,
-      active: schema.active,
+      budget_code: schema.budget_code,
+      budget_type: schema.budget_type,
+      budget_category: schema.budget_category,
+      budget_description: schema.budget_description,
+      is_active: schema.is_active,
     };
 
     // Auto-fill created_by from JWT if table has this field
@@ -702,28 +779,25 @@ export class AuthorsController {
    * Transform API update schema to domain model
    */
   private transformUpdateSchema(
-    schema: Static<typeof UpdateAuthorsSchema>,
+    schema: Static<typeof UpdateBudgetsSchema>,
     request: FastifyRequest,
   ) {
     const updateData: any = {};
 
-    if (schema.name !== undefined) {
-      updateData.name = schema.name;
+    if (schema.budget_code !== undefined) {
+      updateData.budget_code = schema.budget_code;
     }
-    if (schema.email !== undefined) {
-      updateData.email = schema.email;
+    if (schema.budget_type !== undefined) {
+      updateData.budget_type = schema.budget_type;
     }
-    if (schema.bio !== undefined) {
-      updateData.bio = schema.bio;
+    if (schema.budget_category !== undefined) {
+      updateData.budget_category = schema.budget_category;
     }
-    if (schema.birth_date !== undefined) {
-      updateData.birth_date = schema.birth_date;
+    if (schema.budget_description !== undefined) {
+      updateData.budget_description = schema.budget_description;
     }
-    if (schema.country !== undefined) {
-      updateData.country = schema.country;
-    }
-    if (schema.active !== undefined) {
-      updateData.active = schema.active;
+    if (schema.is_active !== undefined) {
+      updateData.is_active = schema.is_active;
     }
 
     // Auto-fill updated_by from JWT if table has this field
@@ -731,11 +805,11 @@ export class AuthorsController {
     return updateData;
   }
 
-  // ===== BULK IMPORT METHODS =====
+  // ===== IMPORT METHODS =====
 
   /**
    * Download import template
-   * GET /authors/import/template
+   * GET /budgets/import/template
    */
   async downloadImportTemplate(
     request: FastifyRequest<{
@@ -767,7 +841,7 @@ export class AuthorsController {
         excel: 'xlsx',
       };
 
-      const filename = `authors-import-template.${fileExtensions[format]}`;
+      const filename = `budgets-import-template.${fileExtensions[format]}`;
 
       reply
         .header('Content-Type', mimeTypes[format])
@@ -793,7 +867,7 @@ export class AuthorsController {
 
   /**
    * Validate import file
-   * POST /authors/import/validate
+   * POST /budgets/import/validate
    */
   async validateImport(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -809,7 +883,7 @@ export class AuthorsController {
       const file = files[0]; // Get first file
 
       // Parse options from string field
-      let options: ImportOptions = {};
+      let options: any = {};
       if (fields.options) {
         try {
           options = JSON.parse(fields.options);
@@ -855,29 +929,59 @@ export class AuthorsController {
         'Import file validated successfully',
       );
 
-      // Map new response format to expected format
+      // Get session and config to access ALL validated rows and transformer
+      const session = (this.importService as any).sessions.get(result.sessionId);
+      const validatedRows = session?.validatedRows || [];
+      const config = (this.importService as any).config;
+
+      // Map to ValidateImportApiResponseSchema format
       const mappedResult = {
         sessionId: result.sessionId,
-        filename: result.fileName,
+        // Root-level summary fields for frontend compatibility
         totalRows: result.summary.totalRows,
         validRows: result.summary.validRows,
         invalidRows: result.summary.invalidRows,
+        // Detailed summary object
         summary: {
-          toCreate: result.summary.validRows,
-          toUpdate: 0,
-          toSkip: result.summary.invalidRows,
-          errors: result.summary.totalErrors,
+          totalRows: result.summary.totalRows,
+          validRows: result.summary.validRows,
+          invalidRows: result.summary.invalidRows,
           warnings: result.summary.totalWarnings,
+          duplicates: 0, // TODO: Implement duplicate detection
+          willCreate: result.summary.validRows,
+          willSkip: 0,
         },
-        preview: result.errors.map((error) => ({
-          rowNumber: error.row,
-          status: 'error' as const,
-          action: 'skip' as const,
-          data: error.data,
-          errors: error.errors,
-          warnings: error.warnings,
-        })),
-        expiresAt: result.expiresAt.toISOString(),
+        errors: result.errors.flatMap((error) =>
+          error.errors.map((err) => ({
+            row: error.row,
+            field: err.field,
+            message: err.message,
+            value: err.value,
+          })),
+        ),
+        warnings: result.errors.flatMap((error) =>
+          error.warnings.map((warn) => ({
+            row: error.row,
+            field: warn.field,
+            message: warn.message,
+            value: warn.value,
+          })),
+        ),
+        // Preview: Transform raw data to match frontend expectations
+        preview: validatedRows.slice(0, 10).map((rowValidation, index) => {
+          const transformedData = config.rowTransformer && rowValidation.data
+            ? config.rowTransformer(rowValidation.data)
+            : rowValidation.data;
+
+          return {
+            rowNumber: rowValidation.row,
+            status: rowValidation.isValid ? 'valid' : 'error',
+            action: 'create', // Default action (can be enhanced with duplicate detection)
+            ...transformedData, // Spread budget fields directly
+            errors: rowValidation.errors,
+            warnings: rowValidation.warnings,
+          };
+        }),
       };
 
       return reply.success(mappedResult, 'Import file validated successfully');
@@ -902,7 +1006,7 @@ export class AuthorsController {
 
   /**
    * Execute import
-   * POST /authors/import/execute
+   * POST /budgets/import/execute
    */
   async executeImport(
     request: FastifyRequest<{
@@ -918,27 +1022,14 @@ export class AuthorsController {
     try {
       const result = await this.importService.executeImport({
         sessionId,
-        skipWarnings: options?.continueOnError || false,
+        skipWarnings: true, // Always skip warnings/errors - will import only valid rows
       });
 
-      // Map new response format to expected format
+      // Map to ExecuteImportApiResponseSchema format
       const mappedJob = {
         jobId: result.jobId,
         status: result.status,
-        progress: {
-          current: 0,
-          total: 0,
-          percentage: 0,
-        },
-        summary: {
-          processed: 0,
-          successful: 0,
-          failed: 0,
-          skipped: 0,
-          created: 0,
-          updated: 0,
-        },
-        startedAt: new Date().toISOString(),
+        message: 'Import job started successfully',
       };
 
       request.log.info(
@@ -949,21 +1040,22 @@ export class AuthorsController {
       return reply.code(202).success(mappedJob, 'Import job started successfully');
     } catch (error: any) {
       request.log.error(error, 'Failed to execute import');
-      return reply.error(
-        'IMPORT_EXECUTION_FAILED',
-        error.message || 'Failed to execute import',
-        500,
-      );
+      return reply
+        .code(500)
+        .error(
+          'IMPORT_EXECUTION_FAILED',
+          error.message || 'Failed to execute import',
+        );
     }
   }
 
   /**
    * Get import job status
-   * GET /authors/import/status/:jobId
+   * GET /budgets/import/status/:jobId
    */
   async getImportStatus(
     request: FastifyRequest<{
-      Params: { jobId: string };
+      Params: Static<typeof ImportJobIdParamSchema>;
     }>,
     reply: FastifyReply,
   ) {
@@ -974,7 +1066,7 @@ export class AuthorsController {
     try {
       const status = await this.importService.getJobStatus(jobId);
 
-      // Map new response format to expected format
+      // Map to ImportStatusApiResponseSchema format
       const mappedStatus = {
         jobId: status.jobId,
         status: status.status,
@@ -984,15 +1076,11 @@ export class AuthorsController {
           percentage: status.progress,
         },
         summary: {
-          processed: status.processedRecords,
-          successful: status.successCount,
-          failed: status.failedCount,
-          skipped: 0,
           created: status.successCount,
           updated: 0,
+          failed: status.failedCount,
+          skipped: 0,
         },
-        startedAt: status.startedAt?.toISOString(),
-        completedAt: status.completedAt?.toISOString(),
         errors: [],
       };
 
