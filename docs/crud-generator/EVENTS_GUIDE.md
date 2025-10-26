@@ -21,13 +21,14 @@
 
 The `--with-events` flag enables **real-time WebSocket event emission** for all CRUD operations. When enabled, the backend automatically broadcasts events whenever data changes, allowing frontend applications to react in real-time.
 
-**Current State (v2.0.1)**:
+**Current State (v2.1.0)**:
 
 - ✅ Backend event emission fully implemented
 - ✅ WebSocket infrastructure ready
 - ✅ Event types and payload structure defined
-- 🚧 Frontend real-time updates (planned for v2.1.0)
-- 🚧 Import progress via WebSocket (planned for v2.1.0)
+- ✅ Frontend state manager generation (`--with-events` flag)
+- ✅ BaseRealtimeStateManager with optimistic updates & conflict detection
+- 🚧 Import progress via WebSocket (planned for v2.2.0)
 
 **Use Cases**:
 
@@ -60,6 +61,13 @@ pnpm run crud-gen products
 - `{{domain}}.controller.ts` - Event emission after each operation
 - Integration with `EventService` (from `@shared/services/event.service`)
 - Integration with `CrudEventHelper` (from `@shared/helpers/crud-event.helper`)
+
+**Frontend Files** (NEW in v2.1.0):
+
+- `{{module}}-state-manager.service.ts` - Real-time state management service
+- Extends `BaseRealtimeStateManager` with full CRUD synchronization
+- Automatic optimistic updates and conflict detection
+- Complete lifecycle hooks for connection events
 
 **Event Emission Points**:
 
@@ -483,25 +491,46 @@ describe('ProductsController - Events', () => {
 
 ## Frontend Integration
 
-### Current State (v2.0.1)
+### Current State (v2.1.0)
 
-Generated frontend code includes WebSocket service integration:
+**State Manager Generation** - The `--with-events` flag now generates a complete real-time state manager service:
 
 ```typescript
-// Generated: apps/web/src/app/modules/products/services/products.service.ts
+// Generated: apps/web/src/app/features/products/services/products-state-manager.service.ts
 
-import { WebSocketService } from '@core/services/websocket.service';
+import { Injectable, inject } from '@angular/core';
+import { BaseRealtimeStateManager } from '@shared/business/services/base-realtime-state-manager';
+import { ProductService } from './products.service';
+import { Product } from '../types/products.types';
 
-@Injectable()
-export class ProductsService {
-  private wsService = inject(WebSocketService);
+@Injectable({ providedIn: 'root' })
+export class ProductStateManager extends BaseRealtimeStateManager<Product> {
+  private productsService = inject(ProductService);
 
   constructor() {
-    // WebSocket listeners will be implemented in v2.1.0
-    // For now, service is ready for future integration
+    super({
+      feature: 'products',
+      entity: 'product',
+      enableOptimisticUpdates: true,
+      enableConflictDetection: true,
+      debounceMs: 300,
+      retryAttempts: 3,
+    });
   }
 
-  // CRUD methods using HttpClient...
+  // ✅ All abstract methods automatically implemented:
+  // - fetchFromServer()
+  // - serverCreate()
+  // - serverUpdate()
+  // - serverDelete()
+  // - extractEntityId()
+
+  // ✅ Lifecycle hooks available for customization:
+  // - onRealtimeConnected()
+  // - onRealtimeDisconnected()
+  // - onBulkUpdate()
+  // - onSyncComplete()
+  // - onConflictDetected()
 }
 ```
 
@@ -538,64 +567,83 @@ export class WebSocketService {
 }
 ```
 
-### Manual Integration (Until v2.1.0)
+### Using Generated State Manager
 
-You can manually add real-time updates to generated list components:
+**Basic Usage** - Initialize and subscribe to real-time state:
 
 ```typescript
-// Manual enhancement: apps/web/src/app/modules/products/list/products-list.component.ts
+// Use in components: apps/web/src/app/modules/products/list/products-list.component.ts
 
-export class ProductsListComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-  private wsService = inject(WebSocketService);
+export class ProductsListComponent implements OnInit {
+  private stateManager = inject(ProductStateManager);
+
+  // Subscribe to real-time synchronized state
+  products = this.stateManager.localState;
+  isConnected = this.stateManager.isConnected;
+  syncStatus = this.stateManager.syncStats;
 
   ngOnInit() {
-    this.loadData();
-    this.setupRealtimeUpdates();
+    // Initialize state manager (fetches initial data + starts WebSocket sync)
+    this.stateManager.initialize();
   }
 
-  private setupRealtimeUpdates() {
-    // Listen for created events
-    this.wsService
-      .listen<any>('products:created')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        // Add new item to list
-        this.items.update((items) => [...items, event.data]);
-        this.showNotification('New product created');
-      });
-
-    // Listen for updated events
-    this.wsService
-      .listen<any>('products:updated')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        // Update existing item
-        this.items.update((items) => items.map((item) => (item.id === event.data.id ? event.data : item)));
-      });
-
-    // Listen for deleted events
-    this.wsService
-      .listen<any>('products:deleted')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        // Remove item from list
-        this.items.update((items) => items.filter((item) => item.id !== event.id));
-      });
-
-    // Listen for bulk deleted events
-    this.wsService
-      .listen<any>('products:bulk-deleted')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        // Remove multiple items
-        this.items.update((items) => items.filter((item) => !event.ids.includes(item.id)));
-      });
+  // Optimistic create - UI updates immediately, syncs with server in background
+  async createProduct(data: Omit<Product, 'id'>) {
+    await this.stateManager.optimisticCreate(data);
+    // List auto-updates via localState signal!
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  // Optimistic update - Shows change immediately while syncing
+  async updateProduct(id: string, changes: Partial<Product>) {
+    await this.stateManager.optimisticUpdate(id, changes);
+  }
+
+  // Optimistic delete - Removes from UI immediately
+  async deleteProduct(id: string) {
+    await this.stateManager.optimisticDelete(id);
+  }
+
+  // Manual refresh from server (if needed)
+  async refresh() {
+    await this.stateManager.refresh();
+  }
+}
+```
+
+**Advanced Usage** - Custom lifecycle hooks and conflict handling:
+
+```typescript
+// Extend generated state manager for custom behavior
+export class ProductStateManager extends BaseRealtimeStateManager<Product> {
+  // ... constructor and required methods ...
+
+  // Override lifecycle hooks for custom logic
+  protected override onRealtimeConnected(): void {
+    console.log('✅ Connected to real-time product updates');
+    this.showNotification('Real-time sync enabled');
+  }
+
+  protected override onRealtimeDisconnected(): void {
+    console.warn('⚠️ Disconnected from real-time updates');
+    this.showNotification('Working offline');
+  }
+
+  protected override onConflictDetected(conflict: ConflictInfo<Product>): void {
+    console.warn('🔥 Conflict detected:', conflict);
+
+    // Custom conflict resolution
+    if (this.shouldUseServerVersion(conflict)) {
+      // Server wins
+      return;
+    } else {
+      // Keep local version, retry server update
+      this.retryUpdate(conflict.entity.id, conflict.localChanges);
+    }
+  }
+
+  protected override onBulkUpdate(entities: Product[]): void {
+    console.log(`📦 Received bulk update: ${entities.length} products`);
+    this.showNotification(`${entities.length} products updated`);
   }
 }
 ```
@@ -604,28 +652,17 @@ export class ProductsListComponent implements OnInit, OnDestroy {
 
 ## Future Features
 
-### Planned for v2.1.0
+### Completed in v2.1.0 ✅
 
-#### 1. Auto-Generated Real-Time List Updates
+- ✅ **State Manager Generation** - Automatically generates real-time state management services
+- ✅ **Optimistic Updates** - UI updates immediately with automatic server synchronization
+- ✅ **Conflict Detection** - Detects and handles concurrent modifications
+- ✅ **Offline Support** - Pending operations queue for offline scenarios
+- ✅ **Lifecycle Hooks** - Customizable hooks for connection events and conflicts
 
-List components will automatically include WebSocket listeners:
+### Planned for v2.2.0
 
-```typescript
-// Future generated code (v2.1.0)
-export class ProductsListComponent implements OnInit {
-  ngOnInit() {
-    this.loadData();
-    this.setupRealtimeUpdates(); // ← Auto-generated method
-  }
-
-  private setupRealtimeUpdates() {
-    // All WebSocket listeners auto-generated
-    // No manual code required
-  }
-}
-```
-
-#### 2. Import Progress via WebSocket
+#### 1. Import Progress via WebSocket
 
 Import dialogs will show real-time progress:
 
@@ -647,26 +684,19 @@ export class ProductsImportDialogComponent {
 }
 ```
 
-#### 3. Optimistic UI Updates
+#### 2. Automatic List Component Integration
 
 ```typescript
-// Future feature
-async createProduct(data: CreateProduct) {
-  // Optimistically add to list
-  const tempId = generateTempId();
-  this.items.update(items => [...items, { ...data, id: tempId }]);
+// Future feature (v2.2.0) - List components will auto-inject state manager
+export class ProductsListComponent {
+  private stateManager = inject(ProductStateManager);
 
-  // Send to server
-  const result = await this.api.create(data);
+  // Auto-generated initialization
+  ngOnInit() {
+    this.stateManager.initialize();
+  }
 
-  // Replace temp item with real item when confirmed via WebSocket
-  this.wsService.listen('products:created')
-    .pipe(take(1))
-    .subscribe(event => {
-      this.items.update(items =>
-        items.map(item => item.id === tempId ? event.data : item)
-      );
-    });
+  // All CRUD operations auto-wired to state manager
 }
 ```
 
