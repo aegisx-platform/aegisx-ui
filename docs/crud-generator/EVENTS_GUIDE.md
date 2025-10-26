@@ -21,7 +21,7 @@
 
 The `--with-events` flag enables **real-time WebSocket event emission** for all CRUD operations. When enabled, the backend automatically broadcasts events whenever data changes, allowing frontend applications to react in real-time.
 
-**Current State (v2.1.0)**:
+**Current State (v2.2.0)**:
 
 - ✅ Backend event emission fully implemented
 - ✅ WebSocket infrastructure ready
@@ -29,8 +29,8 @@ The `--with-events` flag enables **real-time WebSocket event emission** for all 
 - ✅ Frontend state manager generation (`--with-events` flag)
 - ✅ BaseRealtimeStateManager with optimistic updates & conflict detection
 - ✅ List component state manager integration (auto-injected & initialized)
-- 🚧 Dialog components integration (planned for v2.2.0)
-- 🚧 Import progress via WebSocket (planned for v2.2.0)
+- ✅ Dialog components integration (create/edit use optimistic updates)
+- 🚧 Import progress via WebSocket (planned for v2.3.0)
 
 **Use Cases**:
 
@@ -714,26 +714,72 @@ export class ProductStateManager extends BaseRealtimeStateManager<Product> {
 - ✅ **Offline Support** - Pending operations queue for offline scenarios
 - ✅ **Lifecycle Hooks** - Customizable hooks for connection events and conflicts
 
-### Planned for v2.2.0
+### Completed in v2.2.0 ✅
 
-#### 1. Dialog Components Integration
+#### Dialog Components Integration
 
-Auto-inject state manager in create/edit dialogs:
+Auto-inject state manager in create/edit dialogs for optimistic updates:
+
+**Auto-Generated Create Dialog**:
 
 ```typescript
-// Future generated code (v2.2.0)
-export class ProductEditDialogComponent {
-  stateManager = inject(ProductStateManager);
+export class ProductCreateDialogComponent {
+  private productStateManager = inject(ProductStateManager);
 
-  async onSubmit() {
-    // Optimistic update - dialog closes immediately
-    await this.stateManager.optimisticUpdate(this.data.product.id, formData);
-    this.dialogRef.close(true);
+  async onFormSubmit(formData: ProductFormData) {
+    this.loading.set(true);
+    try {
+      // Optimistic create - dialog closes immediately, list updates automatically
+      await this.productStateManager.optimisticCreate(formData);
+      this.snackBar.open('Product created successfully', 'Close', { duration: 3000 });
+      this.dialogRef.close(true); // Close with success flag
+    } catch (error: any) {
+      this.snackBar.open(error?.message || 'Failed to create product', 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+    } finally {
+      this.loading.set(false);
+    }
   }
 }
 ```
 
-#### 2. Import Progress via WebSocket
+**Auto-Generated Edit Dialog**:
+
+```typescript
+export class ProductEditDialogComponent {
+  private productStateManager = inject(ProductStateManager);
+
+  async onFormSubmit(formData: ProductFormData) {
+    this.loading.set(true);
+    try {
+      // Optimistic update - dialog closes immediately, list updates automatically
+      await this.productStateManager.optimisticUpdate(this.data.product.id, formData);
+      this.snackBar.open('Product updated successfully', 'Close', { duration: 3000 });
+      this.dialogRef.close(true); // Close with success flag
+    } catch (error: any) {
+      this.snackBar.open(error?.message || 'Failed to update product', 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+    } finally {
+      this.loading.set(false);
+    }
+  }
+}
+```
+
+**Benefits**:
+
+- ⚡ Dialog closes instantly (0ms perceived latency)
+- 🔄 List updates automatically via state manager
+- ✨ No manual reload triggers needed
+- 🎯 Consistent UX across all CRUD operations
+
+### Planned for v2.3.0
+
+#### Import Progress via WebSocket
 
 Import dialogs will show real-time progress:
 
@@ -752,22 +798,6 @@ export class ProductsImportDialogComponent {
         this.processedRows.set(event.processedRows);
       });
   }
-}
-```
-
-#### 2. Automatic List Component Integration
-
-```typescript
-// Future feature (v2.2.0) - List components will auto-inject state manager
-export class ProductsListComponent {
-  private stateManager = inject(ProductStateManager);
-
-  // Auto-generated initialization
-  ngOnInit() {
-    this.stateManager.initialize();
-  }
-
-  // All CRUD operations auto-wired to state manager
 }
 ```
 
