@@ -59,7 +59,7 @@ export class BudgetStateManager extends BaseRealtimeStateManager<Budget> {
 
     try {
       await this.budgetsService.loadBudgetList({
-        limit: 10000,
+        limit: 1000,
         page: 1,
       });
 
