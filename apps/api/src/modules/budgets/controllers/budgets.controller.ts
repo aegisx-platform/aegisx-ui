@@ -1,147 +1,170 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
-import { {{ModuleName}}Service } from '../services/{{toKebabCase currentRoute.camelName}}.service';
-import { Create{{ModuleName}}, Update{{ModuleName}} } from '../types/{{toKebabCase currentRoute.camelName}}.types';
+import { BudgetsService } from '../services/budgets.service';
+import { CreateBudgets, UpdateBudgets } from '../types/budgets.types';
 import {
-  Create{{ModuleName}}Schema,
-  Update{{ModuleName}}Schema,
-  {{ModuleName}}IdParamSchema,
-  Get{{ModuleName}}QuerySchema,
-  List{{ModuleName}}QuerySchema
-} from '../schemas/{{toKebabCase currentRoute.camelName}}.schemas';
-{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+  CreateBudgetsSchema,
+  UpdateBudgetsSchema,
+  BudgetsIdParamSchema,
+  GetBudgetsQuerySchema,
+  ListBudgetsQuerySchema,
+} from '../schemas/budgets.schemas';
 import { ExportQuerySchema } from '../../../schemas/export.schemas';
 import { ExportService, ExportField } from '../../../services/export.service';
-{{/if}}
-{{#if withImport}}
-import { {{ModuleName}}ImportService } from '../services/{{toKebabCase currentRoute.camelName}}-import.service';
+import { BudgetsImportService } from '../services/budgets-import.service';
 import {
   ValidateImportApiResponseSchema,
   ExecuteImportApiResponseSchema,
   ExecuteImportRequestSchema,
   ImportStatusApiResponseSchema,
-} from '../schemas/{{toKebabCase currentRoute.camelName}}.schemas';
-{{/if}}
-{{#if (or (eq package 'enterprise') (eq package 'full'))}}
+} from '../schemas/budgets.schemas';
 import {
   DropdownQuerySchema,
   BulkCreateSchema,
   BulkUpdateSchema,
-  BulkDeleteSchema,{{#if hasStatusField}}
+  BulkDeleteSchema,
   BulkStatusSchema,
-  StatusToggleSchema,{{/if}}{{#if (eq package 'full')}}
+  StatusToggleSchema,
   ValidationRequestSchema,
-  UniquenessCheckSchema{{/if}}
+  UniquenessCheckSchema,
 } from '../../../schemas/base.schemas';
-{{/if}}
 
 /**
- * {{ModuleName}} Controller
- * Package: {{package}}
- * Has Status Field: {{hasStatusField}}
- * 
+ * Budgets Controller
+ * Package: full
+ * Has Status Field: true
+ *
  * Following Fastify controller patterns:
  * - Proper request/reply typing with Static<typeof Schema>
  * - Schema-based validation integration
  * - Structured error handling
  * - Logging integration with Fastify's logger
  */
-export class {{ModuleName}}Controller {
+export class BudgetsController {
   constructor(
-    private {{moduleName}}Service: {{ModuleName}}Service{{#if (or (eq package 'enterprise') (eq package 'full'))}},
-    private exportService: ExportService{{/if}}{{#if withImport}},
-    private importService: {{ModuleName}}ImportService{{/if}}
+    private budgetsService: BudgetsService,
+    private exportService: ExportService,
+    private importService: BudgetsImportService,
   ) {}
 
   /**
-   * Create new {{moduleName}}
-   * POST /{{moduleName}}
+   * Create new budgets
+   * POST /budgets
    */
   async create(
-    request: FastifyRequest<{ Body: Static<typeof Create{{ModuleName}}Schema> }>,
-    reply: FastifyReply
+    request: FastifyRequest<{ Body: Static<typeof CreateBudgetsSchema> }>,
+    reply: FastifyReply,
   ) {
-    request.log.info({ body: request.body }, 'Creating {{moduleName}}');
+    request.log.info({ body: request.body }, 'Creating budgets');
 
     // Transform API schema to domain model
     const createData = this.transformCreateSchema(request.body, request);
-    
-    const {{moduleName}} = await this.{{moduleName}}Service.create(createData);
-    
-    request.log.info({ {{moduleName}}Id: {{moduleName}}.id }, '{{ModuleName}} created successfully');
 
-    return reply.code(201).success({{moduleName}}, '{{ModuleName}} created successfully');
+    const budgets = await this.budgetsService.create(createData);
+
+    request.log.info({ budgetsId: budgets.id }, 'Budgets created successfully');
+
+    return reply.code(201).success(budgets, 'Budgets created successfully');
   }
 
   /**
-   * Get {{moduleName}} by ID
-   * GET /{{moduleName}}/:id
+   * Get budgets by ID
+   * GET /budgets/:id
    */
   async findOne(
     request: FastifyRequest<{
-      Params: Static<typeof {{ModuleName}}IdParamSchema>;
-      Querystring: Static<typeof Get{{ModuleName}}QuerySchema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Querystring: Static<typeof GetBudgetsQuerySchema>;
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ {{moduleName}}Id: id }, 'Fetching {{moduleName}}');
+    request.log.info({ budgetsId: id }, 'Fetching budgets');
 
-    const {{moduleName}} = await this.{{moduleName}}Service.findById(id, request.query);
+    const budgets = await this.budgetsService.findById(id, request.query);
 
-    return reply.success({{moduleName}});
+    return reply.success(budgets);
   }
 
   /**
-   * Get paginated list of {{moduleName}}s
-   * GET /{{moduleName}}
+   * Get paginated list of budgetss
+   * GET /budgets
    * Supports: ?fields=id,name&limit=100 (Security hardened)
    */
   async findMany(
-    request: FastifyRequest<{ Querystring: Static<typeof List{{ModuleName}}QuerySchema> }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Querystring: Static<typeof ListBudgetsQuerySchema>;
+    }>,
+    reply: FastifyReply,
   ) {
-    request.log.info({ query: request.query }, 'Fetching {{moduleName}} list');
+    request.log.info({ query: request.query }, 'Fetching budgets list');
 
     // 🛡️ Security: Extract and validate parameters
     const { fields, ...queryParams } = request.query;
-    
+
     // 🛡️ Security: Define allowed fields by role
     const SAFE_FIELDS = {
-      public: ['id', '{{defaultLabelField}}', 'created_at'],
-      user: ['id', '{{defaultLabelField}}', {{#each columns}}{{#unless (isSensitiveField this)}}'{{name}}', {{/unless}}{{/each}}'created_at'],
-      admin: [{{#each columns}}'{{name}}', {{/each}}]
+      public: ['id', 'budget_code', 'created_at'],
+      user: [
+        'id',
+        'budget_code',
+        'id',
+        'budget_code',
+        'budget_type',
+        'budget_category',
+        'budget_description',
+        'is_active',
+        'created_at',
+        'created_at',
+      ],
+      admin: [
+        'id',
+        'budget_code',
+        'budget_type',
+        'budget_category',
+        'budget_description',
+        'is_active',
+        'created_at',
+      ],
     };
-    
+
     // 🛡️ Security: Get user role (default to public for safety)
     const userRole = request.user?.role || 'public';
     const allowedFields = SAFE_FIELDS[userRole] || SAFE_FIELDS.public;
-    
+
     // 🛡️ Security: Filter requested fields against whitelist
-    const safeFields = fields ? fields.filter(field => allowedFields.includes(field)) : undefined;
-    
+    const safeFields = fields
+      ? fields.filter((field) => allowedFields.includes(field))
+      : undefined;
+
     // 🛡️ Security: Log suspicious requests
-    if (fields && fields.some(field => !allowedFields.includes(field))) {
-      request.log.warn({
-        user: request.user?.id,
-        requestedFields: fields,
-        allowedFields,
-        ip: request.ip
-      }, 'Suspicious field access attempt detected');
+    if (fields && fields.some((field) => !allowedFields.includes(field))) {
+      request.log.warn(
+        {
+          user: request.user?.id,
+          requestedFields: fields,
+          allowedFields,
+          ip: request.ip,
+        },
+        'Suspicious field access attempt detected',
+      );
     }
 
-    // Get {{moduleName}} list with field filtering
-    const result = await this.{{moduleName}}Service.findMany({
+    // Get budgets list with field filtering
+    const result = await this.budgetsService.findMany({
       ...queryParams,
-      fields: safeFields
+      fields: safeFields,
     });
 
-    request.log.info({ 
-      count: result.data.length, 
-      total: result.pagination.total,
-      fieldsRequested: fields?.length || 0,
-      fieldsAllowed: safeFields?.length || 'all'
-    }, '{{ModuleName}} list fetched');
+    request.log.info(
+      {
+        count: result.data.length,
+        total: result.pagination.total,
+        fieldsRequested: fields?.length || 0,
+        fieldsAllowed: safeFields?.length || 'all',
+      },
+      'Budgets list fetched',
+    );
 
     // Use raw send to match FlexibleSchema
     return reply.send({
@@ -158,288 +181,348 @@ export class {{ModuleName}}Controller {
   }
 
   /**
-   * Update {{moduleName}}
-   * PUT /{{moduleName}}/:id
+   * Update budgets
+   * PUT /budgets/:id
    */
   async update(
     request: FastifyRequest<{
-      Params: Static<typeof {{ModuleName}}IdParamSchema>;
-      Body: Static<typeof Update{{ModuleName}}Schema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
+      Body: Static<typeof UpdateBudgetsSchema>;
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ {{moduleName}}Id: id, body: request.body }, 'Updating {{moduleName}}');
+    request.log.info({ budgetsId: id, body: request.body }, 'Updating budgets');
 
     // Transform API schema to domain model
     const updateData = this.transformUpdateSchema(request.body, request);
-    
-    const {{moduleName}} = await this.{{moduleName}}Service.update(id, updateData);
 
-    request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} updated successfully');
+    const budgets = await this.budgetsService.update(id, updateData);
 
-    return reply.success({{moduleName}}, '{{ModuleName}} updated successfully');
+    request.log.info({ budgetsId: id }, 'Budgets updated successfully');
+
+    return reply.success(budgets, 'Budgets updated successfully');
   }
 
   /**
-   * Delete {{moduleName}}
-   * DELETE /{{moduleName}}/:id
+   * Delete budgets
+   * DELETE /budgets/:id
    */
   async delete(
-    request: FastifyRequest<{ Params: Static<typeof {{ModuleName}}IdParamSchema> }>,
-    reply: FastifyReply
+    request: FastifyRequest<{ Params: Static<typeof BudgetsIdParamSchema> }>,
+    reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ {{moduleName}}Id: id }, 'Deleting {{moduleName}}');
+    request.log.info({ budgetsId: id }, 'Deleting budgets');
 
-    const deleted = await this.{{moduleName}}Service.delete(id);
+    const deleted = await this.budgetsService.delete(id);
 
     if (!deleted) {
-      return reply.code(404).error('NOT_FOUND', '{{ModuleName}} not found');
+      return reply.code(404).error('NOT_FOUND', 'Budgets not found');
     }
 
-    request.log.info({ {{moduleName}}Id: id }, '{{ModuleName}} deleted successfully');
+    request.log.info({ budgetsId: id }, 'Budgets deleted successfully');
 
     // Return operation result using standard success response
-    return reply.success({
-      id,
-      deleted: true
-    }, '{{ModuleName}} deleted successfully');
+    return reply.success(
+      {
+        id,
+        deleted: true,
+      },
+      'Budgets deleted successfully',
+    );
   }
 
-{{#if (or (eq package 'enterprise') (eq package 'full'))}}
-  
   // ===== ENHANCED CRUD METHODS =====
-  
+
   /**
    * Get dropdown options
-   * GET /{{moduleName}}/dropdown
+   * GET /budgets/dropdown
    */
   async getDropdownOptions(
-    request: FastifyRequest<{ Querystring: Static<typeof DropdownQuerySchema> }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Querystring: Static<typeof DropdownQuerySchema>;
+    }>,
+    reply: FastifyReply,
   ) {
-    request.log.info({ query: request.query }, 'Fetching {{moduleName}} dropdown options');
+    request.log.info(
+      { query: request.query },
+      'Fetching budgets dropdown options',
+    );
 
-    const result = await this.{{moduleName}}Service.getDropdownOptions(request.query);
+    const result = await this.budgetsService.getDropdownOptions(request.query);
 
     return reply.success({
       options: result.options,
-      total: result.total
+      total: result.total,
     });
   }
 
   /**
-   * Bulk create {{moduleName}}s
-   * POST /{{moduleName}}/bulk
+   * Bulk create budgetss
+   * POST /budgets/bulk
    */
   async bulkCreate(
-    request: FastifyRequest<{ Body: { items: Create{{ModuleName}}[]; options?: { skipDuplicates?: boolean; continueOnError?: boolean } } }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Body: {
+        items: CreateBudgets[];
+        options?: { skipDuplicates?: boolean; continueOnError?: boolean };
+      };
+    }>,
+    reply: FastifyReply,
   ) {
-    request.log.info({ count: request.body.items.length }, 'Bulk creating {{moduleName}}s');
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk creating budgetss',
+    );
 
     // Transform API schema to domain model for each item
     const transformedData = {
-      items: request.body.items.map(item => this.transformCreateSchema(item, request))
+      items: request.body.items.map((item) =>
+        this.transformCreateSchema(item, request),
+      ),
     };
 
-    const result = await this.{{moduleName}}Service.bulkCreate(transformedData);
+    const result = await this.budgetsService.bulkCreate(transformedData);
 
-    return reply.code(201).success(result, `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
+    return reply
+      .code(201)
+      .success(
+        result,
+        `Bulk create completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+      );
   }
 
   /**
-   * Bulk update {{moduleName}}s
-   * PUT /{{moduleName}}/bulk
+   * Bulk update budgetss
+   * PUT /budgets/bulk
    */
   async bulkUpdate(
-    request: FastifyRequest<{ Body: { items: Array<{ id: string | number; data: Update{{ModuleName}} }> } }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Body: { items: Array<{ id: string | number; data: UpdateBudgets }> };
+    }>,
+    reply: FastifyReply,
   ) {
-    request.log.info({ count: request.body.items.length }, 'Bulk updating {{moduleName}}s');
+    request.log.info(
+      { count: request.body.items.length },
+      'Bulk updating budgetss',
+    );
 
     // Transform API schema to domain model for each item
     const transformedData = {
-      items: request.body.items.map(item => ({
+      items: request.body.items.map((item) => ({
         id: item.id,
-        data: this.transformUpdateSchema(item.data, request)
-      }))
+        data: this.transformUpdateSchema(item.data, request),
+      })),
     };
 
-    const result = await this.{{moduleName}}Service.bulkUpdate(transformedData);
+    const result = await this.budgetsService.bulkUpdate(transformedData);
 
-    return reply.success(result, `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
+    return reply.success(
+      result,
+      `Bulk update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
   }
 
   /**
-   * Bulk delete {{moduleName}}s
-   * DELETE /{{moduleName}}/bulk
+   * Bulk delete budgetss
+   * DELETE /budgets/bulk
    */
   async bulkDelete(
     request: FastifyRequest<{ Body: Static<typeof BulkDeleteSchema> }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
-    request.log.info({ count: request.body.ids.length }, 'Bulk deleting {{moduleName}}s');
+    request.log.info(
+      { count: request.body.ids.length },
+      'Bulk deleting budgetss',
+    );
 
-    const result = await this.{{moduleName}}Service.bulkDelete(request.body);
+    const result = await this.budgetsService.bulkDelete(request.body);
 
-    return reply.success(result, `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
+    return reply.success(
+      result,
+      `Bulk delete completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
   }
 
-  {{#if hasStatusField}}
   /**
    * Bulk status update
-   * PATCH /{{moduleName}}/bulk/status
+   * PATCH /budgets/bulk/status
    */
   async bulkUpdateStatus(
     request: FastifyRequest<{ Body: Static<typeof BulkStatusSchema> }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
-    request.log.info({ 
-      count: request.body.ids.length, 
-      status: request.body.status 
-    }, 'Bulk updating {{moduleName}} status');
+    request.log.info(
+      {
+        count: request.body.ids.length,
+        status: request.body.status,
+      },
+      'Bulk updating budgets status',
+    );
 
     // Convert status to boolean if it's a string
     const statusData = {
       ...request.body,
-      status: typeof request.body.status === 'string' 
-        ? request.body.status === 'true' || request.body.status === '1'
-        : Boolean(request.body.status)
+      status:
+        typeof request.body.status === 'string'
+          ? request.body.status === 'true' || request.body.status === '1'
+          : Boolean(request.body.status),
     };
-    
-    const result = await this.{{moduleName}}Service.bulkUpdateStatus(statusData);
 
-    return reply.success(result, `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`);
+    const result = await this.budgetsService.bulkUpdateStatus(statusData);
+
+    return reply.success(
+      result,
+      `Bulk status update completed: ${result.summary.successful} successful, ${result.summary.failed} failed`,
+    );
   }
 
   /**
-   * Activate {{moduleName}}
-   * PATCH /{{moduleName}}/:id/activate
+   * Activate budgets
+   * PATCH /budgets/:id/activate
    */
   async activate(
     request: FastifyRequest<{
-      Params: Static<typeof {{ModuleName}}IdParamSchema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
       Body: Static<typeof StatusToggleSchema>;
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ {{moduleName}}Id: id }, 'Activating {{moduleName}}');
+    request.log.info({ budgetsId: id }, 'Activating budgets');
 
-    const result = await this.{{moduleName}}Service.activate(id, request.body);
+    const result = await this.budgetsService.activate(id, request.body);
 
-    return reply.success(result, '{{ModuleName}} activated successfully');
+    return reply.success(result, 'Budgets activated successfully');
   }
 
   /**
-   * Deactivate {{moduleName}}
-   * PATCH /{{moduleName}}/:id/deactivate
+   * Deactivate budgets
+   * PATCH /budgets/:id/deactivate
    */
   async deactivate(
     request: FastifyRequest<{
-      Params: Static<typeof {{ModuleName}}IdParamSchema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
       Body: Static<typeof StatusToggleSchema>;
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ {{moduleName}}Id: id }, 'Deactivating {{moduleName}}');
+    request.log.info({ budgetsId: id }, 'Deactivating budgets');
 
-    const result = await this.{{moduleName}}Service.deactivate(id, request.body);
+    const result = await this.budgetsService.deactivate(id, request.body);
 
-    return reply.success(result, '{{ModuleName}} deactivated successfully');
+    return reply.success(result, 'Budgets deactivated successfully');
   }
 
   /**
-   * Toggle {{moduleName}} status
-   * PATCH /{{moduleName}}/:id/toggle
+   * Toggle budgets status
+   * PATCH /budgets/:id/toggle
    */
   async toggle(
     request: FastifyRequest<{
-      Params: Static<typeof {{ModuleName}}IdParamSchema>;
+      Params: Static<typeof BudgetsIdParamSchema>;
       Body: Static<typeof StatusToggleSchema>;
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const { id } = request.params;
-    request.log.info({ {{moduleName}}Id: id }, 'Toggling {{moduleName}} status');
+    request.log.info({ budgetsId: id }, 'Toggling budgets status');
 
-    const result = await this.{{moduleName}}Service.toggle(id, request.body);
+    const result = await this.budgetsService.toggle(id, request.body);
 
-    return reply.success(result, '{{ModuleName}} status toggled successfully');
+    return reply.success(result, 'Budgets status toggled successfully');
   }
-  {{/if}}
 
   /**
    * Get statistics
-   * GET /{{moduleName}}/stats
+   * GET /budgets/stats
    */
-  async getStats(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
-    request.log.info('Fetching {{moduleName}} statistics');
+  async getStats(request: FastifyRequest, reply: FastifyReply) {
+    request.log.info('Fetching budgets statistics');
 
-    const stats = await this.{{moduleName}}Service.getStats();
+    const stats = await this.budgetsService.getStats();
 
     return reply.success(stats);
   }
 
   /**
-   * Export {{moduleName}} data
-   * GET /{{moduleName}}/export
+   * Export budgets data
+   * GET /budgets/export
    */
   async export(
     request: FastifyRequest<{ Querystring: Static<typeof ExportQuerySchema> }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
-    const { format, ids, filters, fields, filename, includeMetadata = true, applyFilters = false } = request.query;
-    
-    request.log.info({ 
-      format, 
-      idsCount: ids?.length || 0,
-      hasFilters: !!filters,
-      fieldsCount: fields?.length || 0
-    }, 'Exporting {{moduleName}} data');
+    const {
+      format,
+      ids,
+      filters,
+      fields,
+      filename,
+      includeMetadata = true,
+      applyFilters = false,
+    } = request.query;
+
+    request.log.info(
+      {
+        format,
+        idsCount: ids?.length || 0,
+        hasFilters: !!filters,
+        fieldsCount: fields?.length || 0,
+      },
+      'Exporting budgets data',
+    );
 
     try {
       // Prepare query parameters based on export options
       let queryParams: any = {};
-      
+
       // Apply specific IDs if provided
       if (ids && ids.length > 0) {
         queryParams.ids = ids;
       }
-      
+
       // Apply filters if requested
       if (applyFilters && filters) {
         queryParams = { ...queryParams, ...filters };
       }
 
       // Get data from service
-      const exportData = await this.{{moduleName}}Service.getExportData(queryParams, fields);
-      
+      const exportData = await this.budgetsService.getExportData(
+        queryParams,
+        fields,
+      );
+
       // Prepare export fields configuration
       const exportFields = this.getExportFields(fields);
-      
+
       // Generate export filename and clean any existing extensions
-      let exportFilename = filename || this.generateExportFilename(format, ids?.length);
-      
+      let exportFilename =
+        filename || this.generateExportFilename(format, ids?.length);
+
       // Remove any existing file extensions to prevent double extensions
       if (exportFilename.includes('.')) {
-        exportFilename = exportFilename.substring(0, exportFilename.lastIndexOf('.'));
+        exportFilename = exportFilename.substring(
+          0,
+          exportFilename.lastIndexOf('.'),
+        );
       }
-      
+
       // Prepare metadata
-      const metadata = includeMetadata ? {
-        exportedBy: (request.user as any)?.username || (request.user as any)?.email || 'System',
-        exportedAt: new Date(),
-        filtersApplied: applyFilters ? filters : undefined,
-        totalRecords: exportData.length,
-        selectedRecords: ids?.length
-      } : undefined;
+      const metadata = includeMetadata
+        ? {
+            exportedBy:
+              (request.user as any)?.username ||
+              (request.user as any)?.email ||
+              'System',
+            exportedAt: new Date(),
+            filtersApplied: applyFilters ? filters : undefined,
+            totalRecords: exportData.length,
+            selectedRecords: ids?.length,
+          }
+        : undefined;
 
       // Generate export file
       let buffer: Buffer;
@@ -449,7 +532,7 @@ export class {{ModuleName}}Controller {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            metadata
+            metadata,
           });
           break;
         case 'excel':
@@ -457,8 +540,8 @@ export class {{ModuleName}}Controller {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            title: '{{ModuleName}} Export',
-            metadata
+            title: 'Budgets Export',
+            metadata,
           });
           break;
         case 'pdf':
@@ -466,114 +549,119 @@ export class {{ModuleName}}Controller {
             data: exportData,
             fields: exportFields,
             filename: exportFilename,
-            title: '{{ModuleName}} Export - รายงาน{{displayName}}',
+            title: 'Budgets Export - รายงาน',
             metadata,
             pdfOptions: {
               template: 'professional',
               pageSize: 'A4',
               orientation: 'landscape',
               subtitle: 'Generated with Thai Font Support',
-              logo: process.env.PDF_LOGO_URL
-            }
+              logo: process.env.PDF_LOGO_URL,
+            },
           });
           break;
         default:
-          return reply.code(400).error('INVALID_FORMAT', 'Unsupported export format');
+          return reply
+            .code(400)
+            .error('INVALID_FORMAT', 'Unsupported export format');
       }
 
       // Set response headers for file download
       const mimeTypes = {
         csv: 'text/csv',
-        excel: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        pdf: 'application/pdf'
+        excel:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        pdf: 'application/pdf',
       };
 
       const fileExtensions = {
         csv: 'csv',
         excel: 'xlsx',
-        pdf: 'pdf'
+        pdf: 'pdf',
       };
 
       reply
         .header('Content-Type', mimeTypes[format])
-        .header('Content-Disposition', `attachment; filename="${exportFilename}.${fileExtensions[format]}"`)
+        .header(
+          'Content-Disposition',
+          `attachment; filename="${exportFilename}.${fileExtensions[format]}"`,
+        )
         .header('Content-Length', buffer.length);
 
-      request.log.info({ 
-        format,
-        filename: `${exportFilename}.${fileExtensions[format]}`,
-        fileSize: buffer.length,
-        recordCount: exportData.length
-      }, '{{ModuleName}} export completed successfully');
+      request.log.info(
+        {
+          format,
+          filename: `${exportFilename}.${fileExtensions[format]}`,
+          fileSize: buffer.length,
+          recordCount: exportData.length,
+        },
+        'Budgets export completed successfully',
+      );
 
       return reply.send(buffer);
-
     } catch (error) {
       request.log.error({ error, format }, 'Export failed');
-      return reply
-        .code(500)
-        .send({
-          success: false,
-          error: {
-            code: 'EXPORT_FAILED',
-            message: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            statusCode: 500,
-          },
-          meta: {
-            timestamp: new Date().toISOString(),
-            version: 'v1',
-            requestId: request.id,
-            environment: process.env.NODE_ENV || 'development',
-          },
-        });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'EXPORT_FAILED',
+          message: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          statusCode: 500,
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          version: 'v1',
+          requestId: request.id,
+          environment: process.env.NODE_ENV || 'development',
+        },
+      });
     }
   }
-{{/if}}
 
-{{#if (eq package 'full')}}
-  
   // ===== FULL PACKAGE METHODS =====
-  
+
   /**
    * Validate data before save
-   * POST /{{moduleName}}/validate
+   * POST /budgets/validate
    */
   async validate(
-    request: FastifyRequest<{ Body: { data: Static<typeof Create{{ModuleName}}Schema> } }>,
-    reply: FastifyReply
+    request: FastifyRequest<{
+      Body: { data: Static<typeof CreateBudgetsSchema> };
+    }>,
+    reply: FastifyReply,
   ) {
-    request.log.info('Validating {{moduleName}} data');
+    request.log.info('Validating budgets data');
 
-    const result = await this.{{moduleName}}Service.validate(request.body);
+    const result = await this.budgetsService.validate(request.body);
 
     return reply.success(result);
   }
 
   /**
    * Check field uniqueness
-   * GET /{{moduleName}}/check/:field
+   * GET /budgets/check/:field
    */
   async checkUniqueness(
-    request: FastifyRequest<{ 
+    request: FastifyRequest<{
       Params: { field: string };
-      Querystring: Static<typeof UniquenessCheckSchema>; 
+      Querystring: Static<typeof UniquenessCheckSchema>;
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const { field } = request.params;
-    request.log.info({ field, value: request.query.value }, 'Checking {{moduleName}} field uniqueness');
+    request.log.info(
+      { field, value: request.query.value },
+      'Checking budgets field uniqueness',
+    );
 
-    const result = await this.{{moduleName}}Service.checkUniqueness(field, {
+    const result = await this.budgetsService.checkUniqueness(field, {
       value: String(request.query.value),
-      excludeId: request.query.excludeId
+      excludeId: request.query.excludeId,
     });
 
     return reply.success(result);
   }
-{{/if}}
 
-{{#if (or (eq package 'enterprise') (eq package 'full'))}}
-  
   // ===== PRIVATE EXPORT HELPER METHODS =====
 
   /**
@@ -582,14 +670,46 @@ export class {{ModuleName}}Controller {
   private getExportFields(requestedFields?: string[]): ExportField[] {
     // Define all available fields for export
     const allFields: ExportField[] = [
-      {{#each columns}}
-      { key: '{{name}}', label: '{{#if label}}{{label}}{{else}}{{titleCase name}}{{/if}}', type: '{{getExportFieldType type}}' as 'string' | 'number' | 'date' | 'boolean' | 'json' },
-      {{/each}}
+      {
+        key: 'id',
+        label: 'Id',
+        type: 'number' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'budget_code',
+        label: 'Budget code',
+        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'budget_type',
+        label: 'Budget type',
+        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'budget_category',
+        label: 'Budget category',
+        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'budget_description',
+        label: 'Budget description',
+        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'is_active',
+        label: 'Is active',
+        type: 'boolean' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
+      {
+        key: 'created_at',
+        label: 'Created at',
+        type: 'string' as 'string' | 'number' | 'date' | 'boolean' | 'json',
+      },
     ];
 
     // Return requested fields or all fields
     if (requestedFields && requestedFields.length > 0) {
-      return allFields.filter(field => requestedFields.includes(field.key));
+      return allFields.filter((field) => requestedFields.includes(field.key));
     }
 
     return allFields;
@@ -598,83 +718,79 @@ export class {{ModuleName}}Controller {
   /**
    * Generate export filename
    */
-  private generateExportFilename(format: string, selectedCount?: number): string {
+  private generateExportFilename(
+    format: string,
+    selectedCount?: number,
+  ): string {
     const timestamp = new Date().toISOString().split('T')[0];
-    const module = '{{toKebabCase currentRoute.camelName}}';
-    
+    const module = 'budgets';
+
     let suffix = '';
     if (selectedCount && selectedCount > 0) {
       suffix = `-selected-${selectedCount}`;
     }
-    
+
     return `${module}-export${suffix}-${timestamp}`;
   }
 
-{{/if}}
   // ===== PRIVATE TRANSFORMATION METHODS =====
 
   /**
    * Transform API create schema to domain model
    */
-  private transformCreateSchema(schema: Static<typeof Create{{ModuleName}}Schema>, request: FastifyRequest) {
+  private transformCreateSchema(
+    schema: Static<typeof CreateBudgetsSchema>,
+    request: FastifyRequest,
+  ) {
     const result: any = {
       // Transform snake_case API fields to camelCase domain fields
-      {{#each columns}}
-      {{#unless isPrimaryKey}}
-      {{#unless (or (eq name 'created_at') (eq name 'updated_at') (eq name 'created_by') (eq name 'updated_by'))}}
-      {{name}}: schema.{{name}},
-      {{/unless}}
-      {{/unless}}
-      {{/each}}
+      budget_code: schema.budget_code,
+      budget_type: schema.budget_type,
+      budget_category: schema.budget_category,
+      budget_description: schema.budget_description,
+      is_active: schema.is_active,
     };
 
     // Auto-fill created_by from JWT if table has this field
-    {{#each columns}}
-    {{#if (eq name 'created_by')}}
-    if (request.user?.id) {
-      result.created_by = request.user.id;
-    }
-    {{/if}}
-    {{/each}}
 
     return result;
   }
 
   /**
-   * Transform API update schema to domain model  
+   * Transform API update schema to domain model
    */
-  private transformUpdateSchema(schema: Static<typeof Update{{ModuleName}}Schema>, request: FastifyRequest) {
+  private transformUpdateSchema(
+    schema: Static<typeof UpdateBudgetsSchema>,
+    request: FastifyRequest,
+  ) {
     const updateData: any = {};
-    
-    {{#each columns}}
-    {{#unless isPrimaryKey}}
-    {{#unless (or (eq name 'created_at') (eq name 'updated_at') (eq name 'created_by') (eq name 'updated_by'))}}
-    if (schema.{{name}} !== undefined) {
-      updateData.{{name}} = schema.{{name}};
+
+    if (schema.budget_code !== undefined) {
+      updateData.budget_code = schema.budget_code;
     }
-    {{/unless}}
-    {{/unless}}
-    {{/each}}
+    if (schema.budget_type !== undefined) {
+      updateData.budget_type = schema.budget_type;
+    }
+    if (schema.budget_category !== undefined) {
+      updateData.budget_category = schema.budget_category;
+    }
+    if (schema.budget_description !== undefined) {
+      updateData.budget_description = schema.budget_description;
+    }
+    if (schema.is_active !== undefined) {
+      updateData.is_active = schema.is_active;
+    }
 
     // Auto-fill updated_by from JWT if table has this field
-    {{#each columns}}
-    {{#if (eq name 'updated_by')}}
-    if (request.user?.id) {
-      updateData.updated_by = request.user.id;
-    }
-    {{/if}}
-    {{/each}}
 
     return updateData;
   }
-
-{{#if withImport}}
 
   // ===== IMPORT METHODS =====
 
   /**
    * Download import template
-   * GET /{{moduleName}}/import/template
+   * GET /budgets/import/template
    */
   async downloadImportTemplate(
     request: FastifyRequest<{
@@ -706,7 +822,7 @@ export class {{ModuleName}}Controller {
         excel: 'xlsx',
       };
 
-      const filename = `{{kebabCase}}-import-template.${fileExtensions[format]}`;
+      const filename = `-import-template.${fileExtensions[format]}`;
 
       reply
         .header('Content-Type', mimeTypes[format])
@@ -731,7 +847,7 @@ export class {{ModuleName}}Controller {
 
   /**
    * Validate import file
-   * POST /{{moduleName}}/import/validate
+   * POST /budgets/import/validate
    */
   async validateImport(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -794,7 +910,9 @@ export class {{ModuleName}}Controller {
       );
 
       // Get session and config to access ALL validated rows and transformer
-      const session = (this.importService as any).sessions.get(result.sessionId);
+      const session = (this.importService as any).sessions.get(
+        result.sessionId,
+      );
       const validatedRows = session?.validatedRows || [];
       const config = (this.importService as any).config;
 
@@ -833,9 +951,10 @@ export class {{ModuleName}}Controller {
         ),
         // Preview: Transform raw data to match frontend expectations
         preview: validatedRows.slice(0, 10).map((rowValidation, index) => {
-          const transformedData = config.rowTransformer && rowValidation.data
-            ? config.rowTransformer(rowValidation.data)
-            : rowValidation.data;
+          const transformedData =
+            config.rowTransformer && rowValidation.data
+              ? config.rowTransformer(rowValidation.data)
+              : rowValidation.data;
 
           return {
             rowNumber: rowValidation.row,
@@ -869,7 +988,7 @@ export class {{ModuleName}}Controller {
 
   /**
    * Execute import
-   * POST /{{moduleName}}/import/execute
+   * POST /budgets/import/execute
    */
   async executeImport(
     request: FastifyRequest<{
@@ -881,10 +1000,7 @@ export class {{ModuleName}}Controller {
     const userId = (request.user as any)?.id;
 
     try {
-      request.log.info(
-        { sessionId, options, userId },
-        'Executing import job',
-      );
+      request.log.info({ sessionId, options, userId }, 'Executing import job');
 
       // Execute import and get job result
       const result = await this.importService.executeImport({
@@ -906,7 +1022,7 @@ export class {{ModuleName}}Controller {
 
   /**
    * Get import job status
-   * GET /{{moduleName}}/import/status/:jobId
+   * GET /budgets/import/status/:jobId
    */
   async getImportStatus(
     request: FastifyRequest<{ Params: { jobId: string } }>,
@@ -936,5 +1052,4 @@ export class {{ModuleName}}Controller {
       );
     }
   }
-{{/if}}
 }

@@ -10,18 +10,18 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { FormsModule } from '@angular/forms';
 
-import { {{PascalCase}}Service } from '../services/{{kebabCase}}.service';
+import { BudgetService } from '../services/budgets.service';
 import {
   ImportOptions,
   ValidateImportResponse,
   ImportJob,
   ImportRowPreview,
-} from '../types/{{typesFileName}}';
+} from '../types/budgets.types';
 
 type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
 
 @Component({
-  selector: 'app-{{kebabCase}}-import-dialog',
+  selector: 'app-budgets-import-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -43,9 +43,9 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
             <mat-icon>upload_file</mat-icon>
           </div>
           <div>
-            <h2 class="tremor-dialog-title">Bulk Import {{title}}</h2>
+            <h2 class="tremor-dialog-title">Bulk Import Budgets</h2>
             <p class="tremor-dialog-subtitle">
-              \{{ getStepTitle() }}
+              {{ getStepTitle() }}
             </p>
           </div>
         </div>
@@ -136,7 +136,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
             @if (selectedFile()) {
               <div class="file-selected">
                 <mat-icon>description</mat-icon>
-                <span>\{{ selectedFile()?.name }}</span>
+                <span>{{ selectedFile()?.name }}</span>
                 <button mat-icon-button (click)="clearFile()">
                   <mat-icon>close</mat-icon>
                 </button>
@@ -173,25 +173,25 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
             <div class="grid grid-cols-4 gap-4 mb-6">
               <div class="stat-card">
                 <div class="stat-value">
-                  \{{ validationResult()?.summary?.totalRows }}
+                  {{ validationResult()?.summary?.totalRows }}
                 </div>
                 <div class="stat-label">Total Rows</div>
               </div>
               <div class="stat-card stat-success">
                 <div class="stat-value">
-                  \{{ validationResult()?.summary?.validRows }}
+                  {{ validationResult()?.summary?.validRows }}
                 </div>
                 <div class="stat-label">Valid</div>
               </div>
               <div class="stat-card stat-error">
                 <div class="stat-value">
-                  \{{ validationResult()?.summary?.invalidRows }}
+                  {{ validationResult()?.summary?.invalidRows }}
                 </div>
                 <div class="stat-label">Invalid</div>
               </div>
               <div class="stat-card stat-warning">
                 <div class="stat-value">
-                  \{{ validationResult()?.summary?.duplicates }}
+                  {{ validationResult()?.summary?.duplicates }}
                 </div>
                 <div class="stat-label">Duplicates</div>
               </div>
@@ -204,7 +204,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
             ) {
               <div class="preview-section">
                 <h4 class="text-sm font-semibold mb-3">
-                  Preview (First \{{ validationResult()!.preview.length }} rows)
+                  Preview (First {{ validationResult()!.preview.length }} rows)
                 </h4>
                 <div class="table-container">
                   <table
@@ -216,7 +216,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                     <ng-container matColumnDef="rowNumber">
                       <th mat-header-cell *matHeaderCellDef>Row</th>
                       <td mat-cell *matCellDef="let row">
-                        \{{ row.rowNumber }}
+                        {{ row.rowNumber }}
                       </td>
                     </ng-container>
 
@@ -225,7 +225,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                       <th mat-header-cell *matHeaderCellDef>Status</th>
                       <td mat-cell *matCellDef="let row">
                         <mat-chip [class]="getStatusChipClass(row.status)">
-                          \{{ row.status | titlecase }}
+                          {{ row.status | titlecase }}
                         </mat-chip>
                       </td>
                     </ng-container>
@@ -238,20 +238,30 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                           class="action-badge"
                           [class]="getActionBadgeClass(row.action)"
                         >
-                          \{{ row.action | titlecase }}
+                          {{ row.action | titlecase }}
                         </span>
                       </td>
                     </ng-container>
 
                     <!-- Data Columns -->
-                    {{#each displayColumns}}
-                    <ng-container matColumnDef="{{this.name}}">
-                      <th mat-header-cell *matHeaderCellDef>{{this.label}}</th>
+                    <ng-container matColumnDef="budget_code">
+                      <th mat-header-cell *matHeaderCellDef>Budget Code</th>
                       <td mat-cell *matCellDef="let row">
-                        \{{ row.{{this.name}} }}
+                        {{ row.budget_code }}
                       </td>
                     </ng-container>
-                    {{/each}}
+                    <ng-container matColumnDef="budget_type">
+                      <th mat-header-cell *matHeaderCellDef>Budget Type</th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ row.budget_type }}
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="budget_category">
+                      <th mat-header-cell *matHeaderCellDef>Budget Category</th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ row.budget_category }}
+                      </td>
+                    </ng-container>
 
                     <!-- Errors Column -->
                     <ng-container matColumnDef="errors">
@@ -263,7 +273,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                               <div class="error-item">
                                 <mat-icon class="error-icon">error</mat-icon>
                                 <span
-                                  >\{{ error.field }}: \{{ error.message }}</span
+                                  >{{ error.field }}: {{ error.message }}</span
                                 >
                               </div>
                             }
@@ -280,8 +290,8 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                                   >warning</mat-icon
                                 >
                                 <span
-                                  >\{{ warning.field }}:
-                                  \{{ warning.message }}</span
+                                  >{{ warning.field }}:
+                                  {{ warning.message }}</span
                                 >
                               </div>
                             }
@@ -351,13 +361,13 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
               <div class="summary-details">
                 <div class="summary-row">
                   <span>Will Create:</span>
-                  <strong>\{{
+                  <strong>{{
                     validationResult()!.summary.willCreate || 0
                   }}</strong>
                 </div>
                 <div class="summary-row">
                   <span>Will Update:</span>
-                  <strong>\{{
+                  <strong>{{
                     importOptions.updateExisting
                       ? validationResult()!.summary.duplicates
                       : 0
@@ -365,7 +375,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                 </div>
                 <div class="summary-row">
                   <span>Will Skip:</span>
-                  <strong>\{{
+                  <strong>{{
                     validationResult()!.summary.willSkip || 0
                   }}</strong>
                 </div>
@@ -379,7 +389,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
           <div class="step-content">
             <div class="progress-container">
               <mat-icon class="progress-icon spinning">sync</mat-icon>
-              <h3>Importing {{title}}...</h3>
+              <h3>Importing Budgets...</h3>
               <p class="text-gray-600">
                 Please wait while we process your data
               </p>
@@ -387,15 +397,13 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
               <div class="progress-stats">
                 <div class="stat">
                   <span class="stat-label">Progress</span>
-                  <span class="stat-value"
-                    >\{{ importJob()!.progress }}%</span
-                  >
+                  <span class="stat-value">{{ importJob()!.progress }}%</span>
                 </div>
                 <div class="stat">
                   <span class="stat-label">Processed</span>
                   <span class="stat-value"
-                    >\{{ importJob()!.processedRecords }} /
-                    \{{ importJob()!.totalRecords }}</span
+                    >{{ importJob()!.processedRecords }} /
+                    {{ importJob()!.totalRecords }}</span
                   >
                 </div>
               </div>
@@ -425,20 +433,20 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
               <div class="result-summary">
                 <div class="result-row">
                   <span>Total Rows:</span>
-                  <strong>\{{ importJob()!.totalRecords }}</strong>
+                  <strong>{{ importJob()!.totalRecords }}</strong>
                 </div>
                 <div class="result-row">
                   <span>Processed:</span>
-                  <strong>\{{ importJob()!.processedRecords }}</strong>
+                  <strong>{{ importJob()!.processedRecords }}</strong>
                 </div>
                 <div class="result-row success">
                   <span>Successful:</span>
-                  <strong>\{{ importJob()!.successCount }}</strong>
+                  <strong>{{ importJob()!.successCount }}</strong>
                 </div>
                 @if (importJob()!.failedCount > 0) {
                   <div class="result-row error">
                     <span>Failed:</span>
-                    <strong>\{{ importJob()!.failedCount }}</strong>
+                    <strong>{{ importJob()!.failedCount }}</strong>
                   </div>
                 }
               </div>
@@ -447,7 +455,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
                 <div class="errors-section mt-4">
                   <h4 class="text-sm font-semibold mb-2 text-red-600">Error</h4>
                   <div class="error-detail">
-                    \{{ importJob()!.error }}
+                    {{ importJob()!.error }}
                   </div>
                 </div>
               }
@@ -920,10 +928,10 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
     `,
   ],
 })
-export class {{PascalCase}}ImportDialogComponent {
-  private {{camelCase}}Service = inject({{PascalCase}}Service);
+export class BudgetImportDialogComponent {
+  private budgetsService = inject(BudgetService);
   private snackBar = inject(MatSnackBar);
-  private dialogRef = inject(MatDialogRef<{{PascalCase}}ImportDialogComponent>);
+  private dialogRef = inject(MatDialogRef<BudgetImportDialogComponent>);
 
   currentStep = signal<ImportStep>('upload');
   loading = signal<boolean>(false);
@@ -942,9 +950,9 @@ export class {{PascalCase}}ImportDialogComponent {
     'rowNumber',
     'status',
     'action',
-    {{#each displayColumns}}
-    '{{this.name}}',
-    {{/each}}
+    'budget_code',
+    'budget_type',
+    'budget_category',
     'errors',
   ];
 
@@ -1000,12 +1008,12 @@ export class {{PascalCase}}ImportDialogComponent {
   }
 
   downloadTemplate(format: 'csv' | 'excel'): void {
-    this.{{camelCase}}Service.downloadImportTemplate(format, true).subscribe({
+    this.budgetsService.downloadImportTemplate(format, true).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `{{kebabCase}}-import-template.${format === 'excel' ? 'xlsx' : 'csv'}`;
+        link.download = `budgets-import-template.${format === 'excel' ? 'xlsx' : 'csv'}`;
         link.click();
         window.URL.revokeObjectURL(url);
         this.snackBar.open(`Template downloaded successfully`, 'Close', {
@@ -1027,7 +1035,7 @@ export class {{PascalCase}}ImportDialogComponent {
     this.loading.set(true);
 
     try {
-      const response = await this.{{camelCase}}Service.validateImportFile(file);
+      const response = await this.budgetsService.validateImportFile(file);
 
       if (response?.success && response.data) {
         this.validationResult.set(response.data);
@@ -1052,7 +1060,7 @@ export class {{PascalCase}}ImportDialogComponent {
     this.loading.set(true);
 
     try {
-      const response = await this.{{camelCase}}Service.executeImport(
+      const response = await this.budgetsService.executeImport(
         validation.sessionId,
         this.importOptions,
       );
@@ -1074,7 +1082,7 @@ export class {{PascalCase}}ImportDialogComponent {
   private startPolling(jobId: string): void {
     this.pollingInterval = setInterval(async () => {
       try {
-        const response = await this.{{camelCase}}Service.getImportStatus(jobId);
+        const response = await this.budgetsService.getImportStatus(jobId);
 
         if (response?.success && response.data) {
           this.importJob.set(response.data);

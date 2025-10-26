@@ -49,6 +49,7 @@ import systemSettingsPlugin from '../modules/systemSettings';
 import themesPlugin from '../modules/themes';
 import userProfilePlugin from '../modules/user-profile/user-profile.plugin';
 import websocketPlugin from '../shared/websocket/websocket.plugin';
+import budgetsPlugin from '../modules/budgets';
 
 /**
  * Plugin registration group interface
@@ -328,6 +329,11 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
     name: 'business-features',
     description: 'Business feature modules',
     plugins: [
+      {
+        name: 'budgets',
+        plugin: budgetsPlugin,
+        required: true,
+      },
       {
         name: 'api-keys',
         plugin: apiKeysPlugin,

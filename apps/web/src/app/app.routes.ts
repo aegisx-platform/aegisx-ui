@@ -95,19 +95,6 @@ export const appRoutes: Route[] = [
       requiredPermissions: ['authors.read', 'admin.*'],
     },
   },
-  // Note: budgets route removed - use as development/testing module only
-  // To add budgets: uncomment and ensure budgets module is generated
-  // {
-  //   path: 'budgets',
-  //   loadChildren: () =>
-  //     import('./features/budgets/budgets.routes').then((m) => m.budgetsRoutes),
-  //   canActivate: [AuthGuard],
-  //   data: {
-  //     title: 'Budgets',
-  //     description: 'Budgets Management System',
-  //     requiredPermissions: ['budgets.read', 'admin.*'],
-  //   },
-  // },
   {
     path: 'pdf-templates',
     loadChildren: () =>
@@ -245,6 +232,17 @@ export const appRoutes: Route[] = [
       import('./dev-tools/pages/realtime-demo/realtime-demo.component').then(
         (m) => m.RealtimeDemoComponent,
       ),
+  },
+  {
+    path: 'budgets',
+    loadChildren: () =>
+      import('./features/budgets/budgets.routes').then((m) => m.budgetsRoutes),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Budgets',
+      description: 'Budgets Management System',
+      requiredPermissions: ['budgets.read', 'admin.*'],
+    },
   },
   {
     path: '**',

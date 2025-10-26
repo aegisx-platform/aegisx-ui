@@ -1,76 +1,65 @@
 // ===== CORE ENTITY TYPES =====
 
-export interface {{PascalCase}} {
-  {{#each columns}}
-  {{name}}{{#if isNullable}}?{{/if}}: {{#if (or (contains type 'timestamp') (eq type 'date'))}}string{{else if (eq type 'jsonb')}}Record<string, any>{{else if (eq type 'json')}}Record<string, any>{{else if (eq tsType 'Record<string, any>')}}Record<string, any>{{else if (contains tsType 'Record&lt;string, any&gt;')}}Record<string, any>{{else if (eq tsType 'string')}}string{{else if (eq tsType 'number')}}number{{else if (eq tsType 'boolean')}}boolean{{else}}string{{/if}}{{#if isNullable}} | null{{/if}};
-  {{/each}}
+export interface Budget {
+  id: number;
+  budget_code: string;
+  budget_type: string;
+  budget_category: string;
+  budget_description?: string | null;
+  is_active: boolean;
+  created_at: string;
 }
 
-export interface Create{{PascalCase}}Request {
-  {{#each columns}}
-  {{#unless isPrimaryKey}}
-  {{#unless (eq name 'created_at')}}
-  {{#unless (eq name 'updated_at')}}
-  {{name}}{{#if isNullable}}?{{/if}}: {{#if (or (contains type 'timestamp') (eq type 'date'))}}string{{else if (eq type 'jsonb')}}Record<string, any>{{else if (eq type 'json')}}Record<string, any>{{else if (eq tsType 'Record<string, any>')}}Record<string, any>{{else if (contains tsType 'Record&lt;string, any&gt;')}}Record<string, any>{{else if (eq tsType 'string')}}string{{else if (eq tsType 'number')}}number{{else if (eq tsType 'boolean')}}boolean{{else}}string{{/if}}{{#if isNullable}} | null{{/if}};
-  {{/unless}}
-  {{/unless}}
-  {{/unless}}
-  {{/each}}
+export interface CreateBudgetRequest {
+  budget_code: string;
+  budget_type: string;
+  budget_category: string;
+  budget_description?: string | null;
+  is_active: boolean;
 }
 
-export interface Update{{PascalCase}}Request {
-  {{#each columns}}
-  {{#unless isPrimaryKey}}
-  {{#unless (eq name 'created_at')}}
-  {{#unless (eq name 'updated_at')}}
-  {{name}}?: {{#if (or (contains type 'timestamp') (eq type 'date'))}}string{{else if (eq type 'jsonb')}}Record<string, any>{{else if (eq type 'json')}}Record<string, any>{{else if (eq tsType 'Record<string, any>')}}Record<string, any>{{else if (contains tsType 'Record&lt;string, any&gt;')}}Record<string, any>{{else if (eq tsType 'string')}}string{{else if (eq tsType 'number')}}number{{else if (eq tsType 'boolean')}}boolean{{else}}string{{/if}}{{#if isNullable}} | null{{/if}};
-  {{/unless}}
-  {{/unless}}
-  {{/unless}}
-  {{/each}}
+export interface UpdateBudgetRequest {
+  budget_code?: string;
+  budget_type?: string;
+  budget_category?: string;
+  budget_description?: string | null;
+  is_active?: boolean;
 }
 
 // ===== QUERY TYPES =====
 
-export interface List{{PascalCase}}Query {
+export interface ListBudgetQuery {
   // Pagination
   page?: number;
   limit?: number;
-  
+
   // Search
   search?: string;
-  
+
   // Sort
   sort?: string; // Multiple sort support: field1:desc,field2:asc
-  
+
   // Field selection
   fields?: string[]; // Array of field names to return
-  
+
   // Include related data
   include?: string | string[];
-  
+
   // Smart field-based filters
-  {{#each columns}}
-  {{#unless isPrimaryKey}}
-  {{#if (or (contains type 'timestamp') (eq type 'date'))}}
-  // Date/DateTime filtering for {{name}}
-  {{name}}?: string; // ISO date string for exact match
-  {{name}}_min?: string; // ISO date string for range start
-  {{name}}_max?: string; // ISO date string for range end
-  {{else if (eq tsType 'boolean')}}
-  // Boolean filtering for {{name}}
-  {{name}}?: boolean;
-  {{else if (eq tsType 'number')}}
-  // Numeric filtering for {{name}}
-  {{name}}?: number; // Exact match
-  {{name}}_min?: number; // Range start
-  {{name}}_max?: number; // Range end
-  {{else if (eq tsType 'string')}}
-  // String filtering for {{name}}
-  {{name}}?: string; // Exact match
-  {{/if}}
-  {{/unless}}
-  {{/each}}
+  // String filtering for budget_code
+  budget_code?: string; // Exact match
+  // String filtering for budget_type
+  budget_type?: string; // Exact match
+  // String filtering for budget_category
+  budget_category?: string; // Exact match
+  // String filtering for budget_description
+  budget_description?: string; // Exact match
+  // Boolean filtering for is_active
+  is_active?: boolean;
+  // Date/DateTime filtering for created_at
+  created_at?: string; // ISO date string for exact match
+  created_at_min?: string; // ISO date string for range start
+  created_at_max?: string; // ISO date string for range end
 }
 
 // ===== API RESPONSE TYPES =====
@@ -108,7 +97,6 @@ export interface PaginatedResponse<T> {
   };
 }
 
-{{#if includeEnhanced}}
 // ===== ENHANCED TYPES =====
 
 export interface DropdownOption {
@@ -135,7 +123,7 @@ export interface BulkOperationSummary {
 
 export interface BulkResponse {
   success: boolean;
-  data: {{PascalCase}}[];
+  data: Budget[];
   summary: BulkOperationSummary;
   message: string;
   meta?: {
@@ -145,9 +133,7 @@ export interface BulkResponse {
     environment: string;
   };
 }
-{{/if}}
 
-{{#if includeFull}}
 // ===== FULL PACKAGE TYPES =====
 
 export interface ValidationError {
@@ -172,7 +158,6 @@ export interface StatsResponse {
   // Additional stats can be added based on module needs
   [key: string]: number;
 }
-{{/if}}
 
 // ===== IMPORT TYPES =====
 
@@ -190,7 +175,7 @@ export interface ImportError {
   severity: 'error' | 'warning' | 'info';
 }
 
-export interface ImportRowPreview extends Partial<{{PascalCase}}> {
+export interface ImportRowPreview extends Partial<Budget> {
   rowNumber: number;
   status: 'valid' | 'warning' | 'error' | 'duplicate';
   action: 'create' | 'update' | 'skip';
@@ -251,26 +236,13 @@ export interface ImportJob {
 
 // ===== UTILITY TYPES =====
 
-export type {{PascalCase}}Field = keyof {{PascalCase}};
-export type {{PascalCase}}SortField = {{PascalCase}}Field;
+export type BudgetField = keyof Budget;
+export type BudgetSortField = BudgetField;
 
-export interface {{PascalCase}}ListOptions {
+export interface BudgetListOptions {
   page?: number;
   limit?: number;
   sort?: string;
-  fields?: {{PascalCase}}Field[];
+  fields?: BudgetField[];
   search?: string;
 }
-
-{{#unless includeEnhanced}}
-// ===== BASIC BULK OPERATIONS =====
-
-export interface BulkResponse {
-  success: boolean;
-  created?: number;
-  updated?: number;
-  deleted?: number;
-  errors?: any[];
-  message?: string;
-}
-{{/unless}}

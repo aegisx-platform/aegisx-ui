@@ -5,12 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-{{#if queryFilters.datetime}}
-import { DateRangeFilterComponent } from '../../../shared/components/date-range-filter/date-range-filter.component';
-{{/if}}
 
 @Component({
-  selector: 'app-{{kebabCaseHelper moduleName}}-list-filters',
+  selector: 'app-budgets-list-filters',
   standalone: true,
   imports: [
     CommonModule,
@@ -19,7 +16,7 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    {{#if queryFilters.datetime}}DateRangeFilterComponent,{{/if}}
+    
   ],
   template: `
     <!-- Filters Panel -->
@@ -49,8 +46,8 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
               type="text"
               [(ngModel)]="searchTerm"
               (keyup.enter)="onSearch()"
-              placeholder="Search by {{searchPlaceholder}}... (Press Enter or click Search)"
-              aria-label="Search {{lowercase moduleName}}"
+              placeholder="Search by ... (Press Enter or click Search)"
+              aria-label="Search budgets"
               [class.pr-10]="searchTerm"
               class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -80,7 +77,7 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
             class="flex-shrink-0 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
             aria-label="Search"
             [matTooltip]="
-              searchTerm.trim() ? 'Search {{lowercase moduleName}}' : 'Enter search term to search'
+              searchTerm.trim() ? 'Search budgets' : 'Enter search term to search'
             "
           >
             <mat-icon class="!text-lg !w-5 !h-5">search</mat-icon>
@@ -92,7 +89,7 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
             [class.opacity-50]="loading"
             [class.cursor-wait]="loading"
             aria-label="Refresh"
-            [matTooltip]="loading ? 'Loading...' : 'Reload all {{lowercase moduleName}}'"
+            [matTooltip]="loading ? 'Loading...' : 'Reload all budgets'"
           >
             <mat-icon class="!text-lg !w-5 !h-5">refresh</mat-icon>
           </button>
@@ -150,7 +147,7 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
             <mat-icon class="!text-base !w-4 !h-4">tune</mat-icon>
             Advanced Filters
             @if (activeFilterCount > 0) {
-              <span class="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">\{{ activeFilterCount }}</span>
+              <span class="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">{{ activeFilterCount }}</span>
             }
           </button>
 
@@ -184,32 +181,71 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
       @if (showAdvancedFilters()) {
         <div class="mt-4 pt-4 border-t border-gray-200">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {{#each filters.string}}
-            <!-- {{this.label}} Filter -->
+            <!-- Budget Code Filter -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >{{this.label}}</label
+                >Budget Code</label
               >
               <input
                 type="text"
-                [(ngModel)]="{{this.name}}Filter"
-                (ngModelChange)="{{this.name}}FilterChange.emit($event)"
+                [(ngModel)]="budget_codeFilter"
+                (ngModelChange)="budget_codeFilterChange.emit($event)"
                 (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="{{this.placeholder}}"
+                placeholder="Enter budget code"
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            {{/each}}
-
-            {{#each filters.boolean}}
-            <!-- {{this.label}} Filter -->
+            <!-- Budget Type Filter -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >{{this.label}}</label
+                >Budget Type</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="budget_typeFilter"
+                (ngModelChange)="budget_typeFilterChange.emit($event)"
+                (keyup.enter)="applyFiltersClicked.emit()"
+                placeholder="Enter budget type"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <!-- Budget Category Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                >Budget Category</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="budget_categoryFilter"
+                (ngModelChange)="budget_categoryFilterChange.emit($event)"
+                (keyup.enter)="applyFiltersClicked.emit()"
+                placeholder="Enter budget category"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <!-- Budget Description Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                >Budget Description</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="budget_descriptionFilter"
+                (ngModelChange)="budget_descriptionFilterChange.emit($event)"
+                (keyup.enter)="applyFiltersClicked.emit()"
+                placeholder="Enter budget description"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Is Active Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                >Is Active</label
               >
               <select
-                [(ngModel)]="{{this.name}}Filter"
-                (ngModelChange)="{{this.name}}FilterChange.emit($event)"
+                [(ngModel)]="is_activeFilter"
+                (ngModelChange)="is_activeFilterChange.emit($event)"
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option [ngValue]="undefined">All</option>
@@ -217,33 +253,8 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
                 <option [ngValue]="false">No</option>
               </select>
             </div>
-            {{/each}}
 
-            {{#each filters.date}}
-            <!-- {{this.label}} Filter - Full Width -->
-            <div class="md:col-span-3">
-              <app-date-range-filter
-                fieldName="{{this.name}}"
-                label="{{this.label}}"
-                [isDateTime]="false"
-                (filterChange)="onDateFilterChange($event)"
-              >
-              </app-date-range-filter>
-            </div>
-            {{/each}}
 
-            {{#each filters.datetime}}
-            <!-- {{this.label}} Filter - Full Width -->
-            <div class="md:col-span-3">
-              <app-date-range-filter
-                fieldName="{{this.name}}"
-                label="{{this.label}}"
-                [isDateTime]="true"
-                (filterChange)="onDateFilterChange($event)"
-              >
-              </app-date-range-filter>
-            </div>
-            {{/each}}
           </div>
 
           <!-- Apply Filters Button -->
@@ -268,7 +279,7 @@ import { DateRangeFilterComponent } from '../../../shared/components/date-range-
   `,
   styles: [],
 })
-export class {{pascalCaseHelper moduleName}}ListFiltersComponent {
+export class BudgetsListFiltersComponent {
   @Input({ required: true }) activeFilterCount!: number;
   @Input() loading = false;
 
@@ -281,17 +292,22 @@ export class {{pascalCaseHelper moduleName}}ListFiltersComponent {
     'all' | 'active' | 'unavailable'
   >();
 
-  {{#each filters.string}}
-  // {{this.label}} filter
-  @Input() {{this.name}}Filter = '';
-  @Output() {{this.name}}FilterChange = new EventEmitter<string>();
-  {{/each}}
+  // Budget Code filter
+  @Input() budget_codeFilter = '';
+  @Output() budget_codeFilterChange = new EventEmitter<string>();
+  // Budget Type filter
+  @Input() budget_typeFilter = '';
+  @Output() budget_typeFilterChange = new EventEmitter<string>();
+  // Budget Category filter
+  @Input() budget_categoryFilter = '';
+  @Output() budget_categoryFilterChange = new EventEmitter<string>();
+  // Budget Description filter
+  @Input() budget_descriptionFilter = '';
+  @Output() budget_descriptionFilterChange = new EventEmitter<string>();
 
-  {{#each filters.boolean}}
-  // {{this.label}} filter
-  @Input() {{this.name}}Filter: boolean | undefined = undefined;
-  @Output() {{this.name}}FilterChange = new EventEmitter<boolean | undefined>();
-  {{/each}}
+  // Is Active filter
+  @Input() is_activeFilter: boolean | undefined = undefined;
+  @Output() is_activeFilterChange = new EventEmitter<boolean | undefined>();
 
   // Event outputs
   @Output() searchClicked = new EventEmitter<void>();
