@@ -484,6 +484,186 @@ pnpm run db:migrate && pnpm run db:seed
 - **[📋 All Commands Reference](./docs/references/claude-commands.md)** - Complete shell command list
 - **[🤖 CRUD Generator](./docs/crud-generator/)** - Automatic CRUD API generation with error handling & validation
 
+## 📝 Recent Development Sessions
+
+### Session 40 (2025-10-26): CRUD Generator Documentation & WebSocket Events Analysis
+
+**Completed Work:**
+
+1. **📚 Complete CRUD Generator Documentation Package** (3,320+ lines)
+   - Created `docs/crud-generator/CHANGELOG.md` - Version history & migration guides
+   - Created `docs/crud-generator/EVENTS_GUIDE.md` - Complete WebSocket events guide (1,018 lines)
+   - Created `docs/crud-generator/IMPORT_GUIDE.md` - Import functionality & v2.0.1 fixes (1,279 lines)
+   - Created `docs/crud-generator/QUICK_COMMANDS.md` - CLI reference (747 lines)
+   - Updated README files for better navigation and feature highlights
+
+2. **🔍 WebSocket Events Gap Analysis**
+   - Backend events: ✅ 100% complete (`--with-events` flag fully implemented)
+   - Frontend infrastructure: ✅ WebSocketService & BaseRealtimeStateManager exist
+   - **Gap identified**: Frontend templates don't generate WebSocket integration code
+   - Created `docs/crud-generator/WEBSOCKET_IMPLEMENTATION_SPEC.md` with 4-phase implementation plan
+
+3. **📋 Future Roadmap**
+   - Phase 1: State Manager Template (4-6h)
+   - Phase 2: List Component Integration (4-6h)
+   - Phase 3: Import Dialog Real-Time (3-4h)
+   - Phase 4: Backend Testing (2-3h)
+
+### Session 39 (2025-10-26): Import Dialog Template Fix & NPM Publish
+
+**Completed Work:**
+
+1. **🐛 Fixed Import Dialog Type Mismatch**
+   - **Problem**: Import dialog template used `progress.percentage` but BaseImportService returns flat `progress` number
+   - **Fix**: Updated `templates/frontend/v2/import-dialog.hbs` to use correct response structure
+   - **Changes**:
+
+     ```typescript
+     // Before (incorrect)
+     progress: data.progress.percentage;
+     (summary.created, summary.updated, summary.failed);
+
+     // After (correct - matching BaseImportService)
+     progress: data.progress; // Direct number 0-100
+     successCount: data.successCount;
+     errorCount: data.errorCount;
+     ```
+
+2. **📦 Published to NPM Registry**
+   - Package: `@aegisx/crud-generator@2.0.1`
+   - Registry: https://registry.npmjs.org/
+   - Status: ✅ Successfully published
+   - Contains: Import dialog template fix
+
+3. **🔄 Git Subtree Sync**
+   - Successfully synced `libs/aegisx-crud-generator/` to separate repository
+   - Used: `./libs/aegisx-crud-generator/sync-to-repo.sh develop`
+
+## 🚨 CRITICAL: CRUD Generator Git Workflow
+
+**⚠️ libs/aegisx-crud-generator/ is synced to separate repository**
+
+**MANDATORY Steps After Making Changes to CRUD Generator:**
+
+```bash
+# 1. Commit changes in main monorepo
+git add libs/aegisx-crud-generator/
+git commit -m "docs(crud-generator): update documentation"
+
+# 2. ⚠️ CRITICAL: Sync to separate crud-generator repository
+./libs/aegisx-crud-generator/sync-to-repo.sh develop
+
+# 3. Push main monorepo
+git push origin develop
+
+# 4. (Optional) Publish to NPM if package.json version changed
+cd libs/aegisx-crud-generator
+npm publish
+```
+
+**Git Subtree Commands:**
+
+```bash
+# Sync to separate repository (most common)
+./libs/aegisx-crud-generator/sync-to-repo.sh develop
+
+# Manual sync (if script unavailable)
+git subtree push --prefix=libs/aegisx-crud-generator \
+  git@github.com:aegisx-platform/crud-generator.git develop
+
+# Pull updates from separate repository (rare)
+git subtree pull --prefix=libs/aegisx-crud-generator \
+  git@github.com:aegisx-platform/crud-generator.git develop --squash
+```
+
+**⚠️ DO NOT FORGET** the git subtree push or changes won't appear in the separate crud-generator repository!
+
+**Why This Matters:**
+
+- `libs/aegisx-crud-generator/` is published as standalone NPM package
+- Separate repository: https://github.com/aegisx-platform/crud-generator
+- Main monorepo is source of truth, must sync to separate repo
+- NPM package is built from separate repository
+
+## 🤖 CRUD Generator Quick Commands
+
+### Basic Generation
+
+```bash
+# Generate basic CRUD (no import, no events)
+pnpm aegisx-crud books --package
+
+# Generate with import functionality
+pnpm aegisx-crud budgets --package --with-import
+
+# Generate with WebSocket events
+pnpm aegisx-crud notifications --package --with-events
+
+# Generate with both import and events
+pnpm aegisx-crud products --package --with-import --with-events
+```
+
+### Advanced Options
+
+```bash
+# Dry run (preview without creating files)
+pnpm aegisx-crud articles --package --dry-run
+
+# Force overwrite existing files
+pnpm aegisx-crud users --package --force
+
+# Combine all flags
+pnpm aegisx-crud inventory --package --with-import --with-events --force
+```
+
+### Common Workflows
+
+**1. New Feature with Import:**
+
+```bash
+# Generate CRUD with import dialog
+pnpm aegisx-crud budgets --package --with-import
+
+# Files created:
+# - Backend: controller, service, repository, routes, schemas, tests
+# - Frontend: list, create/edit/view dialogs, import dialog, service, types
+# - Database: Migration file
+```
+
+**2. Real-Time Feature with Events:**
+
+```bash
+# Generate CRUD with WebSocket events
+pnpm aegisx-crud notifications --package --with-events
+
+# Backend includes:
+# - EventService integration
+# - Event emission on create/update/delete
+# - Bulk operation events (bulk_started, bulk_progress, bulk_completed)
+```
+
+**3. Regenerate Existing Feature:**
+
+```bash
+# Review changes first
+pnpm aegisx-crud books --package --dry-run
+
+# Force regenerate if satisfied
+pnpm aegisx-crud books --package --force
+```
+
+### Flag Reference
+
+| Flag            | Description                                | Use Case                          |
+| --------------- | ------------------------------------------ | --------------------------------- |
+| `--package`     | Use `.crudgen.json` config                 | ✅ ALWAYS use this flag           |
+| `--with-import` | Add import dialog + backend import service | Bulk data import features         |
+| `--with-events` | Add WebSocket real-time events             | Live updates, notifications       |
+| `--dry-run`     | Preview changes without creating files     | Review before generation          |
+| `--force`       | Overwrite existing files                   | Regenerate after template updates |
+
+**📚 Complete Documentation:** See `docs/crud-generator/` for comprehensive guides
+
 ### CI/CD & DevOps
 
 - **[🔄 Git Flow & Release](./docs/infrastructure/git-flow-release-guide.md)** - Branch strategy & release process

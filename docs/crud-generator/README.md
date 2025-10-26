@@ -2,13 +2,37 @@
 
 > **Automatic CRUD API generation with built-in error handling and validation**
 
+## 🎉 What's New in v2.0.1
+
+**Import Dialog Type Alignment Fix** - Generated import dialogs now have correct TypeScript interfaces matching BaseImportService API responses:
+
+- ✅ Fixed `progress` property (direct number 0-100, not nested object)
+- ✅ Fixed summary properties (`successCount`, `failedCount` - flat structure)
+- ✅ Fixed error handling (single `error` string, not array)
+- ✅ Removed unsupported 'partial' status
+
+**Migration**: Regenerate any modules using `--with-import` flag to get updated templates.
+
+See [CHANGELOG.md](./CHANGELOG.md) for complete version history.
+
+---
+
 ## 🚀 Quick Start
 
 ```bash
-# Generate a CRUD module for your table
-node libs/aegisx-crud-generator/bin/cli.js generate {table_name} --package full --no-roles --force
+# Interactive mode (recommended)
+pnpm run crud-gen
 
-# Example
+# Direct command with standard CRUD
+pnpm run crud-gen products --entity Product
+
+# Enterprise package (with events & import)
+pnpm run crud-gen products --entity Product --package enterprise
+
+# Full package (all features)
+pnpm run crud-gen products --entity Product --package full
+
+# Legacy command (still works)
 node libs/aegisx-crud-generator/bin/cli.js generate authors --package full --no-roles --force
 ```
 
@@ -16,28 +40,60 @@ node libs/aegisx-crud-generator/bin/cli.js generate authors --package full --no-
 
 ### Essential Guides (Start Here)
 
-1. **[Error Handling Guide](./ERROR_HANDLING_GUIDE.md)** ⭐ **Important!**
+1. **[Quick Commands Reference](./QUICK_COMMANDS.md)** ⭐ **Start Here!**
+   - All CLI flags and options
+   - Package comparison table
+   - Common workflows and examples
+   - Fast reference for daily use
+
+2. **[User Guide](./USER_GUIDE.md)** ⭐ **Complete Walkthrough**
+   - Feature-by-feature documentation
+   - Step-by-step tutorials
+   - Best practices and patterns
+   - Enterprise and Full package features
+
+3. **[Events Guide](./EVENTS_GUIDE.md)** - WebSocket Real-Time Events
+   - What is `--with-events`
+   - Backend event emission (EventService, CrudEventHelper)
+   - Frontend integration patterns
+   - Testing and troubleshooting
+
+4. **[Import Guide](./IMPORT_GUIDE.md)** - Bulk Excel/CSV Import
+   - What is `--with-import`
+   - 5-step import workflow
+   - BaseImportService integration
+   - v2.0.1 type alignment fixes
+   - Session management and progress tracking
+
+5. **[Error Handling Guide](./ERROR_HANDLING_GUIDE.md)** - Validation & Errors
    - Automatic error detection from database schema
    - Error code conventions and status codes (409 vs 422)
    - Generated error types and response formats
    - Troubleshooting common issues
 
-2. **[Validation Reference](./VALIDATION_REFERENCE.md)** ⭐ **Important!**
+6. **[Validation Reference](./VALIDATION_REFERENCE.md)** - Field Validations
    - Auto-detected validations (email, date, phone, etc.)
    - Field name patterns that trigger validations
    - Complete validation rules reference
    - Testing strategies
 
-3. **[Testing Guide](./TESTING_GUIDE.md)** ⭐ **Important!**
+7. **[Testing Guide](./TESTING_GUIDE.md)** - Quality Assurance
    - Test setup and configuration
    - Unit, integration, and E2E testing strategies
    - Validation and error handling test examples
    - Test utilities and best practices
 
+8. **[CHANGELOG](./CHANGELOG.md)** - Version History
+   - v2.0.1 import dialog fixes
+   - v2.0.0 complete rewrite
+   - Migration guides
+   - Future roadmap
+
 ### Coming Soon
 
-4. **Type Mapping Guide** - PostgreSQL to TypeScript/TypeBox mapping
-5. **Best Practices** - Database schema design and naming conventions
+9. **Type Mapping Guide** - PostgreSQL to TypeScript/TypeBox mapping
+10. **Best Practices** - Database schema design and naming conventions
+11. **API Reference** - Complete API documentation
 
 ---
 
@@ -45,7 +101,7 @@ node libs/aegisx-crud-generator/bin/cli.js generate authors --package full --no-
 
 When you generate a CRUD module, you automatically get:
 
-### ✅ Complete CRUD Operations
+### ✅ Complete CRUD Operations (All Packages)
 
 - **Create** - POST with validation
 - **Read** - GET by ID with includes
@@ -53,7 +109,7 @@ When you generate a CRUD module, you automatically get:
 - **Update** - PUT with validation
 - **Delete** - DELETE with FK reference checking
 
-### ✅ Automatic Error Handling
+### ✅ Automatic Error Handling (All Packages)
 
 - **409 Conflict** - Duplicate unique values
 - **422 Unprocessable Entity** - Business rule violations
@@ -61,21 +117,37 @@ When you generate a CRUD module, you automatically get:
 - **Type-safe error codes** - TypeScript enums
 - **Error message mapping** - Single source of truth
 
-### ✅ Enterprise Features (Full Package)
+### ✅ Enterprise Features (Enterprise & Full Packages)
 
+- **WebSocket Events** (`--with-events`) - Real-time CRUD event emission
+- **Bulk Import** (`--with-import`) - Excel/CSV import with 5-step wizard
 - **Dropdown** - GET /dropdown for UI components
 - **Bulk Operations** - POST/PUT/DELETE /bulk
 - **Export** - GET /export (CSV, Excel, PDF)
 - **Statistics** - GET /stats
+
+### ✅ Full Package Features (Full Package Only)
+
+- **Audit Trail** (`--with-audit`) - Complete change history
+- **Soft Delete** (`--with-soft-delete`) - Trash and restore functionality
 - **Validation** - POST /validate (pre-save)
 - **Uniqueness Check** - GET /check/:field
 
-### ✅ Type Safety
+### ✅ Type Safety (All Packages)
 
 - **PostgreSQL Schema** → TypeBox schemas
 - **TypeBox** → TypeScript types
 - **TypeScript** → OpenAPI documentation
 - **No type assertions** - Fully type-safe end-to-end
+
+### ✅ Code Quality (All Packages)
+
+- **BaseRepository** - Consistent data access patterns
+- **BaseService** - Business logic layer with validation
+- **BaseController** - Route handlers with error handling
+- **BaseImportService** - Standardized import workflow (with `--with-import`)
+- **EventService** - WebSocket event management (with `--with-events`)
+- **Angular Signals** - Modern reactive state management (frontend)
 
 ---
 
@@ -319,13 +391,19 @@ describe('Authors Validation', () => {
 
 ## 📖 Documentation Index
 
-| Document                                          | Description                       | Priority |
-| ------------------------------------------------- | --------------------------------- | -------- |
-| [Error Handling Guide](./ERROR_HANDLING_GUIDE.md) | Complete error handling reference | ⭐ High  |
-| [Validation Reference](./VALIDATION_REFERENCE.md) | All auto-detected validations     | ⭐ High  |
-| [Testing Guide](./TESTING_GUIDE.md)               | Comprehensive testing strategies  | ⭐ High  |
-| Type Mapping Guide                                | PostgreSQL to TypeScript mapping  | Medium   |
-| Best Practices                                    | Database design guidelines        | Medium   |
+| Document                                          | Description                              | Priority |
+| ------------------------------------------------- | ---------------------------------------- | -------- |
+| [Quick Commands Reference](./QUICK_COMMANDS.md)   | Fast CLI reference for daily use         | ⭐ High  |
+| [User Guide](./USER_GUIDE.md)                     | Complete feature walkthrough             | ⭐ High  |
+| [Events Guide](./EVENTS_GUIDE.md)                 | WebSocket real-time events               | ⭐ High  |
+| [Import Guide](./IMPORT_GUIDE.md)                 | Bulk Excel/CSV import                    | ⭐ High  |
+| [CHANGELOG](./CHANGELOG.md)                       | Version history & migration              | ⭐ High  |
+| [Error Handling Guide](./ERROR_HANDLING_GUIDE.md) | Error detection & handling               | High     |
+| [Validation Reference](./VALIDATION_REFERENCE.md) | Field validation rules                   | High     |
+| [Testing Guide](./TESTING_GUIDE.md)               | Testing strategies                       | High     |
+| Type Mapping Guide                                | PostgreSQL to TypeScript (coming soon)   | Medium   |
+| Best Practices                                    | Database design guidelines (coming soon) | Medium   |
+| API Reference                                     | Complete API docs (coming soon)          | Medium   |
 
 ---
 
@@ -451,5 +529,14 @@ After generating a CRUD module, verify:
 
 ---
 
-**Last Updated:** 2025-01-22
-**Generator Version:** 1.0.0
+## 🔗 Quick Links
+
+- **[Quick Commands](./QUICK_COMMANDS.md)** - CLI reference
+- **[Events Guide](./EVENTS_GUIDE.md)** - Real-time WebSocket events
+- **[Import Guide](./IMPORT_GUIDE.md)** - Bulk import with Excel/CSV
+- **[CHANGELOG](./CHANGELOG.md)** - Version history
+
+---
+
+**Last Updated:** 2025-10-26
+**Generator Version:** 2.0.1

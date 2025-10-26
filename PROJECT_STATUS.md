@@ -1,7 +1,7 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-10-26 (Session 39 - Import Dialog Template Fix & npm Publish)
-**Current Task:** ✅ Import Dialog Template Fixed & Published to npm v2.0.1
+**Last Updated:** 2025-10-26 (Session 40 - CRUD Generator Documentation & WebSocket Events Analysis)
+**Current Task:** ✅ Complete Documentation Package Created (3,320+ lines) & WebSocket Implementation Spec Ready
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 
 ## 🏗️ Project Overview
@@ -11,6 +11,290 @@ AegisX Starter - Enterprise-ready monorepo with Angular 19, Fastify, PostgreSQL
 > 📌 **Session Recovery Document** - If session is lost, read this file to continue from where we left off.
 
 ## 🚀 Current Session Progress
+
+### Session Overview
+
+- **Date**: 2025-10-26 (Session 40)
+- **Main Focus**: ✅ Complete CRUD Generator Documentation & Analyze WebSocket Events Gap
+- **Status**: Documentation complete (3,320+ lines), WebSocket implementation spec ready, pending commit & git subtree sync
+
+### 🎯 Session 40 Tasks
+
+#### 1. **✅ COMPLETED: Complete CRUD Generator Documentation Package**
+
+**Goal**: Create comprehensive documentation for `@aegisx/crud-generator` to prevent future mistakes and provide clear guidance.
+
+**Documentation Created** (3,320+ lines total):
+
+1. **`docs/crud-generator/CHANGELOG.md`** (276 lines)
+   - Complete version history from v1.0.0 to v2.0.1
+   - Breaking changes documentation
+   - Migration guides for each version
+   - Future roadmap (v2.1.0, v2.2.0)
+   - Upgrade instructions
+
+2. **`docs/crud-generator/EVENTS_GUIDE.md`** (1,018 lines)
+   - Complete guide for `--with-events` flag
+   - Backend event emission patterns
+   - Event structure and lifecycle
+   - CrudEventHelper API reference
+   - Real-time features implementation
+   - WebSocket integration patterns
+   - Testing event-driven features
+
+3. **`docs/crud-generator/IMPORT_GUIDE.md`** (1,279 lines)
+   - Complete guide for `--with-import` flag
+   - v2.0.1 type fixes documentation
+   - Import workflow (upload → validate → review → execute)
+   - Backend import service patterns
+   - Frontend import dialog implementation
+   - Session-based review system
+   - Error handling and recovery
+   - Performance optimization
+
+4. **`docs/crud-generator/QUICK_COMMANDS.md`** (747 lines)
+   - Fast CLI reference for daily use
+   - All available flags and options
+   - Common workflows and use cases
+   - Package comparison table
+   - Troubleshooting guide
+   - Examples for every scenario
+
+**Documentation Updated**:
+
+1. **`docs/crud-generator/README.md`** (542 lines)
+   - Added v2.0.1 highlights section
+   - Links to all 8 documentation guides
+   - Updated feature list with import and events
+   - Better navigation structure
+
+2. **`libs/aegisx-crud-generator/README.md`** (167 lines)
+   - v2.0.1 release highlights
+   - Cross-reference to main documentation
+   - Quick start examples
+
+3. **`libs/aegisx-crud-generator/docs/README.md`** (475 lines)
+   - Session 39 summary
+   - Import dialog fix notes
+   - Updated links
+
+**Impact**:
+
+- ✅ Complete documentation ecosystem for CRUD generator
+- ✅ Clear guidance on all flags: `--package`, `--with-import`, `--with-events`, `--force`, `--dry-run`
+- ✅ Prevents future mistakes by documenting v2.0.1 fixes
+- ✅ Fast reference available via QUICK_COMMANDS.md
+- ✅ Professional-grade documentation suitable for public npm package
+
+#### 2. **✅ COMPLETED: WebSocket Events Gap Analysis**
+
+**Goal**: Review pending "event" work in crud-generator and create implementation plan.
+
+**Analysis Results**:
+
+**Backend Events** - ✅ 100% Complete:
+
+- `--with-events` flag fully implemented
+- EventService integration in generated services
+- CrudEventHelper for consistent event emission
+- Event structure: `{ feature, entity, action, data, meta }`
+- Events for: created, updated, deleted, bulk operations
+- Bulk events: bulk_started, bulk_progress, bulk_completed
+
+**Frontend Infrastructure** - ✅ Exists:
+
+- `WebSocketService` - Socket.io client with reconnection
+- `BaseRealtimeStateManager` - Entity state management with optimistic updates
+- Feature-based event subscriptions
+- Conflict detection and resolution
+
+**Gap Identified** - ❌ Frontend Templates Missing:
+
+- Frontend templates don't generate WebSocket integration code
+- No state manager template for real-time features
+- List components don't subscribe to events
+- Import dialogs use polling instead of WebSocket
+
+**Specification Created**:
+
+Created **`docs/crud-generator/WEBSOCKET_IMPLEMENTATION_SPEC.md`** with 4-phase implementation plan:
+
+**Phase 1: State Manager Template** (4-6 hours)
+
+- Create `templates/frontend/v2/state-manager.hbs`
+- Generate `[entity]-state-manager.ts` class extending BaseRealtimeStateManager
+- Auto-subscribe to entity events
+- Manage local state with optimistic updates
+
+**Phase 2: List Component Integration** (4-6 hours)
+
+- Update `list-component-v2.hbs` to inject state manager
+- Add real-time notification UI
+- Auto-reload on create/update/delete events
+- Show toast notifications for changes
+
+**Phase 3: Import Dialog Real-Time** (3-4 hours)
+
+- Replace polling with WebSocket in `import-dialog.hbs`
+- Subscribe to bulk_progress events
+- Real-time progress updates
+- Live error reporting
+
+**Phase 4: Backend Testing** (2-3 hours)
+
+- Update `test.hbs` to include event emission tests
+- Verify events are emitted correctly
+- Test event payloads match specification
+
+**Total Estimated Effort**: 13-17 hours across 4 sessions
+
+**Impact**:
+
+- ✅ Clear roadmap for completing WebSocket frontend integration
+- ✅ Detailed specifications for each phase
+- ✅ Code examples and patterns documented
+- ✅ Ready for implementation in future sessions
+
+#### 3. **✅ COMPLETED: Update CLAUDE.md with Git Workflow**
+
+**Goal**: Document Session 39, Session 40, and critical git subtree workflow to prevent future mistakes.
+
+**Sections Added to CLAUDE.md**:
+
+1. **Recent Development Sessions Section**:
+   - Session 40 summary (documentation & WebSocket analysis)
+   - Session 39 summary (import dialog fix & npm publish)
+   - Detailed work completed in each session
+   - Future roadmap
+
+2. **🚨 CRITICAL: CRUD Generator Git Workflow Section**:
+   - Mandatory steps after making changes to `libs/aegisx-crud-generator/`
+   - Git subtree push commands
+   - Warning about forgetting sync
+   - Why it matters (standalone npm package)
+
+3. **🤖 CRUD Generator Quick Commands Section**:
+   - Basic generation examples
+   - Advanced options with all flags
+   - Common workflows (new feature, real-time, regenerate)
+   - Flag reference table
+
+**Impact**:
+
+- ✅ Session 39 and 40 work documented for future reference
+- ✅ Git subtree workflow prominently displayed with warnings
+- ✅ Quick commands available in main CLAUDE.md for easy access
+- ✅ Prevents forgetting critical sync step
+
+#### 4. **⏳ IN PROGRESS: Update PROJECT_STATUS.md**
+
+**Goal**: Document Session 40 work for session recovery.
+
+**Status**: Currently being updated with all Session 40 details.
+
+#### 5. **⏳ PENDING: Commit Documentation Changes**
+
+**Files to Commit**:
+
+- `CLAUDE.md` (updated with sessions & git workflow)
+- `PROJECT_STATUS.md` (Session 40 update)
+- `docs/crud-generator/CHANGELOG.md` (new)
+- `docs/crud-generator/EVENTS_GUIDE.md` (new)
+- `docs/crud-generator/IMPORT_GUIDE.md` (new)
+- `docs/crud-generator/QUICK_COMMANDS.md` (new)
+- `docs/crud-generator/WEBSOCKET_IMPLEMENTATION_SPEC.md` (new)
+- `docs/crud-generator/README.md` (updated)
+- `libs/aegisx-crud-generator/README.md` (updated)
+- `libs/aegisx-crud-generator/docs/README.md` (updated)
+
+**Commit Message**:
+
+```
+docs(crud-generator): add comprehensive documentation package and WebSocket implementation spec
+
+Session 40 Work:
+- Add CHANGELOG.md with complete version history
+- Add EVENTS_GUIDE.md (1,018 lines) - Complete WebSocket events guide
+- Add IMPORT_GUIDE.md (1,279 lines) - Import functionality & v2.0.1 fixes
+- Add QUICK_COMMANDS.md (747 lines) - CLI reference for daily use
+- Add WEBSOCKET_IMPLEMENTATION_SPEC.md - 4-phase implementation plan
+- Update README files with v2.0.1 highlights and navigation
+- Update CLAUDE.md with Session 39/40 summaries and git workflow
+- Update PROJECT_STATUS.md for Session 40
+
+Total: 3,320+ lines of documentation created
+Gap Analysis: Backend events 100%, frontend templates 0%
+Next Steps: Implement WebSocket frontend templates (13-17 hours)
+```
+
+#### 6. **⏳ PENDING: Git Subtree Push to crud-generator Repository**
+
+**Command**:
+
+```bash
+./libs/aegisx-crud-generator/sync-to-repo.sh develop
+```
+
+**Why Critical**:
+
+- `libs/aegisx-crud-generator/` is synced to separate repository
+- Separate repo is source for npm package
+- Without sync, documentation won't appear in standalone repository
+
+#### 7. **⏳ PENDING: Push to Main Repository Remote**
+
+**Command**:
+
+```bash
+git push origin develop
+```
+
+### 📊 Session 40 Summary
+
+**What We Accomplished**:
+
+1. ✅ Created complete documentation package (3,320+ lines)
+   - CHANGELOG.md - Version history and migration guides
+   - EVENTS_GUIDE.md - Complete WebSocket events documentation
+   - IMPORT_GUIDE.md - Import functionality comprehensive guide
+   - QUICK_COMMANDS.md - Fast CLI reference
+   - WEBSOCKET_IMPLEMENTATION_SPEC.md - Future implementation plan
+
+2. ✅ Analyzed WebSocket events gap
+   - Backend: 100% complete
+   - Frontend infrastructure: Exists
+   - Frontend templates: 0% (gap identified)
+   - Created 4-phase implementation spec (13-17 hours)
+
+3. ✅ Updated CLAUDE.md with critical workflows
+   - Session 39 and 40 summaries
+   - Git subtree workflow with warnings
+   - CRUD generator quick commands
+
+4. ⏳ Documentation ready for commit and git subtree sync
+
+**What's Next** (Current Session):
+
+- ⏳ Finish PROJECT_STATUS.md update
+- ⏳ Commit all documentation changes
+- ⏳ Git subtree push to crud-generator repository
+- ⏳ Push to main repository remote
+
+**Future Sessions** (WebSocket Frontend Implementation):
+
+- Session 41: Phase 1 - State Manager Template (4-6h)
+- Session 42: Phase 2 - List Component Integration (4-6h)
+- Session 43: Phase 3 - Import Dialog Real-Time (3-4h)
+- Session 44: Phase 4 - Backend Testing (2-3h)
+
+**Time Spent**: ~2-3 hours
+**Lines of Documentation**: 3,320+ lines
+**Complexity**: Medium (comprehensive documentation + gap analysis)
+**Quality**: Professional-grade documentation suitable for public npm package
+
+---
+
+## 🎯 Session 39 Tasks (COMPLETED - Previous Session)
 
 ### Session Overview
 
