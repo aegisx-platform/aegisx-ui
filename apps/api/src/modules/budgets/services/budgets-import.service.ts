@@ -27,11 +27,13 @@ export class BudgetsImportService extends BaseImportService<Budgets> {
   constructor(
     knex: Knex,
     private budgetsRepository: BudgetsRepository,
+    eventService?: any, // EventService for WebSocket progress updates
   ) {
     super(
       knex,
       BudgetsImportService.createConfig(budgetsRepository),
       'budgets',
+      eventService, // Pass eventService to BaseImportService for progress events
     );
   }
 

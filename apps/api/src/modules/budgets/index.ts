@@ -41,6 +41,7 @@ export default fp(
     const budgetsImportService = new BudgetsImportService(
       (fastify as any).knex,
       budgetsRepository,
+      (fastify as any).eventService, // Pass eventService for import progress events
     );
 
     // Controller instantiation with proper dependencies

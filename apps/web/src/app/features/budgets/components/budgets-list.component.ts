@@ -393,7 +393,13 @@ export class BudgetsListComponent {
       // Always use traditional API for list/search operations
       // WebSocket events are for real-time sync of CUD operations only
       await this.budgetsService.loadBudgetList(params);
-      this.dataSource.data = this.budgetsService.budgetsList();
+
+      // Sync API response to state manager for real-time event handling
+      const apiData = this.budgetsService.budgetsList();
+      this.budgetStateManager['itemsSignal'].set(apiData);
+
+      // Use state manager's data (includes real-time updates)
+      this.dataSource.data = this.budgetStateManager.localState();
       if (this.paginator) {
         this.paginator.length = this.budgetsService.totalBudget();
       }
