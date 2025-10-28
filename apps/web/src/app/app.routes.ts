@@ -74,28 +74,6 @@ export const appRoutes: Route[] = [
     },
   },
   {
-    path: 'books',
-    loadChildren: () =>
-      import('./features/books/books.routes').then((m) => m.booksRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Books',
-      description: 'Books Management System',
-      requiredPermissions: ['books.read', 'admin.*'],
-    },
-  },
-  {
-    path: 'authors',
-    loadChildren: () =>
-      import('./features/authors/authors.routes').then((m) => m.authorsRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Authors',
-      description: 'Authors Management System',
-      requiredPermissions: ['authors.read', 'admin.*'],
-    },
-  },
-  {
     path: 'pdf-templates',
     loadChildren: () =>
       import('./core/pdf-templates/pdf-templates.routes').then(
@@ -232,17 +210,6 @@ export const appRoutes: Route[] = [
       import('./dev-tools/pages/realtime-demo/realtime-demo.component').then(
         (m) => m.RealtimeDemoComponent,
       ),
-  },
-  {
-    path: 'budgets',
-    loadChildren: () =>
-      import('./features/budgets/budgets.routes').then((m) => m.budgetsRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Budgets',
-      description: 'Budgets Management System',
-      requiredPermissions: ['budgets.read', 'admin.*'],
-    },
   },
   {
     path: '**',

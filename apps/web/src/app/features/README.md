@@ -10,10 +10,9 @@ This directory is **reserved for business-specific features only**.
 
 ## ✅ Current Business Features
 
-- **authors** - Example: Author management (can be removed if not needed)
-- **books** - Example: Book management (can be removed if not needed)
-- **budgets** - Example: Budget management (can be removed if not needed)
-- **comprehensive-tests** - Test suite for components
+_This directory is empty and ready for your business features._
+
+Use the CRUD generator to create new business features.
 
 ## 🚫 DO NOT Place Core Features Here
 

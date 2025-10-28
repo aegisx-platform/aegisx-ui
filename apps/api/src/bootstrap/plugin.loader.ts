@@ -46,10 +46,7 @@ import settingsPlugin from '../core/settings/settings.plugin';
 import systemSettingsPlugin from '../core/system-settings';
 import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 
-// Business feature modules (example features)
-import authorsPlugin from '../modules/authors';
-import booksPlugin from '../modules/books';
-import budgetsPlugin from '../modules/budgets';
+// Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 
 /**
@@ -328,26 +325,12 @@ export function createCorePluginGroup(apiPrefix: string): PluginGroup {
 export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
   return {
     name: 'business-features',
-    description: 'Business feature modules',
+    description: 'Business feature modules (ready for HIS, Inventory, etc.)',
     plugins: [
-      {
-        name: 'budgets',
-        plugin: budgetsPlugin,
-        required: true,
-      },
+      // Core platform plugins (used by business features)
       {
         name: 'api-keys',
         plugin: apiKeysPlugin,
-        required: true,
-      },
-      {
-        name: 'authors',
-        plugin: authorsPlugin,
-        required: true,
-      },
-      {
-        name: 'books',
-        plugin: booksPlugin,
         required: true,
       },
       {
@@ -380,6 +363,7 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
         plugin: pdfExportPlugin,
         required: true,
       },
+      // Business feature plugins will be added here by CRUD generator
     ],
   };
 }
