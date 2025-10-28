@@ -23,7 +23,7 @@ import knexPlugin from '../plugins/knex.plugin';
 import loggingPlugin from '../plugins/logging.plugin';
 import pluginMonitoring from '../plugins/monitoring.plugin';
 import multipartPlugin from '../plugins/multipart.plugin';
-import pdfExportPlugin from '../modules/pdf-export';
+import pdfExportPlugin from '../core/pdf-export';
 import redisPlugin from '../plugins/redis.plugin';
 import responseHandlerPlugin from '../plugins/response-handler.plugin';
 import schemasPlugin from '../plugins/schemas.plugin';
@@ -38,18 +38,20 @@ import rbacPlugin from '../core/rbac/rbac.plugin';
 import systemPlugin from '../core/system/default.plugin';
 import { usersPlugin } from '../core/users';
 
-// Business feature modules
-import apiKeysPlugin from '../modules/apiKeys';
+// Core platform modules (now in core/)
+import apiKeysPlugin from '../core/api-keys';
+import fileUploadPlugin from '../core/file-upload/file-upload.plugin';
+import navigationPlugin from '../core/navigation/navigation.plugin';
+import settingsPlugin from '../core/settings/settings.plugin';
+import systemSettingsPlugin from '../core/system-settings';
+import themesPlugin from '../core/themes';
+import userProfilePlugin from '../core/user-profile/user-profile.plugin';
+
+// Business feature modules (example features)
 import authorsPlugin from '../modules/authors';
 import booksPlugin from '../modules/books';
-import fileUploadPlugin from '../modules/file-upload/file-upload.plugin';
-import navigationPlugin from '../modules/navigation/navigation.plugin';
-import settingsPlugin from '../modules/settings/settings.plugin';
-import systemSettingsPlugin from '../modules/systemSettings';
-import themesPlugin from '../modules/themes';
-import userProfilePlugin from '../modules/user-profile/user-profile.plugin';
-import websocketPlugin from '../shared/websocket/websocket.plugin';
 import budgetsPlugin from '../modules/budgets';
+import websocketPlugin from '../shared/websocket/websocket.plugin';
 
 /**
  * Plugin registration group interface
