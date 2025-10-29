@@ -90,72 +90,6 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
   );
 
   /**
-   * Get PDF Template by ID
-   * GET /api/pdf-templates/:id
-   */
-  fastify.get<{
-    Params: Static<typeof PdfTemplateIdParamSchema>;
-  }>(
-    '/:id',
-    {
-      schema: {
-        description: 'Get PDF template by ID',
-        tags: ['PDF Templates'],
-        params: PdfTemplateIdParamSchema,
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'object' },
-            },
-          },
-          404: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              error: { type: 'string' },
-            },
-          },
-        },
-      },
-      preValidation: [fastify.authenticate],
-    },
-    async (
-      request: FastifyRequest<{
-        Params: Static<typeof PdfTemplateIdParamSchema>;
-      }>,
-      reply: FastifyReply,
-    ) => {
-      try {
-        const template = await templateService.getTemplate(request.params.id);
-
-        if (!template) {
-          return reply.code(404).send({
-            success: false,
-            error: 'Template not found',
-          });
-        }
-
-        return reply.send({
-          success: true,
-          data: template,
-        });
-      } catch (error) {
-        request.log.error(
-          { error, templateId: request.params.id },
-          'Failed to get PDF template',
-        );
-
-        return reply.code(500).send({
-          success: false,
-          error: error.message,
-        });
-      }
-    },
-  );
-
-  /**
    * List PDF Templates
    * GET /api/pdf-templates
    */
@@ -197,141 +131,6 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
         });
       } catch (error) {
         request.log.error({ error }, 'Failed to list PDF templates');
-
-        return reply.code(500).send({
-          success: false,
-          error: error.message,
-        });
-      }
-    },
-  );
-
-  /**
-   * Update PDF Template
-   * PUT /api/pdf-templates/:id
-   */
-  fastify.put<{
-    Params: Static<typeof PdfTemplateIdParamSchema>;
-    Body: Static<typeof UpdatePdfTemplateSchema>;
-  }>(
-    '/:id',
-    {
-      schema: {
-        description: 'Update PDF template',
-        tags: ['PDF Templates'],
-        params: PdfTemplateIdParamSchema,
-        body: UpdatePdfTemplateSchema,
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'object' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
-      preValidation: [fastify.authenticate],
-    },
-    async (
-      request: FastifyRequest<{
-        Params: Static<typeof PdfTemplateIdParamSchema>;
-        Body: Static<typeof UpdatePdfTemplateSchema>;
-      }>,
-      reply: FastifyReply,
-    ) => {
-      try {
-        const template = await templateService.updateTemplate(
-          request.params.id,
-          request.body,
-          request.user?.id,
-        );
-
-        request.log.info(
-          {
-            templateId: template.id,
-            templateName: template.name,
-          },
-          'PDF template updated successfully',
-        );
-
-        return reply.send({
-          success: true,
-          data: template,
-          message: 'Template updated successfully',
-        });
-      } catch (error) {
-        request.log.error(
-          { error, templateId: request.params.id },
-          'Failed to update PDF template',
-        );
-
-        return reply.code(400).send({
-          success: false,
-          error: error.message,
-        });
-      }
-    },
-  );
-
-  /**
-   * Delete PDF Template
-   * DELETE /api/pdf-templates/:id
-   */
-  fastify.delete<{
-    Params: Static<typeof PdfTemplateIdParamSchema>;
-  }>(
-    '/:id',
-    {
-      schema: {
-        description: 'Delete PDF template',
-        tags: ['PDF Templates'],
-        params: PdfTemplateIdParamSchema,
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
-      preValidation: [fastify.authenticate],
-    },
-    async (
-      request: FastifyRequest<{
-        Params: Static<typeof PdfTemplateIdParamSchema>;
-      }>,
-      reply: FastifyReply,
-    ) => {
-      try {
-        const deleted = await templateService.deleteTemplate(request.params.id);
-
-        if (!deleted) {
-          return reply.code(404).send({
-            success: false,
-            error: 'Template not found',
-          });
-        }
-
-        request.log.info(
-          {
-            templateId: request.params.id,
-          },
-          'PDF template deleted successfully',
-        );
-
-        return reply.send({
-          success: true,
-          message: 'Template deleted successfully',
-        });
-      } catch (error) {
-        request.log.error(
-          { error, templateId: request.params.id },
-          'Failed to delete PDF template',
-        );
 
         return reply.code(500).send({
           success: false,
@@ -416,76 +215,6 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
         request.log.error({ error }, 'Failed to render PDF');
 
         return reply.code(500).send({
-          success: false,
-          error: error.message,
-        });
-      }
-    },
-  );
-
-  /**
-   * Preview Template
-   * POST /api/pdf-templates/:id/preview
-   */
-  fastify.post<{
-    Params: Static<typeof PdfTemplateIdParamSchema>;
-    Body: Static<typeof PdfTemplatePreviewRequestSchema>;
-  }>(
-    '/:id/preview',
-    {
-      schema: {
-        description: 'Preview PDF template with sample or custom data',
-        tags: ['PDF Templates'],
-        params: PdfTemplateIdParamSchema,
-        body: PdfTemplatePreviewRequestSchema,
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              renderId: { type: 'string' },
-              previewUrl: { type: 'string' },
-              filename: { type: 'string' },
-              renderTime: { type: 'number' },
-              metadata: {
-                type: 'object',
-                properties: {
-                  templateName: { type: 'string' },
-                  templateVersion: { type: 'string' },
-                  renderedAt: { type: 'string' },
-                  expiresAt: { type: 'string' },
-                },
-              },
-            },
-            required: ['success'],
-            additionalProperties: true,
-          },
-        },
-      },
-      preValidation: [fastify.authenticate],
-    },
-    async (
-      request: FastifyRequest<{
-        Params: Static<typeof PdfTemplateIdParamSchema>;
-        Body: Static<typeof PdfTemplatePreviewRequestSchema>;
-      }>,
-      reply: FastifyReply,
-    ) => {
-      try {
-        const result = await templateService.previewTemplate(
-          request.params.id,
-          request.body.data,
-        );
-
-        // Return the response directly - it already has success: true
-        return reply.send(result);
-      } catch (error) {
-        request.log.error(
-          { error, templateId: request.params.id },
-          'Failed to preview template',
-        );
-
-        return reply.code(400).send({
           success: false,
           error: error.message,
         });
@@ -590,136 +319,6 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
         });
       } catch (error) {
         request.log.error({ error }, 'Failed to search templates');
-
-        return reply.code(500).send({
-          success: false,
-          error: error.message,
-        });
-      }
-    },
-  );
-
-  /**
-   * Duplicate Template
-   * POST /api/pdf-templates/:id/duplicate
-   */
-  fastify.post<{
-    Params: Static<typeof PdfTemplateIdParamSchema>;
-    Body: { name: string };
-  }>(
-    '/:id/duplicate',
-    {
-      schema: {
-        description: 'Duplicate PDF template',
-        tags: ['PDF Templates'],
-        params: PdfTemplateIdParamSchema,
-        body: {
-          type: 'object',
-          properties: {
-            name: { type: 'string', minLength: 1, maxLength: 100 },
-          },
-          required: ['name'],
-        },
-        response: {
-          201: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'object' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
-      preValidation: [fastify.authenticate],
-    },
-    async (
-      request: FastifyRequest<{
-        Params: Static<typeof PdfTemplateIdParamSchema>;
-        Body: { name: string };
-      }>,
-      reply: FastifyReply,
-    ) => {
-      try {
-        const template = await templateService.duplicateTemplate(
-          request.params.id,
-          request.body.name,
-          request.user?.id,
-        );
-
-        request.log.info(
-          {
-            originalId: request.params.id,
-            newId: template.id,
-            newName: template.name,
-          },
-          'PDF template duplicated successfully',
-        );
-
-        return reply.code(201).send({
-          success: true,
-          data: template,
-          message: 'Template duplicated successfully',
-        });
-      } catch (error) {
-        request.log.error(
-          { error, templateId: request.params.id },
-          'Failed to duplicate template',
-        );
-
-        return reply.code(400).send({
-          success: false,
-          error: error.message,
-        });
-      }
-    },
-  );
-
-  /**
-   * Get Template Versions
-   * GET /api/pdf-templates/:id/versions
-   */
-  fastify.get<{
-    Params: Static<typeof PdfTemplateIdParamSchema>;
-  }>(
-    '/:id/versions',
-    {
-      schema: {
-        description: 'Get PDF template version history',
-        tags: ['PDF Templates'],
-        params: PdfTemplateIdParamSchema,
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'array' },
-            },
-          },
-        },
-      },
-      preValidation: [fastify.authenticate],
-    },
-    async (
-      request: FastifyRequest<{
-        Params: Static<typeof PdfTemplateIdParamSchema>;
-      }>,
-      reply: FastifyReply,
-    ) => {
-      try {
-        const versions = await templateService.getTemplateVersions(
-          request.params.id,
-        );
-
-        return reply.send({
-          success: true,
-          data: versions,
-        });
-      } catch (error) {
-        request.log.error(
-          { error, templateId: request.params.id },
-          'Failed to get template versions',
-        );
 
         return reply.code(500).send({
           success: false,
@@ -967,6 +566,407 @@ export async function pdfTemplateRoutes(fastify: FastifyInstance) {
         });
       } catch (error) {
         request.log.error({ error }, 'Failed to get active templates for use');
+
+        return reply.code(500).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Get PDF Template by ID
+   * GET /api/pdf-templates/:id
+   */
+  fastify.get<{
+    Params: Static<typeof PdfTemplateIdParamSchema>;
+  }>(
+    '/:id',
+    {
+      schema: {
+        description: 'Get PDF template by ID',
+        tags: ['PDF Templates'],
+        params: PdfTemplateIdParamSchema,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' },
+            },
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (
+      request: FastifyRequest<{
+        Params: Static<typeof PdfTemplateIdParamSchema>;
+      }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const template = await templateService.getTemplate(request.params.id);
+
+        if (!template) {
+          return reply.code(404).send({
+            success: false,
+            error: 'Template not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: template,
+        });
+      } catch (error) {
+        request.log.error(
+          { error, templateId: request.params.id },
+          'Failed to get PDF template',
+        );
+
+        return reply.code(500).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Update PDF Template
+   * PUT /api/pdf-templates/:id
+   */
+  fastify.put<{
+    Params: Static<typeof PdfTemplateIdParamSchema>;
+    Body: Static<typeof UpdatePdfTemplateSchema>;
+  }>(
+    '/:id',
+    {
+      schema: {
+        description: 'Update PDF template',
+        tags: ['PDF Templates'],
+        params: PdfTemplateIdParamSchema,
+        body: UpdatePdfTemplateSchema,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (
+      request: FastifyRequest<{
+        Params: Static<typeof PdfTemplateIdParamSchema>;
+        Body: Static<typeof UpdatePdfTemplateSchema>;
+      }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const template = await templateService.updateTemplate(
+          request.params.id,
+          request.body,
+          request.user?.id,
+        );
+
+        request.log.info(
+          {
+            templateId: template.id,
+            templateName: template.name,
+          },
+          'PDF template updated successfully',
+        );
+
+        return reply.send({
+          success: true,
+          data: template,
+          message: 'Template updated successfully',
+        });
+      } catch (error) {
+        request.log.error(
+          { error, templateId: request.params.id },
+          'Failed to update PDF template',
+        );
+
+        return reply.code(400).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Delete PDF Template
+   * DELETE /api/pdf-templates/:id
+   */
+  fastify.delete<{
+    Params: Static<typeof PdfTemplateIdParamSchema>;
+  }>(
+    '/:id',
+    {
+      schema: {
+        description: 'Delete PDF template',
+        tags: ['PDF Templates'],
+        params: PdfTemplateIdParamSchema,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (
+      request: FastifyRequest<{
+        Params: Static<typeof PdfTemplateIdParamSchema>;
+      }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const deleted = await templateService.deleteTemplate(request.params.id);
+
+        if (!deleted) {
+          return reply.code(404).send({
+            success: false,
+            error: 'Template not found',
+          });
+        }
+
+        request.log.info(
+          {
+            templateId: request.params.id,
+          },
+          'PDF template deleted successfully',
+        );
+
+        return reply.send({
+          success: true,
+          message: 'Template deleted successfully',
+        });
+      } catch (error) {
+        request.log.error(
+          { error, templateId: request.params.id },
+          'Failed to delete PDF template',
+        );
+
+        return reply.code(500).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Preview Template
+   * POST /api/pdf-templates/:id/preview
+   */
+  fastify.post<{
+    Params: Static<typeof PdfTemplateIdParamSchema>;
+    Body: Static<typeof PdfTemplatePreviewRequestSchema>;
+  }>(
+    '/:id/preview',
+    {
+      schema: {
+        description: 'Preview PDF template with sample or custom data',
+        tags: ['PDF Templates'],
+        params: PdfTemplateIdParamSchema,
+        body: PdfTemplatePreviewRequestSchema,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              renderId: { type: 'string' },
+              previewUrl: { type: 'string' },
+              filename: { type: 'string' },
+              renderTime: { type: 'number' },
+              metadata: {
+                type: 'object',
+                properties: {
+                  templateName: { type: 'string' },
+                  templateVersion: { type: 'string' },
+                  renderedAt: { type: 'string' },
+                  expiresAt: { type: 'string' },
+                },
+              },
+            },
+            required: ['success'],
+            additionalProperties: true,
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (
+      request: FastifyRequest<{
+        Params: Static<typeof PdfTemplateIdParamSchema>;
+        Body: Static<typeof PdfTemplatePreviewRequestSchema>;
+      }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const result = await templateService.previewTemplate(
+          request.params.id,
+          request.body.data,
+        );
+
+        // Return the response directly - it already has success: true
+        return reply.send(result);
+      } catch (error) {
+        request.log.error(
+          { error, templateId: request.params.id },
+          'Failed to preview template',
+        );
+
+        return reply.code(400).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Duplicate Template
+   * POST /api/pdf-templates/:id/duplicate
+   */
+  fastify.post<{
+    Params: Static<typeof PdfTemplateIdParamSchema>;
+    Body: { name: string };
+  }>(
+    '/:id/duplicate',
+    {
+      schema: {
+        description: 'Duplicate PDF template',
+        tags: ['PDF Templates'],
+        params: PdfTemplateIdParamSchema,
+        body: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', minLength: 1, maxLength: 100 },
+          },
+          required: ['name'],
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (
+      request: FastifyRequest<{
+        Params: Static<typeof PdfTemplateIdParamSchema>;
+        Body: { name: string };
+      }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const template = await templateService.duplicateTemplate(
+          request.params.id,
+          request.body.name,
+          request.user?.id,
+        );
+
+        request.log.info(
+          {
+            originalId: request.params.id,
+            newId: template.id,
+            newName: template.name,
+          },
+          'PDF template duplicated successfully',
+        );
+
+        return reply.code(201).send({
+          success: true,
+          data: template,
+          message: 'Template duplicated successfully',
+        });
+      } catch (error) {
+        request.log.error(
+          { error, templateId: request.params.id },
+          'Failed to duplicate template',
+        );
+
+        return reply.code(400).send({
+          success: false,
+          error: error.message,
+        });
+      }
+    },
+  );
+
+  /**
+   * Get Template Versions
+   * GET /api/pdf-templates/:id/versions
+   */
+  fastify.get<{
+    Params: Static<typeof PdfTemplateIdParamSchema>;
+  }>(
+    '/:id/versions',
+    {
+      schema: {
+        description: 'Get PDF template version history',
+        tags: ['PDF Templates'],
+        params: PdfTemplateIdParamSchema,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'array' },
+            },
+          },
+        },
+      },
+      preValidation: [fastify.authenticate],
+    },
+    async (
+      request: FastifyRequest<{
+        Params: Static<typeof PdfTemplateIdParamSchema>;
+      }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const versions = await templateService.getTemplateVersions(
+          request.params.id,
+        );
+
+        return reply.send({
+          success: true,
+          data: versions,
+        });
+      } catch (error) {
+        request.log.error(
+          { error, templateId: request.params.id },
+          'Failed to get template versions',
+        );
 
         return reply.code(500).send({
           success: false,

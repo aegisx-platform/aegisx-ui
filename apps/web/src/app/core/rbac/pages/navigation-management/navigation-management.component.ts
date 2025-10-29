@@ -985,14 +985,20 @@ export class NavigationManagementComponent implements OnInit {
       // Check if role has any of the item's permissions
       // Support both formats: "resource:action" and "resource.action"
       const hasMatch = item.permissions.some((itemPerm) => {
+        // Handle both string and Permission object types
+        const itemPermString =
+          typeof itemPerm === 'string'
+            ? itemPerm
+            : `${itemPerm.resource}.${itemPerm.action}`;
+
         // Try exact match first (colon format)
-        const exactMatch = rolePermissionStrings.includes(itemPerm);
+        const exactMatch = rolePermissionStrings.includes(itemPermString);
 
         // Try dot format
-        const dotMatch = rolePermissionsWithDots.includes(itemPerm);
+        const dotMatch = rolePermissionsWithDots.includes(itemPermString);
 
         // Try converting item permission from dot to colon
-        const itemPermColonFormat = itemPerm.replace('.', ':');
+        const itemPermColonFormat = itemPermString.replace('.', ':');
         const colonMatch = rolePermissionStrings.includes(itemPermColonFormat);
 
         return exactMatch || dotMatch || colonMatch;
@@ -1237,7 +1243,7 @@ export class NavigationManagementComponent implements OnInit {
   }
 
   duplicateNavigationItem(item: NavigationItem): void {
-    this.navigationService.duplicate(item.id).subscribe({
+    this.navigationService.getById(item.id).subscribe({
       next: (sourceItem: NavigationItem) => {
         // Generate unique key by appending -copy (or -copy-2, -copy-3, etc.)
         let newKey = `${sourceItem.key}-copy`;

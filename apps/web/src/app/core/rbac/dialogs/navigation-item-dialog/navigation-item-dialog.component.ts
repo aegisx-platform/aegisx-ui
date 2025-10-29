@@ -682,9 +682,15 @@ export class NavigationItemDialogComponent implements OnInit {
               : null;
 
         if (permissionsToSelect && permissionsToSelect.length > 0) {
-          // Backend returns permissions as string[] like ['users.create', 'users.read']
+          // Backend may return permissions as string[] or Permission[]
           // We need to match them with Permission objects from availablePermissions
-          permissionsToSelect.forEach((permissionString) => {
+          permissionsToSelect.forEach((permission) => {
+            // Handle both string and Permission object types
+            const permissionString =
+              typeof permission === 'string'
+                ? permission
+                : `${permission.resource}.${permission.action}`;
+
             const matchingPermission = response.data.find(
               (p) => `${p.resource}.${p.action}` === permissionString,
             );

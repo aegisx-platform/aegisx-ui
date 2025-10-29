@@ -51,26 +51,6 @@ export async function apiKeysRoutes(
     handler: controller.create.bind(controller),
   });
 
-  // Get apiKeys by ID
-  fastify.get('/:id', {
-    schema: {
-      tags: ['ApiKeys'],
-      summary: 'Get apiKeys by ID',
-      description: 'Retrieve a apiKeys by its unique identifier',
-      params: ApiKeysIdParamSchema,
-      querystring: GetApiKeysQuerySchema,
-      response: {
-        200: ApiKeysResponseSchema,
-        400: SchemaRefs.ValidationError,
-        401: SchemaRefs.Unauthorized,
-        403: SchemaRefs.Forbidden,
-        404: SchemaRefs.NotFound,
-        500: SchemaRefs.ServerError,
-      },
-    },
-    handler: controller.findOne.bind(controller),
-  });
-
   // Get all apiKeyss
   fastify.get('/', {
     schema: {
@@ -90,47 +70,7 @@ export async function apiKeysRoutes(
     handler: controller.findMany.bind(controller),
   });
 
-  // Update apiKeys
-  fastify.put('/:id', {
-    schema: {
-      tags: ['ApiKeys'],
-      summary: 'Update apiKeys by ID',
-      description: 'Update an existing apiKeys with new data',
-      params: ApiKeysIdParamSchema,
-      body: UpdateApiKeysSchema,
-      response: {
-        200: ApiKeysResponseSchema,
-        400: SchemaRefs.ValidationError,
-        401: SchemaRefs.Unauthorized,
-        403: SchemaRefs.Forbidden,
-        404: SchemaRefs.NotFound,
-        409: SchemaRefs.Conflict,
-        500: SchemaRefs.ServerError,
-      },
-    },
-    handler: controller.update.bind(controller),
-  });
-
-  // Delete apiKeys
-  fastify.delete('/:id', {
-    schema: {
-      tags: ['ApiKeys'],
-      summary: 'Delete apiKeys by ID',
-      description: 'Delete a apiKeys by its unique identifier',
-      params: ApiKeysIdParamSchema,
-      response: {
-        200: SchemaRefs.OperationResult,
-        400: SchemaRefs.ValidationError,
-        401: SchemaRefs.Unauthorized,
-        403: SchemaRefs.Forbidden,
-        404: SchemaRefs.NotFound,
-        500: SchemaRefs.ServerError,
-      },
-    },
-    handler: controller.delete.bind(controller),
-  });
-
-  // ===== NEW API KEY MANAGEMENT ROUTES =====
+  // ===== API KEY MANAGEMENT ROUTES (before parameterized routes) =====
 
   // Generate new API key
   fastify.post('/generate', {
@@ -188,6 +128,68 @@ export async function apiKeysRoutes(
     },
     preHandler: [fastify.authenticate], // JWT authentication required
     handler: controller.getMyKeys.bind(controller),
+  });
+
+  // ===== PARAMETERIZED ROUTES (must come after specific routes) =====
+
+  // Get apiKeys by ID
+  fastify.get('/:id', {
+    schema: {
+      tags: ['ApiKeys'],
+      summary: 'Get apiKeys by ID',
+      description: 'Retrieve a apiKeys by its unique identifier',
+      params: ApiKeysIdParamSchema,
+      querystring: GetApiKeysQuerySchema,
+      response: {
+        200: ApiKeysResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: controller.findOne.bind(controller),
+  });
+
+  // Update apiKeys
+  fastify.put('/:id', {
+    schema: {
+      tags: ['ApiKeys'],
+      summary: 'Update apiKeys by ID',
+      description: 'Update an existing apiKeys with new data',
+      params: ApiKeysIdParamSchema,
+      body: UpdateApiKeysSchema,
+      response: {
+        200: ApiKeysResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        409: SchemaRefs.Conflict,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: controller.update.bind(controller),
+  });
+
+  // Delete apiKeys
+  fastify.delete('/:id', {
+    schema: {
+      tags: ['ApiKeys'],
+      summary: 'Delete apiKeys by ID',
+      description: 'Delete a apiKeys by its unique identifier',
+      params: ApiKeysIdParamSchema,
+      response: {
+        200: SchemaRefs.OperationResult,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: controller.delete.bind(controller),
   });
 
   // Revoke API key
