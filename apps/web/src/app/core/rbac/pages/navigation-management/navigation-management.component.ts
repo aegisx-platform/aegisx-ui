@@ -984,13 +984,8 @@ export class NavigationManagementComponent implements OnInit {
 
       // Check if role has any of the item's permissions
       // Support both formats: "resource:action" and "resource.action"
-      const hasMatch = item.permissions.some((itemPerm) => {
-        // Handle both string and Permission object types
-        const itemPermString =
-          typeof itemPerm === 'string'
-            ? itemPerm
-            : `${itemPerm.resource}.${itemPerm.action}`;
-
+      // item.permissions is string[] like ['users.create', 'users.read']
+      const hasMatch = item.permissions.some((itemPermString) => {
         // Try exact match first (colon format)
         const exactMatch = rolePermissionStrings.includes(itemPermString);
 
