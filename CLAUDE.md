@@ -539,89 +539,68 @@ pnpm run db:migrate && pnpm run db:seed
 
 > **📌 For complete session history and details, see [PROJECT_STATUS.md](./PROJECT_STATUS.md) § Recent Development Sessions**
 
-### Current Status (Session 47 - 2025-10-29)
+### Current Status (Session 47 - 2025-10-30) ✅ COMPLETED
 
-**Navigation Management UI Feature Complete + Role Preview Mode:**
+**Session 47a (2025-10-29) - Navigation Management UI + RBAC:**
 
-- ✅ **Frontend Service** - NavigationItemsService with 9 API methods (168 lines)
-- ✅ **Management Component** - Full UI with hierarchy, drag-drop, Role Preview Mode (838 lines)
-- ✅ **Dialog Component** - 3-tab dialog with pre-filled data support (700 lines)
-- ✅ **Route Registration** - Added to rbac.routes.ts with permission guards
-- ✅ **Build Verification** - Both frontend and backend builds passing (0 errors)
+- ✅ **Navigation Management UI** - Full CRUD with Material table, Role Preview Mode
+- ✅ **RBAC Module Progress** - 45% → 50% complete
 
-**Features Completed (Session 47):**
+**Session 47b (2025-10-30) - Config-Driven Attachment System:**
 
-1. **Navigation Management UI** - Full CRUD with Material table
-   - Permission guards integration
-   - Filters (search, type, status, visibility)
-   - Bulk operations (delete, enable/disable, assign permissions)
+- ✅ **Full-Stack Implementation** - Complete backend + frontend + documentation
 
-2. **Duplicate Navigation Item** - Dialog-based duplication with smart key generation
-   - Backend endpoint: `POST /navigation-items/:id/duplicate`
-   - Returns source data for dialog pre-filling
-   - Frontend generates unique keys (`-copy`, `-copy-2`, etc.)
-   - Preserves permissions from original item
+**Latest Development:**
 
-3. **Drag-and-Drop Sorting** - Visual reordering with immediate feedback
-   - Angular CDK drag-drop integration
-   - Drag handle icon (prevents accidental drags)
-   - Auto-disable when filters active (info banner + tooltips)
-   - Optimistic UI with backend sync and error recovery
+- ✅ **Config-Driven Attachment System** - Complete full-stack implementation
+- ✅ **Polymorphic Attachments Table** - Single table for all entity types
+- ✅ **8 Pre-Configured Entities** - Inventory (4) + HIS (4) ready
+- ✅ **RESTful API** - 13 endpoints with OpenAPI docs
+- ✅ **Type-Safe Schemas** - Full TypeBox validation
+- ✅ **Frontend Components** - Complete with service, list, item, upload widgets
+- ✅ **Test Page** - Comprehensive testing interface with 8 scenarios
+- ✅ **Documentation** - README, DEVELOPER_GUIDE with 3 usage patterns
 
-4. **UI Simplification & Visual Improvements**
-   - **27% Column Reduction** - From 11 to 8 columns (kept dragHandle per user request)
-   - **Enhanced Hierarchy** - Clear visual depth with progressive colors and borders
-   - **Better Permissions UX** - Icon + tooltip shows actual permission names
-   - **Cleaner Design** - Removed bulk selection and technical columns
-   - **91 Lines of CSS** - Comprehensive hierarchy styles with dark mode support
+**Implementation Summary:**
 
-5. **Role Preview Mode** ⭐ NEW
-   - **Toggle Between Roles** - See navigation from any role's perspective
-   - **Permission Verification** - Quickly check which menus each role can access
-   - **Multi-Format Support** - Handles both colon and dot permission formats
-   - **Read-Only Safety** - Prevents accidental edits during preview
-   - **Real-Time Filtering** - Instant updates using Angular Signals computed values
-   - **Visual Indicators** - Menu count (visible/total), role permissions count
-   - **3 Critical Bug Fixes** - Permission format mismatch, table synchronization, permission persistence
+- **Backend**: 2,048 lines (controller, service, repository, routes, schemas)
+- **Frontend**: 2,445+ lines (service, components, test page)
+- **Total**: ~4,500 lines of production code
+- **Patterns**: Multiple files (default), Single file (maxFiles=1), Direct reference
 
-**Technical Improvements:**
+**Quick Reference:**
 
-- Fixed 2 frontend TypeScript strict mode errors (optional chaining, bracket notation)
-- Fixed 19 backend errors by adding service wrapper methods
-- Fixed 5 TypeScript errors in duplicate/drag-drop (service naming + type annotations)
-- Fixed 3 critical bugs in Role Preview Mode (permission format, table updates, persistence)
-- Implemented proper service layer pattern: Controller → Service → Repository
-- All methods include automatic cache invalidation on mutations
+```typescript
+// Pattern 1: Multiple Files (Default) - Products, Patients
+'product': {
+  entityType: 'product',
+  allowedTypes: ['image', 'manual'],
+  maxFiles: 10, // Multiple files
+  allowedMimeTypes: ['image/*', 'application/pdf'],
+  maxFileSize: 5 * 1024 * 1024,
+}
 
-**Files Created/Modified:**
+// Pattern 2: Single File - Profile Pictures
+'user-profile': {
+  entityType: 'user-profile',
+  allowedTypes: ['profile-picture'],
+  maxFiles: 1, // Single file only
+  allowedMimeTypes: ['image/jpeg', 'image/png'],
+  maxFileSize: 2 * 1024 * 1024,
+}
 
-1. **Frontend** (3 new files + 2 modified):
-   - `navigation-items.service.ts` - API service with 9 methods (added `duplicate()`)
-   - `navigation-management.component.ts` - Main UI with Role Preview Mode (4 signals, 2 computed values, 2 effects)
-   - `navigation-item-dialog.component.ts` - Dialog with pre-filled data + permission update fix (700 lines)
-   - `rbac.routes.ts` - Added navigation route
+// Frontend Usage (same component for all patterns)
+<app-entity-attachments
+  entityType="product"
+  [entityId]="productId()"
+  [layout]="'grid'"
+/>
+```
 
-2. **Backend** (3 new/modified):
-   - `navigation.service.ts` - Added 9 public wrapper methods (lines 315-427)
-   - `navigation-items.controller.ts` - Added `duplicateNavigationItem()` endpoint
-   - `navigation-items.routes.ts` - Added `POST /navigation-items/:id/duplicate` route
+**Documentation:**
 
-**RBAC Module Progress:** 45% → 50% (Navigation Management complete with Role Preview Mode)
-
-**Next Steps:**
-
-- Test Role Preview Mode end-to-end with different roles
-- Complete remaining RBAC pages (Role Management, Permission Management, User Role Assignment)
-
-### Previous Status (Session 46 - 2025-10-28)
-
-**Latest Cleanup:**
-
-- ✅ **Theme System Removed** - 9 files deleted (themes module not needed)
-- ✅ **ALL Business Features Removed** - 72 files deleted (books, authors, budgets, comprehensive-tests)
-- ✅ **Unused Files Cleaned** - Scripts, test directories, build output removed
-- ✅ **Repository Clean Slate** - Empty modules/ and features/ ready for HIS & Inventory
-- ✅ **Total Cleanup** - 89 files deleted, 4 commits, all pushed successfully
+- 📖 [README.md](./docs/features/attachment-system/README.md) - Overview & quick start
+- 👨‍💻 [DEVELOPER_GUIDE.md](./docs/features/attachment-system/DEVELOPER_GUIDE.md) - 3 patterns with examples
 
 **Documentation & Release:**
 
@@ -633,12 +612,21 @@ pnpm run db:migrate && pnpm run db:seed
 
 **Repository Status:**
 
-- 14 core backend modules (only essential infrastructure)
-- 10 core frontend features (only core platform)
+- 15 core backend modules (14 + attachments system)
+- 10 core frontend features (core platform only)
 - Empty `apps/api/src/modules/` - Ready for HIS modules
 - Empty `apps/web/src/app/features/` - Ready for HIS features
-- CRUD Generator verified working and ready
+- CRUD Generator v2.1.0 verified and ready
 - Clean repository ready for HIS and Inventory development
+
+### Previous Status (Session 46 - 2025-10-28)
+
+**Repository Cleanup:**
+
+- ✅ Theme System Removed - 9 files deleted
+- ✅ ALL Business Features Removed - 72 files deleted
+- ✅ Unused Files Cleaned - Scripts, test directories removed
+- ✅ Total Cleanup - 89 files deleted, 4 commits
 
 ### Previous Status (Session 44 - 2025-10-28)
 

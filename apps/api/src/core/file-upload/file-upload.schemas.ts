@@ -46,6 +46,13 @@ export const FileUploadSchema = Type.Object({
       description: 'Additional metadata for the file',
     }),
   ),
+  forceEncryption: Type.Optional(
+    Type.Boolean({
+      description:
+        'Force file encryption (overrides category default). If true, file content will be encrypted with AES-256-GCM even if category does not require it.',
+      default: false,
+    }),
+  ),
   // Note: Thumbnails are generated dynamically via /thumbnail endpoint
   // No need for pre-generation options
 });

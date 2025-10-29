@@ -44,12 +44,13 @@ export interface UpdateFileData {
 }
 
 export interface FileFilters {
-  uploadedBy?: string;
+  uploadedBy?: string | null; // null for explicit anonymous filtering
   category?: string;
   type?: string;
   isPublic?: boolean;
   isTemporary?: boolean;
   search?: string;
+  metadata?: Record<string, any>; // For context-aware filtering (contextType, contextId, etc.)
 }
 
 export interface PaginationOptions {
@@ -135,14 +136,18 @@ export class FileUploadRepository {
         .whereNull('deleted_at');
 
       // If userId is provided, check ownership or public access
-      // If no userId (anonymous), only allow public files
+      // If no userId (anonymous), allow public files OR anonymous uploads (uploaded_by IS NULL)
       if (userId) {
         query.where((builder) => {
           builder.where('uploaded_by', userId).orWhere('is_public', true);
         });
       } else {
-        // Anonymous access - only public files
-        query.where('is_public', true);
+        // Anonymous access - allow:
+        // 1. Public files (is_public = true)
+        // 2. Anonymous uploads (uploaded_by IS NULL)
+        query.where((builder) => {
+          builder.where('is_public', true).orWhereNull('uploaded_by');
+        });
       }
 
       const file = await query.first();
@@ -190,9 +195,25 @@ export class FileUploadRepository {
     try {
       const query = this.deps.db(this.tableName).whereNull('deleted_at');
 
-      // Apply filters
-      if (filters.uploadedBy) {
-        query.where('uploaded_by', filters.uploadedBy);
+      // CRITICAL: Handle anonymous vs authenticated user filtering
+      if (filters.uploadedBy !== undefined) {
+        if (filters.uploadedBy) {
+          // Authenticated user: show their files OR public files
+          query.where((builder: any) => {
+            builder
+              .where('uploaded_by', filters.uploadedBy)
+              .orWhere('is_public', true);
+          });
+        } else {
+          // Anonymous user: show ONLY anonymous uploads (uploaded_by IS NULL) OR public files
+          query.where((builder: any) => {
+            builder.whereNull('uploaded_by').orWhere('is_public', true);
+          });
+        }
+      }
+      // If uploadedBy is not provided at all (shouldn't happen), show public files only
+      else {
+        query.where('is_public', true);
       }
 
       if (filters.category) {
@@ -213,6 +234,16 @@ export class FileUploadRepository {
 
       if (filters.search) {
         query.where('original_name', 'ilike', `%${filters.search}%`);
+      }
+
+      // NEW: Metadata filtering for context-aware queries
+      if (filters.metadata) {
+        // Filter by metadata fields (contextType, contextId, etc.)
+        Object.entries(filters.metadata).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            query.whereRaw(`metadata->>'${key}' = ?`, [value]);
+          }
+        });
       }
 
       // Count total records
@@ -396,14 +427,19 @@ export class FileUploadRepository {
   /**
    * Find files by hash (for duplicate detection)
    */
-  async findByHash(hash: string, userId: string): Promise<UploadedFile[]> {
+  async findByHash(hash: string, userId?: string): Promise<UploadedFile[]> {
     try {
-      const files = await this.deps
+      const query = this.deps
         .db(this.tableName)
         .where('file_hash', hash)
-        .where('uploaded_by', userId)
         .whereNull('deleted_at');
 
+      // Filter by user only if userId is provided (for authenticated uploads)
+      if (userId) {
+        query.where('uploaded_by', userId);
+      }
+
+      const files = await query;
       return files.map((file) => this.mapDatabaseFileToSchema(file));
     } catch (error) {
       this.deps.logger.error(error, `Failed to find files by hash: ${hash}`);

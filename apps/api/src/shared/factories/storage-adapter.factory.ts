@@ -10,6 +10,14 @@ import {
   LocalStorageAdapter,
   LocalStorageConfig,
 } from '../adapters/local-storage.adapter';
+import {
+  S3StorageAdapter,
+  S3StorageConfig,
+} from '../adapters/s3-storage.adapter';
+import {
+  MinIOStorageAdapter,
+  MinIOStorageConfig,
+} from '../adapters/minio-storage.adapter';
 
 /**
  * Storage Adapter Factory
@@ -47,16 +55,14 @@ export class StorageAdapterFactory implements IStorageAdapterFactory {
         break;
 
       case StorageType.AWS_S3:
-        throw new ConfigurationError(
-          'AWS S3 adapter not yet implemented. Coming soon!',
-          StorageType.AWS_S3,
-        );
+        adapter = await this.createS3Adapter(config.options as S3StorageConfig);
+        break;
 
       case StorageType.MINIO:
-        throw new ConfigurationError(
-          'MinIO adapter not yet implemented. Coming soon!',
-          StorageType.MINIO,
+        adapter = await this.createMinIOAdapter(
+          config.options as MinIOStorageConfig,
         );
+        break;
 
       case StorageType.GOOGLE_CLOUD:
         throw new ConfigurationError(
@@ -89,9 +95,9 @@ export class StorageAdapterFactory implements IStorageAdapterFactory {
   getSupportedTypes(): StorageType[] {
     return [
       StorageType.LOCAL,
+      StorageType.AWS_S3,
+      StorageType.MINIO,
       // Future implementations:
-      // StorageType.AWS_S3,
-      // StorageType.MINIO,
       // StorageType.GOOGLE_CLOUD,
       // StorageType.AZURE_BLOB,
     ];
@@ -127,7 +133,10 @@ export class StorageAdapterFactory implements IStorageAdapterFactory {
   async healthCheckAll(): Promise<Record<StorageType, boolean>> {
     const results: Record<StorageType, boolean> = {} as any;
 
-    for (const [type, adapter] of this.adapters) {
+    // Convert Map entries to array for iteration
+    const entries = Array.from(this.adapters.entries());
+
+    for (const [type, adapter] of entries) {
       try {
         results[type] = await adapter.healthCheck();
       } catch (error) {
@@ -170,27 +179,65 @@ export class StorageAdapterFactory implements IStorageAdapterFactory {
   }
 
   /**
-   * Future: Create AWS S3 Adapter
+   * Create AWS S3 Adapter
    */
-  private async createS3Adapter(config: any): Promise<IStorageAdapter> {
-    // TODO: Implement S3StorageAdapter
-    // Will require AWS SDK and S3 configuration
-    throw new ConfigurationError(
-      'S3 adapter implementation is planned for future release',
-      StorageType.AWS_S3,
-    );
+  private async createS3Adapter(
+    config: S3StorageConfig,
+  ): Promise<S3StorageAdapter> {
+    // Validate required configuration
+    if (!config.region) {
+      throw new ConfigurationError(
+        'AWS region is required for S3 storage adapter',
+        StorageType.AWS_S3,
+      );
+    }
+
+    if (!config.bucket) {
+      throw new ConfigurationError(
+        'S3 bucket is required for S3 storage adapter',
+        StorageType.AWS_S3,
+      );
+    }
+
+    if (!config.accessKeyId || !config.secretAccessKey) {
+      throw new ConfigurationError(
+        'AWS credentials are required for S3 storage adapter',
+        StorageType.AWS_S3,
+      );
+    }
+
+    return new S3StorageAdapter(config);
   }
 
   /**
-   * Future: Create MinIO Adapter
+   * Create MinIO Adapter
    */
-  private async createMinIOAdapter(config: any): Promise<IStorageAdapter> {
-    // TODO: Implement MinIOStorageAdapter
-    // Will require MinIO client and MinIO configuration
-    throw new ConfigurationError(
-      'MinIO adapter implementation is planned for future release',
-      StorageType.MINIO,
-    );
+  private async createMinIOAdapter(
+    config: MinIOStorageConfig,
+  ): Promise<MinIOStorageAdapter> {
+    // Validate required configuration
+    if (!config.endpoint) {
+      throw new ConfigurationError(
+        'MinIO endpoint is required for MinIO storage adapter',
+        StorageType.MINIO,
+      );
+    }
+
+    if (!config.bucket) {
+      throw new ConfigurationError(
+        'MinIO bucket is required for MinIO storage adapter',
+        StorageType.MINIO,
+      );
+    }
+
+    if (!config.accessKey || !config.secretKey) {
+      throw new ConfigurationError(
+        'MinIO credentials are required for MinIO storage adapter',
+        StorageType.MINIO,
+      );
+    }
+
+    return new MinIOStorageAdapter(config);
   }
 
   /**
@@ -214,26 +261,13 @@ export class StorageAdapterFactory implements IStorageAdapterFactory {
 export const storageAdapterFactory = StorageAdapterFactory.getInstance();
 
 /**
- * Configuration types for different storage providers
+ * Re-export configuration types for convenience
  */
-export interface S3StorageConfig {
-  region: string;
-  bucket: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-  endpoint?: string;
-  forcePathStyle?: boolean;
-}
+export type { LocalStorageConfig, S3StorageConfig, MinIOStorageConfig };
 
-export interface MinIOStorageConfig {
-  endpoint: string;
-  port: number;
-  useSSL: boolean;
-  accessKey: string;
-  secretKey: string;
-  bucket: string;
-}
-
+/**
+ * Future storage provider configuration types
+ */
 export interface GoogleCloudStorageConfig {
   projectId: string;
   keyFilename?: string;

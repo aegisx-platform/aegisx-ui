@@ -118,21 +118,8 @@ export class FileUploadController {
           : undefined,
       };
 
+      // Optional authentication - allow anonymous uploads (userId will be undefined for anonymous users)
       const userId = request.user?.id;
-      if (!userId) {
-        return reply.code(401).send({
-          success: false,
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'User authentication required',
-          },
-          meta: {
-            requestId: request.id,
-            timestamp: new Date().toISOString(),
-            version: '1.0',
-          },
-        });
-      }
 
       // Convert @aegisx/fastify-multipart file to expected format with toBuffer method
       const fileData = {
@@ -212,184 +199,9 @@ export class FileUploadController {
     }
   }
 
-  /**
-   * Upload multiple files
-   */
-  async uploadMultipleFiles(
-    request: FastifyRequest<{
-      Body: FileUploadRequest;
-    }>,
-    reply: FastifyReply,
-  ) {
-    try {
-      request.log.info('Starting to process multipart files...');
-      const files = request.files();
-      const fileArray: any[] = [];
-      let fileCount = 0;
-
-      for await (const file of files) {
-        fileCount++;
-        request.log.info(`Processing file ${fileCount}: ${file.filename}`);
-        fileArray.push(file);
-
-        // Safety limit to prevent infinite loops
-        if (fileCount > 20) {
-          throw new Error(
-            'Too many files in request - possible infinite loop detected',
-          );
-        }
-      }
-
-      request.log.info(
-        `Collected ${fileArray.length} files from multipart request`,
-      );
-
-      if (fileArray.length === 0) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'NO_FILES_PROVIDED',
-            message: 'No files provided in request',
-          },
-          meta: {
-            requestId: request.id,
-            timestamp: new Date().toISOString(),
-            version: '1.0',
-          },
-        });
-      }
-
-      const uploadRequest: FileUploadRequest = {
-        category: request.body?.category,
-        isPublic: this.parseBoolean(request.body?.isPublic),
-        isTemporary: this.parseBoolean(request.body?.isTemporary),
-        expiresIn: request.body?.expiresIn
-          ? Number(request.body.expiresIn)
-          : undefined,
-        allowDuplicates: this.parseBoolean(request.body?.allowDuplicates),
-        metadata: request.body?.metadata,
-      };
-
-      const userId = request.user?.id;
-      if (!userId) {
-        return reply.code(401).send({
-          success: false,
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'User authentication required',
-          },
-          meta: {
-            requestId: request.id,
-            timestamp: new Date().toISOString(),
-            version: '1.0',
-          },
-        });
-      }
-
-      request.log.info(
-        `Starting multiple file upload: ${fileArray.length} files`,
-      );
-      const uploadStartTime = Date.now();
-
-      const result = await this.deps.fileUploadService.uploadMultipleFiles(
-        fileArray,
-        uploadRequest,
-        userId,
-      );
-
-      // Generate signed URLs for uploaded files
-      const uploadedWithUrls = await Promise.all(
-        result.uploaded.map(async (file) => {
-          try {
-            const signedUrlsResult =
-              await this.deps.fileUploadService.generateSignedUrls(
-                file.id,
-                { expiresIn: 3600 },
-                userId,
-              );
-            return {
-              ...file,
-              signedUrls: signedUrlsResult.urls,
-            };
-          } catch (_error) {
-            // If signed URL generation fails, return file without URLs
-            return file;
-          }
-        }),
-      );
-
-      const uploadEndTime = Date.now();
-      const uploadDuration = uploadEndTime - uploadStartTime;
-
-      const statusCode =
-        result.failed.length === 0
-          ? 201
-          : result.uploaded.length === 0
-            ? 400
-            : 207;
-
-      request.log.info(
-        `Multiple file upload completed: ${result.uploaded.length}/${result.summary.total} files uploaded (${uploadDuration}ms)`,
-      );
-
-      return reply.code(statusCode).send({
-        success: true,
-        data: {
-          ...result,
-          uploaded: uploadedWithUrls,
-        },
-        meta: {
-          requestId: request.id,
-          timestamp: new Date().toISOString(),
-          version: '1.0',
-          duration: uploadDuration,
-        },
-      });
-    } catch (error: any) {
-      request.log.error(error, 'Failed to upload multiple files');
-
-      // Handle specific Fastify multipart errors
-      let statusCode = 500;
-      let errorCode = 'UPLOAD_FAILED';
-      let errorMessage = error.message || 'Failed to upload files';
-
-      if (error.code === 'FST_FILES_LIMIT') {
-        statusCode = 413;
-        errorCode = 'FILE_LIMIT_EXCEEDED';
-        errorMessage = 'Too many files. Maximum 10 files allowed.';
-      } else if (error.code === 'FST_FILE_TOO_LARGE') {
-        statusCode = 413;
-        errorCode = 'FILE_TOO_LARGE';
-        errorMessage = 'File size exceeds 100MB limit.';
-      } else if (error.message.includes('timeout')) {
-        statusCode = 408;
-        errorCode = 'UPLOAD_TIMEOUT';
-        errorMessage =
-          'Upload operation timed out. Please try with smaller files or fewer files.';
-      } else if (error.message.includes('Buffer read timeout')) {
-        statusCode = 408;
-        errorCode = 'FILE_READ_TIMEOUT';
-        errorMessage =
-          'File reading timed out. The file may be corrupted or too large.';
-      }
-
-      return reply.code(statusCode).send({
-        success: false,
-        error: {
-          code: errorCode,
-          message: errorMessage,
-          statusCode: statusCode,
-          details:
-            process.env.NODE_ENV === 'development' ? error.stack : undefined,
-        },
-        meta: {
-          requestId: request.id,
-          timestamp: new Date().toISOString(),
-          version: '1.0',
-        },
-      });
-    }
-  }
+  // Note: uploadMultipleFiles method removed
+  // Frontend should upload files individually in parallel
+  // This follows AWS S3, MinIO, and Google Cloud Storage patterns
 
   /**
    * Get file metadata
@@ -473,15 +285,26 @@ export class FileUploadController {
     try {
       const userId = request.user?.id;
       // Optional authentication: if userId is provided, filter by user + public files
-      // If no userId, show only public files
+      // If no userId (anonymous), show only anonymous uploads OR public files
+
+      // Parse metadata filter from query string (for context-aware filtering)
+      let metadataFilter: Record<string, any> | undefined;
+      if ((request.query as any).metadata) {
+        try {
+          metadataFilter = JSON.parse((request.query as any).metadata);
+        } catch (err) {
+          request.log.warn({ err }, 'Failed to parse metadata filter');
+        }
+      }
 
       const filters = {
-        uploadedBy: userId, // This will be undefined for anonymous users
+        uploadedBy: userId !== undefined ? userId : null, // null for explicit anonymous
         category: request.query.category,
         type: request.query.type,
         isPublic: request.query.isPublic,
         isTemporary: request.query.isTemporary,
         search: request.query.search,
+        metadata: metadataFilter,
       };
 
       // Map API field names to database column names

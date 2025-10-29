@@ -170,6 +170,7 @@ export class LocalStorageAdapter implements IStorageAdapter {
   async generateViewUrl(
     fileKey: string,
     options: ViewUrlOptions = {},
+    fileId?: string,
   ): Promise<string> {
     const token = await this.generateJWTToken(
       fileKey,
@@ -185,12 +186,15 @@ export class LocalStorageAdapter implements IStorageAdapter {
       queryParams.set('cache', options.cache.toString());
     }
 
-    return `${this.config.baseUrl}/api/files/${this.extractFileId(fileKey)}/view?${queryParams.toString()}`;
+    // Use provided fileId or fallback to extracting from fileKey
+    const id = fileId || this.extractFileId(fileKey);
+    return `${this.config.baseUrl}/api/files/${id}/view?${queryParams.toString()}`;
   }
 
   async generateDownloadUrl(
     fileKey: string,
     options: DownloadUrlOptions = {},
+    fileId?: string,
   ): Promise<string> {
     const token = await this.generateJWTToken(
       fileKey,
@@ -203,12 +207,15 @@ export class LocalStorageAdapter implements IStorageAdapter {
       queryParams.set('inline', options.inline.toString());
     }
 
-    return `${this.config.baseUrl}/api/files/${this.extractFileId(fileKey)}/download?${queryParams.toString()}`;
+    // Use provided fileId or fallback to extracting from fileKey
+    const id = fileId || this.extractFileId(fileKey);
+    return `${this.config.baseUrl}/api/files/${id}/download?${queryParams.toString()}`;
   }
 
   async generateThumbnailUrl(
     fileKey: string,
     options: ThumbnailUrlOptions = {},
+    fileId?: string,
   ): Promise<string> {
     const token = await this.generateJWTToken(
       fileKey,
@@ -227,7 +234,9 @@ export class LocalStorageAdapter implements IStorageAdapter {
       queryParams.set('format', options.format);
     }
 
-    return `${this.config.baseUrl}/api/files/${this.extractFileId(fileKey)}/thumbnail?${queryParams.toString()}`;
+    // Use provided fileId or fallback to extracting from fileKey
+    const id = fileId || this.extractFileId(fileKey);
+    return `${this.config.baseUrl}/api/files/${id}/thumbnail?${queryParams.toString()}`;
   }
 
   async generateMultipleUrls(
@@ -250,14 +259,26 @@ export class LocalStorageAdapter implements IStorageAdapter {
       },
     );
 
-    // Generate individual URLs
+    // Generate individual URLs with fileId
     const [viewUrl, downloadUrl, thumbnailUrl] = await Promise.all([
-      this.generateViewUrl(fileMetadata.storageKey, { expiresIn }),
-      this.generateDownloadUrl(fileMetadata.storageKey, { expiresIn }),
-      this.generateThumbnailUrl(fileMetadata.storageKey, {
-        ...options.thumbnailOptions,
-        expiresIn,
-      }),
+      this.generateViewUrl(
+        fileMetadata.storageKey,
+        { expiresIn },
+        fileMetadata.id,
+      ),
+      this.generateDownloadUrl(
+        fileMetadata.storageKey,
+        { expiresIn },
+        fileMetadata.id,
+      ),
+      this.generateThumbnailUrl(
+        fileMetadata.storageKey,
+        {
+          ...options.thumbnailOptions,
+          expiresIn,
+        },
+        fileMetadata.id,
+      ),
     ]);
 
     return {

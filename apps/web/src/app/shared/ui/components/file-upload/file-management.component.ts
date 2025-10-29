@@ -21,17 +21,28 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { Subscription, debounceTime, distinctUntilChanged, skip } from 'rxjs';
+import { MatBadgeModule } from '@angular/material/badge';
+import {
+  Subscription,
+  debounceTime,
+  distinctUntilChanged,
+  skip,
+  forkJoin,
+} from 'rxjs';
 
 import { FileUploadService } from './file-upload.service';
+import {
+  AttachmentService,
+  AttachmentStatistics,
+} from '../../../services/attachment.service';
 import { ConfirmDialogComponent } from '../confirm-dialog.component';
+import { AttachmentDetailsDialogComponent } from './attachment-details-dialog.component';
 import {
   UploadedFile,
   FileListQuery,
@@ -39,6 +50,24 @@ import {
   isViewableMimeType,
 } from './file-upload.types';
 
+/**
+ * Enhanced File with Attachment Information
+ */
+interface EnhancedFile extends UploadedFile {
+  attachmentCount?: number;
+  isLoadingAttachments?: boolean;
+}
+
+/**
+ * File Management Component with Attachment Integration
+ *
+ * Features:
+ * - Shows attachment count badges
+ * - Displays "In Use" indicators
+ * - Opens AttachmentDetailsDialog to show where files are used
+ * - Prevents deletion of files that are attached to entities
+ * - Warns users before deleting attached files
+ */
 @Component({
   selector: 'app-file-management',
   standalone: true,
@@ -55,24 +84,37 @@ import {
     MatIconModule,
     MatMenuModule,
     MatChipsModule,
-    MatCardModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDialogModule,
     MatCheckboxModule,
     MatTooltipModule,
     MatDividerModule,
+    MatBadgeModule,
   ],
   template: `
-    <mat-card class="file-management-container">
-      <mat-card-header class="file-management-header">
-        <mat-card-title>File Management</mat-card-title>
-        <mat-card-subtitle> Manage your uploaded files </mat-card-subtitle>
+    <div class="file-management-container">
+      <!-- Header -->
+      <div class="file-management-header">
+        <div>
+          <h2
+            class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1"
+          >
+            <mat-icon class="text-blue-600 dark:text-blue-400"
+              >folder_open</mat-icon
+            >
+            <span>File Management</span>
+          </h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Manage uploaded files with attachment tracking
+          </p>
+        </div>
         <div class="header-actions">
           <button
             mat-icon-button
             (click)="refreshFiles()"
             [disabled]="isLoading()"
+            matTooltip="Refresh files"
           >
             <mat-icon>refresh</mat-icon>
           </button>
@@ -94,38 +136,38 @@ import {
             </button>
           </mat-menu>
         </div>
-      </mat-card-header>
+      </div>
 
       <!-- File Statistics -->
-      <div *ngIf="fileStats()" class="file-stats">
+      <div *ngIf="attachmentStats()" class="file-stats">
         <div class="stats-grid">
           <div class="stat-card">
-            <mat-icon>folder</mat-icon>
-            <div>
-              <div class="stat-value">{{ fileStats()!.totalFiles }}</div>
-              <div class="stat-label">Total Files</div>
+            <div class="stat-label">Total Files</div>
+            <div class="stat-value">{{ attachmentStats()!.totalFiles }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Files With Attachments</div>
+            <div class="stat-value">
+              {{ attachmentStats()!.filesWithAttachments }}
             </div>
           </div>
           <div class="stat-card">
-            <mat-icon>storage</mat-icon>
-            <div>
-              <div class="stat-value">
-                {{ fileStats()!.totalSizeFormatted }}
-              </div>
-              <div class="stat-label">Total Size</div>
+            <div class="stat-label">Files Without Attachments</div>
+            <div class="stat-value">
+              {{ attachmentStats()!.filesWithoutAttachments }}
             </div>
           </div>
           <div class="stat-card">
-            <mat-icon>pie_chart</mat-icon>
-            <div>
-              <div class="stat-value">{{ fileStats()!.quotaPercentage }}%</div>
-              <div class="stat-label">Quota Used</div>
+            <div class="stat-label">Total Attachments</div>
+            <div class="stat-value">
+              {{ attachmentStats()!.totalAttachments }}
             </div>
           </div>
         </div>
       </div>
 
-      <mat-card-content>
+      <!-- Content -->
+      <div class="file-management-content">
         <!-- Filters and Search -->
         <form [formGroup]="filterForm" class="filter-form">
           <div class="filter-row">
@@ -164,21 +206,22 @@ import {
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Status</mat-label>
-              <mat-select formControlName="isPublic">
+              <mat-label>Usage Status</mat-label>
+              <mat-select formControlName="attachmentStatus">
                 <mat-option value="">All Files</mat-option>
-                <mat-option [value]="true">Public</mat-option>
-                <mat-option [value]="false">Private</mat-option>
+                <mat-option value="attached">In Use</mat-option>
+                <mat-option value="unattached">Not Used</mat-option>
               </mat-select>
             </mat-form-field>
 
             <button
-              mat-stroked-button
-              color="primary"
+              type="button"
               (click)="clearFilters()"
               [disabled]="!hasActiveFilters()"
+              class="inline-flex items-center justify-center gap-2 px-4 h-14 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Clear Filters
+              <mat-icon class="icon-size-5">clear</mat-icon>
+              <span>Clear Filters</span>
             </button>
           </div>
         </form>
@@ -263,19 +306,58 @@ import {
               </td>
             </ng-container>
 
-            <!-- Name Column -->
+            <!-- Name Column with Attachment Badge -->
             <ng-container matColumnDef="originalName">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
               <td mat-cell *matCellDef="let file">
                 <div class="file-name-cell">
-                  <span class="file-name" [title]="file.originalName">{{
-                    file.originalName
-                  }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="file-name" [title]="file.originalName">{{
+                      file.originalName
+                    }}</span>
+
+                    <!-- Attachment Count Badge -->
+                    @if (
+                      file.attachmentCount !== undefined &&
+                      file.attachmentCount > 0
+                    ) {
+                      <button
+                        mat-icon-button
+                        class="attachment-badge-btn"
+                        (click)="showAttachmentDetails(file)"
+                        [matTooltip]="
+                          'Used in ' + file.attachmentCount + ' place(s)'
+                        "
+                      >
+                        <mat-icon
+                          [matBadge]="file.attachmentCount"
+                          matBadgeColor="primary"
+                          matBadgeSize="small"
+                          class="text-blue-600"
+                        >
+                          link
+                        </mat-icon>
+                      </button>
+                    }
+                  </div>
+
                   <div class="file-meta">
                     <mat-chip-set>
                       <mat-chip [class]="'category-' + file.fileCategory">{{
                         file.fileCategory
                       }}</mat-chip>
+
+                      <!-- In Use Indicator -->
+                      @if (
+                        file.attachmentCount !== undefined &&
+                        file.attachmentCount > 0
+                      ) {
+                        <mat-chip class="in-use-chip">
+                          <mat-icon class="chip-icon">check_circle</mat-icon>
+                          In Use
+                        </mat-chip>
+                      }
+
                       <mat-chip *ngIf="file.isPublic" class="public-chip"
                         >Public</mat-chip
                       >
@@ -300,7 +382,9 @@ import {
             <ng-container matColumnDef="mimeType">
               <th mat-header-cell *matHeaderCellDef>Type</th>
               <td mat-cell *matCellDef="let file">
-                <span class="file-type">{{ file.mimeType }}</span>
+                <span class="file-type" [title]="file.mimeType">{{
+                  getFriendlyFileType(file.mimeType)
+                }}</span>
               </td>
             </ng-container>
 
@@ -353,6 +437,18 @@ import {
                     <mat-icon>link</mat-icon>
                     Copy Link
                   </button>
+
+                  <!-- Show Attachment Details (if file is attached) -->
+                  @if (
+                    file.attachmentCount !== undefined &&
+                    file.attachmentCount > 0
+                  ) {
+                    <button mat-menu-item (click)="showAttachmentDetails(file)">
+                      <mat-icon>info</mat-icon>
+                      View Usage ({{ file.attachmentCount }})
+                    </button>
+                  }
+
                   <mat-divider></mat-divider>
                   <button
                     mat-menu-item
@@ -361,6 +457,16 @@ import {
                   >
                     <mat-icon>delete</mat-icon>
                     Delete
+                    @if (
+                      file.attachmentCount !== undefined &&
+                      file.attachmentCount > 0
+                    ) {
+                      <mat-icon
+                        class="ml-2 text-orange-600"
+                        matTooltip="File is in use"
+                        >warning</mat-icon
+                      >
+                    }
                   </button>
                 </mat-menu>
               </td>
@@ -394,6 +500,7 @@ import {
               *ngFor="let file of files(); trackBy: trackByFileId"
               class="file-card"
               [class.selected]="isSelected(file)"
+              [class.in-use]="file.attachmentCount && file.attachmentCount > 0"
             >
               <!-- Selection Checkbox -->
               <div class="card-selection">
@@ -403,6 +510,23 @@ import {
                 >
                 </mat-checkbox>
               </div>
+
+              <!-- In Use Badge (top-right) -->
+              @if (
+                file.attachmentCount !== undefined && file.attachmentCount > 0
+              ) {
+                <div class="card-in-use-badge">
+                  <mat-icon
+                    [matBadge]="file.attachmentCount"
+                    matBadgeColor="primary"
+                    matBadgeSize="small"
+                    class="text-blue-600"
+                    matTooltip="Used in {{ file.attachmentCount }} place(s)"
+                  >
+                    link
+                  </mat-icon>
+                </div>
+              }
 
               <!-- File Preview -->
               <div class="card-preview">
@@ -433,6 +557,17 @@ import {
                     <mat-chip [class]="'category-' + file.fileCategory">{{
                       file.fileCategory
                     }}</mat-chip>
+
+                    @if (
+                      file.attachmentCount !== undefined &&
+                      file.attachmentCount > 0
+                    ) {
+                      <mat-chip class="in-use-chip">
+                        <mat-icon class="chip-icon">check_circle</mat-icon>
+                        In Use
+                      </mat-chip>
+                    }
+
                     <mat-chip *ngIf="file.isPublic" class="public-chip"
                       >Public</mat-chip
                     >
@@ -456,6 +591,20 @@ import {
                 >
                   <mat-icon>visibility</mat-icon>
                 </button>
+
+                <!-- Show attachment details if file is in use -->
+                @if (
+                  file.attachmentCount !== undefined && file.attachmentCount > 0
+                ) {
+                  <button
+                    mat-icon-button
+                    (click)="showAttachmentDetails(file)"
+                    matTooltip="View usage details"
+                  >
+                    <mat-icon class="text-blue-600">info</mat-icon>
+                  </button>
+                }
+
                 <button
                   mat-icon-button
                   [matMenuTriggerFor]="cardMenu"
@@ -507,8 +656,8 @@ import {
           showFirstLastButtons
         >
         </mat-paginator>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   `,
   styles: [
     `
@@ -518,8 +667,13 @@ import {
 
       .file-management-header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+
+      .file-management-content {
+        /* Content wrapper */
       }
 
       .header-actions {
@@ -529,43 +683,69 @@ import {
       }
 
       .file-stats {
-        padding: 1rem;
-        background-color: #f5f5f5;
-        border-bottom: 1px solid #e0e0e0;
+        padding: 0 0 1.5rem 0;
+        background: transparent;
+        border-bottom: none;
+        margin-bottom: 1rem;
       }
 
       .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
       }
 
       .stat-card {
         display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
+        flex-direction: column;
+        padding: 1.5rem;
         background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        transition: all 0.15s ease;
       }
 
-      .stat-card mat-icon {
-        font-size: 2rem;
-        width: 2rem;
-        height: 2rem;
-        color: #2196f3;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
+      .stat-card:hover {
+        box-shadow:
+          0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px -1px rgba(0, 0, 0, 0.1);
       }
 
       .stat-label {
         font-size: 0.875rem;
-        color: #666;
+        font-weight: 500;
+        color: #6b7280;
+        line-height: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #111827;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Dark mode support */
+      :host-context(.dark) .stat-card {
+        background-color: #1f2937;
+        border-color: #374151;
+      }
+
+      :host-context(.dark) .stat-card:hover {
+        box-shadow:
+          0 1px 3px 0 rgba(0, 0, 0, 0.3),
+          0 1px 2px -1px rgba(0, 0, 0, 0.3);
+      }
+
+      :host-context(.dark) .stat-label {
+        color: #9ca3af;
+      }
+
+      :host-context(.dark) .stat-value {
+        color: #f9fafb;
       }
 
       .filter-form {
@@ -631,7 +811,7 @@ import {
       }
 
       .file-name-cell {
-        max-width: 300px;
+        max-width: 400px;
       }
 
       .file-name {
@@ -645,6 +825,11 @@ import {
 
       .file-meta {
         margin-top: 0.25rem;
+      }
+
+      .attachment-badge-btn {
+        width: 32px;
+        height: 32px;
       }
 
       .file-type {
@@ -683,7 +868,7 @@ import {
 
       .file-card {
         border: 1px solid #e0e0e0;
-        border-radius: 8px;
+        border-radius: 12px;
         overflow: hidden;
         background: white;
         transition: all 0.3s ease;
@@ -691,12 +876,17 @@ import {
       }
 
       .file-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
       }
 
       .file-card.selected {
         border-color: #2196f3;
         box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+      }
+
+      .file-card.in-use {
+        border-color: #4caf50;
       }
 
       .card-selection {
@@ -709,12 +899,23 @@ import {
         padding: 0.25rem;
       }
 
+      .card-in-use-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 50%;
+        padding: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
       .card-preview {
-        height: 160px;
+        height: 180px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #f5f5f5;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         position: relative;
       }
 
@@ -734,7 +935,7 @@ import {
         font-size: 4rem;
         height: 4rem;
         width: 4rem;
-        color: #666;
+        color: white;
       }
 
       .card-info {
@@ -762,13 +963,14 @@ import {
 
       .card-actions {
         position: absolute;
-        top: 0.5rem;
+        bottom: 0.5rem;
         right: 0.5rem;
         display: flex;
         gap: 0.25rem;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
         padding: 0.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         opacity: 0;
         transition: opacity 0.3s ease;
       }
@@ -778,6 +980,18 @@ import {
       }
 
       /* Chip Styles */
+      .chip-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+      }
+
+      .in-use-chip {
+        background-color: #4caf50 !important;
+        color: white !important;
+      }
+
       .category-image {
         background-color: #4caf50;
         color: white;
@@ -817,12 +1031,16 @@ import {
 
       /* Dark theme adjustments */
       :host-context(.dark) .file-stats {
-        background-color: #303030;
+        background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
         border-color: #666;
       }
 
       :host-context(.dark) .stat-card {
         background-color: #424242;
+        color: white;
+      }
+
+      :host-context(.dark) .stat-value {
         color: white;
       }
 
@@ -836,7 +1054,7 @@ import {
       }
 
       :host-context(.dark) .card-preview {
-        background-color: #303030;
+        background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
       }
 
       @media (max-width: 768px) {
@@ -867,19 +1085,21 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   @Output() filesDeleted = new EventEmitter<UploadedFile[]>();
 
   private fileUploadService = inject(FileUploadService);
+  private attachmentService = inject(AttachmentService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
   private subscription = new Subscription();
 
   // Signals
-  private _files = signal<UploadedFile[]>([]);
+  private _files = signal<EnhancedFile[]>([]);
   private _isLoading = signal(false);
   private _currentPage = signal(0);
   private _pageSize = signal(this.defaultPageSize);
   private _totalFiles = signal(0);
-  private _selectedFiles = signal<UploadedFile[]>([]);
+  private _selectedFiles = signal<EnhancedFile[]>([]);
   private _viewMode = signal<'table' | 'grid'>('table');
+  private _attachmentStats = signal<AttachmentStatistics | null>(null);
 
   readonly files = this._files.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
@@ -888,16 +1108,24 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   readonly totalFiles = this._totalFiles.asReadonly();
   readonly selectedFiles = this._selectedFiles.asReadonly();
   readonly viewMode = this._viewMode.asReadonly();
-  readonly fileStats = this.fileUploadService.fileStats;
+  readonly attachmentStats = this._attachmentStats.asReadonly();
 
   readonly availableCategories = FILE_UPLOAD_LIMITS.ALLOWED_CATEGORIES;
 
-  // Filter form
+  // Computed: Total files that have attachments
+  readonly totalAttachedFiles = computed(() => {
+    return this._files().filter(
+      (f) => f.attachmentCount && f.attachmentCount > 0,
+    ).length;
+  });
+
+  // Filter form (with new attachmentStatus filter)
   filterForm: FormGroup = this.fb.group({
     search: [''],
     category: [''],
     type: [''],
     isPublic: [''],
+    attachmentStatus: [''], // New filter
     sort: ['uploadedAt'],
     order: ['desc'],
   });
@@ -913,7 +1141,7 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     'uploadedAt',
     'actions',
   ];
-  dataSource = new MatTableDataSource<UploadedFile>();
+  dataSource = new MatTableDataSource<EnhancedFile>();
 
   // Computed properties
   readonly hasActiveFilters = computed(() => {
@@ -946,13 +1174,8 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   private setupFilterSubscription() {
     this.subscription.add(
       this.filterForm.valueChanges
-        .pipe(
-          skip(1), // Skip initial value เพื่อป้องกัน immediate trigger
-          debounceTime(300),
-          distinctUntilChanged(),
-        )
-        .subscribe((value) => {
-          // ป้องกัน infinite loop โดยตรวจสอบว่า loading อยู่หรือไม่
+        .pipe(skip(1), debounceTime(300), distinctUntilChanged())
+        .subscribe(() => {
           if (!this._isLoading()) {
             this._currentPage.set(0);
             this.loadFiles();
@@ -964,13 +1187,20 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   loadFiles() {
     this._isLoading.set(true);
 
+    const formValue = this.filterForm.value;
+    const attachmentStatusFilter = formValue.attachmentStatus;
+
     const query: FileListQuery = {
-      page: this._currentPage() + 1, // API uses 1-based pagination
+      page: this._currentPage() + 1,
       limit: this._pageSize(),
-      ...this.filterForm.value,
+      search: formValue.search,
+      category: formValue.category,
+      type: formValue.type,
+      isPublic: formValue.isPublic,
+      sort: formValue.sort,
+      order: formValue.order,
     };
 
-    // Remove empty values
     Object.keys(query).forEach((key) => {
       if (
         query[key as keyof FileListQuery] === '' ||
@@ -983,16 +1213,18 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.fileUploadService.getFiles(query).subscribe({
         next: (response) => {
-          this._files.set(response.data);
-          this._totalFiles.set(response.pagination.total);
-          this.dataSource.data = response.data;
-          this._isLoading.set(false);
+          const files: EnhancedFile[] = response.data;
+
+          // Load attachment counts for each file
+          this.loadAttachmentCounts(files, attachmentStatusFilter);
         },
         error: (error) => {
           this.snackBar.open(
             'Failed to load files: ' + error.message,
             'Close',
-            { duration: 5000 },
+            {
+              duration: 5000,
+            },
           );
           this._isLoading.set(false);
         },
@@ -1000,11 +1232,92 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadFileStats() {
+  /**
+   * Load attachment counts for all files
+   */
+  private loadAttachmentCounts(
+    files: EnhancedFile[],
+    attachmentStatusFilter?: string,
+  ) {
+    if (files.length === 0) {
+      this._files.set([]);
+      this._totalFiles.set(0);
+      this.dataSource.data = [];
+      this._isLoading.set(false);
+      return;
+    }
+
+    // Create observable array for attachment count requests
+    const countRequests = files.map((file) =>
+      this.attachmentService.getAttachmentCountByFileId(file.id),
+    );
+
     this.subscription.add(
-      this.fileUploadService.getFileStats().subscribe({
+      forkJoin(countRequests).subscribe({
+        next: (counts) => {
+          // Attach counts to files
+          const enhancedFiles = files.map((file, index) => ({
+            ...file,
+            attachmentCount: counts[index],
+            isLoadingAttachments: false,
+          }));
+
+          // Apply client-side attachment status filter
+          let filteredFiles = enhancedFiles;
+          if (attachmentStatusFilter === 'attached') {
+            filteredFiles = enhancedFiles.filter(
+              (f) => f.attachmentCount && f.attachmentCount > 0,
+            );
+          } else if (attachmentStatusFilter === 'unattached') {
+            filteredFiles = enhancedFiles.filter(
+              (f) => !f.attachmentCount || f.attachmentCount === 0,
+            );
+          }
+
+          this._files.set(filteredFiles);
+          this._totalFiles.set(filteredFiles.length);
+          this.dataSource.data = filteredFiles;
+          this._isLoading.set(false);
+        },
         error: (error) => {
-          console.warn('Failed to load file statistics:', error);
+          console.error('Failed to load attachment counts:', error);
+
+          // Fallback: Set counts to undefined
+          const enhancedFiles = files.map((file) => ({
+            ...file,
+            attachmentCount: undefined,
+            isLoadingAttachments: false,
+          }));
+
+          this._files.set(enhancedFiles);
+          this._totalFiles.set(files.length);
+          this.dataSource.data = enhancedFiles;
+          this._isLoading.set(false);
+        },
+      }),
+    );
+  }
+
+  loadFileStats() {
+    console.log('[FileManagement] Loading attachment statistics...');
+    this.subscription.add(
+      this.attachmentService.getStatistics().subscribe({
+        next: (stats) => {
+          console.log('[FileManagement] Attachment statistics loaded:', stats);
+          this._attachmentStats.set(stats);
+        },
+        error: (error) => {
+          console.error(
+            '[FileManagement] Failed to load attachment statistics:',
+            error,
+          );
+          // Set default stats on error so cards are visible
+          this._attachmentStats.set({
+            totalFiles: 0,
+            filesWithAttachments: 0,
+            filesWithoutAttachments: 0,
+            totalAttachments: 0,
+          });
         },
       }),
     );
@@ -1018,20 +1331,19 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   }
 
   clearFilters() {
-    // Reset form โดยไม่ trigger valueChanges เพื่อป้องกัน infinite loop
     this.filterForm.reset(
       {
         search: '',
         category: '',
         type: '',
         isPublic: '',
+        attachmentStatus: '',
         sort: 'uploadedAt',
         order: 'desc',
       },
       { emitEvent: false },
     );
 
-    // เรียก loadFiles() โดยตรงแทน
     this._currentPage.set(0);
     this.loadFiles();
   }
@@ -1047,21 +1359,19 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   }
 
   onSortChange(sort: Sort) {
-    // ปรับปรุง form โดยไม่ trigger valueChanges เพื่อป้องกัน infinite loop
     this.filterForm.patchValue(
       {
         sort: sort.active || 'uploadedAt',
         order: sort.direction || 'desc',
       },
       { emitEvent: false },
-    ); // เพิ่ม emitEvent: false เพื่อไม่ให้ trigger valueChanges
+    );
 
-    // เรียก loadFiles() โดยตรงแทน
     this._currentPage.set(0);
     this.loadFiles();
   }
 
-  toggleSelection(file: UploadedFile) {
+  toggleSelection(file: EnhancedFile) {
     const selected = this._selectedFiles();
     const index = selected.findIndex((f) => f.id === file.id);
 
@@ -1082,16 +1392,42 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  isSelected(file: UploadedFile): boolean {
+  isSelected(file: EnhancedFile): boolean {
     return this._selectedFiles().some((f) => f.id === file.id);
   }
 
-  downloadFile(file: UploadedFile) {
-    // Use signed download URL if available, otherwise fallback to regular download
+  /**
+   * Show attachment details dialog
+   */
+  showAttachmentDetails(file: EnhancedFile) {
+    // Fetch full attachment details
+    this.subscription.add(
+      this.attachmentService.getAttachmentsByFileId(file.id).subscribe({
+        next: (attachments) => {
+          this.dialog.open(AttachmentDetailsDialogComponent, {
+            width: '600px',
+            data: {
+              fileName: file.originalName,
+              fileId: file.id,
+              attachments,
+            },
+          });
+        },
+        error: (error) => {
+          this.snackBar.open(
+            'Failed to load attachment details: ' + error.message,
+            'Close',
+            { duration: 5000 },
+          );
+        },
+      }),
+    );
+  }
+
+  downloadFile(file: EnhancedFile) {
     if (file.signedUrls?.download) {
       window.open(file.signedUrls.download, '_blank');
     } else {
-      // Generate signed URL for download
       this.subscription.add(
         this.fileUploadService
           .generateSignedUrl(file.id, { expiresIn: 3600 })
@@ -1103,9 +1439,7 @@ export class FileManagementComponent implements OnInit, OnDestroy {
               this.snackBar.open(
                 'Failed to generate download link: ' + error.message,
                 'Close',
-                {
-                  duration: 5000,
-                },
+                { duration: 5000 },
               );
             },
           }),
@@ -1113,27 +1447,22 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  viewFile(file: UploadedFile) {
-    // Smart View Logic: Check if file is viewable, otherwise force download
+  viewFile(file: EnhancedFile) {
     const isViewable = isViewableMimeType(file.mimeType);
 
     if (!isViewable) {
-      // File cannot be viewed inline, show message and offer download instead
       this.snackBar.open(
         `This file type (${file.mimeType}) cannot be previewed. Click Download to save the file.`,
         'Close',
         { duration: 5000 },
       );
-      // Automatically trigger download for non-viewable files
       this.downloadFile(file);
       return;
     }
 
-    // Use signed view URL if available, otherwise fallback to regular view
     if (file.signedUrls?.view) {
       window.open(file.signedUrls.view, '_blank');
     } else {
-      // Generate signed URL for view
       this.subscription.add(
         this.fileUploadService
           .generateSignedUrl(file.id, { expiresIn: 3600 })
@@ -1156,8 +1485,7 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     this.fileSelected.emit(file);
   }
 
-  copyLink(file: UploadedFile) {
-    // Use signed download URL if available, otherwise generate one
+  copyLink(file: EnhancedFile) {
     if (file.signedUrls?.download) {
       navigator.clipboard.writeText(file.signedUrls.download).then(() => {
         this.snackBar.open(
@@ -1169,7 +1497,6 @@ export class FileManagementComponent implements OnInit, OnDestroy {
         );
       });
     } else {
-      // Generate signed URL for sharing
       this.subscription.add(
         this.fileUploadService
           .generateSignedUrl(file.id, { expiresIn: 86400 })
@@ -1191,9 +1518,7 @@ export class FileManagementComponent implements OnInit, OnDestroy {
               this.snackBar.open(
                 'Failed to generate shareable link: ' + error.message,
                 'Close',
-                {
-                  duration: 5000,
-                },
+                { duration: 5000 },
               );
             },
           }),
@@ -1201,50 +1526,89 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteFile(file: UploadedFile) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Delete File',
-        message: `Are you sure you want to delete "${file.originalName}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-      },
-    });
+  /**
+   * Delete file with attachment protection
+   */
+  deleteFile(file: EnhancedFile) {
+    // Check if file is attached
+    if (file.attachmentCount && file.attachmentCount > 0) {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        data: {
+          title: 'Delete File In Use',
+          message: `⚠️ This file is currently used in ${file.attachmentCount} place(s).\n\nDeleting this file will NOT remove the attachments, but the entities will lose access to this file.\n\nAre you sure you want to proceed?`,
+          confirmText: 'Delete Anyway',
+          cancelText: 'Cancel',
+        },
+      });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.subscription.add(
-          this.fileUploadService.deleteFile(file.id).subscribe({
-            next: () => {
-              this.snackBar.open('File deleted successfully', 'Close', {
-                duration: 3000,
-              });
-              this.refreshFiles();
-              this.filesDeleted.emit([file]);
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.performDelete(file);
+        }
+      });
+    } else {
+      // File not attached, proceed with normal delete confirmation
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: {
+          title: 'Delete File',
+          message: `Are you sure you want to delete "${file.originalName}"? This action cannot be undone.`,
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.performDelete(file);
+        }
+      });
+    }
+  }
+
+  private performDelete(file: EnhancedFile) {
+    this.subscription.add(
+      this.fileUploadService.deleteFile(file.id).subscribe({
+        next: () => {
+          this.snackBar.open('File deleted successfully', 'Close', {
+            duration: 3000,
+          });
+          this.refreshFiles();
+          this.filesDeleted.emit([file]);
+        },
+        error: (error) => {
+          this.snackBar.open(
+            'Failed to delete file: ' + error.message,
+            'Close',
+            {
+              duration: 5000,
             },
-            error: (error) => {
-              this.snackBar.open(
-                'Failed to delete file: ' + error.message,
-                'Close',
-                { duration: 5000 },
-              );
-            },
-          }),
-        );
-      }
-    });
+          );
+        },
+      }),
+    );
   }
 
   bulkDelete() {
     const selected = this._selectedFiles();
     if (selected.length === 0) return;
 
+    // Count attached files
+    const attachedFiles = selected.filter(
+      (f) => f.attachmentCount && f.attachmentCount > 0,
+    );
+
+    const message =
+      attachedFiles.length > 0
+        ? `⚠️ You are about to delete ${selected.length} files, including ${attachedFiles.length} file(s) that are currently in use.\n\nAre you sure you want to proceed?`
+        : `Are you sure you want to delete ${selected.length} selected files? This action cannot be undone.`;
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
+      width: '500px',
       data: {
         title: 'Delete Files',
-        message: `Are you sure you want to delete ${selected.length} selected files? This action cannot be undone.`,
+        message,
         confirmText: 'Delete All',
         cancelText: 'Cancel',
       },
@@ -1266,7 +1630,7 @@ export class FileManagementComponent implements OnInit, OnDestroy {
             this.refreshFiles();
             this.filesDeleted.emit(selected);
           })
-          .catch((_error) => {
+          .catch(() => {
             this.snackBar.open('Some files could not be deleted', 'Close', {
               duration: 5000,
             });
@@ -1284,6 +1648,81 @@ export class FileManagementComponent implements OnInit, OnDestroy {
   }
 
   formatFileSize = this.fileUploadService.formatFileSize;
+
+  /**
+   * Convert mime type to friendly file type name
+   */
+  getFriendlyFileType(mimeType: string): string {
+    const mimeTypeMap: Record<string, string> = {
+      // Images
+      'image/jpeg': 'JPEG Image',
+      'image/jpg': 'JPEG Image',
+      'image/png': 'PNG Image',
+      'image/gif': 'GIF Image',
+      'image/webp': 'WebP Image',
+      'image/svg+xml': 'SVG Image',
+      'image/bmp': 'BMP Image',
+      'image/tiff': 'TIFF Image',
+
+      // Documents
+      'application/pdf': 'PDF',
+      'application/msword': 'Word',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        'Word',
+      'application/vnd.ms-excel': 'Excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        'Excel',
+      'application/vnd.ms-powerpoint': 'PowerPoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        'PowerPoint',
+
+      // Text
+      'text/plain': 'Text',
+      'text/csv': 'CSV',
+      'text/html': 'HTML',
+      'text/css': 'CSS',
+      'text/javascript': 'JavaScript',
+
+      // Archives
+      'application/zip': 'ZIP',
+      'application/x-rar-compressed': 'RAR',
+      'application/x-7z-compressed': '7Z',
+      'application/x-tar': 'TAR',
+      'application/gzip': 'GZIP',
+
+      // Others
+      'application/json': 'JSON',
+      'application/xml': 'XML',
+      'video/mp4': 'MP4 Video',
+      'video/avi': 'AVI Video',
+      'audio/mpeg': 'MP3',
+      'audio/wav': 'WAV',
+    };
+
+    // Return friendly name if exists
+    if (mimeTypeMap[mimeType]) {
+      return mimeTypeMap[mimeType];
+    }
+
+    // Fallback: Extract main type (e.g., "image" from "image/png")
+    const mainType = mimeType.split('/')[0];
+    const subType = mimeType.split('/')[1]?.toUpperCase() || '';
+
+    switch (mainType) {
+      case 'image':
+        return `${subType} Image`;
+      case 'video':
+        return `${subType} Video`;
+      case 'audio':
+        return `${subType} Audio`;
+      case 'text':
+        return `${subType} Text`;
+      case 'application':
+        return subType || 'File';
+      default:
+        return mimeType;
+    }
+  }
 
   getFileIcon(mimeType: string): string {
     const category = this.fileUploadService.getFileTypeCategory(mimeType);
@@ -1308,20 +1747,14 @@ export class FileManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  trackByFileId(index: number, file: UploadedFile): string {
+  trackByFileId(index: number, file: EnhancedFile): string {
     return file.id;
   }
 
-  /**
-   * Get display thumbnail URL (uses signed URLs directly)
-   */
-  getDisplayThumbnailUrl(file: UploadedFile): string {
-    // Use signed thumbnail URL directly - CORS is configured to allow this
+  getDisplayThumbnailUrl(file: EnhancedFile): string {
     if (file.signedUrls?.thumbnail) {
       return file.signedUrls.thumbnail;
     }
-
-    // If no signed URL, return empty (should not happen in current implementation)
     return '';
   }
 }

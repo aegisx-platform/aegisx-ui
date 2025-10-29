@@ -94,7 +94,8 @@
     "generate:crud": "node tools/crud-generator/index.js generate",
     "generate:crud:events": "node tools/crud-generator/index.js generate --with-events",
     "crud:list": "node tools/crud-generator/index.js list-tables",
-    "crud:validate": "node tools/crud-generator/index.js validate"
+    "crud:validate": "node tools/crud-generator/index.js validate",
+    "migrate:file-storage": "tsx scripts/migrate-file-storage.ts"
   },
   "private": true,
   "dependencies": {
@@ -109,6 +110,8 @@
     "@angular/platform-browser": "~20.1.0",
     "@angular/platform-browser-dynamic": "~20.1.0",
     "@angular/router": "~20.1.0",
+    "@aws-sdk/client-s3": "^3.918.0",
+    "@aws-sdk/s3-request-presigner": "^3.918.0",
     "@fastify/auth": "^5.0.2",
     "@fastify/autoload": "^6.3.1",
     "@fastify/cookie": "^11.0.2",
@@ -149,6 +152,7 @@
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
     "lodash-es": "4.17.21",
+    "minio": "^8.0.6",
     "moment": "^2.30.1",
     "monaco-editor": "^0.54.0",
     "ngx-extended-pdf-viewer": "25.6.0-alpha.3",

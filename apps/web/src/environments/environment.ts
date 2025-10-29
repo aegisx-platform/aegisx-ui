@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3383', // Direct API URL for Multi-Instance Development
+  apiUrl: '', // Use proxy in development (managed by proxy.conf.js)
   features: {
     enableComponentShowcase: true, // Enable component showcase in development
   },

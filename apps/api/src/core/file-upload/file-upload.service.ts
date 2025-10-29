@@ -66,7 +66,7 @@ export class FileUploadService {
   async uploadFile(
     file: MultipartFile,
     uploadRequest: FileUploadRequest,
-    userId: string,
+    userId?: string,
   ): Promise<ProcessedUploadResult> {
     const result = await this.uploadFileWithoutVariants(
       file,
@@ -86,7 +86,7 @@ export class FileUploadService {
   private async uploadFileWithoutVariants(
     file: MultipartFile,
     uploadRequest: FileUploadRequest,
-    userId: string,
+    userId?: string,
   ): Promise<ProcessedUploadResult> {
     try {
       // Validate file
@@ -166,12 +166,20 @@ export class FileUploadService {
         processTimeoutPromise,
       ]);
 
-      // Generate unique file ID for consistent storage paths
+      // Generate unique file ID
       const fileId = crypto.randomUUID();
 
-      // Generate storage key using file ID for consistency
-      // Always use 'file' for original uploads, 'image' is for variants only
-      const storageKey = this.generateStorageKey(fileId, 'file', file.filename);
+      // Determine category (from request or auto-detect from MIME type)
+      const category =
+        uploadRequest.category || this.determineCategory(file.mimetype);
+
+      // Generate storage key with new 3-level structure
+      // Format: {category}/{year-month}/{filename}_{timestamp}_{hash}.{ext}
+      const storageKey = this.generateStorageKey(
+        category,
+        file.filename,
+        fileHash,
+      );
 
       // Upload to storage with timeout protection
       const STORAGE_UPLOAD_TIMEOUT = 60000; // 60 seconds
@@ -268,119 +276,10 @@ export class FileUploadService {
     }
   }
 
-  /**
-   * Upload multiple files with concurrent processing and timeout protection
-   */
-  async uploadMultipleFiles(
-    files: MultipartFile[],
-    uploadRequest: FileUploadRequest,
-    userId: string,
-  ): Promise<MultipleUploadResult> {
-    const startTime = Date.now();
-    this.deps.logger.info(
-      `Starting multiple file upload: ${files.length} files for user ${userId}`,
-    );
-
-    const uploaded: UploadedFile[] = [];
-    const failed: Array<{ filename: string; error: string; code: string }> = [];
-    let totalSize = 0;
-
-    // Validate total number of files
-    if (files.length > FILE_UPLOAD_LIMITS.MAX_FILES_PER_UPLOAD) {
-      throw new Error(
-        `Too many files. Maximum ${FILE_UPLOAD_LIMITS.MAX_FILES_PER_UPLOAD} files allowed per upload.`,
-      );
-    }
-
-    // Process files with controlled concurrency and timeout protection
-    const CONCURRENCY_LIMIT = 3; // Process max 3 files simultaneously
-    const UPLOAD_TIMEOUT = 120000; // 2 minutes per file
-
-    const processFile = async (file: MultipartFile, index: number) => {
-      const fileStartTime = Date.now();
-      this.deps.logger.info(
-        `Processing file ${index + 1}/${files.length}: ${file.filename}`,
-      );
-
-      try {
-        // Add timeout wrapper for individual file upload
-        const uploadPromise = this.uploadFileWithoutVariants(
-          file,
-          uploadRequest,
-          userId,
-        );
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => {
-            reject(
-              new Error(
-                `Upload timeout: ${file.filename} took longer than ${UPLOAD_TIMEOUT}ms`,
-              ),
-            );
-          }, UPLOAD_TIMEOUT);
-        });
-
-        const result = await Promise.race([uploadPromise, timeoutPromise]);
-
-        const fileEndTime = Date.now();
-        this.deps.logger.info(
-          `File processed successfully: ${file.filename} (${fileEndTime - fileStartTime}ms)`,
-        );
-
-        uploaded.push(result.file);
-        totalSize += result.file.fileSize;
-
-        // Generate image variants asynchronously without blocking response
-        if (this.isImageFile(file.mimetype)) {
-          this.generateImageVariantsAsync(result.file, file).catch((error) => {
-            this.deps.logger.error(
-              error,
-              `Failed to generate variants for ${result.file.id}`,
-            );
-          });
-        }
-      } catch (error: any) {
-        const fileEndTime = Date.now();
-        this.deps.logger.error(
-          error,
-          `File upload failed: ${file.filename} (${fileEndTime - fileStartTime}ms)`,
-        );
-
-        failed.push({
-          filename: file.filename,
-          error: error.message,
-          code: this.getErrorCode(error),
-        });
-      }
-    };
-
-    // Process files in batches with concurrency control
-    for (let i = 0; i < files.length; i += CONCURRENCY_LIMIT) {
-      const batch = files.slice(i, i + CONCURRENCY_LIMIT);
-      const batchPromises = batch.map((file, batchIndex) =>
-        processFile(file, i + batchIndex),
-      );
-
-      await Promise.allSettled(batchPromises);
-    }
-
-    const endTime = Date.now();
-    const totalTime = endTime - startTime;
-
-    this.deps.logger.info(
-      `Multiple file upload completed: ${uploaded.length} uploaded, ${failed.length} failed (${totalTime}ms total)`,
-    );
-
-    return {
-      uploaded,
-      failed,
-      summary: {
-        total: files.length,
-        uploaded: uploaded.length,
-        failed: failed.length,
-        totalSize,
-      },
-    };
-  }
+  // Note: uploadMultipleFiles method removed
+  // Frontend should upload files individually in parallel using the single upload endpoint
+  // This follows AWS S3, MinIO, and Google Cloud Storage patterns
+  // Frontend will handle concurrency control (3-5 files at a time)
 
   /**
    * Get file by ID
@@ -826,16 +725,25 @@ export class FileUploadService {
           .jpeg({ quality: 80 })
           .toBuffer();
 
-        const variantKey = `${path.parse(file.filename).name}_${size.name}.jpg`;
+        // Generate hash for variant
+        const variantHash = this.generateFileHash(resizedBuffer);
+
+        // Create variant filename
+        const variantFilename = `${path.parse(file.filename).name}_${size.name}.jpg`;
+
+        // Use same category as original file + add '/variants' subdirectory
+        const variantCategory = `${file.fileCategory}/variants`;
+
+        // Generate storage key for variant
         const storageKey = this.generateStorageKey(
-          file.id,
-          'image',
-          variantKey,
+          variantCategory,
+          variantFilename,
+          variantHash,
         );
 
         await this.deps.storageAdapter.uploadFile(resizedBuffer, storageKey, {
           mimeType: 'image/jpeg',
-          originalName: variantKey,
+          originalName: variantFilename,
           isPublic: file.isPublic,
         });
 
@@ -910,19 +818,33 @@ export class FileUploadService {
     return await pipeline.toBuffer();
   }
 
+  /**
+   * Generate storage key with new 3-level structure
+   * Format: {category}/{year-month}/{filename}_{timestamp}_{hash}.{ext}
+   * Example: products/abc123/images/2025-10/photo_1730123456_a1b2c3d4.jpg
+   */
   private generateStorageKey(
-    userId: string,
-    fileType: string,
+    category: string,
     filename: string,
+    fileHash: string,
   ): string {
     const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    // Sanitize filename (remove special characters)
+    const sanitizedFilename = path
+      .parse(filename)
+      .name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const ext = path.parse(filename).ext || '';
 
-    return `${userId}/${fileType}/${year}/${month}/${day}/${Date.now()}_${sanitizedFilename}`;
+    // Get first 8 characters of hash for uniqueness
+    const shortHash = fileHash.substring(0, 8);
+
+    // Generate timestamp
+    const timestamp = Date.now();
+
+    // Construct storage key: category/year-month/filename_timestamp_hash.ext
+    return `${category}/${yearMonth}/${sanitizedFilename}_${timestamp}_${shortHash}${ext}`;
   }
 
   private generateFileHash(buffer: Buffer): string {

@@ -40,6 +40,7 @@ import { usersPlugin } from '../core/users';
 
 // Core platform modules (now in core/)
 import apiKeysPlugin from '../core/api-keys';
+import { attachmentPlugin } from '../core/attachments/attachment.plugin';
 import fileUploadPlugin from '../core/file-upload/file-upload.plugin';
 import navigationPlugin from '../core/navigation/navigation.plugin';
 import settingsPlugin from '../core/settings/settings.plugin';
@@ -350,6 +351,11 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'file-upload',
         plugin: fileUploadPlugin,
+        required: true,
+      },
+      {
+        name: 'attachments',
+        plugin: attachmentPlugin,
         required: true,
       },
       {
