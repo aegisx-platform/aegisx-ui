@@ -541,10 +541,10 @@ pnpm run db:migrate && pnpm run db:seed
 
 ### Current Status (Session 47 - 2025-10-29)
 
-**Navigation Management UI Feature Complete + Duplicate & Drag-Drop + Simplified:**
+**Navigation Management UI Feature Complete + Role Preview Mode:**
 
 - ✅ **Frontend Service** - NavigationItemsService with 9 API methods (168 lines)
-- ✅ **Management Component** - Simplified UI with enhanced hierarchy (8 columns, clear visual depth)
+- ✅ **Management Component** - Full UI with hierarchy, drag-drop, Role Preview Mode (838 lines)
 - ✅ **Dialog Component** - 3-tab dialog with pre-filled data support (700 lines)
 - ✅ **Route Registration** - Added to rbac.routes.ts with permission guards
 - ✅ **Build Verification** - Both frontend and backend builds passing (0 errors)
@@ -568,18 +568,28 @@ pnpm run db:migrate && pnpm run db:seed
    - Auto-disable when filters active (info banner + tooltips)
    - Optimistic UI with backend sync and error recovery
 
-4. **UI Simplification & Visual Improvements** ⭐ NEW
+4. **UI Simplification & Visual Improvements**
    - **27% Column Reduction** - From 11 to 8 columns (kept dragHandle per user request)
    - **Enhanced Hierarchy** - Clear visual depth with progressive colors and borders
    - **Better Permissions UX** - Icon + tooltip shows actual permission names
    - **Cleaner Design** - Removed bulk selection and technical columns
    - **91 Lines of CSS** - Comprehensive hierarchy styles with dark mode support
 
+5. **Role Preview Mode** ⭐ NEW
+   - **Toggle Between Roles** - See navigation from any role's perspective
+   - **Permission Verification** - Quickly check which menus each role can access
+   - **Multi-Format Support** - Handles both colon and dot permission formats
+   - **Read-Only Safety** - Prevents accidental edits during preview
+   - **Real-Time Filtering** - Instant updates using Angular Signals computed values
+   - **Visual Indicators** - Menu count (visible/total), role permissions count
+   - **3 Critical Bug Fixes** - Permission format mismatch, table synchronization, permission persistence
+
 **Technical Improvements:**
 
 - Fixed 2 frontend TypeScript strict mode errors (optional chaining, bracket notation)
 - Fixed 19 backend errors by adding service wrapper methods
 - Fixed 5 TypeScript errors in duplicate/drag-drop (service naming + type annotations)
+- Fixed 3 critical bugs in Role Preview Mode (permission format, table updates, persistence)
 - Implemented proper service layer pattern: Controller → Service → Repository
 - All methods include automatic cache invalidation on mutations
 
@@ -587,8 +597,8 @@ pnpm run db:migrate && pnpm run db:seed
 
 1. **Frontend** (3 new files + 2 modified):
    - `navigation-items.service.ts` - API service with 9 methods (added `duplicate()`)
-   - `navigation-management.component.ts` - Main UI with simplified design + hierarchy styles
-   - `navigation-item-dialog.component.ts` - Dialog with pre-filled data support (700 lines)
+   - `navigation-management.component.ts` - Main UI with Role Preview Mode (4 signals, 2 computed values, 2 effects)
+   - `navigation-item-dialog.component.ts` - Dialog with pre-filled data + permission update fix (700 lines)
    - `rbac.routes.ts` - Added navigation route
 
 2. **Backend** (3 new/modified):
@@ -596,11 +606,11 @@ pnpm run db:migrate && pnpm run db:seed
    - `navigation-items.controller.ts` - Added `duplicateNavigationItem()` endpoint
    - `navigation-items.routes.ts` - Added `POST /navigation-items/:id/duplicate` route
 
-**RBAC Module Progress:** 45% → 50% (Navigation Management complete with enhanced UX)
+**RBAC Module Progress:** 45% → 50% (Navigation Management complete with Role Preview Mode)
 
 **Next Steps:**
 
-- Test all features end-to-end in browser (CRUD, duplicate, drag-drop, hierarchy display)
+- Test Role Preview Mode end-to-end with different roles
 - Complete remaining RBAC pages (Role Management, Permission Management, User Role Assignment)
 
 ### Previous Status (Session 46 - 2025-10-28)

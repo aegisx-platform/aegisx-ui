@@ -744,13 +744,204 @@ effect(() => {
 **Complexity**: Medium (UI/UX improvements + comprehensive CSS)
 **Quality**: Production-ready, user-approved design
 
-**Total Session 47 Time**: ~6.5 hours
+#### **✅ COMPLETED: Session 47 Continuation 3 - Role Preview Mode Feature**
+
+**User Request**: "ผมอยากปรับให้มี mode ให้สามารถดูในมุมมองของแต่ละ role ได้ว่ามันได้เมนูอะไรบ้างเราจะทำแบบไหนดีครับ" (I want to add a mode to view navigation from each role's perspective to see which menus they can access. How should we implement this?)
+
+**User Requirements** (via AskUserQuestion):
+
+- **Display Format**: Side-by-side comparison
+- **Role Selection**: Toggle buttons
+- **Information**: Show role permissions, menu count (visible/total), visual indicators
+- **Functionality**: Read-only mode (no editing while in preview)
+
+**Tasks Completed**:
+
+1. **✅ Backend API Verification**
+   - Confirmed existing `getRolePermissions()` API works (no new endpoints needed)
+   - Returns permissions with format: `resource:action` (e.g., `profile:read`, `settings:view`)
+   - File: `rbac.service.ts:123-145`
+
+2. **✅ Frontend Component State - Angular Signals Architecture**
+   - Added 4 signals: `previewMode`, `selectedRole`, `availableRoles`, `rolePermissions`
+   - Added 2 computed values: `visibleItemsForRole`, `menuCount`
+   - Added 3 methods: `loadAvailableRoles()`, `previewAsRole()`, `exitPreviewMode()`
+   - File: `navigation-management.component.ts:673-677, 882-932`
+
+3. **✅ Permission Filtering Logic with Multi-Format Support**
+   - Items with no permissions → Always visible
+   - Items with permissions → Visible only if role has at least one matching permission
+   - **Critical Bug Fixed**: Permission format mismatch
+     - Role permissions: `resource:action` (colon separator)
+     - Navigation items: `resource.action` (dot separator)
+     - Solution: Multi-format matching strategy supporting both formats
+   - File: `navigation-management.component.ts:882-926`
+
+4. **✅ UI Components - Role Preview Mode Card**
+   - Toggle button group for role selection
+   - Preview information panel showing:
+     - Current role name
+     - Menu count (visible/total)
+     - Permissions count
+     - Exit preview button
+   - Visual banner: "Preview Mode Active - Read-only view"
+   - Dark mode support with `:host-context(.dark)` variants
+   - File: `navigation-management.component.ts` (template section)
+
+5. **✅ Read-Only Mode Implementation**
+   - Disabled edit actions (add, edit, delete, duplicate, import) in preview mode
+   - Disabled drag-and-drop sorting automatically via effect
+   - Added "Read-only mode active" message in action menu
+   - File: `navigation-management.component.ts` (template + effects)
+
+6. **✅ Table Update Synchronization Fix**
+   - **Bug Fixed**: Table not updating after role selection (effect race condition)
+   - Solution: Added explicit `this.onFilterChange()` calls in `previewAsRole()` and `exitPreviewMode()`
+   - Added effect to update dataSource when preview mode changes
+   - File: `navigation-management.component.ts:950-980, 1412-1476`
+
+7. **✅ Permission Update Persistence Fix**
+   - **Bug Fixed**: Permission updates not saving (empty array sent as `undefined`)
+   - Backend API design: `undefined` = "don't touch", `[]` = "clear field"
+   - Solution: Always send `permission_ids` array (even if empty)
+   - File: `navigation-item-dialog.component.ts:774-823`
+
+8. **✅ Data Refresh Filter Preservation**
+   - **Bug Fixed**: Preview filter lost after editing navigation item
+   - Solution: Changed `loadNavigationItems()` to use `onFilterChange()` instead of direct dataSource update
+   - File: `navigation-management.component.ts:991-1012`
+
+**Files Modified**:
+
+**Frontend** (2 files):
+
+- `navigation-management.component.ts` - Added Role Preview Mode functionality
+  - 4 new signals for state management
+  - 2 computed values for reactive filtering
+  - 3 new methods for preview mode control
+  - 2 effects for auto-updating UI
+  - UI components: Role toggle buttons, preview info panel, read-only banner
+  - Bug fixes: Multi-format permission matching, table synchronization
+
+- `navigation-item-dialog.component.ts` - Fixed permission update logic
+  - Changed from conditional `permission_ids` to always-send pattern
+  - Ensures empty array clears permissions (not ignored)
+
+**Critical Bug Fixes**:
+
+1. **Permission Format Mismatch (CRITICAL)**:
+
+   ```typescript
+   // Problem: Backend uses different formats
+   // Role permissions: "profile:read", "settings:view" (colon)
+   // Navigation items: "profile.read", "settings.view" (dot)
+
+   // Solution: Multi-format matching
+   const rolePermissionsWithDots = rolePermissionStrings.map((p) => p.replace(':', '.'));
+   const hasMatch = item.permissions.some((itemPerm) => {
+     const exactMatch = rolePermissionStrings.includes(itemPerm);
+     const dotMatch = rolePermissionsWithDots.includes(itemPerm);
+     const colonMatch = rolePermissionStrings.includes(itemPerm.replace('.', ':'));
+     return exactMatch || dotMatch || colonMatch;
+   });
+   ```
+
+2. **Table Update Race Condition**:
+
+   ```typescript
+   // Problem: Effect triggered but dataSource not updated immediately
+
+   // Solution: Explicit calls + effect for guaranteed updates
+   async previewAsRole(role: Role): Promise<void> {
+     // ... load permissions ...
+     this.previewMode.set(true);
+     this.onFilterChange(); // ⚠️ CRITICAL: Immediate table update
+   }
+
+   // Plus effect for reactive updates
+   effect(() => {
+     const visible = this.visibleItemsForRole();
+     this.dataSource.data = this.previewMode() ? visible : this.filteredNavigationItems();
+   });
+   ```
+
+3. **Permission Update Not Persisting**:
+
+   ```typescript
+   // Before (WRONG):
+   permission_ids: permissionIds.length > 0 ? permissionIds : undefined;
+   // Backend: if (permission_ids !== undefined) { update } // ❌ undefined skips update
+
+   // After (CORRECT):
+   permission_ids: permissionIds; // Always send array, even if empty
+   // Backend: if (permission_ids !== undefined) { update } // ✅ [] clears permissions
+   ```
+
+**Impact**:
+
+- ✅ **Role Perspective View** - See navigation from any role's viewpoint
+- ✅ **Permission Verification** - Quickly check which menus each role can access
+- ✅ **Multi-Format Support** - Handles both colon and dot permission formats
+- ✅ **Read-Only Safety** - Prevents accidental edits during preview
+- ✅ **Real-Time Filtering** - Instant updates using Angular Signals computed values
+- ✅ **Build Success** - Frontend and backend builds passing (0 errors)
+
+**Key Technical Patterns**:
+
+```typescript
+// Signals-Based Architecture
+readonly previewMode = signal(false);
+readonly selectedRole = signal<Role | null>(null);
+readonly rolePermissions = signal<Permission[]>([]);
+
+// Computed Reactive Filtering
+readonly visibleItemsForRole = computed(() => {
+  const items = this.filteredNavigationItems();
+  const permissions = this.rolePermissions();
+
+  return items.filter(item => {
+    if (!item.permissions?.length) return true;
+    return item.permissions.some(p => hasPermissionMatch(p, permissions));
+  });
+});
+
+// Effect for Auto-Updating UI
+effect(() => {
+  const visible = this.visibleItemsForRole();
+  this.dataSource.data = this.previewMode() ? visible : this.filteredNavigationItems();
+});
+```
+
+**Architecture Benefits**:
+
+1. **Reactive State Management** - Angular Signals provide automatic change detection
+2. **Computed Values** - Automatic recalculation when dependencies change
+3. **Multi-Format Compatibility** - Handles permission format inconsistencies gracefully
+4. **Read-Only Mode** - Conditional UI prevents accidental modifications
+5. **Effect-Based Synchronization** - UI stays in sync with state changes
+
+**Before vs After**:
+
+| Aspect                      | Before                     | After                                |
+| --------------------------- | -------------------------- | ------------------------------------ |
+| **Role Perspective**        | ❌ Not available           | ✅ Full role preview mode            |
+| **Permission Verification** | ❌ Manual database queries | ✅ Visual toggle between roles       |
+| **Format Support**          | ❌ Single format only      | ✅ Multi-format matching (colon/dot) |
+| **Table Updates**           | ❌ Race conditions         | ✅ Synchronized via effects          |
+| **Permission Updates**      | ❌ Empty array ignored     | ✅ Empty array clears permissions    |
+
+**Time Spent**: ~2.5 hours (implementation + 3 critical bug fixes + testing)
+**Complexity**: High (Angular Signals, multi-format support, 3 critical bug fixes)
+**Quality**: Production-ready with comprehensive error handling
+
+**Total Session 47 Time**: ~9 hours
 **Total Session 47 Impact**:
 
 - Navigation Management UI with full CRUD
 - Duplicate feature with smart key generation
 - Drag-and-drop sorting with visual feedback
-- **UI Simplification with enhanced hierarchy** (NEW)
+- UI Simplification with enhanced hierarchy
+- **Role Preview Mode with permission filtering** (NEW)
 - 35 permission mappings fixed
 - RBAC Module Progress: 45% → 50%
 

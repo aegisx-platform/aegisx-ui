@@ -37,6 +37,7 @@ import { RbacService } from '../../services/rbac.service';
 export interface NavigationItemDialogData {
   mode: 'create' | 'edit' | 'view';
   navigationItem?: NavigationItem;
+  prefilledData?: Partial<NavigationItem>;
   availableNavigationItems?: NavigationItem[];
 }
 
@@ -352,6 +353,43 @@ export interface NavigationItemDialogData {
             <!-- Permissions Tab -->
             <mat-tab label="Permissions">
               <div class="py-4">
+                <!-- Selected Permissions Summary (Top) -->
+                <div
+                  *ngIf="permissionSelection.selected.length > 0"
+                  class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800"
+                >
+                  <h4 class="font-medium mb-2 flex items-center gap-2">
+                    <mat-icon class="text-blue-600">verified_user</mat-icon>
+                    Selected Permissions ({{
+                      permissionSelection.selected.length
+                    }})
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
+                    <mat-chip
+                      *ngFor="
+                        let permission of permissionSelection.selected.slice(
+                          0,
+                          20
+                        )
+                      "
+                      class="!bg-blue-100 !text-blue-800 dark:!bg-blue-900 dark:!text-blue-200 !mr-2 !mb-2"
+                      [removable]="data.mode !== 'view'"
+                      (removed)="togglePermission(permission, false)"
+                    >
+                      {{ permission.resource }}.{{ permission.action }}
+                      <mat-icon matChipRemove *ngIf="data.mode !== 'view'"
+                        >cancel</mat-icon
+                      >
+                    </mat-chip>
+                    <mat-chip
+                      *ngIf="permissionSelection.selected.length > 20"
+                      class="!bg-gray-100 !text-gray-800 dark:!bg-gray-700 dark:!text-gray-200 !mr-2 !mb-2"
+                    >
+                      +{{ permissionSelection.selected.length - 20 }} more
+                    </mat-chip>
+                  </div>
+                </div>
+
                 <!-- Permission Search -->
                 <mat-form-field appearance="outline" class="w-full mb-4">
                   <mat-label>Search permissions</mat-label>
@@ -588,7 +626,11 @@ export class NavigationItemDialogComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    const item = this.data.navigationItem;
+    // Use prefilledData for create mode (duplication), otherwise use navigationItem (edit/view)
+    const item =
+      this.data.mode === 'create' && this.data.prefilledData
+        ? this.data.prefilledData
+        : this.data.navigationItem;
 
     this.navigationForm = this.fb.group({
       parent_id: [item?.parent_id || null],
@@ -630,14 +672,21 @@ export class NavigationItemDialogComponent implements OnInit {
       if (response) {
         this.availablePermissions.set(response.data);
 
-        // Pre-select permissions if editing
-        if (
-          this.data.mode === 'edit' &&
-          this.data.navigationItem?.permissions
-        ) {
-          this.data.navigationItem.permissions.forEach((itemPermission) => {
+        // Pre-select permissions if editing, viewing, or duplicating
+        const permissionsToSelect =
+          this.data.mode === 'create' && this.data.prefilledData
+            ? this.data.prefilledData.permissions
+            : (this.data.mode === 'edit' || this.data.mode === 'view') &&
+                this.data.navigationItem
+              ? this.data.navigationItem.permissions
+              : null;
+
+        if (permissionsToSelect && permissionsToSelect.length > 0) {
+          // Backend returns permissions as string[] like ['users.create', 'users.read']
+          // We need to match them with Permission objects from availablePermissions
+          permissionsToSelect.forEach((permissionString) => {
             const matchingPermission = response.data.find(
-              (p) => p.id === itemPermission.id,
+              (p) => `${p.resource}.${p.action}` === permissionString,
             );
             if (matchingPermission) {
               this.permissionSelection.select(matchingPermission);
@@ -745,30 +794,32 @@ export class NavigationItemDialogComponent implements OnInit {
           show_in_compact: formValue.show_in_compact,
           show_in_horizontal: formValue.show_in_horizontal,
           show_in_mobile: formValue.show_in_mobile,
-          permission_ids: permissionIds.length > 0 ? permissionIds : undefined,
+          // ✅ Always send permission_ids array (empty array = clear permissions)
+          permission_ids: permissionIds,
         };
 
         await this.navigationService.create(createRequest).toPromise();
       } else {
         const updateRequest: UpdateNavigationItemRequest = {
-          parent_id: formValue.parent_id,
+          parent_id: formValue.parent_id || undefined,
           key: formValue.key,
           title: formValue.title,
           type: formValue.type,
-          icon: formValue.icon,
-          link: formValue.link,
+          icon: formValue.icon || undefined,
+          link: formValue.link || undefined,
           target: formValue.target,
           sort_order: formValue.sort_order,
           disabled: formValue.disabled,
           hidden: formValue.hidden,
           exact_match: formValue.exact_match,
-          badge_title: formValue.badge_title,
-          badge_classes: formValue.badge_classes,
-          badge_variant: formValue.badge_variant,
+          badge_title: formValue.badge_title || undefined,
+          badge_classes: formValue.badge_classes || undefined,
+          badge_variant: formValue.badge_variant || undefined,
           show_in_default: formValue.show_in_default,
           show_in_compact: formValue.show_in_compact,
           show_in_horizontal: formValue.show_in_horizontal,
           show_in_mobile: formValue.show_in_mobile,
+          // ✅ Always send permission_ids array (empty array = clear permissions)
           permission_ids: permissionIds,
         };
 
