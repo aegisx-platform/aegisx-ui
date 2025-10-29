@@ -103,14 +103,6 @@ export const appRoutes: Route[] = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'attachment-test',
-    loadComponent: () =>
-      import('./pages/component-showcase/attachment-test.page').then(
-        (m) => m.AttachmentTestPage,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
     path: 'components',
     canActivate: [AuthGuard],
     children: [
