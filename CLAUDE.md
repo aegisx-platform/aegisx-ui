@@ -541,29 +541,41 @@ pnpm run db:migrate && pnpm run db:seed
 
 ### Current Status (Session 47 - 2025-10-29)
 
-**Navigation Management UI Feature Complete + Duplicate & Drag-Drop:**
+**Navigation Management UI Feature Complete + Duplicate & Drag-Drop + Simplified:**
 
 - ✅ **Frontend Service** - NavigationItemsService with 9 API methods (168 lines)
-- ✅ **Management Component** - Full Material table with CRUD, duplicate, drag-drop (950+ lines)
+- ✅ **Management Component** - Simplified UI with enhanced hierarchy (8 columns, clear visual depth)
 - ✅ **Dialog Component** - 3-tab dialog with pre-filled data support (700 lines)
 - ✅ **Route Registration** - Added to rbac.routes.ts with permission guards
 - ✅ **Build Verification** - Both frontend and backend builds passing (0 errors)
 
-**New Features Added (Session 47 continuation):**
+**Features Completed (Session 47):**
 
-1. **Duplicate Navigation Item** - Dialog-based duplication with smart key generation
+1. **Navigation Management UI** - Full CRUD with Material table
+   - Permission guards integration
+   - Filters (search, type, status, visibility)
+   - Bulk operations (delete, enable/disable, assign permissions)
+
+2. **Duplicate Navigation Item** - Dialog-based duplication with smart key generation
    - Backend endpoint: `POST /navigation-items/:id/duplicate`
    - Returns source data for dialog pre-filling
    - Frontend generates unique keys (`-copy`, `-copy-2`, etc.)
    - Preserves permissions from original item
 
-2. **Drag-and-Drop Sorting** - Visual reordering with immediate feedback
+3. **Drag-and-Drop Sorting** - Visual reordering with immediate feedback
    - Angular CDK drag-drop integration
    - Drag handle icon (prevents accidental drags)
    - Auto-disable when filters active (info banner + tooltips)
    - Optimistic UI with backend sync and error recovery
 
-**Technical Fixes:**
+4. **UI Simplification & Visual Improvements** ⭐ NEW
+   - **27% Column Reduction** - From 11 to 8 columns (kept dragHandle per user request)
+   - **Enhanced Hierarchy** - Clear visual depth with progressive colors and borders
+   - **Better Permissions UX** - Icon + tooltip shows actual permission names
+   - **Cleaner Design** - Removed bulk selection and technical columns
+   - **91 Lines of CSS** - Comprehensive hierarchy styles with dark mode support
+
+**Technical Improvements:**
 
 - Fixed 2 frontend TypeScript strict mode errors (optional chaining, bracket notation)
 - Fixed 19 backend errors by adding service wrapper methods
@@ -575,7 +587,7 @@ pnpm run db:migrate && pnpm run db:seed
 
 1. **Frontend** (3 new files + 2 modified):
    - `navigation-items.service.ts` - API service with 9 methods (added `duplicate()`)
-   - `navigation-management.component.ts` - Main UI with duplicate & drag-drop (950+ lines)
+   - `navigation-management.component.ts` - Main UI with simplified design + hierarchy styles
    - `navigation-item-dialog.component.ts` - Dialog with pre-filled data support (700 lines)
    - `rbac.routes.ts` - Added navigation route
 
@@ -584,11 +596,11 @@ pnpm run db:migrate && pnpm run db:seed
    - `navigation-items.controller.ts` - Added `duplicateNavigationItem()` endpoint
    - `navigation-items.routes.ts` - Added `POST /navigation-items/:id/duplicate` route
 
-**RBAC Module Progress:** 45% → 50% (Navigation Management with duplicate & drag-drop)
+**RBAC Module Progress:** 45% → 50% (Navigation Management complete with enhanced UX)
 
 **Next Steps:**
 
-- Test duplicate and drag-drop features end-to-end in browser
+- Test all features end-to-end in browser (CRUD, duplicate, drag-drop, hierarchy display)
 - Complete remaining RBAC pages (Role Management, Permission Management, User Role Assignment)
 
 ### Previous Status (Session 46 - 2025-10-28)

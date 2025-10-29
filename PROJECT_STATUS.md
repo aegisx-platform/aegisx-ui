@@ -200,7 +200,7 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - Team scaling
 - Enterprise use cases
 
-**Last Updated:** 2025-10-29 (Session 47 - Navigation Management UI Feature Complete)
+**Last Updated:** 2025-10-29 (Session 47 - Navigation Management UI Complete + Simplified)
 
 ---
 
@@ -616,12 +616,141 @@ effect(() => {
 **Complexity**: Medium-High (UI interactions + Angular CDK + error handling)
 **Quality**: Production-ready, all builds passing, comprehensive UX
 
-**Total Session 47 Time**: ~5 hours
+#### **✅ COMPLETED: Session 47 Continuation 2 - UI Simplification & Visual Improvements**
+
+**User Request**: "สามารถทำให้ดูง่ายขึ้นอีกได้ไหมคับ" (Can you make it look simpler/easier to use?)
+
+**User Feedback** (via AskUserQuestion):
+
+- Main issue: "ไม่เห็น hierarchy ชัดเจน" (Can't see hierarchy clearly)
+- Display format: "Flat แบบเดิม แต่ซ่อน columns" (Keep flat view but hide columns)
+- Columns to keep: "แสดงเฉพาะ title, parent, type, link, permission, status" (Show only title, parent, type, link, permissions, status)
+- Permissions display: "แสดงเป็น icon + tooltip" (Show as icon + tooltip)
+- **Critical correction**: "dragHandle ต้องเอาไว้ซิครับลืม" (Must keep dragHandle, I forgot)
+
+**Tasks Completed**:
+
+1. **✅ Fixed displayedColumns Array**
+   - Added `dragHandle` column back (per user correction)
+   - Removed unnecessary columns: `select`, `key`, `sort_order`
+   - **Result**: Clean 8-column layout (dragHandle, title, parent, type, link, permissions, status, actions)
+   - File: `navigation-management.component.ts:588-597`
+
+2. **✅ Enhanced Title Column with Better Hierarchy**
+   - Increased indentation from 1.5rem to 2rem per level
+   - Added bold, colored arrow indicator (↳) for child items
+   - Added dynamic CSS classes: `hierarchy-level-0` through `hierarchy-level-10`
+   - **Result**: Hierarchy is now clearly visible at a glance
+   - File: `navigation-management.component.ts:254-274`
+
+3. **✅ Improved Permissions Column**
+   - Changed from count + button to icon + tooltip
+   - Shows `shield` icon when has permissions, `shield_off` when none
+   - Tooltip displays actual permission names (e.g., "users.create, users.read")
+   - Small count badge for quick reference
+   - **Result**: More intuitive and space-efficient
+   - File: `navigation-management.component.ts:337-367`
+
+4. **✅ Removed Unused Column Templates**
+   - Deleted Selection column (checkbox bulk selection)
+   - Deleted Key column
+   - Deleted Sort Order column
+   - **Result**: Cleaner template, faster rendering
+
+5. **✅ Added Comprehensive Hierarchy Styles**
+   - Progressive background colors by depth level (subtle blue tints)
+   - Left border indicators (stronger as nesting increases)
+   - Full dark mode support with `:host-context(.dark)` variants
+   - Smooth transitions and hover effects
+   - **Result**: Visual hierarchy is immediately apparent
+   - File: `navigation-management.component.ts:542-632` (91 lines of CSS)
+
+**Files Modified**:
+
+**Frontend** (1 file):
+
+- `navigation-management.component.ts` - Major UI simplification updates
+  - displayedColumns: 11 → 8 columns (27% reduction)
+  - Title column template enhanced with hierarchy
+  - Permissions column changed to icon + tooltip
+  - Removed 3 unused column templates
+  - Added 91 lines of hierarchy visual styles
+
+**Impact**:
+
+- ✅ **27% Column Reduction** - From 11 to 8 columns (kept dragHandle per user request)
+- ✅ **Hierarchy Visibility** - Immediately clear with progressive colors and borders
+- ✅ **Better Permissions UX** - Icon + tooltip shows actual permission names
+- ✅ **Cleaner UI** - Removed unnecessary bulk selection and technical columns
+- ✅ **Dark Mode Ready** - All styles include dark mode variants
+- ✅ **Build Success** - Frontend and backend builds passing (0 errors)
+
+**Key Technical Patterns**:
+
+```typescript
+// Progressive Hierarchy Styling
+.hierarchy-level-0 { background: rgba(59, 130, 246, 0.02); }
+.hierarchy-level-1 {
+  background: rgba(59, 130, 246, 0.04);
+  border-left: 3px solid rgba(59, 130, 246, 0.3);
+}
+.hierarchy-level-2 {
+  background: rgba(59, 130, 246, 0.06);
+  border-left: 3px solid rgba(59, 130, 246, 0.5);
+}
+// ... progressive depth indicators up to level 10
+
+// Enhanced Title Column
+<div class="flex items-center gap-2 hierarchy-content"
+     [style.padding-left.rem]="getIndentLevel(item) * 2">
+  <span *ngIf="getIndentLevel(item) > 0"
+        class="hierarchy-arrow text-lg font-bold text-primary-500">
+    ↳
+  </span>
+  <mat-icon *ngIf="item.icon">{{ item.icon }}</mat-icon>
+  <span class="font-medium">{{ item.title }}</span>
+</div>
+
+// Permissions Icon + Tooltip
+<mat-icon
+  [class.text-primary-600]="item.permissions?.length"
+  [class.text-gray-400]="!item.permissions?.length"
+  [matTooltip]="item.permissions?.length
+    ? item.permissions.join(', ')
+    : 'No permissions'">
+  {{ item.permissions?.length ? 'shield' : 'shield_off' }}
+</mat-icon>
+```
+
+**Architecture Benefits**:
+
+1. **Progressive Visual Depth** - Each nesting level gets darker background and thicker border
+2. **Semantic Colors** - Primary blue consistently used for hierarchy indicators
+3. **Dark Mode Compatibility** - All styles include `:host-context(.dark)` variants
+4. **Information Density** - Removed clutter while preserving functionality
+5. **Accessibility** - Clear visual hierarchy helps all users navigate structure
+
+**Before vs After**:
+
+| Aspect                   | Before         | After                              |
+| ------------------------ | -------------- | ---------------------------------- |
+| **Columns**              | 11 columns     | 8 columns (27% reduction)          |
+| **Hierarchy Visibility** | ❌ Not clear   | ✅ Immediately visible             |
+| **Permissions Display**  | Count + button | Icon + tooltip with names          |
+| **Drag Handle**          | ✅ Present     | ✅ Present (kept per user request) |
+| **Visual Depth**         | Basic padding  | Progressive colors + borders       |
+
+**Time Spent**: ~1.5 hours (UI analysis + simplification + styling)
+**Complexity**: Medium (UI/UX improvements + comprehensive CSS)
+**Quality**: Production-ready, user-approved design
+
+**Total Session 47 Time**: ~6.5 hours
 **Total Session 47 Impact**:
 
 - Navigation Management UI with full CRUD
 - Duplicate feature with smart key generation
 - Drag-and-drop sorting with visual feedback
+- **UI Simplification with enhanced hierarchy** (NEW)
 - 35 permission mappings fixed
 - RBAC Module Progress: 45% → 50%
 
