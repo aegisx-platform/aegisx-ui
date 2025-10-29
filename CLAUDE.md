@@ -541,38 +541,54 @@ pnpm run db:migrate && pnpm run db:seed
 
 ### Current Status (Session 47 - 2025-10-29)
 
-**Navigation Management UI Feature Complete:**
+**Navigation Management UI Feature Complete + Duplicate & Drag-Drop:**
 
-- ✅ **Frontend Service** - NavigationItemsService with 8 API methods (143 lines)
-- ✅ **Management Component** - Full Material table with CRUD operations (838 lines)
-- ✅ **Dialog Component** - 3-tab dialog (Basic Info, Configuration, Permissions) (700 lines)
+- ✅ **Frontend Service** - NavigationItemsService with 9 API methods (168 lines)
+- ✅ **Management Component** - Full Material table with CRUD, duplicate, drag-drop (950+ lines)
+- ✅ **Dialog Component** - 3-tab dialog with pre-filled data support (700 lines)
 - ✅ **Route Registration** - Added to rbac.routes.ts with permission guards
-- ✅ **Build Verification** - Both frontend and backend builds passing
+- ✅ **Build Verification** - Both frontend and backend builds passing (0 errors)
+
+**New Features Added (Session 47 continuation):**
+
+1. **Duplicate Navigation Item** - Dialog-based duplication with smart key generation
+   - Backend endpoint: `POST /navigation-items/:id/duplicate`
+   - Returns source data for dialog pre-filling
+   - Frontend generates unique keys (`-copy`, `-copy-2`, etc.)
+   - Preserves permissions from original item
+
+2. **Drag-and-Drop Sorting** - Visual reordering with immediate feedback
+   - Angular CDK drag-drop integration
+   - Drag handle icon (prevents accidental drags)
+   - Auto-disable when filters active (info banner + tooltips)
+   - Optimistic UI with backend sync and error recovery
 
 **Technical Fixes:**
 
 - Fixed 2 frontend TypeScript strict mode errors (optional chaining, bracket notation)
 - Fixed 19 backend errors by adding service wrapper methods
+- Fixed 5 TypeScript errors in duplicate/drag-drop (service naming + type annotations)
 - Implemented proper service layer pattern: Controller → Service → Repository
 - All methods include automatic cache invalidation on mutations
 
 **Files Created/Modified:**
 
-1. **Frontend** (3 new files + 1 modified):
-   - `navigation-items.service.ts` - API service with 8 methods
-   - `navigation-management.component.ts` - Main UI component (838 lines)
-   - `navigation-item-dialog.component.ts` - Dialog component (700 lines)
+1. **Frontend** (3 new files + 2 modified):
+   - `navigation-items.service.ts` - API service with 9 methods (added `duplicate()`)
+   - `navigation-management.component.ts` - Main UI with duplicate & drag-drop (950+ lines)
+   - `navigation-item-dialog.component.ts` - Dialog with pre-filled data support (700 lines)
    - `rbac.routes.ts` - Added navigation route
 
-2. **Backend** (2 modified):
+2. **Backend** (3 new/modified):
    - `navigation.service.ts` - Added 9 public wrapper methods (lines 315-427)
-   - `navigation-items.controller.ts` - Updated to use service methods
+   - `navigation-items.controller.ts` - Added `duplicateNavigationItem()` endpoint
+   - `navigation-items.routes.ts` - Added `POST /navigation-items/:id/duplicate` route
 
-**RBAC Module Progress:** 45% → 50% (Navigation Management added)
+**RBAC Module Progress:** 45% → 50% (Navigation Management with duplicate & drag-drop)
 
 **Next Steps:**
 
-- Test Navigation Management UI end-to-end
+- Test duplicate and drag-drop features end-to-end in browser
 - Complete remaining RBAC pages (Role Management, Permission Management, User Role Assignment)
 
 ### Previous Status (Session 46 - 2025-10-28)
