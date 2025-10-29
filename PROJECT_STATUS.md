@@ -1,7 +1,7 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-10-30 (Session 47 Complete - Navigation Management + Attachment System)
-**Current Task:** ✅ Session 47a: RBAC Navigation (50%), Session 47b: Attachment System Complete
+**Last Updated:** 2025-10-29 (Session 47 - RBAC: Navigation Management + Error Handling Standardization Complete)
+**Current Task:** ✅ Session 47 Complete - RBAC 50% + Auth Middleware Error Handling Fixed
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 **CRUD Generator Version:** v2.1.0 (Published to npm)
 
@@ -286,122 +286,7 @@ pnpm aegisx-crud inventory --package --with-import --with-events
 
 ## 📊 Recent Development Sessions
 
-### 🎯 Session 47b (2025-10-30) - Config-Driven Attachment System ✅ COMPLETED
-
-#### **✅ COMPLETED: Full-Stack Attachment System Implementation**
-
-**Goal**: Implement a universal, config-driven attachment system for ANY entity type (patients, products, orders, equipment, etc.) without writing new code.
-
-**User Request**: Complete the attachment system with full backend + frontend + comprehensive documentation.
-
-**Tasks Completed**:
-
-**1. Backend Implementation (2,048 lines)**:
-
-- Created AttachmentService with polymorphic design (single table for all entities)
-- Created AttachmentController with 13 RESTful API endpoints
-- Created AttachmentRepository with CRUD operations
-- Created TypeBox schemas with full validation
-- Created attachment-config.ts with 8 pre-configured entity types
-- Database migration for attachments table
-- File: `apps/api/src/core/attachments/` (7 files)
-
-**2. Frontend Implementation (2,445+ lines)**:
-
-- Created EntityAttachmentsComponent - Smart container component (228 lines)
-- Created AttachmentListComponent - List/Grid display (187 lines)
-- Created AttachmentItemComponent - Single file item with actions (215 lines)
-- Created UploadWidgetComponent - Drag-drop upload UI (463 lines)
-- Created AttachmentService - HTTP client wrapper (168 lines)
-- Created comprehensive test page with 8 scenarios (477 lines)
-- Files: `apps/web/src/app/shared/components/entity-attachments/`, `apps/web/src/app/shared/services/`
-
-**3. Comprehensive Documentation (829 lines)**:
-
-- README.md (342 lines) - Overview, quick start, architecture, API endpoints
-- DEVELOPER_GUIDE.md (487 lines) - 3 usage patterns with complete code examples:
-  - Pattern 1: Multiple files (default) - Products, Patients, Orders
-  - Pattern 2: Single file (maxFiles=1) - Profile Pictures, Logos
-  - Pattern 3: Direct reference (performance) - Optimized queries
-- Files: `docs/features/attachment-system/`
-
-**4. Bug Fixes**:
-
-- Fixed Invalid Date display in AttachmentItemComponent
-- Enhanced formatDate() with null/undefined/Invalid Date checks
-- Returns '-' for any invalid date scenario
-
-**Files Created/Modified**:
-
-**Backend** (48 new files):
-
-- `apps/api/src/core/attachments/` - Complete attachment module
-- `apps/api/src/core/file-upload/config/` - Category configurations
-- `apps/api/src/core/file-upload/services/` - Supporting services
-- `apps/api/src/shared/adapters/` - S3 and MinIO storage adapters
-- 6 database migrations for attachments, encryption, audit logs
-
-**Frontend** (18 new files):
-
-- `apps/web/src/app/shared/components/entity-attachments/` - 4 components
-- `apps/web/src/app/shared/components/upload-widget/` - Upload component
-- `apps/web/src/app/shared/components/camera-capture/` - Camera component
-- `apps/web/src/app/shared/services/` - 5 service files
-- Test page: `apps/web/src/app/pages/component-showcase/attachment-test.page.ts`
-
-**Documentation** (2 files):
-
-- `docs/features/attachment-system/README.md`
-- `docs/features/attachment-system/DEVELOPER_GUIDE.md`
-
-**Commit**: `85c0a77` - 65 files changed, 25,035 insertions, 4,600 deletions
-
-**Impact**:
-
-- ✅ **Config-Driven System** - Add new entity types via configuration only (zero boilerplate)
-- ✅ **8 Pre-Configured Entities** - Inventory (4) + HIS (4) ready out of the box
-- ✅ **13 RESTful API Endpoints** - Complete CRUD with OpenAPI documentation
-- ✅ **3 Usage Patterns** - Multiple files, Single file, Direct reference (all documented)
-- ✅ **Generic Components** - Reusable UI widgets for all entity types
-- ✅ **Type Safety** - 100% TypeScript with TypeBox validation
-- ✅ **Production Ready** - ~4,500 lines of production code with comprehensive docs
-
-**Key Technical Features**:
-
-```typescript
-// Backend Configuration (zero code, just config):
-export const ATTACHMENT_CONFIGS: Record<string, AttachmentConfig> = {
-  'product': {
-    entityType: 'product',
-    allowedTypes: ['image', 'manual'],
-    maxFiles: 10,
-    allowedMimeTypes: ['image/*', 'application/pdf'],
-    maxFileSize: 5 * 1024 * 1024,
-  },
-  'user-profile': {
-    entityType: 'user-profile',
-    allowedTypes: ['profile-picture'],
-    maxFiles: 1, // Single file only
-    allowedMimeTypes: ['image/jpeg', 'image/png'],
-    maxFileSize: 2 * 1024 * 1024,
-  }
-};
-
-// Frontend Usage (same component for all patterns):
-<app-entity-attachments
-  entityType="product"
-  [entityId]="productId()"
-  [layout]="'grid'"
-/>
-```
-
-**Time Spent**: ~6 hours (backend + frontend + documentation + bug fixes)
-**Complexity**: High (polymorphic design + generic components + 3 patterns)
-**Quality**: Production-ready with professional documentation
-
----
-
-### 🎯 Session 47a (2025-10-29) - Navigation Management UI Feature Complete
+### 🎯 Session 47 (2025-10-29) - Navigation Management UI Feature Complete
 
 #### **✅ COMPLETED: Navigation Management Feature (RBAC Module)**
 
@@ -1059,6 +944,139 @@ effect(() => {
 - **Role Preview Mode with permission filtering** (NEW)
 - 35 permission mappings fixed
 - RBAC Module Progress: 45% → 50%
+
+---
+
+#### **✅ COMPLETED: Session 47 Continuation 4 - Auth Middleware Error Handling Standardization**
+
+**User Report**: User Role Assignment page (`http://localhost:4249/rbac/user-roles`) unable to search users - API endpoint timing out instead of returning proper HTTP error responses.
+
+**Critical User Feedback**:
+
+> "อ้าวแต่ fastify.verifyPermission('users', 'list') มันก็ควร error 403 ไม่ใช่หรอคุณจะมาปล่อยให้มันค้างแบบนี้ได้ไง"
+>
+> Translation: "But fastify.verifyPermission('users', 'list') should error 403, right? How can you let it hang like this?"
+
+This led to discovering a critical bug where permission failures caused timeouts instead of immediate 403 responses.
+
+**Root Cause Identified**:
+
+Fastify `preValidation` hooks don't automatically convert thrown errors to HTTP responses. All auth middleware were throwing `Error()` instead of calling `reply.forbidden()` or `reply.unauthorized()`, causing requests to hang without sending responses to clients.
+
+**Tasks Completed**:
+
+1. **✅ Fixed verifyPermission Middleware (CRITICAL BUG)**
+   - **Problem**: Threw `Error('PERMISSION_DENIED')` → request timeout
+   - **Solution**: Changed to `return reply.forbidden('Permission denied')`
+   - **Lines**: 120, 128 in auth.strategies.ts
+   - **Impact**: Permission failures now return immediate 403 responses
+
+2. **✅ Fixed verifyRole Middleware**
+   - **Problem**: Threw `Error('INSUFFICIENT_PERMISSIONS')` → request timeout
+   - **Solution**: Changed to `return reply.forbidden('Insufficient permissions')`
+   - **Lines**: 48 in auth.strategies.ts
+   - **Impact**: Role check failures now return immediate 403 responses
+
+3. **✅ Fixed verifyOwnership Middleware**
+   - **Problem**: Threw `Error('RESOURCE_ACCESS_DENIED')` → request timeout
+   - **Solution**: Changed to `return reply.forbidden('Access denied to this resource')`
+   - **Lines**: 63 in auth.strategies.ts
+   - **Impact**: Ownership check failures now return immediate 403 responses
+
+4. **✅ Verified verifyJWT Middleware**
+   - **Status**: Already correct - uses `return reply.unauthorized()` pattern
+   - **No changes needed**: This middleware was already properly implemented
+
+5. **✅ Fixed Permission Configuration**
+   - Changed `/api/users` endpoint permission from `users:list` to `users:read`
+   - Matches what admin role actually has in database
+   - File: `apps/api/src/core/users/users.routes.ts:23`
+
+**Files Modified**:
+
+**Backend** (2 files):
+
+- `apps/api/src/core/auth/strategies/auth.strategies.ts` - Fixed 3 middleware functions
+  - Line 48: `verifyRole` - throw → return reply.forbidden()
+  - Line 63: `verifyOwnership` - throw → return reply.forbidden()
+  - Line 120, 128: `verifyPermission` - throw → return reply.forbidden()
+- `apps/api/src/core/users/users.routes.ts` - Changed permission requirement
+  - Line 23: `users:list` → `users:read`
+
+**Test Results**:
+
+**Before Fix** (with `users:list` permission):
+
+```bash
+# Request hung indefinitely, no HTTP response
+# Server logs: "Request error" but no response sent to client
+# Result: Client timeout after 60+ seconds
+```
+
+**After Fix** (immediate 403):
+
+```bash
+# Test 1: With permission mismatch (users:list)
+HTTP Status: 403 ✅
+{"success":false,"error":{"code":"FORBIDDEN","message":"Permission denied"}}
+
+# Test 2: With correct permission (users:read)
+HTTP Status: 200 ✅
+{"success":true,"data":[...users...]}
+```
+
+**Impact**:
+
+- ✅ **Critical Bug Fixed** - Timeouts eliminated, proper HTTP responses returned
+- ✅ **All Auth Middleware Standardized** - Consistent error handling pattern
+- ✅ **Better User Experience** - Immediate error feedback (403) instead of timeouts
+- ✅ **Production Stability** - Prevents hanging connections and resource leaks
+- ✅ **Error Handler Bypass** - Middleware now returns responses directly (doesn't rely on error handler)
+
+**Key Technical Learning**:
+
+```typescript
+// ❌ WRONG: Throwing errors in preValidation hooks
+fastify.decorate('verifyRole', function (allowedRoles: string[]) {
+  return async function (request: FastifyRequest, _reply: FastifyReply) {
+    if (!user || !user.role || !allowedRoles.includes(user.role)) {
+      throw new Error('INSUFFICIENT_PERMISSIONS'); // Causes timeout!
+    }
+  };
+});
+
+// ✅ CORRECT: Return response directly in preValidation hooks
+fastify.decorate('verifyRole', function (allowedRoles: string[]) {
+  return async function (request: FastifyRequest, reply: FastifyReply) {
+    if (!user || !user.role || !allowedRoles.includes(user.role)) {
+      return reply.forbidden('Insufficient permissions'); // Immediate 403!
+    }
+  };
+});
+```
+
+**Architecture Pattern Established**:
+
+All Fastify preValidation hooks MUST use direct response pattern:
+
+1. `reply.unauthorized()` for authentication failures (401)
+2. `reply.forbidden()` for authorization failures (403)
+3. NEVER throw errors in preValidation hooks
+4. Error handlers may not catch preValidation hook errors properly
+
+**Debugging Process**:
+
+1. User reported search not working
+2. Initial investigation → Permission mismatch (`users:list` vs `users:read`)
+3. Fixed permission → Still timeout (not 403!)
+4. **User's critical insight** → Should return 403 immediately, not hang
+5. Discovered root cause → Middleware throwing errors instead of returning responses
+6. Fixed all 3 affected middleware functions
+7. Standardized error handling across all auth middleware
+
+**Time Spent**: ~2 hours (debugging + user testing + middleware fixes + standardization)
+**Complexity**: High (critical production bug affecting all protected routes)
+**Quality**: Production-critical fix with comprehensive testing
 
 ---
 

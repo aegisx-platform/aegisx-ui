@@ -442,6 +442,65 @@ function createRegisterRequestData() {
 
 **ผิดแล้วต้องแก้ทันที - ห้ามเดา!**
 
+### 🚨 CRITICAL: Fastify preValidation Hook Error Handling (MANDATORY)
+
+**🚨 NEVER throw errors in Fastify preValidation hooks - ALWAYS return responses directly**
+
+**Critical Issue Discovered (Session 47):**
+
+Fastify `preValidation` hooks don't automatically convert thrown errors to HTTP responses. Throwing errors in preValidation hooks causes requests to hang indefinitely without sending responses to clients, leading to timeouts instead of proper error responses.
+
+**MANDATORY Pattern for All Auth Middleware:**
+
+```typescript
+// ❌ WRONG: Throwing errors causes timeouts
+fastify.decorate('verifyRole', function (allowedRoles: string[]) {
+  return async function (request: FastifyRequest, _reply: FastifyReply) {
+    if (!user || !user.role || !allowedRoles.includes(user.role)) {
+      throw new Error('INSUFFICIENT_PERMISSIONS'); // ❌ Request hangs, no response sent!
+    }
+  };
+});
+
+// ✅ CORRECT: Return response directly
+fastify.decorate('verifyRole', function (allowedRoles: string[]) {
+  return async function (request: FastifyRequest, reply: FastifyReply) {
+    if (!user || !user.role || !allowedRoles.includes(user.role)) {
+      return reply.forbidden('Insufficient permissions'); // ✅ Immediate 403 response!
+    }
+  };
+});
+```
+
+**MANDATORY Rules:**
+
+1. **ALWAYS use `return reply.unauthorized()` for authentication failures** (401)
+2. **ALWAYS use `return reply.forbidden()` for authorization failures** (403)
+3. **NEVER throw `Error()` in preValidation hooks** - causes timeouts
+4. **Include `reply: FastifyReply` parameter** - not `_reply` (underscore means unused)
+5. **Error handlers may NOT catch preValidation hook errors** - must return responses directly
+
+**Impact of Wrong Pattern:**
+
+- ❌ Requests timeout after 60+ seconds without any response
+- ❌ Server logs "Request error" but never sends HTTP response to client
+- ❌ Hanging connections and resource leaks
+- ❌ Poor user experience and production instability
+- ❌ Affects ALL protected routes using these middleware
+
+**Correct Implementation (Reference):**
+
+See `apps/api/src/core/auth/strategies/auth.strategies.ts` for standardized implementations:
+
+- `verifyJWT` (lines 8-40) - Returns `reply.unauthorized()` ✅
+- `verifyRole` (lines 44-51) - Returns `reply.forbidden()` ✅
+- `verifyOwnership` (lines 54-66) - Returns `reply.forbidden()` ✅
+- `verifyPermission` (lines 69-132) - Returns `reply.forbidden()` ✅
+
+**Why This Matters:**
+
+This was a **production-critical bug** discovered when User Role Assignment page hung indefinitely instead of returning 403 errors. All auth middleware were standardized to prevent this issue across the entire codebase.
+
 ## 🔴 IMPORTANT: This project uses PNPM, not NPM or Yarn
 
 **Always use `pnpm` commands, never use `npm` or `yarn` commands for dependencies**
