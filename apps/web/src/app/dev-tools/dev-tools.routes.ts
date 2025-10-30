@@ -87,4 +87,12 @@ export const DEV_TOOLS_ROUTES: Routes = [
       ),
     title: 'Test Material',
   },
+  {
+    path: 'component-showcase',
+    loadComponent: () =>
+      import('../pages/component-showcase/component-showcase.component').then(
+        (c) => c.ComponentShowcaseComponent,
+      ),
+    title: 'Component Showcase',
+  },
 ];
