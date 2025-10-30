@@ -634,6 +634,43 @@ pnpm run db:migrate && pnpm run db:seed
 - **[📋 All Commands Reference](./docs/references/claude-commands.md)** - Complete shell command list
 - **[🤖 CRUD Generator](./docs/crud-generator/)** - Automatic CRUD API generation with error handling & validation
 
+## 🤖 Custom Commands
+
+These are shortcut commands that can be used to trigger common workflows. When you see these commands, perform the actions listed below.
+
+### doc-sync
+
+**Purpose**: Update project documentation and sync with remote repository after completing a session or major work.
+
+**Actions to Perform**:
+
+1. **Update `PROJECT_STATUS.md`**:
+   - Change "Last Updated" to current session number
+   - Add new session entry to "Recent Development Sessions"
+   - Update "What's Working Well" section if new features were added
+   - Update "Last Updated" in summary section
+
+2. **Update `CLAUDE.md`**:
+   - Add current session to "Recent Development Sessions"
+   - Move previous "Current Status" to "Previous Status"
+
+3. **Git operations**:
+   - `git add PROJECT_STATUS.md CLAUDE.md`
+   - `git commit -m "docs: update documentation for Session X"`
+   - `git pull origin develop`
+   - `git push origin develop`
+
+**Usage Examples**:
+
+- "doc-sync"
+- "please doc-sync"
+- "ช่วย doc-sync ให้หน่อย"
+- "doc-sync for this session"
+
+**When to Use**: After completing significant work or at the end of a development session.
+
+---
+
 ## 📝 Recent Development Sessions
 
 > **📌 For complete session history and details, see [PROJECT_STATUS.md](./PROJECT_STATUS.md) § Recent Development Sessions**
