@@ -1,7 +1,6 @@
 import { Route } from '@angular/router';
 import { AuthGuard, GuestGuard } from './core/auth';
-import { showcaseGuard } from './pages/component-showcase/guards/showcase.guard';
-import { PermissionGuard } from './core/rbac/guards/permission.guard';
+import { environment } from '../environments/environment';
 
 export const appRoutes: Route[] = [
   {
@@ -23,14 +22,6 @@ export const appRoutes: Route[] = [
     path: 'dashboard',
     loadComponent: () =>
       import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'realtime-demo',
-    loadComponent: () =>
-      import('./dev-tools/pages/realtime-demo/realtime-demo.component').then(
-        (m) => m.RealtimeDemoComponent,
-      ),
     canActivate: [AuthGuard],
   },
   {
@@ -66,8 +57,6 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import('./core/rbac/rbac.routes').then((m) => m.rbacRoutes),
     canActivate: [AuthGuard],
-    // Note: Removed PermissionGuard from parent route
-    // Each child route has its own permission check
     data: {
       title: 'RBAC Management',
       description: 'Role-Based Access Control Management System',
@@ -83,7 +72,6 @@ export const appRoutes: Route[] = [
     data: {
       title: 'PDF Templates',
       description: 'PDF Template Management System',
-      requiredPermissions: ['templates.read', 'admin.*'],
     },
   },
   {
@@ -91,14 +79,6 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./pages/file-upload/file-upload.page').then(
         (m) => m.FileUploadPage,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'file-upload-demo',
-    loadComponent: () =>
-      import('./dev-tools/pages/file-upload-demo.page').then(
-        (m) => m.FileUploadDemoPage,
       ),
     canActivate: [AuthGuard],
   },
@@ -136,81 +116,26 @@ export const appRoutes: Route[] = [
       },
     ],
   },
-  {
-    path: 'test-ax',
-    loadComponent: () =>
-      import('./dev-tools/pages/material-demo/material-demo.component').then(
-        (m) => m.MaterialDemoComponent,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'icon-test',
-    loadComponent: () =>
-      import('./dev-tools/components/debug-icons.component').then(
-        (m) => m.DebugIconsComponent,
-      ),
-  },
-  {
-    path: 'test-navigation',
-    loadComponent: () =>
-      import('./dev-tools/components/debug-navigation.component').then(
-        (m) => m.DebugNavigationComponent,
-      ),
-  },
-  {
-    path: 'debug-icons',
-    loadComponent: () =>
-      import('./dev-tools/components/debug-icons.component').then(
-        (m) => m.DebugIconsComponent,
-      ),
-  },
-  {
-    path: 'debug-navigation',
-    loadComponent: () =>
-      import('./dev-tools/components/debug-navigation.component').then(
-        (m) => m.DebugNavigationComponent,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'demo/navigation',
-    loadComponent: () =>
-      import('./dev-tools/demo/navigation-demo.component').then(
-        (m) => m.NavigationDemoComponent,
-      ),
-  },
-  {
-    path: 'material-demo',
-    loadComponent: () =>
-      import('./dev-tools/pages/material-demo/material-demo.component').then(
-        (m) => m.MaterialDemoComponent,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'component-showcase',
-    loadComponent: () =>
-      import('./pages/component-showcase/component-showcase.component').then(
-        (m) => m.ComponentShowcaseComponent,
-      ),
-    canActivate: [AuthGuard, showcaseGuard],
-  },
-  {
-    path: 'test-material',
-    loadComponent: () =>
-      import('./dev-tools/pages/material-demo/material-demo.component').then(
-        (m) => m.MaterialDemoComponent,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'test-rbac-websocket',
-    loadComponent: () =>
-      import('./dev-tools/pages/realtime-demo/realtime-demo.component').then(
-        (m) => m.RealtimeDemoComponent,
-      ),
-  },
+
+  // Dev/Test routes (only in development environment)
+  ...(environment.production
+    ? []
+    : [
+        {
+          path: 'dev',
+          loadChildren: () =>
+            import('./dev-tools/dev-tools.routes').then(
+              (m) => m.DEV_TOOLS_ROUTES,
+            ),
+          canActivate: [AuthGuard],
+          data: {
+            title: 'Dev Tools',
+            description: 'Development & Testing Tools',
+          },
+        },
+      ]),
+
+  // Fallback
   {
     path: '**',
     redirectTo: 'dashboard',
