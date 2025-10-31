@@ -135,6 +135,32 @@ export class NavigationService {
         },
       ],
     },
+    // Monitoring
+    {
+      id: 'monitoring',
+      title: 'Monitoring',
+      type: 'collapsible',
+      icon: 'bar_chart',
+      permissions: ['monitoring:view', '*:*'],
+      children: [
+        {
+          id: 'system-monitoring',
+          title: 'System Monitoring',
+          type: 'item',
+          icon: 'monitoring',
+          link: '/monitoring/system',
+          permissions: ['monitoring:view', '*:*'],
+        },
+        {
+          id: 'error-logs',
+          title: 'Error Logs',
+          type: 'item',
+          icon: 'bug_report',
+          link: '/monitoring/error-logs',
+          permissions: ['error-logs:read', '*:*'],
+        },
+      ],
+    },
     // System
     {
       id: 'system-config',
