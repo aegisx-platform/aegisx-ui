@@ -63,6 +63,18 @@ export const appRoutes: Route[] = [
     },
   },
   {
+    path: 'monitoring',
+    loadChildren: () =>
+      import('./core/monitoring/monitoring.routes').then(
+        (m) => m.monitoringRoutes,
+      ),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Monitoring',
+      description: 'System Monitoring and Error Logs',
+    },
+  },
+  {
     path: 'pdf-templates',
     loadChildren: () =>
       import('./core/pdf-templates/pdf-templates.routes').then(
