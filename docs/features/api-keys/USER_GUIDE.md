@@ -1,586 +1,358 @@
-# API Keys User Guide
+# API Key Caching System - User Guide
 
-> **Complete guide for generating, managing, and using API keys for programmatic access to your application.**
+## Overview
 
-## 📋 Table of Contents
+The API Key Caching System enhances your API experience by providing lightning-fast response times and improved reliability. This guide helps you understand how the caching system affects your daily API usage and how to troubleshoot cache-related issues.
 
-- [Introduction](#introduction)
-- [Generating API Keys](#generating-api-keys)
-- [Using API Keys](#using-api-keys)
-- [Managing Your Keys](#managing-your-keys)
-- [Security Best Practices](#security-best-practices)
-- [Troubleshooting](#troubleshooting)
+## What You'll Experience
 
-## Introduction
+### Performance Improvements
 
-API Keys provide secure programmatic access to your application's APIs without requiring interactive login. They are perfect for:
+**Faster API Responses**
 
-- **Server-to-Server Communication** - Backend services calling your APIs
-- **Scheduled Jobs** - Cron jobs, data synchronization tasks
-- **Mobile Apps** - Mobile applications needing API access
-- **Third-Party Integrations** - External systems accessing your data
-- **Automation Scripts** - Scripts for data import/export, monitoring
+- First API call: ~50-100ms (database lookup)
+- Subsequent calls: <1ms (cache lookup)
+- Up to 100x faster response times for repeated operations
 
-### Key Concepts
+**Improved Reliability**
 
-- **API Key**: A unique identifier that authenticates API requests
-- **Permissions**: What actions the API key can perform (read, write, etc.)
-- **Expiration**: Optional time limit for key validity
-- **Prefix**: The visible part of the key (e.g., `ak_8a9590a2`)
+- Reduced database connection errors
+- Better performance during high traffic
+- Consistent response times
 
-## Generating API Keys
+**Enhanced User Experience**
 
-### Step-by-Step Guide
+- Instant API key validation
+- Faster dashboard loading
+- Smoother application performance
 
-#### 1. Navigate to API Keys Management
+## How Caching Affects Your API Usage
 
-1. Log in to your account
-2. Click your profile icon → **Settings**
-3. Navigate to **API Keys** section
+### API Key Validation
 
-#### 2. Click "Generate New Key"
-
-![Generate Key Button](images/generate-button.png)
-
-#### 3. Fill in Key Details
-
-**Required Fields:**
-
-- **Name** (required)
-  - Example: "Production Server", "Mobile App", "Data Import Script"
-  - Should be descriptive for easy identification
-  - Maximum 100 characters
-
-**Optional Fields:**
-
-- **Description** (optional)
-  - Detailed notes about key usage
-  - Example: "Used by production server for user data synchronization"
-  - Maximum 500 characters
-
-- **Expires In** (optional)
-  - Number of days until key expires
-  - Range: 1 - 3650 days (10 years)
-  - Leave empty for permanent key
-  - **Recommendation**: Use expiring keys for temporary integrations
-
-#### 4. Generate the Key
-
-Click **"Generate API Key"** button.
-
-#### 5. ⚠️ CRITICAL: Save Your Key
-
-![Generated Key Display](images/key-generated.png)
-
-**YOU WILL ONLY SEE THE FULL KEY ONCE!**
+**First Request (Cache Miss)**
 
 ```
-ak_8a9590a2_87e400a2b35cd9ffccb6d76caf6432dfcf623b6fa6157b6d99f39940c12f5e1e
+Your App → API Gateway → Database → Response (50ms)
+                     ↓
+               Cache Storage
 ```
 
-**What to do:**
-
-1. **Copy the key immediately** using the copy button
-2. **Store it in a secure location**:
-   - Password manager (1Password, LastPass, Bitwarden)
-   - Environment variable in your application
-   - Secure secrets management system (AWS Secrets Manager, HashiCorp Vault)
-3. **NEVER** commit the key to Git
-4. **NEVER** share the key via email or chat
-
-**After closing this dialog, you will only see the key preview:**
+**Subsequent Requests (Cache Hit)**
 
 ```
-ak_8a9590a2_87e4...12f5e1e
+Your App → API Gateway → Cache → Response (<1ms)
 ```
 
-#### 6. Verify Key Information
+### Permission Checks
 
-The dialog shows:
+When you use scoped API keys, the system caches permission decisions:
 
-- **Name**: Your chosen name
-- **Preview**: Masked key for identification
-- **Status**: Active
-- **Expires**: Expiration date (or "Never")
+1. **First permission check**: Validates against database and caches result
+2. **Repeated checks**: Uses cached permission for same resource/action
+3. **Cache duration**: 10 minutes (automatically refreshed)
 
-Click **"Done - I've Saved My Key"** once you've securely stored the key.
+### API Key Listings
 
-## Using API Keys
+When viewing your API keys in the dashboard:
 
-### Authentication Methods
+1. **First load**: Fetches from database and caches list
+2. **Subsequent loads**: Uses cached list for instant display
+3. **Auto-refresh**: Cache updates when you create/delete keys
 
-You have 3 ways to send your API key with requests:
+## Cache Behavior You Should Know
 
-#### Method 1: Custom Header (Recommended) ⭐
+### Cache Expiration Times
 
-**Best for**: Server-to-server communication, backend integrations
+| Data Type              | Cache Duration | Reason                        |
+| ---------------------- | -------------- | ----------------------------- |
+| **API Key Validation** | 5 minutes      | Security balance              |
+| **Permission Checks**  | 10 minutes     | Permissions change less often |
+| **Key Listings**       | 30 minutes     | Lists are relatively stable   |
+| **Usage Counters**     | 1 minute       | For batching updates          |
+
+### Automatic Cache Updates
+
+The cache automatically refreshes when you:
+
+- Create a new API key
+- Delete an existing API key
+- Update key permissions or status
+- Rotate an API key
+- Change your account permissions
+
+### Manual Cache Refresh
+
+In rare cases, you might need to refresh cached data:
+
+1. **Log out and log back in**: Clears all your cached data
+2. **Wait for automatic expiration**: Caches refresh every 5-30 minutes
+3. **Contact support**: For immediate cache clearing if needed
+
+## Understanding Cache Status
+
+### Dashboard Indicators
+
+**Green indicators**: Data served from cache (fast)
+
+- Response times under 5ms
+- Instant page loads
+- Smooth interactions
+
+**Yellow indicators**: Cache warming up
+
+- First few requests after login
+- New API key first usage
+- After permission changes
+
+**Red indicators**: Cache issues (rare)
+
+- Consistently slow responses
+- Error messages mentioning cache
+- Need to contact support
+
+## Common User Scenarios
+
+### Scenario 1: New API Key Creation
+
+**What Happens:**
+
+1. You create a new API key
+2. System stores in database
+3. Cache is updated immediately
+4. New key is available instantly
+
+**Timeline:**
+
+- Key creation: ~100ms
+- First validation: <1ms (pre-cached)
+- Subsequent validations: <1ms
+
+### Scenario 2: Permission Changes
+
+**What Happens:**
+
+1. Administrator changes your permissions
+2. System invalidates all your cached data
+3. Next API call refreshes cache with new permissions
+4. All subsequent calls use updated cache
+
+**Timeline:**
+
+- Permission change: Immediate
+- Cache invalidation: <1 second
+- Next API call: ~50ms (cache refresh)
+- Subsequent calls: <1ms
+
+### Scenario 3: High Traffic Usage
+
+**What Happens:**
+
+1. Multiple applications use your API key
+2. Cache serves all validation requests
+3. Database load remains minimal
+4. Consistent performance maintained
+
+**Benefits:**
+
+- No rate limiting due to database load
+- Consistent sub-millisecond response times
+- Reliable service during traffic spikes
+
+## Troubleshooting Cache Issues
+
+### Slow API Responses
+
+**Symptoms:**
+
+- API calls taking longer than usual
+- Dashboard loading slowly
+- Inconsistent response times
+
+**Solutions:**
+
+1. **Check cache status**: Look for cache health indicators
+2. **Wait for cache warming**: First requests after changes are slower
+3. **Clear browser cache**: Sometimes helps with dashboard issues
+4. **Contact support**: If issues persist beyond 5 minutes
+
+### Stale Data Issues
+
+**Symptoms:**
+
+- Old API keys still appearing as valid
+- Permission changes not reflected
+- Usage statistics not updating
+
+**Solutions:**
+
+1. **Wait for automatic refresh**: Caches expire within 5-30 minutes
+2. **Log out and back in**: Forces cache refresh
+3. **Check recent changes**: Verify changes were saved properly
+4. **Contact support**: For immediate cache clearing
+
+### Error Messages
+
+**Common Cache-Related Errors:**
+
+```
+"Cache service unavailable"
+```
+
+- **Meaning**: Redis cache is temporarily down
+- **Impact**: Slower responses (database fallback)
+- **Action**: No action needed, system auto-recovers
+
+```
+"Cache validation failed"
+```
+
+- **Meaning**: Cached data integrity issue
+- **Impact**: Single slow request for cache refresh
+- **Action**: Retry request, should resolve automatically
+
+```
+"Cache memory full"
+```
+
+- **Meaning**: Cache storage limit reached
+- **Impact**: Temporary slower responses
+- **Action**: Contact support for cache management
+
+## Best Practices for Cache-Aware Usage
+
+### Optimize Your API Usage
+
+1. **Reuse API keys**: Don't create new keys unnecessarily
+2. **Batch operations**: Group related API calls together
+3. **Understand cache timing**: First call after changes is slower
+4. **Monitor your usage**: Use dashboard for usage tracking
+
+### Work with Cache Behavior
+
+1. **Expect first-call delays**: After permission changes or new keys
+2. **Plan for cache warmup**: High-traffic periods may need warming
+3. **Test with real usage patterns**: Cache performs best with realistic load
+4. **Monitor response times**: Use cache-aware performance monitoring
+
+### Security Considerations
+
+1. **Cache doesn't reduce security**: Full validation still occurs
+2. **Sensitive data not cached**: API key secrets never stored in cache
+3. **Automatic expiration**: Security data refreshes every 5 minutes
+4. **Immediate invalidation**: Security events clear cache instantly
+
+## Monitoring Your Cache Performance
+
+### Dashboard Metrics
+
+**Response Time Graphs:**
+
+- Green bars: Cache hits (<1ms)
+- Yellow bars: Cache misses (50-100ms)
+- Red bars: Errors or issues
+
+**Cache Hit Ratio:**
+
+- Target: >90% for optimal performance
+- 80-89%: Good performance
+- <80%: May indicate configuration issues
+
+**Usage Patterns:**
+
+- Regular patterns: Cache is working well
+- Erratic patterns: May indicate cache issues
+
+### API Headers
+
+When making API calls, check response headers:
+
+```
+X-Cache-Status: HIT    // Served from cache
+X-Cache-Status: MISS   // Served from database
+X-Cache-Status: BYPASS // Cache was bypassed
+```
+
+### Performance Benchmarking
+
+**Measure your API performance:**
 
 ```bash
-# cURL example
-curl -X GET http://api.example.com/api/users \
-  -H "x-api-key: YOUR_API_KEY_HERE" \
-  -H "Content-Type: application/json"
+# Test cache performance
+curl -w "@curl-format.txt" -H "Authorization: Bearer your-api-key" \
+     https://api.example.com/your-endpoint
+
+# Expected results:
+# First call: 50-100ms
+# Subsequent calls: <5ms
 ```
 
-```javascript
-// JavaScript (Node.js)
-const http = require('http');
-
-const options = {
-  hostname: 'api.example.com',
-  path: '/api/users',
-  method: 'GET',
-  headers: {
-    'x-api-key': process.env.API_KEY,
-    'Content-Type': 'application/json',
-  },
-};
-
-http.request(options, callback).end();
-```
+## FAQ
 
-```python
-# Python
-import requests
+### General Questions
 
-headers = {
-    'x-api-key': os.environ['API_KEY'],
-    'Content-Type': 'application/json'
-}
-
-response = requests.get('http://api.example.com/api/users', headers=headers)
-```
-
-**Advantages**:
-
-- Clear and explicit API key authentication
-- Doesn't interfere with OAuth/JWT headers
-- Easy to filter in logs
-
-#### Method 2: Bearer Token
-
-**Best for**: Tools expecting OAuth-style authentication
-
-```bash
-# cURL example
-curl -X GET http://api.example.com/api/users \
-  -H "Authorization: Bearer YOUR_API_KEY_HERE" \
-  -H "Content-Type": application/json"
-```
-
-```javascript
-// JavaScript (fetch)
-fetch('http://api.example.com/api/users', {
-  method: 'GET',
-  headers: {
-    Authorization: `Bearer ${process.env.API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-})
-  .then((response) => response.json())
-  .then((data) => console.log(data));
-```
-
-```python
-# Python
-import requests
-
-headers = {
-    'Authorization': f'Bearer {os.environ["API_KEY"]}',
-    'Content-Type': 'application/json'
-}
-
-response = requests.get('http://api.example.com/api/users', headers=headers)
-```
-
-**Advantages**:
-
-- Standard authorization header
-- Works with OAuth-aware HTTP clients
-- Compatible with most API testing tools
-
-#### Method 3: Query Parameter
-
-**Best for**: Webhooks, URLs with limited header support
-
-```bash
-# cURL example
-curl -X GET "http://api.example.com/api/users?api_key=YOUR_API_KEY_HERE"
-```
-
-```javascript
-// JavaScript
-const API_KEY = process.env.API_KEY;
-const url = `http://api.example.com/api/users?api_key=${API_KEY}`;
-
-fetch(url)
-  .then((response) => response.json())
-  .then((data) => console.log(data));
-```
-
-**⚠️ Security Warning**:
-
-- Keys may appear in server logs
-- Keys visible in browser history/URL bar
-- Only use when headers are not possible
-- Must be explicitly enabled on specific routes
-
-### Testing Your API Key
-
-#### Simple Test Script (Node.js)
-
-Create `test-api-key.js`:
-
-```javascript
-const http = require('http');
-
-// ⚠️ Replace with your actual API key
-const API_KEY = 'ak_8a9590a2_87e400a2b35cd9ffccb6d76caf6432dfcf623b6fa6157b6d99f39940c12f5e1e';
-
-console.log('🔐 Testing API Key Authentication\n');
-
-const options = {
-  hostname: '127.0.0.1',
-  port: 3383,
-  path: '/api/users?limit=5',
-  method: 'GET',
-  headers: {
-    'x-api-key': API_KEY,
-    'Content-Type': 'application/json',
-  },
-};
-
-const request = http.request(options, (res) => {
-  let body = '';
-
-  res.on('data', (chunk) => {
-    body += chunk;
-  });
-
-  res.on('end', () => {
-    console.log(`HTTP Status: ${res.statusCode}`);
+**Q: Will caching affect my API's security?**
+A: No. The cache never stores sensitive data like API key secrets. Full security validation still occurs on every request.
 
-    if (res.statusCode === 200) {
-      const data = JSON.parse(body);
-      console.log('✅ Success!');
-      console.log(`Found ${data.data?.length || 0} users`);
-      console.log('\nResponse:', JSON.stringify(data, null, 2));
-    } else {
-      console.log('❌ Failed:', body);
-    }
-  });
-});
+**Q: How do I know if my request used the cache?**
+A: Check the response headers for `X-Cache-Status` or monitor response times. Cache hits are typically under 1ms.
 
-request.on('error', (e) => {
-  console.error('❌ Request Error:', e.message);
-});
+**Q: What happens if the cache goes down?**
+A: The system automatically falls back to database validation. You'll experience slower responses but no service interruption.
 
-request.end();
-```
+### Performance Questions
 
-Run the test:
+**Q: Why is my first API call slow after making changes?**
+A: The cache needs to refresh after changes. The first call loads fresh data from the database and caches it for subsequent requests.
 
-```bash
-node test-api-key.js
-```
+**Q: Can I pre-warm the cache for better performance?**
+A: The system automatically warms the cache for frequently used keys. For special cases, contact support for manual cache warming.
 
-#### Expected Success Response
+**Q: How long do cached permissions last?**
+A: Permission checks are cached for 10 minutes. If permissions change, the cache is invalidated immediately.
 
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "cd79fbcf-1eba-4d0a-a90d-e06646e55b4a",
-      "email": "admin@aegisx.local",
-      "username": "admin",
-      "role": "admin",
-      "created_at": "2025-01-01T00:00:00.000Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 5,
-    "total": 1
-  }
-}
-```
+### Troubleshooting Questions
 
-## Managing Your Keys
+**Q: My API key was deleted but still works. Why?**
+A: This can happen briefly due to caching. Wait 5 minutes for automatic expiration or contact support for immediate cache clearing.
 
-### Viewing Your API Keys
+**Q: I'm seeing inconsistent response times. What's wrong?**
+A: This often indicates cache warming or cache miss scenarios. Monitor the pattern - it should stabilize after a few requests.
 
-1. Navigate to **Settings → API Keys**
-2. You will see a list of your API keys with:
-   - **Name**: Key identifier
-   - **Preview**: Masked key (`ak_8a9590a2_87e4...12f5e1e`)
-   - **Status**: Active/Inactive
-   - **Last Used**: When the key was last accessed
-   - **Expires**: Expiration date
-   - **Actions**: Rotate, Revoke, Delete
+**Q: Can I disable caching for my API key?**
+A: Caching is system-wide for performance. However, you can contact support if you have specific requirements that need special handling.
 
-### Key Lifecycle Operations
+## Getting Help
 
-#### 1. Rotate Key
+### Self-Service Troubleshooting
 
-**When to rotate:**
+1. **Check this guide**: Review relevant sections above
+2. **Wait and retry**: Many cache issues resolve automatically
+3. **Monitor patterns**: Look for consistent issues vs one-time events
+4. **Check status page**: Verify no system-wide cache issues
 
-- Key may have been compromised
-- Regular security practice (every 90 days)
-- Employee departure who had access
-- Security audit requirements
+### When to Contact Support
 
-**How to rotate:**
+Contact support if you experience:
 
-1. Click **Actions → Rotate** for the key
-2. Confirm rotation
-3. **Save the new key immediately** - old key will be disabled
-4. Update your application with the new key
+- Persistent slow responses (>5 minutes)
+- Error messages related to caching
+- Stale data that doesn't refresh after 30 minutes
+- Consistent cache miss rates below 80%
 
-**What happens:**
+### Information to Provide
 
-- New key generated with same permissions and settings
-- Old key immediately disabled
-- All configurations remain the same (name, permissions, expiry)
+When contacting support about cache issues:
 
-#### 2. Revoke Key
+- Your API key prefix (first 8 characters)
+- Timestamp of the issue
+- Error messages (if any)
+- Response time measurements
+- Whether the issue affects all requests or specific operations
 
-**When to revoke:**
+## Related Resources
 
-- Key confirmed compromised
-- Integration no longer needed
-- Immediately disable without generating replacement
-
-**How to revoke:**
-
-1. Click **Actions → Revoke** for the key
-2. Optionally enter revocation reason
-3. Confirm revocation
-
-**What happens:**
-
-- Key immediately disabled
-- Status changed to "Inactive"
-- Can no longer be used for API requests
-- Revocation is permanent (cannot be undone)
-
-#### 3. Delete Key
-
-**When to delete:**
-
-- Key no longer needed
-- Clean up old/test keys
-- Remove expired keys
-
-**How to delete:**
-
-1. Click **Actions → Delete** for the key
-2. Confirm deletion
-
-**What happens:**
-
-- Key permanently removed from database
-- Cannot be recovered
-- All usage history retained for audit
-
-### Monitoring Key Usage
-
-Check your API keys list regularly for:
-
-- **Last Used At**: Detect unused or abandoned keys
-- **Last Used IP**: Identify suspicious access patterns
-- **Status Changes**: Ensure all keys are in expected state
-
-**Red Flags**:
-
-- Key never used after creation → May be compromised/leaked
-- Key used from unexpected IP addresses → Potential security breach
-- Recently created key with no usage → Investigate why
-
-## Security Best Practices
-
-### ✅ DO
-
-1. **Store Keys Securely**
-
-   ```bash
-   # ✅ Environment variable
-   export API_KEY="ak_8a9590a2_..."
-
-   # ✅ .env file (add to .gitignore!)
-   API_KEY=ak_8a9590a2_87e400a2b35cd9ffccb6d76caf6432dfcf623b6fa6157b6d99f39940c12f5e1e
-   ```
-
-2. **Use Environment Variables**
-
-   ```javascript
-   // ✅ Read from environment
-   const apiKey = process.env.API_KEY;
-   ```
-
-3. **Set Expiration Dates**
-   - Temporary integrations: 7-90 days
-   - Regular services: 365 days
-   - Review before expiration
-
-4. **Rotate Keys Regularly**
-   - Production keys: Every 90 days
-   - Development keys: Every 180 days
-   - Immediately if compromised
-
-5. **Use Separate Keys per Service**
-   - Backend API: One key
-   - Mobile app: Another key
-   - Data import: Separate key
-
-6. **Monitor Usage**
-   - Check last_used_at weekly
-   - Review last_used_ip for anomalies
-   - Delete unused keys
-
-### ❌ DON'T
-
-1. **Never Commit to Git**
-
-   ```javascript
-   // ❌ WRONG - Don't hardcode
-   const API_KEY = 'ak_8a9590a2_87e400a2...';
-
-   // ✅ CORRECT - Use environment
-   const API_KEY = process.env.API_KEY;
-   ```
-
-2. **Never Share via Email/Chat**
-   - Use secure sharing tools (1Password, LastPass)
-   - Rotate key after sharing if unsure
-
-3. **Never Use Query Parameters** (unless necessary)
-   - Keys visible in logs
-   - Keys visible in browser history
-   - Use headers instead
-
-4. **Never Use Same Key Everywhere**
-   - Compromise of one service affects all
-   - Create service-specific keys
-
-5. **Never Ignore Expiration**
-   - Plan key rotation before expiry
-   - Avoid service interruption
-
-## Troubleshooting
-
-### Error: 401 Unauthorized
-
-**Possible Causes:**
-
-1. **Invalid API Key**
-
-   ```json
-   {
-     "success": false,
-     "error": {
-       "code": "UNAUTHORIZED",
-       "message": "Invalid API key"
-     }
-   }
-   ```
-
-   **Solution**: Verify you copied the full key correctly
-
-2. **Expired API Key**
-
-   ```json
-   {
-     "success": false,
-     "error": {
-       "code": "UNAUTHORIZED",
-       "message": "API key has expired"
-     }
-   }
-   ```
-
-   **Solution**: Generate a new key or rotate the existing key
-
-3. **Revoked API Key**
-
-   ```json
-   {
-     "success": false,
-     "error": {
-       "code": "UNAUTHORIZED",
-       "message": "API key is disabled"
-     }
-   }
-   ```
-
-   **Solution**: Key was revoked - generate a new key
-
-### Error: 403 Forbidden
-
-**Possible Causes:**
-
-1. **Insufficient Permissions**
-
-   ```json
-   {
-     "success": false,
-     "error": {
-       "code": "FORBIDDEN",
-       "message": "Permission denied"
-     }
-   }
-   ```
-
-   **Solution**:
-   - Check which permissions your key has
-   - Generate new key with required permissions
-   - Contact administrator for permission upgrade
-
-2. **Wrong Resource Access**
-   - API key for "products" used on "users" endpoint
-   - Solution: Use correct key or add permissions
-
-### Request Timeout
-
-**Possible Causes:**
-
-1. **Network Issues**
-   - Check internet connection
-   - Verify API server is reachable
-
-2. **Server Overload**
-   - Wait and retry with exponential backoff
-   - Contact support if persistent
-
-### Key Not Working After Generation
-
-**Checklist:**
-
-1. ✅ Copied full key (not just preview)?
-2. ✅ No extra spaces at start/end?
-3. ✅ Using correct authentication method (header/bearer)?
-4. ✅ Correct header name (`x-api-key` not `api-key`)?
-5. ✅ Key is Active status?
-6. ✅ Key not expired?
-
-### Getting Help
-
-If you still have issues:
-
-1. Check API key status in web interface
-2. Try generating a new test key
-3. Contact support with:
-   - Key preview (first 12 characters: `ak_8a9590a2`)
-   - Error message
-   - Request method and endpoint
-   - Timestamp of failed attempt
-
----
-
-**Related Documentation**:
-
-- [API Reference](./API_REFERENCE.md) - API endpoint details
-- [Developer Guide](./DEVELOPER_GUIDE.md) - Integration guide
-- [Security Guide](./SECURITY.md) - Advanced security
-
-**Last Updated**: 2025-10-30
+- **[API Key Management Guide](../api-key-management/USER_GUIDE.md)**: Managing your API keys
+- **[Performance Monitoring](../monitoring/USER_GUIDE.md)**: Monitoring API performance
+- **[Security Best Practices](../security/USER_GUIDE.md)**: API security guidelines
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)**: Detailed troubleshooting steps

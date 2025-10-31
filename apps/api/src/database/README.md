@@ -79,17 +79,25 @@ User-specific navigation customization.
 
 ### System Configuration
 
-#### `system_settings`
-Application-wide configuration.
-- **Category organization**: App, security, features, etc.
-- **Type safety**: Strongly typed values with data type specification
-- **Public/Private**: Control over frontend exposure
-- **Restart requirements**: Flag settings that require app restart
+#### `app_settings`
+Application-wide configuration system (replaces legacy system_settings).
+- **Rich metadata**: Label, description, UI schema for frontend forms
+- **Access levels**: Public, user, admin, system
+- **Type safety**: Strongly typed values with validation rules
+- **Namespace support**: Organize settings by namespace
+- **User overrides**: Personal overrides via app_user_settings table
+- **Audit trail**: Complete history tracking via app_settings_history
 
-#### `setting_templates`
-Default setting structures and validation.
-- **Template definitions**: Default values and validation rules
-- **User configurability**: Control over user modification permissions
+#### `app_user_settings`
+User-specific setting overrides.
+- **Personal configuration**: Per-user overrides for allowed settings
+- **Inheritance**: Falls back to app_settings default if no override
+
+#### `app_settings_history`
+Complete audit trail for settings changes.
+- **Change tracking**: Old value, new value, action type
+- **User attribution**: Who made the change and when
+- **Context**: IP address, user agent for security auditing
 
 ### Storage & Files
 
