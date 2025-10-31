@@ -33,6 +33,7 @@ import swaggerPlugin from '../plugins/swagger.plugin';
 // Core infrastructure modules
 import authPlugin from '../core/auth/auth.plugin';
 import authStrategiesPlugin from '../core/auth/strategies/auth.strategies';
+import { errorLogsPlugin } from '../core/error-logs';
 import { monitoringPlugin as monitoringModulePlugin } from '../core/monitoring';
 import permissionCachePlugin from '../core/rbac/permission-cache.plugin';
 import rbacPlugin from '../core/rbac/rbac.plugin';
@@ -289,7 +290,8 @@ export function createPluginGroups(
 export function createCorePluginGroup(apiPrefix: string): PluginGroup {
   return {
     name: 'core-infrastructure',
-    description: 'Core infrastructure modules (auth, users, rbac, monitoring)',
+    description:
+      'Core infrastructure modules (auth, users, rbac, monitoring, error-logs)',
     plugins: [
       {
         name: 'system',
@@ -319,6 +321,11 @@ export function createCorePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'monitoring-module',
         plugin: monitoringModulePlugin,
+        required: true,
+      },
+      {
+        name: 'error-logs',
+        plugin: errorLogsPlugin,
         required: true,
       },
     ],

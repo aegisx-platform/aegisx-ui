@@ -121,6 +121,9 @@ importers:
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
+      chart.js:
+        specifier: ^4.5.1
+        version: 4.5.1
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -175,6 +178,9 @@ importers:
       monaco-editor:
         specifier: ^0.54.0
         version: 0.54.0
+      ng2-charts:
+        specifier: ^8.0.0
+        version: 8.0.0(@angular/cdk@20.2.2(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.1.8(@angular/animations@20.3.0(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)))(chart.js@4.5.1)(rxjs@7.8.2)
       ngx-extended-pdf-viewer:
         specifier: 25.6.0-alpha.3
         version: 25.6.0-alpha.3(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))
@@ -4136,6 +4142,12 @@ packages:
     engines: { node: '>=10.0' }
     peerDependencies:
       tslib: '2'
+
+  '@kurkle/color@0.3.4':
+    resolution:
+      {
+        integrity: sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==,
+      }
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution:
@@ -8571,6 +8583,13 @@ packages:
       {
         integrity: sha512-bNFETTG/pM5ryzQ9Ad0lJOTa6HWD/YsScAR3EnCPZRPlQh77JocYktSHOUHelyhm8IARL+o4c4F1bP5KVOjiRA==,
       }
+
+  chart.js@4.5.1:
+    resolution:
+      {
+        integrity: sha512-GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw==,
+      }
+    engines: { pnpm: '>=8' }
 
   chokidar@3.6.0:
     resolution:
@@ -13913,6 +13932,19 @@ packages:
     peerDependenciesMeta:
       tailwindcss:
         optional: true
+
+  ng2-charts@8.0.0:
+    resolution:
+      {
+        integrity: sha512-nofsNHI2Zt+EAwT+BJBVg0kgOhNo9ukO4CxULlaIi7VwZSr7I1km38kWSoU41Oq6os6qqIh5srnL+CcV+RFPFA==,
+      }
+    peerDependencies:
+      '@angular/cdk': '>=19.0.0'
+      '@angular/common': '>=19.0.0'
+      '@angular/core': '>=19.0.0'
+      '@angular/platform-browser': '>=19.0.0'
+      chart.js: ^3.4.0 || ^4.0.0
+      rxjs: ^6.5.3 || ^7.4.0
 
   ngx-extended-pdf-viewer@25.6.0-alpha.3:
     resolution:
@@ -22318,6 +22350,8 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
+  '@kurkle/color@0.3.4': {}
+
   '@leichtgewicht/ip-codec@2.0.5': {}
 
   '@listr2/prompt-adapter-inquirer@2.0.22(@inquirer/prompts@7.6.0(@types/node@20.19.9))':
@@ -25715,6 +25749,10 @@ snapshots:
   char-regex@1.0.2: {}
 
   chardet@2.1.0: {}
+
+  chart.js@4.5.1:
+    dependencies:
+      '@kurkle/color': 0.3.4
 
   chokidar@3.6.0:
     dependencies:
@@ -29185,6 +29223,17 @@ snapshots:
     optionalDependencies:
       rollup: 4.50.1
       tailwindcss: 3.4.17(ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.17))(@types/node@20.19.9)(typescript@5.8.3))
+
+  ng2-charts@8.0.0(@angular/cdk@20.2.2(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.1.8(@angular/animations@20.3.0(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)))(chart.js@4.5.1)(rxjs@7.8.2):
+    dependencies:
+      '@angular/cdk': 20.2.2(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+      '@angular/common': 20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+      '@angular/core': 20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)
+      '@angular/platform-browser': 20.1.8(@angular/animations@20.3.0(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))
+      chart.js: 4.5.1
+      lodash-es: 4.17.21
+      rxjs: 7.8.2
+      tslib: 2.8.1
 
   ngx-extended-pdf-viewer@25.6.0-alpha.3(@angular/common@20.1.8(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.8(@angular/compiler@20.1.8)(rxjs@7.8.2)(zone.js@0.15.1)):
     dependencies:

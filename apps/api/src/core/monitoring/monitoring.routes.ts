@@ -169,6 +169,431 @@ async function monitoringRoutes(fastify: FastifyInstance) {
       }
     },
   );
+
+  // System metrics endpoint
+  fastify.get(
+    '/system-metrics',
+    {
+      schema: {
+        summary: 'Get system metrics',
+        description: 'Get current system metrics (CPU, memory, disk usage)',
+        tags: ['monitoring'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              cpu: {
+                type: 'object',
+                properties: {
+                  usage: { type: 'number' },
+                  cores: { type: 'number' },
+                  loadAverage: {
+                    type: 'array',
+                    items: { type: 'number' },
+                  },
+                },
+              },
+              memory: {
+                type: 'object',
+                properties: {
+                  total: { type: 'number' },
+                  used: { type: 'number' },
+                  free: { type: 'number' },
+                  usagePercent: { type: 'number' },
+                },
+              },
+              process: {
+                type: 'object',
+                properties: {
+                  memoryUsage: { type: 'number' },
+                  uptime: { type: 'number' },
+                  pid: { type: 'number' },
+                },
+              },
+              timestamp: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const os = await import('os');
+        const process = await import('process');
+
+        const totalMem = os.totalmem();
+        const freeMem = os.freemem();
+        const usedMem = totalMem - freeMem;
+
+        return reply.success({
+          cpu: {
+            usage: process.cpuUsage().user / 1000000, // Convert to seconds
+            cores: os.cpus().length,
+            loadAverage: os.loadavg(),
+          },
+          memory: {
+            total: totalMem,
+            used: usedMem,
+            free: freeMem,
+            usagePercent: (usedMem / totalMem) * 100,
+          },
+          process: {
+            memoryUsage: process.memoryUsage().heapUsed,
+            uptime: process.uptime(),
+            pid: process.pid,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        fastify.logger.error('Failed to get system metrics', {
+          error: error.message,
+        });
+        return reply.error(
+          'METRICS_ERROR',
+          'Failed to get system metrics',
+          500,
+        );
+      }
+    },
+  );
+
+  // API performance endpoint
+  fastify.get(
+    '/api-performance',
+    {
+      schema: {
+        summary: 'Get API performance metrics',
+        description: 'Get API response times and throughput',
+        tags: ['monitoring'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              responseTime: {
+                type: 'object',
+                properties: {
+                  avg: { type: 'number' },
+                  min: { type: 'number' },
+                  max: { type: 'number' },
+                },
+              },
+              throughput: {
+                type: 'object',
+                properties: {
+                  requestsPerSecond: { type: 'number' },
+                  totalRequests: { type: 'number' },
+                },
+              },
+              timestamp: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // TODO: Implement actual metrics collection
+        // For now, returning mock data
+        return reply.success({
+          responseTime: {
+            avg: 45.2,
+            min: 12.5,
+            max: 234.7,
+          },
+          throughput: {
+            requestsPerSecond: 125.5,
+            totalRequests: 15432,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        fastify.logger.error('Failed to get API performance metrics', {
+          error: error.message,
+        });
+        return reply.error(
+          'METRICS_ERROR',
+          'Failed to get API performance metrics',
+          500,
+        );
+      }
+    },
+  );
+
+  // Database statistics endpoint
+  fastify.get(
+    '/database-stats',
+    {
+      schema: {
+        summary: 'Get database statistics',
+        description: 'Get database connection pool and query performance',
+        tags: ['monitoring'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              pool: {
+                type: 'object',
+                properties: {
+                  total: { type: 'number' },
+                  idle: { type: 'number' },
+                  active: { type: 'number' },
+                },
+              },
+              queries: {
+                type: 'object',
+                properties: {
+                  total: { type: 'number' },
+                  slow: { type: 'number' },
+                },
+              },
+              timestamp: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // Get Knex pool status
+        const pool = fastify.knex?.client?.pool;
+
+        return reply.success({
+          pool: {
+            total: pool?.max || 0,
+            idle: pool?.numFree?.() || 0,
+            active: pool?.numUsed?.() || 0,
+          },
+          queries: {
+            total: 0, // TODO: Implement query counting
+            slow: 0, // TODO: Implement slow query detection
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        fastify.logger.error('Failed to get database stats', {
+          error: error.message,
+        });
+        return reply.error(
+          'METRICS_ERROR',
+          'Failed to get database stats',
+          500,
+        );
+      }
+    },
+  );
+
+  // Redis statistics endpoint
+  fastify.get(
+    '/redis-stats',
+    {
+      schema: {
+        summary: 'Get Redis statistics',
+        description: 'Get Redis cache hit rates and memory usage',
+        tags: ['monitoring'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              cache: {
+                type: 'object',
+                properties: {
+                  hits: { type: 'number' },
+                  misses: { type: 'number' },
+                  hitRate: { type: 'number' },
+                },
+              },
+              memory: {
+                type: 'object',
+                properties: {
+                  used: { type: 'number' },
+                  peak: { type: 'number' },
+                },
+              },
+              connections: {
+                type: 'object',
+                properties: {
+                  active: { type: 'number' },
+                },
+              },
+              timestamp: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // Get Redis info if available
+        const redis = (fastify as any).redis;
+        const stats = {
+          cache: {
+            hits: 0,
+            misses: 0,
+            hitRate: 0,
+          },
+          memory: {
+            used: 0,
+            peak: 0,
+          },
+          connections: {
+            active: redis ? 1 : 0,
+          },
+        };
+
+        if (redis && typeof redis.info === 'function') {
+          try {
+            const info = await redis.info('stats');
+            // Parse Redis INFO output
+            const lines = info.split('\r\n');
+            for (const line of lines) {
+              if (line.startsWith('keyspace_hits:')) {
+                stats.cache.hits = parseInt(line.split(':')[1]);
+              } else if (line.startsWith('keyspace_misses:')) {
+                stats.cache.misses = parseInt(line.split(':')[1]);
+              }
+            }
+            const total = stats.cache.hits + stats.cache.misses;
+            stats.cache.hitRate =
+              total > 0 ? (stats.cache.hits / total) * 100 : 0;
+          } catch (redisError) {
+            fastify.logger.warn('Failed to get Redis stats', {
+              error: redisError.message,
+            });
+          }
+        }
+
+        return reply.success({
+          ...stats,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        fastify.logger.error('Failed to get Redis stats', {
+          error: error.message,
+        });
+        return reply.error('METRICS_ERROR', 'Failed to get Redis stats', 500);
+      }
+    },
+  );
+
+  // Active sessions endpoint
+  fastify.get(
+    '/active-sessions',
+    {
+      schema: {
+        summary: 'Get active sessions',
+        description: 'Get current active user sessions count',
+        tags: ['monitoring'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              total: { type: 'number' },
+              users: { type: 'number' },
+              sessions: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    userId: { type: 'string' },
+                    lastActivity: { type: 'string' },
+                  },
+                },
+              },
+              timestamp: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // Query active sessions from database
+        const activeSessions = await fastify
+          .knex('sessions')
+          .where('expires_at', '>', new Date())
+          .select('user_id', 'last_activity_at')
+          .orderBy('last_activity_at', 'desc')
+          .limit(100);
+
+        const uniqueUsers = new Set(activeSessions.map((s) => s.user_id)).size;
+
+        return reply.success({
+          total: activeSessions.length,
+          users: uniqueUsers,
+          sessions: activeSessions.map((s) => ({
+            userId: s.user_id,
+            lastActivity: s.last_activity_at,
+          })),
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        fastify.logger.error('Failed to get active sessions', {
+          error: error.message,
+        });
+        return reply.error(
+          'METRICS_ERROR',
+          'Failed to get active sessions',
+          500,
+        );
+      }
+    },
+  );
+
+  // Request metrics endpoint
+  fastify.get(
+    '/request-metrics',
+    {
+      schema: {
+        summary: 'Get request metrics',
+        description: 'Get request counts by endpoint',
+        tags: ['monitoring'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              totalRequests: { type: 'number' },
+              byEndpoint: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    endpoint: { type: 'string' },
+                    count: { type: 'number' },
+                    avgResponseTime: { type: 'number' },
+                  },
+                },
+              },
+              timestamp: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // TODO: Implement actual request metrics collection
+        // For now, returning mock data
+        return reply.success({
+          totalRequests: 15432,
+          byEndpoint: [
+            { endpoint: '/api/users', count: 5234, avgResponseTime: 42.3 },
+            { endpoint: '/api/auth/login', count: 823, avgResponseTime: 125.7 },
+            { endpoint: '/api/error-logs', count: 1543, avgResponseTime: 38.2 },
+          ],
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        fastify.logger.error('Failed to get request metrics', {
+          error: error.message,
+        });
+        return reply.error(
+          'METRICS_ERROR',
+          'Failed to get request metrics',
+          500,
+        );
+      }
+    },
+  );
 }
 
 // Helper functions
@@ -178,10 +603,9 @@ async function storeClientError(
   error: any,
 ): Promise<void> {
   try {
-    // Optional: Store in database for analysis
-    // This could be implemented to store in a dedicated errors table
-    if (process.env.STORE_CLIENT_ERRORS === 'true' && fastify.knex) {
-      await fastify.knex('client_errors').insert({
+    // Store in error_logs table (always enabled now)
+    if (fastify.knex) {
+      await fastify.knex('error_logs').insert({
         timestamp: new Date(error.timestamp),
         level: error.level,
         message: error.message,
@@ -191,10 +615,10 @@ async function storeClientError(
         session_id: error.sessionId,
         correlation_id: error.correlationId,
         stack: error.stack,
-        context: JSON.stringify(error.context || {}),
+        context: error.context ? JSON.stringify(error.context) : null,
         type: error.type,
-        server_timestamp: new Date(),
-        ip: error.ip,
+        ip_address: error.ip,
+        referer: error.referer,
       });
     }
   } catch (dbError) {

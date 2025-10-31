@@ -1,386 +1,287 @@
-import { Injectable, inject } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { GlobalErrorHandler } from '../../error-handling/services/error-handler.service';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError, tap, finalize } from 'rxjs/operators';
+import {
+  SystemMetrics,
+  APIPerformance,
+  DatabaseStats,
+  RedisStats,
+  ActiveSessions,
+  RequestMetrics,
+  MonitoringState,
+  ApiErrorResponse,
+} from '../models/monitoring.types';
 
-interface PerformanceMetric {
-  name: string;
-  value: number;
-  timestamp: number;
-  url: string;
-  userAgent: string;
-  context?: Record<string, any>;
-}
-
-interface UserAction {
-  type: 'click' | 'navigation' | 'form_submit' | 'custom';
-  element?: string;
-  url: string;
-  timestamp: number;
-  duration?: number;
-  context?: Record<string, any>;
-}
-
+/**
+ * Monitoring Service
+ *
+ * Provides methods to fetch system monitoring data including:
+ * - System metrics (CPU, memory, process)
+ * - API performance (response times, throughput)
+ * - Database statistics (connection pool, queries)
+ * - Redis statistics (cache hit rate, memory)
+ * - Active sessions
+ * - Request metrics by endpoint
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class MonitoringService {
-  private router = inject(Router);
-  private errorHandler = inject(GlobalErrorHandler);
+  private http = inject(HttpClient);
+  private readonly baseUrl = '/monitoring';
 
-  private performanceQueue: PerformanceMetric[] = [];
-  private userActionQueue: UserAction[] = [];
-  private readonly maxQueueSize = 100;
-  private readonly flushInterval = 30000; // 30 seconds
-  private flushTimer?: number;
+  // Signal-based state management
+  private _state = signal<MonitoringState>({
+    systemMetrics: null,
+    apiPerformance: null,
+    databaseStats: null,
+    redisStats: null,
+    activeSessions: null,
+    requestMetrics: null,
+    loading: false,
+    error: null,
+  });
 
-  private navigationStartTime = 0;
-  private isInitialized = false;
+  // Read-only state signals
+  readonly state = this._state.asReadonly();
+  readonly systemMetrics = () => this._state().systemMetrics;
+  readonly apiPerformance = () => this._state().apiPerformance;
+  readonly databaseStats = () => this._state().databaseStats;
+  readonly redisStats = () => this._state().redisStats;
+  readonly activeSessions = () => this._state().activeSessions;
+  readonly requestMetrics = () => this._state().requestMetrics;
+  readonly loading = () => this._state().loading;
+  readonly error = () => this._state().error;
 
-  initialize(): void {
-    if (this.isInitialized) return;
+  /**
+   * Get system metrics (CPU, memory, process stats)
+   */
+  getSystemMetrics(): Observable<SystemMetrics> {
+    this.setLoading(true);
+    this.clearError();
 
-    this.setupPerformanceMonitoring();
-    this.setupNavigationTracking();
-    this.setupUserActionTracking();
-    this.startPeriodicFlush();
-
-    this.isInitialized = true;
-    console.log('Monitoring service initialized');
-  }
-
-  private setupPerformanceMonitoring(): void {
-    // Track Core Web Vitals when available
-    if ('PerformanceObserver' in window) {
-      try {
-        // Largest Contentful Paint (LCP)
-        new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) {
-            this.trackPerformanceMetric({
-              name: 'lcp',
-              value: entry.startTime,
-              timestamp: Date.now(),
-              url: window.location.href,
-              userAgent: navigator.userAgent,
-              context: {
-                element: (entry as any).element?.tagName,
-                size: (entry as any).size,
-              },
-            });
-          }
-        }).observe({ entryTypes: ['largest-contentful-paint'] });
-
-        // First Input Delay (FID)
-        new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) {
-            this.trackPerformanceMetric({
-              name: 'fid',
-              value: (entry as any).processingStart - entry.startTime,
-              timestamp: Date.now(),
-              url: window.location.href,
-              userAgent: navigator.userAgent,
-              context: {
-                eventType: (entry as any).name,
-              },
-            });
-          }
-        }).observe({ entryTypes: ['first-input'] });
-
-        // Cumulative Layout Shift (CLS)
-        new PerformanceObserver((list) => {
-          let clsValue = 0;
-          for (const entry of list.getEntries()) {
-            if (!(entry as any).hadRecentInput) {
-              clsValue += (entry as any).value;
-            }
-          }
-
-          if (clsValue > 0) {
-            this.trackPerformanceMetric({
-              name: 'cls',
-              value: clsValue,
-              timestamp: Date.now(),
-              url: window.location.href,
-              userAgent: navigator.userAgent,
-            });
-          }
-        }).observe({ entryTypes: ['layout-shift'] });
-      } catch (error) {
-        console.warn('Performance monitoring setup failed:', error);
-      }
-    }
-
-    // Track page load times
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const navigationTiming = performance.getEntriesByType(
-          'navigation',
-        )[0] as PerformanceNavigationTiming;
-
-        if (navigationTiming) {
-          this.trackPerformanceMetric({
-            name: 'page_load_time',
-            value: navigationTiming.loadEventEnd - navigationTiming.fetchStart,
-            timestamp: Date.now(),
-            url: window.location.href,
-            userAgent: navigator.userAgent,
-            context: {
-              domContentLoaded:
-                navigationTiming.domContentLoadedEventEnd -
-                navigationTiming.fetchStart,
-              firstByte:
-                navigationTiming.responseStart - navigationTiming.fetchStart,
-              domInteractive:
-                navigationTiming.domInteractive - navigationTiming.fetchStart,
-            },
+    return this.http
+      .get<{
+        success: true;
+        data: SystemMetrics;
+        message: string;
+      }>(`${this.baseUrl}/system-metrics`)
+      .pipe(
+        map((response) => response.data),
+        tap((metrics) => {
+          this.updateState({
+            systemMetrics: metrics,
+            loading: false,
           });
-        }
-      }, 0);
-    });
-  }
-
-  private setupNavigationTracking(): void {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        const navigationTime = Date.now() - this.navigationStartTime;
-
-        this.trackUserAction({
-          type: 'navigation',
-          url: event.url,
-          timestamp: Date.now(),
-          duration: this.navigationStartTime > 0 ? navigationTime : undefined,
-          context: {
-            previousUrl:
-              event.urlAfterRedirects !== event.url
-                ? event.urlAfterRedirects
-                : undefined,
-          },
-        });
-
-        // Track slow navigation
-        if (navigationTime > 2000) {
-          this.errorHandler.logCustomError(
-            `Slow navigation detected: ${event.url}`,
-            'warn',
-            { navigationTime: `${navigationTime}ms`, url: event.url },
-          );
-        }
-      });
-
-    // Track navigation start
-    this.router.events.subscribe(() => {
-      this.navigationStartTime = Date.now();
-    });
-  }
-
-  private setupUserActionTracking(): void {
-    // Track clicks on important elements
-    document.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      if (this.shouldTrackClick(target)) {
-        this.trackUserAction({
-          type: 'click',
-          element: this.getElementSelector(target),
-          url: window.location.href,
-          timestamp: Date.now(),
-          context: {
-            tagName: target.tagName,
-            className: target.className,
-            id: target.id,
-            text: target.textContent?.slice(0, 100),
-          },
-        });
-      }
-    });
-
-    // Track form submissions
-    document.addEventListener('submit', (event) => {
-      const form = event.target as HTMLFormElement;
-      this.trackUserAction({
-        type: 'form_submit',
-        element: this.getElementSelector(form),
-        url: window.location.href,
-        timestamp: Date.now(),
-        context: {
-          action: form.action,
-          method: form.method,
-          fields: this.getFormFieldNames(form),
-        },
-      });
-    });
-  }
-
-  private shouldTrackClick(element: HTMLElement): boolean {
-    // Track clicks on buttons, links, and elements with specific classes/attributes
-    const trackableElements = ['BUTTON', 'A'];
-    const trackableClasses = ['btn', 'button', 'link', 'menu-item'];
-    const trackableAttributes = ['data-track', 'data-analytics'];
-
-    return (
-      trackableElements.includes(element.tagName) ||
-      trackableClasses.some((cls) => element.classList.contains(cls)) ||
-      trackableAttributes.some((attr) => element.hasAttribute(attr))
-    );
-  }
-
-  private getElementSelector(element: HTMLElement): string {
-    if (element.id) {
-      return `#${element.id}`;
-    }
-
-    if (element.className) {
-      return `${element.tagName.toLowerCase()}.${element.className.split(' ')[0]}`;
-    }
-
-    return element.tagName.toLowerCase();
-  }
-
-  private getFormFieldNames(form: HTMLFormElement): string[] {
-    const inputs = form.querySelectorAll('input, select, textarea');
-    return Array.from(inputs)
-      .map(
-        (input) =>
-          (input as HTMLInputElement).name || (input as HTMLInputElement).id,
-      )
-      .filter((name) => name && !name.toLowerCase().includes('password'));
-  }
-
-  private trackPerformanceMetric(metric: PerformanceMetric): void {
-    this.performanceQueue.push(metric);
-
-    if (this.performanceQueue.length > this.maxQueueSize) {
-      this.performanceQueue.shift();
-    }
-
-    // Log significant performance issues immediately
-    if (
-      (metric.name === 'lcp' && metric.value > 4000) ||
-      (metric.name === 'fid' && metric.value > 300) ||
-      (metric.name === 'cls' && metric.value > 0.25)
-    ) {
-      this.errorHandler.logCustomError(
-        `Poor ${metric.name.toUpperCase()} score: ${metric.value}`,
-        'warn',
-        { metric: metric.name, value: metric.value, url: metric.url },
+        }),
+        catchError((error) => this.handleError(error)),
+        finalize(() => this.setLoading(false)),
       );
-    }
   }
 
-  private trackUserAction(action: UserAction): void {
-    this.userActionQueue.push(action);
+  /**
+   * Get API performance metrics (response times, throughput)
+   */
+  getAPIPerformance(): Observable<APIPerformance> {
+    this.setLoading(true);
+    this.clearError();
 
-    if (this.userActionQueue.length > this.maxQueueSize) {
-      this.userActionQueue.shift();
-    }
+    return this.http
+      .get<{
+        success: true;
+        data: APIPerformance;
+        message: string;
+      }>(`${this.baseUrl}/api-performance`)
+      .pipe(
+        map((response) => response.data),
+        tap((performance) => {
+          this.updateState({
+            apiPerformance: performance,
+            loading: false,
+          });
+        }),
+        catchError((error) => this.handleError(error)),
+        finalize(() => this.setLoading(false)),
+      );
   }
 
-  private startPeriodicFlush(): void {
-    this.flushTimer = window.setInterval(() => {
-      this.flushQueues();
-    }, this.flushInterval);
+  /**
+   * Get database statistics (connection pool, queries)
+   */
+  getDatabaseStats(): Observable<DatabaseStats> {
+    this.setLoading(true);
+    this.clearError();
+
+    return this.http
+      .get<{
+        success: true;
+        data: DatabaseStats;
+        message: string;
+      }>(`${this.baseUrl}/database-stats`)
+      .pipe(
+        map((response) => response.data),
+        tap((stats) => {
+          this.updateState({
+            databaseStats: stats,
+            loading: false,
+          });
+        }),
+        catchError((error) => this.handleError(error)),
+        finalize(() => this.setLoading(false)),
+      );
   }
 
-  private async flushQueues(): Promise<void> {
-    try {
-      if (this.performanceQueue.length > 0 || this.userActionQueue.length > 0) {
-        const payload = {
-          performance: [...this.performanceQueue],
-          userActions: [...this.userActionQueue],
-          timestamp: Date.now(),
-          sessionId: this.getSessionId(),
-          url: window.location.href,
-        };
+  /**
+   * Get Redis statistics (cache hit rate, memory)
+   */
+  getRedisStats(): Observable<RedisStats> {
+    this.setLoading(true);
+    this.clearError();
 
-        await this.sendMonitoringData(payload);
-
-        // Clear queues after successful send
-        this.performanceQueue = [];
-        this.userActionQueue = [];
-      }
-    } catch (error) {
-      console.warn('Failed to flush monitoring queues:', error);
-    }
+    return this.http
+      .get<{
+        success: true;
+        data: RedisStats;
+        message: string;
+      }>(`${this.baseUrl}/redis-stats`)
+      .pipe(
+        map((response) => response.data),
+        tap((stats) => {
+          this.updateState({
+            redisStats: stats,
+            loading: false,
+          });
+        }),
+        catchError((error) => this.handleError(error)),
+        finalize(() => this.setLoading(false)),
+      );
   }
 
-  private async sendMonitoringData(data: any): Promise<void> {
-    try {
-      const response = await fetch('/api/client-monitoring', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Client-Monitoring': 'true',
-        },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
+  /**
+   * Get active sessions count
+   */
+  getActiveSessions(): Observable<ActiveSessions> {
+    this.setLoading(true);
+    this.clearError();
 
-      if (!response.ok) {
-        throw new Error(`Failed to send monitoring data: ${response.status}`);
-      }
-    } catch (error) {
-      console.warn('Error sending monitoring data:', error);
-      throw error;
-    }
+    return this.http
+      .get<{
+        success: true;
+        data: ActiveSessions;
+        message: string;
+      }>(`${this.baseUrl}/active-sessions`)
+      .pipe(
+        map((response) => response.data),
+        tap((sessions) => {
+          this.updateState({
+            activeSessions: sessions,
+            loading: false,
+          });
+        }),
+        catchError((error) => this.handleError(error)),
+        finalize(() => this.setLoading(false)),
+      );
   }
 
-  private getSessionId(): string {
-    let sessionId = sessionStorage.getItem('aegisx_session_id');
-    if (!sessionId) {
-      sessionId =
-        'session-' +
-        Math.random().toString(36).substr(2, 9) +
-        '-' +
-        Date.now().toString(36);
-      sessionStorage.setItem('aegisx_session_id', sessionId);
-    }
-    return sessionId;
+  /**
+   * Get request metrics by endpoint
+   */
+  getRequestMetrics(): Observable<RequestMetrics> {
+    this.setLoading(true);
+    this.clearError();
+
+    return this.http
+      .get<{
+        success: true;
+        data: RequestMetrics;
+        message: string;
+      }>(`${this.baseUrl}/request-metrics`)
+      .pipe(
+        map((response) => response.data),
+        tap((metrics) => {
+          this.updateState({
+            requestMetrics: metrics,
+            loading: false,
+          });
+        }),
+        catchError((error) => this.handleError(error)),
+        finalize(() => this.setLoading(false)),
+      );
   }
 
-  // Public methods for manual tracking
-  trackCustomMetric(
-    name: string,
-    value: number,
-    context?: Record<string, any>,
-  ): void {
-    this.trackPerformanceMetric({
-      name,
-      value,
-      timestamp: Date.now(),
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      context,
+  /**
+   * Load all monitoring data at once
+   */
+  loadAllMetrics(): Observable<void> {
+    this.setLoading(true);
+    this.clearError();
+
+    return new Observable((observer) => {
+      Promise.all([
+        this.getSystemMetrics().toPromise(),
+        this.getAPIPerformance().toPromise(),
+        this.getDatabaseStats().toPromise(),
+        this.getRedisStats().toPromise(),
+        this.getActiveSessions().toPromise(),
+        this.getRequestMetrics().toPromise(),
+      ])
+        .then(() => {
+          this.setLoading(false);
+          observer.next();
+          observer.complete();
+        })
+        .catch((error) => {
+          this.handleError(error);
+          observer.error(error);
+        });
     });
   }
 
-  trackCustomAction(action: string, context?: Record<string, any>): void {
-    this.trackUserAction({
-      type: 'custom',
-      element: action,
-      url: window.location.href,
-      timestamp: Date.now(),
-      context,
+  /**
+   * Refresh monitoring data
+   */
+  refresh(): void {
+    this.loadAllMetrics().subscribe({
+      next: () => console.log('Monitoring data refreshed'),
+      error: (error) =>
+        console.error('Failed to refresh monitoring data:', error),
     });
   }
 
-  // Get current statistics
-  getQueueStats(): { performance: number; userActions: number } {
-    return {
-      performance: this.performanceQueue.length,
-      userActions: this.userActionQueue.length,
-    };
+  // Private helper methods
+
+  private updateState(partialState: Partial<MonitoringState>): void {
+    this._state.update((current) => ({ ...current, ...partialState }));
   }
 
-  // Manual flush
-  async flush(): Promise<void> {
-    await this.flushQueues();
+  private setLoading(loading: boolean): void {
+    this.updateState({ loading });
   }
 
-  // Cleanup
-  destroy(): void {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
+  private clearError(): void {
+    this.updateState({ error: null });
+  }
+
+  private setError(error: string): void {
+    this.updateState({ error, loading: false });
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage: string;
+
+    if (error.error && typeof error.error === 'object') {
+      const apiError = error.error as ApiErrorResponse;
+      errorMessage = apiError.error?.message || 'An unexpected error occurred';
+    } else if (error.message) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = `HTTP ${error.status}: ${error.statusText || 'Unknown error'}`;
     }
-    this.flushQueues(); // Send remaining data
+
+    this.setError(errorMessage);
+
+    console.error('Monitoring API Error:', error);
+    return throwError(() => new Error(errorMessage));
   }
 }
