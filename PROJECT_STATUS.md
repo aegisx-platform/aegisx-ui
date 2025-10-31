@@ -72,7 +72,7 @@ aegisx-starter/
 
 ### 🎯 Implemented Features
 
-**Backend Core Modules (API)** - 14 core modules (business features removed):
+**Backend Core Modules (API)** - 13 core modules (business features removed):
 
 1. **Authentication** - JWT-based authentication system
 2. **Users** - User management with RBAC integration
@@ -82,12 +82,11 @@ aegisx-starter/
 6. **PDF Export** - Dynamic PDF generation
 7. **PDF Templates** - Template management with Monaco editor
 8. **Navigation** - Dynamic navigation system
-9. **Settings** - Application settings
-10. **System Settings** - System configuration
-11. **User Profile** - Profile management with preferences
-12. **Monitoring** - System monitoring and health checks
-13. **WebSocket** - Real-time event system
-14. **System** - Core system functionality
+9. **Settings** - Application settings (includes system-wide configuration)
+10. **User Profile** - Profile management with preferences
+11. **Monitoring** - System monitoring and health checks
+12. **WebSocket** - Real-time event system
+13. **System** - Core system functionality
 
 **Frontend Core Features (Web)** - 10 core features (business features removed):
 

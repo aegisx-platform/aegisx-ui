@@ -9,8 +9,6 @@ export async function seed(knex: Knex): Promise<void> {
   await knex('navigation_permissions').del();
   await knex('navigation_items').del();
   await knex('user_settings').del();
-  await knex('setting_templates').del();
-  await knex('system_settings').del();
   await knex('themes').del();
   await knex('user_preferences').del();
   await knex('avatar_files').del();
@@ -78,128 +76,8 @@ export async function seed(knex: Knex): Promise<void> {
 
   console.log('✅ Created default themes');
 
-  // Insert system settings
-  await knex('system_settings').insert([
-    {
-      category: 'app',
-      key: 'name',
-      value: 'AegisX Platform',
-      data_type: 'string',
-      description: 'Application name',
-      is_public: true,
-    },
-    {
-      category: 'app',
-      key: 'version',
-      value: '1.0.0',
-      data_type: 'string',
-      description: 'Application version',
-      is_public: true,
-    },
-    {
-      category: 'app',
-      key: 'description',
-      value: 'Enterprise-grade platform for modern applications',
-      data_type: 'string',
-      description: 'Application description',
-      is_public: true,
-    },
-    {
-      category: 'security',
-      key: 'jwt_expiry',
-      value: '3600',
-      data_type: 'number',
-      description: 'JWT token expiry in seconds',
-      is_public: false,
-    },
-    {
-      category: 'security',
-      key: 'refresh_token_expiry',
-      value: '86400',
-      data_type: 'number',
-      description: 'Refresh token expiry in seconds',
-      is_public: false,
-    },
-    {
-      category: 'security',
-      key: 'max_login_attempts',
-      value: '5',
-      data_type: 'number',
-      description: 'Maximum login attempts before lockout',
-      is_public: false,
-    },
-    {
-      category: 'features',
-      key: 'registration_enabled',
-      value: 'true',
-      data_type: 'boolean',
-      description: 'Enable user registration',
-      is_public: true,
-    },
-    {
-      category: 'features',
-      key: 'two_factor_required',
-      value: 'false',
-      data_type: 'boolean',
-      description: 'Require two-factor authentication',
-      is_public: true,
-    },
-  ]);
-
-  // Insert setting templates for user preferences
-  await knex('setting_templates').insert([
-    {
-      category: 'theme',
-      key: 'name',
-      default_value: 'default',
-      data_type: 'string',
-      description: 'Default theme name',
-    },
-    {
-      category: 'theme',
-      key: 'scheme',
-      default_value: 'light',
-      data_type: 'string',
-      description: 'Color scheme preference',
-    },
-    {
-      category: 'layout',
-      key: 'type',
-      default_value: 'classic',
-      data_type: 'string',
-      description: 'Layout type',
-    },
-    {
-      category: 'notifications',
-      key: 'email',
-      default_value: 'true',
-      data_type: 'boolean',
-      description: 'Enable email notifications',
-    },
-    {
-      category: 'notifications',
-      key: 'desktop',
-      default_value: 'true',
-      data_type: 'boolean',
-      description: 'Enable desktop notifications',
-    },
-    {
-      category: 'localization',
-      key: 'language',
-      default_value: 'en',
-      data_type: 'string',
-      description: 'Interface language',
-    },
-    {
-      category: 'localization',
-      key: 'timezone',
-      default_value: 'UTC',
-      data_type: 'string',
-      description: 'User timezone',
-    },
-  ]);
-
-  console.log('✅ Created system settings and templates');
+  // Note: System-wide settings are now managed via app_settings table
+  // (migration 010_create_settings_table.ts) with access_level: 'system'
 
   // Get existing permissions for navigation
   const dashboardPerm = await knex('permissions')

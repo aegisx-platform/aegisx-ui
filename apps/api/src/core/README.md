@@ -24,8 +24,7 @@ Core modules provide **reusable infrastructure and platform services** that are 
 - **navigation** - Dynamic navigation menus
 - **pdf-export** - PDF generation and export
 - **pdf-templates** - PDF template management
-- **settings** - Application settings
-- **system-settings** - System-wide settings
+- **settings** - Application settings (includes system-wide configuration)
 - **user-profile** - User activity and preferences
 
 ## 📝 Module Characteristics
