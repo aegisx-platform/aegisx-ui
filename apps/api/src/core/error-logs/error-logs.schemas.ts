@@ -1,7 +1,7 @@
 import { Type, Static } from '@sinclair/typebox';
 import {
   ApiSuccessResponseSchema,
-  PaginationParamsSchema,
+  PaginationQuerySchema,
   PaginatedResponseSchema,
 } from '../../schemas/base.schemas';
 
@@ -36,7 +36,7 @@ export const ErrorLogSchema = Type.Object({
 
 // Query parameters for listing errors
 export const ErrorLogsQuerySchema = Type.Intersect([
-  PaginationParamsSchema,
+  PaginationQuerySchema,
   Type.Object({
     level: Type.Optional(
       Type.Union([

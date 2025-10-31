@@ -22,10 +22,10 @@ export class ErrorLogsController {
         },
       });
     } catch (error: any) {
-      request.log.error('Failed to fetch error logs', {
-        error: error.message,
-        query: request.query,
-      });
+      request.log.error(
+        { error: error.message, query: request.query },
+        'Failed to fetch error logs',
+      );
 
       return reply.error('FETCH_ERROR', 'Failed to fetch error logs', 500);
     }
@@ -44,10 +44,10 @@ export class ErrorLogsController {
         return reply.notFound('Error log not found');
       }
 
-      request.log.error('Failed to fetch error log', {
-        error: error.message,
-        id: request.params.id,
-      });
+      request.log.error(
+        { error: error.message, id: request.params.id },
+        'Failed to fetch error log',
+      );
 
       return reply.error('FETCH_ERROR', 'Failed to fetch error log', 500);
     }
@@ -63,9 +63,10 @@ export class ErrorLogsController {
 
       return reply.success(stats);
     } catch (error: any) {
-      request.log.error('Failed to fetch error stats', {
-        error: error.message,
-      });
+      request.log.error(
+        { error: error.message },
+        'Failed to fetch error stats',
+      );
 
       return reply.error(
         'FETCH_ERROR',
@@ -84,10 +85,10 @@ export class ErrorLogsController {
 
       return reply.success(result);
     } catch (error: any) {
-      request.log.error('Failed to cleanup old errors', {
-        error: error.message,
-        query: request.query,
-      });
+      request.log.error(
+        { error: error.message, query: request.query },
+        'Failed to cleanup old errors',
+      );
 
       return reply.error(
         'CLEANUP_ERROR',

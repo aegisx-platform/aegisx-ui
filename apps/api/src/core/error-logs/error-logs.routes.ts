@@ -34,7 +34,7 @@ async function errorLogsRoutes(
       },
       preValidation: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['error-logs:read', '*:*']),
+        fastify.verifyPermission('error-logs', 'read'),
       ],
     },
     controller.findAll.bind(controller),
@@ -59,7 +59,7 @@ async function errorLogsRoutes(
       },
       preValidation: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['error-logs:read', '*:*']),
+        fastify.verifyPermission('error-logs', 'read'),
       ],
     },
     controller.getStats.bind(controller),
@@ -85,7 +85,7 @@ async function errorLogsRoutes(
       },
       preValidation: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['error-logs:read', '*:*']),
+        fastify.verifyPermission('error-logs', 'read'),
       ],
     },
     controller.findById.bind(controller),
@@ -109,7 +109,7 @@ async function errorLogsRoutes(
       },
       preValidation: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['error-logs:delete', '*:*']),
+        fastify.verifyPermission('error-logs', 'delete'),
       ],
     },
     controller.cleanup.bind(controller),

@@ -40,7 +40,7 @@ export default fp(
   },
   {
     name: 'error-logs-plugin',
-    dependencies: ['knex-plugin', 'jwt-auth-plugin', 'rbac-plugin'],
+    dependencies: ['knex-plugin', 'jwt-auth-plugin', 'auth-strategies-plugin'],
   },
 );
 
