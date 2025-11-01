@@ -132,7 +132,7 @@ export class FileAuditService extends BaseAuditService<
   async logFileOperation(data: CreateFileAuditLog): Promise<string> {
     return this.create({
       ...data,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     } as Partial<FileAuditLog>);
   }
 
@@ -203,12 +203,13 @@ export class FileAuditService extends BaseAuditService<
 
     history.forEach((log) => {
       // Count by operation
-      byOperation[log.operation] = (byOperation[log.operation] || 0) + 1;
+      const operation = log.operation as string;
+      byOperation[operation] = (byOperation[operation] || 0) + 1;
 
       // Count by access method
       if (log.accessMethod) {
-        byAccessMethod[log.accessMethod] =
-          (byAccessMethod[log.accessMethod] || 0) + 1;
+        const accessMethod = log.accessMethod as string;
+        byAccessMethod[accessMethod] = (byAccessMethod[accessMethod] || 0) + 1;
       }
 
       // Count successes

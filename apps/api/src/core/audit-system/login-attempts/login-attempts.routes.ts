@@ -45,7 +45,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.findAll.bind(controller),
@@ -69,7 +69,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.findById.bind(controller),
@@ -94,7 +94,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getStats.bind(controller),
@@ -120,7 +120,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.checkLockout.bind(controller),
@@ -143,7 +143,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.detectBruteForce.bind(controller),
@@ -182,7 +182,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getRecent.bind(controller),
@@ -210,7 +210,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getByUserId.bind(controller),
@@ -237,7 +237,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getSuccessful.bind(controller),
@@ -262,7 +262,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getFailed.bind(controller),
@@ -293,7 +293,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getByReason.bind(controller),
@@ -321,7 +321,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:read', '*:*']),
+        fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
     controller.getByIp.bind(controller),
@@ -343,7 +343,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:export', '*:*']),
+        fastify.verifyPermission('login-attempts', 'export'),
       ],
     },
     controller.export.bind(controller),
@@ -369,7 +369,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:delete', '*:*']),
+        fastify.verifyPermission('login-attempts', 'delete'),
       ],
     },
     controller.cleanup.bind(controller),
@@ -394,7 +394,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:create', '*:*']),
+        fastify.verifyPermission('login-attempts', 'create'),
       ],
     },
     controller.create.bind(controller),
@@ -418,7 +418,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
       },
       preHandler: [
         fastify.verifyJWT,
-        fastify.verifyPermission(['login-attempts:delete', '*:*']),
+        fastify.verifyPermission('login-attempts', 'delete'),
       ],
     },
     controller.delete.bind(controller),
