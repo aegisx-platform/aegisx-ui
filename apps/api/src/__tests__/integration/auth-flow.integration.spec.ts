@@ -1175,4 +1175,259 @@ describe('Authentication Flow Integration Tests', () => {
       });
     });
   });
+
+  describe('Email Verification', () => {
+    describe('POST /api/auth/register creates verification token', () => {
+      it('should create email verification token after registration', async () => {
+        const userData = createRegisterRequestData({
+          email: 'verify-test@example.com',
+          username: 'verify-test',
+          password: 'TestPass123!',
+        });
+
+        const registerResponse = await requestHelper.post(
+          '/api/auth/register',
+          { body: userData },
+        );
+        expectResponse(registerResponse).hasStatus(201).isSuccess();
+
+        const userId = registerResponse.body.data?.user?.id;
+
+        // Verify token was created in database
+        const app = requestHelper.app;
+        const verification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+
+        expect(verification).toBeDefined();
+        expect(verification.email).toBe(userData.email);
+        expect(verification.verified).toBe(false);
+        expect(verification.token).toBeDefined();
+        expect(verification.token.length).toBe(64); // 32 bytes hex = 64 chars
+      });
+    });
+
+    describe('POST /api/auth/verify-email', () => {
+      it('should verify email with valid token', async () => {
+        const userData = createRegisterRequestData({
+          email: 'verify-valid@example.com',
+          username: 'verify-valid',
+          password: 'TestPass123!',
+        });
+
+        const registerResponse = await requestHelper.post(
+          '/api/auth/register',
+          { body: userData },
+        );
+        const userId = registerResponse.body.data?.user?.id;
+
+        // Get verification token from database
+        const app = requestHelper.app;
+        const verification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+
+        // Verify email
+        const verifyResponse = await requestHelper.post(
+          '/api/auth/verify-email',
+          {
+            body: { token: verification.token },
+          },
+        );
+
+        expectResponse(verifyResponse).hasStatus(200).isSuccess();
+        expect(verifyResponse.body.data?.emailVerified).toBe(true);
+
+        // Check database updated
+        const updatedUser = await app.knex('users').where('id', userId).first();
+        expect(updatedUser.email_verified).toBe(true);
+        expect(updatedUser.email_verified_at).toBeDefined();
+
+        const updatedVerification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+        expect(updatedVerification.verified).toBe(true);
+        expect(updatedVerification.verified_at).toBeDefined();
+      });
+
+      it('should reject invalid verification token', async () => {
+        const verifyResponse = await requestHelper.post(
+          '/api/auth/verify-email',
+          {
+            body: { token: 'invalid-token-12345' },
+          },
+        );
+
+        expectResponse(verifyResponse).hasStatus(400);
+        expect(verifyResponse.body.error?.code).toBe(
+          'EMAIL_VERIFICATION_FAILED',
+        );
+      });
+
+      it('should handle already verified email', async () => {
+        const userData = createRegisterRequestData({
+          email: 'already-verified@example.com',
+          username: 'already-verified',
+          password: 'TestPass123!',
+        });
+
+        const registerResponse = await requestHelper.post(
+          '/api/auth/register',
+          { body: userData },
+        );
+        const userId = registerResponse.body.data?.user?.id;
+
+        // Get verification token
+        const app = requestHelper.app;
+        const verification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+
+        // Verify first time
+        await requestHelper.post('/api/auth/verify-email', {
+          body: { token: verification.token },
+        });
+
+        // Try to verify again
+        const secondVerifyResponse = await requestHelper.post(
+          '/api/auth/verify-email',
+          {
+            body: { token: verification.token },
+          },
+        );
+
+        expectResponse(secondVerifyResponse).hasStatus(200).isSuccess();
+        expect(secondVerifyResponse.body.message).toContain('already verified');
+      });
+    });
+
+    describe('POST /api/auth/resend-verification', () => {
+      it('should resend verification email to authenticated user', async () => {
+        const userData = createRegisterRequestData({
+          email: 'resend-test@example.com',
+          username: 'resend-test',
+          password: 'TestPass123!',
+        });
+
+        const registerResponse = await requestHelper.post(
+          '/api/auth/register',
+          { body: userData },
+        );
+        const accessToken = registerResponse.body.data?.accessToken;
+        const userId = registerResponse.body.data?.user?.id;
+
+        // Get old token
+        const app = requestHelper.app;
+        const oldVerification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+
+        // Resend verification
+        const resendResponse = await requestHelper.post(
+          '/api/auth/resend-verification',
+          {
+            body: {},
+            headers: { authorization: `Bearer ${accessToken}` },
+          },
+        );
+
+        expectResponse(resendResponse).hasStatus(200).isSuccess();
+        expect(resendResponse.body.data?.message).toContain('resent');
+
+        // Check new token created and old one deleted
+        const verifications = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .where('verified', false);
+
+        expect(verifications.length).toBe(1);
+        expect(verifications[0].token).not.toBe(oldVerification.token);
+      });
+
+      it('should reject resend for already verified email', async () => {
+        const userData = createRegisterRequestData({
+          email: 'resend-verified@example.com',
+          username: 'resend-verified',
+          password: 'TestPass123!',
+        });
+
+        const registerResponse = await requestHelper.post(
+          '/api/auth/register',
+          { body: userData },
+        );
+        const accessToken = registerResponse.body.data?.accessToken;
+        const userId = registerResponse.body.data?.user?.id;
+
+        // Get token and verify
+        const app = requestHelper.app;
+        const verification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+
+        await requestHelper.post('/api/auth/verify-email', {
+          body: { token: verification.token },
+        });
+
+        // Try to resend after verification
+        const resendResponse = await requestHelper.post(
+          '/api/auth/resend-verification',
+          {
+            body: {},
+            headers: { authorization: `Bearer ${accessToken}` },
+          },
+        );
+
+        expectResponse(resendResponse).hasStatus(400);
+        expect(resendResponse.body.error?.code).toBe('EMAIL_ALREADY_VERIFIED');
+      });
+    });
+
+    describe('Token expiration', () => {
+      it('should reject expired verification token', async () => {
+        const userData = createRegisterRequestData({
+          email: 'expired-token@example.com',
+          username: 'expired-token',
+          password: 'TestPass123!',
+        });
+
+        const registerResponse = await requestHelper.post(
+          '/api/auth/register',
+          { body: userData },
+        );
+        const userId = registerResponse.body.data?.user?.id;
+
+        // Get token and manually expire it
+        const app = requestHelper.app;
+        const verification = await app
+          .knex('email_verifications')
+          .where('user_id', userId)
+          .first();
+
+        // Set expiry to past
+        await app
+          .knex('email_verifications')
+          .where('id', verification.id)
+          .update({
+            expires_at: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+          });
+
+        // Try to verify with expired token
+        const verifyResponse = await requestHelper.post(
+          '/api/auth/verify-email',
+          {
+            body: { token: verification.token },
+          },
+        );
+
+        expectResponse(verifyResponse).hasStatus(400);
+        expect(verifyResponse.body.error?.message).toContain('expired');
+      });
+    });
+  });
 });
