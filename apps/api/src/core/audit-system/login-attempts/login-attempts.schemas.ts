@@ -34,41 +34,31 @@ export const LoginFailureReasonSchema = createEnumSchema(
  * Login Attempt Schema
  *
  * Records all login attempts for security monitoring
+ * Extends base audit log with login-specific fields
  */
-export const LoginAttemptSchema = Type.Object({
-  id: CommonSchemas.Uuid,
+export const LoginAttemptSchema = Type.Intersect([
+  BaseAuditLogSchema,
+  Type.Object({
+    // Login credentials attempted
+    email: Type.Optional(
+      Type.String({
+        maxLength: 255,
+        format: 'email',
+        description: 'Email address used for login',
+      }),
+    ),
+    username: Type.Optional(
+      Type.String({
+        maxLength: 100,
+        description: 'Username used for login',
+      }),
+    ),
 
-  // User identification
-  userId: Type.Union([CommonSchemas.Uuid, Type.Null()], {
-    description: 'User ID if user exists, null for invalid email/username',
+    // Attempt result
+    success: Type.Boolean({ default: false }),
+    failureReason: Type.Optional(LoginFailureReasonSchema),
   }),
-
-  // Login credentials attempted
-  email: Type.Optional(
-    Type.String({
-      maxLength: 255,
-      format: 'email',
-      description: 'Email address used for login',
-    }),
-  ),
-  username: Type.Optional(
-    Type.String({
-      maxLength: 100,
-      description: 'Username used for login',
-    }),
-  ),
-
-  // Request metadata
-  ipAddress: CommonSchemas.IpAddress,
-  userAgent: Type.Optional(CommonSchemas.UserAgent),
-
-  // Attempt result
-  success: Type.Boolean({ default: false }),
-  failureReason: Type.Optional(LoginFailureReasonSchema),
-
-  // Timestamp
-  createdAt: CommonSchemas.Timestamp,
-});
+]);
 
 export type LoginAttempt = Static<typeof LoginAttemptSchema>;
 
@@ -227,31 +217,32 @@ export type BruteForceResult = Static<typeof BruteForceResultSchema>;
  * Login Attempt Response
  */
 export const LoginAttemptResponseSchema =
-  CommonSchemas.ApiSuccessResponseSchema(LoginAttemptSchema);
+  CommonSchemas.ApiSuccessResponse(LoginAttemptSchema);
 
 /**
  * Login Attempts List Response
  */
 export const LoginAttemptsResponseSchema =
-  CommonSchemas.PaginatedResponseSchema(LoginAttemptSchema);
+  CommonSchemas.PaginatedResponse(LoginAttemptSchema);
 
 /**
  * Login Attempts Stats Response
  */
 export const LoginAttemptsStatsResponseSchema =
-  CommonSchemas.ApiSuccessResponseSchema(LoginAttemptsStatsSchema);
+  CommonSchemas.ApiSuccessResponse(LoginAttemptsStatsSchema);
 
 /**
  * Account Lockout Status Response
  */
 export const AccountLockoutStatusResponseSchema =
-  CommonSchemas.ApiSuccessResponseSchema(AccountLockoutStatusSchema);
+  CommonSchemas.ApiSuccessResponse(AccountLockoutStatusSchema);
 
 /**
  * Brute Force Result Response
  */
-export const BruteForceResultResponseSchema =
-  CommonSchemas.ApiSuccessResponseSchema(BruteForceResultSchema);
+export const BruteForceResultResponseSchema = CommonSchemas.ApiSuccessResponse(
+  BruteForceResultSchema,
+);
 
 /**
  * Export all schemas for easy import

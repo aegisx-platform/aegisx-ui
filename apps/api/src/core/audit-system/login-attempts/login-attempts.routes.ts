@@ -185,7 +185,7 @@ export async function loginAttemptsRoutes(fastify: FastifyInstance) {
         fastify.verifyPermission('login-attempts', 'read'),
       ],
     },
-    controller.getRecent.bind(controller),
+    controller.getRecentByIdentifier.bind(controller),
   );
 
   // ==================== USER-SPECIFIC ENDPOINTS ====================

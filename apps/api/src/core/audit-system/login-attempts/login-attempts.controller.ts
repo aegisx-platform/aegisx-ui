@@ -118,9 +118,9 @@ export class LoginAttemptsController extends BaseAuditController<
 
   /**
    * GET /recent/:identifier
-   * Get recent login attempts
+   * Get recent login attempts by identifier
    */
-  async getRecent(
+  async getRecentByIdentifier(
     request: FastifyRequest<{
       Params: { identifier: string };
       Querystring: { minutes?: number };
@@ -138,7 +138,7 @@ export class LoginAttemptsController extends BaseAuditController<
 
       return reply.success(attempts);
     } catch (error: any) {
-      this.logError(request, 'getRecent', error, {
+      this.logError(request, 'getRecentByIdentifier', error, {
         identifier: request.params.identifier,
       });
 
