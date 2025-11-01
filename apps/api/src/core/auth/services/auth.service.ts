@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { randomBytes } from 'crypto';
 import { AuthRepository } from '../auth.repository';
+import { AccountLockoutService } from './account-lockout.service';
 
 interface RegisterInput {
   email: string;
@@ -17,9 +18,11 @@ interface LoginInput {
 
 export class AuthService {
   private authRepository: AuthRepository;
+  private lockoutService: AccountLockoutService;
 
   constructor(private readonly app: FastifyInstance) {
     this.authRepository = new AuthRepository(app.knex);
+    this.lockoutService = new AccountLockoutService(app, app.knex, app.redis);
   }
 
   async register(input: RegisterInput) {
