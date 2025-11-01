@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 import { AuthRepository } from '../auth.repository';
 import { AccountLockoutService } from './account-lockout.service';
 import { EmailVerificationService } from './email-verification.service';
+import { PasswordResetService } from './password-reset.service';
 
 interface RegisterInput {
   email: string;
@@ -21,11 +22,13 @@ export class AuthService {
   private authRepository: AuthRepository;
   private lockoutService: AccountLockoutService;
   private emailVerificationService: EmailVerificationService;
+  private passwordResetService: PasswordResetService;
 
   constructor(private readonly app: FastifyInstance) {
     this.authRepository = new AuthRepository(app.knex);
     this.lockoutService = new AccountLockoutService(app, app.knex, app.redis);
     this.emailVerificationService = new EmailVerificationService(app, app.knex);
+    this.passwordResetService = new PasswordResetService(app, app.knex);
   }
 
   async register(input: RegisterInput) {
@@ -415,5 +418,30 @@ export class AuthService {
     }
 
     return { success: true, message: 'Verification email resent' };
+  }
+
+  /**
+   * Request password reset - sends reset email
+   */
+  async requestPasswordReset(email: string) {
+    return await this.passwordResetService.requestPasswordReset(email);
+  }
+
+  /**
+   * Verify password reset token
+   */
+  async verifyResetToken(token: string) {
+    return await this.passwordResetService.verifyResetToken(token);
+  }
+
+  /**
+   * Reset password using token
+   */
+  async resetPassword(token: string, newPassword: string, ipAddress?: string) {
+    return await this.passwordResetService.resetPassword(
+      token,
+      newPassword,
+      ipAddress,
+    );
   }
 }

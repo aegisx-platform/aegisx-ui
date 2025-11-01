@@ -49,3 +49,16 @@ export interface AuthTokens {
 export interface RefreshTokenResponse {
   accessToken: string;
 }
+
+export interface RequestPasswordResetRequest {
+  email: string;
+}
+
+export interface VerifyResetTokenRequest {
+  token: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}

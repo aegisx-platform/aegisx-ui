@@ -247,4 +247,81 @@ export default async function authRoutes(fastify: FastifyInstance) {
     preHandler: [fastify.authenticateJWT],
     handler: authController.resendVerification,
   });
+
+  // POST /api/auth/request-password-reset - Request password reset
+  typedFastify.route({
+    method: 'POST',
+    url: '/auth/request-password-reset',
+    config: {
+      rateLimit: {
+        max: 3, // 3 reset requests
+        timeWindow: '1 hour', // per hour per IP
+        keyGenerator: (req) => req.ip || 'unknown',
+      },
+    },
+    schema: {
+      tags: ['Authentication'],
+      summary: 'Request password reset',
+      description:
+        'Sends a password reset email with a secure token. ' +
+        'Always returns success for security (does not reveal if email exists). ' +
+        'Tokens expire after 1 hour.',
+      body: SchemaRefs.module('auth', 'requestPasswordResetRequest'),
+      response: {
+        200: SchemaRefs.module('auth', 'requestPasswordResetResponse'),
+        429: SchemaRefs.ServerError, // Rate limit exceeded
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: authController.requestPasswordReset,
+  });
+
+  // POST /api/auth/verify-reset-token - Verify password reset token
+  typedFastify.route({
+    method: 'POST',
+    url: '/auth/verify-reset-token',
+    schema: {
+      tags: ['Authentication'],
+      summary: 'Verify password reset token',
+      description:
+        'Checks if a password reset token is valid and not expired. ' +
+        'Used by frontend to validate token before showing reset form.',
+      body: SchemaRefs.module('auth', 'verifyResetTokenRequest'),
+      response: {
+        200: SchemaRefs.module('auth', 'verifyResetTokenResponse'),
+        400: SchemaRefs.ValidationError,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: authController.verifyResetToken,
+  });
+
+  // POST /api/auth/reset-password - Reset password using token
+  typedFastify.route({
+    method: 'POST',
+    url: '/auth/reset-password',
+    config: {
+      rateLimit: {
+        max: 5, // 5 reset attempts
+        timeWindow: '1 minute', // per minute per IP
+        keyGenerator: (req) => req.ip || 'unknown',
+      },
+    },
+    schema: {
+      tags: ['Authentication'],
+      summary: 'Reset password',
+      description:
+        'Resets user password using a valid reset token. ' +
+        'Invalidates all existing sessions for security. ' +
+        'Token can only be used once.',
+      body: SchemaRefs.module('auth', 'resetPasswordRequest'),
+      response: {
+        200: SchemaRefs.module('auth', 'resetPasswordResponse'),
+        400: SchemaRefs.ValidationError,
+        429: SchemaRefs.ServerError, // Rate limit exceeded
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: authController.resetPassword,
+  });
 }
