@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Knex } from 'knex';
 import { randomBytes } from 'crypto';
+import { EmailService } from '../../email/email.service';
 
 /**
  * Email Verification Service
@@ -38,11 +39,14 @@ export interface VerificationResult {
 export class EmailVerificationService {
   private readonly TOKEN_LENGTH = 32;
   private readonly EXPIRATION_HOURS = 24;
+  private emailService: EmailService;
 
   constructor(
     private readonly fastify: FastifyInstance,
     private readonly db: Knex,
-  ) {}
+  ) {
+    this.emailService = new EmailService(fastify);
+  }
 
   /**
    * Create a new verification token for a user
@@ -187,44 +191,14 @@ export class EmailVerificationService {
   }
 
   /**
-   * Send verification email (placeholder - integrate with email service)
+   * Send verification email using Email Service
    */
   async sendVerificationEmail(
     email: string,
     token: string,
     userName?: string,
   ): Promise<void> {
-    // TODO: Integrate with actual email service (SendGrid, AWS SES, etc.)
-    // For now, just log the verification URL
-
-    const verificationUrl = `${process.env.WEB_URL || 'http://localhost:4200'}/auth/verify-email?token=${token}`;
-
-    this.fastify.log.info({
-      msg: 'Verification email would be sent',
-      email,
-      userName,
-      verificationUrl,
-      note: 'TODO: Integrate with email service',
-    });
-
-    // In development, you can also print to console for testing
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.NODE_ENV === 'test'
-    ) {
-      console.log('\n=================================');
-      console.log('📧 EMAIL VERIFICATION');
-      console.log('=================================');
-      console.log(`To: ${email}`);
-      console.log(`Subject: Verify your email address`);
-      console.log(`\nHello ${userName || 'User'},`);
-      console.log(
-        '\nPlease verify your email address by clicking the link below:',
-      );
-      console.log(`\n${verificationUrl}`);
-      console.log('\nThis link will expire in 24 hours.');
-      console.log('=================================\n');
-    }
+    await this.emailService.sendVerificationEmail(email, token, userName);
   }
 
   /**
