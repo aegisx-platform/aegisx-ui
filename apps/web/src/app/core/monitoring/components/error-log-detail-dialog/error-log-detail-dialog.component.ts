@@ -26,26 +26,21 @@ import { ErrorLog } from '../../models/monitoring.types';
   ],
   template: `
     <!-- Header -->
-    <div class="dialog-header">
-      <mat-icon [class]="getLevelIconClass()" class="!leading-[1]">
-        {{ getLevelIcon() }}
-      </mat-icon>
-      <h2
-        mat-dialog-title
-        class="!text-base !font-semibold !mb-0 !leading-tight !ml-2"
-      >
-        Error Log Details
-      </h2>
-      <span class="text-xs text-slate-500 !ml-2">{{
-        data.timestamp | date: 'medium'
-      }}</span>
-      <div class="flex-1"></div>
-      <button
-        mat-icon-button
-        [mat-dialog-close]="null"
-        class="close-button !w-8 !h-8"
-      >
-        <mat-icon class="!text-[20px]">close</mat-icon>
+    <div
+      mat-dialog-title
+      class="flex items-center justify-between pb-4 border-b border-slate-200"
+    >
+      <div class="flex items-center gap-2">
+        <mat-icon [class]="getLevelIconClass()" class="!leading-[1]">
+          {{ getLevelIcon() }}
+        </mat-icon>
+        <h2 class="text-base font-semibold m-0">Error Log Details</h2>
+        <span class="text-xs text-slate-500">{{
+          data.timestamp | date: 'medium'
+        }}</span>
+      </div>
+      <button mat-icon-button [mat-dialog-close]="null">
+        <mat-icon>close</mat-icon>
       </button>
     </div>
 
@@ -263,23 +258,6 @@ import { ErrorLog } from '../../models/monitoring.types';
   `,
   styles: [
     `
-      .dialog-header {
-        display: flex;
-        align-items: center;
-        padding: 10px 16px;
-        border-bottom: 1px solid #e2e8f0;
-        gap: 0;
-      }
-
-      .dialog-header h2 {
-        margin: 0;
-        color: #1f2937;
-      }
-
-      .close-button {
-        margin: -4px -4px -4px 0;
-      }
-
       .dialog-content {
         max-height: 70vh;
         overflow-y: auto;
