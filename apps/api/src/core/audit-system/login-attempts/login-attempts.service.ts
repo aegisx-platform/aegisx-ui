@@ -134,7 +134,7 @@ export class LoginAttemptsService extends BaseAuditService<
   async logLoginAttempt(data: CreateLoginAttempt): Promise<string> {
     return this.create({
       ...data,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
     } as Partial<LoginAttempt>);
   }
 

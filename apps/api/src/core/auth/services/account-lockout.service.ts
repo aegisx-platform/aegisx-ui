@@ -314,8 +314,6 @@ export class AccountLockoutService {
       success: successOnly ? true : failedOnly ? false : undefined,
       page,
       limit,
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
     });
 
     // Convert to old interface format for backward compatibility
@@ -327,7 +325,7 @@ export class AccountLockoutService {
       ip_address: attempt.ipAddress,
       user_agent: attempt.userAgent || null,
       success: attempt.success,
-      failure_reason: attempt.failureReason || null,
+      failure_reason: (attempt.failureReason as string) || null,
       created_at: new Date(attempt.createdAt),
     }));
   }
@@ -338,7 +336,7 @@ export class AccountLockoutService {
    */
   async cleanupOldAttempts(daysToKeep: number = 30): Promise<number> {
     const result = await this.loginAttemptsService.cleanup({
-      days: daysToKeep,
+      olderThan: daysToKeep,
     });
 
     this.fastify.log.info({
