@@ -285,7 +285,49 @@ export async function seed(knex: Knex): Promise<void> {
     role_id: adminRole.id,
   });
 
+  // Create manager user
+  const hashedManagerPassword = await bcrypt.hash('Manager123!', 10);
+  const [managerUser] = await knex('users')
+    .insert({
+      email: 'manager@aegisx.local',
+      username: 'manager',
+      password: hashedManagerPassword,
+      first_name: 'Manager',
+      last_name: 'User',
+      is_active: true,
+    })
+    .returning(['id']);
+
+  // Assign manager role to manager user
+  await knex('user_roles').insert({
+    user_id: managerUser.id,
+    role_id: managerRole.id,
+  });
+
+  // Create demo user
+  const hashedDemoPassword = await bcrypt.hash('Demo123!', 10);
+  const [demoUser] = await knex('users')
+    .insert({
+      email: 'demo@aegisx.local',
+      username: 'demo',
+      password: hashedDemoPassword,
+      first_name: 'Demo',
+      last_name: 'User',
+      is_active: true,
+    })
+    .returning(['id']);
+
+  // Assign user role to demo user
+  await knex('user_roles').insert({
+    user_id: demoUser.id,
+    role_id: userRole.id,
+  });
+
   console.log('✅ Seed data created successfully');
   console.log('📧 Admin user: admin@aegisx.local');
   console.log('🔑 Password: Admin123!');
+  console.log('📧 Manager user: manager@aegisx.local');
+  console.log('🔑 Password: Manager123!');
+  console.log('📧 Demo user: demo@aegisx.local');
+  console.log('🔑 Password: Demo123!');
 }

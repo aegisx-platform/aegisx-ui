@@ -229,7 +229,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
                     type="button"
                     (click)="fillDemoCredentials('admin')"
                     class="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg border border-slate-200
-                           hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                           hover:border-purple-300 hover:bg-purple-50 transition-all group"
                   >
                     <div class="flex-shrink-0">
                       <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
@@ -237,8 +237,27 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
                       </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-700">Admin Account</div>
+                      <div class="text-xs font-semibold text-slate-900 group-hover:text-purple-700">Admin Account</div>
                       <div class="text-xs text-slate-500 truncate">admin@aegisx.local</div>
+                    </div>
+                    <mat-icon class="text-slate-400 group-hover:text-purple-600 !text-base">arrow_forward</mat-icon>
+                  </button>
+
+                  <!-- Manager Button -->
+                  <button
+                    type="button"
+                    (click)="fillDemoCredentials('manager')"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg border border-slate-200
+                           hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                  >
+                    <div class="flex-shrink-0">
+                      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <mat-icon class="text-white !text-sm">manage_accounts</mat-icon>
+                      </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-700">Manager Account</div>
+                      <div class="text-xs text-slate-500 truncate">manager@aegisx.local</div>
                     </div>
                     <mat-icon class="text-slate-400 group-hover:text-blue-600 !text-base">arrow_forward</mat-icon>
                   </button>
@@ -412,11 +431,15 @@ export class LoginPage {
     this.hidePassword.set(!this.hidePassword());
   }
 
-  protected fillDemoCredentials(type: 'admin' | 'demo'): void {
+  protected fillDemoCredentials(type: 'admin' | 'manager' | 'demo'): void {
     const credentials = {
       admin: {
         email: 'admin@aegisx.local',
         password: 'Admin123!',
+      },
+      manager: {
+        email: 'manager@aegisx.local',
+        password: 'Manager123!',
       },
       demo: {
         email: 'demo@aegisx.local',
