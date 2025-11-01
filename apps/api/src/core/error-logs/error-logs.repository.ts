@@ -115,6 +115,13 @@ export class ErrorLogsRepository {
       .first();
     const totalErrors = parseInt(totalResult?.count as string) || 0;
 
+    // Recent errors (last 24 hours)
+    const recentResult = await this.knex('error_logs')
+      .count('* as count')
+      .where('timestamp', '>=', this.knex.raw(`NOW() - INTERVAL '24 hours'`))
+      .first();
+    const recentErrors = parseInt(recentResult?.count as string) || 0;
+
     // By level
     const byLevelResults = await this.knex('error_logs')
       .select('level')
@@ -141,6 +148,8 @@ export class ErrorLogsRepository {
       http: 0,
       angular: 0,
       custom: 0,
+      backend: 0,
+      system: 0,
     };
     byTypeResults.forEach((row: any) => {
       byType[row.type as keyof typeof byType] = parseInt(row.count);
@@ -174,6 +183,7 @@ export class ErrorLogsRepository {
 
     return {
       totalErrors,
+      recentErrors,
       byLevel,
       byType,
       trend,
@@ -213,5 +223,11 @@ export class ErrorLogsRepository {
       .returning('id');
 
     return result.id;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.knex('error_logs').where('id', id).delete();
+
+    return result > 0;
   }
 }

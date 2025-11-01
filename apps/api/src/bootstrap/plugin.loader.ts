@@ -17,6 +17,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 
 import { activityLoggingPlugin } from '../plugins/activity-logging';
 import errorHandlerPlugin from '../plugins/error-handler.plugin';
+import globalErrorHooksPlugin from '../plugins/global-error-hooks.plugin';
 import healthCheckPlugin from '../plugins/health-check.plugin';
 import jwtAuthPlugin from '../plugins/jwt-auth.plugin';
 import knexPlugin from '../plugins/knex.plugin';
@@ -88,6 +89,11 @@ export function createPluginGroups(
             enableFileRotation: appConfig.logging.enableFileRotation,
             logDirectory: appConfig.logging.directory,
           },
+          required: true,
+        },
+        {
+          name: 'global-error-hooks',
+          plugin: globalErrorHooksPlugin,
           required: true,
         },
         {

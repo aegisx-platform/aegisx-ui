@@ -102,4 +102,52 @@ export class ErrorLogsController {
       );
     }
   }
+
+  async export(
+    request: FastifyRequest<{ Querystring: ErrorLogsQuery }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const csv = await this.service.exportToCSV(request.query);
+
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `error-logs-${timestamp}.csv`;
+
+      // Set headers for CSV download
+      reply.header('Content-Type', 'text/csv; charset=utf-8');
+      reply.header('Content-Disposition', `attachment; filename="${filename}"`);
+
+      return reply.send(csv);
+    } catch (error: any) {
+      request.log.error(
+        { error: error.message, query: request.query },
+        'Failed to export error logs',
+      );
+
+      return reply.error('EXPORT_ERROR', 'Failed to export error logs', 500);
+    }
+  }
+
+  async delete(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      await this.service.delete(request.params.id);
+
+      return reply.success({ message: 'Error log deleted successfully' });
+    } catch (error: any) {
+      if (error.message === 'ERROR_NOT_FOUND') {
+        return reply.notFound('Error log not found');
+      }
+
+      request.log.error(
+        { error: error.message, id: request.params.id },
+        'Failed to delete error log',
+      );
+
+      return reply.error('DELETE_ERROR', 'Failed to delete error log', 500);
+    }
+  }
 }

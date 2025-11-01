@@ -757,10 +757,11 @@ export async function seed(knex: Knex): Promise<void> {
     'action',
   ]);
   const adminRole = await knex('roles').where({ name: 'admin' }).first();
+  const managerRole = await knex('roles').where({ name: 'manager' }).first();
   const userRole = await knex('roles').where({ name: 'user' }).first();
 
-  if (!adminRole || !userRole) {
-    console.error('❌ Admin or User role not found!');
+  if (!adminRole || !managerRole || !userRole) {
+    console.error('❌ Admin, Manager, or User role not found!');
     return;
   }
 
@@ -799,7 +800,44 @@ export async function seed(knex: Knex): Promise<void> {
     `✅ Assigned ${adminAssigned} permissions to admin role (total: ${adminPermissions.length})`,
   );
 
-  // Assign limited permissions to user role
+  // Assign dashboard + users + profile permissions to manager role
+  const managerPermissionList = [
+    'navigation.view',
+    'dashboard.view',
+    'users.create',
+    'users.read',
+    'users.update',
+    'users.delete',
+    'profile.read',
+    'profile.update',
+    'profile.avatar',
+    'profile.preferences',
+  ];
+
+  const managerPermissions = allPermissions.filter((perm) =>
+    managerPermissionList.includes(`${perm.resource}.${perm.action}`),
+  );
+
+  let managerAssigned = 0;
+  for (const perm of managerPermissions) {
+    const existing = await knex('role_permissions')
+      .where({ role_id: managerRole.id, permission_id: perm.id })
+      .first();
+
+    if (!existing) {
+      await knex('role_permissions').insert({
+        role_id: managerRole.id,
+        permission_id: perm.id,
+      });
+      managerAssigned++;
+    }
+  }
+
+  console.log(
+    `✅ Assigned ${managerAssigned} permissions to manager role (total: ${managerPermissions.length})`,
+  );
+
+  // Assign dashboard + profile permissions to user role
   const userPermissionList = [
     'navigation.view',
     'dashboard.view',
@@ -807,8 +845,6 @@ export async function seed(knex: Knex): Promise<void> {
     'profile.update',
     'profile.avatar',
     'profile.preferences',
-    'settings.view',
-    'settings.update',
   ];
 
   const userPermissions = allPermissions.filter((perm) =>

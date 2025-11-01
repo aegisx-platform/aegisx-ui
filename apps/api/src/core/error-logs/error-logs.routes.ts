@@ -65,6 +65,31 @@ async function errorLogsRoutes(
     controller.getStats.bind(controller),
   );
 
+  // GET /error-logs/export - Export error logs to CSV
+  typedFastify.get(
+    '/export',
+    {
+      schema: {
+        summary: 'Export error logs',
+        description: 'Export error logs to CSV file with optional filters',
+        tags: ['error-logs'],
+        querystring: SchemaRefs.module('error-logs', 'error-logs-query'),
+        response: {
+          200: Type.String({
+            description: 'CSV file content',
+          }),
+          401: SchemaRefs.Unauthorized,
+          500: SchemaRefs.ServerError,
+        },
+      },
+      preValidation: [
+        fastify.verifyJWT,
+        fastify.verifyPermission('error-logs', 'read'),
+      ],
+    },
+    controller.export.bind(controller),
+  );
+
   // GET /error-logs/:id - Get single error log
   typedFastify.get(
     '/:id',
@@ -113,6 +138,38 @@ async function errorLogsRoutes(
       ],
     },
     controller.cleanup.bind(controller),
+  );
+
+  // DELETE /error-logs/:id - Delete single error log
+  typedFastify.delete(
+    '/:id',
+    {
+      schema: {
+        summary: 'Delete error log',
+        description: 'Delete a single error log by ID',
+        tags: ['error-logs'],
+        params: Type.Object({
+          id: Type.String({ format: 'uuid' }),
+        }),
+        response: {
+          200: Type.Object({
+            success: Type.Literal(true),
+            data: Type.Object({
+              message: Type.String(),
+            }),
+          }),
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          404: SchemaRefs.NotFound,
+          500: SchemaRefs.ServerError,
+        },
+      },
+      preValidation: [
+        fastify.verifyJWT,
+        fastify.verifyPermission('error-logs', 'delete'),
+      ],
+    },
+    controller.delete.bind(controller),
   );
 }
 

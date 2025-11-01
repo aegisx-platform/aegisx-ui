@@ -1011,10 +1011,7 @@ export class NavigationManagementComponent implements OnInit {
     return { visible, total };
   });
 
-  ngOnInit(): void {
-    this.loadNavigationItems();
-    this.loadAvailableRoles();
-
+  constructor() {
     // Effect to disable drag when filters are active
     effect(() => {
       const currentFilters = this.filters();
@@ -1045,6 +1042,11 @@ export class NavigationManagementComponent implements OnInit {
         this.isDragEnabled.set(false);
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.loadNavigationItems();
+    this.loadAvailableRoles();
   }
 
   ngAfterViewInit(): void {

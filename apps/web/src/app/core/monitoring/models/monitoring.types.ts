@@ -148,7 +148,7 @@ export interface ErrorLog {
   url?: string;
   stack?: string;
   context?: Record<string, any>;
-  type: 'javascript' | 'http' | 'angular' | 'custom';
+  type: 'javascript' | 'http' | 'angular' | 'custom' | 'backend' | 'system';
 
   // User context
   userId?: string;
@@ -168,7 +168,7 @@ export interface ErrorLog {
 
 export interface ErrorLogsQuery {
   level?: 'error' | 'warn' | 'info';
-  type?: 'javascript' | 'http' | 'angular' | 'custom';
+  type?: 'javascript' | 'http' | 'angular' | 'custom' | 'backend' | 'system';
   userId?: string;
   sessionId?: string;
   startDate?: string; // ISO timestamp
@@ -192,6 +192,8 @@ export interface ErrorStats {
     http: number;
     angular: number;
     custom: number;
+    backend: number;
+    system: number;
   };
   recentErrors: number; // Last 24 hours
   topErrors: Array<{
@@ -201,9 +203,7 @@ export interface ErrorStats {
 }
 
 export interface CleanupQuery {
-  olderThan: string; // ISO timestamp
-  level?: 'error' | 'warn' | 'info';
-  type?: 'javascript' | 'http' | 'angular' | 'custom';
+  olderThan: number; // Number of days
 }
 
 // ============================================================================
@@ -236,7 +236,7 @@ export interface ErrorStatsResponse {
 export interface CleanupResponse {
   success: true;
   data: {
-    deleted: number;
+    deletedCount: number;
   };
   message: string;
 }

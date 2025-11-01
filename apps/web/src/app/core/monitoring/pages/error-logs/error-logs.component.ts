@@ -1,28 +1,27 @@
+import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BreadcrumbComponent, AegisxNavigationItem } from '@aegisx/ui';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ErrorLogDetailDialogComponent } from '../../components/error-log-detail-dialog/error-log-detail-dialog.component';
+import { CleanupDialogComponent } from '../../components/cleanup-dialog/cleanup-dialog.component';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { ErrorLog, ErrorLogsQuery } from '../../models/monitoring.types';
 import { ErrorLogsService } from '../../services/error-logs.service';
-import {
-  ErrorLog,
-  ErrorLogsQuery,
-  ErrorStats,
-} from '../../models/monitoring.types';
 
 @Component({
   selector: 'app-error-logs',
@@ -57,29 +56,31 @@ import {
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1
+            class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+          >
             Error Logs
           </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">
+          <p class="text-slate-600 dark:text-slate-400 mt-1">
             View and manage application error logs
           </p>
         </div>
 
         <div class="flex flex-wrap gap-2">
           <button
-            mat-raised-button
-            color="accent"
+            mat-stroked-button
             (click)="exportLogs()"
             [disabled]="loading()"
+            class="border-slate-300 text-slate-700 hover:bg-slate-200"
           >
             <mat-icon>download</mat-icon>
             Export CSV
           </button>
           <button
-            mat-raised-button
-            color="warn"
+            mat-stroked-button
             (click)="openCleanupDialog()"
             [disabled]="loading()"
+            class="border-slate-300 text-slate-700 hover:bg-slate-200"
           >
             <mat-icon>delete_sweep</mat-icon>
             Cleanup Old Logs
@@ -88,61 +89,114 @@ import {
       </div>
 
       <!-- Error Statistics -->
-      <div *ngIf="stats()" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <mat-card appearance="outlined" class="border-l-4 border-red-500">
+      <div *ngIf="stats()" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Total Errors Card -->
+        <mat-card
+          appearance="outlined"
+          class="border border-slate-200 bg-white rounded-xl"
+        >
           <mat-card-content class="p-4">
-            <div class="flex items-center gap-2 mb-2">
-              <mat-icon class="text-red-500">error</mat-icon>
-              <h3 class="text-sm font-medium text-gray-600">Total Errors</h3>
+            <div class="flex items-center gap-1.5 !mb-2">
+              <span
+                class="size-2.5 shrink-0 rounded-sm bg-red-500 dark:bg-red-500"
+                aria-hidden="true"
+              ></span>
+              <h3 class="text-md font-medium text-slate-600 !mb-0">
+                Total Errors
+              </h3>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p
+              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+            >
               {{ stats()?.totalErrors || 0 }}
             </p>
+            <p class="text-xs text-slate-500">
+              Critical issues requiring attention
+            </p>
           </mat-card-content>
         </mat-card>
 
-        <mat-card appearance="outlined" class="border-l-4 border-orange-500">
+        <!-- Warnings Card -->
+        <mat-card
+          appearance="outlined"
+          class="border border-slate-200 bg-white rounded-xl"
+        >
           <mat-card-content class="p-4">
-            <div class="flex items-center gap-2 mb-2">
-              <mat-icon class="text-orange-500">warning</mat-icon>
-              <h3 class="text-sm font-medium text-gray-600">Warnings</h3>
+            <div class="flex items-center gap-1.5 !mb-2">
+              <span
+                class="size-2.5 shrink-0 rounded-sm bg-orange-500 dark:bg-orange-500"
+                aria-hidden="true"
+              ></span>
+              <h3 class="text-md font-medium text-slate-600 !mb-0">Warnings</h3>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p
+              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+            >
               {{ stats()?.byLevel?.warn || 0 }}
             </p>
+            <p class="text-xs text-slate-500">Potential issues to review</p>
           </mat-card-content>
         </mat-card>
 
-        <mat-card appearance="outlined" class="border-l-4 border-blue-500">
+        <!-- Info Card -->
+        <mat-card
+          appearance="outlined"
+          class="border border-slate-200 bg-white rounded-xl"
+        >
           <mat-card-content class="p-4">
-            <div class="flex items-center gap-2 mb-2">
-              <mat-icon class="text-blue-500">info</mat-icon>
-              <h3 class="text-sm font-medium text-gray-600">Info</h3>
+            <div class="flex items-center gap-1.5 !mb-2">
+              <span
+                class="size-2.5 shrink-0 rounded-sm bg-blue-500 dark:bg-blue-500"
+                aria-hidden="true"
+              ></span>
+              <h3 class="text-md font-medium text-slate-600 !mb-0">Info</h3>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p
+              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+            >
               {{ stats()?.byLevel?.info || 0 }}
             </p>
+            <p class="text-xs text-slate-500">Informational messages</p>
           </mat-card-content>
         </mat-card>
 
-        <mat-card appearance="outlined" class="border-l-4 border-purple-500">
+        <!-- Recent (24h) Card -->
+        <mat-card
+          appearance="outlined"
+          class="border border-slate-200 bg-white rounded-xl"
+        >
           <mat-card-content class="p-4">
-            <div class="flex items-center gap-2 mb-2">
-              <mat-icon class="text-purple-500">schedule</mat-icon>
-              <h3 class="text-sm font-medium text-gray-600">Recent (24h)</h3>
+            <div class="flex items-center gap-1.5 !mb-2">
+              <span
+                class="size-2.5 shrink-0 rounded-sm bg-green-500"
+                aria-hidden="true"
+              ></span>
+              <h3 class="text-md font-medium text-slate-600 !mb-0">
+                Recent (24h)
+              </h3>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p
+              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+            >
               {{ stats()?.recentErrors || 0 }}
             </p>
+            <p class="text-xs text-slate-500">Errors in the last 24 hours</p>
           </mat-card-content>
         </mat-card>
       </div>
 
       <!-- Filters -->
-      <mat-card appearance="outlined">
-        <mat-card-content class="p-4">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <mat-form-field appearance="outline" class="w-full">
+      <mat-card
+        appearance="outlined"
+        class="border border-slate-200 bg-white rounded-xl !mb-0"
+      >
+        <mat-card-content class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
               <mat-label>Search Message</mat-label>
               <input
                 matInput
@@ -152,7 +206,11 @@ import {
               <mat-icon matPrefix>search</mat-icon>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
               <mat-label>Level</mat-label>
               <mat-select [formControl]="levelControl">
                 <mat-option [value]="null">All Levels</mat-option>
@@ -162,7 +220,11 @@ import {
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
               <mat-label>Type</mat-label>
               <mat-select [formControl]="typeControl">
                 <mat-option [value]="null">All Types</mat-option>
@@ -170,15 +232,16 @@ import {
                 <mat-option value="http">HTTP</mat-option>
                 <mat-option value="angular">Angular</mat-option>
                 <mat-option value="custom">Custom</mat-option>
+                <mat-option value="backend">Backend</mat-option>
+                <mat-option value="system">System</mat-option>
               </mat-select>
             </mat-form-field>
 
-            <div class="flex gap-2">
+            <div class="flex gap-2 h-14">
               <button
-                mat-raised-button
-                color="primary"
+                mat-flat-button
                 (click)="applyFilters()"
-                class="flex-1"
+                class="flex-1 bg-blue-900 hover:bg-blue-800 text-white h-full"
               >
                 <mat-icon>filter_list</mat-icon>
                 Apply
@@ -186,7 +249,7 @@ import {
               <button
                 mat-stroked-button
                 (click)="clearFilters()"
-                class="flex-1"
+                class="flex-1 border-slate-300 text-slate-700 hover:bg-slate-50 h-full"
               >
                 <mat-icon>clear</mat-icon>
                 Clear
@@ -202,13 +265,18 @@ import {
       </div>
 
       <!-- Error State -->
-      <div *ngIf="error()" class="p-4">
-        <mat-card appearance="outlined" class="border-l-4 border-red-500">
-          <mat-card-content class="flex items-center gap-3">
-            <mat-icon class="text-red-500">error</mat-icon>
+      <div *ngIf="error()">
+        <mat-card
+          appearance="outlined"
+          class="border border-rose-200 bg-rose-50/50 rounded-xl"
+        >
+          <mat-card-content class="flex items-center gap-3 p-6">
+            <div class="bg-rose-100 rounded-lg p-3">
+              <mat-icon class="text-rose-600">error</mat-icon>
+            </div>
             <div>
-              <h3 class="font-semibold text-red-700">Error Loading Logs</h3>
-              <p class="text-sm text-gray-600">{{ error() }}</p>
+              <h3 class="font-semibold text-rose-700">Error Loading Logs</h3>
+              <p class="text-sm text-slate-600">{{ error() }}</p>
             </div>
           </mat-card-content>
         </mat-card>
@@ -216,7 +284,10 @@ import {
 
       <!-- Error Logs Table -->
       <div *ngIf="!loading() && !error()">
-        <mat-card appearance="outlined">
+        <mat-card
+          appearance="outlined"
+          class="border border-slate-200 rounded-xl"
+        >
           <div class="overflow-x-auto">
             <table
               mat-table
@@ -226,11 +297,20 @@ import {
             >
               <!-- Timestamp Column -->
               <ng-container matColumnDef="timestamp">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  class="min-w-[180px]"
+                >
                   Timestamp
                 </th>
-                <td mat-cell *matCellDef="let log" class="text-sm">
-                  {{ log.timestamp | date: 'short' }}
+                <td
+                  mat-cell
+                  *matCellDef="let log"
+                  class="text-sm min-w-[180px]"
+                >
+                  {{ log.timestamp | date: 'dd/MM/yyyy HH:mm:ss' }}
                 </td>
               </ng-container>
 
@@ -241,10 +321,10 @@ import {
                   <mat-chip
                     [class]="
                       log.level === 'error'
-                        ? 'bg-red-100 text-red-700'
+                        ? 'bg-rose-50 text-rose-700'
                         : log.level === 'warn'
-                          ? 'bg-orange-100 text-orange-700'
-                          : 'bg-blue-100 text-blue-700'
+                          ? 'bg-orange-50 text-orange-700'
+                          : 'bg-blue-50 text-blue-700'
                     "
                   >
                     {{ log.level | uppercase }}
@@ -256,7 +336,7 @@ import {
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
                 <td mat-cell *matCellDef="let log">
-                  <mat-chip class="bg-gray-100 text-gray-700">
+                  <mat-chip class="bg-slate-50 text-slate-700">
                     {{ log.type }}
                   </mat-chip>
                 </td>
@@ -279,14 +359,6 @@ import {
                   <div class="truncate max-w-xs" [matTooltip]="log.url || ''">
                     {{ log.url || '-' }}
                   </div>
-                </td>
-              </ng-container>
-
-              <!-- User Column -->
-              <ng-container matColumnDef="user">
-                <th mat-header-cell *matHeaderCellDef>User</th>
-                <td mat-cell *matCellDef="let log" class="text-sm">
-                  {{ log.userId || 'Anonymous' }}
                 </td>
               </ng-container>
 
@@ -322,7 +394,7 @@ import {
                   class="mat-cell text-center py-8"
                   [attr.colspan]="displayedColumns.length"
                 >
-                  <div class="flex flex-col items-center gap-2 text-gray-500">
+                  <div class="flex flex-col items-center gap-2 text-slate-500">
                     <mat-icon class="text-4xl">inbox</mat-icon>
                     <p>No error logs found</p>
                   </div>
@@ -356,18 +428,44 @@ import {
         margin: 0 auto;
       }
 
+      /* Tremor-style Table Styling */
       table {
         width: 100%;
       }
 
-      .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 12px;
+        padding: 14px 16px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: rgb(71, 85, 105); /* text-slate-600 */
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background-color: rgb(248, 250, 252); /* bg-slate-50 */
+        border-bottom: 1px solid rgb(226, 232, 240); /* border-slate-200 */
       }
 
+      .mat-mdc-cell {
+        padding: 14px 16px;
+        font-size: 0.875rem;
+        color: rgb(51, 65, 85); /* text-slate-700 */
+        border-bottom: 1px solid rgb(241, 245, 249); /* border-slate-100 */
+      }
+
+      .mat-mdc-row:hover {
+        background-color: rgb(248, 250, 252); /* bg-slate-50 */
+      }
+
+      /* Chip Styling */
       mat-chip {
         font-size: 0.75rem;
         min-height: 24px;
+        font-weight: 500;
+        border-radius: 6px;
+      }
+
+      /* Table Container */
+      .overflow-x-auto {
+        border-radius: 8px 8px 0 0;
       }
     `,
   ],
@@ -396,7 +494,6 @@ export class ErrorLogsComponent implements OnInit {
     'type',
     'message',
     'url',
-    'user',
     'actions',
   ];
 
@@ -491,28 +588,72 @@ export class ErrorLogsComponent implements OnInit {
   }
 
   viewLogDetails(log: ErrorLog): void {
-    // TODO: Open dialog with full error details including stack trace
-    this.snackBar.open(`Viewing log: ${log.id}`, 'Close', { duration: 3000 });
-    console.log('Log details:', log);
+    const dialogRef = this.dialog.open(ErrorLogDetailDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: log,
+      autoFocus: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.snackBar.open(
+          '✓ Details copied to clipboard successfully',
+          'Close',
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          },
+        );
+      }
+    });
   }
 
   deleteLog(id: string): void {
-    if (!confirm('Are you sure you want to delete this error log?')) {
-      return;
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Error Log',
+        message:
+          'Are you sure you want to delete this error log? This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        confirmColor: 'warn',
+      },
+    });
 
-    this.errorLogsService.deleteErrorLog(id).subscribe({
-      next: () => {
-        this.snackBar.open('Error log deleted successfully', 'Close', {
-          duration: 3000,
-        });
-        this.loadErrorStats(); // Refresh stats
-      },
-      error: (err) => {
-        this.snackBar.open(`Failed to delete log: ${err.message}`, 'Close', {
-          duration: 5000,
-        });
-      },
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.errorLogsService.deleteErrorLog(id).subscribe({
+        next: () => {
+          this.snackBar.open('✓ Error log deleted successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+          this.loadErrorLogs(); // Refresh list
+          this.loadErrorStats(); // Refresh stats
+        },
+        error: (err) => {
+          this.snackBar.open(
+            `✗ Failed to delete log: ${err.message}`,
+            'Close',
+            {
+              duration: 5000,
+              panelClass: ['error-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            },
+          );
+        },
+      });
     });
   }
 
@@ -538,35 +679,44 @@ export class ErrorLogsComponent implements OnInit {
   }
 
   openCleanupDialog(): void {
-    // TODO: Open dialog to select cleanup criteria
-    const confirmed = confirm(
-      'Delete error logs older than 30 days?\n\nThis action cannot be undone.',
-    );
+    const dialogRef = this.dialog.open(CleanupDialogComponent, {
+      width: '500px',
+      disableClose: false,
+    });
 
-    if (confirmed) {
-      const olderThan = new Date();
-      olderThan.setDate(olderThan.getDate() - 30);
+    dialogRef.afterClosed().subscribe((days: number | undefined) => {
+      if (!days) {
+        return;
+      }
 
-      this.errorLogsService
-        .cleanupLogs({ olderThan: olderThan.toISOString() })
-        .subscribe({
-          next: (result) => {
-            this.snackBar.open(
-              `Deleted ${result.deleted} old error logs`,
-              'Close',
-              { duration: 3000 },
-            );
-            this.loadErrorLogs();
-            this.loadErrorStats();
-          },
-          error: (err) => {
-            this.snackBar.open(
-              `Failed to cleanup logs: ${err.message}`,
-              'Close',
-              { duration: 5000 },
-            );
-          },
-        });
-    }
+      this.errorLogsService.cleanupLogs({ olderThan: days }).subscribe({
+        next: (result) => {
+          this.snackBar.open(
+            `✓ Deleted ${result.deletedCount} old error logs`,
+            'Close',
+            {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            },
+          );
+          this.loadErrorLogs();
+          this.loadErrorStats();
+        },
+        error: (err) => {
+          this.snackBar.open(
+            `✗ Failed to cleanup logs: ${err.message}`,
+            'Close',
+            {
+              duration: 5000,
+              panelClass: ['error-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            },
+          );
+        },
+      });
+    });
   }
 }

@@ -158,7 +158,7 @@ export class ErrorLogsService {
   /**
    * Cleanup old error logs
    */
-  cleanupLogs(query: CleanupQuery): Observable<{ deleted: number }> {
+  cleanupLogs(query: CleanupQuery): Observable<{ deletedCount: number }> {
     this.setLoading(true);
     this.clearError();
 
@@ -173,8 +173,8 @@ export class ErrorLogsService {
       .delete<CleanupResponse>(`${this.baseUrl}/cleanup`, { params })
       .pipe(
         map((response) => response.data),
-        tap(({ deleted }) => {
-          console.log(`Deleted ${deleted} error logs`);
+        tap(({ deletedCount }) => {
+          console.log(`Deleted ${deletedCount} error logs`);
           this.updateState({ loading: false });
         }),
         catchError((error) => this.handleError(error)),

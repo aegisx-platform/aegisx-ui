@@ -1,27 +1,27 @@
+import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import {
-  Component,
-  inject,
-  OnInit,
-  OnDestroy,
-  signal,
-  computed,
-  ViewChild,
-  ElementRef,
   AfterViewInit,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
 } from '@angular/core';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { BreadcrumbComponent, AegisxNavigationItem } from '@aegisx/ui';
-import { MonitoringService } from '../../services/monitoring.service';
-import { MetricsGuideDialogComponent } from '../../components/metrics-guide-dialog/metrics-guide-dialog.component';
 import Chart from 'chart.js/auto';
+import { MetricsGuideDialogComponent } from '../../components/metrics-guide-dialog/metrics-guide-dialog.component';
+import { MonitoringService } from '../../services/monitoring.service';
 
 interface MetricCard {
   title: string;
@@ -70,16 +70,17 @@ interface MetricCard {
 
         <div class="flex flex-wrap gap-2">
           <button
-            mat-raised-button
-            color="accent"
+            mat-stroked-button
             (click)="openGuide()"
             matTooltip="เปิดคู่มือการใช้งานฉบับภาษาไทย"
+            class="border-slate-300 text-slate-700 hover:bg-slate-200"
           >
             <mat-icon>school</mat-icon>
             คู่มือการใช้งาน
           </button>
+
           <button
-            mat-raised-button
+            mat-flat-button
             [color]="autoRefresh() ? 'accent' : 'primary'"
             (click)="toggleAutoRefresh()"
             [matTooltip]="
@@ -92,7 +93,7 @@ interface MetricCard {
             {{ autoRefresh() ? 'Stop Auto-Refresh' : 'Start Auto-Refresh' }}
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="refresh()"
             [disabled]="loading()"

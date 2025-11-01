@@ -23,6 +23,30 @@ async function errorHandlerPlugin(
       },
     });
 
+    // Log error to database (non-blocking)
+    if (fastify.errorQueue) {
+      fastify.errorQueue.enqueue({
+        timestamp: new Date(),
+        level: 'error',
+        message: message,
+        url: request.url,
+        stack: error.stack,
+        type: 'backend',
+        user_id: (request as any).user?.id,
+        session_id: request.id,
+        user_agent: request.headers['user-agent'],
+        correlation_id: (request as any).correlationId,
+        ip_address: request.ip,
+        context: {
+          method: request.method,
+          params: request.params,
+          query: request.query,
+          statusCode,
+          errorCode: (error as any).code,
+        },
+      });
+    }
+
     // Validation errors
     if (error.validation) {
       // Format validation errors properly
@@ -183,11 +207,36 @@ async function errorHandlerPlugin(
 
   // Not found handler
   fastify.setNotFoundHandler((request, reply) => {
-    reply.notFound(`Route ${request.method} ${request.url} not found`);
+    const message = `Route ${request.method} ${request.url} not found`;
+
+    // Log to error queue (non-blocking)
+    if (fastify.errorQueue) {
+      fastify.errorQueue.enqueue({
+        timestamp: new Date(),
+        level: 'warn',
+        message: message,
+        url: request.url,
+        type: 'backend',
+        user_id: (request as any).user?.id,
+        session_id: request.id,
+        user_agent: request.headers['user-agent'],
+        correlation_id: (request as any).correlationId,
+        ip_address: request.ip,
+        context: {
+          method: request.method,
+          params: request.params,
+          query: request.query,
+          statusCode: 404,
+        },
+      });
+    }
+
+    reply.notFound(message);
   });
 }
 
 export default fp(errorHandlerPlugin, {
   name: 'error-handler-plugin',
   dependencies: ['response-handler-plugin'],
+  // Note: errorQueue is optional - if monitoring-module loads first, it will be available
 });

@@ -164,7 +164,7 @@ export async function seed(knex: Knex): Promise<void> {
         key: 'system-monitoring',
         title: 'System Monitoring',
         type: 'item',
-        icon: 'monitoring',
+        icon: 'speed',
         link: '/monitoring/system',
         sort_order: 1,
         show_in_default: true,

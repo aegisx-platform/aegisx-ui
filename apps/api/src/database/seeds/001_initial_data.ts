@@ -22,6 +22,9 @@ export async function seed(knex: Knex): Promise<void> {
   // Insert permissions
   const permissions = await knex('permissions')
     .insert([
+      // Dashboard permissions
+      { resource: 'dashboard', action: 'view', description: 'View dashboard' },
+
       // User management permissions
       { resource: 'users', action: 'create', description: 'Create new users' },
       {
@@ -71,18 +74,25 @@ export async function seed(knex: Knex): Promise<void> {
   }));
   await knex('role_permissions').insert(adminPermissions);
 
-  // Assign user management permissions to manager role
+  // Assign dashboard + user management + profile permissions to manager role
   const managerPermissions = permissions
-    .filter((perm) => perm.resource === 'users' || perm.resource === 'profile')
+    .filter(
+      (perm) =>
+        perm.resource === 'dashboard' ||
+        perm.resource === 'users' ||
+        perm.resource === 'profile',
+    )
     .map((perm) => ({
       role_id: managerRole.id,
       permission_id: perm.id,
     }));
   await knex('role_permissions').insert(managerPermissions);
 
-  // Assign limited permissions to user role
+  // Assign dashboard + profile permissions to user role
   const userPermissions = permissions
-    .filter((perm) => perm.resource === 'profile')
+    .filter(
+      (perm) => perm.resource === 'dashboard' || perm.resource === 'profile',
+    )
     .map((perm) => ({
       role_id: userRole.id,
       permission_id: perm.id,

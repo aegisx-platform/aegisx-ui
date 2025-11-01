@@ -147,7 +147,7 @@ export class NavigationService {
           id: 'system-monitoring',
           title: 'System Monitoring',
           type: 'item',
-          icon: 'monitoring',
+          icon: 'speed',
           link: '/monitoring/system',
           permissions: ['monitoring:view', '*:*'],
         },

@@ -23,6 +23,8 @@ export const ErrorLogSchema = Type.Object({
     Type.Literal('http'),
     Type.Literal('angular'),
     Type.Literal('custom'),
+    Type.Literal('backend'),
+    Type.Literal('system'),
   ]),
   userId: Type.Optional(Type.String({ format: 'uuid' })),
   sessionId: Type.Optional(Type.String()),
@@ -51,6 +53,8 @@ export const ErrorLogsQuerySchema = Type.Intersect([
         Type.Literal('http'),
         Type.Literal('angular'),
         Type.Literal('custom'),
+        Type.Literal('backend'),
+        Type.Literal('system'),
       ]),
     ),
     userId: Type.Optional(Type.String({ format: 'uuid' })),
@@ -63,6 +67,7 @@ export const ErrorLogsQuerySchema = Type.Intersect([
 // Error statistics
 export const ErrorStatsSchema = Type.Object({
   totalErrors: Type.Number(),
+  recentErrors: Type.Number({ description: 'Errors in the last 24 hours' }),
   byLevel: Type.Object({
     error: Type.Number(),
     warn: Type.Number(),
@@ -73,6 +78,8 @@ export const ErrorStatsSchema = Type.Object({
     http: Type.Number(),
     angular: Type.Number(),
     custom: Type.Number(),
+    backend: Type.Number(),
+    system: Type.Number(),
   }),
   trend: Type.Array(
     Type.Object({
@@ -106,6 +113,12 @@ export const ErrorStatsResponseSchema =
 export const CleanupResponseSchema = ApiSuccessResponseSchema(
   Type.Object({
     deletedCount: Type.Number({ minimum: 0 }),
+  }),
+);
+
+export const DeleteErrorLogResponseSchema = ApiSuccessResponseSchema(
+  Type.Object({
+    message: Type.String(),
   }),
 );
 

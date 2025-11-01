@@ -7,6 +7,9 @@ import {
   Histogram,
   Gauge,
 } from 'prom-client';
+import { createErrorQueueService } from '../core/monitoring/services/error-queue.service';
+
+import { ErrorQueueService } from '../core/monitoring/services/error-queue.service';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -20,6 +23,7 @@ declare module 'fastify' {
       memoryUsage: Gauge<string>;
       cpuUsage: Gauge<string>;
     };
+    errorQueue?: ErrorQueueService;
   }
 }
 
@@ -37,6 +41,10 @@ async function monitoringPlugin(
 
   // Clear existing metrics to avoid conflicts
   register.clear();
+
+  // Initialize error queue service (non-blocking error logging)
+  const errorQueue = createErrorQueueService(fastify);
+  fastify.decorate('errorQueue', errorQueue);
 
   // Enable default system metrics
   if (options.enableDefaultMetrics !== false) {
@@ -252,8 +260,9 @@ async function monitoringPlugin(
 
 export default fp(monitoringPlugin, {
   name: 'monitoring-plugin',
-  dependencies: ['logging-plugin'],
+  dependencies: ['logging-plugin', 'knex-plugin'], // knex required for errorQueue
   fastify: '>=4.x',
+  encapsulate: false, // errorQueue decorator must be visible to error-handler and other plugins
 });
 
 export { MonitoringOptions };
