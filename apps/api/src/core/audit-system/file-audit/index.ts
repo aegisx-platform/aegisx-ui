@@ -34,6 +34,9 @@ export { FileAuditController } from './file-audit.controller';
 // Routes
 export { fileAuditRoutes } from './file-audit.routes';
 
+// Plugin
+export { default as fileAuditPlugin } from './file-audit.plugin';
+
 // Schemas & Types
 export * from './file-audit.schemas';
 export { FileAuditSchemas } from './file-audit.schemas';
