@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { Knex } from 'knex';
 import { Redis } from 'ioredis';
+import { LoginAttemptsService } from '../../audit-system/login-attempts';
+import { LoginFailureReason } from '../../audit-system/login-attempts/login-attempts.schemas';
 
 /**
  * Account Lockout Service
@@ -12,8 +14,9 @@ import { Redis } from 'ioredis';
  * - Track failed login attempts in Redis (fast) and PostgreSQL (persistent)
  * - Lock account after 5 failed attempts within 15 minutes
  * - Auto-unlock after lockout duration (15 minutes)
- * - Log all attempts to database for security audit
+ * - Log all attempts to database using LoginAttemptsService for comprehensive audit
  * - Support both email and username login methods
+ * - Integration with comprehensive audit system for statistics, export, and security monitoring
  */
 
 export interface LoginAttemptRecord {
@@ -43,11 +46,15 @@ export class AccountLockoutService {
   private readonly REDIS_KEY_PREFIX = 'auth:lockout:';
   private readonly REDIS_ATTEMPT_KEY_PREFIX = 'auth:attempts:';
 
+  private readonly loginAttemptsService: LoginAttemptsService;
+
   constructor(
     private readonly fastify: FastifyInstance,
     private readonly db: Knex,
     private readonly redis: Redis,
-  ) {}
+  ) {
+    this.loginAttemptsService = new LoginAttemptsService(db);
+  }
 
   /**
    * Check if an account is currently locked
@@ -93,6 +100,15 @@ export class AccountLockoutService {
 
   /**
    * Record a login attempt (success or failure)
+   *
+   * Performance Notes:
+   * - Database audit logging: Fire-and-forget (doesn't block)
+   * - Redis counter clearing: Fire-and-forget (doesn't block on success)
+   * - Redis failed attempt tracking: Synchronous (security-critical)
+   * - Account locking: Synchronous (security-critical)
+   *
+   * This design ensures successful logins are fast while maintaining
+   * security for failed attempts and account lockouts.
    */
   async recordAttempt(
     identifier: string,
@@ -116,7 +132,7 @@ export class AccountLockoutService {
       failureReason = null,
     } = params;
 
-    // Log to database (async, don't await)
+    // Log to database (async, fire-and-forget - doesn't block request)
     this.logAttemptToDatabase({
       user_id: userId,
       email,
@@ -134,15 +150,22 @@ export class AccountLockoutService {
     });
 
     if (success) {
-      // Successful login - clear all failed attempts
-      await this.clearAttempts(identifier);
+      // Successful login - clear attempts asynchronously (fire-and-forget)
+      // This doesn't block successful login response
+      this.clearAttempts(identifier).catch((error) => {
+        this.fastify.log.error({
+          msg: 'Failed to clear login attempts from Redis',
+          error,
+          identifier,
+        });
+      });
       return;
     }
 
-    // Failed attempt - increment counter
+    // Failed attempt - increment counter (MUST await - security critical)
     await this.incrementFailedAttempts(identifier);
 
-    // Check if should lock account
+    // Check if should lock account (MUST await - security critical)
     const attemptCount = await this.getAttemptCount(identifier);
 
     if (attemptCount >= this.MAX_ATTEMPTS) {
@@ -225,26 +248,46 @@ export class AccountLockoutService {
   }
 
   /**
-   * Log attempt to PostgreSQL database
+   * Log attempt to PostgreSQL database using LoginAttemptsService
+   *
+   * This provides comprehensive audit logging with:
+   * - Statistics and trend analysis
+   * - Export capabilities
+   * - Advanced security monitoring
+   * - Brute force detection
+   * - Proper repository/service pattern
    */
   private async logAttemptToDatabase(
     record: LoginAttemptRecord,
   ): Promise<void> {
-    await this.db('login_attempts').insert({
-      id: this.db.raw('gen_random_uuid()'),
-      user_id: record.user_id,
-      email: record.email,
-      username: record.username,
-      ip_address: record.ip_address,
-      user_agent: record.user_agent,
+    // Map failure_reason to LoginFailureReason enum if provided
+    let failureReason: LoginFailureReason | undefined;
+    if (record.failure_reason) {
+      // Map common failure reasons to enum values
+      const failureMap: Record<string, LoginFailureReason> = {
+        account_locked: LoginFailureReason.ACCOUNT_LOCKED,
+        user_not_found: LoginFailureReason.INVALID_CREDENTIALS,
+        invalid_password: LoginFailureReason.INVALID_CREDENTIALS,
+        account_disabled: LoginFailureReason.ACCOUNT_INACTIVE,
+        invalid_credentials: LoginFailureReason.INVALID_CREDENTIALS,
+      };
+      failureReason = failureMap[record.failure_reason];
+    }
+
+    await this.loginAttemptsService.logLoginAttempt({
+      userId: record.user_id || undefined,
+      email: record.email || undefined,
+      username: record.username || undefined,
+      ipAddress: record.ip_address,
+      userAgent: record.user_agent || undefined,
       success: record.success,
-      failure_reason: record.failure_reason,
-      created_at: this.db.fn.now(),
+      failureReason,
     });
   }
 
   /**
    * Get login attempt history for a user (admin/security audit)
+   * Delegates to LoginAttemptsService for comprehensive querying
    */
   async getAttemptHistory(
     identifier: string,
@@ -262,44 +305,54 @@ export class AccountLockoutService {
       failedOnly = false,
     } = options;
 
-    let query = this.db('login_attempts')
-      .where('email', identifier)
-      .orWhere('username', identifier)
-      .orderBy('created_at', 'desc')
-      .limit(limit)
-      .offset(offset);
+    // Use LoginAttemptsService for querying
+    const page = Math.floor(offset / limit) + 1;
 
-    if (successOnly) {
-      query = query.where('success', true);
-    } else if (failedOnly) {
-      query = query.where('success', false);
-    }
+    const result = await this.loginAttemptsService.findAll({
+      email: identifier.includes('@') ? identifier : undefined,
+      username: !identifier.includes('@') ? identifier : undefined,
+      success: successOnly ? true : failedOnly ? false : undefined,
+      page,
+      limit,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+    });
 
-    return await query;
+    // Convert to old interface format for backward compatibility
+    return result.data.map((attempt) => ({
+      id: attempt.id,
+      user_id: attempt.userId || null,
+      email: attempt.email || null,
+      username: attempt.username || null,
+      ip_address: attempt.ipAddress,
+      user_agent: attempt.userAgent || null,
+      success: attempt.success,
+      failure_reason: attempt.failureReason || null,
+      created_at: new Date(attempt.createdAt),
+    }));
   }
 
   /**
    * Clean up old login attempts (run periodically, e.g., daily)
+   * Delegates to LoginAttemptsService for cleanup operations
    */
   async cleanupOldAttempts(daysToKeep: number = 30): Promise<number> {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
-
-    const deletedCount = await this.db('login_attempts')
-      .where('created_at', '<', cutoffDate)
-      .del();
+    const result = await this.loginAttemptsService.cleanup({
+      days: daysToKeep,
+    });
 
     this.fastify.log.info({
       msg: 'Cleaned up old login attempts',
-      deletedCount,
+      deletedCount: result.deletedCount,
       daysToKeep,
     });
 
-    return deletedCount;
+    return result.deletedCount;
   }
 
   /**
    * Get lockout statistics (for monitoring/dashboard)
+   * Delegates to LoginAttemptsService for comprehensive statistics
    */
   async getLockoutStats(since?: Date): Promise<{
     totalAttempts: number;
@@ -308,30 +361,24 @@ export class AccountLockoutService {
     uniqueIPs: number;
     currentlyLocked: number;
   }> {
+    // Calculate days for LoginAttemptsService.getStats()
     const sinceDate = since || new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24h
+    const days = Math.ceil(
+      (Date.now() - sinceDate.getTime()) / (24 * 60 * 60 * 1000),
+    );
 
-    const [stats] = (await this.db('login_attempts')
-      .where('created_at', '>=', sinceDate)
-      .select(
-        this.db.raw('COUNT(*) as total_attempts'),
-        this.db.raw(
-          'COUNT(*) FILTER (WHERE success = false) as failed_attempts',
-        ),
-        this.db.raw(
-          'COUNT(*) FILTER (WHERE success = true) as successful_attempts',
-        ),
-        this.db.raw('COUNT(DISTINCT ip_address) as unique_ips'),
-      )) as any[];
+    // Get comprehensive statistics from LoginAttemptsService
+    const stats = await this.loginAttemptsService.getStats(days);
 
     // Count currently locked accounts in Redis
     const lockoutKeys = await this.redis.keys(`${this.REDIS_KEY_PREFIX}*`);
     const currentlyLocked = lockoutKeys.length;
 
     return {
-      totalAttempts: parseInt(stats.total_attempts, 10),
-      failedAttempts: parseInt(stats.failed_attempts, 10),
-      successfulAttempts: parseInt(stats.successful_attempts, 10),
-      uniqueIPs: parseInt(stats.unique_ips, 10),
+      totalAttempts: stats.total,
+      failedAttempts: stats.failureCount,
+      successfulAttempts: stats.successCount,
+      uniqueIPs: stats.uniqueIPs,
       currentlyLocked,
     };
   }
