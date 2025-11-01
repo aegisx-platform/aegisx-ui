@@ -75,7 +75,37 @@ export class AuthService {
 
   readonly hasPermission = computed(() => (permission: string) => {
     const user = this._currentUser();
-    return user?.permissions?.includes(permission) || false;
+    if (!user?.permissions || user.permissions.length === 0) {
+      return false;
+    }
+
+    // Check wildcard patterns (same logic as backend)
+    return user.permissions.some((userPerm) => {
+      // Exact match
+      if (userPerm === permission) {
+        return true;
+      }
+
+      // *:* matches everything
+      if (userPerm === '*:*') {
+        return true;
+      }
+
+      const [userResource, userAction] = userPerm.split(':');
+      const [reqResource, reqAction] = permission.split(':');
+
+      // resource:* matches all actions on that resource
+      if (userResource === reqResource && userAction === '*') {
+        return true;
+      }
+
+      // *:action matches that action on all resources
+      if (userResource === '*' && userAction === reqAction) {
+        return true;
+      }
+
+      return false;
+    });
   });
 
   constructor() {
