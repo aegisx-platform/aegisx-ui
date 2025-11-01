@@ -310,7 +310,7 @@ export class AccountLockoutService {
   }> {
     const sinceDate = since || new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24h
 
-    const [stats] = await this.db('login_attempts')
+    const [stats] = (await this.db('login_attempts')
       .where('created_at', '>=', sinceDate)
       .select(
         this.db.raw('COUNT(*) as total_attempts'),
@@ -321,7 +321,7 @@ export class AccountLockoutService {
           'COUNT(*) FILTER (WHERE success = true) as successful_attempts',
         ),
         this.db.raw('COUNT(DISTINCT ip_address) as unique_ips'),
-      );
+      )) as any[];
 
     // Count currently locked accounts in Redis
     const lockoutKeys = await this.redis.keys(`${this.REDIS_KEY_PREFIX}*`);

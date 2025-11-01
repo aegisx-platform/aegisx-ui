@@ -106,6 +106,29 @@ export class AuthService {
 
   async login(input: LoginInput, userAgent?: string, ipAddress?: string) {
     const { email, password } = input;
+    const identifier = email; // Can be email or username
+
+    // Check if account is locked
+    const lockoutStatus = await this.lockoutService.isAccountLocked(identifier);
+    if (lockoutStatus.isLocked) {
+      // Record the blocked attempt
+      await this.lockoutService.recordAttempt(identifier, {
+        email: email.includes('@') ? email : null,
+        username: !email.includes('@') ? email : null,
+        ipAddress: ipAddress || 'unknown',
+        userAgent,
+        success: false,
+        failureReason: 'account_locked',
+      });
+
+      const error = new Error(
+        `Account is locked. Try again after ${lockoutStatus.lockoutEndsAt?.toLocaleString()}`,
+      );
+      (error as any).statusCode = 429;
+      (error as any).code = 'ACCOUNT_LOCKED';
+      (error as any).lockoutEndsAt = lockoutStatus.lockoutEndsAt;
+      throw error;
+    }
 
     // Find user by email or username
     let user;
@@ -138,6 +161,16 @@ export class AuthService {
     }
 
     if (!user || !user.password) {
+      // Record failed attempt - user not found
+      await this.lockoutService.recordAttempt(identifier, {
+        email: email.includes('@') ? email : null,
+        username: !email.includes('@') ? email : null,
+        ipAddress: ipAddress || 'unknown',
+        userAgent,
+        success: false,
+        failureReason: 'user_not_found',
+      });
+
       const error = new Error('Invalid credentials');
       (error as any).statusCode = 401;
       (error as any).code = 'INVALID_CREDENTIALS';
@@ -150,6 +183,17 @@ export class AuthService {
       user.password,
     );
     if (!isValid) {
+      // Record failed attempt - invalid password
+      await this.lockoutService.recordAttempt(identifier, {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        ipAddress: ipAddress || 'unknown',
+        userAgent,
+        success: false,
+        failureReason: 'invalid_password',
+      });
+
       const error = new Error('Invalid credentials');
       (error as any).statusCode = 401;
       (error as any).code = 'INVALID_CREDENTIALS';
@@ -158,11 +202,32 @@ export class AuthService {
 
     // Check if user is active
     if (!user.isActive) {
+      // Record failed attempt - account disabled
+      await this.lockoutService.recordAttempt(identifier, {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        ipAddress: ipAddress || 'unknown',
+        userAgent,
+        success: false,
+        failureReason: 'account_disabled',
+      });
+
       const error = new Error('Account is disabled');
       (error as any).statusCode = 403;
       (error as any).code = 'ACCOUNT_DISABLED';
       throw error;
     }
+
+    // Record successful login attempt
+    await this.lockoutService.recordAttempt(identifier, {
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+      ipAddress: ipAddress || 'unknown',
+      userAgent,
+      success: true,
+    });
 
     // Load user permissions
     const permissionsResult = await this.app
