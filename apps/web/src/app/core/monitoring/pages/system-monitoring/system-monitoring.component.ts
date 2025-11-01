@@ -58,7 +58,9 @@ interface MetricCard {
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1
+            class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+          >
             System Monitoring
           </h1>
           <p class="text-slate-600 dark:text-slate-400 mt-1">
@@ -108,7 +110,10 @@ interface MetricCard {
 
       <!-- Error State -->
       <div *ngIf="error()" class="p-4">
-        <mat-card appearance="outlined" class="border border-rose-200 bg-rose-50/50">
+        <mat-card
+          appearance="outlined"
+          class="border border-rose-200 bg-rose-50/50"
+        >
           <mat-card-content class="flex items-center gap-3">
             <div class="bg-rose-100 rounded-lg p-3">
               <mat-icon class="text-rose-600">error</mat-icon>
@@ -139,11 +144,15 @@ interface MetricCard {
                         card.icon
                       }}</mat-icon>
                     </div>
-                    <h3 class="text-sm font-medium text-slate-600 tracking-tight">
+                    <h3
+                      class="text-sm font-medium text-slate-600 tracking-tight"
+                    >
                       {{ card.title }}
                     </h3>
                   </div>
-                  <p class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                  <p
+                    class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+                  >
                     {{ card.value }}
                   </p>
                   <p *ngIf="card.subtitle" class="text-xs text-slate-500 mt-2">
@@ -183,7 +192,9 @@ interface MetricCard {
                 <div class="bg-slate-100 rounded-lg p-2">
                   <mat-icon class="text-slate-600">memory</mat-icon>
                 </div>
-                <span class="font-extrabold tracking-tight">CPU & Memory Usage</span>
+                <span class="font-extrabold tracking-tight"
+                  >CPU & Memory Usage</span
+                >
                 <mat-icon
                   class="text-slate-400 text-lg cursor-help"
                   [matTooltip]="cpuMemoryTooltip"
@@ -206,7 +217,9 @@ interface MetricCard {
                 <div class="bg-slate-100 rounded-lg p-2">
                   <mat-icon class="text-slate-600">storage</mat-icon>
                 </div>
-                <span class="font-extrabold tracking-tight">Database Connection Pool</span>
+                <span class="font-extrabold tracking-tight"
+                  >Database Connection Pool</span
+                >
                 <mat-icon
                   class="text-slate-400 text-lg cursor-help"
                   [matTooltip]="databaseTooltip"
@@ -229,7 +242,9 @@ interface MetricCard {
                 <div class="bg-slate-100 rounded-lg p-2">
                   <mat-icon class="text-slate-600">cached</mat-icon>
                 </div>
-                <span class="font-extrabold tracking-tight">Redis Cache Performance</span>
+                <span class="font-extrabold tracking-tight"
+                  >Redis Cache Performance</span
+                >
                 <mat-icon
                   class="text-slate-400 text-lg cursor-help"
                   [matTooltip]="redisTooltip"
@@ -252,7 +267,9 @@ interface MetricCard {
                 <div class="bg-slate-100 rounded-lg p-2">
                   <mat-icon class="text-slate-600">speed</mat-icon>
                 </div>
-                <span class="font-extrabold tracking-tight">API Response Times</span>
+                <span class="font-extrabold tracking-tight"
+                  >API Response Times</span
+                >
                 <mat-icon
                   class="text-slate-400 text-lg cursor-help"
                   [matTooltip]="apiResponseTooltip"
@@ -277,7 +294,9 @@ interface MetricCard {
                 <div class="bg-slate-100 rounded-lg p-2">
                   <mat-icon class="text-slate-600">people</mat-icon>
                 </div>
-                <span class="font-extrabold tracking-tight">Active Sessions</span>
+                <span class="font-extrabold tracking-tight"
+                  >Active Sessions</span
+                >
                 <mat-icon
                   class="text-slate-400 text-lg cursor-help"
                   [matTooltip]="activeSessionsTooltip"
@@ -289,17 +308,23 @@ interface MetricCard {
             <mat-card-content>
               <div class="space-y-4">
                 <div class="flex justify-between items-center">
-                  <span class="text-slate-600 tracking-tight">Total Sessions</span>
-                  <span class="text-3xl font-extrabold tracking-tight text-slate-900">{{
-                    activeSessions()?.total || 0
-                  }}</span>
+                  <span class="text-slate-600 tracking-tight"
+                    >Total Sessions</span
+                  >
+                  <span
+                    class="text-3xl font-extrabold tracking-tight text-slate-900"
+                    >{{ activeSessions()?.total || 0 }}</span
+                  >
                 </div>
                 <mat-divider></mat-divider>
                 <div class="flex justify-between items-center">
-                  <span class="text-slate-600 tracking-tight">Unique Users</span>
-                  <span class="text-3xl font-extrabold tracking-tight text-slate-900">{{
-                    activeSessions()?.users || 0
-                  }}</span>
+                  <span class="text-slate-600 tracking-tight"
+                    >Unique Users</span
+                  >
+                  <span
+                    class="text-3xl font-extrabold tracking-tight text-slate-900"
+                    >{{ activeSessions()?.users || 0 }}</span
+                  >
                 </div>
               </div>
             </mat-card-content>
@@ -311,7 +336,9 @@ interface MetricCard {
                 <div class="bg-slate-100 rounded-lg p-2">
                   <mat-icon class="text-slate-600">analytics</mat-icon>
                 </div>
-                <span class="font-extrabold tracking-tight">Request Throughput</span>
+                <span class="font-extrabold tracking-tight"
+                  >Request Throughput</span
+                >
                 <mat-icon
                   class="text-slate-400 text-lg cursor-help"
                   [matTooltip]="requestThroughputTooltip"
@@ -323,22 +350,35 @@ interface MetricCard {
             <mat-card-content>
               <div class="space-y-4">
                 <div class="flex justify-between items-center">
-                  <span class="text-slate-600 tracking-tight">Requests/Second</span>
-                  <span class="text-3xl font-extrabold tracking-tight text-indigo-600">{{
-                    apiPerformance()?.throughput?.requestsPerSecond || 0
-                  }}</span>
+                  <span class="text-slate-600 tracking-tight"
+                    >Requests/Second</span
+                  >
+                  <span
+                    class="text-3xl font-extrabold tracking-tight text-indigo-600"
+                    >{{
+                      apiPerformance()?.throughput?.requestsPerSecond || 0
+                    }}</span
+                  >
                 </div>
                 <mat-divider></mat-divider>
                 <div class="flex justify-between items-center">
-                  <span class="text-slate-600 tracking-tight">Requests/Minute</span>
-                  <span class="text-xl font-semibold tracking-tight text-slate-700">{{
-                    apiPerformance()?.throughput?.requestsPerMinute || 0
-                  }}</span>
+                  <span class="text-slate-600 tracking-tight"
+                    >Requests/Minute</span
+                  >
+                  <span
+                    class="text-xl font-semibold tracking-tight text-slate-700"
+                    >{{
+                      apiPerformance()?.throughput?.requestsPerMinute || 0
+                    }}</span
+                  >
                 </div>
                 <mat-divider></mat-divider>
                 <div class="flex justify-between items-center">
-                  <span class="text-slate-600 tracking-tight">Avg Response Time</span>
-                  <span class="text-3xl font-extrabold tracking-tight text-slate-900"
+                  <span class="text-slate-600 tracking-tight"
+                    >Avg Response Time</span
+                  >
+                  <span
+                    class="text-3xl font-extrabold tracking-tight text-slate-900"
                     >{{
                       apiPerformance()?.responseTime?.average?.toFixed(2) || 0
                     }}ms</span
@@ -666,7 +706,7 @@ export class SystemMonitoringComponent
               system ? system.memory.usagePercent : 0,
               system ? 100 - system.memory.usagePercent : 100,
             ],
-            backgroundColor: ['#64748B', '#059669', '#F1F5F9'],
+            backgroundColor: ['#3B82F6', '#06B6D4', '#E0E7FF'],
           },
         ],
       },
@@ -707,7 +747,7 @@ export class SystemMonitoringComponent
               db?.pool.idle || 0,
               db?.pool.total || 0,
             ],
-            backgroundColor: ['#059669', '#D97706', '#64748B'],
+            backgroundColor: ['#3B82F6', '#06B6D4', '#6366F1'],
           },
         ],
       },
@@ -748,7 +788,7 @@ export class SystemMonitoringComponent
         datasets: [
           {
             data: [redis?.cache.hits || 0, redis?.cache.misses || 0],
-            backgroundColor: ['#059669', '#E11D48'],
+            backgroundColor: ['#3B82F6', '#F43F5E'],
           },
         ],
       },
@@ -792,7 +832,7 @@ export class SystemMonitoringComponent
               api?.responseTime.p99 || 0,
               api?.responseTime.max || 0,
             ],
-            backgroundColor: '#7C3AED',
+            backgroundColor: '#8B5CF6',
           },
         ],
       },
