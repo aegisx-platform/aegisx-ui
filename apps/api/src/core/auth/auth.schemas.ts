@@ -70,6 +70,21 @@ export const UnlockAccountRequestSchema = Type.Object({
   }),
 });
 
+export const VerifyEmailRequestSchema = Type.Object({
+  token: Type.String({
+    description: 'Email verification token from email',
+  }),
+});
+
+export const ResendVerificationRequestSchema = Type.Object({
+  email: Type.Optional(
+    Type.String({
+      format: 'email',
+      description: 'Email address (optional if authenticated)',
+    }),
+  ),
+});
+
 // Response Schemas
 export const AuthResponseSchema = ApiSuccessResponseSchema(
   Type.Object({
@@ -118,12 +133,32 @@ export const UnlockAccountResponseSchema = ApiSuccessResponseSchema(
   }),
 );
 
+export const VerifyEmailResponseSchema = ApiSuccessResponseSchema(
+  Type.Object({
+    emailVerified: Type.Boolean({
+      description: 'Whether email is now verified',
+    }),
+  }),
+);
+
+export const ResendVerificationResponseSchema = ApiSuccessResponseSchema(
+  Type.Object({
+    message: Type.String({
+      description: 'Success message',
+    }),
+  }),
+);
+
 // TypeScript Types
 export type AuthUser = Static<typeof AuthUserSchema>;
 export type RegisterRequest = Static<typeof RegisterRequestSchema>;
 export type LoginRequest = Static<typeof LoginRequestSchema>;
 export type RefreshRequest = Static<typeof RefreshRequestSchema>;
 export type UnlockAccountRequest = Static<typeof UnlockAccountRequestSchema>;
+export type VerifyEmailRequest = Static<typeof VerifyEmailRequestSchema>;
+export type ResendVerificationRequest = Static<
+  typeof ResendVerificationRequestSchema
+>;
 export type AuthResponse = Static<typeof AuthResponseSchema>;
 export type RegisterResponse = Static<typeof RegisterResponseSchema>;
 export type RefreshResponse = Static<typeof RefreshResponseSchema>;
@@ -131,6 +166,10 @@ export type ProfileResponse = Static<typeof ProfileResponseSchema>;
 export type LogoutResponse = Static<typeof LogoutResponseSchema>;
 export type PermissionsResponse = Static<typeof PermissionsResponseSchema>;
 export type UnlockAccountResponse = Static<typeof UnlockAccountResponseSchema>;
+export type VerifyEmailResponse = Static<typeof VerifyEmailResponseSchema>;
+export type ResendVerificationResponse = Static<
+  typeof ResendVerificationResponseSchema
+>;
 
 // Export schemas for registration
 export const authSchemas = {
@@ -139,6 +178,8 @@ export const authSchemas = {
   'login-request': LoginRequestSchema,
   'refresh-request': RefreshRequestSchema,
   'unlock-account-request': UnlockAccountRequestSchema,
+  'verify-email-request': VerifyEmailRequestSchema,
+  'resend-verification-request': ResendVerificationRequestSchema,
   'auth-response': AuthResponseSchema,
   'register-response': RegisterResponseSchema,
   'refresh-response': RefreshResponseSchema,
@@ -146,6 +187,8 @@ export const authSchemas = {
   'logout-response': LogoutResponseSchema,
   'permissions-response': PermissionsResponseSchema,
   'unlock-account-response': UnlockAccountResponseSchema,
+  'verify-email-response': VerifyEmailResponseSchema,
+  'resend-verification-response': ResendVerificationResponseSchema,
 
   // Legacy compatibility
   authUser: AuthUserSchema,
@@ -153,6 +196,8 @@ export const authSchemas = {
   loginRequest: LoginRequestSchema,
   refreshRequest: RefreshRequestSchema,
   unlockAccountRequest: UnlockAccountRequestSchema,
+  verifyEmailRequest: VerifyEmailRequestSchema,
+  resendVerificationRequest: ResendVerificationRequestSchema,
   authResponse: AuthResponseSchema,
   registerResponse: RegisterResponseSchema,
   refreshResponse: RefreshResponseSchema,
@@ -160,4 +205,6 @@ export const authSchemas = {
   logoutResponse: LogoutResponseSchema,
   permissionsResponse: PermissionsResponseSchema,
   unlockAccountResponse: UnlockAccountResponseSchema,
+  verifyEmailResponse: VerifyEmailResponseSchema,
+  resendVerificationResponse: ResendVerificationResponseSchema,
 };

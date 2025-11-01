@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { randomBytes } from 'crypto';
 import { AuthRepository } from '../auth.repository';
 import { AccountLockoutService } from './account-lockout.service';
+import { EmailVerificationService } from './email-verification.service';
 
 interface RegisterInput {
   email: string;
@@ -19,10 +20,12 @@ interface LoginInput {
 export class AuthService {
   private authRepository: AuthRepository;
   private lockoutService: AccountLockoutService;
+  private emailVerificationService: EmailVerificationService;
 
   constructor(private readonly app: FastifyInstance) {
     this.authRepository = new AuthRepository(app.knex);
     this.lockoutService = new AccountLockoutService(app, app.knex, app.redis);
+    this.emailVerificationService = new EmailVerificationService(app, app.knex);
   }
 
   async register(input: RegisterInput) {
@@ -86,6 +89,18 @@ export class AuthService {
         user_agent: undefined,
         ip_address: undefined,
       });
+
+      // Create email verification token and send email
+      const verificationToken =
+        await this.emailVerificationService.createVerificationToken(
+          user.id,
+          user.email,
+        );
+      await this.emailVerificationService.sendVerificationEmail(
+        user.email,
+        verificationToken,
+        `${firstName || ''} ${lastName || ''}`.trim(),
+      );
 
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
@@ -379,5 +394,26 @@ export class AuthService {
 
   async unlockAccount(identifier: string): Promise<void> {
     await this.lockoutService.unlockAccount(identifier);
+  }
+
+  async verifyEmail(token: string, ipAddress?: string) {
+    return await this.emailVerificationService.verifyEmail(token, ipAddress);
+  }
+
+  async resendVerification(userId: string) {
+    const token =
+      await this.emailVerificationService.resendVerification(userId);
+
+    // Get user details to send email
+    const user = await this.authRepository.findUserById(userId);
+    if (user) {
+      await this.emailVerificationService.sendVerificationEmail(
+        user.email,
+        token,
+        `${user.firstName} ${user.lastName}`.trim(),
+      );
+    }
+
+    return { success: true, message: 'Verification email resent' };
   }
 }

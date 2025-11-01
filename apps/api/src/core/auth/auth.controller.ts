@@ -4,6 +4,8 @@ import {
   LoginRequest,
   RefreshRequest,
   UnlockAccountRequest,
+  VerifyEmailRequest,
+  ResendVerificationRequest,
 } from './auth.types';
 
 export const authController = {
@@ -184,6 +186,67 @@ export const authController = {
         identifier,
       },
       message: 'Account unlocked successfully',
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: 'v1',
+        requestId: request.id,
+        environment: ['development', 'staging', 'production'].includes(
+          process.env.NODE_ENV || '',
+        )
+          ? (process.env.NODE_ENV as 'development' | 'staging' | 'production')
+          : 'development',
+      },
+    });
+  },
+
+  async verifyEmail(request: FastifyRequest, reply: FastifyReply) {
+    const { token } = request.body as VerifyEmailRequest;
+
+    const result = await request.server.authService.verifyEmail(
+      token,
+      request.ip,
+    );
+
+    if (!result.success) {
+      return reply.code(400).send({
+        success: false,
+        error: {
+          code: 'EMAIL_VERIFICATION_FAILED',
+          message: result.message,
+        },
+      });
+    }
+
+    return reply.send({
+      success: true,
+      data: {
+        emailVerified: result.emailVerified || false,
+      },
+      message: result.message,
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: 'v1',
+        requestId: request.id,
+        environment: ['development', 'staging', 'production'].includes(
+          process.env.NODE_ENV || '',
+        )
+          ? (process.env.NODE_ENV as 'development' | 'staging' | 'production')
+          : 'development',
+      },
+    });
+  },
+
+  async resendVerification(request: FastifyRequest, reply: FastifyReply) {
+    const userId = request.user.id;
+
+    const result = await request.server.authService.resendVerification(userId);
+
+    return reply.send({
+      success: true,
+      data: {
+        message: result.message,
+      },
+      message: result.message,
       meta: {
         timestamp: new Date().toISOString(),
         version: 'v1',

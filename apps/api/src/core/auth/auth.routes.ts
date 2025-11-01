@@ -204,4 +204,47 @@ export default async function authRoutes(fastify: FastifyInstance) {
     ],
     handler: authController.unlockAccount,
   });
+
+  // POST /api/auth/verify-email - Verify email address
+  typedFastify.route({
+    method: 'POST',
+    url: '/auth/verify-email',
+    schema: {
+      tags: ['Authentication'],
+      summary: 'Verify email address using verification token',
+      description:
+        'Verifies user email address using the token sent via email during registration. ' +
+        'Tokens expire after 24 hours.',
+      body: SchemaRefs.module('auth', 'verifyEmailRequest'),
+      response: {
+        200: SchemaRefs.module('auth', 'verifyEmailResponse'),
+        400: SchemaRefs.ValidationError,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    handler: authController.verifyEmail,
+  });
+
+  // POST /api/auth/resend-verification - Resend verification email
+  typedFastify.route({
+    method: 'POST',
+    url: '/auth/resend-verification',
+    schema: {
+      tags: ['Authentication'],
+      summary: 'Resend email verification',
+      description:
+        'Resends the email verification link to authenticated user. ' +
+        'Creates a new verification token and invalidates the old one.',
+      security: [{ bearerAuth: [] }],
+      body: SchemaRefs.module('auth', 'resendVerificationRequest'),
+      response: {
+        200: SchemaRefs.module('auth', 'resendVerificationResponse'),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preHandler: [fastify.authenticateJWT],
+    handler: authController.resendVerification,
+  });
 }
