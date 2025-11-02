@@ -97,6 +97,16 @@ export const appRoutes: Route[] = [
     },
   },
   {
+    path: 'audit',
+    loadChildren: () =>
+      import('./core/audit/audit.routes').then((m) => m.auditRoutes),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Audit',
+      description: 'Login Attempts and File Activity',
+    },
+  },
+  {
     path: 'pdf-templates',
     loadChildren: () =>
       import('./core/pdf-templates/pdf-templates.routes').then(
