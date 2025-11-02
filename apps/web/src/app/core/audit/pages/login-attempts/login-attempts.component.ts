@@ -76,7 +76,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
       <!-- Filters -->
       <mat-card class="mb-4">
         <mat-card-content class="p-4">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Search</mat-label>
               <input
@@ -97,19 +97,6 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
                 <mat-option [value]="null">All</mat-option>
                 <mat-option [value]="true">Success</mat-option>
                 <mat-option [value]="false">Failed</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Items per page</mat-label>
-              <mat-select
-                [(ngModel)]="pageSize"
-                (ngModelChange)="onPageSizeChange()"
-              >
-                <mat-option [value]="10">10</mat-option>
-                <mat-option [value]="25">25</mat-option>
-                <mat-option [value]="50">50</mat-option>
-                <mat-option [value]="100">100</mat-option>
               </mat-select>
             </mat-form-field>
 
@@ -320,10 +307,6 @@ export class LoginAttemptsComponent implements OnInit {
       success: this.statusFilter !== null ? this.statusFilter : undefined,
     };
     this.loginAttemptsService.getLoginAttempts(query).subscribe();
-  }
-
-  onPageSizeChange(): void {
-    this.loadLoginAttempts();
   }
 
   onSearchChange(): void {
