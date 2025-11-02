@@ -195,7 +195,7 @@ export class EmailService {
     token: string,
     userName?: string,
   ): Promise<boolean> {
-    const verificationUrl = `${process.env.WEB_URL || 'http://localhost:4200'}/auth/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.WEB_URL || 'http://localhost:4200'}/verify-email?token=${token}`;
 
     const html = `
       <!DOCTYPE html>
@@ -266,7 +266,7 @@ If you didn't create an account, you can safely ignore this email.
     token: string,
     userName?: string,
   ): Promise<boolean> {
-    const resetUrl = `${process.env.WEB_URL || 'http://localhost:4200'}/auth/reset-password?token=${token}`;
+    const resetUrl = `${process.env.WEB_URL || 'http://localhost:4200'}/reset-password?token=${token}`;
 
     const html = `
       <!DOCTYPE html>
