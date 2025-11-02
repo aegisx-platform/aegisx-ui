@@ -95,7 +95,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       response: {
         200: SchemaRefs.module('auth', 'authResponse'),
         401: SchemaRefs.Unauthorized,
-        429: SchemaRefs.ServerError, // Rate limit exceeded
+        429: SchemaRefs.RateLimitError, // Rate limit exceeded or account locked
         500: SchemaRefs.ServerError,
       },
       // activityLog: {

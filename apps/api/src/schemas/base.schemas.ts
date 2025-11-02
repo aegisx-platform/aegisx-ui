@@ -196,6 +196,19 @@ export const ServerErrorResponseSchema = Type.Object({
   meta: Type.Optional(ApiMetaSchema),
 });
 
+export const RateLimitErrorResponseSchema = Type.Object({
+  success: Type.Literal(false),
+  error: Type.Object({
+    code: Type.String({
+      description:
+        'Error code (e.g., TOO_MANY_LOGIN_ATTEMPTS, ACCOUNT_LOCKED, RATE_LIMIT_EXCEEDED)',
+    }),
+    message: Type.String({ description: 'Human-readable error message' }),
+    statusCode: Type.Literal(429),
+  }),
+  meta: Type.Optional(ApiMetaSchema),
+});
+
 export const NotImplementedResponseSchema = Type.Object({
   success: Type.Literal(false),
   error: Type.Object({

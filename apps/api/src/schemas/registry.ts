@@ -12,6 +12,7 @@ import {
   ConflictResponseSchema,
   UnprocessableEntityResponseSchema,
   ServerErrorResponseSchema,
+  RateLimitErrorResponseSchema,
   PaginationQuerySchema,
   SearchQuerySchema,
   UuidParamSchema,
@@ -48,6 +49,7 @@ export class SchemaRegistry {
       'conflict-response': ConflictResponseSchema,
       'unprocessable-entity-response': UnprocessableEntityResponseSchema,
       'server-error-response': ServerErrorResponseSchema,
+      'rate-limit-error-response': RateLimitErrorResponseSchema,
       'pagination-query': PaginationQuerySchema,
       'search-query': SearchQuerySchema,
       'uuid-param': UuidParamSchema,
@@ -144,6 +146,7 @@ export const SchemaRefs = {
   Conflict: { $ref: 'conflict-response#' },
   UnprocessableEntity: { $ref: 'unprocessable-entity-response#' },
   ServerError: { $ref: 'server-error-response#' },
+  RateLimitError: { $ref: 'rate-limit-error-response#' },
 
   // Query schemas
   Pagination: { $ref: 'pagination-query#' },
