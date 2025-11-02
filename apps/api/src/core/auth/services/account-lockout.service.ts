@@ -2,7 +2,6 @@ import { FastifyInstance } from 'fastify';
 import { Knex } from 'knex';
 import { Redis } from 'ioredis';
 import { LoginAttemptsService } from '../../audit-system/login-attempts';
-import { LoginFailureReason } from '../../audit-system/login-attempts/login-attempts.schemas';
 
 /**
  * Account Lockout Service
@@ -260,20 +259,6 @@ export class AccountLockoutService {
   private async logAttemptToDatabase(
     record: LoginAttemptRecord,
   ): Promise<void> {
-    // Map failure_reason to LoginFailureReason enum if provided
-    let failureReason: LoginFailureReason | undefined;
-    if (record.failure_reason) {
-      // Map common failure reasons to enum values
-      const failureMap: Record<string, LoginFailureReason> = {
-        account_locked: LoginFailureReason.ACCOUNT_LOCKED,
-        user_not_found: LoginFailureReason.INVALID_CREDENTIALS,
-        invalid_password: LoginFailureReason.INVALID_CREDENTIALS,
-        account_disabled: LoginFailureReason.ACCOUNT_INACTIVE,
-        invalid_credentials: LoginFailureReason.INVALID_CREDENTIALS,
-      };
-      failureReason = failureMap[record.failure_reason];
-    }
-
     await this.loginAttemptsService.logLoginAttempt({
       userId: record.user_id || undefined,
       email: record.email || undefined,
@@ -281,7 +266,7 @@ export class AccountLockoutService {
       ipAddress: record.ip_address,
       userAgent: record.user_agent || undefined,
       success: record.success,
-      failureReason,
+      failureReason: record.failure_reason || undefined,
     });
   }
 

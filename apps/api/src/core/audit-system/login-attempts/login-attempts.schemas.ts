@@ -1,34 +1,5 @@
 import { Type, Static } from '@sinclair/typebox';
-import {
-  CommonSchemas,
-  BaseAuditLogSchema,
-  createEnumSchema,
-  createOptionalEnumSchema,
-} from '../base/base.schemas';
-
-/**
- * Login Failure Reason Enum
- */
-export enum LoginFailureReason {
-  INVALID_CREDENTIALS = 'invalid_credentials',
-  ACCOUNT_LOCKED = 'account_locked',
-  ACCOUNT_INACTIVE = 'account_inactive',
-  ACCOUNT_DELETED = 'account_deleted',
-  EMAIL_NOT_VERIFIED = 'email_not_verified',
-  TOO_MANY_ATTEMPTS = 'too_many_attempts',
-  IP_BLOCKED = 'ip_blocked',
-  RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
-  INVALID_MFA_CODE = 'invalid_mfa_code',
-  MFA_REQUIRED = 'mfa_required',
-}
-
-/**
- * Login Failure Reason Schema
- */
-export const LoginFailureReasonSchema = createEnumSchema(
-  Object.values(LoginFailureReason),
-  'Reason for login failure',
-);
+import { CommonSchemas, BaseAuditLogSchema } from '../base/base.schemas';
 
 /**
  * Login Attempt Schema
@@ -56,7 +27,13 @@ export const LoginAttemptSchema = Type.Intersect([
 
     // Attempt result
     success: Type.Boolean({ default: false }),
-    failureReason: Type.Optional(LoginFailureReasonSchema),
+    failureReason: Type.Optional(
+      Type.String({
+        minLength: 1,
+        maxLength: 100,
+        description: 'Reason for login failure',
+      }),
+    ),
   }),
 ]);
 
@@ -73,9 +50,12 @@ export const LoginAttemptsQuerySchema = Type.Intersect([
     username: Type.Optional(Type.String({ maxLength: 100 })),
     ipAddress: Type.Optional(CommonSchemas.IpAddress),
     success: CommonSchemas.BooleanQuery,
-    failureReason: createOptionalEnumSchema(
-      Object.values(LoginFailureReason),
-      'Filter by failure reason',
+    failureReason: Type.Optional(
+      Type.String({
+        minLength: 1,
+        maxLength: 100,
+        description: 'Filter by failure reason',
+      }),
     ),
     startDate: CommonSchemas.StartDate,
     endDate: CommonSchemas.EndDate,
@@ -128,7 +108,13 @@ export const CreateLoginAttemptSchema = Type.Object({
   ipAddress: CommonSchemas.IpAddress,
   userAgent: Type.Optional(Type.String({ maxLength: 1000 })),
   success: Type.Boolean({ default: false }),
-  failureReason: Type.Optional(LoginFailureReasonSchema),
+  failureReason: Type.Optional(
+    Type.String({
+      minLength: 1,
+      maxLength: 100,
+      description: 'Reason for login failure',
+    }),
+  ),
 });
 
 export type CreateLoginAttempt = Static<typeof CreateLoginAttemptSchema>;
@@ -248,9 +234,6 @@ export const BruteForceResultResponseSchema = CommonSchemas.ApiSuccessResponse(
  * Export all schemas for easy import
  */
 export const LoginAttemptsSchemas = {
-  // Enums
-  LoginFailureReason: LoginFailureReasonSchema,
-
   // Main schemas
   LoginAttempt: LoginAttemptSchema,
   LoginAttemptsQuery: LoginAttemptsQuerySchema,
