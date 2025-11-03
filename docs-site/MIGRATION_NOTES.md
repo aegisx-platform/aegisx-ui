@@ -119,7 +119,9 @@ pnpm docs:build
 
 - Fixed pnpm version mismatch in GitHub Actions workflow
 - Updated from `version: 10` to `version: 10.17.0` to match package.json
-- GitHub Actions now runs successfully with correct pnpm version
+- Fixed Node.js memory limit issue during build
+- Increased memory limit to 4GB using `NODE_OPTIONS: --max-old-space-size=4096`
+- Required due to large documentation set (282 markdown files)
 
 ## 🚀 Next Steps
 
