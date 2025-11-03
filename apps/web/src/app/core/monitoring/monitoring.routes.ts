@@ -43,6 +43,17 @@ export const monitoringRoutes: Route[] = [
     },
   },
   {
+    path: 'activity-logs',
+    loadComponent: () =>
+      import('./pages/activity-logs/activity-logs.component').then(
+        (m) => m.ActivityLogsComponent,
+      ),
+    data: {
+      title: 'Activity Logs',
+      description: 'View and manage all user activity logs',
+    },
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
