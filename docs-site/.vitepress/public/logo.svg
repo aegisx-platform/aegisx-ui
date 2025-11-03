@@ -1,0 +1,15 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield background -->
+  <path d="M60 10L95 25V50C95 72.5 82.5 90 60 110C37.5 90 25 72.5 25 50V25L60 10Z" fill="#3B82F6" stroke="#1E40AF" stroke-width="2"/>
+
+  <!-- Inner shield detail -->
+  <path d="M60 20L85 32V50C85 68 75 82 60 98C45 82 35 68 35 50V32L60 20Z" fill="#60A5FA" opacity="0.6"/>
+
+  <!-- Aegis symbol (Greek letter Α stylized) -->
+  <path d="M60 45L70 70H50L60 45Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="52" y1="62" x2="68" y2="62" stroke="white" stroke-width="2"/>
+
+  <!-- Additional decorative elements -->
+  <circle cx="60" cy="40" r="3" fill="white" opacity="0.8"/>
+  <path d="M45 75L60 85L75 75" stroke="#E0F2FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

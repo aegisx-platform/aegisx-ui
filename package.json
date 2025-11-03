@@ -94,7 +94,10 @@
     "generate:crud": "node tools/crud-generator/index.js generate",
     "generate:crud:events": "node tools/crud-generator/index.js generate --with-events",
     "crud:list": "node tools/crud-generator/index.js list-tables",
-    "crud:validate": "node tools/crud-generator/index.js validate"
+    "crud:validate": "node tools/crud-generator/index.js validate",
+    "docs:dev": "vitepress dev docs-site",
+    "docs:build": "vitepress build docs-site",
+    "docs:preview": "vitepress preview docs-site"
   },
   "private": true,
   "dependencies": {
@@ -200,6 +203,7 @@
     "@nx/web": "21.4.1",
     "@nx/workspace": "21.4.1",
     "@playwright/test": "^1.55.0",
+    "@scalar/api-reference": "^1.38.1",
     "@schematics/angular": "~20.1.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
@@ -242,6 +246,8 @@
     "typescript": "~5.8.0",
     "typescript-eslint": "^8.29.0",
     "verdaccio": "^6.0.5",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.22",
     "ws": "^8.18.3"
   },
   "nx": {

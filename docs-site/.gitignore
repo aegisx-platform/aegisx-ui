@@ -1,0 +1,10 @@
+# VitePress build output
+.vitepress/dist
+.vitepress/cache
+
+# Node modules (if any)
+node_modules
+
+# Temp files
+*.log
+.DS_Store
