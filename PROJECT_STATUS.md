@@ -1,6 +1,6 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-01-03 (Session 63b - CRUD Generator v2.2.0 Release)
+**Last Updated:** 2025-11-03 (Session 63c - Multi-Instance Database Connection Fix)
 **Current Status:** ✅ **PLATFORM COMPLETE** - All core features implemented, tested, and production-ready
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 **CRUD Generator Version:** v2.2.0 (Ready for npm publish)
@@ -285,6 +285,94 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 ## 🚀 Recent Development Sessions
 
 > **📦 For older sessions (38-46), see [Session Archive](./docs/sessions/ARCHIVE_2024_Q4.md)**
+
+### Session 63c (2025-11-03) ✅ COMPLETED
+
+**Session Focus:** Multi-Instance Database Connection Fix - Sustainable Solution for Environment Variables
+
+**Problem Discovered:**
+
+- CRUD Generator reported "Table not found" for all tables (pdf_templates, api_keys, users)
+- Database migrations were going to wrong database instance
+- knexfile.ts used `DATABASE_*` prefix but .env.local only had `POSTGRES_*` prefix
+- Migrations went to port 5432 (main database) instead of port 5483 (instance-specific database)
+
+**Root Cause Analysis:**
+
+- **Docker PostgreSQL** requires `POSTGRES_*` variables (official image requirement)
+- **Node.js tools** (Knex, migrations, CRUD generator) prefer `DATABASE_*` variables (industry standard)
+- **setup-env.sh** only generated `POSTGRES_*` variables in .env.local
+- **.env** had `DATABASE_PORT=5432` which wasn't being overridden
+- Variable naming mismatch caused silent migration failures to wrong database
+
+**Sustainable Solution Implemented:**
+
+1. ✅ **knexfile.ts Fallback Logic** - Added `DATABASE_* || POSTGRES_* || default` pattern for all 3 environments
+2. ✅ **setup-env.sh Enhancement** - Generate BOTH `DATABASE_*` and `POSTGRES_*` variables automatically
+3. ✅ **.env.example Documentation** - Added comments explaining dual-prefix usage and production behavior
+4. ✅ **Inline Comments** - Documented that `POSTGRES_*` is Docker-only, production uses `DATABASE_*` only
+
+**Technical Implementation:**
+
+```bash
+# Generated .env.local (automatic from setup-env.sh)
+# DATABASE_* variables: Used by Node.js tools (Knex, migrations, CRUD generator)
+DATABASE_HOST=localhost
+DATABASE_PORT=5483
+DATABASE_NAME=aegisx_db
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres
+
+# POSTGRES_* variables: Required by Docker PostgreSQL image (local development only)
+# Note: Production environments use DATABASE_* only
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5483
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DATABASE=aegisx_db
+```
+
+**Files Modified (3 files):**
+
+- `knexfile.ts` - Added fallback logic for development, test, production environments
+- `scripts/setup-env.sh` - Generate both DATABASE*\* and POSTGRES*\* variables with documentation
+- `.env.example` - Added comments explaining dual-prefix pattern
+
+**Benefits of This Solution:**
+
+- ✅ **Works for all future instances** - setup-env.sh automatically generates both prefixes
+- ✅ **Prevents silent failures** - Migrations go to correct database every time
+- ✅ **Developer-friendly** - Comments explain why both variable names exist
+- ✅ **Production-ready** - Production uses only DATABASE*\* (no POSTGRES*\* needed)
+- ✅ **Backward compatible** - Existing instances continue to work
+- ✅ **Zero manual configuration** - Automatic port assignment based on folder name
+
+**Testing Verification:**
+
+- ✅ Database schema reset: `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
+- ✅ Migrations ran successfully: 38 migrations, 33 tables created
+- ✅ Seeds ran successfully: Navigation, permissions, users populated
+- ✅ CRUD Generator can now connect and analyze tables
+
+**Impact:**
+
+- 🎯 **Root Cause Fixed** - Identified and resolved variable naming mismatch systematically
+- 🔧 **Sustainable Solution** - Works for all future instances without manual intervention
+- 📚 **Well-Documented** - Comments explain the dual-prefix pattern for future developers
+- ✅ **Production-Ready** - Tested and verified with full migration cycle
+
+**Key Learning:**
+
+- Docker images and Node.js tools have different variable naming conventions
+- Silent failures are dangerous - migrations succeeded but went to wrong database
+- Sustainable solutions require supporting both naming conventions with fallback logic
+- Documentation is critical - comments prevent future confusion about multiple variable names
+
+**Commit:**
+
+- `4833f98` - fix(config): fix multi-instance database connection issue with dual-prefix support
+
+---
 
 ### Session 63b (2025-01-03) ✅ COMPLETED
 
