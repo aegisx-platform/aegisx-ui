@@ -136,10 +136,13 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          this._isLoading.set(false);
           if (response.success && response.data) {
             this.setAuthData(response.data);
+            // Load full profile to get avatar, bio, preferences, etc.
+            this.loadUserProfile();
             this.router.navigate(['/']);
+          } else {
+            this._isLoading.set(false);
           }
         }),
         catchError((error) => {
@@ -154,6 +157,8 @@ export class AuthService {
       tap((response) => {
         if (response.success && response.data) {
           this.setAuthData(response.data);
+          // Load full profile to get avatar, bio, preferences, etc.
+          this.loadUserProfile();
           this.router.navigate(['/']);
         }
       }),
@@ -210,6 +215,7 @@ export class AuthService {
   private loadUserProfile(): void {
     const token = this._accessToken();
     if (token) {
+      console.log('🔄 [AuthService] Loading full profile from /api/profile...');
       // Load full profile from API
       this.http.get<any>('/profile').subscribe({
         next: (response) => {
@@ -229,6 +235,11 @@ export class AuthService {
               avatar: profile.avatar,
               bio: profile.bio,
             };
+            console.log('✅ [AuthService] Profile loaded successfully');
+            console.log(
+              '🖼️ [AuthService] Profile avatar:',
+              user.avatar || 'NO AVATAR',
+            );
             this._currentUser.set(user);
             this._isAuthenticated.set(true);
           }
@@ -284,6 +295,12 @@ export class AuthService {
         console.warn('Could not extract permissions from JWT token', error);
       }
     }
+
+    console.log('🔐 [AuthService] setAuthData - user:', userWithPermissions);
+    console.log(
+      '🖼️ [AuthService] setAuthData - avatar:',
+      userWithPermissions.avatar || 'NO AVATAR',
+    );
 
     this._accessToken.set(authData.accessToken);
     this._currentUser.set(userWithPermissions);

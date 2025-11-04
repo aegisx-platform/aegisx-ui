@@ -178,15 +178,45 @@
 .ax-navigation__footer {
   flex: 0 0 auto;
   padding: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(130, 130, 130, 0.12)!important;
   transition: all var(--ax-navigation-transition-duration)
     var(--ax-navigation-transition-timing);
 
+  // Wrapper for footer content
+  .ax-nav-footer-wrapper {
+    width: 100%;
+  }
+
+  // Collapsed state behavior
   .ax-navigation--collapsed & {
     padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    > * {
-      display: none;
+    // Center the wrapper
+    .ax-nav-footer-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+
+    // Center profile link
+    .nav-footer-profile {
+      justify-content: center !important;
+      padding: 0.5rem !important;
+      width: auto;
+      gap: 0 !important;
+    }
+
+    // Hide info and arrows
+    .nav-footer-info,
+    .nav-footer-arrows {
+      display: none !important;
+    }
+
+    // Ensure avatar is visible
+    .nav-footer-avatar {
+      display: block !important;
     }
   }
 }

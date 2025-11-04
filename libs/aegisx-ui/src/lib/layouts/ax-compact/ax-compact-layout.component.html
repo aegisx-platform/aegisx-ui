@@ -24,7 +24,7 @@
   [items]="axNavigation"
   [config]="navigationConfig()"
   [showHeader]="true"
-  [showFooter]="false"
+  [showFooter]="true"
   (stateChange)="onNavigationStateChange($event)"
   (itemClick)="onNavigationItemClick($event)"
 >
@@ -43,6 +43,13 @@
       }
     }
   </div>
+
+  <!-- Navigation footer from parent -->
+  @if (navigationFooter) {
+    <div navigation-footer>
+      <ng-container *ngTemplateOutlet="navigationFooter"></ng-container>
+    </div>
+  }
 </ax-navigation>
 
 <!-- Main Content Wrapper -->

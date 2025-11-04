@@ -59,6 +59,44 @@ interface Notification {
           </div>
         </ng-template>
 
+        <!-- Navigation Footer -->
+        <ng-template #navigationFooter>
+          <div class="ax-nav-footer-wrapper">
+            <a
+              routerLink="/profile"
+              class="nav-footer-profile flex items-center gap-3 px-4 w-full hover:bg-white/10 transition-all rounded-lg cursor-pointer no-underline"
+            >
+              <!-- Avatar (always visible) -->
+              <img
+                [src]="
+                  currentUser()?.avatar ||
+                  '/assets/images/avatars/default.png'
+                "
+                [alt]="currentUser()?.name || 'User'"
+                class="nav-footer-avatar w-10 h-10 rounded-full object-cover flex-shrink-0"
+              />
+
+              <!-- User Info (hidden when collapsed) -->
+              <div class="nav-footer-info flex-1 min-w-0">
+                <p class="text-sm font-medium text-white truncate mb-0.5 m-0">
+                  {{ currentUser()?.name || 'Guest User' }}
+                </p>
+                <p class="text-xs text-gray-400 truncate m-0">
+                  {{ currentUser()?.email || 'guest@example.com' }}
+                </p>
+              </div>
+
+              <!-- Arrows (hidden when collapsed) -->
+              <div
+                class="nav-footer-arrows flex flex-col text-gray-400 text-xs leading-none gap-0.5"
+              >
+                <span>▲</span>
+                <span>▼</span>
+              </div>
+            </a>
+          </div>
+        </ng-template>
+
         <!-- Toolbar Title -->
         <ng-template #toolbarTitle>
           <span class="text-xl font-bold">AegisX Platform</span>
@@ -219,6 +257,80 @@ interface Notification {
         border-radius: 50% !important;
         clip-path: circle(50%) !important;
       }
+
+      /* Navigation User Profile Styles */
+      .nav-user-profile {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        border-radius: 0 !important;
+        background-color: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        contain: layout size !important;
+        position: relative !important;
+      }
+
+      .nav-user-profile:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      /* Constrain Material Button internal overlays */
+      .nav-user-profile ::ng-deep .mat-mdc-button-persistent-ripple,
+      .nav-user-profile ::ng-deep .mat-mdc-button-touch-target,
+      .nav-user-profile ::ng-deep .mdc-button__ripple {
+        max-width: 100% !important;
+        overflow: hidden !important;
+      }
+
+      .nav-user-profile > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0.75rem 1rem !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+
+      /* When navigation is collapsed (w-16 = 4rem) */
+      .w-16 .nav-user-info,
+      .w-16 .nav-user-icon {
+        display: none;
+      }
+
+      .w-16 .nav-user-profile > div {
+        justify-content: center;
+        padding: 0.75rem !important;
+      }
+
+      /* When navigation is expanded (w-64 = 16rem) */
+      .w-64 .nav-user-info,
+      .w-64 .nav-user-icon {
+        display: block;
+      }
+
+      /* Navigation Footer Profile Styles */
+      .nav-footer-profile {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: background-color 0.2s ease;
+      }
+
+      /* Hide info and arrows when navigation is collapsed */
+      :host ::ng-deep .ax-navigation--collapsed .nav-footer-info,
+      :host ::ng-deep .ax-navigation--collapsed .nav-footer-arrows {
+        display: none !important;
+      }
+
+      /* Center avatar when collapsed */
+      :host ::ng-deep .ax-navigation--collapsed .nav-footer-profile {
+        justify-content: center;
+        padding: 0.75rem !important;
+      }
     `,
   ],
 })
@@ -232,16 +344,43 @@ export class AppComponent implements OnInit {
   shouldShowLayout = signal(true);
   currentUser = computed(() => {
     const user = this.authService.currentUser();
-    console.log('Current User:', user);
+    console.log('🔍 [Nav Footer] Current User:', user);
     if (user) {
-      return {
-        name: this.authService.userDisplayName(),
-        email: user.email,
-        avatar: (user as any).avatar || null, // Get avatar from user data
+      const userData = {
+        name: this.authService.userDisplayName(), // firstName + lastName
+        email: user.email, // Real email
+        avatar: user.avatar || null, // Real avatar from user profile
       };
+      console.log('🖼️ [Nav Footer] Avatar URL:', userData.avatar);
+      return userData;
     }
     return null;
   });
+
+  // User initials for avatar fallback
+  userInitials = computed(() => {
+    const user = this.authService.currentUser();
+    if (!user) return 'U';
+
+    const displayName = this.authService.userDisplayName();
+    const names = displayName.split(' ');
+
+    if (names.length >= 2) {
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    }
+    return displayName.substring(0, 2).toUpperCase();
+  });
+
+  // User role/status for display
+  userRole = computed(() => {
+    const user = this.authService.currentUser();
+    if (!user) return 'Guest';
+
+    const role = (user as any).role || 'user';
+    // Capitalize first letter
+    return role.charAt(0).toUpperCase() + role.slice(1);
+  });
+
   notifications = signal<Notification[]>([]);
   currentYear = new Date().getFullYear();
 

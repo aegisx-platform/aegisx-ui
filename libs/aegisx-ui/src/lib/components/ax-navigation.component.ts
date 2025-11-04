@@ -77,6 +77,7 @@ import { filter } from 'rxjs/operators';
 
       <!-- Navigation Footer -->
       @if (showFooter) {
+        
         <div class="ax-navigation__footer">
           <ng-content select="[navigation-footer]"></ng-content>
         </div>
