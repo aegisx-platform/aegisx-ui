@@ -85,7 +85,6 @@ export async function seed(knex: Knex): Promise<void> {
     .first();
   if (adminUser) {
     await knex('users').where({ id: adminUser.id }).update({
-      name: 'System Administrator',
       status: 'active',
       email_verified: true,
       email_verified_at: knex.fn.now(),

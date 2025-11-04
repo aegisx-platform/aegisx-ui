@@ -11,12 +11,26 @@ export async function up(knex: Knex): Promise<void> {
     table.string('last_name', 100);
     table.boolean('is_active').defaultTo(true);
     table.timestamp('last_login_at');
+
+    // Account status and verification (from old 004_extend_users_table)
+    table
+      .enum('status', ['active', 'inactive', 'suspended', 'pending'])
+      .defaultTo('pending');
+    table.boolean('email_verified').defaultTo(false);
+    table.timestamp('email_verified_at').nullable();
+
+    // Localization preferences (from old 004_extend_users_table)
+    table.string('timezone', 100).defaultTo('UTC');
+    table.string('language', 10).defaultTo('en');
+
     table.timestamps(true, true);
 
     // Indexes for performance
     table.index('email');
     table.index('username');
     table.index('is_active');
+    table.index('status');
+    table.index('email_verified');
   });
 
   // Create user_roles junction table with RBAC enhancements
