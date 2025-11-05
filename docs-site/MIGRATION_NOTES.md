@@ -105,7 +105,8 @@ pnpm docs:build
 ✅ **Phase 7**: GitHub Pages Deployment
 
 - Created `.github/workflows/deploy-docs.yml`
-- Auto-deploy on push to main/develop branches
+- **Manual trigger only** (using `workflow_dispatch`)
+- Deploy manually via GitHub Actions UI
 - Will deploy to: https://aegisx-platform.github.io/aegisx-starter/
 
 ✅ **Phase 8**: Build Success
@@ -144,16 +145,29 @@ Review and fix files in `docs-site-problematic-files/`:
 
 ### 3. ✅ Pushed to GitHub (COMPLETED)
 
-Code has been successfully pushed to develop branch. GitHub Actions will automatically build and deploy to GitHub Pages.
+Code has been successfully pushed to develop branch.
 
-### 4. Add Images (Optional)
+### 4. Deploy to GitHub Pages (Manual)
+
+To deploy documentation to GitHub Pages:
+
+1. Go to: https://github.com/aegisx-platform/aegisx-starter/actions
+2. Select workflow: "Deploy Documentation to GitHub Pages"
+3. Click "Run workflow" button
+4. Select branch: `develop` (or `main`)
+5. Click "Run workflow" to start deployment
+
+After deployment completes, documentation will be available at:
+https://aegisx-platform.github.io/aegisx-starter/
+
+### 5. Add Images (Optional)
 
 Some documentation references images that don't exist. You can:
 
 - Add screenshots to `.vitepress/public/images/`
 - Update markdown to reference: `![Screenshot](/images/name.png)`
 
-### 5. Enable API Playground (Optional)
+### 6. Enable API Playground (Optional)
 
 Fix Scalar API Reference integration or use alternative like Swagger UI.
 

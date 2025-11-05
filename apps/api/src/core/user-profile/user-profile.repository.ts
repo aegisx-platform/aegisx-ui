@@ -249,18 +249,19 @@ export class UserProfileRepository {
       },
     };
 
-    // Build full avatar URL with base API URL
+    // Use relative avatar URL for Angular proxy compatibility
     let avatarUrl = null;
     if (dbResult.avatar_url) {
-      const baseUrl = process.env.API_BASE_URL || 'http://localhost:4200';
-      // If already absolute URL, use as is, otherwise prepend base URL
+      // If already absolute URL, use as is
       if (
         dbResult.avatar_url.startsWith('http://') ||
         dbResult.avatar_url.startsWith('https://')
       ) {
         avatarUrl = dbResult.avatar_url;
       } else {
-        avatarUrl = `${baseUrl}${dbResult.avatar_url}`;
+        // Keep as relative URL (e.g., /api/uploads/avatars/xxx.jpg)
+        // This allows Angular proxy to work correctly
+        avatarUrl = dbResult.avatar_url;
       }
     }
 
