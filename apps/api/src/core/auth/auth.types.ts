@@ -4,7 +4,7 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
-  isActive: boolean;
+  status: 'active' | 'inactive' | 'suspended' | 'pending';
   role?: string; // Deprecated: Use roles[] for multi-role support
   roles?: string[]; // Multi-role support
   createdAt: string;

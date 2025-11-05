@@ -13,7 +13,12 @@ export const AuthUserSchema = Type.Object({
   username: Type.String(),
   firstName: Type.String(),
   lastName: Type.String(),
-  isActive: Type.Boolean(),
+  status: Type.Union([
+    Type.Literal('active'),
+    Type.Literal('inactive'),
+    Type.Literal('suspended'),
+    Type.Literal('pending'),
+  ]),
   role: Type.String(),
   createdAt: Type.String({ format: 'date-time' }),
   updatedAt: Type.String({ format: 'date-time' }),
