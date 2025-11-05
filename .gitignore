@@ -118,6 +118,5 @@ docker-compose.override.yml
 docker-compose.instance.yml
 
 # Test and development files
-test-*.html
 responsive-test.html
 test-websocket.html
