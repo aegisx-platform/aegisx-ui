@@ -55,6 +55,7 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
   @ContentChild('toolbarTitle') toolbarTitle!: TemplateRef<unknown>;
   @ContentChild('toolbarActions') toolbarActions!: TemplateRef<unknown>;
   @ContentChild('navigationHeader') navigationHeader!: TemplateRef<unknown>;
+  @ContentChild('navigationFooter') navigationFooter!: TemplateRef<unknown>;
   @ContentChild('footerContent') footerContent!: TemplateRef<unknown>;
 
   currentYear = new Date().getFullYear();
