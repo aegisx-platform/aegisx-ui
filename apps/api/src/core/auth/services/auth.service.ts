@@ -406,18 +406,14 @@ export class AuthService {
     // Query permissions for all roles (direct and inherited)
     const permissionsResult = await this.app
       .knex('permissions as p')
-      .select(
-        this.app.knex.raw(
-          "ARRAY_AGG(DISTINCT CONCAT(p.resource, ':', p.action)) as permissions",
-        ),
-      )
+      .distinct('p.id', 'p.resource', 'p.action')
       .join('role_permissions as rp', 'p.id', 'rp.permission_id')
-      .whereIn('rp.role_id', Array.from(allRoleIds))
-      .groupByRaw('p.resource, p.action') // Group by resource:action to ensure distinct
-      .first();
+      .whereIn('rp.role_id', Array.from(allRoleIds));
 
-    // Extract just the permission strings
-    const allPermissions = permissionsResult?.permissions || [];
+    // Extract and format permission strings (resource:action)
+    const allPermissions = permissionsResult.map(
+      (row: any) => `${row.resource}:${row.action}`
+    );
 
     // Return deduplicated permissions
     return Array.from(new Set(allPermissions));

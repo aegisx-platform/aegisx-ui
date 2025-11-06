@@ -2,7 +2,8 @@ import type { Knex } from 'knex';
 import * as bcrypt from 'bcryptjs';
 
 /**
- * Link all permissions for a resource to the admin role
+ * Link all permissions for a module/resource to the admin role (idempotent)
+ * Used for permissions created by migrations (e.g., module roles like testProducts)
  */
 async function linkAdminPermissions(
   knex: Knex,
@@ -20,33 +21,38 @@ async function linkAdminPermissions(
     .select('id', 'action');
 
   if (permissions.length === 0) {
-    console.log(`⚠️  No permissions found for resource: ${resource}`);
+    console.log(`⏭️  No permissions found for resource: ${resource}`);
     return;
   }
 
-  const rolePermissions = permissions.map((p) => ({
-    role_id: adminRole.id,
-    permission_id: p.id,
-  }));
+  // Insert role-permission mappings idempotently
+  // This handles permissions created by migrations (like module roles)
+  for (const permission of permissions) {
+    await knex.raw(
+      `
+      INSERT INTO role_permissions (role_id, permission_id, created_at, updated_at)
+      VALUES (?, ?, NOW(), NOW())
+      ON CONFLICT (role_id, permission_id) DO NOTHING
+    `,
+      [adminRole.id, permission.id],
+    );
+  }
 
-  await knex('role_permissions')
-    .insert(rolePermissions)
-    .onConflict(['role_id', 'permission_id'])
-    .ignore();
-
-  console.log(`✅ Linked ${permissions.length} permissions to admin role`);
+  console.log(`✅ Linked ${permissions.length} ${resource} permissions to admin role`);
 }
 
 export async function seed(knex: Knex): Promise<void> {
-  // Clear existing data in reverse order due to foreign keys
+  // Clear only user-related data (idempotent seed design)
+  // ❌ Do NOT delete permissions or role_permissions
+  // Permissions are managed by migrations, not seeds
   await knex('user_sessions').del();
   await knex('user_roles').del();
-  await knex('role_permissions').del();
   await knex('users').del();
-  await knex('permissions').del();
-  // Don't delete roles - they're created in migration 001
 
-  // Get system roles by name (created by migration 001)
+  // Don't delete roles - they're created in migration 001
+  // Don't delete permissions - they're created in migrations
+
+  // Get system roles by name (created by migration 001 or 002)
   const adminRole = await knex('roles').where('name', 'admin').first();
   const userRole = await knex('roles').where('name', 'user').first();
   const moderatorRole = await knex('roles').where('name', 'moderator').first();
@@ -55,7 +61,7 @@ export async function seed(knex: Knex): Promise<void> {
     throw new Error('System roles not found - run migrations first');
   }
 
-  // Insert additional roles if needed (manager role)
+  // Insert additional roles if needed (manager role) - idempotent
   const managerRoles = await knex('roles')
     .insert([
       {
@@ -73,249 +79,45 @@ export async function seed(knex: Knex): Promise<void> {
     managerRole = await knex('roles').where('name', 'manager').first();
   }
 
-  // Insert permissions
+  // Get system permissions (now created by migration 002)
+  // NOTE: System permissions are created in migrations/002_create_system_permissions.ts
+  // This seed no longer creates them, ensuring single source of truth
   const permissions = await knex('permissions')
-    .insert([
-      // Dashboard permissions
-      { resource: 'dashboard', action: 'view', description: 'View dashboard' },
-
-      // User management permissions
-      { resource: 'users', action: 'create', description: 'Create new users' },
-      {
-        resource: 'users',
-        action: 'read',
-        description: 'View user information',
-      },
-      {
-        resource: 'users',
-        action: 'update',
-        description: 'Update user information',
-      },
-      { resource: 'users', action: 'delete', description: 'Delete users' },
-
-      // Role management permissions
-      { resource: 'roles', action: 'create', description: 'Create new roles' },
-      { resource: 'roles', action: 'read', description: 'View roles' },
-      { resource: 'roles', action: 'update', description: 'Update roles' },
-      { resource: 'roles', action: 'delete', description: 'Delete roles' },
-
-      // Permission management permissions
-      {
-        resource: 'permissions',
-        action: 'read',
-        description: 'View permissions',
-      },
-      {
-        resource: 'permissions',
-        action: 'assign',
-        description: 'Assign permissions to roles',
-      },
-
-      // Profile permissions (for regular users)
-      { resource: 'profile', action: 'read', description: 'View own profile' },
-      {
-        resource: 'profile',
-        action: 'update',
-        description: 'Update own profile',
-      },
-
-      // System monitoring permissions
-      {
-        resource: 'system',
-        action: 'monitoring:read',
-        description: 'View system monitoring data',
-      },
-
-      // Error logs permissions
-      {
-        resource: 'error-logs',
-        action: 'read',
-        description: 'View error logs',
-      },
-      {
-        resource: 'error-logs',
-        action: 'delete',
-        description: 'Delete error logs',
-      },
-      {
-        resource: 'error-logs',
-        action: 'export',
-        description: 'Export error logs',
-      },
-
-      // Activity logs permissions
-      {
-        resource: 'activity-logs',
-        action: 'read',
-        description: 'View activity logs',
-      },
-      {
-        resource: 'activity-logs',
-        action: 'delete',
-        description: 'Delete activity logs',
-      },
-      {
-        resource: 'activity-logs',
-        action: 'export',
-        description: 'Export activity logs',
-      },
-
-      // Navigation management permissions
-      {
-        resource: 'navigation',
-        action: 'read',
-        description: 'View navigation items',
-      },
-      {
-        resource: 'navigation',
-        action: 'create',
-        description: 'Create navigation items',
-      },
-      {
-        resource: 'navigation',
-        action: 'update',
-        description: 'Update navigation items',
-      },
-      {
-        resource: 'navigation',
-        action: 'delete',
-        description: 'Delete navigation items',
-      },
-      {
-        resource: 'navigation',
-        action: 'view',
-        description: 'View user navigation menu',
-      },
-      {
-        resource: 'navigation',
-        action: 'assign-permissions',
-        description: 'Assign permissions to navigation items',
-      },
-
-      // File upload permissions
-      {
-        resource: 'files',
-        action: 'upload',
-        description: 'Upload files',
-      },
-      {
-        resource: 'files',
-        action: 'read',
-        description: 'View files',
-      },
-      {
-        resource: 'files',
-        action: 'update',
-        description: 'Update file metadata',
-      },
-      {
-        resource: 'files',
-        action: 'delete',
-        description: 'Delete files',
-      },
-      {
-        resource: 'files',
-        action: 'read-config',
-        description: 'View storage configuration',
-      },
-      {
-        resource: 'files',
-        action: 'cleanup',
-        description: 'Cleanup deleted files',
-      },
-
-      // Settings permissions
-      {
-        resource: 'settings',
-        action: 'read',
-        description: 'View settings',
-      },
-      {
-        resource: 'settings',
-        action: 'create',
-        description: 'Create settings',
-      },
-      {
-        resource: 'settings',
-        action: 'update',
-        description: 'Update settings',
-      },
-      {
-        resource: 'settings',
-        action: 'delete',
-        description: 'Delete settings',
-      },
-      {
-        resource: 'settings',
-        action: 'update-value',
-        description: 'Update setting values',
-      },
-      {
-        resource: 'settings',
-        action: 'bulk-update',
-        description: 'Bulk update settings',
-      },
-      {
-        resource: 'settings',
-        action: 'read-history',
-        description: 'View settings history',
-      },
-      {
-        resource: 'settings',
-        action: 'user:read',
-        description: 'View user settings',
-      },
-      {
-        resource: 'settings',
-        action: 'user:update',
-        description: 'Update user settings',
-      },
-      {
-        resource: 'settings',
-        action: 'user:delete',
-        description: 'Delete user settings',
-      },
-
-      // User role assignment permissions
-      {
-        resource: 'user-roles',
-        action: 'read',
-        description: 'View user role assignments',
-      },
-      {
-        resource: 'user-roles',
-        action: 'assign',
-        description: 'Assign roles to users',
-      },
-      {
-        resource: 'user-roles',
-        action: 'revoke',
-        description: 'Revoke roles from users',
-      },
-      {
-        resource: 'user-roles',
-        action: 'bulk-assign',
-        description: 'Bulk assign roles',
-      },
-      {
-        resource: 'user-roles',
-        action: 'set-expiry',
-        description: 'Set role expiration',
-      },
+    .whereIn('resource', [
+      'dashboard',
+      'users',
+      'roles',
+      'permissions',
+      'profile',
+      'system',
+      'error-logs',
+      'activity-logs',
+      'navigation',
+      'files',
+      'settings',
+      'user-roles',
     ])
-    .returning(['id', 'resource', 'action']);
+    .select('id', 'resource', 'action');
 
-  // Assign all permissions to admin role
-  const adminPermissions = permissions.map((perm) => ({
-    role_id: adminRole.id,
-    permission_id: perm.id,
-  }));
-  await knex('role_permissions').insert(adminPermissions);
+  if (permissions.length > 0) {
+    // Assign existing system permissions to admin role (idempotent)
+    for (const perm of permissions) {
+      await knex.raw(
+        `
+        INSERT INTO role_permissions (role_id, permission_id, created_at, updated_at)
+        VALUES (?, ?, NOW(), NOW())
+        ON CONFLICT (role_id, permission_id) DO NOTHING
+      `,
+        [adminRole.id, perm.id],
+      );
+    }
+  }
 
-  // Link testProducts permissions to admin role (from migration)
+  // Link module permissions to admin role (from CRUD generator migrations)
+  // Example: testProducts permissions created by 002_*_add_testProducts_permissions.ts
   await linkAdminPermissions(knex, 'testProducts');
 
-  // Assign dashboard + user management + profile + files permissions to manager role
+  // Assign dashboard + user management + profile + files permissions to manager role (idempotent)
   const managerPermissions = permissions
     .filter(
       (perm) =>
@@ -328,9 +130,19 @@ export async function seed(knex: Knex): Promise<void> {
       role_id: managerRole.id,
       permission_id: perm.id,
     }));
-  await knex('role_permissions').insert(managerPermissions);
 
-  // Assign dashboard + profile permissions to user role
+  for (const perm of managerPermissions) {
+    await knex.raw(
+      `
+      INSERT INTO role_permissions (role_id, permission_id, created_at, updated_at)
+      VALUES (?, ?, NOW(), NOW())
+      ON CONFLICT (role_id, permission_id) DO NOTHING
+    `,
+      [perm.role_id, perm.permission_id],
+    );
+  }
+
+  // Assign dashboard + profile permissions to user role (idempotent)
   const userPermissions = permissions
     .filter(
       (perm) => perm.resource === 'dashboard' || perm.resource === 'profile',
@@ -339,7 +151,17 @@ export async function seed(knex: Knex): Promise<void> {
       role_id: userRole.id,
       permission_id: perm.id,
     }));
-  await knex('role_permissions').insert(userPermissions);
+
+  for (const perm of userPermissions) {
+    await knex.raw(
+      `
+      INSERT INTO role_permissions (role_id, permission_id, created_at, updated_at)
+      VALUES (?, ?, NOW(), NOW())
+      ON CONFLICT (role_id, permission_id) DO NOTHING
+    `,
+      [perm.role_id, perm.permission_id],
+    );
+  }
 
   // Create admin user
   const hashedPassword = await bcrypt.hash('Admin123!', 10);

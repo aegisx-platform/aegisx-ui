@@ -4,6 +4,8 @@ import { TestCategoriesController } from './controllers/test-categories.controll
 import { TestCategoriesService } from './services/test-categories.service';
 import { TestCategoriesRepository } from './repositories/test-categories.repository';
 import { testCategoriesRoutes } from './routes/index';
+import { testCategoriesImportRoutes } from './routes/test-categories-import.routes';
+import { TestCategoriesImportService } from './services/test-categories-import.service';
 
 // Note: FastifyInstance eventService type is declared in websocket.plugin.ts
 
@@ -36,15 +38,32 @@ export default fp(
     );
     const testCategoriesService = new TestCategoriesService(
       testCategoriesRepository,
+      (fastify as any).eventService,
+    );
+    const testCategoriesImportService = new TestCategoriesImportService(
+      (fastify as any).knex,
+      testCategoriesRepository,
+      (fastify as any).eventService, // Pass eventService for import progress events
     );
 
     // Controller instantiation with proper dependencies
     const testCategoriesController = new TestCategoriesController(
       testCategoriesService,
+      testCategoriesImportService,
+      (fastify as any).eventService,
     );
 
     // Optional: Decorate Fastify instance with service for cross-plugin access
     // fastify.decorate('testCategoriesService', testCategoriesService);
+
+    // ⚠️ IMPORTANT: Register import routes FIRST (before main routes)
+    // Import routes have static paths like /export, /import/template
+    // They must be registered before dynamic routes like /:id
+    // Otherwise /:id will match everything including /export
+    await fastify.register(testCategoriesImportRoutes, {
+      controller: testCategoriesController,
+      prefix: options.prefix || '/test-categories',
+    });
 
     // Register main CRUD routes (includes dynamic /:id route)
     await fastify.register(testCategoriesRoutes, {
@@ -56,10 +75,16 @@ export default fp(
     fastify.addHook('onReady', async () => {
       fastify.log.info(`TestCategories domain module registered successfully`);
     });
+
+    // Cleanup event listeners on close
+    fastify.addHook('onClose', async () => {
+      fastify.log.info(`Cleaning up TestCategories domain module resources`);
+      // Add any cleanup logic here
+    });
   },
   {
     name: 'testCategories-domain-plugin',
-    dependencies: ['knex-plugin'],
+    dependencies: ['knex-plugin', 'websocket-plugin'],
   },
 );
 
@@ -78,7 +103,24 @@ export type {
   TestCategoriesIdParam,
   GetTestCategoriesQuery,
   ListTestCategoriesQuery,
+  TestCategoriesCreatedEvent,
+  TestCategoriesUpdatedEvent,
+  TestCategoriesDeletedEvent,
 } from './schemas/test-categories.schemas';
+
+// Event type definitions for external consumers
+import { TestCategories } from './schemas/test-categories.schemas';
+
+export interface TestCategoriesEventHandlers {
+  onCreated?: (data: TestCategories) => void | Promise<void>;
+  onUpdated?: (data: TestCategories) => void | Promise<void>;
+  onDeleted?: (data: { id: number | string }) => void | Promise<void>;
+}
+
+export interface TestCategoriesWebSocketSubscription {
+  subscribe(handlers: TestCategoriesEventHandlers): void;
+  unsubscribe(): void;
+}
 
 // Module name constant
 export const MODULE_NAME = 'testCategories' as const;

@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    
   ],
   template: `
     <!-- Filters Panel -->
@@ -76,9 +77,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
             class="flex-shrink-0 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
             aria-label="Search"
             [matTooltip]="
-              searchTerm.trim()
-                ? 'Search test_products'
-                : 'Enter search term to search'
+              searchTerm.trim() ? 'Search test_products' : 'Enter search term to search'
             "
           >
             <mat-icon class="!text-lg !w-5 !h-5">search</mat-icon>
@@ -148,10 +147,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
             <mat-icon class="!text-base !w-4 !h-4">tune</mat-icon>
             Advanced Filters
             @if (activeFilterCount > 0) {
-              <span
-                class="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full"
-                >{{ activeFilterCount }}</span
-              >
+              <span class="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">{{ activeFilterCount }}</span>
             }
           </button>
 
@@ -185,17 +181,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       @if (showAdvancedFilters()) {
         <div class="mt-4 pt-4 border-t border-gray-200">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Sku Filter -->
+            <!-- Code Filter -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Sku</label
+                >Code</label
               >
               <input
                 type="text"
-                [(ngModel)]="skuFilter"
-                (ngModelChange)="skuFilterChange.emit($event)"
+                [(ngModel)]="codeFilter"
+                (ngModelChange)="codeFilterChange.emit($event)"
                 (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter sku"
+                placeholder="Enter code"
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -213,31 +209,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <!-- Barcode Filter -->
+            <!-- Slug Filter -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Barcode</label
+                >Slug</label
               >
               <input
                 type="text"
-                [(ngModel)]="barcodeFilter"
-                (ngModelChange)="barcodeFilterChange.emit($event)"
+                [(ngModel)]="slugFilter"
+                (ngModelChange)="slugFilterChange.emit($event)"
                 (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter barcode"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Manufacturer Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Manufacturer</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="manufacturerFilter"
-                (ngModelChange)="manufacturerFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter manufacturer"
+                placeholder="Enter slug"
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -255,34 +237,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <!-- Long Description Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Long Description</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="long_descriptionFilter"
-                (ngModelChange)="long_descriptionFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter long description"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Specifications Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Specifications</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="specificationsFilter"
-                (ngModelChange)="specificationsFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter specifications"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
             <!-- Status Filter -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5"
@@ -294,34 +248,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
                 (ngModelChange)="statusFilterChange.emit($event)"
                 (keyup.enter)="applyFiltersClicked.emit()"
                 placeholder="Select status"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Condition Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Condition</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="conditionFilter"
-                (ngModelChange)="conditionFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter condition"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Availability Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Availability</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="availabilityFilter"
-                (ngModelChange)="availabilityFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter availability"
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -384,51 +310,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
                 <option [ngValue]="false">No</option>
               </select>
             </div>
-            <!-- Is Taxable Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Is Taxable</label
-              >
-              <select
-                [(ngModel)]="is_taxableFilter"
-                (ngModelChange)="is_taxableFilterChange.emit($event)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option [ngValue]="undefined">All</option>
-                <option [ngValue]="true">Yes</option>
-                <option [ngValue]="false">No</option>
-              </select>
-            </div>
-            <!-- Is Shippable Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Is Shippable</label
-              >
-              <select
-                [(ngModel)]="is_shippableFilter"
-                (ngModelChange)="is_shippableFilterChange.emit($event)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option [ngValue]="undefined">All</option>
-                <option [ngValue]="true">Yes</option>
-                <option [ngValue]="false">No</option>
-              </select>
-            </div>
-            <!-- Allow Backorder Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Allow Backorder</label
-              >
-              <select
-                [(ngModel)]="allow_backorderFilter"
-                (ngModelChange)="allow_backorderFilterChange.emit($event)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option [ngValue]="undefined">All</option>
-                <option [ngValue]="true">Yes</option>
-                <option [ngValue]="false">No</option>
-              </select>
-            </div>
+
+
           </div>
 
           <!-- Apply Filters Button -->
@@ -466,36 +349,21 @@ export class TestProductsListFiltersComponent {
     'all' | 'active' | 'unavailable'
   >();
 
-  // Sku filter
-  @Input() skuFilter = '';
-  @Output() skuFilterChange = new EventEmitter<string>();
+  // Code filter
+  @Input() codeFilter = '';
+  @Output() codeFilterChange = new EventEmitter<string>();
   // Name filter
   @Input() nameFilter = '';
   @Output() nameFilterChange = new EventEmitter<string>();
-  // Barcode filter
-  @Input() barcodeFilter = '';
-  @Output() barcodeFilterChange = new EventEmitter<string>();
-  // Manufacturer filter
-  @Input() manufacturerFilter = '';
-  @Output() manufacturerFilterChange = new EventEmitter<string>();
+  // Slug filter
+  @Input() slugFilter = '';
+  @Output() slugFilterChange = new EventEmitter<string>();
   // Description filter
   @Input() descriptionFilter = '';
   @Output() descriptionFilterChange = new EventEmitter<string>();
-  // Long Description filter
-  @Input() long_descriptionFilter = '';
-  @Output() long_descriptionFilterChange = new EventEmitter<string>();
-  // Specifications filter
-  @Input() specificationsFilter = '';
-  @Output() specificationsFilterChange = new EventEmitter<string>();
   // Status filter
   @Input() statusFilter = '';
   @Output() statusFilterChange = new EventEmitter<string>();
-  // Condition filter
-  @Input() conditionFilter = '';
-  @Output() conditionFilterChange = new EventEmitter<string>();
-  // Availability filter
-  @Input() availabilityFilter = '';
-  @Output() availabilityFilterChange = new EventEmitter<string>();
   // Created By filter
   @Input() created_byFilter = '';
   @Output() created_byFilterChange = new EventEmitter<string>();
@@ -509,17 +377,6 @@ export class TestProductsListFiltersComponent {
   // Is Featured filter
   @Input() is_featuredFilter: boolean | undefined = undefined;
   @Output() is_featuredFilterChange = new EventEmitter<boolean | undefined>();
-  // Is Taxable filter
-  @Input() is_taxableFilter: boolean | undefined = undefined;
-  @Output() is_taxableFilterChange = new EventEmitter<boolean | undefined>();
-  // Is Shippable filter
-  @Input() is_shippableFilter: boolean | undefined = undefined;
-  @Output() is_shippableFilterChange = new EventEmitter<boolean | undefined>();
-  // Allow Backorder filter
-  @Input() allow_backorderFilter: boolean | undefined = undefined;
-  @Output() allow_backorderFilterChange = new EventEmitter<
-    boolean | undefined
-  >();
 
   // Event outputs
   @Output() searchClicked = new EventEmitter<void>();

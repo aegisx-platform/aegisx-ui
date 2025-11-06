@@ -64,6 +64,12 @@ async function generateMigrationFile(moduleName, options = {}) {
           resource: moduleName,
           action: 'delete',
         },
+        {
+          name: `${moduleName}.export`,
+          description: `Export ${moduleName}`,
+          resource: moduleName,
+          action: 'export',
+        },
       ];
 
       const roles = multipleRoles
@@ -75,17 +81,18 @@ async function generateMigrationFile(moduleName, options = {}) {
             },
             {
               name: `${moduleName}_editor`,
-              description: `Create, read, and update ${moduleName}`,
+              description: `Create, read, update, and export ${moduleName}`,
               permissions: [
                 `${moduleName}.create`,
                 `${moduleName}.read`,
                 `${moduleName}.update`,
+                `${moduleName}.export`,
               ],
             },
             {
               name: `${moduleName}_viewer`,
-              description: `Read-only access to ${moduleName}`,
-              permissions: [`${moduleName}.read`],
+              description: `Read-only and export access to ${moduleName}`,
+              permissions: [`${moduleName}.read`, `${moduleName}.export`],
             },
           ]
         : [
@@ -217,6 +224,12 @@ async function generateMigrationFile(moduleName, options = {}) {
       resource: moduleName,
       action: 'delete',
     },
+    {
+      name: `${moduleName}.export`,
+      description: `Export ${moduleName}`,
+      resource: moduleName,
+      action: 'export',
+    },
   ];
 
   // Generate roles based on multipleRoles option
@@ -229,17 +242,18 @@ async function generateMigrationFile(moduleName, options = {}) {
         },
         {
           name: `${moduleName}_editor`,
-          description: `Create, read, and update ${moduleName}`,
+          description: `Create, read, update, and export ${moduleName}`,
           permissions: [
             `${moduleName}.create`,
             `${moduleName}.read`,
             `${moduleName}.update`,
+            `${moduleName}.export`,
           ],
         },
         {
           name: `${moduleName}_viewer`,
-          description: `Read-only access to ${moduleName}`,
-          permissions: [`${moduleName}.read`],
+          description: `Read-only and export access to ${moduleName}`,
+          permissions: [`${moduleName}.read`, `${moduleName}.export`],
         },
       ]
     : [
@@ -444,6 +458,12 @@ async function writeToDatabase(moduleName, options = {}) {
         resource: moduleName,
         action: 'delete',
       },
+      {
+        name: `${moduleName}.export`,
+        description: `Export ${moduleName}`,
+        resource: moduleName,
+        action: 'export',
+      },
     ];
 
     // Define roles for the module based on multipleRoles option
@@ -456,17 +476,18 @@ async function writeToDatabase(moduleName, options = {}) {
           },
           {
             name: `${moduleName}_editor`,
-            description: `Create, read, and update ${moduleName}`,
+            description: `Create, read, update, and export ${moduleName}`,
             permissions: [
               `${moduleName}.create`,
               `${moduleName}.read`,
               `${moduleName}.update`,
+              `${moduleName}.export`,
             ],
           },
           {
             name: `${moduleName}_viewer`,
-            description: `Read-only access to ${moduleName}`,
-            permissions: [`${moduleName}.read`],
+            description: `Read-only and export access to ${moduleName}`,
+            permissions: [`${moduleName}.read`, `${moduleName}.export`],
           },
         ]
       : [

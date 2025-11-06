@@ -15,7 +15,6 @@ export function createPermissions(
   knex: Knex,
   permissions: Permission[],
   options?: {
-    assignToAdmin?: boolean;
     roleAssignments?: RoleAssignment[];
   },
 ): Promise<void>;

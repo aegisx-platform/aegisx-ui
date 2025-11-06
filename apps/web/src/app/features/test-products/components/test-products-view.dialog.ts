@@ -31,9 +31,9 @@ export interface TestProductViewDialogData {
             <h3 class="section-title">Basic Information</h3>
 
             <div class="field-row">
-              <label>Sku</label>
+              <label>Code</label>
               <div class="field-value">
-                {{ data.testProducts?.sku || '-' }}
+                {{ data.testProducts?.code || '-' }}
               </div>
             </div>
             <div class="field-row">
@@ -43,75 +43,15 @@ export interface TestProductViewDialogData {
               </div>
             </div>
             <div class="field-row">
-              <label>Barcode</label>
+              <label>Slug</label>
               <div class="field-value">
-                {{ data.testProducts?.barcode || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Manufacturer</label>
-              <div class="field-value">
-                {{ data.testProducts?.manufacturer || '-' }}
+                {{ data.testProducts?.slug || '-' }}
               </div>
             </div>
             <div class="field-row">
               <label>Description</label>
               <div class="field-value">
                 {{ data.testProducts?.description || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Long Description</label>
-              <div class="field-value">
-                {{ data.testProducts?.long_description || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Specifications</label>
-              <div class="field-value">
-                {{ data.testProducts?.specifications || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Quantity</label>
-              <div class="field-value">
-                {{ data.testProducts?.quantity ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Min Quantity</label>
-              <div class="field-value">
-                {{ data.testProducts?.min_quantity ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Max Quantity</label>
-              <div class="field-value">
-                {{ data.testProducts?.max_quantity ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Price</label>
-              <div class="field-value">
-                {{ data.testProducts?.price ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Cost</label>
-              <div class="field-value">
-                {{ data.testProducts?.cost ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Weight</label>
-              <div class="field-value">
-                {{ data.testProducts?.weight ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Discount Percentage</label>
-              <div class="field-value">
-                {{ data.testProducts?.discount_percentage ?? '-' }}
               </div>
             </div>
             <div class="field-row">
@@ -147,147 +87,39 @@ export interface TestProductViewDialogData {
               </div>
             </div>
             <div class="field-row">
-              <label>Is Taxable</label>
+              <label>Display Order</label>
               <div class="field-value">
-                @if (data.testProducts?.is_taxable) {
-                  <span class="status status-success">
-                    <span class="status-dot"></span>
-                    Yes
-                  </span>
-                } @else {
-                  <span class="status status-gray">
-                    <span class="status-dot"></span>
-                    No
-                  </span>
-                }
+                {{ data.testProducts?.display_order ?? '-' }}
               </div>
             </div>
             <div class="field-row">
-              <label>Is Shippable</label>
+              <label>Item Count</label>
               <div class="field-value">
-                @if (data.testProducts?.is_shippable) {
-                  <span class="status status-success">
-                    <span class="status-dot"></span>
-                    Yes
-                  </span>
-                } @else {
-                  <span class="status status-gray">
-                    <span class="status-dot"></span>
-                    No
-                  </span>
-                }
+                {{ data.testProducts?.item_count ?? '-' }}
               </div>
             </div>
             <div class="field-row">
-              <label>Allow Backorder</label>
+              <label>Discount Rate</label>
               <div class="field-value">
-                @if (data.testProducts?.allow_backorder) {
-                  <span class="status status-success">
-                    <span class="status-dot"></span>
-                    Yes
-                  </span>
-                } @else {
-                  <span class="status status-gray">
-                    <span class="status-dot"></span>
-                    No
-                  </span>
-                }
+                {{ data.testProducts?.discount_rate ?? '-' }}
+              </div>
+            </div>
+            <div class="field-row">
+              <label>Metadata</label>
+              <div class="field-value">
+                {{ data.testProducts?.metadata || '-' }}
+              </div>
+            </div>
+            <div class="field-row">
+              <label>Settings</label>
+              <div class="field-value">
+                {{ data.testProducts?.settings || '-' }}
               </div>
             </div>
             <div class="field-row">
               <label>Status</label>
               <div class="field-value">
                 {{ data.testProducts?.status || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Condition</label>
-              <div class="field-value">
-                {{ data.testProducts?.condition || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Availability</label>
-              <div class="field-value">
-                {{ data.testProducts?.availability || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Launch Date</label>
-              <div class="field-value">
-                {{ data.testProducts?.launch_date | date: 'mediumDate' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Discontinued Date</label>
-              <div class="field-value">
-                {{ data.testProducts?.discontinued_date | date: 'mediumDate' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Last Stock Check</label>
-              <div class="field-value">
-                {{ data.testProducts?.last_stock_check || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Next Restock Date</label>
-              <div class="field-value">
-                {{ data.testProducts?.next_restock_date | date: 'mediumDate' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Attributes</label>
-              <div class="field-value">
-                {{ data.testProducts?.attributes || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Tags</label>
-              <div class="field-value">
-                {{ data.testProducts?.tags || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Images</label>
-              <div class="field-value">
-                {{ data.testProducts?.images || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Pricing Tiers</label>
-              <div class="field-value">
-                {{ data.testProducts?.pricing_tiers || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Dimensions</label>
-              <div class="field-value">
-                {{ data.testProducts?.dimensions || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Seo Metadata</label>
-              <div class="field-value">
-                {{ data.testProducts?.seo_metadata || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Category Id</label>
-              <div class="field-value">
-                {{ data.testProducts?.category_id || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Parent Product Id</label>
-              <div class="field-value">
-                {{ data.testProducts?.parent_product_id || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Supplier Id</label>
-              <div class="field-value">
-                {{ data.testProducts?.supplier_id || '-' }}
               </div>
             </div>
             <div class="field-row">

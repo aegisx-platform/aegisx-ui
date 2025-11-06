@@ -747,19 +747,17 @@ export class {{ModuleName}}Service extends BaseService<{{ModuleName}}, Create{{M
       query.excludeId = options.excludeId;
     }
 
-    // Use field-specific find methods based on repository's isDisplayField logic
+    // Use field-specific find methods based on unique constraints only
     let existing: any = null;
-    
-    {{#each columns}}
-    {{#unless (or isPrimaryKey (eq name 'created_at') (eq name 'updated_at'))}}
-    {{#if (isDisplayField this)}}
-    if (field === '{{name}}' && options.value) {
-      existing = await this.{{../moduleName}}Repository.findBy{{toPascalCase name}}(options.value);
+
+    {{#if hasUniqueConstraints}}
+    {{#each uniqueConstraints.singleField}}
+    if (field === '{{this}}' && options.value) {
+      existing = await this.{{../moduleName}}Repository.findBy{{toPascalCase this}}(options.value);
     }{{#unless @last}} else {{/unless}}
-    {{/if}}
-    {{/unless}}
     {{/each}}
-    
+    {{/if}}
+
     // If updating (excludeId provided), ignore the current record
     if (existing && options.excludeId && existing.id === options.excludeId) {
       existing = null;

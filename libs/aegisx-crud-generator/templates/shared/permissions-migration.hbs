@@ -65,7 +65,6 @@ export async function up(knex: Knex): Promise<void> {
         permissions: {{UPPER_MODULE_NAME}}_PERMISSIONS,
       },
     ],
-    // Note: assignToAdmin is not needed because admin inherits via parent_id
   });
 
   console.log('[Migration] {{ModuleName}} role and permissions created successfully');

@@ -34,50 +34,22 @@ import {
   CreateTestProductRequest,
   UpdateTestProductRequest,
 } from '../types/test-products.types';
-// CRUD-GENERATOR-TAG: Foreign Key Service Import
-import {
-  formatDateForInput,
-  formatDateForSubmission,
-} from '../../../shared/utils/datetime.utils';
 
 export type TestProductFormMode = 'create' | 'edit';
 
 export interface TestProductFormData {
-  sku: string;
+  code: string;
   name: string;
-  barcode?: string;
-  manufacturer?: string;
+  slug: string;
   description?: string;
-  long_description?: string;
-  specifications?: string;
-  quantity?: number;
-  min_quantity?: number;
-  max_quantity?: number;
-  price: number;
-  cost?: number;
-  weight?: number;
-  discount_percentage?: number;
   is_active?: boolean;
   is_featured?: boolean;
-  is_taxable?: boolean;
-  is_shippable?: boolean;
-  allow_backorder?: boolean;
+  display_order?: number;
+  item_count?: number;
+  discount_rate?: number;
+  metadata?: string;
+  settings?: string;
   status?: string;
-  condition?: string;
-  availability?: string;
-  launch_date?: string;
-  discontinued_date?: string;
-  last_stock_check?: string;
-  next_restock_date?: string;
-  attributes?: string;
-  tags?: string;
-  images?: string;
-  pricing_tiers?: string;
-  dimensions?: string;
-  seo_metadata?: string;
-  category_id: string;
-  parent_product_id?: string;
-  supplier_id?: string;
   deleted_at?: string;
   updated_by?: string;
 }
@@ -103,17 +75,17 @@ export interface TestProductFormData {
   ],
   template: `
     <form [formGroup]="testProductsForm" class="test-products-form">
-      <!-- sku Field -->
+      <!-- code Field -->
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Sku</mat-label>
+        <mat-label>Code</mat-label>
         <input
           matInput
           type="text"
-          formControlName="sku"
-          placeholder="Enter sku"
+          formControlName="code"
+          placeholder="Enter code"
         />
-        <mat-error *ngIf="testProductsForm.get('sku')?.hasError('required')">
-          Sku is required
+        <mat-error *ngIf="testProductsForm.get('code')?.hasError('required')">
+          Code is required
         </mat-error>
       </mat-form-field>
 
@@ -134,26 +106,18 @@ export interface TestProductFormData {
         </mat-error>
       </mat-form-field>
 
-      <!-- barcode Field -->
+      <!-- slug Field -->
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Barcode</mat-label>
+        <mat-label>Slug</mat-label>
         <input
           matInput
           type="text"
-          formControlName="barcode"
-          placeholder="Enter barcode"
+          formControlName="slug"
+          placeholder="Enter slug"
         />
-      </mat-form-field>
-
-      <!-- manufacturer Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Manufacturer</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="manufacturer"
-          placeholder="Enter manufacturer"
-        />
+        <mat-error *ngIf="testProductsForm.get('slug')?.hasError('required')">
+          Slug is required
+        </mat-error>
       </mat-form-field>
 
       <!-- description Field -->
@@ -172,108 +136,6 @@ export interface TestProductFormData {
         </mat-error>
       </mat-form-field>
 
-      <!-- long_description Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Long Description</mat-label>
-        <textarea
-          matInput
-          formControlName="long_description"
-          placeholder="Enter long description"
-          rows="3"
-        ></textarea>
-      </mat-form-field>
-
-      <!-- specifications Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Specifications</mat-label>
-        <textarea
-          matInput
-          formControlName="specifications"
-          placeholder="Enter specifications"
-          rows="3"
-        ></textarea>
-      </mat-form-field>
-
-      <!-- quantity Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Quantity</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="quantity"
-          placeholder="Enter quantity"
-        />
-      </mat-form-field>
-
-      <!-- min_quantity Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Min Quantity</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="min_quantity"
-          placeholder="Enter min quantity"
-        />
-      </mat-form-field>
-
-      <!-- max_quantity Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Max Quantity</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="max_quantity"
-          placeholder="Enter max quantity"
-        />
-      </mat-form-field>
-
-      <!-- price Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Price</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="price"
-          placeholder="Enter price"
-        />
-        <mat-error *ngIf="testProductsForm.get('price')?.hasError('required')">
-          Price is required
-        </mat-error>
-      </mat-form-field>
-
-      <!-- cost Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Cost</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="cost"
-          placeholder="Enter cost"
-        />
-      </mat-form-field>
-
-      <!-- weight Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Weight</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="weight"
-          placeholder="Enter weight"
-        />
-      </mat-form-field>
-
-      <!-- discount_percentage Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Discount Percentage</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="discount_percentage"
-          placeholder="Enter discount percentage"
-        />
-      </mat-form-field>
-
       <!-- is_active Field -->
       <div class="checkbox-field">
         <mat-checkbox formControlName="is_active"> Is Active </mat-checkbox>
@@ -284,27 +146,62 @@ export interface TestProductFormData {
         <mat-checkbox formControlName="is_featured"> Is Featured </mat-checkbox>
       </div>
 
-      <!-- is_taxable Field -->
-      <div class="checkbox-field">
-        <mat-checkbox formControlName="is_taxable"> Is Taxable </mat-checkbox>
-      </div>
+      <!-- display_order Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Display Order</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="display_order"
+          placeholder="Enter display order"
+        />
+      </mat-form-field>
 
-      <!-- is_shippable Field -->
-      <div class="checkbox-field">
-        <mat-checkbox formControlName="is_shippable">
-          Is Shippable
-        </mat-checkbox>
-      </div>
+      <!-- item_count Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Item Count</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="item_count"
+          placeholder="Enter item count"
+        />
+      </mat-form-field>
 
-      <!-- allow_backorder Field -->
-      <div class="checkbox-field">
-        <mat-checkbox formControlName="allow_backorder">
-          Allow Backorder
-        </mat-checkbox>
-      </div>
+      <!-- discount_rate Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Discount Rate</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="discount_rate"
+          placeholder="Enter discount rate"
+        />
+      </mat-form-field>
+
+      <!-- metadata Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Metadata</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="metadata"
+          placeholder="Enter metadata"
+        />
+      </mat-form-field>
+
+      <!-- settings Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Settings</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="settings"
+          placeholder="Enter settings"
+        />
+      </mat-form-field>
 
       <!-- status Field -->
-      <!-- FK reference not found, render as plain text input -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Status</mat-label>
         <input
@@ -313,178 +210,11 @@ export interface TestProductFormData {
           formControlName="status"
           placeholder="Enter status"
         />
-      </mat-form-field>
-
-      <!-- condition Field -->
-      <!-- FK reference not found, render as plain text input -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Condition</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="condition"
-          placeholder="Enter condition"
-        />
-      </mat-form-field>
-
-      <!-- availability Field -->
-      <!-- FK reference not found, render as plain text input -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Availability</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="availability"
-          placeholder="Enter availability"
-        />
-      </mat-form-field>
-
-      <!-- launch_date Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Launch Date</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="launch_date"
-          placeholder="Enter launch date"
-        />
-      </mat-form-field>
-
-      <!-- discontinued_date Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Discontinued Date</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="discontinued_date"
-          placeholder="Enter discontinued date"
-        />
-      </mat-form-field>
-
-      <!-- last_stock_check Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Last Stock Check</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="last_stock_check"
-          placeholder="Enter last stock check"
-        />
-      </mat-form-field>
-
-      <!-- next_restock_date Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Next Restock Date</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="next_restock_date"
-          placeholder="Enter next restock date"
-        />
-      </mat-form-field>
-
-      <!-- attributes Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Attributes</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="attributes"
-          placeholder="Enter attributes"
-        />
-      </mat-form-field>
-
-      <!-- tags Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tags</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="tags"
-          placeholder="Enter tags"
-        />
-      </mat-form-field>
-
-      <!-- images Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Images</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="images"
-          placeholder="Enter images"
-        />
-      </mat-form-field>
-
-      <!-- pricing_tiers Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Pricing Tiers</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pricing_tiers"
-          placeholder="Enter pricing tiers"
-        />
-      </mat-form-field>
-
-      <!-- dimensions Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Dimensions</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="dimensions"
-          placeholder="Enter dimensions"
-        />
-      </mat-form-field>
-
-      <!-- seo_metadata Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Seo Metadata</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="seo_metadata"
-          placeholder="Enter seo metadata"
-        />
-      </mat-form-field>
-
-      <!-- category_id Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Category Id</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="category_id"
-          placeholder="Enter category id"
-        />
         <mat-error
-          *ngIf="testProductsForm.get('category_id')?.hasError('required')"
+          *ngIf="testProductsForm.get('status')?.hasError('maxlength')"
         >
-          Category Id is required
+          Status must be less than 20 characters
         </mat-error>
-      </mat-form-field>
-
-      <!-- parent_product_id Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Parent Product Id</mat-label>
-        <input
-          matInput
-          type="dropdown"
-          formControlName="parent_product_id"
-          placeholder="Enter parent product id"
-        />
-      </mat-form-field>
-
-      <!-- supplier_id Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Supplier Id</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="supplier_id"
-          placeholder="Enter supplier id"
-        />
       </mat-form-field>
 
       <!-- deleted_at Field -->
@@ -627,7 +357,6 @@ export interface TestProductFormData {
 })
 export class TestProductFormComponent implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
-  // CRUD-GENERATOR-TAG: Foreign Key Service Injection
 
   @Input() mode: TestProductFormMode = 'create';
   @Input() initialData?: TestProduct;
@@ -637,50 +366,25 @@ export class TestProductFormComponent implements OnInit, OnChanges {
   @Output() formCancel = new EventEmitter<void>();
 
   private originalFormValue: any;
-  // CRUD-GENERATOR-TAG: Foreign Key Options State
 
   testProductsForm: FormGroup = this.fb.group({
-    sku: ['', [Validators.required]],
+    code: ['', [Validators.required]],
     name: ['', [Validators.required, Validators.maxLength(255)]],
-    barcode: ['', []],
-    manufacturer: ['', []],
+    slug: ['', [Validators.required]],
     description: ['', [Validators.maxLength(1000)]],
-    long_description: ['', []],
-    specifications: ['', []],
-    quantity: ['', []],
-    min_quantity: ['', []],
-    max_quantity: ['', []],
-    price: ['', [Validators.required]],
-    cost: ['', []],
-    weight: ['', []],
-    discount_percentage: ['', []],
     is_active: [false, []],
     is_featured: [false, []],
-    is_taxable: [false, []],
-    is_shippable: [false, []],
-    allow_backorder: [false, []],
+    display_order: ['', []],
+    item_count: ['', []],
+    discount_rate: ['', []],
+    metadata: ['', []],
+    settings: ['', []],
     status: ['', [Validators.maxLength(20)]],
-    condition: ['', []],
-    availability: ['', []],
-    launch_date: ['', []],
-    discontinued_date: ['', []],
-    last_stock_check: ['', []],
-    next_restock_date: ['', []],
-    attributes: ['', []],
-    tags: ['', []],
-    images: ['', []],
-    pricing_tiers: ['', []],
-    dimensions: ['', []],
-    seo_metadata: ['', []],
-    category_id: ['', [Validators.required]],
-    parent_product_id: ['', []],
-    supplier_id: ['', []],
     deleted_at: ['', []],
     updated_by: ['', []],
   });
 
   ngOnInit() {
-    // CRUD-GENERATOR-TAG: Load Foreign Key Options
     if (this.mode === 'edit' && this.initialData) {
       this.populateForm(this.initialData);
     }
@@ -694,41 +398,18 @@ export class TestProductFormComponent implements OnInit, OnChanges {
 
   private populateForm(testProducts: TestProduct) {
     const formValue = {
-      sku: testProducts.sku,
+      code: testProducts.code,
       name: testProducts.name,
-      barcode: testProducts.barcode,
-      manufacturer: testProducts.manufacturer,
+      slug: testProducts.slug,
       description: testProducts.description,
-      long_description: testProducts.long_description,
-      specifications: testProducts.specifications,
-      quantity: testProducts.quantity,
-      min_quantity: testProducts.min_quantity,
-      max_quantity: testProducts.max_quantity,
-      price: testProducts.price,
-      cost: testProducts.cost,
-      weight: testProducts.weight,
-      discount_percentage: testProducts.discount_percentage,
       is_active: testProducts.is_active,
       is_featured: testProducts.is_featured,
-      is_taxable: testProducts.is_taxable,
-      is_shippable: testProducts.is_shippable,
-      allow_backorder: testProducts.allow_backorder,
+      display_order: testProducts.display_order,
+      item_count: testProducts.item_count,
+      discount_rate: testProducts.discount_rate,
+      metadata: testProducts.metadata,
+      settings: testProducts.settings,
       status: testProducts.status,
-      condition: testProducts.condition,
-      availability: testProducts.availability,
-      launch_date: testProducts.launch_date,
-      discontinued_date: testProducts.discontinued_date,
-      last_stock_check: testProducts.last_stock_check,
-      next_restock_date: testProducts.next_restock_date,
-      attributes: testProducts.attributes,
-      tags: testProducts.tags,
-      images: testProducts.images,
-      pricing_tiers: testProducts.pricing_tiers,
-      dimensions: testProducts.dimensions,
-      seo_metadata: testProducts.seo_metadata,
-      category_id: testProducts.category_id,
-      parent_product_id: testProducts.parent_product_id,
-      supplier_id: testProducts.supplier_id,
       deleted_at: testProducts.deleted_at,
       updated_by: testProducts.updated_by,
     };
@@ -750,16 +431,6 @@ export class TestProductFormComponent implements OnInit, OnChanges {
       const formData = {
         ...this.testProductsForm.value,
       } as TestProductFormData;
-
-      // Convert date fields to date-only format for submission
-      if (formData.launch_date) {
-        formData.launch_date = formatDateForSubmission(formData.launch_date);
-      }
-      if (formData.discontinued_date) {
-        formData.discontinued_date = formatDateForSubmission(
-          formData.discontinued_date,
-        );
-      }
 
       this.formSubmit.emit(formData);
     }

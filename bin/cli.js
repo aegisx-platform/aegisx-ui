@@ -1,0 +1,1 @@
+../libs/aegisx-crud-generator/bin/cli.js

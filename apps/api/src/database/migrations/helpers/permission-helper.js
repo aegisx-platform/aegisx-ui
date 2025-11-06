@@ -6,20 +6,20 @@
  */
 
 /**
- * Create permissions and optionally assign them to roles
+ * Create permissions and assign them to specified roles
  *
  * Features:
  * - Idempotent: Safe to run multiple times
  * - Atomic: Wrapped in transaction
  * - Safe: Checks role existence before assignment
- * - Flexible: Supports multiple role assignments
+ * - Hierarchical: Permissions automatically inherited by parent roles via recursive auth
  *
  * @param {object} knex - Knex instance
  * @param {array} permissions - List of permissions to create
- * @param {object} options - Configuration options
+ * @param {object} options - Configuration options { roleAssignments: [...] }
  */
 async function createPermissions(knex, permissions, options = {}) {
-  const { assignToAdmin = true, roleAssignments = [] } = options;
+  const { roleAssignments = [] } = options;
 
   return knex.transaction(async (trx) => {
     // Step 1: Create permissions (idempotent)
@@ -42,14 +42,7 @@ async function createPermissions(knex, permissions, options = {}) {
       );
     }
 
-    // Step 2: Assign permissions to admin role (if enabled)
-    if (assignToAdmin) {
-      await assignPermissionsToRole(trx, 'admin', permissions, {
-        skipIfRoleNotExists: true,
-      });
-    }
-
-    // Step 3: Assign permissions to additional roles
+    // Step 2: Assign permissions to additional roles
     for (const assignment of roleAssignments) {
       await assignPermissionsToRole(
         trx,

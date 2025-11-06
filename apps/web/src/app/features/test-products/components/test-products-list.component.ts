@@ -53,10 +53,8 @@ import {
   SharedExportComponent,
 } from '../../../shared/components/shared-export/shared-export.component';
 import { TestProductService } from '../services/test-products.service';
-import {
-  TestProduct,
-  ListTestProductQuery,
-} from '../types/test-products.types';
+import { TestProduct, ListTestProductQuery } from '../types/test-products.types';
+import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import { TestProductCreateDialogComponent } from './test-products-create.dialog';
 import {
   TestProductEditDialogComponent,
@@ -66,6 +64,7 @@ import {
   TestProductViewDialogComponent,
   TestProductViewDialogData,
 } from './test-products-view.dialog';
+import { TestProductImportDialogComponent } from './test-products-import.dialog';
 
 // Import child components
 import { TestProductsListFiltersComponent } from './test-products-list-filters.component';
@@ -111,6 +110,7 @@ import { TestProductsListHeaderComponent } from './test-products-list-header.com
 })
 export class TestProductsListComponent {
   testProductsService = inject(TestProductService);
+  testProductStateManager = inject(TestProductStateManager);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private axDialog = inject(AxDialogService);
@@ -136,12 +136,12 @@ export class TestProductsListComponent {
   // Mat-Table setup
   displayedColumns: string[] = [
     'select',
-    'sku',
+    'code',
     'name',
-    'barcode',
-    'manufacturer',
+    'slug',
     'description',
-    'long_description',
+    'is_active',
+    'is_featured',
     'actions',
   ];
   dataSource = new MatTableDataSource<TestProduct>([]);
@@ -167,64 +167,32 @@ export class TestProductsListComponent {
   protected searchInputSignal = signal(''); // Input field value (not auto-searched)
 
   // Advanced filter INPUT signals (not sent to API until Apply is clicked)
-  protected skuInputSignal = signal('');
+  protected codeInputSignal = signal('');
   protected nameInputSignal = signal('');
-  protected barcodeInputSignal = signal('');
-  protected manufacturerInputSignal = signal('');
+  protected slugInputSignal = signal('');
   protected descriptionInputSignal = signal('');
-  protected long_descriptionInputSignal = signal('');
-  protected specificationsInputSignal = signal('');
   protected statusInputSignal = signal('');
-  protected conditionInputSignal = signal('');
-  protected availabilityInputSignal = signal('');
   protected created_byInputSignal = signal('');
   protected updated_byInputSignal = signal('');
-  protected quantityInputSignal = signal('');
-  protected min_quantityInputSignal = signal('');
-  protected max_quantityInputSignal = signal('');
-  protected priceInputSignal = signal('');
-  protected costInputSignal = signal('');
-  protected weightInputSignal = signal('');
-  protected discount_percentageInputSignal = signal('');
+  protected display_orderInputSignal = signal('');
+  protected item_countInputSignal = signal('');
+  protected discount_rateInputSignal = signal('');
   protected is_activeInputSignal = signal<boolean | undefined>(undefined);
   protected is_featuredInputSignal = signal<boolean | undefined>(undefined);
-  protected is_taxableInputSignal = signal<boolean | undefined>(undefined);
-  protected is_shippableInputSignal = signal<boolean | undefined>(undefined);
-  protected allow_backorderInputSignal = signal<boolean | undefined>(undefined);
-  protected category_idInputSignal = signal('');
-  protected parent_product_idInputSignal = signal('');
-  protected supplier_idInputSignal = signal('');
 
   // Advanced filter ACTIVE signals (sent to API)
-  protected skuFilterSignal = signal('');
+  protected codeFilterSignal = signal('');
   protected nameFilterSignal = signal('');
-  protected barcodeFilterSignal = signal('');
-  protected manufacturerFilterSignal = signal('');
+  protected slugFilterSignal = signal('');
   protected descriptionFilterSignal = signal('');
-  protected long_descriptionFilterSignal = signal('');
-  protected specificationsFilterSignal = signal('');
   protected statusFilterSignal = signal('');
-  protected conditionFilterSignal = signal('');
-  protected availabilityFilterSignal = signal('');
   protected created_byFilterSignal = signal('');
   protected updated_byFilterSignal = signal('');
-  protected quantityFilterSignal = signal('');
-  protected min_quantityFilterSignal = signal('');
-  protected max_quantityFilterSignal = signal('');
-  protected priceFilterSignal = signal('');
-  protected costFilterSignal = signal('');
-  protected weightFilterSignal = signal('');
-  protected discount_percentageFilterSignal = signal('');
+  protected display_orderFilterSignal = signal('');
+  protected item_countFilterSignal = signal('');
+  protected discount_rateFilterSignal = signal('');
   protected is_activeFilterSignal = signal<boolean | undefined>(undefined);
   protected is_featuredFilterSignal = signal<boolean | undefined>(undefined);
-  protected is_taxableFilterSignal = signal<boolean | undefined>(undefined);
-  protected is_shippableFilterSignal = signal<boolean | undefined>(undefined);
-  protected allow_backorderFilterSignal = signal<boolean | undefined>(
-    undefined,
-  );
-  protected category_idFilterSignal = signal('');
-  protected parent_product_idFilterSignal = signal('');
-  protected supplier_idFilterSignal = signal('');
 
   // Date filter INPUT signals (not sent to API until Apply is clicked)
 
@@ -283,33 +251,18 @@ export class TestProductsListComponent {
 
   // Computed signals
   advancedFilters = computed(() => ({
-    sku: this.skuInputSignal(),
+    code: this.codeInputSignal(),
     name: this.nameInputSignal(),
-    barcode: this.barcodeInputSignal(),
-    manufacturer: this.manufacturerInputSignal(),
+    slug: this.slugInputSignal(),
     description: this.descriptionInputSignal(),
-    long_description: this.long_descriptionInputSignal(),
-    specifications: this.specificationsInputSignal(),
     status: this.statusInputSignal(),
-    condition: this.conditionInputSignal(),
-    availability: this.availabilityInputSignal(),
     created_by: this.created_byInputSignal(),
     updated_by: this.updated_byInputSignal(),
-    quantity: this.quantityInputSignal(),
-    min_quantity: this.min_quantityInputSignal(),
-    max_quantity: this.max_quantityInputSignal(),
-    price: this.priceInputSignal(),
-    cost: this.costInputSignal(),
-    weight: this.weightInputSignal(),
-    discount_percentage: this.discount_percentageInputSignal(),
+    display_order: this.display_orderInputSignal(),
+    item_count: this.item_countInputSignal(),
+    discount_rate: this.discount_rateInputSignal(),
     is_active: this.is_activeInputSignal(),
     is_featured: this.is_featuredInputSignal(),
-    is_taxable: this.is_taxableInputSignal(),
-    is_shippable: this.is_shippableInputSignal(),
-    allow_backorder: this.allow_backorderInputSignal(),
-    category_id: this.category_idInputSignal(),
-    parent_product_id: this.parent_product_idInputSignal(),
-    supplier_id: this.supplier_idInputSignal(),
   }));
 
   // Two-way binding helpers
@@ -320,11 +273,11 @@ export class TestProductsListComponent {
     this.searchInputSignal.set(value);
   }
 
-  get skuFilter() {
-    return this.skuInputSignal();
+  get codeFilter() {
+    return this.codeInputSignal();
   }
-  set skuFilter(value: string) {
-    this.skuInputSignal.set(value);
+  set codeFilter(value: string) {
+    this.codeInputSignal.set(value);
   }
   get nameFilter() {
     return this.nameInputSignal();
@@ -332,17 +285,11 @@ export class TestProductsListComponent {
   set nameFilter(value: string) {
     this.nameInputSignal.set(value);
   }
-  get barcodeFilter() {
-    return this.barcodeInputSignal();
+  get slugFilter() {
+    return this.slugInputSignal();
   }
-  set barcodeFilter(value: string) {
-    this.barcodeInputSignal.set(value);
-  }
-  get manufacturerFilter() {
-    return this.manufacturerInputSignal();
-  }
-  set manufacturerFilter(value: string) {
-    this.manufacturerInputSignal.set(value);
+  set slugFilter(value: string) {
+    this.slugInputSignal.set(value);
   }
   get descriptionFilter() {
     return this.descriptionInputSignal();
@@ -350,35 +297,11 @@ export class TestProductsListComponent {
   set descriptionFilter(value: string) {
     this.descriptionInputSignal.set(value);
   }
-  get long_descriptionFilter() {
-    return this.long_descriptionInputSignal();
-  }
-  set long_descriptionFilter(value: string) {
-    this.long_descriptionInputSignal.set(value);
-  }
-  get specificationsFilter() {
-    return this.specificationsInputSignal();
-  }
-  set specificationsFilter(value: string) {
-    this.specificationsInputSignal.set(value);
-  }
   get statusFilter() {
     return this.statusInputSignal();
   }
   set statusFilter(value: string) {
     this.statusInputSignal.set(value);
-  }
-  get conditionFilter() {
-    return this.conditionInputSignal();
-  }
-  set conditionFilter(value: string) {
-    this.conditionInputSignal.set(value);
-  }
-  get availabilityFilter() {
-    return this.availabilityInputSignal();
-  }
-  set availabilityFilter(value: string) {
-    this.availabilityInputSignal.set(value);
   }
   get created_byFilter() {
     return this.created_byInputSignal();
@@ -393,47 +316,23 @@ export class TestProductsListComponent {
     this.updated_byInputSignal.set(value);
   }
 
-  get quantityFilter() {
-    return this.quantityInputSignal();
+  get display_orderFilter() {
+    return this.display_orderInputSignal();
   }
-  set quantityFilter(value: string) {
-    this.quantityInputSignal.set(value);
+  set display_orderFilter(value: string) {
+    this.display_orderInputSignal.set(value);
   }
-  get min_quantityFilter() {
-    return this.min_quantityInputSignal();
+  get item_countFilter() {
+    return this.item_countInputSignal();
   }
-  set min_quantityFilter(value: string) {
-    this.min_quantityInputSignal.set(value);
+  set item_countFilter(value: string) {
+    this.item_countInputSignal.set(value);
   }
-  get max_quantityFilter() {
-    return this.max_quantityInputSignal();
+  get discount_rateFilter() {
+    return this.discount_rateInputSignal();
   }
-  set max_quantityFilter(value: string) {
-    this.max_quantityInputSignal.set(value);
-  }
-  get priceFilter() {
-    return this.priceInputSignal();
-  }
-  set priceFilter(value: string) {
-    this.priceInputSignal.set(value);
-  }
-  get costFilter() {
-    return this.costInputSignal();
-  }
-  set costFilter(value: string) {
-    this.costInputSignal.set(value);
-  }
-  get weightFilter() {
-    return this.weightInputSignal();
-  }
-  set weightFilter(value: string) {
-    this.weightInputSignal.set(value);
-  }
-  get discount_percentageFilter() {
-    return this.discount_percentageInputSignal();
-  }
-  set discount_percentageFilter(value: string) {
-    this.discount_percentageInputSignal.set(value);
+  set discount_rateFilter(value: string) {
+    this.discount_rateInputSignal.set(value);
   }
 
   get is_activeFilter() {
@@ -448,43 +347,7 @@ export class TestProductsListComponent {
   set is_featuredFilter(value: boolean | undefined) {
     this.is_featuredInputSignal.set(value);
   }
-  get is_taxableFilter() {
-    return this.is_taxableInputSignal();
-  }
-  set is_taxableFilter(value: boolean | undefined) {
-    this.is_taxableInputSignal.set(value);
-  }
-  get is_shippableFilter() {
-    return this.is_shippableInputSignal();
-  }
-  set is_shippableFilter(value: boolean | undefined) {
-    this.is_shippableInputSignal.set(value);
-  }
-  get allow_backorderFilter() {
-    return this.allow_backorderInputSignal();
-  }
-  set allow_backorderFilter(value: boolean | undefined) {
-    this.allow_backorderInputSignal.set(value);
-  }
 
-  get category_idFilter() {
-    return this.category_idInputSignal();
-  }
-  set category_idFilter(value: string) {
-    this.category_idInputSignal.set(value);
-  }
-  get parent_product_idFilter() {
-    return this.parent_product_idInputSignal();
-  }
-  set parent_product_idFilter(value: string) {
-    this.parent_product_idInputSignal.set(value);
-  }
-  get supplier_idFilter() {
-    return this.supplier_idInputSignal();
-  }
-  set supplier_idFilter(value: string) {
-    this.supplier_idInputSignal.set(value);
-  }
 
   // Stats from API (should come from dedicated stats endpoint)
   stats = computed(() => ({
@@ -496,18 +359,17 @@ export class TestProductsListComponent {
 
   // Export configuration
   exportServiceAdapter: ExportService = {
-    export: (options: ExportOptions) =>
-      this.testProductsService.exportTestProduct(options),
+    export: (options: ExportOptions) => this.testProductsService.exportTestProduct(options),
   };
 
   availableExportFields = [
     { key: 'id', label: 'ID' },
-    { key: 'sku', label: 'Sku' },
+    { key: 'code', label: 'Code' },
     { key: 'name', label: 'Name' },
-    { key: 'barcode', label: 'Barcode' },
-    { key: 'manufacturer', label: 'Manufacturer' },
+    { key: 'slug', label: 'Slug' },
     { key: 'description', label: 'Description' },
-    { key: 'long_description', label: 'Long Description' },
+    { key: 'is_active', label: 'Is Active' },
+    { key: 'is_featured', label: 'Is Featured' },
     { key: 'created_at', label: 'Created At' },
     { key: 'updated_at', label: 'Updated At' },
   ];
@@ -528,6 +390,37 @@ export class TestProductsListComponent {
 
   // --- Effect: reload test_products on sort/page/search/filter change ---
   constructor() {
+    // Initialize real-time state manager
+    this.testProductStateManager.initialize();
+
+    // 🔧 OPTIONAL: Uncomment for real-time CRUD updates
+    // By default, list uses reload trigger for data accuracy (HIS mode)
+    // Uncomment below to enable real-time updates instead:
+    /*
+    // Real-time CRUD event subscriptions (optional)
+    // Backend always emits these events for audit trail and event-driven architecture
+    // Frontend can optionally subscribe for real-time UI updates
+
+    // Note: Import required dependencies first:
+    // import { WebSocketService } from '../../../core/services/websocket.service';
+    // import { AuthService } from '../../../core/services/auth.service';
+    // import { Subject } from 'rxjs';
+    // import { takeUntil } from 'rxjs/operators';
+
+    // Add these as class properties:
+    // private wsService = inject(WebSocketService);
+    // private authService = inject(AuthService);
+    // private destroy$ = new Subject<void>();
+
+    // Setup WebSocket connection for real-time updates
+    const token = this.authService.accessToken();
+    if (token) {
+      this.wsService.connect(token);
+      this.wsService.subscribe({ features: ['test_products'] });
+      this.setupCrudEventListeners();
+    }
+    */
+
     // Sync export selection state
     effect(() => {
       const ids = new Set(this.selection.selected.map((b) => b.id));
@@ -564,33 +457,18 @@ export class TestProductsListComponent {
       const page = this.pageState();
       const search = this.searchTermSignal();
 
-      const sku = this.skuFilterSignal();
+      const code = this.codeFilterSignal();
       const name = this.nameFilterSignal();
-      const barcode = this.barcodeFilterSignal();
-      const manufacturer = this.manufacturerFilterSignal();
+      const slug = this.slugFilterSignal();
       const description = this.descriptionFilterSignal();
-      const long_description = this.long_descriptionFilterSignal();
-      const specifications = this.specificationsFilterSignal();
       const status = this.statusFilterSignal();
-      const condition = this.conditionFilterSignal();
-      const availability = this.availabilityFilterSignal();
       const created_by = this.created_byFilterSignal();
       const updated_by = this.updated_byFilterSignal();
-      const quantity = this.quantityFilterSignal();
-      const min_quantity = this.min_quantityFilterSignal();
-      const max_quantity = this.max_quantityFilterSignal();
-      const price = this.priceFilterSignal();
-      const cost = this.costFilterSignal();
-      const weight = this.weightFilterSignal();
-      const discount_percentage = this.discount_percentageFilterSignal();
+      const display_order = this.display_orderFilterSignal();
+      const item_count = this.item_countFilterSignal();
+      const discount_rate = this.discount_rateFilterSignal();
       const is_active = this.is_activeFilterSignal();
       const is_featured = this.is_featuredFilterSignal();
-      const is_taxable = this.is_taxableFilterSignal();
-      const is_shippable = this.is_shippableFilterSignal();
-      const allow_backorder = this.allow_backorderFilterSignal();
-      const category_id = this.category_idFilterSignal();
-      const parent_product_id = this.parent_product_idFilterSignal();
-      const supplier_id = this.supplier_idFilterSignal();
 
       const params: Partial<ListTestProductQuery> = {
         page: (page?.index ?? 0) + 1,
@@ -600,33 +478,18 @@ export class TestProductsListComponent {
             ? `${sort.active}:${sort.direction}`
             : undefined,
         search: search?.trim() || undefined,
-        sku: sku?.trim() || undefined,
+        code: code?.trim() || undefined,
         name: name?.trim() || undefined,
-        barcode: barcode?.trim() || undefined,
-        manufacturer: manufacturer?.trim() || undefined,
+        slug: slug?.trim() || undefined,
         description: description?.trim() || undefined,
-        long_description: long_description?.trim() || undefined,
-        specifications: specifications?.trim() || undefined,
         status: status?.trim() || undefined,
-        condition: condition?.trim() || undefined,
-        availability: availability?.trim() || undefined,
         created_by: created_by?.trim() || undefined,
         updated_by: updated_by?.trim() || undefined,
-        quantity: quantity?.trim() || undefined,
-        min_quantity: min_quantity?.trim() || undefined,
-        max_quantity: max_quantity?.trim() || undefined,
-        price: price?.trim() || undefined,
-        cost: cost?.trim() || undefined,
-        weight: weight?.trim() || undefined,
-        discount_percentage: discount_percentage?.trim() || undefined,
+        display_order: display_order?.trim() || undefined,
+        item_count: item_count?.trim() || undefined,
+        discount_rate: discount_rate?.trim() || undefined,
         is_active: is_active,
         is_featured: is_featured,
-        is_taxable: is_taxable,
-        is_shippable: is_shippable,
-        allow_backorder: allow_backorder,
-        category_id: category_id?.trim() || undefined,
-        parent_product_id: parent_product_id?.trim() || undefined,
-        supplier_id: supplier_id?.trim() || undefined,
       } as any;
 
       Object.keys(params).forEach(
@@ -655,60 +518,30 @@ export class TestProductsListComponent {
   refresh() {
     this.searchInputSignal.set('');
     this.searchTermSignal.set('');
-    this.skuInputSignal.set('');
-    this.skuFilterSignal.set('');
+    this.codeInputSignal.set('');
+    this.codeFilterSignal.set('');
     this.nameInputSignal.set('');
     this.nameFilterSignal.set('');
-    this.barcodeInputSignal.set('');
-    this.barcodeFilterSignal.set('');
-    this.manufacturerInputSignal.set('');
-    this.manufacturerFilterSignal.set('');
+    this.slugInputSignal.set('');
+    this.slugFilterSignal.set('');
     this.descriptionInputSignal.set('');
     this.descriptionFilterSignal.set('');
-    this.long_descriptionInputSignal.set('');
-    this.long_descriptionFilterSignal.set('');
-    this.specificationsInputSignal.set('');
-    this.specificationsFilterSignal.set('');
     this.statusInputSignal.set('');
     this.statusFilterSignal.set('');
-    this.conditionInputSignal.set('');
-    this.conditionFilterSignal.set('');
-    this.availabilityInputSignal.set('');
-    this.availabilityFilterSignal.set('');
     this.created_byInputSignal.set('');
     this.created_byFilterSignal.set('');
     this.updated_byInputSignal.set('');
     this.updated_byFilterSignal.set('');
-    this.quantityInputSignal.set('');
-    this.quantityFilterSignal.set('');
-    this.min_quantityInputSignal.set('');
-    this.min_quantityFilterSignal.set('');
-    this.max_quantityInputSignal.set('');
-    this.max_quantityFilterSignal.set('');
-    this.priceInputSignal.set('');
-    this.priceFilterSignal.set('');
-    this.costInputSignal.set('');
-    this.costFilterSignal.set('');
-    this.weightInputSignal.set('');
-    this.weightFilterSignal.set('');
-    this.discount_percentageInputSignal.set('');
-    this.discount_percentageFilterSignal.set('');
+    this.display_orderInputSignal.set('');
+    this.display_orderFilterSignal.set('');
+    this.item_countInputSignal.set('');
+    this.item_countFilterSignal.set('');
+    this.discount_rateInputSignal.set('');
+    this.discount_rateFilterSignal.set('');
     this.is_activeInputSignal.set(undefined);
     this.is_activeFilterSignal.set(undefined);
     this.is_featuredInputSignal.set(undefined);
     this.is_featuredFilterSignal.set(undefined);
-    this.is_taxableInputSignal.set(undefined);
-    this.is_taxableFilterSignal.set(undefined);
-    this.is_shippableInputSignal.set(undefined);
-    this.is_shippableFilterSignal.set(undefined);
-    this.allow_backorderInputSignal.set(undefined);
-    this.allow_backorderFilterSignal.set(undefined);
-    this.category_idInputSignal.set('');
-    this.category_idFilterSignal.set('');
-    this.parent_product_idInputSignal.set('');
-    this.parent_product_idFilterSignal.set('');
-    this.supplier_idInputSignal.set('');
-    this.supplier_idFilterSignal.set('');
     this.quickFilter = 'all';
     if (this.paginator) this.paginator.pageIndex = 0;
     this.reloadTrigger.update((n) => n + 1);
@@ -716,41 +549,18 @@ export class TestProductsListComponent {
 
   applyFilterImmediate() {
     // Apply text and selection filters
-    this.skuFilterSignal.set(this.skuInputSignal().trim());
+    this.codeFilterSignal.set(this.codeInputSignal().trim());
     this.nameFilterSignal.set(this.nameInputSignal().trim());
-    this.barcodeFilterSignal.set(this.barcodeInputSignal().trim());
-    this.manufacturerFilterSignal.set(this.manufacturerInputSignal().trim());
+    this.slugFilterSignal.set(this.slugInputSignal().trim());
     this.descriptionFilterSignal.set(this.descriptionInputSignal().trim());
-    this.long_descriptionFilterSignal.set(
-      this.long_descriptionInputSignal().trim(),
-    );
-    this.specificationsFilterSignal.set(
-      this.specificationsInputSignal().trim(),
-    );
     this.statusFilterSignal.set(this.statusInputSignal().trim());
-    this.conditionFilterSignal.set(this.conditionInputSignal().trim());
-    this.availabilityFilterSignal.set(this.availabilityInputSignal().trim());
     this.created_byFilterSignal.set(this.created_byInputSignal().trim());
     this.updated_byFilterSignal.set(this.updated_byInputSignal().trim());
-    this.quantityFilterSignal.set(this.quantityInputSignal().trim());
-    this.min_quantityFilterSignal.set(this.min_quantityInputSignal().trim());
-    this.max_quantityFilterSignal.set(this.max_quantityInputSignal().trim());
-    this.priceFilterSignal.set(this.priceInputSignal().trim());
-    this.costFilterSignal.set(this.costInputSignal().trim());
-    this.weightFilterSignal.set(this.weightInputSignal().trim());
-    this.discount_percentageFilterSignal.set(
-      this.discount_percentageInputSignal().trim(),
-    );
+    this.display_orderFilterSignal.set(this.display_orderInputSignal().trim());
+    this.item_countFilterSignal.set(this.item_countInputSignal().trim());
+    this.discount_rateFilterSignal.set(this.discount_rateInputSignal().trim());
     this.is_activeFilterSignal.set(this.is_activeInputSignal());
     this.is_featuredFilterSignal.set(this.is_featuredInputSignal());
-    this.is_taxableFilterSignal.set(this.is_taxableInputSignal());
-    this.is_shippableFilterSignal.set(this.is_shippableInputSignal());
-    this.allow_backorderFilterSignal.set(this.allow_backorderInputSignal());
-    this.category_idFilterSignal.set(this.category_idInputSignal().trim());
-    this.parent_product_idFilterSignal.set(
-      this.parent_product_idInputSignal().trim(),
-    );
-    this.supplier_idFilterSignal.set(this.supplier_idInputSignal().trim());
 
     // Apply date/datetime filters
 
@@ -786,60 +596,30 @@ export class TestProductsListComponent {
   clearAllFilters() {
     this.searchInputSignal.set('');
     this.searchTermSignal.set('');
-    this.skuInputSignal.set('');
-    this.skuFilterSignal.set('');
+    this.codeInputSignal.set('');
+    this.codeFilterSignal.set('');
     this.nameInputSignal.set('');
     this.nameFilterSignal.set('');
-    this.barcodeInputSignal.set('');
-    this.barcodeFilterSignal.set('');
-    this.manufacturerInputSignal.set('');
-    this.manufacturerFilterSignal.set('');
+    this.slugInputSignal.set('');
+    this.slugFilterSignal.set('');
     this.descriptionInputSignal.set('');
     this.descriptionFilterSignal.set('');
-    this.long_descriptionInputSignal.set('');
-    this.long_descriptionFilterSignal.set('');
-    this.specificationsInputSignal.set('');
-    this.specificationsFilterSignal.set('');
     this.statusInputSignal.set('');
     this.statusFilterSignal.set('');
-    this.conditionInputSignal.set('');
-    this.conditionFilterSignal.set('');
-    this.availabilityInputSignal.set('');
-    this.availabilityFilterSignal.set('');
     this.created_byInputSignal.set('');
     this.created_byFilterSignal.set('');
     this.updated_byInputSignal.set('');
     this.updated_byFilterSignal.set('');
-    this.quantityInputSignal.set('');
-    this.quantityFilterSignal.set('');
-    this.min_quantityInputSignal.set('');
-    this.min_quantityFilterSignal.set('');
-    this.max_quantityInputSignal.set('');
-    this.max_quantityFilterSignal.set('');
-    this.priceInputSignal.set('');
-    this.priceFilterSignal.set('');
-    this.costInputSignal.set('');
-    this.costFilterSignal.set('');
-    this.weightInputSignal.set('');
-    this.weightFilterSignal.set('');
-    this.discount_percentageInputSignal.set('');
-    this.discount_percentageFilterSignal.set('');
+    this.display_orderInputSignal.set('');
+    this.display_orderFilterSignal.set('');
+    this.item_countInputSignal.set('');
+    this.item_countFilterSignal.set('');
+    this.discount_rateInputSignal.set('');
+    this.discount_rateFilterSignal.set('');
     this.is_activeInputSignal.set(undefined);
     this.is_activeFilterSignal.set(undefined);
     this.is_featuredInputSignal.set(undefined);
     this.is_featuredFilterSignal.set(undefined);
-    this.is_taxableInputSignal.set(undefined);
-    this.is_taxableFilterSignal.set(undefined);
-    this.is_shippableInputSignal.set(undefined);
-    this.is_shippableFilterSignal.set(undefined);
-    this.allow_backorderInputSignal.set(undefined);
-    this.allow_backorderFilterSignal.set(undefined);
-    this.category_idInputSignal.set('');
-    this.category_idFilterSignal.set('');
-    this.parent_product_idInputSignal.set('');
-    this.parent_product_idFilterSignal.set('');
-    this.supplier_idInputSignal.set('');
-    this.supplier_idFilterSignal.set('');
     this.quickFilter = 'all';
     this.showAdvancedFilters.set(false);
     if (this.paginator) this.paginator.pageIndex = 0;
@@ -849,66 +629,36 @@ export class TestProductsListComponent {
   hasActiveFilters(): boolean {
     return (
       this.searchTermSignal().trim() !== '' ||
-      this.skuFilterSignal().trim() !== '' ||
+      this.codeFilterSignal().trim() !== '' ||
       this.nameFilterSignal().trim() !== '' ||
-      this.barcodeFilterSignal().trim() !== '' ||
-      this.manufacturerFilterSignal().trim() !== '' ||
+      this.slugFilterSignal().trim() !== '' ||
       this.descriptionFilterSignal().trim() !== '' ||
-      this.long_descriptionFilterSignal().trim() !== '' ||
-      this.specificationsFilterSignal().trim() !== '' ||
       this.statusFilterSignal().trim() !== '' ||
-      this.conditionFilterSignal().trim() !== '' ||
-      this.availabilityFilterSignal().trim() !== '' ||
       this.created_byFilterSignal().trim() !== '' ||
       this.updated_byFilterSignal().trim() !== '' ||
-      this.quantityFilterSignal().trim() !== '' ||
-      this.min_quantityFilterSignal().trim() !== '' ||
-      this.max_quantityFilterSignal().trim() !== '' ||
-      this.priceFilterSignal().trim() !== '' ||
-      this.costFilterSignal().trim() !== '' ||
-      this.weightFilterSignal().trim() !== '' ||
-      this.discount_percentageFilterSignal().trim() !== '' ||
+      this.display_orderFilterSignal().trim() !== '' ||
+      this.item_countFilterSignal().trim() !== '' ||
+      this.discount_rateFilterSignal().trim() !== '' ||
       this.is_activeFilterSignal() !== undefined ||
-      this.is_featuredFilterSignal() !== undefined ||
-      this.is_taxableFilterSignal() !== undefined ||
-      this.is_shippableFilterSignal() !== undefined ||
-      this.allow_backorderFilterSignal() !== undefined ||
-      (this.category_idFilterSignal()?.trim() || '') !== '' ||
-      (this.parent_product_idFilterSignal()?.trim() || '') !== '' ||
-      (this.supplier_idFilterSignal()?.trim() || '') !== ''
+      this.is_featuredFilterSignal() !== undefined
     );
   }
 
   getActiveFilterCount(): number {
     let count = 0;
     if (this.searchTermSignal().trim()) count++;
-    if (this.skuFilterSignal().trim()) count++;
+    if (this.codeFilterSignal().trim()) count++;
     if (this.nameFilterSignal().trim()) count++;
-    if (this.barcodeFilterSignal().trim()) count++;
-    if (this.manufacturerFilterSignal().trim()) count++;
+    if (this.slugFilterSignal().trim()) count++;
     if (this.descriptionFilterSignal().trim()) count++;
-    if (this.long_descriptionFilterSignal().trim()) count++;
-    if (this.specificationsFilterSignal().trim()) count++;
     if (this.statusFilterSignal().trim()) count++;
-    if (this.conditionFilterSignal().trim()) count++;
-    if (this.availabilityFilterSignal().trim()) count++;
     if (this.created_byFilterSignal().trim()) count++;
     if (this.updated_byFilterSignal().trim()) count++;
-    if (this.quantityFilterSignal().trim()) count++;
-    if (this.min_quantityFilterSignal().trim()) count++;
-    if (this.max_quantityFilterSignal().trim()) count++;
-    if (this.priceFilterSignal().trim()) count++;
-    if (this.costFilterSignal().trim()) count++;
-    if (this.weightFilterSignal().trim()) count++;
-    if (this.discount_percentageFilterSignal().trim()) count++;
+    if (this.display_orderFilterSignal().trim()) count++;
+    if (this.item_countFilterSignal().trim()) count++;
+    if (this.discount_rateFilterSignal().trim()) count++;
     if (this.is_activeFilterSignal() !== undefined) count++;
     if (this.is_featuredFilterSignal() !== undefined) count++;
-    if (this.is_taxableFilterSignal() !== undefined) count++;
-    if (this.is_shippableFilterSignal() !== undefined) count++;
-    if (this.allow_backorderFilterSignal() !== undefined) count++;
-    if (this.category_idFilterSignal()?.trim()) count++;
-    if (this.parent_product_idFilterSignal()?.trim()) count++;
-    if (this.supplier_idFilterSignal()?.trim()) count++;
     return count;
   }
 
@@ -935,6 +685,22 @@ export class TestProductsListComponent {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
+        this.reloadTrigger.update((n) => n + 1);
+      }
+    });
+  }
+
+  openImportDialog() {
+    const dialogRef = this.dialog.open(TestProductImportDialogComponent, {
+      width: '900px',
+      maxHeight: '90vh',
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.snackBar.open('Import completed successfully', 'Close', {
+          duration: 3000,
+        });
         this.reloadTrigger.update((n) => n + 1);
       }
     });
@@ -967,16 +733,16 @@ export class TestProductsListComponent {
   }
 
   onDeleteTestProduct(testProduct: TestProduct) {
-    const itemName =
-      (testProduct as any).name || (testProduct as any).title || 'testproduct';
+    const itemName = (testProduct as any).name || (testProduct as any).title || 'testproduct';
     this.axDialog.confirmDelete(itemName).subscribe(async (confirmed) => {
       if (confirmed) {
         try {
-          await this.testProductsService.deleteTestProduct(testProduct.id);
+          // Use state manager's optimistic delete for real-time UI updates
+          await this.testProductStateManager.optimisticDelete(testProduct.id);
           this.snackBar.open('TestProduct deleted successfully', 'Close', {
             duration: 3000,
           });
-          this.reloadTrigger.update((n) => n + 1);
+          // No need to reload - state manager auto-updates dataSource via effect
         } catch {
           this.snackBar.open('Failed to delete testproduct', 'Close', {
             duration: 3000,
@@ -1049,33 +815,18 @@ export class TestProductsListComponent {
   getExportFilters(): Record<string, unknown> {
     return {
       searchTerm: this.searchTermSignal(),
-      sku: this.skuFilterSignal(),
+      code: this.codeFilterSignal(),
       name: this.nameFilterSignal(),
-      barcode: this.barcodeFilterSignal(),
-      manufacturer: this.manufacturerFilterSignal(),
+      slug: this.slugFilterSignal(),
       description: this.descriptionFilterSignal(),
-      long_description: this.long_descriptionFilterSignal(),
-      specifications: this.specificationsFilterSignal(),
       status: this.statusFilterSignal(),
-      condition: this.conditionFilterSignal(),
-      availability: this.availabilityFilterSignal(),
       created_by: this.created_byFilterSignal(),
       updated_by: this.updated_byFilterSignal(),
-      quantity: this.quantityFilterSignal(),
-      min_quantity: this.min_quantityFilterSignal(),
-      max_quantity: this.max_quantityFilterSignal(),
-      price: this.priceFilterSignal(),
-      cost: this.costFilterSignal(),
-      weight: this.weightFilterSignal(),
-      discount_percentage: this.discount_percentageFilterSignal(),
+      display_order: this.display_orderFilterSignal(),
+      item_count: this.item_countFilterSignal(),
+      discount_rate: this.discount_rateFilterSignal(),
       is_active: this.is_activeFilterSignal(),
       is_featured: this.is_featuredFilterSignal(),
-      is_taxable: this.is_taxableFilterSignal(),
-      is_shippable: this.is_shippableFilterSignal(),
-      allow_backorder: this.allow_backorderFilterSignal(),
-      category_id: this.category_idFilterSignal(),
-      parent_product_id: this.parent_product_idFilterSignal(),
-      supplier_id: this.supplier_idFilterSignal(),
     };
   }
 
@@ -1100,4 +851,65 @@ export class TestProductsListComponent {
   isRowExpanded(testProduct: TestProduct): boolean {
     return this.expandedTestProduct()?.id === testProduct.id;
   }
+
+  // 🔧 OPTIONAL: Real-time CRUD Event Listeners
+  // This method is commented out by default - uncomment to enable real-time updates
+  // Remember to also uncomment the WebSocket setup in constructor and add required imports
+  /*
+  private setupCrudEventListeners(): void {
+    // 📡 Subscribe to 'created' event
+    // Triggered when a new testProduct is created (by any user)
+    this.wsService
+      .subscribeToEvent('test_products', 'test_products', 'created')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: any) => {
+        console.log('🔥 New testProduct created:', event.data);
+
+        // Option 1: Add to local state and refresh display
+        this.testProductsService.testProductsListSignal.update(
+          list => [event.data, ...list]
+        );
+        this.reloadTrigger.update(n => n + 1); // Refresh display
+
+        // Option 2: Just refresh from server (more reliable)
+        // this.reloadTrigger.update(n => n + 1);
+      });
+
+    // 📡 Subscribe to 'updated' event
+    // Triggered when a testProduct is modified (by any user)
+    this.wsService
+      .subscribeToEvent('test_products', 'test_products', 'updated')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: any) => {
+        console.log('🔄 TestProduct updated:', event.data);
+
+        // Option 1: Update in local state and refresh display
+        this.testProductsService.testProductsListSignal.update(
+          list => list.map(item => item.id === event.data.id ? event.data : item)
+        );
+        this.reloadTrigger.update(n => n + 1); // Refresh display
+
+        // Option 2: Just refresh from server (more reliable)
+        // this.reloadTrigger.update(n => n + 1);
+      });
+
+    // 📡 Subscribe to 'deleted' event
+    // Triggered when a testProduct is removed (by any user)
+    this.wsService
+      .subscribeToEvent('test_products', 'test_products', 'deleted')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: any) => {
+        console.log('🗑️ TestProduct deleted:', event.data);
+
+        // Option 1: Remove from local state and refresh display
+        this.testProductsService.testProductsListSignal.update(
+          list => list.filter(item => item.id !== event.data.id)
+        );
+        this.reloadTrigger.update(n => n + 1); // Refresh display
+
+        // Option 2: Just refresh from server (more reliable)
+        // this.reloadTrigger.update(n => n + 1);
+      });
+  }
+  */
 }

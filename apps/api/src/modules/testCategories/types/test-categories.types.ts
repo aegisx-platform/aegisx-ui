@@ -6,6 +6,9 @@ import {
   type TestCategoriesIdParam,
   type GetTestCategoriesQuery,
   type ListTestCategoriesQuery,
+  type TestCategoriesCreatedEvent,
+  type TestCategoriesUpdatedEvent,
+  type TestCategoriesDeletedEvent
 } from '../schemas/test-categories.schemas';
 
 export {
@@ -15,6 +18,9 @@ export {
   type TestCategoriesIdParam,
   type GetTestCategoriesQuery,
   type ListTestCategoriesQuery,
+  type TestCategoriesCreatedEvent,
+  type TestCategoriesUpdatedEvent,
+  type TestCategoriesDeletedEvent
 };
 
 // Additional type definitions
@@ -30,11 +36,20 @@ export interface TestCategoriesRepository {
       totalPages: number;
     };
   }>;
-  update(
-    id: number | string,
-    data: UpdateTestCategories,
-  ): Promise<TestCategories | null>;
+  update(id: number | string, data: UpdateTestCategories): Promise<TestCategories | null>;
   delete(id: number | string): Promise<boolean>;
+}
+
+// Real-time event type definitions
+export interface TestCategoriesEventHandlers {
+  onCreated?: (data: TestCategories) => void | Promise<void>;
+  onUpdated?: (data: TestCategories) => void | Promise<void>;
+  onDeleted?: (data: { id: number | string }) => void | Promise<void>;
+}
+
+export interface TestCategoriesWebSocketSubscription {
+  subscribe(handlers: TestCategoriesEventHandlers): void;
+  unsubscribe(): void;
 }
 
 // Database entity type (matches database table structure exactly)
@@ -73,6 +88,7 @@ export enum TestCategoriesErrorCode {
   DUPLICATE_CODE = 'TEST_CATEGORIES_DUPLICATE_CODE',
   DUPLICATE_NAME = 'TEST_CATEGORIES_DUPLICATE_NAME',
 
+
   // Business rule validation errors (422)
   INVALID_VALUE_ITEM_COUNT = 'TEST_CATEGORIES_INVALID_VALUE_ITEM_COUNT',
   INVALID_VALUE_DISCOUNT_RATE = 'TEST_CATEGORIES_INVALID_VALUE_DISCOUNT_RATE',
@@ -81,21 +97,16 @@ export enum TestCategoriesErrorCode {
 /**
  * Error messages mapped to error codes
  */
-export const TestCategoriesErrorMessages: Record<
-  TestCategoriesErrorCode,
-  string
-> = {
+export const TestCategoriesErrorMessages: Record<TestCategoriesErrorCode, string> = {
   [TestCategoriesErrorCode.NOT_FOUND]: 'TestCategories not found',
-  [TestCategoriesErrorCode.VALIDATION_ERROR]:
-    'TestCategories validation failed',
+  [TestCategoriesErrorCode.VALIDATION_ERROR]: 'TestCategories validation failed',
 
   // Duplicate error messages
   [TestCategoriesErrorCode.DUPLICATE_CODE]: 'Code already exists',
   [TestCategoriesErrorCode.DUPLICATE_NAME]: 'Name already exists',
 
+
   // Business rule messages
-  [TestCategoriesErrorCode.INVALID_VALUE_ITEM_COUNT]:
-    'item_count must be a positive number',
-  [TestCategoriesErrorCode.INVALID_VALUE_DISCOUNT_RATE]:
-    'discount_rate must be a positive number',
+  [TestCategoriesErrorCode.INVALID_VALUE_ITEM_COUNT]: 'item_count must be a positive number',
+  [TestCategoriesErrorCode.INVALID_VALUE_DISCOUNT_RATE]: 'discount_rate must be a positive number',
 };

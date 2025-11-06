@@ -123,110 +123,15 @@ export class TestProductService {
       }
 
       // Add smart filter parameters based on table schema
-      // String filtering for sku
-      if (params?.sku) httpParams = httpParams.set('sku', params.sku);
+      // String filtering for code
+      if (params?.code) httpParams = httpParams.set('code', params.code);
       // String filtering for name
       if (params?.name) httpParams = httpParams.set('name', params.name);
-      // String filtering for barcode
-      if (params?.barcode)
-        httpParams = httpParams.set('barcode', params.barcode);
-      // String filtering for manufacturer
-      if (params?.manufacturer)
-        httpParams = httpParams.set('manufacturer', params.manufacturer);
+      // String filtering for slug
+      if (params?.slug) httpParams = httpParams.set('slug', params.slug);
       // String filtering for description
       if (params?.description)
         httpParams = httpParams.set('description', params.description);
-      // String filtering for long_description
-      if (params?.long_description)
-        httpParams = httpParams.set(
-          'long_description',
-          params.long_description,
-        );
-      // String filtering for specifications
-      if (params?.specifications)
-        httpParams = httpParams.set('specifications', params.specifications);
-      // Numeric filtering for quantity
-      if (params?.quantity !== undefined)
-        httpParams = httpParams.set('quantity', params.quantity.toString());
-      if (params?.quantity_min !== undefined)
-        httpParams = httpParams.set(
-          'quantity_min',
-          params.quantity_min.toString(),
-        );
-      if (params?.quantity_max !== undefined)
-        httpParams = httpParams.set(
-          'quantity_max',
-          params.quantity_max.toString(),
-        );
-      // Numeric filtering for min_quantity
-      if (params?.min_quantity !== undefined)
-        httpParams = httpParams.set(
-          'min_quantity',
-          params.min_quantity.toString(),
-        );
-      if (params?.min_quantity_min !== undefined)
-        httpParams = httpParams.set(
-          'min_quantity_min',
-          params.min_quantity_min.toString(),
-        );
-      if (params?.min_quantity_max !== undefined)
-        httpParams = httpParams.set(
-          'min_quantity_max',
-          params.min_quantity_max.toString(),
-        );
-      // Numeric filtering for max_quantity
-      if (params?.max_quantity !== undefined)
-        httpParams = httpParams.set(
-          'max_quantity',
-          params.max_quantity.toString(),
-        );
-      if (params?.max_quantity_min !== undefined)
-        httpParams = httpParams.set(
-          'max_quantity_min',
-          params.max_quantity_min.toString(),
-        );
-      if (params?.max_quantity_max !== undefined)
-        httpParams = httpParams.set(
-          'max_quantity_max',
-          params.max_quantity_max.toString(),
-        );
-      // Numeric filtering for price
-      if (params?.price !== undefined)
-        httpParams = httpParams.set('price', params.price.toString());
-      if (params?.price_min !== undefined)
-        httpParams = httpParams.set('price_min', params.price_min.toString());
-      if (params?.price_max !== undefined)
-        httpParams = httpParams.set('price_max', params.price_max.toString());
-      // Numeric filtering for cost
-      if (params?.cost !== undefined)
-        httpParams = httpParams.set('cost', params.cost.toString());
-      if (params?.cost_min !== undefined)
-        httpParams = httpParams.set('cost_min', params.cost_min.toString());
-      if (params?.cost_max !== undefined)
-        httpParams = httpParams.set('cost_max', params.cost_max.toString());
-      // Numeric filtering for weight
-      if (params?.weight !== undefined)
-        httpParams = httpParams.set('weight', params.weight.toString());
-      if (params?.weight_min !== undefined)
-        httpParams = httpParams.set('weight_min', params.weight_min.toString());
-      if (params?.weight_max !== undefined)
-        httpParams = httpParams.set('weight_max', params.weight_max.toString());
-      // Numeric filtering for discount_percentage
-      if (params?.discount_percentage !== undefined)
-        httpParams = httpParams.set(
-          'discount_percentage',
-          params.discount_percentage.toString(),
-        );
-      if (params?.discount_percentage_min !== undefined)
-        httpParams = httpParams.set(
-          'discount_percentage_min',
-          params.discount_percentage_min.toString(),
-        );
-      if (params?.discount_percentage_max !== undefined)
-        httpParams = httpParams.set(
-          'discount_percentage_max',
-          params.discount_percentage_max.toString(),
-        );
       // Boolean filtering for is_active
       if (params?.is_active !== undefined)
         httpParams = httpParams.set('is_active', params.is_active.toString());
@@ -236,96 +141,53 @@ export class TestProductService {
           'is_featured',
           params.is_featured.toString(),
         );
-      // Boolean filtering for is_taxable
-      if (params?.is_taxable !== undefined)
-        httpParams = httpParams.set('is_taxable', params.is_taxable.toString());
-      // Boolean filtering for is_shippable
-      if (params?.is_shippable !== undefined)
+      // Numeric filtering for display_order
+      if (params?.display_order !== undefined)
         httpParams = httpParams.set(
-          'is_shippable',
-          params.is_shippable.toString(),
+          'display_order',
+          params.display_order.toString(),
         );
-      // Boolean filtering for allow_backorder
-      if (params?.allow_backorder !== undefined)
+      if (params?.display_order_min !== undefined)
         httpParams = httpParams.set(
-          'allow_backorder',
-          params.allow_backorder.toString(),
+          'display_order_min',
+          params.display_order_min.toString(),
+        );
+      if (params?.display_order_max !== undefined)
+        httpParams = httpParams.set(
+          'display_order_max',
+          params.display_order_max.toString(),
+        );
+      // Numeric filtering for item_count
+      if (params?.item_count !== undefined)
+        httpParams = httpParams.set('item_count', params.item_count.toString());
+      if (params?.item_count_min !== undefined)
+        httpParams = httpParams.set(
+          'item_count_min',
+          params.item_count_min.toString(),
+        );
+      if (params?.item_count_max !== undefined)
+        httpParams = httpParams.set(
+          'item_count_max',
+          params.item_count_max.toString(),
+        );
+      // Numeric filtering for discount_rate
+      if (params?.discount_rate !== undefined)
+        httpParams = httpParams.set(
+          'discount_rate',
+          params.discount_rate.toString(),
+        );
+      if (params?.discount_rate_min !== undefined)
+        httpParams = httpParams.set(
+          'discount_rate_min',
+          params.discount_rate_min.toString(),
+        );
+      if (params?.discount_rate_max !== undefined)
+        httpParams = httpParams.set(
+          'discount_rate_max',
+          params.discount_rate_max.toString(),
         );
       // String filtering for status
       if (params?.status) httpParams = httpParams.set('status', params.status);
-      // String filtering for condition
-      if (params?.condition)
-        httpParams = httpParams.set('condition', params.condition);
-      // String filtering for availability
-      if (params?.availability)
-        httpParams = httpParams.set('availability', params.availability);
-      // Date/DateTime filtering for launch_date
-      if (params?.launch_date)
-        httpParams = httpParams.set('launch_date', params.launch_date);
-      if (params?.launch_date_min)
-        httpParams = httpParams.set('launch_date_min', params.launch_date_min);
-      if (params?.launch_date_max)
-        httpParams = httpParams.set('launch_date_max', params.launch_date_max);
-      // Date/DateTime filtering for discontinued_date
-      if (params?.discontinued_date)
-        httpParams = httpParams.set(
-          'discontinued_date',
-          params.discontinued_date,
-        );
-      if (params?.discontinued_date_min)
-        httpParams = httpParams.set(
-          'discontinued_date_min',
-          params.discontinued_date_min,
-        );
-      if (params?.discontinued_date_max)
-        httpParams = httpParams.set(
-          'discontinued_date_max',
-          params.discontinued_date_max,
-        );
-      // Date/DateTime filtering for last_stock_check
-      if (params?.last_stock_check)
-        httpParams = httpParams.set(
-          'last_stock_check',
-          params.last_stock_check,
-        );
-      if (params?.last_stock_check_min)
-        httpParams = httpParams.set(
-          'last_stock_check_min',
-          params.last_stock_check_min,
-        );
-      if (params?.last_stock_check_max)
-        httpParams = httpParams.set(
-          'last_stock_check_max',
-          params.last_stock_check_max,
-        );
-      // Date/DateTime filtering for next_restock_date
-      if (params?.next_restock_date)
-        httpParams = httpParams.set(
-          'next_restock_date',
-          params.next_restock_date,
-        );
-      if (params?.next_restock_date_min)
-        httpParams = httpParams.set(
-          'next_restock_date_min',
-          params.next_restock_date_min,
-        );
-      if (params?.next_restock_date_max)
-        httpParams = httpParams.set(
-          'next_restock_date_max',
-          params.next_restock_date_max,
-        );
-      // String filtering for category_id
-      if (params?.category_id)
-        httpParams = httpParams.set('category_id', params.category_id);
-      // String filtering for parent_product_id
-      if (params?.parent_product_id)
-        httpParams = httpParams.set(
-          'parent_product_id',
-          params.parent_product_id,
-        );
-      // String filtering for supplier_id
-      if (params?.supplier_id)
-        httpParams = httpParams.set('supplier_id', params.supplier_id);
       // String filtering for created_by
       if (params?.created_by)
         httpParams = httpParams.set('created_by', params.created_by);
@@ -477,369 +339,6 @@ export class TestProductService {
       throw error;
     } finally {
       this.loadingSignal.set(false);
-    }
-  }
-
-  // ===== ENHANCED OPERATIONS =====
-
-  /**
-   * Export testProducts data
-   */
-  async exportTestProduct(options: {
-    format: 'csv' | 'excel' | 'pdf';
-    ids?: string[];
-    filters?: Record<string, any>;
-    fields?: string[];
-    filename?: string;
-    applyFilters?: boolean;
-    includeMetadata?: boolean;
-  }): Promise<Blob> {
-    try {
-      let httpParams = new HttpParams().set('format', options.format);
-
-      if (options.ids && options.ids.length > 0) {
-        options.ids.forEach((id) => {
-          httpParams = httpParams.append('ids', id);
-        });
-      }
-
-      if (options.filters && options.applyFilters) {
-        Object.entries(options.filters).forEach(([key, value]) => {
-          if (value !== null && value !== undefined && value !== '') {
-            httpParams = httpParams.set(`filters[${key}]`, String(value));
-          }
-        });
-      }
-
-      if (options.fields && options.fields.length > 0) {
-        options.fields.forEach((field) => {
-          httpParams = httpParams.append('fields', field);
-        });
-      }
-
-      if (options.filename) {
-        httpParams = httpParams.set('filename', options.filename);
-      }
-
-      if (options.applyFilters !== undefined) {
-        httpParams = httpParams.set(
-          'applyFilters',
-          String(options.applyFilters),
-        );
-      }
-
-      if (options.includeMetadata !== undefined) {
-        httpParams = httpParams.set(
-          'includeMetadata',
-          String(options.includeMetadata),
-        );
-      }
-
-      const response = await this.http
-        .get(`${this.baseUrl}/export`, {
-          params: httpParams,
-          responseType: 'blob',
-        })
-        .toPromise();
-
-      if (response) {
-        return response;
-      }
-
-      throw new Error('Export failed - no response received');
-    } catch (error: any) {
-      console.error('Failed to export testProducts data:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get dropdown options for testProducts
-   */
-  async getDropdownOptions(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{ value: string; label: string }>;
-            total: number;
-          }>
-        >(`${this.baseUrl}/dropdown`, { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error('Failed to fetch testProducts dropdown options:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get test_categories dropdown options for category_id field
-   */
-  async getTestCategoriesDropdown(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{
-              value: string;
-              label: string;
-              disabled?: boolean;
-            }>;
-            total: number;
-          }>
-        >('/test_categories/dropdown', { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error('Failed to fetch test_categories dropdown options:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get test_products dropdown options for parent_product_id field
-   */
-  async getTestProductsDropdown(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{
-              value: string;
-              label: string;
-              disabled?: boolean;
-            }>;
-            total: number;
-          }>
-        >('/test_products/dropdown', { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error('Failed to fetch test_products dropdown options:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get users dropdown options for supplier_id field
-   */
-  async getUsersDropdown(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{
-              value: string;
-              label: string;
-              disabled?: boolean;
-            }>;
-            total: number;
-          }>
-        >('/users/dropdown', { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error('Failed to fetch users dropdown options:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Bulk create testProductss
-   */
-  async bulkCreateTestProduct(
-    items: CreateTestProductRequest[],
-  ): Promise<BulkResponse | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .post<BulkResponse>(`${this.baseUrl}/bulk`, { items })
-        .toPromise();
-
-      if (response) {
-        // Refresh list after bulk operation
-        await this.loadTestProductList();
-        return response;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to bulk create testProductss');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  /**
-   * Bulk update testProductss
-   */
-  async bulkUpdateTestProduct(
-    items: Array<{ id: string; data: UpdateTestProductRequest }>,
-  ): Promise<BulkResponse | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .put<BulkResponse>(`${this.baseUrl}/bulk`, { items })
-        .toPromise();
-
-      if (response) {
-        // Refresh list after bulk operation
-        await this.loadTestProductList();
-        return response;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to bulk update testProductss');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  /**
-   * Bulk delete testProductss
-   */
-  async bulkDeleteTestProduct(ids: string[]): Promise<BulkResponse | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .delete<BulkResponse>(`${this.baseUrl}/bulk`, { body: { ids } })
-        .toPromise();
-
-      if (response) {
-        // Refresh list after bulk operation
-        await this.loadTestProductList();
-        return response;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to bulk delete testProductss');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
-
-  /**
-   * Validate testProducts data before save
-   */
-  async validateTestProduct(
-    data: CreateTestProductRequest,
-  ): Promise<{ valid: boolean; errors?: any[] }> {
-    try {
-      const response = await this.http
-        .post<
-          ApiResponse<{ valid: boolean; errors?: any[] }>
-        >(`${this.baseUrl}/validate`, { data })
-        .toPromise();
-
-      if (response) {
-        return response.data;
-      }
-      return { valid: false, errors: ['Validation failed'] };
-    } catch (error: any) {
-      console.error('Failed to validate testProducts:', error);
-      return { valid: false, errors: [error.message || 'Validation error'] };
-    }
-  }
-
-  /**
-   * Check field uniqueness
-   */
-  async checkUniqueness(
-    field: string,
-    value: string,
-    excludeId?: string,
-  ): Promise<{ unique: boolean }> {
-    try {
-      let params = new HttpParams().set('value', value);
-
-      if (excludeId) {
-        params = params.set('excludeId', excludeId);
-      }
-
-      const response = await this.http
-        .get<
-          ApiResponse<{ unique: boolean }>
-        >(`${this.baseUrl}/check/${field}`, { params })
-        .toPromise();
-
-      if (response) {
-        return response.data;
-      }
-      return { unique: false };
-    } catch (error: any) {
-      console.error('Failed to check uniqueness:', error);
-      return { unique: false };
-    }
-  }
-
-  /**
-   * Get testProducts statistics
-   */
-  async getStats(): Promise<{ total: number } | null> {
-    try {
-      const response = await this.http
-        .get<ApiResponse<{ total: number }>>(`${this.baseUrl}/stats`)
-        .toPromise();
-
-      if (response) {
-        return response.data;
-      }
-      return null;
-    } catch (error: any) {
-      console.error('Failed to get testProducts stats:', error);
-      return null;
     }
   }
 
