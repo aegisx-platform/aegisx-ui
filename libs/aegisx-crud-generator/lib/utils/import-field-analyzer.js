@@ -274,26 +274,14 @@ function detectFieldType(column) {
  * Detect if field should have uniqueness validation
  */
 function detectUniqueField(column, fieldName) {
-  // Check database unique constraint
+  // Only use actual database unique constraint
+  // Don't use hardcoded patterns to avoid generating validators for fields
+  // that don't have error codes defined
   if (column.unique === true) {
     return true;
   }
 
-  // Check common unique field patterns
-  const uniquePatterns = [
-    'email',
-    'username',
-    'code',
-    'slug',
-    'sku',
-    'isbn',
-    'serial',
-    'license',
-  ];
-
-  return uniquePatterns.some((pattern) =>
-    fieldName.toLowerCase().includes(pattern),
-  );
+  return false;
 }
 
 /**
