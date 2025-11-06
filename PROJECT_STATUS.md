@@ -1,6 +1,6 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-11-05 (Session 64 - Schema Migration & Authentication Fix)
+**Last Updated:** 2025-11-06 (Session 65 - CRUD Generator Fixes & TestProducts Full Package Generation)
 **Current Status:** ✅ **PLATFORM COMPLETE** - All core features implemented, tested, and production-ready
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 **CRUD Generator Version:** v2.2.0 (Ready for npm publish)
@@ -278,13 +278,93 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - **Enterprise Use Cases** - RBAC, audit trails, security features, performance optimization
 - **Rapid Prototyping** - Generate full-stack CRUD in minutes with --with-import and --with-events flags
 
-**Last Updated:** 2025-11-03 (Session 63 - Authentication Documentation Complete)
+**Last Updated:** 2025-11-06 (Session 65 - CRUD Generator Fixes & TestProducts Full Package Generation)
 
 ---
 
 ## 🚀 Recent Development Sessions
 
 > **📦 For older sessions (38-46), see [Session Archive](./docs/sessions/ARCHIVE_2024_Q4.md)**
+
+### Session 65 (2025-11-06) ✅ COMPLETED
+
+**Session Focus:** CRUD Generator Template Fixes & TestProducts Full Package Generation with Import Support
+
+**Main Achievements:**
+
+- ✅ **Fixed Auto-Enable Logic** - Generator no longer auto-enables withEvents when only withImport is used
+- ✅ **Fixed Export Method Generation** - Service template now generates correct export method name
+- ✅ **Fixed File Naming Convention** - Import files now use kebab-case (test-products-import.service.ts) matching other files
+- ✅ **Fixed Unique Field Detection** - Only detect from database schema constraints, removed hardcoded patterns
+- ✅ **Fixed Bulk Operation Events** - Controller template now uses correct response property names
+- ✅ **Fixed JSON Field Handling** - Import service now properly transforms JSON/JSONB fields
+- ✅ **Generated TestProducts Full Package** - Fresh CRUD API with import, export, and bulk operations
+
+**Technical Work Completed:**
+
+1. **Frontend Generator Template Fixes:**
+   - Line 1842: Removed `|| options.withImport` to prevent auto-enabling state manager
+   - Line 1704: Added `singularName` to service generation context
+   - Lines 535-540: Enhanced `hasEnhancedOperations()` to check for `/export` endpoint
+   - Lines 1716-1719: Enable enhanced operations when `withImport` is true (import pairs with export)
+
+2. **Frontend Service Template Fix:**
+   - Line 273: Fixed export method from `{{PascalCase}}` to `{{pascalCaseHelper singularName}}`
+
+3. **Backend Generator - Kebab-Case File Naming:**
+   - Added `moduleNameKebab` variable to all three context definitions
+   - Updated import service output path: `${context.moduleNameKebab}-import.service.ts`
+   - Updated import routes output path: `${context.moduleNameKebab}-import.routes.ts`
+
+4. **Backend Controller Template - Response Property Names:**
+   - Fixed bulkCreate to use `result.created` instead of `result.successful`
+   - Fixed bulkUpdate to use `result.updated` instead of `result.successful`
+   - Fixed bulkDelete to use `result.deleted` instead of `result.successful`
+   - Fixed bulkUpdateStatus to use `result.updated` instead of `result.successful`
+
+5. **Import Field Analyzer - Unique Detection & JSON Handling:**
+   - Fixed `detectUniqueField()` to only check database schema constraints
+   - Removed all hardcoded field name patterns (slug, code, etc.)
+   - Added JSON field detection for JSONB columns
+   - Created individual transformers for each JSON field (metadata, settings, etc.)
+
+**Generated TestProducts Module:**
+
+- ✅ Full CRUD API (create, read, update, delete, list)
+- ✅ Bulk operations (bulkCreate, bulkUpdate, bulkDelete, bulkUpdateStatus)
+- ✅ Import/Export functionality with XLS support
+- ✅ WebSocket events for real-time updates
+- ✅ Proper error handling with error codes
+- ✅ JSON field transformers for metadata and settings
+- ✅ Unique field validators for code and name fields
+- ✅ All tests passing, builds successful
+
+**Files Modified (6 files in generator, generated TestProducts module):**
+
+- `libs/aegisx-crud-generator/lib/generators/frontend-generator.js`
+- `libs/aegisx-crud-generator/templates/frontend/v2/service.hbs`
+- `libs/aegisx-crud-generator/lib/generators/backend-generator.js`
+- `libs/aegisx-crud-generator/templates/backend/domain/controller.hbs`
+- `libs/aegisx-crud-generator/lib/utils/import-field-analyzer.js`
+- `apps/api/src/modules/testProducts/` (full CRUD package regenerated)
+
+**Key Learnings:**
+
+1. **Database-Schema-First Principle** - CRUD Generator must use actual database constraints, never guess from field names
+2. **Template Variable Scope** - All template variables must be defined in context before use
+3. **File Naming Consistency** - Generated files should follow consistent naming conventions (kebab-case for files)
+4. **Feature Independence** - Each feature flag (withImport, withEvents) should be independent unless explicitly paired
+5. **Service/Controller Contract** - Template must match actual service method response structure
+
+**Impact:**
+
+- 🎯 **Better Code Quality** - Generated code now follows all conventions without manual fixes
+- 🔧 **Sustainable** - Template fixes prevent same issues in future CRUD generations
+- 📝 **Type Safety** - Import system fully typed with proper JSON transformations
+- 🚀 **Faster Generation** - No more manual post-generation cleanup needed
+- ✅ **Production Ready** - TestProducts API fully functional with import/export
+
+---
 
 ### Session 64 (2025-11-05) ✅ COMPLETED
 
