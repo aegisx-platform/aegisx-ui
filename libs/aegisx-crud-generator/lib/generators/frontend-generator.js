@@ -534,7 +534,9 @@ class FrontendGenerator {
    */
   hasEnhancedOperations(routesContent) {
     return (
-      routesContent.includes('/bulk') || routesContent.includes('/dropdown')
+      routesContent.includes('/bulk') ||
+      routesContent.includes('/dropdown') ||
+      routesContent.includes('/export')
     );
   }
 
@@ -1699,10 +1701,12 @@ class FrontendGenerator {
 
       const context = {
         moduleName,
+        singularName: singularCamelName, // For use with pascalCaseHelper in export method name
         PascalCase: singularPascalName,
         camelCase: camelName,
         kebabCase: kebabName,
         singularCamelName: singularCamelName,
+        singularPascalName: singularPascalName,
         typesFileName,
         types,
         columns: enhancedSchema ? enhancedSchema.columns : [],
@@ -1712,6 +1716,7 @@ class FrontendGenerator {
         queryFilters: this.generateQueryFilters(types, pascalName),
         includeEnhanced:
           options.enhanced ||
+          options.withImport ||
           apiInfo.hasEnhancedOps ||
           dropdownDependencies.length > 0,
         includeFull: options.full || apiInfo.hasFullOps,
@@ -1724,20 +1729,8 @@ class FrontendGenerator {
       const templateContent = fs.readFileSync(templatePath, 'utf8');
       const template = Handlebars.compile(templateContent);
 
-      // Debug context
-      console.log('🔍 Template context:', JSON.stringify(context, null, 2));
-
       // Generate code
       const generatedCode = template(context);
-
-      // Debug generated code length
-      console.log('📝 Generated code length:', generatedCode.length);
-      if (generatedCode.length < 100) {
-        console.log(
-          '⚠️ Generated code seems too short:',
-          generatedCode.substring(0, 200),
-        );
-      }
 
       // Prepare output directory
       const outputDir = path.join(
@@ -1836,10 +1829,11 @@ class FrontendGenerator {
         filters: this.generateQueryFilters(types, pascalName, enhancedSchema),
         hasPublishedField,
         hasPublishedAtField,
-        includeEnhanced: options.enhanced || apiInfo.hasEnhancedOps,
+        includeEnhanced:
+          options.enhanced || options.withImport || apiInfo.hasEnhancedOps, // Enable enhanced ops when using import for export functionality
         includeFull: options.full || apiInfo.hasFullOps,
         withImport: options.withImport || false, // Pass withImport option to templates
-        withEvents: options.withEvents || options.withImport || false, // Auto-enable events when using import
+        withEvents: options.withEvents || false, // WebSocket events only when explicitly requested
         // Field detection helpers
         hasStatusField: fieldNames.includes('status'),
         hasActiveField: fieldNames.includes('active'),
@@ -2030,7 +2024,7 @@ class FrontendGenerator {
         typesFileName,
         title: this.fieldNameToLabel(moduleName),
         types,
-        withEvents: options.withEvents || options.withImport || false, // Auto-enable events when using import
+        withEvents: options.withEvents || false, // WebSocket events only when explicitly requested
       };
 
       const generatedFiles = [];

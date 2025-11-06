@@ -270,7 +270,7 @@ export class {{PascalCase}}Service {
   /**
    * Export {{camelCaseHelper moduleName}} data
    */
-  async export{{PascalCase}}(options: {
+  async export{{pascalCaseHelper singularName}}(options: {
     format: 'csv' | 'excel' | 'pdf';
     ids?: {{#each columns}}{{#if isPrimaryKey}}{{tsType}}{{/if}}{{/each}}[];
     filters?: Record<string, any>;
