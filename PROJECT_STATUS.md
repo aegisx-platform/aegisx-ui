@@ -348,6 +348,24 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - `libs/aegisx-crud-generator/lib/utils/import-field-analyzer.js`
 - `apps/api/src/modules/testProducts/` (full CRUD package regenerated)
 
+**6. WebSocket Configuration & Import Progress Tracking Fixes:**
+
+- **File: `apps/web/src/app/core/http/services/api-config.service.ts`**
+  - Fixed `getWebSocketUrl()` method to detect development port and route to API server (3333)
+  - Added port detection: if on port 4200 (dev server), connect to localhost:3333
+  - Prevents WebSocket connection timeout errors in development
+
+- **File: `libs/aegisx-crud-generator/templates/frontend/v2/import-dialog.hbs`**
+  - Changed WebSocket subscription from `{{kebabCase}}` to `{{camelCase}}` (lines 1102, 1105)
+  - Matches backend event emission naming (module names are camelCase)
+  - Added comment: "use camelCase to match backend module name"
+  - Added debug logging for troubleshooting progress events
+
+- **File: `apps/web/src/app/features/test-products/components/test-products-import.dialog.ts`**
+  - Verified generated code uses correct camelCase subscriptions
+  - Includes debug logging for import progress event tracking
+  - Template change ensures all future CRUD modules work correctly
+
 **Key Learnings:**
 
 1. **Database-Schema-First Principle** - CRUD Generator must use actual database constraints, never guess from field names
@@ -355,6 +373,8 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 3. **File Naming Consistency** - Generated files should follow consistent naming conventions (kebab-case for files)
 4. **Feature Independence** - Each feature flag (withImport, withEvents) should be independent unless explicitly paired
 5. **Service/Controller Contract** - Template must match actual service method response structure
+6. **WebSocket Port Configuration** - Development setup requires explicit port routing (dev server 4200 → API server 3333)
+7. **Naming Convention Alignment** - WebSocket events use backend module names (camelCase), not frontend folder names (kebab-case)
 
 **Impact:**
 
@@ -363,6 +383,8 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - 📝 **Type Safety** - Import system fully typed with proper JSON transformations
 - 🚀 **Faster Generation** - No more manual post-generation cleanup needed
 - ✅ **Production Ready** - TestProducts API fully functional with import/export
+- 🔌 **WebSocket Working** - Real-time progress tracking with correct port configuration
+- 📡 **All Future Modules** - Will have correct WebSocket integration automatically
 
 ---
 
