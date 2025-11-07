@@ -105,7 +105,11 @@ export class {{PascalCase}}StateManager extends BaseRealtimeStateManager<{{Pasca
     console.log('🔄 Updating {{singularLowerCase}} on server:', { id, changes });
 
     try {
+      {{#if isUUID}}
+      const result = await this.{{camelCase}}Service.update{{PascalCase}}(String(id), changes);
+      {{else}}
       const result = await this.{{camelCase}}Service.update{{PascalCase}}(id as number, changes);
+      {{/if}}
       if (!result) {
         throw new Error('Failed to update {{singularLowerCase}}: Server returned null');
       }
@@ -126,7 +130,11 @@ export class {{PascalCase}}StateManager extends BaseRealtimeStateManager<{{Pasca
     console.log('🗑️ Deleting {{singularLowerCase}} from server:', id);
 
     try {
+      {{#if isUUID}}
+      await this.{{camelCase}}Service.delete{{PascalCase}}(String(id));
+      {{else}}
       await this.{{camelCase}}Service.delete{{PascalCase}}(id as number);
+      {{/if}}
       console.log('✅ {{PascalCase}} deleted from server');
     } catch (error) {
       console.error('❌ Failed to delete {{singularLowerCase}}:', error);

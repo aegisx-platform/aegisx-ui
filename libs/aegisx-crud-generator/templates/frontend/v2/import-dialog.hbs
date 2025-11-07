@@ -1098,15 +1098,23 @@ export class {{PascalCase}}ImportDialogComponent implements OnDestroy {
     }
     this.wsService.connect(token);
 
-    // 📡 Subscribe to feature events
-    this.wsService.subscribe({ features: ['{{kebabCase}}'] });
+    // 📡 Subscribe to feature events (use camelCase to match backend module name)
+    this.wsService.subscribe({ features: ['{{camelCase}}'] });
 
     this.wsService
-      .subscribeToEvent('{{kebabCase}}', 'import', 'progress')
+      .subscribeToEvent('{{camelCase}}', 'import', 'progress')
       .pipe(takeUntil(this.destroy$))
       .subscribe((event: any) => {
+        console.log('📡 Import progress event received:', { jobId, event });
+
         // Only process events for this job
         if (event.jobId !== jobId) return;
+
+        console.log('✅ Updating import progress:', {
+          progress: event.progress,
+          processed: event.processedRecords,
+          total: event.totalRecords,
+        });
 
         // Update import job with progress data
         this.importJob.update((current) => ({

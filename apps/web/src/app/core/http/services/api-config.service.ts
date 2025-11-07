@@ -22,16 +22,21 @@ export class ApiConfigService {
 
     // Get current domain and protocol
     const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
-    const host = window.location.host;
+    const hostname = window.location.hostname;
 
-    // In development, if we're using Angular dev server, construct WebSocket URL
+    // In development, WebSocket must connect to API server, not dev server
     if (!environment.production) {
-      // Use current domain (Angular dev server will proxy to backend)
-      return `${protocol}//${host}`;
+      // In dev, connect directly to API port (3333)
+      // Check if we're on localhost dev server (port 4200)
+      if (window.location.port === '4200') {
+        return `${protocol}//${hostname}:3333`;
+      }
+      // Otherwise use current host
+      return `${protocol}//${window.location.host}`;
     }
 
     // In production, use same domain
-    return `${protocol}//${host}`;
+    return `${protocol}//${window.location.host}`;
   }
 
   /**

@@ -50,12 +50,19 @@ export async function up(knex: Knex): Promise<void> {
   console.log('✅ Created roles and permissions tables');
   console.log('✅ Inserted system roles: admin, user, moderator');
 
-  // Create permissions table
+  // Create permissions table with complete RBAC schema
   await knex.schema.createTable('permissions', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.string('resource', 100).notNullable();
     table.string('action', 50).notNullable();
     table.string('description', 255);
+
+    // Permission categorization and status fields
+    table.string('category', 50).defaultTo('general').notNullable();
+    table.boolean('is_system_permission').defaultTo(false).notNullable();
+    table.boolean('is_active').defaultTo(true).notNullable();
+    table.text('conditions').nullable();
+
     table.timestamps(true, true);
 
     // Create unique constraint on resource + action
@@ -88,6 +95,9 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.alterTable('permissions', (table) => {
     table.index('resource');
     table.index('action');
+    table.index('category');
+    table.index('is_system_permission');
+    table.index('is_active');
   });
 }
 

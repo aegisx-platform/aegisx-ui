@@ -32,12 +32,13 @@ const SYSTEM_PERMISSIONS = [
   // User management permissions
   { resource: 'users', action: 'create', description: 'Create new users' },
   { resource: 'users', action: 'read', description: 'View user information' },
-  {
-    resource: 'users',
-    action: 'update',
-    description: 'Update user information',
-  },
+  { resource: 'users', action: 'update', description: 'Update user information' },
   { resource: 'users', action: 'delete', description: 'Delete users' },
+  { resource: 'users', action: 'update-password', description: 'Update user password' },
+  { resource: 'users', action: 'bulk:activate', description: 'Bulk activate users' },
+  { resource: 'users', action: 'bulk:deactivate', description: 'Bulk deactivate users' },
+  { resource: 'users', action: 'bulk:delete', description: 'Bulk delete users' },
+  { resource: 'users', action: 'bulk:change-status', description: 'Bulk change user status' },
 
   // Role management permissions
   { resource: 'roles', action: 'create', description: 'Create new roles' },
@@ -217,11 +218,14 @@ export async function up(knex: Knex): Promise<void> {
     for (const permission of SYSTEM_PERMISSIONS) {
       await trx.raw(
         `
-        INSERT INTO permissions (resource, action, description, created_at, updated_at)
-        VALUES (?, ?, ?, NOW(), NOW())
+        INSERT INTO permissions (resource, action, description, category, is_system_permission, is_active, created_at, updated_at)
+        VALUES (?, ?, ?, 'system', true, true, NOW(), NOW())
         ON CONFLICT (resource, action) DO UPDATE
         SET
           description = EXCLUDED.description,
+          category = 'system',
+          is_system_permission = true,
+          is_active = true,
           updated_at = NOW()
       `,
         [permission.resource, permission.action, permission.description],

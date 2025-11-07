@@ -451,6 +451,38 @@ class FrontendGenerator {
   }
 
   /**
+   * Detect ID column type from database migrations (UUID or number)
+   */
+  detectIdType(moduleName) {
+    try {
+      const migrationPath = path.join(
+        this.projectRoot,
+        'apps/api/src/database/migrations/014_create_test_tables.ts'
+      );
+
+      if (!fs.existsSync(migrationPath)) {
+        return 'string'; // Default to string (UUID is safer)
+      }
+
+      const content = fs.readFileSync(migrationPath, 'utf8');
+
+      // Check for UUID
+      if (content.includes("table.uuid('id')")) {
+        return 'uuid';
+      }
+
+      // Check for increments (auto-increment number)
+      if (content.includes("table.increments('id')")) {
+        return 'number';
+      }
+
+      return 'string'; // Default
+    } catch (e) {
+      return 'string'; // Default to string (UUID is safer default)
+    }
+  }
+
+  /**
    * Map TypeBox types to TypeScript types
    */
   mapTypeBoxToTypeScript(typeboxType, params = '') {
@@ -2386,6 +2418,10 @@ class FrontendGenerator {
         ? kebabName.slice(0, -1)
         : kebabName;
 
+      // Detect ID type from backend schema
+      const idType = this.detectIdType(moduleName);
+      const isUUID = idType === 'uuid' || idType === 'string';
+
       const context = {
         moduleName,
         PascalCase: singularPascalName,
@@ -2398,6 +2434,8 @@ class FrontendGenerator {
         pluralLowerCase: camelName.toLowerCase(),
         typesFileName: `${kebabName}.types`,
         title: this.fieldNameToLabel(moduleName),
+        idType: idType,
+        isUUID: isUUID,
       };
 
       // Debug: Log context to verify variables

@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { UsersController } from './users.controller';
+import { FastifyInstance } from 'fastify';
 import { SchemaRefs } from '../../schemas/registry';
+import { UsersController } from './users.controller';
 
 export interface UsersRoutesOptions {
   controller: UsersController;
@@ -34,10 +34,7 @@ export async function usersRoutes(
           403: SchemaRefs.Forbidden,
           500: SchemaRefs.ServerError,
         },
-      },
-      onError: (request, _reply, error) => {
-        request.log.error({ err: error }, 'Error in users list endpoint');
-      },
+      }
     },
     controller.listUsers.bind(controller),
   );
@@ -409,6 +406,51 @@ export async function usersRoutes(
       },
     },
     controller.bulkChangeUserRoles.bind(controller),
+  );
+
+  // Bulk change user status (admin only)
+  typedFastify.post(
+    '/users/bulk/change-status',
+    {
+      preValidation: [
+        fastify.authenticate,
+        fastify.verifyPermission('users', 'bulk:change-status'),
+      ],
+      schema: {
+        description: 'Bulk change status for multiple users',
+        tags: ['Users', 'Bulk Operations'],
+        summary: 'Change status for multiple users at once',
+        security: [{ bearerAuth: [] }],
+        body: SchemaRefs.module('users', 'bulk-change-status-request'),
+        response: {
+          200: SchemaRefs.module('users', 'bulk-operation-response'),
+          400: SchemaRefs.ValidationError,
+          401: SchemaRefs.Unauthorized,
+          403: SchemaRefs.Forbidden,
+          422: SchemaRefs.ValidationError,
+          429: {
+            description: 'Rate limit exceeded',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean', const: false },
+              error: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string', const: 'RATE_LIMIT_EXCEEDED' },
+                  message: { type: 'string' },
+                  retryAfter: { type: 'number' },
+                },
+              },
+            },
+          },
+          500: SchemaRefs.ServerError,
+        },
+      },
+      onError: (request, _reply, error) => {
+        request.log.error({ err: error }, 'Error in bulk change status endpoint');
+      },
+    },
+    controller.bulkChangeUserStatus.bind(controller),
   );
 
   // Get users dropdown options

@@ -8,7 +8,12 @@ const UserEntitySchema = Type.Object({
   username: Type.String({ minLength: 3, maxLength: 100 }),
   firstName: Type.Optional(Type.String({ maxLength: 100 })),
   lastName: Type.Optional(Type.String({ maxLength: 100 })),
-  isActive: Type.Boolean(),
+  status: Type.Union([
+    Type.Literal('active'),
+    Type.Literal('inactive'),
+    Type.Literal('suspended'),
+    Type.Literal('pending'),
+  ]),
   lastLoginAt: Type.Optional(Type.String({ format: 'date-time' })),
   createdAt: Type.String({ format: 'date-time' }),
   updatedAt: Type.String({ format: 'date-time' }),
@@ -30,7 +35,12 @@ const ListUsersQuerySchema = Type.Object({
   search: Type.Optional(Type.String()),
   role: Type.Optional(Type.String()),
   status: Type.Optional(
-    Type.Union([Type.Literal('active'), Type.Literal('inactive')]),
+    Type.Union([
+      Type.Literal('active'),
+      Type.Literal('inactive'),
+      Type.Literal('suspended'),
+      Type.Literal('pending'),
+    ]),
   ),
   sortBy: Type.Optional(Type.String()),
   sortOrder: Type.Optional(
@@ -56,7 +66,14 @@ const CreateUserRequestSchema = Type.Object({
   // Support both roleId (UUID) and role (name) for flexibility
   roleId: Type.Optional(Type.String({ format: 'uuid' })),
   role: Type.Optional(Type.String()),
-  isActive: Type.Optional(Type.Boolean({ default: true })),
+  status: Type.Optional(
+    Type.Union([
+      Type.Literal('active'),
+      Type.Literal('inactive'),
+      Type.Literal('suspended'),
+      Type.Literal('pending'),
+    ])
+  ),
 });
 
 // Create user response - Using standard success response
@@ -69,7 +86,14 @@ const UpdateUserRequestSchema = Type.Object({
   firstName: Type.Optional(Type.String({ maxLength: 100 })),
   lastName: Type.Optional(Type.String({ maxLength: 100 })),
   roleId: Type.Optional(Type.String({ format: 'uuid' })),
-  isActive: Type.Optional(Type.Boolean()),
+  status: Type.Optional(
+    Type.Union([
+      Type.Literal('active'),
+      Type.Literal('inactive'),
+      Type.Literal('suspended'),
+      Type.Literal('pending'),
+    ])
+  ),
 });
 
 // Update user response - Using standard success response
@@ -159,8 +183,23 @@ const BulkUserIdsRequestSchema = Type.Object({
   }),
 });
 
-// Bulk status change (activate/deactivate) request
+// Bulk status change (activate/deactivate) request - Legacy schema
 const BulkStatusChangeRequestSchema = BulkUserIdsRequestSchema;
+
+// Bulk status change with target status - New schema for granular control
+const BulkChangeStatusRequestSchema = Type.Object({
+  userIds: Type.Array(Type.String({ format: 'uuid' }), {
+    minItems: 1,
+    maxItems: 100,
+    description: 'Array of user IDs to change status for (max 100)',
+  }),
+  status: Type.Union([
+    Type.Literal('active'),
+    Type.Literal('inactive'),
+    Type.Literal('suspended'),
+    Type.Literal('pending'),
+  ], { description: 'Target status to change users to' }),
+});
 
 // Bulk role change request
 const BulkRoleChangeRequestSchema = Type.Object({
@@ -209,6 +248,8 @@ const BulkErrorCodesSchema = Type.Union([
   Type.Literal('USER_ALREADY_INACTIVE'),
   Type.Literal('ROLE_NOT_FOUND'),
   Type.Literal('CANNOT_CHANGE_OWN_STATUS'),
+  Type.Literal('CANNOT_CHANGE_OWN_ROLE'),
+  Type.Literal('CANNOT_DEACTIVATE_SELF'),
   Type.Literal('CANNOT_CHANGE_ADMIN_STATUS'),
   Type.Literal('INSUFFICIENT_PERMISSIONS'),
   Type.Literal('USER_ALREADY_DELETED'),
@@ -234,6 +275,7 @@ export const usersSchemas = {
   // Bulk operation schemas
   'bulk-user-ids-request': BulkUserIdsRequestSchema,
   'bulk-status-change-request': BulkStatusChangeRequestSchema,
+  'bulk-change-status-request': BulkChangeStatusRequestSchema,
   'bulk-role-change-request': BulkRoleChangeRequestSchema,
   'bulk-operation-response': BulkOperationResponseSchema,
 };
@@ -268,6 +310,7 @@ export type BulkUserIdsRequest = Static<typeof BulkUserIdsRequestSchema>;
 export type BulkStatusChangeRequest = Static<
   typeof BulkStatusChangeRequestSchema
 >;
+export type BulkChangeStatusRequest = Static<typeof BulkChangeStatusRequestSchema>;
 export type BulkRoleChangeRequest = Static<typeof BulkRoleChangeRequestSchema>;
 export type BulkOperationResponse = Static<typeof BulkOperationResponseSchema>;
 export type BulkOperationResult = Static<typeof BulkOperationResultSchema>;

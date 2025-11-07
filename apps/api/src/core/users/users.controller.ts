@@ -10,6 +10,7 @@ import {
   ChangeUserPasswordRequest,
   SelfPasswordChangeRequest,
   BulkStatusChangeRequest,
+  BulkChangeStatusRequest,
   BulkUserIdsRequest,
   BulkRoleChangeRequest,
 } from './users.schemas';
@@ -87,6 +88,7 @@ export class UsersController {
     const user = await this.usersService.updateUser(
       request.params.id,
       request.body,
+      request.user.id,
     );
 
     // Emit real-time event
@@ -474,6 +476,56 @@ export class UsersController {
           operation: 'bulk_role_change',
         },
         'Error in bulk role change',
+      );
+      throw error;
+    }
+  }
+
+  async bulkChangeUserStatus(
+    request: FastifyRequest<{ Body: BulkChangeStatusRequest }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const currentUserId = request.user.id;
+      request.log.info(
+        {
+          userIds: request.body.userIds,
+          targetStatus: request.body.status,
+          requestedBy: currentUserId,
+          operation: 'bulk_change_status',
+        },
+        'Bulk change status requested',
+      );
+
+      const result = await this.usersService.bulkChangeUserStatus(
+        request.body.userIds,
+        request.body.status,
+        currentUserId,
+      );
+
+      request.log.info(
+        {
+          totalRequested: result.totalRequested,
+          successCount: result.successCount,
+          failureCount: result.failureCount,
+          targetStatus: request.body.status,
+          operation: 'bulk_change_status',
+        },
+        'Bulk change status operation completed',
+      );
+
+      return reply.success(result, 'Bulk status change completed');
+    } catch (error) {
+      request.log.error(
+        {
+          error,
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
+          userIds: request.body.userIds,
+          targetStatus: request.body.status,
+          operation: 'bulk_change_status',
+        },
+        'Error in bulk change status',
       );
       throw error;
     }

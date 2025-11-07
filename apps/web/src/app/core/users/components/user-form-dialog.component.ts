@@ -9,7 +9,6 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -37,7 +36,6 @@ interface DialogData {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -156,11 +154,18 @@ interface DialogData {
           </mat-form-field>
 
           <!-- Status -->
-          <div class="flex items-center h-14">
-            <mat-slide-toggle formControlName="isActive" color="primary">
-              Active Account
-            </mat-slide-toggle>
-          </div>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="active">Active</mat-option>
+              <mat-option value="inactive">Inactive</mat-option>
+              <mat-option value="suspended">Suspended</mat-option>
+              <mat-option value="pending">Pending</mat-option>
+            </mat-select>
+            <mat-error *ngIf="userForm.get('status')?.hasError('required')">
+              Status is required
+            </mat-error>
+          </mat-form-field>
         </div>
       </form>
     </mat-dialog-content>
@@ -232,7 +237,7 @@ export class UserFormDialogComponent implements OnInit {
         : [],
     ],
     roleId: ['', Validators.required],
-    isActive: [true],
+    status: ['active', Validators.required],
   });
 
   ngOnInit() {
@@ -246,7 +251,7 @@ export class UserFormDialogComponent implements OnInit {
         email: this.data.user.email,
         username: this.data.user.username,
         roleId: this.data.user.roleId,
-        isActive: this.data.user.isActive,
+        status: this.data.user.status,
       });
 
       // Disable fields that shouldn't be edited
@@ -288,7 +293,7 @@ export class UserFormDialogComponent implements OnInit {
           lastName: formValue.lastName!,
           password: formValue.password!,
           roleId: formValue.roleId!,
-          isActive: formValue.isActive!,
+          status: formValue.status! as any,
         };
 
         await this.userService.createUser(createData);
@@ -300,7 +305,7 @@ export class UserFormDialogComponent implements OnInit {
           firstName: formValue.firstName!,
           lastName: formValue.lastName!,
           roleId: formValue.roleId!,
-          isActive: formValue.isActive!,
+          status: formValue.status! as any,
         };
 
         await this.userService.updateUser(this.data.user!.id, updateData);

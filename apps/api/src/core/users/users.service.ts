@@ -102,11 +102,33 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: string, data: UserUpdateData): Promise<UserWithRole> {
+  async updateUser(
+    id: string,
+    data: UserUpdateData,
+    currentUserId?: string,
+  ): Promise<UserWithRole> {
     // Check if user exists
     const existingUser = await this.usersRepository.findById(id);
     if (!existingUser) {
       throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+    }
+
+    // Security: Prevent user from changing their own status or role
+    if (currentUserId && id === currentUserId) {
+      if (data.status !== undefined) {
+        throw new AppError(
+          'Cannot change your own account status',
+          403,
+          'CANNOT_CHANGE_OWN_STATUS',
+        );
+      }
+      if (data.roleId !== undefined) {
+        throw new AppError(
+          'Cannot change your own role',
+          403,
+          'CANNOT_CHANGE_OWN_ROLE',
+        );
+      }
     }
 
     // Check if email is being changed and already exists
@@ -294,11 +316,11 @@ export class UsersService {
     currentUserId: string,
   ): Promise<BulkOperationResult> {
     return this.executeBulkOperation(userIds, currentUserId, 'activate', {
-      validateCurrentState: (user) => !user.isActive,
+      validateCurrentState: (user) => user.status !== 'active',
       stateErrorCode: 'USER_ALREADY_ACTIVE',
       stateErrorMessage: 'User is already active',
       operation: async (userId) => {
-        await this.usersRepository.update(userId, { isActive: true });
+        await this.usersRepository.update(userId, { status: 'active' });
       },
     });
   }
@@ -311,11 +333,11 @@ export class UsersService {
     currentUserId: string,
   ): Promise<BulkOperationResult> {
     return this.executeBulkOperation(userIds, currentUserId, 'deactivate', {
-      validateCurrentState: (user) => user.isActive,
+      validateCurrentState: (user) => user.status === 'active',
       stateErrorCode: 'USER_ALREADY_INACTIVE',
       stateErrorMessage: 'User is already inactive',
       operation: async (userId) => {
-        await this.usersRepository.update(userId, { isActive: false });
+        await this.usersRepository.update(userId, { status: 'inactive' });
       },
     });
   }
@@ -363,17 +385,41 @@ export class UsersService {
   }
 
   /**
+   * Bulk change user status with proper error handling and business rules
+   */
+  async bulkChangeUserStatus(
+    userIds: string[],
+    targetStatus: 'active' | 'inactive' | 'suspended' | 'pending',
+    currentUserId: string,
+  ): Promise<BulkOperationResult> {
+    return this.executeBulkOperation(userIds, currentUserId, 'status-change', {
+      validateCurrentState: (user) => user.status !== targetStatus,
+      stateErrorCode: 'USER_ALREADY_HAS_STATUS',
+      stateErrorMessage: `User already has status: ${targetStatus}`,
+      operation: async (userId) => {
+        await this.usersRepository.update(userId, { status: targetStatus });
+      },
+      // Special handling: prevent deactivation of self, but allow other status changes
+      allowSelfModification: (user, userId, currentUser) => {
+        // Allow self-modification only if NOT changing to 'inactive'
+        return targetStatus !== 'inactive';
+      },
+    });
+  }
+
+  /**
    * Generic bulk operation executor with business rule validation
    */
   private async executeBulkOperation(
     userIds: string[],
     currentUserId: string,
-    operationType: 'activate' | 'deactivate' | 'delete' | 'role-change',
+    operationType: 'activate' | 'deactivate' | 'delete' | 'role-change' | 'status-change',
     options: {
       validateCurrentState: (user: UserWithRole) => boolean;
       stateErrorCode: string;
       stateErrorMessage: string;
       operation: (userId: string) => Promise<void>;
+      allowSelfModification?: (user: UserWithRole, userId: string, currentUserId: string) => boolean;
     },
   ): Promise<BulkOperationResult> {
     const results: BulkOperationResult['results'] = [];
@@ -400,27 +446,53 @@ export class UsersService {
           continue;
         }
 
-        // Business rule: Cannot modify own account (for deactivate/delete)
-        if (
-          (operationType === 'deactivate' || operationType === 'delete') &&
-          userId === currentUserId
-        ) {
-          results.push({
-            userId,
-            success: false,
-            error: {
-              code:
-                operationType === 'delete'
-                  ? 'CANNOT_DELETE_SELF'
-                  : 'CANNOT_DEACTIVATE_SELF',
-              message:
-                operationType === 'delete'
-                  ? 'Cannot delete your own account'
-                  : 'Cannot deactivate your own account',
-            },
-          });
-          failureCount++;
-          continue;
+        // Business rule: Check if self-modification is allowed for this operation
+        if (userId === currentUserId) {
+          // For some operations, self-modification is never allowed
+          if (
+            operationType === 'deactivate' ||
+            operationType === 'delete' ||
+            operationType === 'role-change'
+          ) {
+            results.push({
+              userId,
+              success: false,
+              error: {
+                code:
+                  operationType === 'delete'
+                    ? 'CANNOT_DELETE_SELF'
+                    : operationType === 'deactivate'
+                      ? 'CANNOT_DEACTIVATE_SELF'
+                      : 'CANNOT_CHANGE_OWN_ROLE',
+                message:
+                  operationType === 'delete'
+                    ? 'Cannot delete your own account'
+                    : operationType === 'deactivate'
+                      ? 'Cannot deactivate your own account'
+                      : 'Cannot change your own role',
+              },
+            });
+            failureCount++;
+            continue;
+          }
+
+          // For status-change, check if the specific status change is allowed for self
+          if (
+            operationType === 'status-change' &&
+            options.allowSelfModification &&
+            !options.allowSelfModification(user, userId, currentUserId)
+          ) {
+            results.push({
+              userId,
+              success: false,
+              error: {
+                code: 'CANNOT_CHANGE_OWN_STATUS',
+                message: 'Cannot change your own account to this status',
+              },
+            });
+            failureCount++;
+            continue;
+          }
         }
 
         // Business rule: Validate current state

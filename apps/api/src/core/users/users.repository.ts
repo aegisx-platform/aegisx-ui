@@ -62,9 +62,8 @@ export class UsersRepository {
     }
 
     if (status) {
-      const isActive = status === 'active';
-      query = query.where('users.is_active', isActive);
-      countQuery = countQuery.where('users.is_active', isActive);
+      query = query.where('users.status', status);
+      countQuery = countQuery.where('users.status', status);
     }
 
     // Get total count
@@ -140,7 +139,7 @@ export class UsersRepository {
           password: data.password,
           first_name: data.firstName,
           last_name: data.lastName,
-          is_active: data.isActive ?? true,
+          status: data.status ?? 'active',
         })
         .returning('*');
 
@@ -176,7 +175,7 @@ export class UsersRepository {
       if (data.username !== undefined) updateData.username = data.username;
       if (data.firstName !== undefined) updateData.first_name = data.firstName;
       if (data.lastName !== undefined) updateData.last_name = data.lastName;
-      if (data.isActive !== undefined) updateData.is_active = data.isActive;
+      if (data.status !== undefined) updateData.status = data.status;
 
       const [user] = await trx('users')
         .where('id', id)
@@ -239,7 +238,7 @@ export class UsersRepository {
       username: row.username,
       firstName: row.first_name,
       lastName: row.last_name,
-      isActive: row.is_active,
+      status: row.status,
       lastLoginAt: row.last_login_at ? new Date(row.last_login_at) : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
@@ -265,7 +264,7 @@ export class UsersRepository {
         'users.last_name',
         'users.bio',
         'users.avatar_url',
-        'users.is_active',
+        'users.status',
         'users.email_verified',
         'users.created_at',
         'users.updated_at',
@@ -287,7 +286,7 @@ export class UsersRepository {
       bio: user.bio,
       avatarUrl: user.avatar_url,
       role: user.role || 'user',
-      status: user.is_active ? 'active' : 'inactive',
+      status: user.status,
       emailVerified: user.email_verified || false,
       createdAt: new Date(user.created_at),
       updatedAt: new Date(user.updated_at),
@@ -372,7 +371,7 @@ export class UsersRepository {
       lastName: user.last_name,
       avatar: user.avatar_url,
       bio: user.bio,
-      isActive: user.is_active,
+      status: user.status,
       isEmailVerified: user.email_verified,
       lastLoginAt: user.last_login_at
         ? new Date(user.last_login_at)
@@ -412,7 +411,7 @@ export class UsersRepository {
       username: user.username,
       firstName: user.first_name,
       lastName: user.last_name,
-      isActive: user.is_active,
+      status: user.status,
       lastLoginAt: user.last_login_at
         ? new Date(user.last_login_at)
         : undefined,

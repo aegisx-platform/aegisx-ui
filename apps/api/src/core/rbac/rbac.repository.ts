@@ -29,12 +29,19 @@ export class RbacRepository {
   async getRoles(
     query: RoleQuery,
   ): Promise<{ roles: Role[]; pagination: PaginationMeta }> {
-    let baseQuery = this.db('roles')
-      .select([
-        'roles.*',
+    // Build select columns - include user_count only if requested
+    const selectColumns = ['roles.*'];
+    if (query.include_user_count) {
+      selectColumns.push(
         this.db.raw('COALESCE(user_role_counts.user_count, 0) as user_count'),
-      ])
-      .leftJoin(
+      );
+    }
+
+    let baseQuery = this.db('roles').select(selectColumns);
+
+    // Only join user_role_counts if requested
+    if (query.include_user_count) {
+      baseQuery = baseQuery.leftJoin(
         this.db('user_roles')
           .select('role_id')
           .count('* as user_count')
@@ -44,6 +51,7 @@ export class RbacRepository {
         'roles.id',
         'user_role_counts.role_id',
       );
+    }
 
     // Apply filters
     if (query.search) {
@@ -98,6 +106,12 @@ export class RbacRepository {
           'permissions.resource',
           'permissions.action',
           'permissions.description',
+          'permissions.category',
+          'permissions.is_system_permission',
+          'permissions.is_active',
+          'permissions.conditions',
+          'permissions.created_at',
+          'permissions.updated_at',
         ])
         .whereIn('role_permissions.role_id', roleIds)
         .where('permissions.is_active', true);
@@ -108,11 +122,19 @@ export class RbacRepository {
           if (!acc[rp.role_id]) {
             acc[rp.role_id] = [];
           }
+          // Validate and construct permission object with all required fields
           acc[rp.role_id].push({
             id: rp.id,
             resource: rp.resource,
             action: rp.action,
-            description: rp.description,
+            description: rp.description || '',
+            category: rp.category || 'general',
+            is_system_permission: rp.is_system_permission || false,
+            is_active: rp.is_active || true,
+            conditions: rp.conditions || null,
+            created_at: rp.created_at,
+            updated_at: rp.updated_at,
+            role_count: 0, // Will be populated if needed
           });
           return acc;
         },
@@ -165,11 +187,26 @@ export class RbacRepository {
           'permissions.resource',
           'permissions.action',
           'permissions.description',
+          'permissions.category',
+          'permissions.is_system_permission',
+          'permissions.is_active',
+          'permissions.conditions',
+          'permissions.created_at',
+          'permissions.updated_at',
         ])
         .where('role_permissions.role_id', id)
         .where('permissions.is_active', true);
 
-      (role as any).permissions = permissions;
+      // Ensure all required fields are present with defaults if missing
+      (role as any).permissions = permissions.map((p: any) => ({
+        ...p,
+        description: p.description || '',
+        category: p.category || 'general',
+        is_system_permission: p.is_system_permission || false,
+        is_active: p.is_active || true,
+        conditions: p.conditions || null,
+        role_count: 0,
+      }));
     } else {
       (role as any).permissions = [];
     }

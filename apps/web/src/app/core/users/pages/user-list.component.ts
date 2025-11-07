@@ -20,8 +20,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AegisxCardComponent } from '@aegisx/ui';
-import { UserService, BulkOperationResult } from '../services/user.service';
+import { UserService, BulkOperationResult, UserStatus } from '../services/user.service';
 import { UserFormDialogComponent } from '../components/user-form-dialog.component';
+import { BulkStatusChangeDialogComponent } from '../components/bulk-status-change-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 
 @Component({
@@ -112,6 +113,8 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
               <mat-option value="">All Status</mat-option>
               <mat-option value="active">Active</mat-option>
               <mat-option value="inactive">Inactive</mat-option>
+              <mat-option value="suspended">Suspended</mat-option>
+              <mat-option value="pending">Pending</mat-option>
             </mat-select>
           </mat-form-field>
 
@@ -191,6 +194,10 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
               </button>
 
               <mat-menu #bulkMenu="matMenu">
+                <button mat-menu-item (click)="openBulkChangeStatusDialog()">
+                  <mat-icon>settings</mat-icon>
+                  Change Status
+                </button>
                 <button mat-menu-item (click)="openBulkRoleChangeDialog()">
                   <mat-icon>manage_accounts</mat-icon>
                   Change Role
@@ -246,22 +253,23 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
                 <th mat-header-cell *matHeaderCellDef class="w-16">
-                  <mat-slide-toggle
+                  <mat-checkbox
                     [checked]="isAllSelected()"
+                    [indeterminate]="!isAllSelected() && selectedUsers().length > 0"
                     (change)="toggleAllSelection($event)"
                     color="primary"
-                  ></mat-slide-toggle>
+                  ></mat-checkbox>
                 </th>
                 <td
                   mat-cell
                   *matCellDef="let user"
                   (click)="$event.stopPropagation()"
                 >
-                  <mat-slide-toggle
+                  <mat-checkbox
                     [checked]="isSelected(user)"
                     (change)="toggleSelection(user)"
                     color="primary"
-                  ></mat-slide-toggle>
+                  ></mat-checkbox>
                 </td>
               </ng-container>
 
@@ -334,12 +342,60 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                   mat-cell
                   *matCellDef="let user"
                   (click)="$event.stopPropagation()"
+                  class="relative"
                 >
-                  <mat-slide-toggle
-                    [checked]="user.isActive"
-                    (change)="toggleUserStatus(user)"
-                    color="primary"
-                  ></mat-slide-toggle>
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="statusMenu"
+                    [matTooltip]="user.status ? (user.status | titlecase) : 'Unknown Status'"
+                    [ngClass]="{
+                      'text-green-600': user.status === 'active',
+                      'text-gray-500': user.status === 'inactive',
+                      'text-red-600': user.status === 'suspended',
+                      'text-yellow-600': user.status === 'pending',
+                      'text-gray-400': !user.status
+                    }"
+                    class="text-sm font-medium"
+                  >
+                    <mat-icon class="mr-1">
+                      {{ getStatusIcon(user.status || '') }}
+                    </mat-icon>
+                    <span>{{ user.status ? (user.status | titlecase) : '?' }}</span>
+                  </button>
+                  <mat-menu #statusMenu="matMenu">
+                    <button
+                      mat-menu-item
+                      [disabled]="user.status === 'active'"
+                      (click)="updateUserStatus(user, 'active')"
+                    >
+                      <mat-icon class="text-green-600">check_circle</mat-icon>
+                      <span>Active</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      [disabled]="user.status === 'inactive'"
+                      (click)="updateUserStatus(user, 'inactive')"
+                    >
+                      <mat-icon class="text-gray-500">cancel</mat-icon>
+                      <span>Inactive</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      [disabled]="user.status === 'suspended'"
+                      (click)="updateUserStatus(user, 'suspended')"
+                    >
+                      <mat-icon class="text-red-600">block</mat-icon>
+                      <span>Suspended</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      [disabled]="user.status === 'pending'"
+                      (click)="updateUserStatus(user, 'pending')"
+                    >
+                      <mat-icon class="text-yellow-600">schedule</mat-icon>
+                      <span>Pending</span>
+                    </button>
+                  </mat-menu>
                 </td>
               </ng-container>
 
@@ -553,9 +609,7 @@ export class UserListComponent implements OnInit {
     }
 
     if (this.selectedStatus) {
-      filtered = filtered.filter((user) =>
-        this.selectedStatus === 'active' ? user.isActive : !user.isActive,
-      );
+      filtered = filtered.filter((user) => user.status === this.selectedStatus);
     }
 
     return filtered;
@@ -655,11 +709,17 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  async toggleUserStatus(user: any): Promise<void> {
+  async updateUserStatus(user: any, newStatus: string): Promise<void> {
     try {
-      await this.userService.updateUser(user.id, { isActive: !user.isActive });
+      await this.userService.updateUser(user.id, { status: newStatus as any });
+      const statusMessages: Record<string, string> = {
+        'active': 'activated',
+        'inactive': 'deactivated',
+        'suspended': 'suspended',
+        'pending': 'set to pending',
+      };
       this.snackBar.open(
-        `User ${user.isActive ? 'deactivated' : 'activated'} successfully`,
+        `User ${statusMessages[newStatus] || 'status changed'} successfully`,
         'Close',
         { duration: 3000 },
       );
@@ -668,6 +728,21 @@ export class UserListComponent implements OnInit {
         duration: 3000,
         panelClass: ['error-snackbar'],
       });
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'active':
+        return 'check_circle';
+      case 'inactive':
+        return 'cancel';
+      case 'suspended':
+        return 'block';
+      case 'pending':
+        return 'schedule';
+      default:
+        return 'help';
     }
   }
 
@@ -846,6 +921,21 @@ export class UserListComponent implements OnInit {
     }
   }
 
+  async openBulkChangeStatusDialog(): Promise<void> {
+    const dialogRef = this.dialog.open(BulkStatusChangeDialogComponent, {
+      width: '400px',
+      data: {
+        selectedUserCount: this.selectedUsers().length,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((status) => {
+      if (status) {
+        this.bulkChangeUserStatus(status);
+      }
+    });
+  }
+
   async bulkChangeRoles(roleId: string): Promise<void> {
     if (this.selectedUsers().length === 0 || !roleId) return;
 
@@ -862,6 +952,30 @@ export class UserListComponent implements OnInit {
     } catch (error: any) {
       this.snackBar.open(
         error.message || 'Failed to change user roles',
+        'Close',
+        { duration: 3000, panelClass: ['error-snackbar'] },
+      );
+    } finally {
+      this.bulkLoading.set(false);
+    }
+  }
+
+  async bulkChangeUserStatus(status: UserStatus): Promise<void> {
+    if (this.selectedUsers().length === 0) return;
+
+    this.bulkLoading.set(true);
+    try {
+      const userIds = this.selectedUsers().map((user) => user.id);
+      const result = await this.userService.bulkChangeUserStatus(
+        userIds,
+        status,
+      );
+
+      this.showBulkOperationResult(result, 'Status Change');
+      this.selectedUsers.set([]);
+    } catch (error: any) {
+      this.snackBar.open(
+        error.message || 'Failed to change user status',
         'Close',
         { duration: 3000, panelClass: ['error-snackbar'] },
       );

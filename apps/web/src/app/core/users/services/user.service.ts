@@ -8,13 +8,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
+export type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending';
+
 export interface User {
   id: string;
   email: string;
   username: string;
   firstName: string;
   lastName: string;
-  isActive: boolean;
+  status: UserStatus;
   role: string; // Deprecated: Use roles[] for multi-role support
   roleId: string; // Deprecated: Use roleIds[] for multi-role support
   roles?: string[]; // Multi-role support
@@ -43,7 +45,7 @@ export interface SimpleUser {
   firstName: string;
   lastName: string;
   email: string;
-  isActive: boolean;
+  status: UserStatus;
 }
 
 export interface CreateUserRequest {
@@ -53,13 +55,13 @@ export interface CreateUserRequest {
   lastName: string;
   password: string;
   roleId: string;
-  isActive?: boolean;
+  status?: UserStatus;
 }
 
 export interface UpdateUserRequest {
   firstName?: string;
   lastName?: string;
-  isActive?: boolean;
+  status?: UserStatus;
   roleId?: string;
 }
 
@@ -68,7 +70,7 @@ interface GetUsersParams {
   limit?: number;
   search?: string;
   role?: string;
-  status?: 'active' | 'inactive';
+  status?: UserStatus;
 }
 
 export interface BulkOperationResult {
@@ -241,13 +243,13 @@ export class UserService {
     return this.usersSignal().map((user) => ({
       value: user.id,
       label: `${user.firstName} ${user.lastName} (${user.email})`,
-      disabled: !user.isActive,
+      disabled: user.status !== 'active',
     }));
   });
 
   readonly activeUserOptions = computed(() => {
     return this.usersSignal()
-      .filter((user) => user.isActive)
+      .filter((user) => user.status === 'active')
       .map((user) => ({
         value: user.id,
         label: `${user.firstName} ${user.lastName}`,
@@ -532,6 +534,52 @@ export class UserService {
     }
   }
 
+  async bulkSuspendUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/suspend`,
+          {
+            userIds,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk suspend failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to suspend users');
+      throw error;
+    }
+  }
+
+  async bulkSetPendingUsers(userIds: string[]): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/pending`,
+          {
+            userIds,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk set pending failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to set users to pending');
+      throw error;
+    }
+  }
+
   async bulkDeleteUsers(userIds: string[]): Promise<BulkOperationResult> {
     try {
       const response = await this.http
@@ -575,6 +623,33 @@ export class UserService {
       throw new Error('Bulk role change failed');
     } catch (error: any) {
       this.errorSignal.set(error.message || 'Failed to change user roles');
+      throw error;
+    }
+  }
+
+  async bulkChangeUserStatus(
+    userIds: string[],
+    status: UserStatus,
+  ): Promise<BulkOperationResult> {
+    try {
+      const response = await this.http
+        .post<ApiResponse<BulkOperationResult>>(
+          `${this.baseUrl}/bulk/change-status`,
+          {
+            userIds,
+            status,
+          },
+        )
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh users list after bulk operation
+        await this.loadUsers();
+        return response.data;
+      }
+      throw new Error('Bulk change status failed');
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to change user status');
       throw error;
     }
   }

@@ -73,11 +73,13 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         maxLength: 255,
         description: 'Name value (max 255 characters)',
         defaultExample: 'Example Name',
+
         validators: [
           TestProductsImportService.validateNameUniqueness(
             testProductsRepository,
           ),
         ],
+
         errorMessages: {
           unique:
             TestProductsErrorMessages[TestProductsErrorCode.DUPLICATE_NAME],
@@ -156,8 +158,9 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         required: false,
         type: 'string',
 
-        description: 'Metadata value (JSON string)',
-        defaultExample: '{"key":"value"}',
+        description: 'Metadata value',
+        defaultExample: 'Sample value',
+
         transformer: TestProductsImportService.transformMetadata,
       },
       {
@@ -166,8 +169,9 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         required: false,
         type: 'string',
 
-        description: 'Settings value (JSON string)',
-        defaultExample: '{"key":"value"}',
+        description: 'Settings value',
+        defaultExample: 'Sample value',
+
         transformer: TestProductsImportService.transformSettings,
       },
       {
@@ -220,13 +224,6 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         }
       } catch (error) {
         console.error('Code uniqueness check failed:', error);
-        return {
-          field: 'code',
-          message: 'Failed to check code uniqueness',
-          code: TestProductsErrorCode.VALIDATION_ERROR,
-          severity: ImportValidationSeverity.ERROR,
-          value,
-        };
       }
 
       return null;
@@ -260,13 +257,6 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         }
       } catch (error) {
         console.error('Name uniqueness check failed:', error);
-        return {
-          field: 'name',
-          message: 'Failed to check name uniqueness',
-          code: TestProductsErrorCode.VALIDATION_ERROR,
-          severity: ImportValidationSeverity.ERROR,
-          value,
-        };
       }
 
       return null;
@@ -302,7 +292,7 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
   }
 
   /**
-   * Transform metadata field values (JSON string to object)
+   * Transform metadata field values
    */
   private static transformMetadata(value: any, _row: any): any {
     if (!value) return undefined;
@@ -319,7 +309,7 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
   }
 
   /**
-   * Transform settings field values (JSON string to object)
+   * Transform settings field values
    */
   private static transformSettings(value: any, _row: any): any {
     if (!value) return undefined;
@@ -352,13 +342,9 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         row.is_featured,
         row,
       ),
-      display_order: row.display_order
-        ? parseInt(row.display_order, 10)
-        : undefined,
-      item_count: row.item_count ? parseInt(row.item_count, 10) : undefined,
-      discount_rate: row.discount_rate
-        ? parseFloat(row.discount_rate)
-        : undefined,
+      display_order: row.display_order,
+      item_count: row.item_count,
+      discount_rate: row.discount_rate,
       metadata: TestProductsImportService.transformMetadata(row.metadata, row),
       settings: TestProductsImportService.transformSettings(row.settings, row),
       status: row.status,

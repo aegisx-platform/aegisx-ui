@@ -47,11 +47,15 @@ import {
   AxDialogService,
   BreadcrumbComponent,
 } from '@aegisx/ui';
+{{#if includeEnhanced}}
 import {
   ExportOptions,
   ExportService,
   SharedExportComponent,
 } from '../../../shared/components/shared-export/shared-export.component';
+{{else}}
+import { SharedExportComponent } from '../../../shared/components/shared-export/shared-export.component';
+{{/if}}
 import { {{pascalCaseHelper singularName}}Service } from '../services/{{kebabCase}}.service';
 import { {{pascalCaseHelper singularName}}, List{{pascalCaseHelper singularName}}Query } from '../types/{{kebabCase}}.types';
 {{#if withEvents}}
@@ -340,6 +344,7 @@ export class {{pascalCaseHelper moduleName}}ListComponent {
     recentWeek: 0,
   }));
 
+{{#if includeEnhanced}}
   // Export configuration
   exportServiceAdapter: ExportService = {
     export: (options: ExportOptions) => this.{{camelCaseHelper moduleName}}Service.export{{pascalCaseHelper singularName}}(options),
@@ -353,6 +358,7 @@ export class {{pascalCaseHelper moduleName}}ListComponent {
     { key: 'created_at', label: 'Created At' },
     { key: 'updated_at', label: 'Updated At' },
   ];
+{{/if}}
 
   ngAfterViewInit() {
     this.cdr.detectChanges();
@@ -866,6 +872,7 @@ export class {{pascalCaseHelper moduleName}}ListComponent {
       });
   }
 
+{{#if includeEnhanced}}
   // Export Event Handlers
   onExportStarted(options: ExportOptions) {
     this.snackBar.open(
@@ -896,6 +903,7 @@ export class {{pascalCaseHelper moduleName}}ListComponent {
       );
     }
   }
+{{/if}}
 
   // Filter Helpers
   getExportFilters(): Record<string, unknown> {

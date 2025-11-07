@@ -124,11 +124,13 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     <span
                       class="px-2 py-1 text-xs font-medium rounded-full"
                       [ngClass]="{
-                        'bg-green-100 text-green-800': user()!.isActive,
-                        'bg-red-100 text-red-800': !user()!.isActive,
+                        'bg-green-100 text-green-800': user()!.status === 'active',
+                        'bg-gray-100 text-gray-800': user()!.status === 'inactive',
+                        'bg-red-100 text-red-800': user()!.status === 'suspended',
+                        'bg-yellow-100 text-yellow-800': user()!.status === 'pending',
                       }"
                     >
-                      {{ user()!.isActive ? 'Active' : 'Inactive' }}
+                      {{ user()!.status | titlecase }}
                     </span>
                   </span>
                 </mat-list-item>

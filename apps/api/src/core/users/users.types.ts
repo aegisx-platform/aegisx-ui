@@ -4,7 +4,7 @@ export interface User {
   username: string;
   firstName?: string;
   lastName?: string;
-  isActive: boolean;
+  status: 'active' | 'inactive' | 'suspended' | 'pending';
   lastLoginAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -29,7 +29,7 @@ export interface UserCreateData {
   lastName?: string;
   roleId?: string; // Optional - can be provided directly
   role?: string; // Optional - role name to be converted to roleId
-  isActive?: boolean;
+  status?: 'active' | 'inactive' | 'suspended' | 'pending';
 }
 
 export interface UserUpdateData {
@@ -38,7 +38,7 @@ export interface UserUpdateData {
   firstName?: string;
   lastName?: string;
   roleId?: string;
-  isActive?: boolean;
+  status?: 'active' | 'inactive' | 'suspended' | 'pending';
 }
 
 export interface UserListOptions {
@@ -46,7 +46,7 @@ export interface UserListOptions {
   limit?: number;
   search?: string;
   role?: string;
-  status?: 'active' | 'inactive';
+  status?: 'active' | 'inactive' | 'suspended' | 'pending';
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }

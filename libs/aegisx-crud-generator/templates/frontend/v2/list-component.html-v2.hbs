@@ -38,6 +38,7 @@
         (dateFilterChange)="onDateFilterChange($event)"
       >
         <!-- Export Button Slot -->
+{{#if includeEnhanced}}
         <app-export
           export
           [exportService]="exportServiceAdapter"
@@ -48,6 +49,7 @@
           (exportStarted)="onExportStarted($event)"
           (exportCompleted)="onExportCompleted($event)"
         ></app-export>
+{{/if}}
 
         <!-- Filter Chips Slot -->
         <div filter-chips>
