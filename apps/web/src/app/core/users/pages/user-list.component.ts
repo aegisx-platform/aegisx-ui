@@ -20,7 +20,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AegisxCardComponent } from '@aegisx/ui';
-import { UserService, BulkOperationResult, UserStatus } from '../services/user.service';
+import {
+  UserService,
+  BulkOperationResult,
+  UserStatus,
+} from '../services/user.service';
 import { UserFormDialogComponent } from '../components/user-form-dialog.component';
 import { BulkStatusChangeDialogComponent } from '../components/bulk-status-change-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
@@ -49,6 +53,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
     MatCheckboxModule,
     MatTooltipModule,
     AegisxCardComponent,
+    BulkStatusChangeDialogComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -255,7 +260,9 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                 <th mat-header-cell *matHeaderCellDef class="w-16">
                   <mat-checkbox
                     [checked]="isAllSelected()"
-                    [indeterminate]="!isAllSelected() && selectedUsers().length > 0"
+                    [indeterminate]="
+                      !isAllSelected() && selectedUsers().length > 0
+                    "
                     (change)="toggleAllSelection($event)"
                     color="primary"
                   ></mat-checkbox>
@@ -347,20 +354,24 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                   <button
                     mat-icon-button
                     [matMenuTriggerFor]="statusMenu"
-                    [matTooltip]="user.status ? (user.status | titlecase) : 'Unknown Status'"
+                    [matTooltip]="
+                      user.status ? (user.status | titlecase) : 'Unknown Status'
+                    "
                     [ngClass]="{
                       'text-green-600': user.status === 'active',
                       'text-gray-500': user.status === 'inactive',
                       'text-red-600': user.status === 'suspended',
                       'text-yellow-600': user.status === 'pending',
-                      'text-gray-400': !user.status
+                      'text-gray-400': !user.status,
                     }"
                     class="text-sm font-medium"
                   >
                     <mat-icon class="mr-1">
                       {{ getStatusIcon(user.status || '') }}
                     </mat-icon>
-                    <span>{{ user.status ? (user.status | titlecase) : '?' }}</span>
+                    <span>{{
+                      user.status ? (user.status | titlecase) : '?'
+                    }}</span>
                   </button>
                   <mat-menu #statusMenu="matMenu">
                     <button
@@ -713,10 +724,10 @@ export class UserListComponent implements OnInit {
     try {
       await this.userService.updateUser(user.id, { status: newStatus as any });
       const statusMessages: Record<string, string> = {
-        'active': 'activated',
-        'inactive': 'deactivated',
-        'suspended': 'suspended',
-        'pending': 'set to pending',
+        active: 'activated',
+        inactive: 'deactivated',
+        suspended: 'suspended',
+        pending: 'set to pending',
       };
       this.snackBar.open(
         `User ${statusMessages[newStatus] || 'status changed'} successfully`,
