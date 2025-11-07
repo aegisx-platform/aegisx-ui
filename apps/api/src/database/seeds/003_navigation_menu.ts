@@ -66,7 +66,7 @@ export async function seed(knex: Knex): Promise<void> {
       show_in_mobile: true,
       disabled: false,
       hidden: false,
-      exact_match: false,
+      exact_match: true,
     },
 
     // 2. User Management (Parent)
