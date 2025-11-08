@@ -5,7 +5,14 @@
  * and synchronization with application configuration.
  */
 
-import { Injectable, inject, signal, computed, DOCUMENT } from '@angular/core';
+import {
+  Injectable,
+  inject,
+  signal,
+  computed,
+  DOCUMENT,
+  afterNextRender,
+} from '@angular/core';
 import { AegisxConfigService } from '../config/config.service';
 import { M3Theme, M3ThemeState } from './m3-theme.types';
 import { generateM3Palette, lightenColor, darkenColor } from './m3-color-utils';
@@ -16,6 +23,7 @@ import { generateM3Palette, lightenColor, darkenColor } from './m3-color-utils';
 export class M3ThemeService {
   private readonly document = inject(DOCUMENT);
   private readonly configService = inject(AegisxConfigService);
+  private themeStyleElement: HTMLStyleElement | null = null;
 
   /**
    * Pre-defined Material 3 themes
@@ -63,7 +71,7 @@ export class M3ThemeService {
   /**
    * Current theme ID signal
    */
-  private readonly _currentTheme = signal<string>('blue');
+  private readonly _currentTheme = signal<string>('brand');
   public readonly currentTheme = this._currentTheme.asReadonly();
 
   /**
@@ -86,8 +94,10 @@ export class M3ThemeService {
     // Initialize theme from saved state or config
     this.initializeTheme();
 
-    // Apply theme on init
-    this.applyTheme();
+    // Apply theme after browser render to ensure DOM is ready
+    afterNextRender(() => {
+      this.applyTheme();
+    });
   }
 
   /**
@@ -180,6 +190,71 @@ export class M3ThemeService {
 
     // Apply theme-specific class (maps to SCSS theme classes in user-themes.scss)
     root.classList.add(`theme-${this.currentTheme()}`);
+
+    // Inject dynamic theme CSS for Material components
+    this.injectThemeCss(theme);
+  }
+
+  /**
+   * Inject theme CSS dynamically into the document
+   * This ensures Material components get the correct colors
+   */
+  private injectThemeCss(theme: M3Theme): void {
+    // Remove old theme style if it exists
+    if (this.themeStyleElement && this.themeStyleElement.parentNode) {
+      this.themeStyleElement.parentNode.removeChild(this.themeStyleElement);
+    }
+
+    // Create new style element with theme CSS
+    const styleElement = this.document.createElement('style');
+    styleElement.id = 'dynamic-theme-styles';
+    styleElement.textContent = this.generateThemeCss(theme);
+
+    // Inject into document head
+    this.document.head.appendChild(styleElement);
+    this.themeStyleElement = styleElement;
+  }
+
+  /**
+   * Generate CSS for the given theme
+   * Uses the theme's seed color to define Material Design colors
+   */
+  private generateThemeCss(theme: M3Theme): string {
+    // Extract primary color from theme seed
+    const primaryColor = theme.seedColor;
+
+    // For now, use the material color palettes that are already defined
+    // This is a fallback CSS that targets Material components specifically
+    const css = `
+      /* Dynamic Theme: ${theme.name} */
+      .theme-${theme.id} button[mat-raised-button][color="primary"],
+      .theme-${theme.id} button[mat-button][color="primary"],
+      .theme-${theme.id} .mdc-button--raised:not(.mdc-button--outlined) {
+        --mdc-theme-primary: ${primaryColor};
+        background-color: ${primaryColor} !important;
+        color: #ffffff !important;
+      }
+
+      .theme-${theme.id} button[mat-stroked-button][color="primary"],
+      .theme-${theme.id} .mdc-button--outlined {
+        --mdc-theme-primary: ${primaryColor};
+        border-color: ${primaryColor} !important;
+        color: ${primaryColor} !important;
+      }
+
+      .theme-${theme.id} mat-form-field.mat-focused .mat-form-field-label,
+      .theme-${theme.id} .mdc-text-field--filled.mdc-text-field--focused {
+        --mdc-theme-primary: ${primaryColor};
+        color: ${primaryColor} !important;
+      }
+
+      /* Ensure Material MDC components use theme color */
+      .theme-${theme.id} .mdc-button {
+        --mdc-theme-primary: ${primaryColor};
+      }
+    `;
+
+    return css;
   }
 
   /**

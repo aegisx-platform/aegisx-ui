@@ -120,6 +120,25 @@ import { M3ThemeService } from '../../services/theme/m3-theme.service';
         min-width: 220px !important;
       }
 
+      /* Override Material menu panel styles */
+      ::ng-deep .theme-switcher-menu.mat-mdc-menu-panel {
+        background-color: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      /* Dark mode */
+      ::ng-deep .dark .theme-switcher-menu.mat-mdc-menu-panel {
+        background-color: rgba(33, 33, 33, 0.98) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+      }
+
+      /* Material menu surface */
+      ::ng-deep .theme-switcher-menu .mat-mdc-menu-content {
+        background-color: transparent !important;
+      }
+
       .theme-menu-section {
         padding: 8px 0;
       }
