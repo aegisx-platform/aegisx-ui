@@ -142,6 +142,7 @@ export class SessionsTabComponent implements OnInit {
   @Input() userId!: string;
 
   private userService = inject(UserService);
+  private http = inject(HttpClient);
 
   sessions = signal<UserSession[]>([]);
   loading = signal(false);
@@ -154,8 +155,7 @@ export class SessionsTabComponent implements OnInit {
     this.loading.set(true);
 
     // Use HttpClient to fetch user sessions from the API
-    const http = inject(HttpClient);
-    http
+    this.http
       .get<any>(`/api/profile/activity/sessions`, {
         params: { page: '1', limit: '10' },
       })
