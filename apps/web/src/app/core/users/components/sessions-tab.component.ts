@@ -1,19 +1,21 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { AegisxCardComponent } from '@aegisx/ui';
-
-export interface UserSession {
-  id: string;
-  ip_address: string;
-  user_agent?: string;
-  created_at: string;
-  updated_at: string;
-  expires_at?: string;
-}
+import { SessionsService } from '../../user-profile/components/activity-log/sessions.service';
+import { ActivitySession } from '../../user-profile/components/activity-log/sessions.types';
 
 @Component({
   selector: 'ax-sessions-tab',
@@ -23,87 +25,261 @@ export interface UserSession {
     MatTableModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatChipsModule,
     AegisxCardComponent,
   ],
   template: `
-    <ax-card [appearance]="'elevated'" class="mt-6">
-      <h3 class="text-lg font-semibold mb-4">Active Sessions</h3>
+    <div class="space-y-6">
+      <!-- Statistics Panel -->
+      @if (sessionsService.stats() && !statsLoading()) {
+        <ax-card
+          [appearance]="'elevated'"
+          class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900 dark:to-cyan-900"
+        >
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Total Sessions -->
+            <div class="text-center p-4">
+              <div class="text-2xl font-bold text-blue-600 dark:text-blue-300">
+                {{ sessionsService.stats()?.total_sessions || 0 }}
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Total Sessions
+              </div>
+            </div>
 
-      @if (loading()) {
-        <div class="flex items-center justify-center h-64">
-          <mat-spinner [diameter]="40"></mat-spinner>
-        </div>
-      } @else if (sessions().length === 0) {
-        <div class="text-center py-8">
-          <mat-icon class="text-6xl text-gray-400">devices</mat-icon>
-          <p class="text-gray-600 dark:text-gray-400 mt-4">
-            No active sessions
-          </p>
-        </div>
-      } @else {
-        <div class="overflow-x-auto">
-          <table mat-table [dataSource]="sessions()" class="w-full">
-            <!-- IP Address Column -->
-            <ng-container matColumnDef="ip_address">
-              <th mat-header-cell>IP Address</th>
-              <td mat-cell *matCellDef="let element">
-                <code class="text-sm">{{ element.ip_address }}</code>
-              </td>
-            </ng-container>
+            <!-- Active Sessions -->
+            <div class="text-center p-4">
+              <div
+                class="text-2xl font-bold text-green-600 dark:text-green-300"
+              >
+                {{ sessionsService.stats()?.active_sessions || 0 }}
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Active Sessions
+              </div>
+            </div>
 
-            <!-- Started At Column -->
-            <ng-container matColumnDef="created_at">
-              <th mat-header-cell>Started At</th>
-              <td mat-cell *matCellDef="let element">
-                {{ element.created_at | date: 'short' }}
-              </td>
-            </ng-container>
+            <!-- Unique Devices -->
+            <div class="text-center p-4">
+              <div
+                class="text-2xl font-bold text-purple-600 dark:text-purple-300"
+              >
+                {{ sessionsService.stats()?.unique_devices || 0 }}
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Unique Devices
+              </div>
+            </div>
 
-            <!-- Last Activity Column -->
-            <ng-container matColumnDef="updated_at">
-              <th mat-header-cell>Last Activity</th>
-              <td mat-cell *matCellDef="let element">
-                {{ element.updated_at | date: 'short' }}
-              </td>
-            </ng-container>
-
-            <!-- Expires At Column -->
-            <ng-container matColumnDef="expires_at">
-              <th mat-header-cell>Expires At</th>
-              <td mat-cell *matCellDef="let element">
-                @if (element.expires_at) {
-                  {{ element.expires_at | date: 'short' }}
-                } @else {
-                  <span class="text-gray-400">No expiry</span>
-                }
-              </td>
-            </ng-container>
-
-            <tr
-              mat-header-row
-              *matHeaderRowDef="[
-                'ip_address',
-                'created_at',
-                'updated_at',
-                'expires_at',
-              ]"
-            ></tr>
-            <tr
-              mat-row
-              *matRowDef="
-                let row;
-                columns: [
-                  'ip_address',
-                  'created_at',
-                  'updated_at',
-                  'expires_at',
-                ]
-              "
-            ></tr>
-          </table>
-        </div>
+            <!-- Last Session -->
+            <div class="text-center p-4">
+              <div
+                class="text-lg font-semibold text-orange-600 dark:text-orange-300"
+              >
+                {{ getRelativeTime(sessionsService.stats()?.last_session) }}
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Last Session
+              </div>
+            </div>
+          </div>
+        </ax-card>
       }
-    </ax-card>
+
+      <!-- Sessions Table -->
+      <ax-card [appearance]="'elevated'">
+        <h3 class="text-lg font-semibold mb-4">Session History</h3>
+
+        @if (sessionsService.loading()) {
+          <div class="flex items-center justify-center h-64">
+            <mat-spinner [diameter]="40"></mat-spinner>
+          </div>
+        } @else if (sessionsService.error()) {
+          <div class="text-center py-8">
+            <mat-icon class="text-6xl text-red-400 mb-4"
+              >error_outline</mat-icon
+            >
+            <p class="text-red-600 dark:text-red-400">
+              {{ sessionsService.error() }}
+            </p>
+          </div>
+        } @else if (sessionsService.hasSessions()) {
+          <div class="overflow-x-auto">
+            <table
+              mat-table
+              [dataSource]="sessionsService.sessions()"
+              class="w-full"
+            >
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  Status
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  @if (element.is_active) {
+                    <span
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                    >
+                      <span
+                        class="w-2 h-2 rounded-full bg-green-600 mr-2"
+                      ></span>
+                      Active
+                    </span>
+                  } @else {
+                    <span
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                    >
+                      <span
+                        class="w-2 h-2 rounded-full bg-gray-600 mr-2"
+                      ></span>
+                      Inactive
+                    </span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Device Info Column -->
+              <ng-container matColumnDef="device">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  Device
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  @if (element.device_info?.device) {
+                    <span
+                      [matTooltip]="formatDeviceInfo(element.device_info)"
+                      class="text-gray-700 dark:text-gray-300"
+                    >
+                      {{ element.device_info.device }}
+                    </span>
+                  } @else {
+                    <span class="text-gray-400">-</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Location Column -->
+              <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  Location
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  @if (element.location_info?.city) {
+                    <span
+                      [matTooltip]="formatLocationInfo(element.location_info)"
+                      class="text-gray-700 dark:text-gray-300"
+                    >
+                      {{ element.location_info.city }}
+                      @if (element.location_info.country) {
+                        , {{ element.location_info.country }}
+                      }
+                    </span>
+                  } @else {
+                    <span class="text-gray-400">-</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- IP Address Column -->
+              <ng-container matColumnDef="ip_address">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  IP Address
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  @if (element.ip_address) {
+                    <code
+                      class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-700 dark:text-gray-300"
+                    >
+                      {{ element.ip_address }}
+                    </code>
+                  } @else {
+                    <span class="text-gray-400">-</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Activities Count Column -->
+              <ng-container matColumnDef="activities_count">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  Activities
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-chip selected class="bg-blue-50 dark:bg-blue-900">
+                    {{ element.activities_count }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Duration Column -->
+              <ng-container matColumnDef="duration">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  Duration
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="text-gray-700 dark:text-gray-300">
+                    {{ formatDuration(element.start_time, element.end_time) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Start Time Column -->
+              <ng-container matColumnDef="start_time">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold">
+                  Started
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="text-sm">
+                    <div class="text-gray-900 dark:text-gray-100">
+                      {{ formatDate(element.start_time) }}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      {{ getRelativeTime(element.start_time) }}
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="font-semibold text-right"
+                >
+                  Actions
+                </th>
+                <td mat-cell *matCellDef="let element" class="text-right">
+                  <button
+                    mat-icon-button
+                    [matTooltip]="'View session details'"
+                    (click)="viewSessionDetails(element)"
+                  >
+                    <mat-icon>info</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedColumns; sticky: true"
+                class="bg-gray-50 dark:bg-gray-800"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              ></tr>
+            </table>
+          </div>
+        } @else {
+          <div class="text-center py-8">
+            <mat-icon class="text-6xl text-gray-400 mb-4">devices</mat-icon>
+            <p class="text-gray-600 dark:text-gray-400">No sessions found</p>
+          </div>
+        }
+      </ax-card>
+    </div>
   `,
   styles: [
     `
@@ -137,44 +313,103 @@ export interface UserSession {
     `,
   ],
 })
-export class SessionsTabComponent implements OnInit {
+export class SessionsTabComponent implements OnInit, OnDestroy {
   @Input() userId!: string;
 
-  private http = inject(HttpClient);
+  readonly sessionsService = inject(SessionsService);
 
-  sessions = signal<UserSession[]>([]);
-  loading = signal(false);
+  // Table columns - plain array (not signal) for mat-table compatibility
+  readonly displayedColumns = [
+    'status',
+    'device',
+    'location',
+    'ip_address',
+    'activities_count',
+    'duration',
+    'start_time',
+    'actions',
+  ];
+
+  readonly statsLoading = signal(false);
 
   ngOnInit() {
-    this.loadSessions();
+    if (this.userId) {
+      this.loadSessions();
+      this.loadStats();
+    }
   }
 
-  private loadSessions(page: number = 1, limit: number = 10) {
-    this.loading.set(true);
+  ngOnDestroy() {
+    // Clean up
+  }
 
-    // Build query params - proxy will add /api prefix
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+  private loadSessions() {
+    this.sessionsService
+      .loadSessions({
+        userId: this.userId,
+        page: 1,
+        limit: 10,
+      })
+      .subscribe();
+  }
 
-    // Fetch user sessions from /profile/activity/sessions endpoint
-    // The Angular proxy will add /api prefix automatically
-    this.http
-      .get<any>('/profile/activity/sessions', { params })
-      .toPromise()
-      .then(
-        (response: any) => {
-          if (response && response.data) {
-            if (response.data.sessions) {
-              this.sessions.set(response.data.sessions);
-            }
-          }
-          this.loading.set(false);
-        },
-        () => {
-          this.sessions.set([]);
-          this.loading.set(false);
-        },
-      );
+  private loadStats() {
+    this.statsLoading.set(true);
+    this.sessionsService.loadStats(true, this.userId).subscribe({
+      next: () => {
+        this.statsLoading.set(false);
+      },
+      error: () => {
+        this.statsLoading.set(false);
+      },
+    });
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  getRelativeTime(timestamp: string | undefined): string {
+    if (!timestamp) return '-';
+    return this.sessionsService.getRelativeTime(timestamp);
+  }
+
+  formatDuration(startTime: string, endTime?: string): string {
+    return this.sessionsService.formatDuration(startTime, endTime);
+  }
+
+  formatDeviceInfo(deviceInfo: Record<string, string | boolean>): string {
+    const parts: string[] = [];
+    if (deviceInfo['device']) parts.push(`Device: ${deviceInfo['device']}`);
+    if (deviceInfo['browser']) parts.push(`Browser: ${deviceInfo['browser']}`);
+    if (deviceInfo['os']) parts.push(`OS: ${deviceInfo['os']}`);
+    if (deviceInfo['isMobile'] !== undefined)
+      parts.push(`Mobile: ${deviceInfo['isMobile']}`);
+    if (deviceInfo['isDesktop'] !== undefined)
+      parts.push(`Desktop: ${deviceInfo['isDesktop']}`);
+    if (deviceInfo['isTablet'] !== undefined)
+      parts.push(`Tablet: ${deviceInfo['isTablet']}`);
+    return parts.join('\n');
+  }
+
+  formatLocationInfo(locationInfo: Record<string, string>): string {
+    const parts: string[] = [];
+    if (locationInfo['city']) parts.push(`City: ${locationInfo['city']}`);
+    if (locationInfo['country'])
+      parts.push(`Country: ${locationInfo['country']}`);
+    if (locationInfo['timezone'])
+      parts.push(`Timezone: ${locationInfo['timezone']}`);
+    return parts.join('\n');
+  }
+
+  viewSessionDetails(session: ActivitySession) {
+    // This will be implemented in Phase 4 with a modal dialog
+    console.log('View session details:', session);
   }
 }

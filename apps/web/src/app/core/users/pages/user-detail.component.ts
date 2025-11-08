@@ -272,9 +272,9 @@ import { User, UserRole, UserService } from '../services/user.service';
           </mat-tab>
 
           <!-- Sessions Tab -->
-          <!-- <mat-tab label="Sessions">
+          <mat-tab label="Sessions">
             <ax-sessions-tab [userId]="user()!.id"></ax-sessions-tab>
-          </mat-tab> -->
+          </mat-tab>
         </mat-tab-group>
       }
     </div>
