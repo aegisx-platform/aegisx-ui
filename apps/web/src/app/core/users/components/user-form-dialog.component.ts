@@ -19,6 +19,9 @@ import {
   Role,
   CreateUserRequest,
   UpdateUserRequest,
+  UserRole,
+  AssignRolesToUserRequest,
+  RemoveRoleFromUserRequest,
 } from '../services/user.service';
 
 interface DialogData {
@@ -140,16 +143,16 @@ interface DialogData {
             </mat-form-field>
           }
 
-          <!-- Role -->
+          <!-- Roles (Multi-select) -->
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Role</mat-label>
-            <mat-select formControlName="roleId">
+            <mat-label>Roles</mat-label>
+            <mat-select formControlName="roleIds" multiple>
               @for (role of roles(); track role.id) {
                 <mat-option [value]="role.id">{{ role.name }}</mat-option>
               }
             </mat-select>
-            <mat-error *ngIf="userForm.get('roleId')?.hasError('required')">
-              Role is required
+            <mat-error *ngIf="userForm.get('roleIds')?.hasError('required')">
+              At least one role is required
             </mat-error>
           </mat-form-field>
 
@@ -224,6 +227,7 @@ export class UserFormDialogComponent implements OnInit {
   isSubmitting = signal(false);
   showPassword = signal(false);
   roles = signal<Role[]>([]);
+  userRoles = signal<UserRole[]>([]);
 
   userForm = this.fb.group({
     firstName: ['', [Validators.required]],
@@ -236,21 +240,23 @@ export class UserFormDialogComponent implements OnInit {
         ? [Validators.required, Validators.minLength(8)]
         : [],
     ],
-    roleId: ['', Validators.required],
+    roleIds: [{ value: [] as string[], disabled: false }, Validators.required],
     status: ['active', Validators.required],
   });
 
-  ngOnInit() {
+  async ngOnInit() {
     // Load roles
-    this.loadRoles();
+    await this.loadRoles();
 
     if (this.data.mode === 'edit' && this.data.user) {
+      // Load user roles first before patching form
+      await this.loadUserRoles();
+
       this.userForm.patchValue({
         firstName: this.data.user.firstName,
         lastName: this.data.user.lastName,
         email: this.data.user.email,
         username: this.data.user.username,
-        roleId: this.data.user.roleId,
         status: this.data.user.status,
       });
 
@@ -267,12 +273,44 @@ export class UserFormDialogComponent implements OnInit {
     // Set default role for new user if roles are loaded and no role selected
     if (
       this.data.mode === 'create' &&
-      !this.userForm.value.roleId &&
+      (!this.userForm.value.roleIds ||
+        this.userForm.value.roleIds.length === 0) &&
       roles.length > 0
     ) {
       const userRole = roles.find((r) => r.name === 'user');
       if (userRole) {
-        this.userForm.patchValue({ roleId: userRole.id });
+        this.userForm.patchValue({ roleIds: [userRole.id] });
+      }
+    }
+  }
+
+  async loadUserRoles() {
+    try {
+      if (this.data.mode === 'edit' && this.data.user) {
+        const userRoles = await this.userService.getUserRoles(
+          this.data.user.id,
+        );
+        this.userRoles.set(userRoles);
+
+        // Extract role IDs from user roles
+        const roleIds = userRoles.map((role) => role.roleId);
+
+        console.log('📊 User Roles from API:', userRoles);
+        console.log('🎯 Extracted Role IDs:', roleIds);
+
+        // Defer form patching to next event loop to ensure mat-select is fully initialized
+        setTimeout(() => {
+          this.userForm.patchValue({ roleIds });
+          console.log('✅ Form Value After Patch:', this.userForm.value);
+        }, 0);
+      }
+    } catch (error) {
+      console.error('Failed to load user roles:', error);
+      // Fall back to primary role if available
+      if (this.data.user?.roleId) {
+        setTimeout(() => {
+          this.userForm.patchValue({ roleIds: [this.data.user!.roleId] });
+        }, 0);
       }
     }
   }
@@ -284,31 +322,103 @@ export class UserFormDialogComponent implements OnInit {
 
     try {
       const formValue = this.userForm.getRawValue();
+      const roleIds = formValue.roleIds || [];
+
+      console.log('🔍 DEBUG: Form Value:', formValue);
+      console.log('🔍 DEBUG: Extracted roleIds:', roleIds);
+      console.log('🔍 DEBUG: roleIds type:', typeof roleIds);
+      console.log('🔍 DEBUG: roleIds is array:', Array.isArray(roleIds));
+      console.log('🔍 DEBUG: roleIds length:', roleIds?.length);
+
+      // Ensure roleIds is an array
+      const normalizedRoleIds = Array.isArray(roleIds)
+        ? roleIds
+        : roleIds
+          ? [roleIds]
+          : [];
+      console.log('🔍 DEBUG: Normalized roleIds:', normalizedRoleIds);
 
       if (this.data.mode === 'create') {
+        // For create mode, use the first role as primary and assign all selected roles
         const createData: CreateUserRequest = {
           email: formValue.email!,
           username: formValue.username!,
           firstName: formValue.firstName!,
           lastName: formValue.lastName!,
           password: formValue.password!,
-          roleId: formValue.roleId!,
+          roleId: normalizedRoleIds[0]!, // First role as primary
           status: formValue.status! as any,
         };
 
-        await this.userService.createUser(createData);
+        const newUser = await this.userService.createUser(createData);
+
+        // If multiple roles selected, assign additional roles
+        if (newUser && normalizedRoleIds.length > 1) {
+          const additionalRoleIds = normalizedRoleIds.slice(1);
+          console.log(
+            '📝 CREATE: Assigning additional roles:',
+            additionalRoleIds,
+          );
+          await this.userService.assignRolesToUser(newUser.id, {
+            roleIds: additionalRoleIds,
+          });
+        }
+
         this.snackBar.open('User created successfully', 'Close', {
           duration: 3000,
         });
       } else {
+        // For edit mode, first update basic user info
         const updateData: UpdateUserRequest = {
           firstName: formValue.firstName!,
           lastName: formValue.lastName!,
-          roleId: formValue.roleId!,
+          roleId: normalizedRoleIds[0]!, // First role as primary
           status: formValue.status! as any,
         };
 
         await this.userService.updateUser(this.data.user!.id, updateData);
+
+        // Then sync all roles
+        const currentRoleIds = this.userRoles().map((r) => r.roleId);
+
+        console.log('📝 EDIT: Current roles from user:', currentRoleIds);
+        console.log('📝 EDIT: Selected roles:', normalizedRoleIds);
+
+        // Remove roles that are no longer selected
+        const rolesToRemove = currentRoleIds.filter(
+          (id) => !normalizedRoleIds.includes(id),
+        );
+
+        console.log('📝 EDIT: Roles to remove:', rolesToRemove);
+        console.log('📝 EDIT: Total roles to remove:', rolesToRemove.length);
+
+        // Remove all deselected roles
+        for (let i = 0; i < rolesToRemove.length; i++) {
+          const roleId = rolesToRemove[i];
+          console.log(
+            `📝 EDIT: Removing role ${i + 1}/${rolesToRemove.length}: ${roleId}`,
+          );
+          await this.userService.removeRoleFromUser(this.data.user!.id, {
+            roleId,
+          });
+          console.log(`📝 EDIT: Successfully removed role: ${roleId}`);
+        }
+
+        console.log('📝 EDIT: All role removals completed');
+
+        // Assign ALL selected roles - backend deduplication will handle existing roles
+        console.log(
+          '📝 EDIT: Calling assignRolesToUser with ALL selected roles:',
+          {
+            userId: this.data.user!.id,
+            roleIds: normalizedRoleIds,
+          },
+        );
+
+        await this.userService.assignRolesToUser(this.data.user!.id, {
+          roleIds: normalizedRoleIds,
+        });
+
         this.snackBar.open('User updated successfully', 'Close', {
           duration: 3000,
         });
@@ -316,6 +426,7 @@ export class UserFormDialogComponent implements OnInit {
 
       this.dialogRef.close(true);
     } catch (error) {
+      console.error('Error during user operation:', error);
       this.snackBar.open(
         this.data.mode === 'create'
           ? 'Failed to create user'

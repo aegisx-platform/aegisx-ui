@@ -27,6 +27,7 @@ import {
 } from '../services/user.service';
 import { UserFormDialogComponent } from '../components/user-form-dialog.component';
 import { BulkStatusChangeDialogComponent } from '../components/bulk-status-change-dialog.component';
+import { BulkRoleChangeDialogComponent } from '../components/bulk-role-change-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 
 @Component({
@@ -54,6 +55,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
     MatTooltipModule,
     AegisxCardComponent,
     BulkStatusChangeDialogComponent,
+    BulkRoleChangeDialogComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -320,12 +322,14 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     <mat-chip
                       *ngFor="let role of user.roles"
                       [ngClass]="{
-                        'bg-purple-100 text-purple-800': role === 'admin',
-                        'bg-blue-100 text-blue-800': role === 'manager',
-                        'bg-green-100 text-green-800': role === 'user',
+                        'bg-purple-100 text-purple-800':
+                          role.roleName === 'admin',
+                        'bg-blue-100 text-blue-800':
+                          role.roleName === 'manager',
+                        'bg-green-100 text-green-800': role.roleName === 'user',
                       }"
                     >
-                      {{ role | titlecase }}
+                      {{ role.roleName | titlecase }}
                     </mat-chip>
                   </mat-chip-set>
                   <!-- Fallback for backward compatibility (single role) -->
@@ -507,33 +511,6 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
             (page)="onPageChange($event)"
             class="border-t dark:border-gray-700"
           ></mat-paginator>
-        }
-
-        <!-- Bulk Actions -->
-        @if (selectedUsers().length > 0) {
-          <div
-            class="fixed bottom-4 right-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4"
-          >
-            <p
-              class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              {{ selectedUsers().length }} user(s) selected
-            </p>
-            <div class="flex space-x-2">
-              <button mat-stroked-button (click)="bulkActivate()">
-                <mat-icon>check_circle</mat-icon>
-                <span>Activate</span>
-              </button>
-              <button mat-stroked-button (click)="bulkDeactivate()">
-                <mat-icon>block</mat-icon>
-                <span>Deactivate</span>
-              </button>
-              <button mat-stroked-button color="warn" (click)="bulkDelete()">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button>
-            </div>
-          </div>
         }
       </ax-card>
     </div>
@@ -852,22 +829,18 @@ export class UserListComponent implements OnInit {
   }
 
   async openBulkRoleChangeDialog(): Promise<void> {
-    try {
-      const roles = await this.userService.getRoles();
+    const dialogRef = this.dialog.open(BulkRoleChangeDialogComponent, {
+      width: '400px',
+      data: {
+        selectedUserCount: this.selectedUsers().length,
+      },
+    });
 
-      // TODO: Create proper role selection dialog component
-      // For now, using a simple prompt
-      const roleNames = roles.map((r) => `${r.name} (${r.id})`).join('\n');
-      const selectedRole = prompt(
-        `Select a role:\n${roleNames}\n\nEnter role ID:`,
-      );
-
-      if (selectedRole) {
-        await this.bulkChangeRoles(selectedRole);
+    dialogRef.afterClosed().subscribe((roleId) => {
+      if (roleId) {
+        this.bulkChangeRoles(roleId);
       }
-    } catch (error) {
-      this.snackBar.open('Failed to load roles', 'Close', { duration: 3000 });
-    }
+    });
   }
 
   // Bulk actions

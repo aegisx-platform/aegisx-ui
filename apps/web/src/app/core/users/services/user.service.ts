@@ -100,6 +100,36 @@ export interface BulkRoleChangeRequest {
   roleId: string;
 }
 
+// Multi-role management types
+export interface UserRole {
+  id: string;
+  roleId: string;
+  roleName: string;
+  assignedAt: string;
+  assignedBy?: string;
+  expiresAt?: string;
+  isActive: boolean;
+}
+
+export interface AssignRolesToUserRequest {
+  roleIds: string[];
+  expiresAt?: string;
+}
+
+export interface RemoveRoleFromUserRequest {
+  roleId: string;
+}
+
+export interface UpdateRoleExpiryRequest {
+  roleId: string;
+  expiresAt?: string;
+}
+
+export interface RoleOperationResponse {
+  message: string;
+  userId: string;
+}
+
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
@@ -378,6 +408,111 @@ export class UserService {
     } catch (error: any) {
       console.error('Failed to fetch roles:', error);
       return [];
+    }
+  }
+
+  // ===== MULTI-ROLE MANAGEMENT METHODS =====
+
+  async getUserRoles(userId: string): Promise<UserRole[]> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<UserRole[]>>(`${this.baseUrl}/${userId}/roles`)
+        .toPromise();
+
+      if (response?.success && response.data) {
+        return response.data;
+      }
+      return [];
+    } catch (error: any) {
+      console.error(`Failed to fetch roles for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async assignRolesToUser(
+    userId: string,
+    request: AssignRolesToUserRequest,
+  ): Promise<RoleOperationResponse | null> {
+    this.loadingSignal.set(true);
+
+    try {
+      const response = await this.http
+        .post<
+          ApiResponse<RoleOperationResponse>
+        >(`${this.baseUrl}/${userId}/roles/assign`, request)
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh user data if it's the selected user
+        if (this.selectedUserSignal()?.id === userId) {
+          await this.loadUserById(userId);
+        }
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to assign roles');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  async removeRoleFromUser(
+    userId: string,
+    request: RemoveRoleFromUserRequest,
+  ): Promise<RoleOperationResponse | null> {
+    this.loadingSignal.set(true);
+
+    try {
+      const response = await this.http
+        .post<
+          ApiResponse<RoleOperationResponse>
+        >(`${this.baseUrl}/${userId}/roles/remove`, request)
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh user data if it's the selected user
+        if (this.selectedUserSignal()?.id === userId) {
+          await this.loadUserById(userId);
+        }
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to remove role');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  async updateRoleExpiry(
+    userId: string,
+    request: UpdateRoleExpiryRequest,
+  ): Promise<RoleOperationResponse | null> {
+    this.loadingSignal.set(true);
+
+    try {
+      const response = await this.http
+        .post<
+          ApiResponse<RoleOperationResponse>
+        >(`${this.baseUrl}/${userId}/roles/expiry`, request)
+        .toPromise();
+
+      if (response?.success && response.data) {
+        // Refresh user data if it's the selected user
+        if (this.selectedUserSignal()?.id === userId) {
+          await this.loadUserById(userId);
+        }
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      this.errorSignal.set(error.message || 'Failed to update role expiry');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
     }
   }
 
