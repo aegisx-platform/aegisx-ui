@@ -16,8 +16,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { AegisxCardComponent } from '@aegisx/ui';
 import { SessionsService } from '../../user-profile/components/activity-log/sessions.service';
-import { ActivitySession } from '../../user-profile/components/activity-log/sessions.types';
+import {
+  ActivitySession,
+  SessionFilters,
+} from '../../user-profile/components/activity-log/sessions.types';
 import { SessionDetailsDialogComponent } from './session-details.dialog';
+import { SessionFilterComponent } from './session-filter.component';
 
 @Component({
   selector: 'ax-sessions-tab',
@@ -31,6 +35,7 @@ import { SessionDetailsDialogComponent } from './session-details.dialog';
     MatTooltipModule,
     MatChipsModule,
     AegisxCardComponent,
+    SessionFilterComponent,
   ],
   template: `
     <div class="space-y-6">
@@ -89,6 +94,11 @@ import { SessionDetailsDialogComponent } from './session-details.dialog';
           </div>
         </ax-card>
       }
+
+      <!-- Filters -->
+      <ax-session-filter
+        (filtersChange)="onFilterApplied($event)"
+      ></ax-session-filter>
 
       <!-- Sessions Table -->
       <ax-card [appearance]="'elevated'">
@@ -418,5 +428,15 @@ export class SessionsTabComponent implements OnInit, OnDestroy {
       disableClose: false,
       data: session,
     });
+  }
+
+  onFilterApplied(filters: SessionFilters) {
+    this.sessionsService
+      .loadSessions({
+        ...filters,
+        userId: this.userId,
+        page: 1,
+      })
+      .subscribe();
   }
 }
