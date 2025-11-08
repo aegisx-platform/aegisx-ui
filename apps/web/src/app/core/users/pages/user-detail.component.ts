@@ -1,23 +1,23 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatListModule } from '@angular/material/list';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { AegisxCardComponent } from '@aegisx/ui';
-import { UserService, User, UserRole } from '../services/user.service';
-import { UserFormDialogComponent } from '../components/user-form-dialog.component';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 import { ActivityTabComponent } from '../components/activity-tab.component';
 import { PermissionsTabComponent } from '../components/permissions-tab.component';
 import { SessionsTabComponent } from '../components/sessions-tab.component';
+import { UserFormDialogComponent } from '../components/user-form-dialog.component';
+import { User, UserRole, UserService } from '../services/user.service';
 
 @Component({
   selector: 'ax-user-detail',
@@ -272,9 +272,9 @@ import { SessionsTabComponent } from '../components/sessions-tab.component';
           </mat-tab>
 
           <!-- Sessions Tab -->
-          <mat-tab label="Sessions">
+          <!-- <mat-tab label="Sessions">
             <ax-sessions-tab [userId]="user()!.id"></ax-sessions-tab>
-          </mat-tab>
+          </mat-tab> -->
         </mat-tab-group>
       }
     </div>

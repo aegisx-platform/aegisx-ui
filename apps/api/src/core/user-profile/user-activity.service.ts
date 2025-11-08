@@ -93,24 +93,24 @@ export class UserActivityService {
     );
   }
 
-  async logSessionCreated(
-    userId: string,
-    sessionId: string,
-    request: FastifyRequest,
-  ): Promise<ActivityLog> {
-    return this.logActivity(
-      userId,
-      ACTIVITY_ACTIONS.SESSION_CREATED,
-      'New session created',
-      request,
-      {
-        metadata: {
-          session_id: sessionId,
-          timestamp: new Date().toISOString(),
-        },
-      },
-    );
-  }
+  // async logSessionCreated(
+  //   userId: string,
+  //   sessionId: string,
+  //   request: FastifyRequest,
+  // ): Promise<ActivityLog> {
+  //   return this.logActivity(
+  //     userId,
+  //     ACTIVITY_ACTIONS.SESSION_CREATED,
+  //     'New session created',
+  //     request,
+  //     {
+  //       metadata: {
+  //         session_id: sessionId,
+  //         timestamp: new Date().toISOString(),
+  //       },
+  //     },
+  //   );
+  // }
 
   /**
    * Log profile-related events
@@ -232,7 +232,6 @@ export class UserActivityService {
         metadata: {
           error_message: error.message,
           endpoint: endpoint || request.method + ' ' + (request.url || ''),
-          stack: error.stack,
         },
       },
     );
@@ -329,21 +328,22 @@ export class UserActivityService {
    * Extract session ID from request (from cookie or header)
    */
   private extractSessionId(request: FastifyRequest): string | undefined {
-    // Try to get session ID from cookies
-    const sessionCookie =
-      request.cookies?.sessionId || request.cookies?.['session-id'];
-    if (sessionCookie) {
-      return sessionCookie;
-    }
+    // DISABLED: Session extraction temporarily disabled for debugging
+    // // Try to get session ID from cookies
+    // const sessionCookie =
+    //   request.cookies?.sessionId || request.cookies?.['session-id'];
+    // if (sessionCookie) {
+    //   return sessionCookie;
+    // }
 
-    // Try to get from Authorization header (JWT sessions)
-    const authHeader = request.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      // For JWT, we could decode and get a session identifier
-      // For now, just return a hash of the token for privacy
-      const token = authHeader.substring(7);
-      return this.hashString(token).substring(0, 16);
-    }
+    // // Try to get from Authorization header (JWT sessions)
+    // const authHeader = request.headers.authorization;
+    // if (authHeader && authHeader.startsWith('Bearer ')) {
+    //   // For JWT, we could decode and get a session identifier
+    //   // For now, just return a hash of the token for privacy
+    //   const token = authHeader.substring(7);
+    //   return this.hashString(token).substring(0, 16);
+    // }
 
     return undefined;
   }

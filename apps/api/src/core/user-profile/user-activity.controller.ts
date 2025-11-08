@@ -56,10 +56,8 @@ export class UserActivityController {
 
       return reply.code(200).send({
         success: true,
-        data: {
-          activities: result.data,
-          pagination: result.pagination,
-        },
+        data: result.data,
+        pagination: result.pagination,
       });
     } catch (error) {
       request.log.error({ error }, 'Failed to get user activities');
@@ -131,6 +129,7 @@ export class UserActivityController {
         error: {
           message: 'Failed to retrieve activity sessions',
           code: 'ACTIVITY_SESSIONS_ERROR',
+          statusCode: 500,
         },
       });
     }
@@ -237,10 +236,8 @@ export class UserActivityController {
 
       return reply.code(200).send({
         success: true,
-        data: {
-          activities: result.data,
-          pagination: result.pagination,
-        },
+        data: result.data,
+        pagination: result.pagination,
       });
     } catch (error) {
       request.log.error({ error }, 'Failed to get all activities');
@@ -256,21 +253,37 @@ export class UserActivityController {
   }
 
   /**
-   * Admin: Get system-wide activity statistics
-   * GET /api/activity-logs/stats
+   * Admin: Get activity statistics (system-wide or user-specific)
+   * GET /api/activity-logs/stats?user_id=optional-uuid
    */
-  async getAdminStats(request: FastifyRequest, reply: FastifyReply) {
+  async getAdminStats(
+    request: FastifyRequest<{ Querystring: { user_id?: string } }>,
+    reply: FastifyReply,
+  ) {
     try {
-      request.log.info('Admin: Getting system-wide activity stats');
+      const { user_id } = request.query;
 
-      const stats = await this.userActivityService.getAdminStats();
-
-      return reply.code(200).send({
-        success: true,
-        data: stats,
-      });
+      if (user_id) {
+        request.log.info(
+          { user_id },
+          'Admin: Getting user-specific activity stats',
+        );
+        const stats =
+          await this.userActivityService.getUserActivityStats(user_id);
+        return reply.code(200).send({
+          success: true,
+          data: stats,
+        });
+      } else {
+        request.log.info('Admin: Getting system-wide activity stats');
+        const stats = await this.userActivityService.getAdminStats();
+        return reply.code(200).send({
+          success: true,
+          data: stats,
+        });
+      }
     } catch (error) {
-      request.log.error({ error }, 'Failed to get admin activity stats');
+      request.log.error({ error }, 'Failed to get activity stats');
 
       return reply.code(500).send({
         success: false,

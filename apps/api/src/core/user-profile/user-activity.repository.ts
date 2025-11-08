@@ -181,24 +181,45 @@ export class UserActivityRepository {
     const pages = Math.ceil(total / limit);
 
     return {
-      data: sessions.map((session) => ({
-        session_id: session.session_id,
-        start_time: session.start_time,
-        end_time: session.end_time,
-        ip_address: session.ip_address,
-        device_info: session.device_info
-          ? typeof session.device_info === 'string'
-            ? JSON.parse(session.device_info)
-            : session.device_info
-          : undefined,
-        location_info: session.location_info
-          ? typeof session.location_info === 'string'
-            ? JSON.parse(session.location_info)
-            : session.location_info
-          : undefined,
-        activities_count: parseInt(session.activities_count),
-        is_active: session.is_active,
-      })),
+      data: sessions.map((session) => {
+        let deviceInfo: any = undefined;
+        let locationInfo: any = undefined;
+
+        try {
+          if (session.device_info) {
+            deviceInfo =
+              typeof session.device_info === 'string'
+                ? JSON.parse(session.device_info)
+                : session.device_info;
+          }
+        } catch (e) {
+          // Handle parsing error gracefully
+          console.warn('Failed to parse device_info:', e);
+        }
+
+        try {
+          if (session.location_info) {
+            locationInfo =
+              typeof session.location_info === 'string'
+                ? JSON.parse(session.location_info)
+                : session.location_info;
+          }
+        } catch (e) {
+          // Handle parsing error gracefully
+          console.warn('Failed to parse location_info:', e);
+        }
+
+        return {
+          session_id: session.session_id,
+          start_time: session.start_time,
+          end_time: session.end_time,
+          ip_address: session.ip_address,
+          device_info: deviceInfo,
+          location_info: locationInfo,
+          activities_count: parseInt(session.activities_count),
+          is_active: Boolean(session.is_active),
+        };
+      }),
       pagination: {
         page,
         limit,
@@ -214,114 +235,119 @@ export class UserActivityRepository {
    * Get activity statistics for a user
    */
   async getUserActivityStats(userId: string): Promise<ActivityStats> {
-    // Get total activities
-    const totalResult = await this.knex('user_activity_logs')
-      .where('user_id', userId)
-      .count('id as count')
-      .first();
-
-    const total_activities = parseInt(totalResult?.count as string) || 0;
-
-    // Get activities by action
-    const actionStats = await this.knex('user_activity_logs')
-      .where('user_id', userId)
-      .groupBy('action')
-      .select('action', this.knex.raw('COUNT(*) as count'))
-      .orderBy('count', 'desc');
-
-    const activities_by_action: Record<string, number> = {};
-    actionStats.forEach((stat) => {
-      activities_by_action[stat.action] = parseInt(stat.count);
-    });
-
-    // Get activities by severity
-    const severityStats = await this.knex('user_activity_logs')
-      .where('user_id', userId)
-      .groupBy('severity')
-      .select('severity', this.knex.raw('COUNT(*) as count'));
-
-    const activities_by_severity = {
-      info: 0,
-      warning: 0,
-      error: 0,
-      critical: 0,
-    };
-
-    severityStats.forEach((stat) => {
-      activities_by_severity[
-        stat.severity as keyof typeof activities_by_severity
-      ] = parseInt(stat.count);
-    });
-
-    // Get recent activities count
-    const recentStats = await Promise.all([
-      // Today
-      this.knex('user_activity_logs')
+    try {
+      // Get total activities
+      const totalResult = await this.knex('user_activity_logs')
         .where('user_id', userId)
-        .where('created_at', '>=', this.knex.raw('CURRENT_DATE'))
         .count('id as count')
-        .first(),
-      // This week
-      this.knex('user_activity_logs')
+        .first();
+
+      const total_activities = parseInt(totalResult?.count as string) || 0;
+
+      // Get activities by action
+      const actionStats = await this.knex('user_activity_logs')
         .where('user_id', userId)
-        .where(
-          'created_at',
-          '>=',
-          this.knex.raw("DATE_TRUNC('week', CURRENT_DATE)"),
-        )
-        .count('id as count')
-        .first(),
-      // This month
-      this.knex('user_activity_logs')
+        .groupBy('action')
+        .select('action', this.knex.raw('COUNT(*) as count'))
+        .orderBy('count', 'desc');
+
+      const activities_by_action: Record<string, number> = {};
+      actionStats.forEach((stat) => {
+        activities_by_action[stat.action] = parseInt(stat.count);
+      });
+
+      // Get activities by severity
+      const severityStats = await this.knex('user_activity_logs')
         .where('user_id', userId)
-        .where(
-          'created_at',
-          '>=',
-          this.knex.raw("DATE_TRUNC('month', CURRENT_DATE)"),
-        )
-        .count('id as count')
-        .first(),
-    ]);
+        .groupBy('severity')
+        .select('severity', this.knex.raw('COUNT(*) as count'));
 
-    const recent_activities_count = {
-      today: parseInt(recentStats[0]?.count as string) || 0,
-      this_week: parseInt(recentStats[1]?.count as string) || 0,
-      this_month: parseInt(recentStats[2]?.count as string) || 0,
-    };
+      const activities_by_severity = {
+        info: 0,
+        warning: 0,
+        error: 0,
+        critical: 0,
+      };
 
-    // Get unique devices and locations
-    const uniqueStats = await Promise.all([
-      this.knex('user_activity_logs')
+      severityStats.forEach((stat) => {
+        activities_by_severity[
+          stat.severity as keyof typeof activities_by_severity
+        ] = parseInt(stat.count);
+      });
+
+      // Get recent activities count
+      const recentStats = await Promise.all([
+        // Today
+        this.knex('user_activity_logs')
+          .where('user_id', userId)
+          .where('created_at', '>=', this.knex.raw('CURRENT_DATE'))
+          .count('id as count')
+          .first(),
+        // This week
+        this.knex('user_activity_logs')
+          .where('user_id', userId)
+          .where(
+            'created_at',
+            '>=',
+            this.knex.raw("DATE_TRUNC('week', CURRENT_DATE)"),
+          )
+          .count('id as count')
+          .first(),
+        // This month
+        this.knex('user_activity_logs')
+          .where('user_id', userId)
+          .where(
+            'created_at',
+            '>=',
+            this.knex.raw("DATE_TRUNC('month', CURRENT_DATE)"),
+          )
+          .count('id as count')
+          .first(),
+      ]);
+
+      const recent_activities_count = {
+        today: parseInt(recentStats[0]?.count as string) || 0,
+        this_week: parseInt(recentStats[1]?.count as string) || 0,
+        this_month: parseInt(recentStats[2]?.count as string) || 0,
+      };
+
+      // Get unique devices and locations
+      const uniqueStats = await Promise.all([
+        this.knex('user_activity_logs')
+          .where('user_id', userId)
+          .whereNotNull('device_info')
+          .countDistinct('device_info as count')
+          .first(),
+        this.knex('user_activity_logs')
+          .where('user_id', userId)
+          .whereNotNull('location_info')
+          .countDistinct('location_info as count')
+          .first(),
+      ]);
+
+      const unique_devices = parseInt(uniqueStats[0]?.count as string) || 0;
+      const unique_locations = parseInt(uniqueStats[1]?.count as string) || 0;
+
+      // Get last activity
+      const lastActivityResult = await this.knex('user_activity_logs')
         .where('user_id', userId)
-        .whereNotNull('device_info')
-        .countDistinct('device_info as count')
-        .first(),
-      this.knex('user_activity_logs')
-        .where('user_id', userId)
-        .whereNotNull('location_info')
-        .countDistinct('location_info as count')
-        .first(),
-    ]);
+        .orderBy('created_at', 'desc')
+        .select('created_at')
+        .first();
 
-    const unique_devices = parseInt(uniqueStats[0]?.count as string) || 0;
-    const unique_locations = parseInt(uniqueStats[1]?.count as string) || 0;
-
-    // Get last activity
-    const lastActivityResult = await this.knex('user_activity_logs')
-      .where('user_id', userId)
-      .orderBy('created_at', 'desc')
-      .select('created_at')
-      .first();
-
-    return {
-      total_activities,
-      activities_by_action,
-      activities_by_severity,
-      recent_activities_count,
-      unique_devices,
-      unique_locations,
-      last_activity: lastActivityResult?.created_at || undefined,
-    };
+      return {
+        total_activities,
+        activities_by_action,
+        activities_by_severity,
+        recent_activities_count,
+        unique_devices,
+        unique_locations,
+        last_activity: lastActivityResult?.created_at || undefined,
+      };
+    } catch (error) {
+      console.error('Error in getUserActivityStats for userId:', userId, error);
+      throw error;
+    }
   }
 
   /**

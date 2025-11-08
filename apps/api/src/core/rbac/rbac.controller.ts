@@ -32,11 +32,6 @@ export class RbacController {
         success: true,
         data: result.roles,
         pagination: result.pagination,
-        meta: {
-          requestId: request.id,
-          timestamp: new Date().toISOString(),
-          version: '1.0',
-        },
       });
     } catch (error) {
       request.log.error({ err: error }, 'Error in getRoles');

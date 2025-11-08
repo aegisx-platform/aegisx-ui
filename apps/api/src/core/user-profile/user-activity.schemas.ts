@@ -153,19 +153,17 @@ export const GetAllActivityLogsQuerySchema = Type.Object({
   ),
 });
 
-// Activity logs response with pagination
+// Activity logs response with pagination (follows standard PaginatedResponseSchema)
 export const ActivityLogsResponseSchema = Type.Object({
   success: Type.Boolean(),
-  data: Type.Object({
-    activities: Type.Array(ActivityLogSchema),
-    pagination: Type.Object({
-      page: Type.Integer(),
-      limit: Type.Integer(),
-      total: Type.Integer(),
-      pages: Type.Integer(),
-      hasNext: Type.Boolean(),
-      hasPrev: Type.Boolean(),
-    }),
+  data: Type.Array(ActivityLogSchema),
+  pagination: Type.Object({
+    page: Type.Integer(),
+    limit: Type.Integer(),
+    total: Type.Integer(),
+    pages: Type.Integer(),
+    hasNext: Type.Boolean(),
+    hasPrev: Type.Boolean(),
   }),
 });
 
@@ -206,6 +204,17 @@ export const ActivitySessionsResponseSchema = Type.Object({
       hasPrev: Type.Boolean(),
     }),
   }),
+});
+
+// Admin: Get activity statistics query parameters (optional user filter)
+export const GetActivityStatsQuerySchema = Type.Object({
+  user_id: Type.Optional(
+    Type.String({
+      format: 'uuid',
+      description:
+        'Filter statistics by user ID (if not provided, returns system-wide stats)',
+    }),
+  ),
 });
 
 // Activity statistics schema
@@ -280,6 +289,7 @@ export type GetActivityLogsQuery = Static<typeof GetActivityLogsQuerySchema>;
 export type GetAllActivityLogsQuery = Static<
   typeof GetAllActivityLogsQuerySchema
 >;
+export type GetActivityStatsQuery = Static<typeof GetActivityStatsQuerySchema>;
 export type ActivityLogsResponse = Static<typeof ActivityLogsResponseSchema>;
 export type ActivitySession = Static<typeof ActivitySessionSchema>;
 export type ActivitySessionsResponse = Static<

@@ -8,9 +8,19 @@ export interface ActivityLog {
   ip_address?: string;
   user_agent?: string;
   session_id?: string;
+  request_id?: string;
   device_info?: {
+    browser?: string;
+    os?: string;
     device?: string;
     isMobile?: boolean;
+    isDesktop?: boolean;
+    isTablet?: boolean;
+  };
+  location_info?: {
+    country?: string;
+    city?: string;
+    timezone?: string;
   };
   metadata?: Record<string, any>;
 }
@@ -66,26 +76,27 @@ export const SEVERITY_CONFIG = {
     label: 'Info',
     color: 'primary',
     icon: 'info',
-    badgeClass: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+    badgeClass: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   },
   warning: {
     label: 'Warning',
     color: 'accent',
     icon: 'warning',
-    badgeClass: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+    badgeClass:
+      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
   },
   error: {
     label: 'Error',
     color: 'warn',
     icon: 'error',
-    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
   },
   critical: {
     label: 'Critical',
     color: 'warn',
     icon: 'dangerous',
-    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-  }
+    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+  },
 } as const;
 
 // Common action types
@@ -100,7 +111,7 @@ export const ACTION_TYPES = [
   'settings_change',
   'avatar_update',
   'preferences_update',
-  'security_event'
+  'security_event',
 ] as const;
 
-export type ActionType = typeof ACTION_TYPES[number];
+export type ActionType = (typeof ACTION_TYPES)[number];

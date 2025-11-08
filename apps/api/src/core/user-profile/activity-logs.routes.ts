@@ -14,15 +14,19 @@ async function activityLogsRoutes(
   const { controller } = options;
   const typedFastify = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
-  // GET /activity-logs/stats - Get system-wide activity statistics (Admin only)
+  // GET /activity-logs/stats - Get activity statistics (system-wide or user-specific)
   typedFastify.get(
     '/stats',
     {
       schema: {
-        summary: 'Get system-wide activity statistics',
+        summary: 'Get activity statistics',
         description:
-          'Get aggregated activity statistics for all users (Admin only)',
+          'Get aggregated activity statistics. If user_id is provided, returns user-specific stats; otherwise returns system-wide stats (Admin only)',
         tags: ['Activity Logs'],
+        querystring: SchemaRefs.module(
+          'user-profile',
+          'get-activity-stats-query',
+        ),
         response: {
           200: SchemaRefs.module('user-profile', 'activity-stats-response'),
           401: SchemaRefs.Unauthorized,

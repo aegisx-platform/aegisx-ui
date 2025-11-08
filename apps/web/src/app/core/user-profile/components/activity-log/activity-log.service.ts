@@ -1,12 +1,13 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import {
   ActivityLog,
+  ActivityLogFilters,
+  ActivityLogPagination,
   ActivityLogResponse,
   ActivityLogStats,
-  ActivityLogFilters,
   ApiResponse,
 } from './activity-log.types';
 
@@ -16,6 +17,11 @@ import {
 export class ActivityLogService {
   private http = inject(HttpClient);
   private baseUrl = '/profile/activity';
+  private adminBaseUrl = '/activity-logs';
+
+  // Track if we're in admin mode (viewing specific user)
+  private adminModeSignal = signal<boolean>(false);
+  private userIdSignal = signal<string | null>(null);
 
   // Signals for state management
   private activitiesSignal = signal<ActivityLog[]>([]);
@@ -48,7 +54,10 @@ export class ActivityLogService {
   readonly filters = this.filtersSubject.asObservable();
 
   // Computed signals
-  readonly hasActivities = computed(() => this.activitiesSignal().length > 0);
+  readonly hasActivities = computed(() => {
+    const activities = this.activitiesSignal();
+    return Array.isArray(activities) && activities.length > 0;
+  });
   readonly totalActivities = computed(
     () => this.paginationSignal()?.total ?? 0,
   );
@@ -63,54 +72,91 @@ export class ActivityLogService {
 
   /**
    * Load activity logs with optional filters
+   * If userId is provided, uses admin endpoint to view specific user's activities
    */
   loadActivities(
-    filters?: ActivityLogFilters,
+    filters?: ActivityLogFilters & { userId?: string },
   ): Observable<ActivityLogResponse> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
+
+    // Extract userId if provided
+    const userId = filters?.userId;
+    if (userId) {
+      this.userIdSignal.set(userId);
+      this.adminModeSignal.set(true);
+    }
 
     // Build HTTP params
     let httpParams = new HttpParams();
     const currentFilters = { ...this.filtersSubject.value, ...filters };
 
-    if (currentFilters.page)
-      httpParams = httpParams.set('page', currentFilters.page.toString());
-    if (currentFilters.limit)
-      httpParams = httpParams.set('limit', currentFilters.limit.toString());
-    if (currentFilters.action)
-      httpParams = httpParams.set('action', currentFilters.action);
-    if (currentFilters.severity)
-      httpParams = httpParams.set('severity', currentFilters.severity);
-    if (currentFilters.search)
-      httpParams = httpParams.set('search', currentFilters.search);
-    if (currentFilters.dateFrom)
-      httpParams = httpParams.set('dateFrom', currentFilters.dateFrom);
-    if (currentFilters.dateTo)
-      httpParams = httpParams.set('dateTo', currentFilters.dateTo);
+    // Remove userId from filters before passing to API
+    const { userId: _, ...filterParams } = currentFilters;
 
-    // Update filters
-    this.filtersSubject.next(currentFilters);
+    if (filterParams.page)
+      httpParams = httpParams.set('page', filterParams.page.toString());
+    if (filterParams.limit)
+      httpParams = httpParams.set('limit', filterParams.limit.toString());
+    if (filterParams.action)
+      httpParams = httpParams.set('action', filterParams.action);
+    if (filterParams.severity)
+      httpParams = httpParams.set('severity', filterParams.severity);
+    if (filterParams.search)
+      httpParams = httpParams.set('search', filterParams.search);
+    if (filterParams.dateFrom)
+      httpParams = httpParams.set('dateFrom', filterParams.dateFrom);
+    if (filterParams.dateTo)
+      httpParams = httpParams.set('dateTo', filterParams.dateTo);
+
+    // Add userId to params for admin endpoint
+    if (userId) {
+      httpParams = httpParams.set('user_id', userId);
+    }
+
+    // Update filters (without userId)
+    this.filtersSubject.next(filterParams);
+
+    // Choose endpoint based on admin mode
+    const endpoint = userId ? this.adminBaseUrl : this.baseUrl;
 
     return this.http
-      .get<
-        ApiResponse<ActivityLogResponse>
-      >(this.baseUrl, { params: httpParams })
+      .get<{
+        success: boolean;
+        data: ActivityLog[];
+        pagination: ActivityLogPagination;
+      }>(endpoint, { params: httpParams })
       .pipe(
-        map((response) => {
+        tap((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.error || 'Failed to load activities');
+            this.errorSignal.set('Failed to load activities');
+            this.loadingSignal.set(false);
+            return;
           }
-          return response.data;
-        }),
-        tap((data) => {
-          this.activitiesSignal.set(data.activities);
-          this.paginationSignal.set(data.pagination);
+          console.log('✅ Activities loaded successfully', response.data);
+          this.activitiesSignal.set(response.data);
+          this.paginationSignal.set(response.pagination);
           this.loadingSignal.set(false);
         }),
+        map(
+          (response) =>
+            ({
+              activities: response.data,
+              pagination: response.pagination,
+            }) as ActivityLogResponse,
+        ),
         catchError((error) => {
-          const errorMessage =
-            error.error?.error || error.message || 'Failed to load activities';
+          // Extract error message from various possible locations
+          let errorMessage = 'Failed to load activities';
+
+          if (typeof error.error?.error === 'string') {
+            errorMessage = error.error.error;
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+
           this.errorSignal.set(errorMessage);
           this.loadingSignal.set(false);
           throw error;
@@ -120,8 +166,19 @@ export class ActivityLogService {
 
   /**
    * Load activity statistics
+   * If userId is provided, loads stats for that specific user (admin mode)
+   * Otherwise loads stats for current user
    */
-  loadStats(forceRefresh: boolean = false): Observable<ActivityLogStats> {
+  loadStats(
+    forceRefresh: boolean = false,
+    userId?: string,
+  ): Observable<ActivityLogStats> {
+    // Set admin mode and userId if provided
+    if (userId) {
+      this.userIdSignal.set(userId);
+      this.adminModeSignal.set(true);
+    }
+
     // Don't load if already loaded and not forcing refresh
     if (
       this.statsLoadedOnceSignal() &&
@@ -140,8 +197,20 @@ export class ActivityLogService {
 
     this.statsLoadingSignal.set(true);
 
+    // Build params for admin endpoint if in admin mode
+    let httpParams = new HttpParams();
+    const effectiveUserId = userId || this.userIdSignal();
+    if (effectiveUserId) {
+      httpParams = httpParams.set('user_id', effectiveUserId);
+    }
+
+    // Choose endpoint based on admin mode
+    const endpoint = effectiveUserId
+      ? `${this.adminBaseUrl}/stats`
+      : `${this.baseUrl}/stats`;
+
     return this.http
-      .get<ApiResponse<ActivityLogStats>>(`${this.baseUrl}/stats`)
+      .get<ApiResponse<ActivityLogStats>>(endpoint, { params: httpParams })
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
@@ -155,8 +224,17 @@ export class ActivityLogService {
           this.statsLoadingSignal.set(false);
         }),
         catchError((error) => {
-          const errorMessage =
-            error.error?.error || error.message || 'Failed to load stats';
+          // Extract error message from various possible locations
+          let errorMessage = 'Failed to load stats';
+
+          if (typeof error.error?.error === 'string') {
+            errorMessage = error.error.error;
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+
           this.errorSignal.set(errorMessage);
           this.statsLoadingSignal.set(false);
           throw error;

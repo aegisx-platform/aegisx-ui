@@ -9,8 +9,10 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { AegisxCardComponent } from '@aegisx/ui';
+import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 import { UserService } from '../services/user.service';
 
 export interface UserRole {
@@ -39,6 +41,7 @@ export interface AvailableRole {
     MatSelectModule,
     MatFormFieldModule,
     MatCheckboxModule,
+    MatTooltipModule,
     FormsModule,
     AegisxCardComponent,
   ],
@@ -71,7 +74,7 @@ export interface AvailableRole {
           <table mat-table [dataSource]="roles()" class="w-full">
             <!-- Role Name Column -->
             <ng-container matColumnDef="roleName">
-              <th mat-header-cell>Role</th>
+              <th mat-header-cell *matHeaderCellDef>Role</th>
               <td mat-cell *matCellDef="let element">
                 <span class="font-medium">{{ element.roleName }}</span>
               </td>
@@ -79,7 +82,7 @@ export interface AvailableRole {
 
             <!-- Assigned Date Column -->
             <ng-container matColumnDef="assignedAt">
-              <th mat-header-cell>Assigned At</th>
+              <th mat-header-cell *matHeaderCellDef>Assigned At</th>
               <td mat-cell *matCellDef="let element">
                 {{ element.assignedAt | date: 'short' }}
               </td>
@@ -87,7 +90,7 @@ export interface AvailableRole {
 
             <!-- Expiry Column -->
             <ng-container matColumnDef="expiresAt">
-              <th mat-header-cell>Expires At</th>
+              <th mat-header-cell *matHeaderCellDef>Expires At</th>
               <td mat-cell *matCellDef="let element">
                 @if (element.expiresAt) {
                   {{ element.expiresAt | date: 'short' }}
@@ -99,7 +102,7 @@ export interface AvailableRole {
 
             <!-- Status Column -->
             <ng-container matColumnDef="isActive">
-              <th mat-header-cell>Status</th>
+              <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let element">
                 @if (element.isActive) {
                   <span
@@ -119,7 +122,7 @@ export interface AvailableRole {
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell>Actions</th>
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let element">
                 <button
                   mat-icon-button
@@ -221,24 +224,36 @@ export class PermissionsTabComponent implements OnInit {
   }
 
   removeRole(role: UserRole) {
-    if (confirm(`Remove role "${role.roleName}"?`)) {
-      this.userService
-        .removeRoleFromUser(this.userId, { roleId: role.roleId })
-        .then(
-          () => {
-            this.snackBar.open('Role removed successfully', 'Close', {
-              duration: 3000,
-            });
-            this.loadRoles();
-          },
-          () => {
-            this.snackBar.open('Failed to remove role', 'Close', {
-              duration: 3000,
-              panelClass: ['error-snackbar'],
-            });
-          },
-        );
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Remove Role',
+        message: `Are you sure you want to remove the "${role.roleName}" role?`,
+        confirmText: 'Remove',
+        confirmColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.userService
+          .removeRoleFromUser(this.userId, { roleId: role.roleId })
+          .then(
+            () => {
+              this.snackBar.open('Role removed successfully', 'Close', {
+                duration: 3000,
+              });
+              this.loadRoles();
+            },
+            () => {
+              this.snackBar.open('Failed to remove role', 'Close', {
+                duration: 3000,
+                panelClass: ['error-snackbar'],
+              });
+            },
+          );
+      }
+    });
   }
 
   openAssignRolesDialog() {
