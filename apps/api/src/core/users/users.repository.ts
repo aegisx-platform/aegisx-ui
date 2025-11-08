@@ -5,6 +5,7 @@ import {
   UserCreateData,
   UserUpdateData,
   UserListOptions,
+  UserRole,
 } from './users.types';
 
 export class UsersRepository {
@@ -24,17 +25,14 @@ export class UsersRepository {
     } = options;
     const offset = (page - 1) * limit;
 
-    // Base query for users with roles
+    // Base query for users (without joins to get distinct users)
     let query = this.knex('users')
-      .select('users.*', 'roles.name as role', 'roles.id as roleId')
-      .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
-      .leftJoin('roles', 'user_roles.role_id', 'roles.id')
+      .select('users.*')
       .whereNull('users.deleted_at'); // Exclude deleted users
 
-    // Count query
+    // Count query for distinct users
     let countQuery = this.knex('users')
-      .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
-      .leftJoin('roles', 'user_roles.role_id', 'roles.id')
+      .distinct('users.id')
       .whereNull('users.deleted_at'); // Exclude deleted users
 
     // Apply filters
@@ -56,9 +54,17 @@ export class UsersRepository {
       });
     }
 
+    // If role filter is applied, join with user_roles and roles tables
     if (role) {
-      query = query.where('roles.name', role);
-      countQuery = countQuery.where('roles.name', role);
+      query = query
+        .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
+        .leftJoin('roles', 'user_roles.role_id', 'roles.id')
+        .where('roles.name', role);
+
+      countQuery = countQuery
+        .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
+        .leftJoin('roles', 'user_roles.role_id', 'roles.id')
+        .where('roles.name', role);
     }
 
     if (status) {
@@ -66,21 +72,44 @@ export class UsersRepository {
       countQuery = countQuery.where('users.status', status);
     }
 
-    // Get total count
-    const [{ count }] = await countQuery.count('users.id as count');
-    const total = parseInt(count as string, 10);
+    // Get total count of distinct users
+    const countResult = await countQuery;
+    const total = countResult.length;
 
     // Map camelCase sortBy to snake_case database column
     const dbSortBy = this.mapSortFieldToDbColumn(sortBy);
 
-    // Apply sorting and pagination
-    const users = await query
+    // Apply sorting and pagination to get unique user IDs
+    const userRows = await query
       .orderBy(`users.${dbSortBy}`, sortOrder)
       .limit(limit)
       .offset(offset);
 
+    // Get user IDs for role fetching
+    const userIds = userRows.map((user) => user.id);
+
+    // Fetch all users with their roles
+    const users = await Promise.all(
+      userRows.map(async (user) => {
+        // Get primary role (first role if exists)
+        const primaryRole = await this.knex('user_roles')
+          .join('roles', 'user_roles.role_id', 'roles.id')
+          .select('roles.name as role', 'roles.id as roleId')
+          .where('user_roles.user_id', user.id)
+          .where('user_roles.is_active', true)
+          .orderBy('user_roles.assigned_at', 'asc')
+          .first();
+
+        return this.mapToUserWithRole({
+          ...user,
+          role: primaryRole?.role || null,
+          roleId: primaryRole?.roleId || null,
+        });
+      }),
+    );
+
     return {
-      users: users.map((user) => this.mapToUserWithRole(user)),
+      users,
       total,
     };
   }
@@ -250,6 +279,7 @@ export class UsersRepository {
       ...this.mapToUser(row),
       role: row.role,
       roleId: row.roleId,
+      roles: [], // Will be populated by service layer
     };
   }
 
@@ -328,6 +358,112 @@ export class UsersRepository {
     return roles;
   }
 
+  // ===== MULTI-ROLE MANAGEMENT METHODS =====
+
+  /**
+   * Get all roles assigned to a user
+   */
+  async getUserRoles(userId: string): Promise<UserRole[]> {
+    const roles = await this.knex('user_roles')
+      .join('roles', 'user_roles.role_id', 'roles.id')
+      .where('user_roles.user_id', userId)
+      .where('user_roles.is_active', true)
+      .select(
+        'user_roles.id as id',
+        'roles.id as roleId',
+        'roles.name as roleName',
+        'user_roles.assigned_at as assignedAt',
+        'user_roles.assigned_by as assignedBy',
+        'user_roles.expires_at as expiresAt',
+        'user_roles.is_active as isActive',
+      );
+
+    return roles.map((role) => ({
+      id: role.id,
+      roleId: role.roleId,
+      roleName: role.roleName,
+      assignedAt: new Date(role.assignedAt),
+      assignedBy: role.assignedBy,
+      expiresAt: role.expiresAt ? new Date(role.expiresAt) : null,
+      isActive: role.isActive,
+    }));
+  }
+
+  /**
+   * Assign roles to a user
+   */
+  async assignRoles(
+    userId: string,
+    roleIds: string[],
+    assignedBy?: string,
+    expiresAt?: Date,
+  ): Promise<UserRole[]> {
+    const trx = await this.knex.transaction();
+
+    try {
+      // Check for duplicates and validate roles exist
+      const existingRoles = await trx('user_roles')
+        .where('user_roles.user_id', userId)
+        .whereIn('user_roles.role_id', roleIds)
+        .select('role_id');
+
+      const existingRoleIds = existingRoles.map((r: any) => r.role_id);
+      const newRoleIds = roleIds.filter((id) => !existingRoleIds.includes(id));
+
+      // Insert new role assignments
+      if (newRoleIds.length > 0) {
+        const assignments = newRoleIds.map((roleId) => ({
+          user_id: userId,
+          role_id: roleId,
+          assigned_by: assignedBy || null,
+          expires_at: expiresAt || null,
+          is_active: true,
+        }));
+
+        await trx('user_roles').insert(assignments);
+      }
+
+      await trx.commit();
+
+      // Return updated roles
+      return this.getUserRoles(userId);
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
+  }
+
+  /**
+   * Remove a role from a user
+   */
+  async removeRole(userId: string, roleId: string): Promise<boolean> {
+    const result = await this.knex('user_roles')
+      .where('user_id', userId)
+      .where('role_id', roleId)
+      .delete();
+
+    return result > 0;
+  }
+
+  /**
+   * Update role expiry date
+   */
+  async updateRoleExpiry(
+    userId: string,
+    roleId: string,
+    expiresAt?: Date,
+  ): Promise<boolean> {
+    const result = await this.knex('user_roles')
+      .where('user_id', userId)
+      .where('role_id', roleId)
+      .update({
+        expires_at: expiresAt || null,
+        updated_at: this.knex.fn.now(),
+      });
+
+    return result > 0;
+  }
+
   // Update user deletion data for soft delete
   async updateUserDeletionData(
     id: string,
@@ -380,6 +516,7 @@ export class UsersRepository {
       updatedAt: new Date(user.updated_at),
       role: user.role_name || 'user',
       roleId: user.role_id,
+      roles: [], // Will be populated by service layer
       deleted_at: user.deleted_at,
       deletion_reason: user.deletion_reason,
       recovery_deadline: user.recovery_deadline,
@@ -420,6 +557,7 @@ export class UsersRepository {
       password: user.password, // Include password hash
       role: user.role_name || 'user',
       roleId: user.role_id,
+      roles: [], // Will be populated by service layer
       deleted_at: user.deleted_at,
       deletion_reason: user.deletion_reason,
       recovery_deadline: user.recovery_deadline,
