@@ -1,19 +1,18 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { AegisxCardComponent } from '@aegisx/ui';
-import { UserService } from '../services/user.service';
 
 export interface UserSession {
   id: string;
-  ipAddress: string;
-  userAgent?: string;
-  startedAt: string;
-  lastActivityAt: string;
-  expiresAt?: string;
+  ip_address: string;
+  user_agent?: string;
+  created_at: string;
+  updated_at: string;
+  expires_at?: string;
 }
 
 @Component({
@@ -45,35 +44,35 @@ export interface UserSession {
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="sessions()" class="w-full">
             <!-- IP Address Column -->
-            <ng-container matColumnDef="ipAddress">
+            <ng-container matColumnDef="ip_address">
               <th mat-header-cell>IP Address</th>
               <td mat-cell *matCellDef="let element">
-                <code class="text-sm">{{ element.ipAddress }}</code>
+                <code class="text-sm">{{ element.ip_address }}</code>
               </td>
             </ng-container>
 
             <!-- Started At Column -->
-            <ng-container matColumnDef="startedAt">
+            <ng-container matColumnDef="created_at">
               <th mat-header-cell>Started At</th>
               <td mat-cell *matCellDef="let element">
-                {{ element.startedAt | date: 'short' }}
+                {{ element.created_at | date: 'short' }}
               </td>
             </ng-container>
 
             <!-- Last Activity Column -->
-            <ng-container matColumnDef="lastActivityAt">
+            <ng-container matColumnDef="updated_at">
               <th mat-header-cell>Last Activity</th>
               <td mat-cell *matCellDef="let element">
-                {{ element.lastActivityAt | date: 'short' }}
+                {{ element.updated_at | date: 'short' }}
               </td>
             </ng-container>
 
             <!-- Expires At Column -->
-            <ng-container matColumnDef="expiresAt">
+            <ng-container matColumnDef="expires_at">
               <th mat-header-cell>Expires At</th>
               <td mat-cell *matCellDef="let element">
-                @if (element.expiresAt) {
-                  {{ element.expiresAt | date: 'short' }}
+                @if (element.expires_at) {
+                  {{ element.expires_at | date: 'short' }}
                 } @else {
                   <span class="text-gray-400">No expiry</span>
                 }
@@ -83,10 +82,10 @@ export interface UserSession {
             <tr
               mat-header-row
               *matHeaderRowDef="[
-                'ipAddress',
-                'startedAt',
-                'lastActivityAt',
-                'expiresAt',
+                'ip_address',
+                'created_at',
+                'updated_at',
+                'expires_at',
               ]"
             ></tr>
             <tr
@@ -94,10 +93,10 @@ export interface UserSession {
               *matRowDef="
                 let row;
                 columns: [
-                  'ipAddress',
-                  'startedAt',
-                  'lastActivityAt',
-                  'expiresAt',
+                  'ip_address',
+                  'created_at',
+                  'updated_at',
+                  'expires_at',
                 ]
               "
             ></tr>
@@ -141,7 +140,6 @@ export interface UserSession {
 export class SessionsTabComponent implements OnInit {
   @Input() userId!: string;
 
-  private userService = inject(UserService);
   private http = inject(HttpClient);
 
   sessions = signal<UserSession[]>([]);
@@ -151,14 +149,18 @@ export class SessionsTabComponent implements OnInit {
     this.loadSessions();
   }
 
-  private loadSessions() {
+  private loadSessions(page: number = 1, limit: number = 10) {
     this.loading.set(true);
 
-    // Use HttpClient to fetch user sessions from the API
+    // Build query params - proxy will add /api prefix
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    // Fetch user sessions from /profile/activity/sessions endpoint
+    // The Angular proxy will add /api prefix automatically
     this.http
-      .get<any>(`/api/profile/activity/sessions`, {
-        params: { page: '1', limit: '10' },
-      })
+      .get<any>('/profile/activity/sessions', { params })
       .toPromise()
       .then(
         (response: any) => {

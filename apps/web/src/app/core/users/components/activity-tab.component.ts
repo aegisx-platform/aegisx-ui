@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,7 +13,7 @@ export interface ActivityLog {
   action: string;
   description: string;
   severity?: string;
-  timestamp: string;
+  created_at: string;
   metadata?: Record<string, any>;
 }
 
@@ -99,10 +99,10 @@ export interface ActivityResponse {
             </ng-container>
 
             <!-- Timestamp Column -->
-            <ng-container matColumnDef="timestamp">
+            <ng-container matColumnDef="created_at">
               <th mat-header-cell>Timestamp</th>
               <td mat-cell *matCellDef="let element">
-                {{ element.timestamp | date: 'short' }}
+                {{ element.created_at | date: 'short' }}
               </td>
             </ng-container>
 
@@ -112,14 +112,14 @@ export interface ActivityResponse {
                 'action',
                 'description',
                 'severity',
-                'timestamp',
+                'created_at',
               ]"
             ></tr>
             <tr
               mat-row
               *matRowDef="
                 let row;
-                columns: ['action', 'description', 'severity', 'timestamp']
+                columns: ['action', 'description', 'severity', 'created_at']
               "
             ></tr>
           </table>
@@ -186,11 +186,15 @@ export class ActivityTabComponent implements OnInit {
   private loadActivities(page: number = 1, limit: number = 10) {
     this.loading.set(true);
 
-    // Use HttpClient to fetch user activities from the API
+    // Build query params - proxy will add /api prefix
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    // Fetch user activities from /profile/activity endpoint
+    // The Angular proxy will add /api prefix automatically
     this.http
-      .get<any>(`/api/profile/activity`, {
-        params: { page: page.toString(), limit: limit.toString() },
-      })
+      .get<any>('/profile/activity', { params })
       .toPromise()
       .then(
         (response: any) => {

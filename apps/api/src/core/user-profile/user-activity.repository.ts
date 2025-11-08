@@ -187,10 +187,14 @@ export class UserActivityRepository {
         end_time: session.end_time,
         ip_address: session.ip_address,
         device_info: session.device_info
-          ? JSON.parse(session.device_info)
+          ? typeof session.device_info === 'string'
+            ? JSON.parse(session.device_info)
+            : session.device_info
           : undefined,
         location_info: session.location_info
-          ? JSON.parse(session.location_info)
+          ? typeof session.location_info === 'string'
+            ? JSON.parse(session.location_info)
+            : session.location_info
           : undefined,
         activities_count: parseInt(session.activities_count),
         is_active: session.is_active,
