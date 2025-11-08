@@ -101,73 +101,87 @@ export async function up(knex: Knex): Promise<void> {
   });
 
   // Create user_roles junction table for multi-role support
-  await knex.schema.createTable('user_roles', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table
-      .uuid('user_id')
-      .notNullable()
-      .references('id')
-      .inTable('users')
-      .onDelete('CASCADE');
-    table
-      .uuid('role_id')
-      .notNullable()
-      .references('id')
-      .inTable('roles')
-      .onDelete('CASCADE');
+  // Only create if users table exists
+  const hasUsersTable = await knex.schema.hasTable('users');
 
-    // Role assignment metadata
-    table.timestamp('assigned_at').notNullable().defaultTo(knex.fn.now());
-    table
-      .uuid('assigned_by')
-      .nullable()
-      .comment('User ID who assigned this role');
-    table
-      .timestamp('expires_at')
-      .nullable()
-      .comment('When this role assignment expires');
-    table.boolean('is_active').defaultTo(true).notNullable();
+  if (hasUsersTable) {
+    await knex.schema.createTable('user_roles', (table) => {
+      table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+      table
+        .uuid('user_id')
+        .notNullable()
+        .references('id')
+        .inTable('users')
+        .onDelete('CASCADE');
+      table
+        .uuid('role_id')
+        .notNullable()
+        .references('id')
+        .inTable('roles')
+        .onDelete('CASCADE');
 
-    table.timestamps(true, true);
+      // Role assignment metadata
+      table.timestamp('assigned_at').notNullable().defaultTo(knex.fn.now());
+      table
+        .uuid('assigned_by')
+        .nullable()
+        .comment('User ID who assigned this role');
+      table
+        .timestamp('expires_at')
+        .nullable()
+        .comment('When this role assignment expires');
+      table.boolean('is_active').defaultTo(true).notNullable();
 
-    // Indexes for better query performance
-    table.index('user_id');
-    table.index('role_id');
-    table.index('is_active');
-    table.index('expires_at');
-    table.unique(['user_id', 'role_id']);
-  });
+      table.timestamps(true, true);
 
-  console.log('✅ Created user_roles table for multi-role support');
+      // Indexes for better query performance
+      table.index('user_id');
+      table.index('role_id');
+      table.index('is_active');
+      table.index('expires_at');
+      table.unique(['user_id', 'role_id']);
+    });
 
-  // Populate initial user_roles for existing users
-  // Find default 'user' role
-  const defaultRole = await knex('roles').where('name', 'user').first();
+    console.log('✅ Created user_roles table for multi-role support');
 
-  if (defaultRole) {
-    // Get all users without role assignments
-    const usersWithoutRoles = await knex('users')
-      .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
-      .where('user_roles.user_id', null)
-      .select('users.id');
+    // Populate initial user_roles for existing users
+    // Find default 'user' role
+    const defaultRole = await knex('roles').where('name', 'user').first();
 
-    if (usersWithoutRoles.length > 0) {
-      // Assign default user role to all users
-      const userRoleAssignments = usersWithoutRoles.map((user) => ({
-        user_id: user.id,
-        role_id: defaultRole.id,
-        assigned_at: new Date(),
-        assigned_by: null, // System migration
-        is_active: true,
-      }));
+    if (defaultRole) {
+      // Get all users without role assignments
+      const usersWithoutRoles = await knex('users')
+        .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
+        .where('user_roles.user_id', null)
+        .select('users.id');
 
-      await knex('user_roles').insert(userRoleAssignments);
-      console.log(
-        `✅ Assigned default 'user' role to ${usersWithoutRoles.length} existing users`,
+      if (usersWithoutRoles.length > 0) {
+        // Assign default user role to all users
+        const userRoleAssignments = usersWithoutRoles.map((user) => ({
+          user_id: user.id,
+          role_id: defaultRole.id,
+          assigned_at: new Date(),
+          assigned_by: null, // System migration
+          is_active: true,
+        }));
+
+        await knex('user_roles').insert(userRoleAssignments);
+        console.log(
+          `✅ Assigned default 'user' role to ${usersWithoutRoles.length} existing users`,
+        );
+      }
+    } else {
+      console.warn(
+        '⚠️  Warning: Default "user" role not found during migration',
       );
     }
   } else {
-    console.warn('⚠️  Warning: Default "user" role not found during migration');
+    console.warn(
+      '⚠️  Warning: users table not found. Skipping user_roles creation.',
+    );
+    console.info(
+      'ℹ️  user_roles table will be created once users table exists',
+    );
   }
 }
 
