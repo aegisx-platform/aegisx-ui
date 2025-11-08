@@ -13,9 +13,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { AegisxCardComponent } from '@aegisx/ui';
 import { SessionsService } from '../../user-profile/components/activity-log/sessions.service';
 import { ActivitySession } from '../../user-profile/components/activity-log/sessions.types';
+import { SessionDetailsDialogComponent } from './session-details.dialog';
 
 @Component({
   selector: 'ax-sessions-tab',
@@ -317,6 +319,7 @@ export class SessionsTabComponent implements OnInit, OnDestroy {
   @Input() userId!: string;
 
   readonly sessionsService = inject(SessionsService);
+  readonly dialog = inject(MatDialog);
 
   // Table columns - plain array (not signal) for mat-table compatibility
   readonly displayedColumns = [
@@ -409,7 +412,11 @@ export class SessionsTabComponent implements OnInit, OnDestroy {
   }
 
   viewSessionDetails(session: ActivitySession) {
-    // This will be implemented in Phase 4 with a modal dialog
-    console.log('View session details:', session);
+    this.dialog.open(SessionDetailsDialogComponent, {
+      width: '100%',
+      maxWidth: '900px',
+      disableClose: false,
+      data: session,
+    });
   }
 }
