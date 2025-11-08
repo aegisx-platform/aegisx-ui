@@ -12,10 +12,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AegisxCardComponent } from '@aegisx/ui';
 import { UserService, User } from '../services/user.service';
 import { UserFormDialogComponent } from '../components/user-form-dialog.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 import { ActivityTabComponent } from '../components/activity-tab.component';
 import { PermissionsTabComponent } from '../components/permissions-tab.component';
 import { SessionsTabComponent } from '../components/sessions-tab.component';
-import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 
 @Component({
   selector: 'ax-user-detail',
