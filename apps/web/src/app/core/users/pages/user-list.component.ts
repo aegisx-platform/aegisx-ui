@@ -980,9 +980,9 @@ export class UserListComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((roleId) => {
-      if (roleId) {
-        this.bulkChangeRoles(roleId);
+    dialogRef.afterClosed().subscribe((roleIds) => {
+      if (roleIds && roleIds.length > 0) {
+        this.bulkChangeRoles(roleIds);
       }
     });
   }
@@ -1064,15 +1064,16 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  async bulkChangeRoles(roleId: string): Promise<void> {
-    if (this.selectedUsers().length === 0 || !roleId) return;
+  async bulkChangeRoles(roleIds: string[]): Promise<void> {
+    if (this.selectedUsers().length === 0 || !roleIds || roleIds.length === 0)
+      return;
 
     this.bulkLoading.set(true);
     try {
       const userIds = this.selectedUsers().map((user) => user.id);
       const result = await this.userService.bulkChangeUserRoles(
         userIds,
-        roleId,
+        roleIds,
       );
 
       this.showBulkOperationResult(result, 'Role Change');

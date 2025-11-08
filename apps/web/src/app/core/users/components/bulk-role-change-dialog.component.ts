@@ -43,17 +43,16 @@ interface BulkRoleChangeDialogData {
 
       <form [formGroup]="roleForm">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Select Role</mat-label>
-          <mat-select formControlName="roleId">
-            <mat-option value="">-- Select a role --</mat-option>
+          <mat-label>Select Roles</mat-label>
+          <mat-select formControlName="roleIds" multiple>
             @for (role of roles; track role.id) {
               <mat-option [value]="role.id">
                 {{ role.name }}
               </mat-option>
             }
           </mat-select>
-          <mat-error *ngIf="roleForm.get('roleId')?.hasError('required')">
-            Role is required
+          <mat-error *ngIf="roleForm.get('roleIds')?.hasError('required')">
+            At least one role is required
           </mat-error>
         </mat-form-field>
       </form>
@@ -61,8 +60,8 @@ interface BulkRoleChangeDialogData {
       <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
         <mat-icon class="text-amber-600 align-top">info</mat-icon>
         <span class="ml-2"
-          >Please note: Changing roles may require users to re-authenticate to
-          apply new permissions.</span
+          >All existing roles will be replaced with the selected roles. Users
+          will need to re-authenticate to apply the new permissions.</span
         >
       </div>
     </mat-dialog-content>
@@ -85,7 +84,7 @@ interface BulkRoleChangeDialogData {
         @if (isSubmitting()) {
           <mat-spinner diameter="20" class="inline mr-2"></mat-spinner>
         }
-        Change Role
+        Change Roles
       </button>
     </mat-dialog-actions>
   `,
@@ -127,7 +126,7 @@ export class BulkRoleChangeDialogComponent implements OnInit {
   isSubmitting = () => false;
 
   roleForm = this.fb.group({
-    roleId: ['', Validators.required],
+    roleIds: [[], Validators.required],
   });
 
   ngOnInit(): void {
@@ -145,10 +144,10 @@ export class BulkRoleChangeDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.roleForm.invalid) return;
 
-    const roleId = this.roleForm.value.roleId;
-    if (!roleId) return;
+    const roleIds = (this.roleForm.value?.roleIds ?? []) as string[];
+    if (!roleIds || roleIds.length === 0) return;
 
-    this.dialogRef.close(roleId);
+    this.dialogRef.close(roleIds);
   }
 
   onCancel(): void {
