@@ -1,6 +1,6 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-11-08 (Session 69 - Finalization & Multi-Role RBAC UI Improvements)
+**Last Updated:** 2025-11-10 (Session 69+ - Sessions Tab Enhancement & Activity Tracking)
 **Current Status:** ✅ **PLATFORM COMPLETE** - All core features implemented, tested, and production-ready with complete multi-role support
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 **CRUD Generator Version:** v2.2.0 (Ready for npm publish)
@@ -187,7 +187,15 @@ aegisx-starter/
     - Password confirmation validation
     - Success/error feedback messages
     - Integration with UserService.changePassword() API
-29. **Authentication Implementation Documentation** - Complete technical documentation (Session 63):
+29. **Session Activity Tracking** - Complete session management with activity logging (Session 69+):
+    - JWT token-based session ID extraction and tracking
+    - Session-specific activity filtering and viewing
+    - Material Dialog structure for session details display
+    - Session information (start time, end time, duration, status)
+    - Device and location information per session
+    - Activity timeline within each session
+    - Standardized API response schemas for consistency
+30. **Authentication Implementation Documentation** - Complete technical documentation (Session 63):
     - 8 implementation guides (~9,000 lines total)
     - Master overview with all flows and diagrams
     - Detailed docs: Login, Registration, Email Verification, Password Reset
@@ -278,13 +286,122 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - **Enterprise Use Cases** - RBAC, audit trails, security features, performance optimization
 - **Rapid Prototyping** - Generate full-stack CRUD in minutes with --with-import and --with-events flags
 
-**Last Updated:** 2025-11-08 (Session 68 - RBAC Multi-Role Support with Cache Invalidation)
+**Last Updated:** 2025-11-10 (Session 69+ - Sessions Tab Enhancement & Activity Tracking)
 
 ---
 
 ## 🚀 Recent Development Sessions
 
 > **📦 For older sessions (38-46), see [Session Archive](./docs/sessions/ARCHIVE_2024_Q4.md)**
+
+### Session 69+ (2025-11-10) ✅ COMPLETED
+
+**Session Focus:** Sessions Tab Enhancement & Activity Tracking with Material Dialog Refactoring
+
+**Main Achievements:**
+
+- ✅ **Enabled Session ID Tracking** - Re-enabled JWT token-based session extraction from Authorization headers and cookies
+- ✅ **Fixed Stats Endpoint URL** - Corrected `/api/activity-logs/sessions/stats` to proper `/api/activity-logs/stats` endpoint
+- ✅ **Standardized Response Schema** - Updated `ActivitySessionsResponseSchema` to follow `PaginatedResponseSchema` standard
+- ✅ **Refactored Material Dialog Structure** - Applied proper Angular Material dialog directives (title, content, actions)
+- ✅ **Implemented Session Activity Loading** - Added session-specific activity filtering in dialog's `ngOnInit()`
+
+**Technical Details:**
+
+- **Root Cause Analysis**:
+  1. Session ID extraction was disabled (commented out) preventing session tracking
+  2. Frontend stats endpoint URL constructed incorrectly due to route assembly
+  3. Response schema was non-standard, wrapping data instead of flattening to root
+  4. Dialog used custom div wrapper instead of Material Dialog components
+  5. Dialog didn't implement activity loading for displayed session
+
+- **Solution Approach**:
+  1. Uncommented `extractSessionId()` method to capture JWT tokens and session cookies
+  2. Fixed service URL construction from `/activity-logs/sessions/stats` to `/activity-logs/stats`
+  3. Standardized response to match `PaginatedResponseSchema`: `{ data: [...], pagination: {...} }`
+  4. Refactored template to use `mat-dialog-title`, `mat-dialog-content`, `mat-dialog-actions`
+  5. Implemented `ngOnInit()` to load activities filtered by `session_id`
+
+- **Impact**:
+  - Session tracking now captures session context for all user activities
+  - Frontend calls correct API endpoints
+  - Response schemas consistent across API
+  - Dialog follows Material Design standards
+  - Users can view all activities within a specific session
+
+**Files Modified (11 files):**
+
+**Backend (5 files):**
+
+- `apps/api/src/core/user-profile/user-activity.service.ts` - Enabled session ID extraction (lines 330-348)
+- `apps/api/src/core/user-profile/user-activity.controller.ts` - Standardized sessions response format (lines 289-295)
+- `apps/api/src/core/user-profile/user-activity.schemas.ts` - Updated ActivitySessionsResponseSchema (lines 193-205)
+- `apps/web/src/app/core/user-profile/components/activity-log/activity-log.types.ts` - Added sessionId to filter type (line 62)
+- `apps/web/src/app/core/user-profile/components/activity-log/activity-log.service.ts` - Added session filtering support (lines 111-112)
+
+**Frontend (6 files):**
+
+- `apps/web/src/app/core/users/components/session-details.dialog.ts` - Material dialog refactoring + activity loading
+- Other activity log components - Updated to support session filtering
+
+**Verification Results:**
+
+- ✅ API builds without errors (nx build api)
+- ✅ Web builds without errors (nx build web)
+- ✅ Session tracking enabled and functional
+- ✅ Session activities loading in dialog
+- ✅ Material Dialog structure proper and functional
+- ✅ Response schemas standardized
+
+**Git Commits (5 commits):**
+
+1. `fix(sessions): correct stats endpoint URL`
+2. `fix(activity): standardize activity sessions response format`
+3. `feat(activity): enable session ID tracking from JWT tokens and cookies`
+4. `refactor(sessions): apply Material Dialog structure with proper title/content/actions`
+5. `feat(sessions): implement session-specific activity loading in dialog`
+
+**Code Changes Summary:**
+
+1. **Session Tracking Enable (user-activity.service.ts:330-348)**:
+
+   ```typescript
+   private extractSessionId(request: FastifyRequest): string | undefined {
+     // Try cookies first
+     const sessionCookie = request.cookies?.sessionId || request.cookies?.['session-id'];
+     if (sessionCookie) return sessionCookie;
+
+     // Fall back to JWT token hash
+     const authHeader = request.headers.authorization;
+     if (authHeader?.startsWith('Bearer ')) {
+       const token = authHeader.substring(7);
+       return this.hashString(token).substring(0, 16);
+     }
+     return undefined;
+   }
+   ```
+
+2. **Response Schema Standardization**:
+   - Before: `{ success: true, data: { sessions: [...], pagination: {...} } }`
+   - After: `{ success: true, data: [...], pagination: {...} }`
+
+3. **Material Dialog Structure (session-details.dialog.ts)**:
+   - Changed from custom div wrapper to proper Material components
+   - Added sticky header: `<h2 mat-dialog-title>`
+   - Added scrollable content: `<mat-dialog-content>`
+   - Added action buttons: `<mat-dialog-actions align="end">`
+
+4. **Activity Loading (session-details.dialog.ts:ngOnInit)**:
+   - Added session ID filtering to activity service
+   - Loads session-specific activities on dialog open
+
+**Key Learning:**
+
+`★ Insight ─────────────────────────────────────`
+Session tracking requires layered implementation: (1) data collection at request level (capturing session context), (2) proper API contract adherence (standardized response format), (3) UI component patterns (Material Dialog standards), and (4) feature integration (loading session-specific data). Each layer must work cohesively; missing one causes cascading failures where some operations succeed but data appears incomplete or endpoints fail mysteriously.
+`─────────────────────────────────────────────────`
+
+---
 
 ### Session 68 (2025-11-08) ✅ COMPLETED
 
