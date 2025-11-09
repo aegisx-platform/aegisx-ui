@@ -25,6 +25,25 @@ interface Feature {
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule],
   template: `
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title> Australian Shepherd</mat-card-title>
+        <mat-card-subtitle>Herding group</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions>
+        <button matButton>Learn More</button>
+      </mat-card-actions>
+    </mat-card>
+    <br />
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Poodle</mat-card-title>
+        <mat-card-subtitle>Non-sporting group</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions align="end">
+        <button matButton>Learn More</button>
+      </mat-card-actions>
+    </mat-card>
     <div class="home-container">
       <!-- Hero Section -->
       <section class="hero-section">
@@ -94,12 +113,11 @@ interface Feature {
           </div>
         </section>
 
-
         <section class="section">
           <div class="info-cards-grid">
             <!-- Getting Started -->
-    <!-- Info Cards -->
-          <mat-card class="info-card info-card--primary">
+            <!-- Info Cards -->
+            <mat-card class="info-card info-card--primary">
               <mat-card-content>
                 <div class="info-icon-wrapper">
                   <mat-icon>rocket_launch</mat-icon>
@@ -328,8 +346,6 @@ interface Feature {
       }
 
       .info-card {
-
-
         mat-card-content {
           padding: 24px;
           display: flex;
@@ -338,8 +354,6 @@ interface Feature {
         }
 
         &.info-card--primary {
-
-
           .info-title {
             color: var(--md-sys-color-on-primary-container, #21005e);
           }
@@ -354,8 +368,6 @@ interface Feature {
         }
 
         &.info-card--accent {
-
-
           .info-title {
             color: var(--md-sys-color-on-tertiary-container, #370b1e);
           }
