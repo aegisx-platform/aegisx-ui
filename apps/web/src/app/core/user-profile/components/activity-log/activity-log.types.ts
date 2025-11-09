@@ -59,6 +59,7 @@ export interface ActivityLogFilters {
   search?: string;
   dateFrom?: string;
   dateTo?: string;
+  sessionId?: string;
   page?: number;
   limit?: number;
 }

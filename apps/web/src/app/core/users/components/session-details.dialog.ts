@@ -392,9 +392,24 @@ export class SessionDetailsDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Load activities for this session if session_id exists
-    // Note: This would need a dedicated backend endpoint to fetch activities by session_id
-    // For now, we'll show the session details without activities
+    // Load activities for this specific session by filtering existing activity logs
+    if (this.session?.session_id) {
+      this.activityLogService
+        .loadActivities({
+          page: 1,
+          limit: 50,
+          sessionId: this.session.session_id,
+        })
+        .subscribe({
+          next: () => {
+            // Activities loaded successfully via the service signal
+          },
+          error: (error) => {
+            console.warn('Failed to load session activities:', error);
+            // Activities tab will show empty state if load fails
+          },
+        });
+    }
   }
 
   formatDate(date: string): string {

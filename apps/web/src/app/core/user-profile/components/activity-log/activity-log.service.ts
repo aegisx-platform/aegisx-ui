@@ -108,6 +108,8 @@ export class ActivityLogService {
       httpParams = httpParams.set('dateFrom', filterParams.dateFrom);
     if (filterParams.dateTo)
       httpParams = httpParams.set('dateTo', filterParams.dateTo);
+    if (filterParams.sessionId)
+      httpParams = httpParams.set('session_id', filterParams.sessionId);
 
     // Add userId to params for admin endpoint
     if (userId) {
