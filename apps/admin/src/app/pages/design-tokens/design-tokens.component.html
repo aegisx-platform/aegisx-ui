@@ -54,6 +54,119 @@
     </mat-form-field>
   </div>
 
+  <!-- Naming Convention Guide -->
+  <div class="naming-convention-section">
+    <mat-card appearance="outlined" class="convention-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="primary">info</mat-icon>
+        <mat-card-title>Color Token Naming Convention</mat-card-title>
+        <mat-card-subtitle
+          >Understanding the semantic naming system</mat-card-subtitle
+        >
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="convention-grid">
+          <div class="convention-item">
+            <mat-chip class="suffix-chip">faint</mat-chip>
+            <div class="convention-desc">
+              <strong>สีอ่อนที่สุด</strong> - ใช้กับพื้นหลัง
+              <div class="example-usage">
+                Example: <code>--aegisx-brand-faint</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="convention-item">
+            <mat-chip class="suffix-chip">muted</mat-chip>
+            <div class="convention-desc">
+              <strong>สีนุ่มนวล</strong> - ไม่โดดเด่น
+              <div class="example-usage">
+                Example: <code>--aegisx-success-muted</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="convention-item">
+            <mat-chip class="suffix-chip">subtle</mat-chip>
+            <div class="convention-desc">
+              <strong>สีที่สังเกตเห็นได้</strong> - แต่ไม่เด่น
+              <div class="example-usage">
+                Example: <code>--aegisx-warning-subtle</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="convention-item">
+            <mat-chip class="suffix-chip" color="primary">DEFAULT</mat-chip>
+            <div class="convention-desc">
+              <strong>สีหลัก</strong> - ไม่ต้องระบุ suffix
+              <div class="example-usage">
+                Example: <code>--aegisx-brand-default</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="convention-item">
+            <mat-chip class="suffix-chip">emphasis</mat-chip>
+            <div class="convention-desc">
+              <strong>สีเข้ม</strong> - เน้นๆ
+              <div class="example-usage">
+                Example: <code>--aegisx-info-emphasis</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="convention-item">
+            <mat-chip class="suffix-chip">strong</mat-chip>
+            <div class="convention-desc">
+              <strong>สีเข้มที่สุด</strong> - ใช้กับข้อความ
+              <div class="example-usage">
+                Example: <code>--aegisx-text-strong</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="convention-item">
+            <mat-chip class="suffix-chip">inverted</mat-chip>
+            <div class="convention-desc">
+              <strong>สีตรงข้าม</strong> - ขาว/ดำ
+              <div class="example-usage">
+                Example: <code>--aegisx-text-inverted</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider class="convention-divider"></mat-divider>
+
+        <div class="intensity-guide">
+          <h4>
+            <mat-icon>gradient</mat-icon>
+            Color Intensity Scale
+          </h4>
+          <div class="intensity-bar">
+            <span class="intensity-label">Lightest</span>
+            <div class="intensity-steps">
+              <div class="step">faint</div>
+              <mat-icon>arrow_forward</mat-icon>
+              <div class="step">muted</div>
+              <mat-icon>arrow_forward</mat-icon>
+              <div class="step">subtle</div>
+              <mat-icon>arrow_forward</mat-icon>
+              <div class="step highlight">DEFAULT</div>
+              <mat-icon>arrow_forward</mat-icon>
+              <div class="step">emphasis</div>
+              <mat-icon>arrow_forward</mat-icon>
+              <div class="step">strong</div>
+            </div>
+            <span class="intensity-label">Darkest</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
   <!-- Token Categories -->
   <div class="categories-container">
     @for (category of filteredCategories; track category.id) {
