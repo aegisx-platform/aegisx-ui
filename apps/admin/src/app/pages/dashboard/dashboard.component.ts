@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 interface StatCard {
   title: string;
@@ -22,6 +24,34 @@ interface Activity {
   status: 'success' | 'warning' | 'error';
 }
 
+interface SystemMetric {
+  label: string;
+  value: number;
+  status: 'healthy' | 'warning';
+  statusColor: string;
+}
+
+interface MiniStat {
+  label: string;
+  value: string;
+  icon: string;
+  color: string;
+}
+
+interface Product {
+  name: string;
+  category: string;
+  sales: string;
+}
+
+interface TeamMember {
+  name: string;
+  role: string;
+  initials: string;
+  avatarColor: string;
+  performance: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -32,6 +62,8 @@ interface Activity {
     MatButtonModule,
     MatTableModule,
     MatChipsModule,
+    MatProgressBarModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
@@ -77,31 +109,31 @@ export class DashboardComponent {
   recentActivities: Activity[] = [
     {
       user: 'John Doe',
-      action: 'Created new project',
+      action: 'Created new project "AegisX Dashboard"',
       timestamp: new Date(Date.now() - 1000 * 60 * 5),
       status: 'success',
     },
     {
       user: 'Jane Smith',
-      action: 'Updated user profile',
+      action: 'Updated user profile settings',
       timestamp: new Date(Date.now() - 1000 * 60 * 15),
       status: 'success',
     },
     {
       user: 'Bob Johnson',
-      action: 'Deleted 3 files',
+      action: 'Deleted 3 files from storage',
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
       status: 'warning',
     },
     {
       user: 'Alice Williams',
-      action: 'Failed login attempt',
+      action: 'Failed login attempt detected',
       timestamp: new Date(Date.now() - 1000 * 60 * 45),
       status: 'error',
     },
     {
       user: 'Charlie Brown',
-      action: 'Exported report',
+      action: 'Exported monthly analytics report',
       timestamp: new Date(Date.now() - 1000 * 60 * 60),
       status: 'success',
     },
@@ -110,9 +142,126 @@ export class DashboardComponent {
   // Quick Actions
   quickActions = [
     { icon: 'person_add', label: 'Add User', color: 'primary' },
-    { icon: 'upload_file', label: 'Upload File', color: 'accent' },
-    { icon: 'assessment', label: 'View Reports', color: 'primary' },
+    { icon: 'upload_file', label: 'Upload', color: 'accent' },
+    { icon: 'assessment', label: 'Reports', color: 'primary' },
     { icon: 'settings', label: 'Settings', color: 'accent' },
+  ];
+
+  // System Metrics
+  systemMetrics: SystemMetric[] = [
+    {
+      label: 'CPU Usage',
+      value: 45,
+      status: 'healthy',
+      statusColor: 'var(--aegisx-brand-default)',
+    },
+    {
+      label: 'Memory',
+      value: 68,
+      status: 'healthy',
+      statusColor: 'var(--aegisx-brand-default)',
+    },
+    {
+      label: 'Storage',
+      value: 82,
+      status: 'warning',
+      statusColor: '#f59e0b',
+    },
+    {
+      label: 'Network',
+      value: 34,
+      status: 'healthy',
+      statusColor: 'var(--aegisx-brand-default)',
+    },
+  ];
+
+  // Mini Stats for Performance Overview
+  miniStats: MiniStat[] = [
+    {
+      label: 'Page Views',
+      value: '45.2K',
+      icon: 'visibility',
+      color: 'var(--aegisx-brand-default)',
+    },
+    {
+      label: 'Conversions',
+      value: '2.4K',
+      icon: 'shopping_cart',
+      color: '#10b981',
+    },
+    {
+      label: 'Avg. Duration',
+      value: '3m 24s',
+      icon: 'schedule',
+      color: '#f59e0b',
+    },
+    {
+      label: 'Bounce Rate',
+      value: '32.8%',
+      icon: 'exit_to_app',
+      color: '#ef4444',
+    },
+  ];
+
+  // Top Products
+  topProducts: Product[] = [
+    {
+      name: 'Premium Subscription',
+      category: 'Digital Product',
+      sales: '1,234',
+    },
+    {
+      name: 'Enterprise License',
+      category: 'Software',
+      sales: '892',
+    },
+    {
+      name: 'Consulting Package',
+      category: 'Service',
+      sales: '645',
+    },
+    {
+      name: 'API Access',
+      category: 'Digital Product',
+      sales: '534',
+    },
+    {
+      name: 'Training Course',
+      category: 'Education',
+      sales: '423',
+    },
+  ];
+
+  // Team Members Performance
+  teamMembers: TeamMember[] = [
+    {
+      name: 'Sarah Johnson',
+      role: 'Frontend Developer',
+      initials: 'SJ',
+      avatarColor: 'var(--aegisx-brand-default)',
+      performance: 92,
+    },
+    {
+      name: 'Mike Chen',
+      role: 'Backend Developer',
+      initials: 'MC',
+      avatarColor: '#10b981',
+      performance: 88,
+    },
+    {
+      name: 'Emily Davis',
+      role: 'UI/UX Designer',
+      initials: 'ED',
+      avatarColor: '#f59e0b',
+      performance: 95,
+    },
+    {
+      name: 'David Kim',
+      role: 'DevOps Engineer',
+      initials: 'DK',
+      avatarColor: '#8b5cf6',
+      performance: 78,
+    },
   ];
 
   getStatusColor(status: string): string {
