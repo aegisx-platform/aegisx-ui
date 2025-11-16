@@ -11,7 +11,7 @@ export type AvatarShape = 'circle' | 'square';
   templateUrl: './avatar.component.html',
   styleUrls: ['./avatar.component.scss'],
 })
-export class AvatarComponent {
+export class AxAvatarComponent {
   @Input() src = '';
   @Input() alt = '';
   @Input() name = '';

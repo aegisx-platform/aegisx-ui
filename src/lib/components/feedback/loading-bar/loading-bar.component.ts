@@ -17,7 +17,7 @@ export type LoadingBarVariant =
   templateUrl: './loading-bar.component.html',
   styleUrls: ['./loading-bar.component.scss'],
 })
-export class LoadingBarComponent implements OnInit {
+export class AxLoadingBarComponent implements OnInit {
   @Input() variant: LoadingBarVariant = 'primary';
   @Input() height = 3;
 

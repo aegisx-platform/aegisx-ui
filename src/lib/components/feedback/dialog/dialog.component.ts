@@ -16,7 +16,7 @@ export type DialogSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
 })
-export class DialogComponent {
+export class AxDialogComponent {
   @Input() open = false;
   @Input() title = '';
   @Input() size: DialogSize = 'md';

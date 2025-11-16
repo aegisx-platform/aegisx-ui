@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.scss'],
 })
-export class PaginationComponent {
+export class AxPaginationComponent {
   @Input() currentPage = 1;
   @Input() totalPages = 1;
   @Input() showFirstLast = true;

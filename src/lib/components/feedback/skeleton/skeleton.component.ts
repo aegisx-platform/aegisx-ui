@@ -10,7 +10,7 @@ export type SkeletonType = 'text' | 'circle' | 'rectangle' | 'avatar';
   templateUrl: './skeleton.component.html',
   styleUrls: ['./skeleton.component.scss'],
 })
-export class SkeletonComponent {
+export class AxSkeletonComponent {
   @Input() type: SkeletonType = 'text';
   @Input() width = '';
   @Input() height = '';

@@ -15,7 +15,7 @@ export interface NavbarItem {
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent {
+export class AxNavbarComponent {
   @Input() brand = '';
   @Input() items: NavbarItem[] = [];
   @Input() sticky = false;

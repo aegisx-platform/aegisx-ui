@@ -17,7 +17,7 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'full';
   templateUrl: './drawer.component.html',
   styleUrls: ['./drawer.component.scss'],
 })
-export class DrawerComponent {
+export class AxDrawerComponent {
   @Input() open = false;
   @Input() position: DrawerPosition = 'right';
   @Input() size: DrawerSize = 'md';

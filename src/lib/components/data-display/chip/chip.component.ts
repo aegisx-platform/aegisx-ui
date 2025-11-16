@@ -16,7 +16,7 @@ export type ChipSize = 'sm' | 'md' | 'lg';
   templateUrl: './chip.component.html',
   styleUrls: ['./chip.component.scss'],
 })
-export class ChipComponent {
+export class AxChipComponent {
   @Input() variant: ChipVariant = 'default';
   @Input() size: ChipSize = 'md';
   @Input() removable = false;

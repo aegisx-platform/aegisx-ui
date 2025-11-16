@@ -6,16 +6,16 @@ import {
   SnackbarPosition,
   SnackbarService,
 } from './snackbar.service';
-import { SnackbarComponent } from './snackbar.component';
+import { AxSnackbarComponent } from './snackbar.component';
 
 @Component({
   selector: 'ax-snackbar-container',
   standalone: true,
-  imports: [CommonModule, SnackbarComponent],
+  imports: [CommonModule, AxSnackbarComponent],
   templateUrl: './snackbar-container.component.html',
   styleUrls: ['./snackbar.component.scss'],
 })
-export class SnackbarContainerComponent implements OnInit {
+export class AxSnackbarContainerComponent implements OnInit {
   @Input() position: SnackbarPosition = 'top-right';
   snackbars$!: Observable<Snackbar[]>;
 

@@ -11,7 +11,7 @@ export type CardSize = 'sm' | 'md' | 'lg';
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
 })
-export class CardComponent {
+export class AxCardComponent {
   @Input() variant: CardVariant = 'default';
   @Input() size: CardSize = 'md';
   @Input() hoverable = false;

@@ -10,7 +10,7 @@ export type AlertVariant = 'success' | 'error' | 'warning' | 'info' | 'default';
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],
 })
-export class AlertComponent {
+export class AxAlertComponent {
   @Input() variant: AlertVariant = 'default';
   @Input() title = '';
   @Input() closeable = false;

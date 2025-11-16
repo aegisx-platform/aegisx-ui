@@ -14,7 +14,7 @@ export interface Tab {
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss'],
 })
-export class TabsComponent {
+export class AxTabsComponent {
   @Input() tabs: Tab[] = [];
   @Input() activeIndex = 0;
   @Output() activeIndexChange = new EventEmitter<number>();

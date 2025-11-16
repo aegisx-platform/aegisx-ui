@@ -17,7 +17,7 @@ export type StepperOrientation = 'horizontal' | 'vertical';
   templateUrl: './stepper.component.html',
   styleUrls: ['./stepper.component.scss'],
 })
-export class StepperComponent {
+export class AxStepperComponent {
   @Input() steps: Step[] = [];
   @Input() activeIndex = 0;
   @Input() orientation: StepperOrientation = 'horizontal';

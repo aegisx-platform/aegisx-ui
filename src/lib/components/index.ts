@@ -22,7 +22,7 @@ export * from './navigation';
 export { AegisxCardComponent as AxCardComponent } from './card/card.component';
 
 // Additional Components
-export * from './ax-loading-bar.component';
+// Note: AxLoadingBarComponent is now exported from feedback module
 export * from './ax-navigation.component';
 
 // Dialog Components
