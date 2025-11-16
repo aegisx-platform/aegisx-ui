@@ -1,0 +1,11 @@
+<div [class]="containerClasses">
+  @for (
+    snackbar of snackbars$ | async;
+    track trackBySnackbar($index, snackbar)
+  ) {
+    <ax-snackbar
+      [snackbar]="snackbar"
+      (dismiss)="onDismiss(snackbar.id)"
+    ></ax-snackbar>
+  }
+</div>

@@ -5,14 +5,14 @@
 
 // Base KPI Card
 .kpi-card {
-  background: var(--aegisx-bg-surface);
-  border: 1px solid var(--aegisx-border-default) !important;
+  background: var(--ax-background-default);
+  border: 1px solid var(--ax-border-default) !important;
   border-radius: 8px;
   transition: all 0.2s ease;
   box-shadow: none !important;
 
   &:hover {
-    box-shadow: var(--aegisx-shadow-sm) !important;
+    box-shadow: var(--ax-shadow-sm) !important;
   }
 
   // Default padding for mat-card-content
@@ -24,7 +24,7 @@
 // Divider that matches card border color
 .kpi-card-divider {
   height: 1px;
-  background-color: var(--aegisx-border-default);
+  background-color: var(--ax-border-default);
   width: 100%;
 }
 

@@ -1,0 +1,256 @@
+// Container
+.ax-date-picker-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-spacing-xs);
+  width: 100%;
+}
+
+// Label
+.ax-date-picker-label {
+  display: block;
+  font-size: var(--ax-font-size-sm);
+  font-weight: var(--ax-font-weight-medium);
+  color: var(--ax-text-primary);
+  line-height: var(--ax-line-height-normal);
+}
+
+.ax-date-picker-required {
+  color: var(--ax-error);
+  margin-left: var(--ax-spacing-3xs);
+}
+
+// Wrapper
+.ax-date-picker-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-spacing-sm);
+  width: 100%;
+  border: 1px solid var(--ax-border-color);
+  border-radius: var(--ax-radius-md);
+  background-color: var(--ax-white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(.ax-date-picker-wrapper-disabled) {
+    border-color: var(--ax-primary-light);
+  }
+}
+
+.ax-date-picker-wrapper-focused {
+  border-color: var(--ax-primary);
+  outline: 2px solid var(--ax-primary);
+  outline-offset: -1px;
+}
+
+.ax-date-picker-wrapper-error {
+  border-color: var(--ax-error);
+
+  &.ax-date-picker-wrapper-focused {
+    outline-color: var(--ax-error);
+  }
+}
+
+.ax-date-picker-wrapper-disabled {
+  background-color: var(--ax-gray-100);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+// Sizes
+.ax-date-picker-wrapper-sm {
+  padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
+  font-size: var(--ax-font-size-sm);
+}
+
+.ax-date-picker-wrapper-md {
+  padding: var(--ax-spacing-sm) var(--ax-spacing-md);
+  font-size: var(--ax-font-size-base);
+}
+
+.ax-date-picker-wrapper-lg {
+  padding: var(--ax-spacing-md) var(--ax-spacing-lg);
+  font-size: var(--ax-font-size-lg);
+}
+
+// Display
+.ax-date-picker-display {
+  flex: 1;
+}
+
+.ax-date-picker-value {
+  color: var(--ax-text-primary);
+}
+
+.ax-date-picker-placeholder {
+  color: var(--ax-text-subtle);
+}
+
+// Icons
+.ax-date-picker-icons {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  flex-shrink: 0;
+}
+
+.ax-date-picker-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ax-text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--ax-error);
+  }
+}
+
+.ax-date-picker-icon {
+  display: flex;
+  align-items: center;
+  color: var(--ax-text-secondary);
+}
+
+// Dropdown
+.ax-date-picker-dropdown {
+  position: absolute;
+  top: calc(100% + var(--ax-spacing-xs));
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  padding: var(--ax-spacing-md);
+  background-color: var(--ax-white);
+  border: 1px solid var(--ax-border-color);
+  border-radius: var(--ax-radius-md);
+  box-shadow: var(--ax-shadow-lg);
+}
+
+// Header
+.ax-date-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ax-spacing-md);
+}
+
+.ax-date-picker-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ax-radius-sm);
+  background: transparent;
+  color: var(--ax-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--ax-gray-100);
+    color: var(--ax-primary);
+  }
+}
+
+.ax-date-picker-month-year {
+  flex: 1;
+  text-align: center;
+  font-size: var(--ax-font-size-base);
+  font-weight: var(--ax-font-weight-semibold);
+  color: var(--ax-text-primary);
+}
+
+// Week Days
+.ax-date-picker-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--ax-spacing-2xs);
+  margin-bottom: var(--ax-spacing-xs);
+}
+
+.ax-date-picker-weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  font-size: var(--ax-font-size-xs);
+  font-weight: var(--ax-font-weight-semibold);
+  color: var(--ax-text-secondary);
+  text-transform: uppercase;
+}
+
+// Days Grid
+.ax-date-picker-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--ax-spacing-2xs);
+}
+
+.ax-date-picker-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ax-radius-sm);
+  background: transparent;
+  font-size: var(--ax-font-size-sm);
+  color: var(--ax-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(.ax-date-picker-day-disabled) {
+    background-color: var(--ax-gray-100);
+  }
+}
+
+.ax-date-picker-day-other-month {
+  color: var(--ax-text-subtle);
+}
+
+.ax-date-picker-day-today {
+  font-weight: var(--ax-font-weight-bold);
+  color: var(--ax-primary);
+}
+
+.ax-date-picker-day-selected {
+  background-color: var(--ax-primary);
+  color: var(--ax-white);
+
+  &:hover {
+    background-color: var(--ax-primary-dark);
+  }
+}
+
+.ax-date-picker-day-disabled {
+  color: var(--ax-text-subtle);
+  opacity: 0.4;
+  cursor: not-allowed;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+// Message
+.ax-date-picker-message {
+  font-size: var(--ax-font-size-sm);
+  color: var(--ax-text-secondary);
+  line-height: var(--ax-line-height-normal);
+
+  .ax-date-picker-wrapper-error ~ & {
+    color: var(--ax-error);
+  }
+}

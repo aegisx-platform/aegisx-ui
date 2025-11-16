@@ -1,0 +1,118 @@
+.ax-alert {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ax-spacing-sm);
+  padding: var(--ax-spacing-md);
+  border-radius: var(--ax-radius-md);
+  border-width: 1px;
+  border-style: solid;
+  transition: all 0.2s ease;
+}
+
+.ax-alert-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.ax-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ax-alert-title {
+  font-size: var(--ax-font-size-sm);
+  font-weight: var(--ax-font-weight-semibold);
+  margin-bottom: var(--ax-spacing-xs);
+  line-height: var(--ax-line-height-tight);
+}
+
+.ax-alert-message {
+  font-size: var(--ax-font-size-sm);
+  line-height: var(--ax-line-height-normal);
+}
+
+.ax-alert-close {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: var(--ax-radius-sm);
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Variants
+.ax-alert-default {
+  background-color: var(--ax-gray-50);
+  border-color: var(--ax-gray-200);
+  color: var(--ax-gray-800);
+
+  .ax-alert-icon {
+    color: var(--ax-gray-600);
+  }
+}
+
+.ax-alert-success {
+  background-color: rgba(var(--ax-success-rgb), 0.1);
+  border-color: var(--ax-success);
+  color: var(--ax-success-dark);
+
+  .ax-alert-icon {
+    color: var(--ax-success);
+  }
+}
+
+.ax-alert-error {
+  background-color: rgba(var(--ax-error-rgb), 0.1);
+  border-color: var(--ax-error);
+  color: var(--ax-error-dark);
+
+  .ax-alert-icon {
+    color: var(--ax-error);
+  }
+}
+
+.ax-alert-warning {
+  background-color: rgba(var(--ax-warning-rgb), 0.1);
+  border-color: var(--ax-warning);
+  color: var(--ax-warning-dark);
+
+  .ax-alert-icon {
+    color: var(--ax-warning);
+  }
+}
+
+.ax-alert-info {
+  background-color: rgba(var(--ax-info-rgb), 0.1);
+  border-color: var(--ax-info);
+  color: var(--ax-info-dark);
+
+  .ax-alert-icon {
+    color: var(--ax-info);
+  }
+}
