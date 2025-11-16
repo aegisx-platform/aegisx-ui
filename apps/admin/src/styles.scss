@@ -1,10 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
-/* Import Angular Material Core */
-@use '@angular/material' as mat;
-
-/* Include Material Core - Required for all Material components */
-@include mat.core();
+/* Import AegisX Design System Theme - MUST be imported FIRST */
+@use '../../../libs/aegisx-ui/src/lib/styles/themes/aegisx-light.scss';
 
 /* Import Tailwind CSS */
 @tailwind components;
