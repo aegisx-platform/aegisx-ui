@@ -8,38 +8,38 @@ import { AxCheckboxComponent } from '@aegisx/ui';
 import { AxRadioGroupComponent } from '@aegisx/ui';
 import { AxInputComponent } from '@aegisx/ui';
 import { AxSelectComponent } from '@aegisx/ui';
-import { ToggleComponent } from '@aegisx/ui';
-import { TextareaComponent } from '@aegisx/ui';
-import { DatePickerComponent } from '@aegisx/ui';
+import { AxToggleComponent } from '@aegisx/ui';
+import { AxTextareaComponent } from '@aegisx/ui';
+import { AxDatePickerComponent } from '@aegisx/ui';
 
 // Data Display
-import { CardComponent } from '@aegisx/ui';
-import { BadgeComponent } from '@aegisx/ui';
-import { AvatarComponent } from '@aegisx/ui';
-import { ChipComponent } from '@aegisx/ui';
-import { ListComponent, ListItem } from '@aegisx/ui';
-import { StatsCardComponent } from '@aegisx/ui';
-import { TimelineComponent, TimelineItem } from '@aegisx/ui';
-import { TableComponent, TableColumn } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
+import { AxBadgeComponent } from '@aegisx/ui';
+import { AxAvatarComponent } from '@aegisx/ui';
+import { AxChipComponent } from '@aegisx/ui';
+import { AxListComponent, ListItem } from '@aegisx/ui';
+import { AxStatsCardComponent } from '@aegisx/ui';
+import { AxTimelineComponent, TimelineItem } from '@aegisx/ui';
+import { AxTableComponent, TableColumn } from '@aegisx/ui';
 
 // Feedback
-import { AlertComponent } from '@aegisx/ui';
-import { SnackbarContainerComponent } from '@aegisx/ui';
+import { AxAlertComponent } from '@aegisx/ui';
+import { AxSnackbarContainerComponent } from '@aegisx/ui';
 import { TooltipDirective } from '@aegisx/ui';
-import { ProgressComponent } from '@aegisx/ui';
-import { SkeletonComponent } from '@aegisx/ui';
-import { DialogComponent } from '@aegisx/ui';
-import { LoadingBarComponent } from '@aegisx/ui';
+import { AxProgressComponent } from '@aegisx/ui';
+import { AxSkeletonComponent } from '@aegisx/ui';
+import { AxDialogComponent } from '@aegisx/ui';
+import { AxLoadingBarComponent } from '@aegisx/ui';
 
 // Navigation
-import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
-import { MenuComponent, MenuItem } from '@aegisx/ui';
-import { TabsComponent, Tab } from '@aegisx/ui';
-import { NavbarComponent, NavbarItem } from '@aegisx/ui';
-import { SidebarComponent, SidebarItem } from '@aegisx/ui';
-import { DrawerComponent } from '@aegisx/ui';
-import { PaginationComponent } from '@aegisx/ui';
-import { StepperComponent, Step } from '@aegisx/ui';
+import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
+import { AxMenuComponent, MenuItem } from '@aegisx/ui';
+import { AxTabsComponent, Tab } from '@aegisx/ui';
+import { AxNavbarComponent, NavbarItem } from '@aegisx/ui';
+import { AxSidebarComponent, SidebarItem } from '@aegisx/ui';
+import { AxDrawerComponent } from '@aegisx/ui';
+import { AxPaginationComponent } from '@aegisx/ui';
+import { AxStepperComponent, Step } from '@aegisx/ui';
 
 @Component({
   selector: 'app-aegisx-ui-showcase',
@@ -53,35 +53,35 @@ import { StepperComponent, Step } from '@aegisx/ui';
     AxRadioGroupComponent,
     AxInputComponent,
     AxSelectComponent,
-    ToggleComponent,
-    TextareaComponent,
-    DatePickerComponent,
+    AxToggleComponent,
+    AxTextareaComponent,
+    AxDatePickerComponent,
     // Data Display
-    CardComponent,
-    BadgeComponent,
-    AvatarComponent,
-    ChipComponent,
-    ListComponent,
-    StatsCardComponent,
-    TimelineComponent,
-    TableComponent,
+    AxCardComponent,
+    AxBadgeComponent,
+    AxAvatarComponent,
+    AxChipComponent,
+    AxListComponent,
+    AxStatsCardComponent,
+    AxTimelineComponent,
+    AxTableComponent,
     // Feedback
-    AlertComponent,
-    SnackbarContainerComponent,
+    AxAlertComponent,
+    AxSnackbarContainerComponent,
     TooltipDirective,
-    ProgressComponent,
-    SkeletonComponent,
-    DialogComponent,
-    LoadingBarComponent,
+    AxProgressComponent,
+    AxSkeletonComponent,
+    AxDialogComponent,
+    AxLoadingBarComponent,
     // Navigation
-    BreadcrumbComponent,
-    MenuComponent,
-    TabsComponent,
-    NavbarComponent,
-    SidebarComponent,
-    DrawerComponent,
-    PaginationComponent,
-    StepperComponent,
+    AxBreadcrumbComponent,
+    AxMenuComponent,
+    AxTabsComponent,
+    AxNavbarComponent,
+    AxSidebarComponent,
+    AxDrawerComponent,
+    AxPaginationComponent,
+    AxStepperComponent,
   ],
   templateUrl: './aegisx-ui-showcase.component.html',
   styleUrls: ['./aegisx-ui-showcase.component.scss'],

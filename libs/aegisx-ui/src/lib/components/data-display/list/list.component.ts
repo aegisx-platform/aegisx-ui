@@ -18,7 +18,7 @@ export type ListSize = 'sm' | 'md' | 'lg';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
 })
-export class ListComponent {
+export class AxListComponent {
   @Input() items: ListItem[] = [];
   @Input() size: ListSize = 'md';
   @Input() bordered = false;

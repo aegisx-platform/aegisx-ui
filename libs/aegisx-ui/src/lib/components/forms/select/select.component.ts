@@ -516,7 +516,7 @@ export class AxSelectComponent<T = any> implements ControlValueAccessor {
   /**
    * Register onChange callback
    */
-  registerOnChange(fn: (value: T | T[] | null) => void): void {
+  registerOnChange(fn: (_value: unknown) => void): void {
     this.onChange = fn;
   }
 

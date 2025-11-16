@@ -242,7 +242,7 @@ export class AxCheckboxComponent
   /**
    * Register onChange callback
    */
-  registerOnChange(fn: (value: boolean) => void): void {
+  registerOnChange(fn: (_value: unknown) => void): void {
     this.onChange = fn;
   }
 

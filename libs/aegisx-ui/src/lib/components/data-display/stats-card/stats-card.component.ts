@@ -10,7 +10,7 @@ export type StatsCardTrend = 'up' | 'down' | 'neutral';
   templateUrl: './stats-card.component.html',
   styleUrls: ['./stats-card.component.scss'],
 })
-export class StatsCardComponent {
+export class AxStatsCardComponent {
   @Input() title = '';
   @Input() value = '';
   @Input() change = '';

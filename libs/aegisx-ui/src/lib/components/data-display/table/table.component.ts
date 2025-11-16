@@ -14,7 +14,7 @@ export interface TableColumn {
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
 })
-export class TableComponent {
+export class AxTableComponent {
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
   @Input() striped = false;

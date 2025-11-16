@@ -28,12 +28,12 @@ interface CalendarDay {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DatePickerComponent),
+      useExisting: forwardRef(() => AxDatePickerComponent),
       multi: true,
     },
   ],
 })
-export class DatePickerComponent implements ControlValueAccessor {
+export class AxDatePickerComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() placeholder = 'Select date';
   @Input() disabled = false;
@@ -227,7 +227,7 @@ export class DatePickerComponent implements ControlValueAccessor {
     this.generateCalendar();
   }
 
-  registerOnChange(fn: (value: Date | null) => void): void {
+  registerOnChange(fn: (_value: unknown) => void): void {
     this.onChange = fn;
   }
 

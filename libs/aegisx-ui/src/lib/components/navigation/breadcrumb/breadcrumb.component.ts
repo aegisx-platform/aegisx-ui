@@ -14,7 +14,7 @@ export interface BreadcrumbItem {
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
 })
-export class BreadcrumbComponent {
+export class AxBreadcrumbComponent {
   @Input() items: BreadcrumbItem[] = [];
   @Input() separator = '/';
   @Output() itemClick = new EventEmitter<BreadcrumbItem>();

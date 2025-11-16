@@ -7,7 +7,7 @@ import {
   ViewContainerRef,
   OnDestroy,
 } from '@angular/core';
-import { TooltipComponent } from './tooltip.component';
+import { AxTooltipComponent } from './tooltip.component';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
@@ -20,7 +20,7 @@ export class TooltipDirective implements OnDestroy {
   @Input() tooltipPosition: TooltipPosition = 'top';
   @Input() tooltipDelay = 200;
 
-  private componentRef: ComponentRef<TooltipComponent> | null = null;
+  private componentRef: ComponentRef<AxTooltipComponent> | null = null;
   private showTimeout: any;
 
   constructor(
@@ -48,7 +48,8 @@ export class TooltipDirective implements OnDestroy {
   private show(): void {
     if (this.componentRef) return;
 
-    this.componentRef = this.viewContainerRef.createComponent(TooltipComponent);
+    this.componentRef =
+      this.viewContainerRef.createComponent(AxTooltipComponent);
     this.componentRef.instance.text = this.text;
     this.componentRef.instance.position = this.tooltipPosition;
 

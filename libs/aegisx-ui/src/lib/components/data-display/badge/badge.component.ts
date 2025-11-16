@@ -17,7 +17,7 @@ export type BadgeSize = 'sm' | 'md' | 'lg';
   templateUrl: './badge.component.html',
   styleUrls: ['./badge.component.scss'],
 })
-export class BadgeComponent {
+export class AxBadgeComponent {
   @Input() variant: BadgeVariant = 'default';
   @Input() size: BadgeSize = 'md';
   @Input() dot = false;

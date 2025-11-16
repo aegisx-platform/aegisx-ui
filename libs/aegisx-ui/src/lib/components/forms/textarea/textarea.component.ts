@@ -25,12 +25,12 @@ export type TextareaResize =
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TextareaComponent),
+      useExisting: forwardRef(() => AxTextareaComponent),
       multi: true,
     },
   ],
 })
-export class TextareaComponent implements ControlValueAccessor {
+export class AxTextareaComponent implements ControlValueAccessor {
   @ViewChild('textarea', { static: false })
   textareaRef?: ElementRef<HTMLTextAreaElement>;
 
@@ -81,7 +81,7 @@ export class TextareaComponent implements ControlValueAccessor {
     return !!this.maxLength;
   }
 
-  onInput(_event: Event): void {
+  onInput(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
     this.value = target.value;
     this.onChange(this.value);
@@ -125,7 +125,7 @@ export class TextareaComponent implements ControlValueAccessor {
     }
   }
 
-  registerOnChange(fn: (value: string) => void): void {
+  registerOnChange(fn: (_value: unknown) => void): void {
     this.onChange = fn;
   }
 

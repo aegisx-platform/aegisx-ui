@@ -14,12 +14,12 @@ export type ToggleVariant = 'primary' | 'success' | 'warning' | 'danger';
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => ToggleComponent),
+      useExisting: forwardRef(() => AxToggleComponent),
       multi: true,
     },
   ],
 })
-export class ToggleComponent implements ControlValueAccessor {
+export class AxToggleComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() description = '';
   @Input() disabled = false;
@@ -78,7 +78,7 @@ export class ToggleComponent implements ControlValueAccessor {
     this.checked = !!value;
   }
 
-  registerOnChange(fn: (value: boolean) => void): void {
+  registerOnChange(fn: (_value: unknown) => void): void {
     this.onChange = fn;
   }
 

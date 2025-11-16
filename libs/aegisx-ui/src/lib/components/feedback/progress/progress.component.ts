@@ -17,7 +17,7 @@ export type ProgressSize = 'sm' | 'md' | 'lg';
   templateUrl: './progress.component.html',
   styleUrls: ['./progress.component.scss'],
 })
-export class ProgressComponent {
+export class AxProgressComponent {
   @Input() type: ProgressType = 'bar';
   @Input() variant: ProgressVariant = 'primary';
   @Input() size: ProgressSize = 'md';

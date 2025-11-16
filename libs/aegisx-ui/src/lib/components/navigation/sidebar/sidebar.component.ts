@@ -18,7 +18,7 @@ export type SidebarPosition = 'left' | 'right';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent {
+export class AxSidebarComponent {
   @Input() items: SidebarItem[] = [];
   @Input() collapsed = false;
   @Input() position: SidebarPosition = 'left';

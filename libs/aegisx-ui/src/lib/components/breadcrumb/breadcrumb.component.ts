@@ -159,7 +159,7 @@ import { AegisxNavigationItem } from '../../types/navigation.types';
     `,
   ],
 })
-export class BreadcrumbComponent {
+export class AxBreadcrumbComponent {
   /**
    * Breadcrumb items to display
    */

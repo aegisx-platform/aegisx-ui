@@ -16,7 +16,7 @@ export interface TimelineItem {
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
 })
-export class TimelineComponent {
+export class AxTimelineComponent {
   @Input() items: TimelineItem[] = [];
 
   trackByIndex(index: number): number {

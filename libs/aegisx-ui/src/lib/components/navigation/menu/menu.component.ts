@@ -24,7 +24,7 @@ export interface MenuItem {
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
 })
-export class MenuComponent {
+export class AxMenuComponent {
   @Input() items: MenuItem[] = [];
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();

@@ -275,7 +275,7 @@ export class AxInputComponent implements ControlValueAccessor {
   /**
    * Register onChange callback
    */
-  registerOnChange(fn: (value: string) => void): void {
+  registerOnChange(fn: (_value: unknown) => void): void {
     this.onChange = fn;
   }
 

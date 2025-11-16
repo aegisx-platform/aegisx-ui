@@ -9,7 +9,7 @@ import { Snackbar } from './snackbar.service';
   templateUrl: './snackbar.component.html',
   styleUrls: ['./snackbar.component.scss'],
 })
-export class SnackbarComponent {
+export class AxSnackbarComponent {
   @Input() snackbar!: Snackbar;
   @Output() dismiss = new EventEmitter<void>();
   @Output() actionClick = new EventEmitter<void>();

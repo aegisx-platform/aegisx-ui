@@ -10,7 +10,7 @@ export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
   templateUrl: './tooltip.component.html',
   styleUrls: ['./tooltip.component.scss'],
 })
-export class TooltipComponent {
+export class AxTooltipComponent {
   @Input() text = '';
   @Input() position: TooltipPosition = 'top';
   @Input() top = 0;
