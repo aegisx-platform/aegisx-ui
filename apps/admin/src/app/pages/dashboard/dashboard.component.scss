@@ -1,264 +1,328 @@
-// Dashboard Component Styles using AegisX Design System
+// Dashboard Component (Tremor Style - Clean & Minimal)
+// Layer 1: Material Components (base)
+// Layer 2: TailwindCSS Utilities (layout & spacing)
+// Layer 3: AegisX Design Tokens (theming)
+// Layer 4: Custom SCSS (animations & special effects) ← THIS FILE
 
-// ===== Stats Cards =====
-.stat-card {
-  transition:
-    transform var(--aegisx-transition-fast),
-    box-shadow var(--aegisx-transition-fast);
-  cursor: pointer;
+// ============================================================================
+// 1. Stat Cards (Tremor Style - No Icons, Text Arrows)
+// ============================================================================
+.stat-card-tremor {
+  transition: box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--aegisx-shadow-lg) !important;
-  }
-
-  .stat-icon-wrapper {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--aegisx-radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-    }
-  }
-
-  .change-chip {
-    mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
-      margin-right: 4px;
-    }
+    box-shadow: var(--aegisx-shadow-sm) !important;
   }
 }
 
-// ===== Activity List with Timeline =====
-.activity-list {
-  .activity-item {
-    display: flex;
-    gap: 16px;
-    padding: 12px 0;
+.stat-label-tremor {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--aegisx-text-body);
+  margin: 0 0 0.375rem 0;
+}
+
+.stat-value-tremor {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--aegisx-text-strong);
+  margin: 0 0 0.375rem 0;
+  line-height: 1.2;
+}
+
+.stat-change-tremor {
+  font-size: 0.75rem;
+  color: var(--aegisx-text-subtle);
+  margin: 0;
+
+  &.stat-positive {
+    color: #059669;
+
+    .stat-arrow {
+      color: #059669;
+    }
+  }
+
+  &.stat-negative {
+    color: #dc2626;
+
+    .stat-arrow {
+      color: #dc2626;
+    }
+  }
+
+  .stat-arrow {
+    font-weight: 600;
+    margin-right: 0.25rem;
+  }
+}
+
+// ============================================================================
+// 2. Chart Titles (Tremor Style - Minimal)
+// ============================================================================
+.chart-title-tremor {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--aegisx-text-strong);
+}
+
+// ============================================================================
+// 3. Section Titles (Tremor Style - Uniform)
+// ============================================================================
+.section-title-tremor {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--aegisx-text-strong);
+}
+
+.view-all-btn-tremor {
+  font-size: 0.875rem;
+}
+
+// ============================================================================
+// 4. Recent Activities (Tremor Style - No Icons, Simple Text)
+// ============================================================================
+.activity-list-tremor {
+  .activity-item-tremor {
+    padding: 0.75rem 0;
 
     &:not(.last-item) {
       border-bottom: 1px solid var(--aegisx-border-default);
     }
 
-    .activity-timeline {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-
-      .timeline-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 0 0 4px var(--aegisx-background-default);
+    .activity-content-tremor {
+      .activity-user-tremor {
+        font-size: 0.875rem;
+        font-weight: 500;
       }
 
-      .timeline-line {
-        width: 2px;
-        flex: 1;
-        background: var(--aegisx-border-default);
-        margin-top: 4px;
+      .activity-time-tremor {
+        font-size: 0.75rem;
+        white-space: nowrap;
       }
-    }
 
-    .activity-content {
-      flex: 1;
-      min-width: 0;
-
-      .activity-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+      .activity-action-tremor {
+        font-size: 0.875rem;
+        margin: 0;
+        line-height: 1.4;
       }
     }
   }
 }
 
-// ===== Quick Actions Grid =====
-.quick-actions-grid {
+// ============================================================================
+// 5. Quick Actions (Tremor Style - Simple Text Buttons)
+// ============================================================================
+.quick-actions-grid-tremor {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 0.5rem;
 
-  .action-button {
-    aspect-ratio: 1;
-    padding: 16px;
+  .action-button-tremor {
+    padding: 0.875rem;
+    text-align: center;
 
-    mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
+    .action-label-tremor {
+      font-size: 0.875rem;
+      font-weight: 500;
     }
   }
 }
 
-// ===== System Metrics =====
-.metric-item {
-  mat-progress-bar {
-    height: 8px;
+// ============================================================================
+// 6. System Status (Tremor Style - Muted Colors)
+// ============================================================================
+.metric-item-tremor {
+  .metric-label-tremor {
+    font-size: 0.875rem;
+  }
+
+  .metric-value-tremor {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .progress-bar-tremor {
+    height: 6px;
     border-radius: var(--aegisx-radius-full);
+
+    ::ng-deep .mdc-linear-progress__bar-inner {
+      border-color: var(--aegisx-border-emphasis);
+    }
   }
 }
 
-// ===== Mini Stats Cards =====
-.mini-stat-card {
-  transition: transform var(--aegisx-transition-fast);
-  border-radius: var(--aegisx-radius-md);
+// ============================================================================
+// 7. Top Products (Tremor Style - Simple Rank Badge)
+// ============================================================================
+.product-item-tremor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  transition: background 0.15s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    background: #f9fafb;
   }
 
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-}
-
-// ===== Chart Placeholder =====
-.chart-placeholder {
-  min-height: 300px;
-  background: var(--aegisx-background-subtle);
-  border-radius: var(--aegisx-radius-md);
-  border: 2px dashed var(--aegisx-border-default);
-  transition: all var(--aegisx-transition-base);
-
-  &:hover {
-    border-color: var(--aegisx-brand-default);
-    background: var(--aegisx-background-muted);
-  }
-}
-
-// ===== Top Products =====
-.product-item {
-  transition: all var(--aegisx-transition-fast);
-  border-radius: var(--aegisx-radius-md);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--aegisx-background-subtle) !important;
-    transform: translateX(4px);
-  }
-
-  .rank-badge {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--aegisx-radius-md);
+  .rank-badge-tremor {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.375rem;
+    background: #f3f4f6;
+    color: #6b7280;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 0.875rem;
     flex-shrink: 0;
+  }
 
-    &.top-rank {
-      background: linear-gradient(
-        135deg,
-        var(--aegisx-brand-default),
-        var(--aegisx-brand-emphasis)
-      ) !important;
-      color: white !important;
-      box-shadow: var(--aegisx-shadow-sm);
-    }
+  .product-name-tremor {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0 0 0.125rem 0;
+  }
+
+  .product-category-tremor {
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .product-sales-tremor {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 0.125rem 0;
+  }
+
+  .product-sales-label-tremor {
+    font-size: 0.75rem;
+    margin: 0;
   }
 }
 
-// ===== Team Members =====
-.team-member-item {
-  padding: 12px;
-  border-radius: var(--aegisx-radius-md);
-  transition: background var(--aegisx-transition-fast);
+// ============================================================================
+// 8. Team Performance (Tremor Style - Muted Avatar)
+// ============================================================================
+.team-member-item-tremor {
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  transition: background 0.15s ease;
 
   &:hover {
-    background: var(--aegisx-background-subtle);
+    background: #f9fafb;
   }
 
-  .avatar {
-    width: 40px;
-    height: 40px;
+  .avatar-tremor {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 0.75rem;
     color: white;
     flex-shrink: 0;
+    opacity: 0.9;
   }
 
-  mat-progress-bar {
-    height: 6px;
-    border-radius: var(--aegisx-radius-full);
+  .member-name-tremor {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0 0 0.125rem 0;
+  }
+
+  .member-role-tremor {
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .performance-badge-tremor {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background: #f3f4f6;
+    color: #6b7280;
   }
 }
 
-// ===== Responsive Adjustments =====
+// ============================================================================
+// 9. ngx-charts Customization (Tremor Style - Minimal)
+// ============================================================================
+::ng-deep {
+  // Chart container styling
+  .ngx-charts {
+    text {
+      fill: var(--aegisx-text-body);
+      font-size: 0.75rem;
+    }
+
+    .gridline-path {
+      stroke: var(--aegisx-border-default);
+      stroke-dasharray: 3, 3;
+    }
+
+    .refline-path {
+      stroke: var(--aegisx-border-emphasis);
+    }
+
+    .reference-area {
+      fill: var(--aegisx-background-subtle);
+    }
+
+    .tick text {
+      fill: var(--aegisx-text-subtle);
+    }
+  }
+
+  // Line chart specific
+  .line-chart {
+    .line-series {
+      .line {
+        stroke-width: 2;
+      }
+    }
+  }
+
+  // Bar chart specific
+  .bar-chart {
+    .bar {
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// 10. Responsive Adjustments
+// ============================================================================
 @media (max-width: 768px) {
-  .stat-card {
-    .stat-icon-wrapper {
-      width: 48px;
-      height: 48px;
-
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-    }
+  .stat-value-tremor {
+    font-size: 1.5rem;
   }
 
-  .quick-actions-grid {
-    .action-button {
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-    }
+  .quick-actions-grid-tremor {
+    grid-template-columns: 1fr;
   }
 }
 
-// ===== Material Design 3 Enhancements =====
+// ============================================================================
+// 11. Card Hover Effects (Minimal)
+// ============================================================================
 mat-card {
   &[appearance='outlined'] {
-    // Already styled by Material overrides
-    transition: all var(--aegisx-transition-base);
+    transition: box-shadow 0.2s ease;
 
     &:hover {
-      box-shadow: var(--aegisx-shadow-md) !important;
+      box-shadow: var(--aegisx-shadow-sm) !important;
     }
-  }
-}
-
-// ===== Custom Scrollbar (optional) =====
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--aegisx-background-subtle);
-  border-radius: var(--aegisx-radius-full);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--aegisx-border-emphasis);
-  border-radius: var(--aegisx-radius-full);
-
-  &:hover {
-    background: var(--aegisx-text-subtle);
   }
 }

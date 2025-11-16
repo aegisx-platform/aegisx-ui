@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +44,7 @@ interface TokenCategory {
   ],
   templateUrl: './design-tokens.component.html',
   styleUrls: ['./design-tokens.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DesignTokensComponent implements OnInit {
   themeService = inject(TremorThemeService);
@@ -801,6 +802,13 @@ export class DesignTokensComponent implements OnInit {
     setTimeout(() => {
       this.computeTokenValues();
     }, 100);
+  }
+
+  scrollToSection(sectionId: string): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   getTotalTokenCount(): number {

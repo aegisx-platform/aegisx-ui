@@ -1,86 +1,103 @@
-<!-- Dashboard Container -->
-<div class="flex flex-col gap-6 p-6">
+<!-- Dashboard Container (Tremor Style - Clean & Minimal) -->
+<div class="docs-page">
   <!-- Page Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold" style="color: var(--aegisx-text-strong)">
-        Dashboard
-      </h1>
-      <p class="mt-1 text-sm" style="color: var(--aegisx-text-body)">
-        Welcome back! Here's what's happening today.
-      </p>
-    </div>
+  <div class="docs-header">
+    <h1 class="docs-title">Dashboard</h1>
+    <p class="docs-subtitle">Welcome back! Here's what's happening today.</p>
 
-    <button matButton="filled" color="primary">
-      <mat-icon>refresh</mat-icon>
-      Refresh Data
-    </button>
+    <div class="docs-actions">
+      <button matButton="filled" color="primary">
+        <mat-icon>refresh</mat-icon>
+        Refresh Data
+      </button>
+    </div>
   </div>
 
-  <!-- Stats Cards Grid (Material Design 3 Style) -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <!-- Stats Cards Grid (Tremor Style - No Icons, Text Arrows) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <mat-card
       *ngFor="let stat of stats"
       appearance="outlined"
-      class="stat-card"
+      class="stat-card-tremor"
     >
       <mat-card-content>
-        <div class="flex items-start justify-between mb-4">
-          <div
-            class="stat-icon-wrapper"
-            [style.background-color]="stat.iconColor + '15'"
-          >
-            <mat-icon [style.color]="stat.iconColor">{{ stat.icon }}</mat-icon>
-          </div>
+        <p class="stat-label-tremor">{{ stat.title }}</p>
+        <h3 class="stat-value-tremor">{{ stat.value }}</h3>
+        <p
+          class="stat-change-tremor"
+          [class.stat-positive]="stat.changeType === 'increase'"
+          [class.stat-negative]="stat.changeType === 'decrease'"
+        >
+          <span class="stat-arrow">{{
+            stat.changeType === 'increase' ? '↑' : '↓'
+          }}</span>
+          <span>{{ stat.change }} from last month</span>
+        </p>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
-          <mat-chip
-            [highlighted]="stat.changeType === 'increase'"
-            class="change-chip"
-          >
-            <mat-icon class="text-sm">
-              {{
-                stat.changeType === 'increase' ? 'trending_up' : 'trending_down'
-              }}
-            </mat-icon>
-            {{ stat.change }}
-          </mat-chip>
-        </div>
+  <!-- Charts Section (ngx-charts) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Line Chart -->
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title class="chart-title-tremor">
+          User Growth Trend
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-line-chart
+          [view]="view"
+          [results]="lineChartData"
+          [xAxis]="showXAxis"
+          [yAxis]="showYAxis"
+          [legend]="showLegend"
+          [showXAxisLabel]="showXAxisLabel"
+          [showYAxisLabel]="showYAxisLabel"
+          [scheme]="colorScheme"
+          [gradient]="gradient"
+          [curve]="'monotoneX'"
+        >
+        </ngx-charts-line-chart>
+      </mat-card-content>
+    </mat-card>
 
-        <div>
-          <p
-            class="text-sm font-medium mb-1"
-            style="color: var(--aegisx-text-body)"
-          >
-            {{ stat.title }}
-          </p>
-          <h3
-            class="text-3xl font-bold"
-            style="color: var(--aegisx-text-strong)"
-          >
-            {{ stat.value }}
-          </h3>
-          <p class="text-xs mt-1" style="color: var(--aegisx-text-subtle)">
-            from last month
-          </p>
-        </div>
+    <!-- Bar Chart -->
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title class="chart-title-tremor">
+          Users by Department
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-bar-vertical
+          [view]="view"
+          [results]="barChartData"
+          [xAxis]="showXAxis"
+          [yAxis]="showYAxis"
+          [legend]="showLegend"
+          [showXAxisLabel]="showXAxisLabel"
+          [showYAxisLabel]="showYAxisLabel"
+          [scheme]="colorScheme"
+          [gradient]="gradient"
+        >
+        </ngx-charts-bar-vertical>
       </mat-card-content>
     </mat-card>
   </div>
 
   <!-- Main Content Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Recent Activities (2 columns on large screens) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- Recent Activities (Tremor Style - Minimal) -->
     <mat-card appearance="outlined" class="lg:col-span-2">
       <mat-card-header>
         <div class="flex items-center justify-between w-full">
-          <mat-card-title class="flex items-center gap-2">
-            <mat-icon style="color: var(--aegisx-brand-default)">
-              history
-            </mat-icon>
-            <span>Recent Activities</span>
+          <mat-card-title class="section-title-tremor">
+            Recent Activities
           </mat-card-title>
 
-          <button matButton color="primary">
+          <button matButton color="primary" class="view-all-btn-tremor">
             View All
             <mat-icon>arrow_forward</mat-icon>
           </button>
@@ -88,48 +105,32 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="activity-list">
+        <div class="activity-list-tremor">
           <div
             *ngFor="let activity of recentActivities; let last = last"
-            class="activity-item"
+            class="activity-item-tremor"
             [class.last-item]="last"
           >
-            <div class="activity-timeline">
-              <div
-                class="timeline-dot"
-                [style.background-color]="getStatusColor(activity.status)"
-              ></div>
-              <div *ngIf="!last" class="timeline-line"></div>
-            </div>
-
-            <div class="activity-content">
+            <div class="activity-content-tremor">
               <div class="flex items-center justify-between mb-1">
-                <div class="flex items-center gap-2">
-                  <mat-icon
-                    class="activity-icon"
-                    [style.color]="getStatusColor(activity.status)"
-                  >
-                    {{
-                      activity.status === 'success'
-                        ? 'check_circle'
-                        : activity.status === 'warning'
-                          ? 'warning'
-                          : 'error'
-                    }}
-                  </mat-icon>
-                  <span
-                    class="font-semibold"
-                    style="color: var(--aegisx-text-strong)"
-                  >
-                    {{ activity.user }}
-                  </span>
-                </div>
-                <span class="text-xs" style="color: var(--aegisx-text-subtle)">
+                <span
+                  class="activity-user-tremor"
+                  style="color: var(--aegisx-text-strong)"
+                >
+                  {{ activity.user }}
+                </span>
+                <span
+                  class="activity-time-tremor"
+                  style="color: var(--aegisx-text-subtle)"
+                >
                   {{ getRelativeTime(activity.timestamp) }}
                 </span>
               </div>
 
-              <p class="text-sm" style="color: var(--aegisx-text-body)">
+              <p
+                class="activity-action-tremor"
+                style="color: var(--aegisx-text-body)"
+              >
                 {{ activity.action }}
               </p>
             </div>
@@ -139,53 +140,52 @@
     </mat-card>
 
     <!-- Quick Actions & System Status -->
-    <div class="flex flex-col gap-6">
-      <!-- Quick Actions -->
+    <div class="flex flex-col gap-4">
+      <!-- Quick Actions (Tremor Style - Simple Cards) -->
       <mat-card appearance="outlined">
         <mat-card-header>
-          <mat-card-title class="flex items-center gap-2">
-            <mat-icon style="color: var(--aegisx-brand-default)">bolt</mat-icon>
-            <span>Quick Actions</span>
+          <mat-card-title class="section-title-tremor">
+            Quick Actions
           </mat-card-title>
         </mat-card-header>
 
         <mat-card-content>
-          <div class="quick-actions-grid">
+          <div class="quick-actions-grid-tremor">
             <button
               *ngFor="let action of quickActions"
               matButton="outlined"
-              class="action-button"
+              class="action-button-tremor"
             >
-              <div class="flex flex-col items-center gap-2">
-                <mat-icon [color]="action.color">{{ action.icon }}</mat-icon>
-                <span class="text-xs">{{ action.label }}</span>
-              </div>
+              <span class="action-label-tremor">{{ action.label }}</span>
             </button>
           </div>
         </mat-card-content>
       </mat-card>
 
-      <!-- System Status -->
+      <!-- System Status (Tremor Style - Muted Colors) -->
       <mat-card appearance="outlined">
         <mat-card-header>
-          <mat-card-title class="flex items-center gap-2">
-            <mat-icon style="color: var(--aegisx-brand-default)">
-              monitor_heart
-            </mat-icon>
-            <span>System Status</span>
+          <mat-card-title class="section-title-tremor">
+            System Status
           </mat-card-title>
         </mat-card-header>
 
         <mat-card-content>
           <div class="space-y-4">
-            <div *ngFor="let metric of systemMetrics" class="metric-item">
+            <div
+              *ngFor="let metric of systemMetrics"
+              class="metric-item-tremor"
+            >
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm" style="color: var(--aegisx-text-body)">
+                <span
+                  class="metric-label-tremor"
+                  style="color: var(--aegisx-text-body)"
+                >
                   {{ metric.label }}
                 </span>
                 <span
-                  class="text-sm font-semibold"
-                  [style.color]="metric.statusColor"
+                  class="metric-value-tremor"
+                  style="color: var(--aegisx-text-strong)"
                 >
                   {{ metric.value }}%
                 </span>
@@ -194,7 +194,7 @@
               <mat-progress-bar
                 mode="determinate"
                 [value]="metric.value"
-                [color]="metric.status === 'healthy' ? 'primary' : 'warn'"
+                class="progress-bar-tremor"
               ></mat-progress-bar>
             </div>
           </div>
@@ -203,75 +203,13 @@
     </div>
   </div>
 
-  <!-- Performance Overview -->
-  <mat-card appearance="outlined">
-    <mat-card-header>
-      <div class="flex items-center justify-between w-full">
-        <mat-card-title class="flex items-center gap-2">
-          <mat-icon style="color: var(--aegisx-brand-default)">
-            show_chart
-          </mat-icon>
-          <span>Performance Overview</span>
-        </mat-card-title>
-
-        <mat-button-toggle-group value="month">
-          <mat-button-toggle value="week">Week</mat-button-toggle>
-          <mat-button-toggle value="month">Month</mat-button-toggle>
-          <mat-button-toggle value="year">Year</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-    </mat-card-header>
-
-    <mat-card-content>
-      <!-- Mini Stats Row -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div
-          *ngFor="let miniStat of miniStats"
-          class="mini-stat-card p-4 rounded-lg"
-          style="background: var(--aegisx-background-subtle)"
-        >
-          <div class="flex items-center gap-2 mb-2">
-            <mat-icon class="text-lg" [style.color]="miniStat.color">
-              {{ miniStat.icon }}
-            </mat-icon>
-            <span class="text-xs" style="color: var(--aegisx-text-body)">
-              {{ miniStat.label }}
-            </span>
-          </div>
-          <p class="text-xl font-bold" style="color: var(--aegisx-text-strong)">
-            {{ miniStat.value }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Chart Placeholder -->
-      <div class="chart-placeholder flex items-center justify-center">
-        <div class="text-center">
-          <mat-icon
-            class="text-6xl mb-4"
-            style="color: var(--aegisx-text-subtle)"
-          >
-            insert_chart
-          </mat-icon>
-          <p style="color: var(--aegisx-text-body)">
-            Chart visualization will be displayed here
-          </p>
-          <p class="text-sm mt-2" style="color: var(--aegisx-text-subtle)">
-            Integrate with Chart.js, Recharts, or other charting libraries
-          </p>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-
   <!-- Bottom Grid: Top Products & Team Performance -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Top Products -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Top Products (Tremor Style) -->
     <mat-card appearance="outlined">
       <mat-card-header>
-        <mat-card-title class="flex items-center gap-2">
-          <mat-icon style="color: var(--aegisx-brand-default)"> star </mat-icon>
-          <span>Top Products</span>
+        <mat-card-title class="section-title-tremor">
+          Top Products
         </mat-card-title>
       </mat-card-header>
 
@@ -279,36 +217,38 @@
         <div class="space-y-3">
           <div
             *ngFor="let product of topProducts; let i = index"
-            class="product-item flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            class="product-item-tremor"
           >
-            <div
-              class="rank-badge"
-              [class.top-rank]="i === 0"
-              style="
-                background: var(--aegisx-background-subtle);
-                color: var(--aegisx-text-strong);
-              "
-            >
+            <div class="rank-badge-tremor">
               {{ i + 1 }}
             </div>
 
             <div class="flex-1">
-              <p class="font-medium" style="color: var(--aegisx-text-strong)">
+              <p
+                class="product-name-tremor"
+                style="color: var(--aegisx-text-strong)"
+              >
                 {{ product.name }}
               </p>
-              <p class="text-xs" style="color: var(--aegisx-text-subtle)">
+              <p
+                class="product-category-tremor"
+                style="color: var(--aegisx-text-subtle)"
+              >
                 {{ product.category }}
               </p>
             </div>
 
             <div class="text-right">
               <p
-                class="font-semibold"
-                style="color: var(--aegisx-brand-default)"
+                class="product-sales-tremor"
+                style="color: var(--aegisx-text-strong)"
               >
                 {{ product.sales }}
               </p>
-              <p class="text-xs" style="color: var(--aegisx-text-subtle)">
+              <p
+                class="product-sales-label-tremor"
+                style="color: var(--aegisx-text-subtle)"
+              >
                 sales
               </p>
             </div>
@@ -317,43 +257,52 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Team Performance -->
+    <!-- Team Performance (Tremor Style) -->
     <mat-card appearance="outlined">
       <mat-card-header>
-        <mat-card-title class="flex items-center gap-2">
-          <mat-icon style="color: var(--aegisx-brand-default)">
-            groups
-          </mat-icon>
-          <span>Team Performance</span>
+        <mat-card-title class="section-title-tremor">
+          Team Performance
         </mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
         <div class="space-y-4">
-          <div *ngFor="let member of teamMembers" class="team-member-item">
+          <div
+            *ngFor="let member of teamMembers"
+            class="team-member-item-tremor"
+          >
             <div class="flex items-center gap-3 mb-2">
-              <div class="avatar" [style.background-color]="member.avatarColor">
+              <div
+                class="avatar-tremor"
+                [style.background-color]="member.avatarColor"
+              >
                 {{ member.initials }}
               </div>
 
               <div class="flex-1">
-                <p class="font-medium" style="color: var(--aegisx-text-strong)">
+                <p
+                  class="member-name-tremor"
+                  style="color: var(--aegisx-text-strong)"
+                >
                   {{ member.name }}
                 </p>
-                <p class="text-xs" style="color: var(--aegisx-text-subtle)">
+                <p
+                  class="member-role-tremor"
+                  style="color: var(--aegisx-text-subtle)"
+                >
                   {{ member.role }}
                 </p>
               </div>
 
-              <mat-chip [highlighted]="member.performance > 80">
+              <span class="performance-badge-tremor">
                 {{ member.performance }}%
-              </mat-chip>
+              </span>
             </div>
 
             <mat-progress-bar
               mode="determinate"
               [value]="member.performance"
-              [color]="member.performance > 80 ? 'primary' : 'accent'"
+              class="progress-bar-tremor"
             ></mat-progress-bar>
           </div>
         </div>

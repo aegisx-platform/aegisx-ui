@@ -6,6 +6,7 @@ import {
   ViewEncapsulation,
   inject,
 } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MatAutocompleteModule,
@@ -77,6 +78,7 @@ export interface Agent {
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -415,6 +417,18 @@ export class ComponentsDemoComponent implements OnInit {
     const ctrlValue = normalizedYear;
     datepicker.select(ctrlValue);
     datepicker.close();
+  }
+
+  // Scroll navigation methods
+  scrollToSection(sectionId: string): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // Private filter methods for autocomplete

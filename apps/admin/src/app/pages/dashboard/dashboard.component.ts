@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 interface StatCard {
   title: string;
@@ -64,12 +65,13 @@ interface TeamMember {
     MatChipsModule,
     MatProgressBarModule,
     MatButtonToggleModule,
+    NgxChartsModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
-  // Stats Cards Data
+  // Stats Cards Data (Tremor Style - No icons)
   stats: StatCard[] = [
     {
       title: 'Total Users',
@@ -104,6 +106,40 @@ export class DashboardComponent {
       iconColor: '#ef4444',
     },
   ];
+
+  // Chart Data for ngx-charts
+  lineChartData = [
+    {
+      name: 'Users',
+      series: [
+        { name: 'Jan', value: 2100 },
+        { name: 'Feb', value: 2200 },
+        { name: 'Mar', value: 2350 },
+        { name: 'Apr', value: 2400 },
+        { name: 'May', value: 2450 },
+        { name: 'Jun', value: 2543 },
+      ],
+    },
+  ];
+
+  barChartData = [
+    { name: 'Engineering', value: 45 },
+    { name: 'Sales', value: 32 },
+    { name: 'Marketing', value: 28 },
+    { name: 'HR', value: 18 },
+    { name: 'Operations', value: 15 },
+    { name: 'Finance', value: 12 },
+  ];
+
+  // Chart Options
+  view: [number, number] = [700, 300];
+  showXAxis = true;
+  showYAxis = true;
+  gradient = false;
+  showLegend = false;
+  showXAxisLabel = false;
+  showYAxisLabel = false;
+  colorScheme = 'cool';
 
   // Recent Activities
   recentActivities: Activity[] = [

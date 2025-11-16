@@ -1,27 +1,20 @@
 <!-- Components Demo Container -->
-<div class="flex flex-col gap-6 p-6">
+<div class="docs-page">
   <!-- Page Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold" style="color: var(--aegisx-text-strong)">
-        Material Components Demo
-      </h1>
-      <p class="mt-1 text-sm" style="color: var(--aegisx-text-body)">
-        Explore all Angular Material components with AegisX Design System
-        styling
-      </p>
-    </div>
+  <div class="docs-header">
+    <h1 class="docs-title">Material Components Demo</h1>
+    <p class="docs-subtitle">
+      Explore all Angular Material components with AegisX Design System styling
+    </p>
   </div>
 
-  <!-- Quick Navigation Card -->
+  <!-- Quick Navigation -->
+  <div class="section-header">
+    <h2>Quick Navigation</h2>
+  </div>
+
   <mat-card appearance="outlined">
     <mat-card-content>
-      <h2
-        class="text-lg font-semibold mb-4"
-        style="color: var(--aegisx-text-strong)"
-      >
-        Quick Navigation
-      </h2>
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
         <button matButton="outlined" (click)="scrollToSection('form-inputs')">
           <mat-icon class="mr-2">input</mat-icon>
@@ -87,6 +80,71 @@
           <mat-icon class="mr-2">analytics</mat-icon>
           Tremor Examples
         </button>
+      </div>
+
+      <mat-divider class="my-4"></mat-divider>
+
+      <h3
+        class="text-base font-semibold mb-3"
+        style="color: var(--aegisx-text-strong)"
+      >
+        Design System Resources
+      </h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <button matButton="filled" color="primary" routerLink="/typography">
+          <mat-icon class="mr-2">text_fields</mat-icon>
+          Typography System
+        </button>
+        <button matButton="outlined" routerLink="/card-examples">
+          <mat-icon class="mr-2">dashboard</mat-icon>
+          KPI Card Gallery
+        </button>
+        <button matButton="outlined" routerLink="/design-tokens">
+          <mat-icon class="mr-2">token</mat-icon>
+          Design Tokens
+        </button>
+        <button matButton="outlined" routerLink="/form-layouts">
+          <mat-icon class="mr-2">view_module</mat-icon>
+          Form Layouts
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Form Sizes Demo Card -->
+  <mat-card appearance="outlined">
+    <mat-card-content>
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <h3
+            class="text-xl font-bold mb-2 flex items-center gap-2"
+            style="color: var(--aegisx-text-strong)"
+          >
+            <mat-icon class="text-blue-600">format_size</mat-icon>
+            Form Size Utilities
+          </h3>
+          <p class="text-sm mb-4" style="color: var(--aegisx-text-body)">
+            Explore 4 pre-configured form size variants (Extra Small, Compact,
+            Standard, Large) with interactive examples and best practice
+            guidelines for your application.
+          </p>
+          <div class="flex gap-2">
+            <button matButton="filled" color="primary" routerLink="/form-sizes">
+              <mat-icon>open_in_new</mat-icon>
+              View Form Sizes Demo
+            </button>
+            <button matButton="outlined" routerLink="/form-sizes">
+              Learn More
+            </button>
+          </div>
+        </div>
+        <div class="hidden lg:flex items-center ml-6">
+          <mat-icon
+            class="text-blue-600"
+            style="font-size: 80px; width: 80px; height: 80px"
+            >widgets</mat-icon
+          >
+        </div>
       </div>
     </mat-card-content>
   </mat-card>
@@ -1720,6 +1778,7 @@
   <!-- ============================================
        SECTION: Cards
        ============================================ -->
+
   <section id="cards" class="scroll-mt-6">
     <mat-card appearance="outlined">
       <mat-card-content>
@@ -1728,158 +1787,105 @@
           style="color: var(--aegisx-text-strong)"
         >
           <mat-icon class="align-middle mr-2">credit_card</mat-icon>
-          Card Examples
+          Cards
         </h2>
 
-        <!-- Basic Cards -->
+        <!-- Navigation Card to Full Card Examples -->
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                  <mat-icon class="text-purple-600 dark:text-purple-400"
+                    >view_module</mat-icon
+                  >
+                  Comprehensive Card Examples & Patterns
+                </h3>
+                <p class="text-sm mb-4" style="color: var(--aegisx-text-body)">
+                  Explore all 3 Material Design 3 card types (Raised, Outlined,
+                  Filled) with 10+ real-world use cases including statistics
+                  cards, user profiles, products, pricing tables, and more.
+                </p>
+                <div class="flex gap-2">
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    routerLink="/card-examples"
+                  >
+                    <mat-icon>open_in_new</mat-icon>
+                    View All Card Examples
+                  </button>
+                </div>
+              </div>
+              <mat-icon
+                class="text-purple-600 dark:text-purple-400 hidden lg:block"
+                style="font-size: 80px; width: 80px; height: 80px"
+              >
+                credit_card
+              </mat-icon>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Material 3 Card Types - Quick Preview -->
         <h3
           class="text-lg font-medium mb-3"
           style="color: var(--aegisx-text-emphasis)"
         >
-          Basic Cards
+          Material 3 Card Types
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-card-title>Outlined Card</mat-card-title>
-              <mat-card-subtitle>With border</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <p>
-                This is an outlined card with a border. Recommended for AegisX
-                Design System style.
-              </p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-button>Action</button>
-            </mat-card-actions>
-          </mat-card>
-
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Raised Card (Default) -->
           <mat-card>
             <mat-card-header>
-              <mat-card-title>Elevated Card</mat-card-title>
-              <mat-card-subtitle>With shadow (default)</mat-card-subtitle>
+              <mat-card-title>Raised Card</mat-card-title>
+              <mat-card-subtitle
+                >Default - Elevated with shadow</mat-card-subtitle
+              >
             </mat-card-header>
             <mat-card-content>
-              <p>
-                This is an elevated card with shadow elevation (default
-                appearance).
+              <p class="text-sm mb-2">
+                The default card style with elevation and shadow. Best for
+                primary content that needs emphasis.
               </p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-button>Action</button>
-            </mat-card-actions>
-          </mat-card>
-
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-card-title>Card with Icon</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="flex items-center gap-3">
-                <mat-icon color="primary" class="text-4xl">info</mat-icon>
-                <p>Card content with icon</p>
+              <div class="text-xs" style="color: var(--aegisx-text-muted)">
+                <code>&lt;mat-card&gt;</code>
               </div>
             </mat-card-content>
           </mat-card>
-        </div>
 
-        <!-- Cards with Images -->
-        <h3
-          class="text-lg font-medium mb-3"
-          style="color: var(--aegisx-text-emphasis)"
-        >
-          Cards with Images
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <mat-card appearance="outlined">
-            <img
-              mat-card-image
-              src="https://via.placeholder.com/400x200"
-              alt="Placeholder image"
-            />
-            <mat-card-content>
-              <mat-card-title>Card with Image</mat-card-title>
-              <mat-card-subtitle>Image at the top</mat-card-subtitle>
-              <p>This card has an image at the top followed by content.</p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-button>Share</button>
-              <button mat-button>Learn More</button>
-            </mat-card-actions>
-          </mat-card>
-
+          <!-- Outlined Card -->
           <mat-card appearance="outlined">
             <mat-card-header>
-              <mat-card-title>Header First</mat-card-title>
-              <mat-card-subtitle>Then image</mat-card-subtitle>
+              <mat-card-title>Outlined Card</mat-card-title>
+              <mat-card-subtitle>Border, no shadow</mat-card-subtitle>
             </mat-card-header>
-            <img
-              mat-card-image
-              src="https://via.placeholder.com/400x150"
-              alt="Placeholder image"
-            />
             <mat-card-content>
-              <p>This card has header first, then image.</p>
-            </mat-card-content>
-          </mat-card>
-        </div>
-
-        <!-- Interactive Cards -->
-        <h3
-          class="text-lg font-medium mb-3"
-          style="color: var(--aegisx-text-emphasis)"
-        >
-          Interactive Cards
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <mat-card
-            appearance="outlined"
-            class="cursor-pointer hover:shadow-lg transition-shadow"
-          >
-            <mat-card-content class="text-center">
-              <mat-icon class="text-5xl mb-2" color="primary"
-                >account_circle</mat-icon
-              >
-              <h3 class="text-lg font-semibold mb-1">Profile</h3>
-              <p class="text-sm text-gray-600">View profile</p>
+              <p class="text-sm mb-2">
+                Clean, flat design with border.
+                <strong>AegisX Design System standard.</strong> Best for
+                secondary content.
+              </p>
+              <div class="text-xs" style="color: var(--aegisx-text-muted)">
+                <code>&lt;mat-card appearance="outlined"&gt;</code>
+              </div>
             </mat-card-content>
           </mat-card>
 
-          <mat-card
-            appearance="outlined"
-            class="cursor-pointer hover:shadow-lg transition-shadow"
-          >
-            <mat-card-content class="text-center">
-              <mat-icon class="text-5xl mb-2" color="accent">settings</mat-icon>
-              <h3 class="text-lg font-semibold mb-1">Settings</h3>
-              <p class="text-sm text-gray-600">Manage settings</p>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card
-            appearance="outlined"
-            class="cursor-pointer hover:shadow-lg transition-shadow"
-          >
-            <mat-card-content class="text-center">
-              <mat-icon class="text-5xl mb-2" color="warn"
-                >notifications</mat-icon
-              >
-              <h3 class="text-lg font-semibold mb-1">Alerts</h3>
-              <p class="text-sm text-gray-600">View alerts</p>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card
-            appearance="outlined"
-            class="cursor-pointer hover:shadow-lg transition-shadow"
-          >
-            <mat-card-content class="text-center">
-              <mat-icon class="text-5xl mb-2" color="primary"
-                >analytics</mat-icon
-              >
-              <h3 class="text-lg font-semibold mb-1">Reports</h3>
-              <p class="text-sm text-gray-600">View reports</p>
+          <!-- Filled Card -->
+          <mat-card appearance="filled">
+            <mat-card-header>
+              <mat-card-title>Filled Card</mat-card-title>
+              <mat-card-subtitle>Background fill</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="text-sm mb-2">
+                Card with filled background. Useful for alternate sections or
+                grouped content.
+              </p>
+              <div class="text-xs" style="color: var(--aegisx-text-muted)">
+                <code>&lt;mat-card appearance="filled"&gt;</code>
+              </div>
             </mat-card-content>
           </mat-card>
         </div>
