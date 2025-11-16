@@ -16,15 +16,44 @@
   <!-- 1. Button -->
   <div class="demo-section">
     <h3>1. Button Component</h3>
+
+    <h4>Variants</h4>
     <div class="demo-container">
       <ax-button>Default</ax-button>
+      <ax-button variant="solid" color="primary">Solid Primary</ax-button>
+      <ax-button variant="outline" color="primary">Outline Primary</ax-button>
+      <ax-button variant="ghost" color="primary">Ghost Primary</ax-button>
+      <ax-button variant="link" color="primary">Link Primary</ax-button>
+    </div>
+
+    <h4>Colors</h4>
+    <div class="demo-container">
       <ax-button variant="solid" color="primary">Primary</ax-button>
       <ax-button variant="solid" color="success">Success</ax-button>
       <ax-button variant="solid" color="error">Error</ax-button>
       <ax-button variant="solid" color="warning">Warning</ax-button>
-      <ax-button variant="outline" color="primary">Outline</ax-button>
-      <ax-button variant="ghost" color="primary">Ghost</ax-button>
+      <ax-button variant="solid" color="neutral">Neutral</ax-button>
+    </div>
+
+    <h4>Sizes</h4>
+    <div class="demo-container">
+      <ax-button size="sm">Small</ax-button>
+      <ax-button size="md">Medium</ax-button>
+      <ax-button size="lg">Large</ax-button>
+    </div>
+
+    <h4>States</h4>
+    <div class="demo-container">
+      <ax-button>Normal</ax-button>
+      <ax-button [loading]="true">Loading</ax-button>
       <ax-button [disabled]="true">Disabled</ax-button>
+    </div>
+
+    <h4>Full Width</h4>
+    <div class="demo-container">
+      <ax-button [fullWidth]="true" variant="solid" color="primary"
+        >Full Width Button</ax-button
+      >
     </div>
   </div>
 
@@ -51,16 +80,70 @@
   <!-- 4. Input -->
   <div class="demo-section">
     <h3>4. Input Component</h3>
+
+    <h4>Basic Input Types</h4>
     <div class="demo-container">
       <ax-input
         [(ngModel)]="inputValue"
         placeholder="Enter your name"
-        label="Name"
+        label="Text Input"
       ></ax-input>
       <ax-input
         type="email"
         placeholder="email@example.com"
+        label="Email Input"
+      ></ax-input>
+      <ax-input
+        type="password"
+        placeholder="Enter password"
+        label="Password Input"
+      ></ax-input>
+      <ax-input
+        type="number"
+        placeholder="Enter number"
+        label="Number Input"
+      ></ax-input>
+    </div>
+
+    <h4>Sizes</h4>
+    <div class="demo-container">
+      <ax-input size="sm" placeholder="Small input" label="Small"></ax-input>
+      <ax-input size="md" placeholder="Medium input" label="Medium"></ax-input>
+      <ax-input size="lg" placeholder="Large input" label="Large"></ax-input>
+    </div>
+
+    <h4>States</h4>
+    <div class="demo-container">
+      <ax-input placeholder="Normal input" label="Normal"></ax-input>
+      <ax-input
+        placeholder="Disabled input"
+        label="Disabled"
+        [disabled]="true"
+      ></ax-input>
+      <ax-input
+        placeholder="Error input"
+        label="Error"
+        error="This field is required"
+      ></ax-input>
+      <ax-input
+        placeholder="Success input"
+        label="Success"
+        [valid]="true"
+      ></ax-input>
+    </div>
+
+    <h4>With Icons</h4>
+    <div class="demo-container">
+      <ax-input
+        placeholder="Search..."
+        label="Search"
+        prefixIcon="search"
+      ></ax-input>
+      <ax-input
+        type="email"
+        placeholder="Email address"
         label="Email"
+        prefixIcon="mail"
       ></ax-input>
     </div>
   </div>
@@ -128,12 +211,38 @@
   <!-- 10. Badge -->
   <div class="demo-section">
     <h3>10. Badge Component</h3>
+
+    <h4>Variants</h4>
     <div class="demo-container">
       <ax-badge variant="default">Default</ax-badge>
       <ax-badge variant="primary">Primary</ax-badge>
       <ax-badge variant="success">Success</ax-badge>
       <ax-badge variant="warning">Warning</ax-badge>
       <ax-badge variant="error">Error</ax-badge>
+      <ax-badge variant="info">Info</ax-badge>
+    </div>
+
+    <h4>Sizes</h4>
+    <div class="demo-container">
+      <ax-badge variant="primary" size="sm">Small</ax-badge>
+      <ax-badge variant="primary" size="md">Medium</ax-badge>
+      <ax-badge variant="primary" size="lg">Large</ax-badge>
+    </div>
+
+    <h4>Usage Examples</h4>
+    <div class="demo-container">
+      <ax-badge variant="success">Active</ax-badge>
+      <ax-badge variant="error">Inactive</ax-badge>
+      <ax-badge variant="warning">Pending</ax-badge>
+      <ax-badge variant="primary">New</ax-badge>
+      <ax-badge variant="default">Draft</ax-badge>
+    </div>
+
+    <h4>With Dots</h4>
+    <div class="demo-container">
+      <ax-badge variant="success" [dot]="true"></ax-badge>
+      <ax-badge variant="error" [dot]="true"></ax-badge>
+      <ax-badge variant="warning" [dot]="true"></ax-badge>
     </div>
   </div>
 
@@ -208,11 +317,47 @@
   <!-- 17. Alert -->
   <div class="demo-section">
     <h3>17. Alert Component</h3>
+
+    <h4>Basic Variants</h4>
     <div class="demo-container">
+      <ax-alert variant="default">This is a default alert message</ax-alert>
       <ax-alert variant="info">This is an info alert message</ax-alert>
       <ax-alert variant="success">Operation completed successfully!</ax-alert>
       <ax-alert variant="warning">Please review this warning</ax-alert>
       <ax-alert variant="error">An error has occurred</ax-alert>
+    </div>
+
+    <h4>With Titles</h4>
+    <div class="demo-container">
+      <ax-alert variant="info" title="Information">
+        This alert has a title and description
+      </ax-alert>
+      <ax-alert variant="success" title="Success!">
+        Your changes have been saved successfully
+      </ax-alert>
+      <ax-alert variant="warning" title="Warning">
+        This action cannot be undone
+      </ax-alert>
+      <ax-alert variant="error" title="Error">
+        Failed to process your request
+      </ax-alert>
+    </div>
+
+    <h4>Closeable Alerts</h4>
+    <div class="demo-container">
+      <ax-alert variant="info" [closeable]="true">
+        You can close this alert
+      </ax-alert>
+      <ax-alert variant="success" title="Closeable" [closeable]="true">
+        Click the X button to dismiss
+      </ax-alert>
+    </div>
+
+    <h4>Without Icons</h4>
+    <div class="demo-container">
+      <ax-alert variant="info" [icon]="false">
+        This alert has no icon
+      </ax-alert>
     </div>
   </div>
 
@@ -241,9 +386,48 @@
   <!-- 20. Progress -->
   <div class="demo-section">
     <h3>20. Progress Component</h3>
+
+    <h4>Variants</h4>
     <div class="demo-container">
-      <ax-progress [value]="progressValue" variant="primary"></ax-progress>
-      <ax-progress [value]="75" variant="success"></ax-progress>
+      <ax-progress [value]="45" variant="primary" label="Primary"></ax-progress>
+      <ax-progress [value]="60" variant="success" label="Success"></ax-progress>
+      <ax-progress [value]="30" variant="warning" label="Warning"></ax-progress>
+      <ax-progress [value]="90" variant="error" label="Error"></ax-progress>
+      <ax-progress [value]="75" variant="info" label="Info"></ax-progress>
+    </div>
+
+    <h4>Sizes</h4>
+    <div class="demo-container">
+      <ax-progress
+        [value]="progressValue"
+        size="sm"
+        label="Small"
+      ></ax-progress>
+      <ax-progress
+        [value]="progressValue"
+        size="md"
+        label="Medium"
+      ></ax-progress>
+      <ax-progress
+        [value]="progressValue"
+        size="lg"
+        label="Large"
+      ></ax-progress>
+    </div>
+
+    <h4>Indeterminate</h4>
+    <div class="demo-container">
+      <ax-progress [indeterminate]="true" variant="primary"></ax-progress>
+    </div>
+
+    <h4>With Labels</h4>
+    <div class="demo-container">
+      <ax-progress
+        [value]="progressValue"
+        variant="primary"
+        [showValue]="true"
+        label="Uploading..."
+      ></ax-progress>
     </div>
   </div>
 
@@ -260,27 +444,87 @@
   <!-- 22. Dialog -->
   <div class="demo-section">
     <h3>22. Dialog Component</h3>
-    <div class="demo-container">
-      <ax-button (click)="showDialog = true">Open Dialog</ax-button>
 
-      <ax-dialog [(open)]="showDialog" title="Dialog Title" size="md">
-        <p>This is the dialog content. You can put any content here.</p>
-        <div footer>
-          <ax-button
-            variant="outline"
-            color="neutral"
-            (click)="showDialog = false"
-            >Cancel</ax-button
-          >
-          <ax-button
-            variant="solid"
-            color="primary"
-            (click)="showDialog = false"
-            >Confirm</ax-button
-          >
-        </div>
-      </ax-dialog>
+    <h4>Sizes</h4>
+    <div class="demo-container">
+      <ax-button (click)="showDialog = true">Medium Dialog</ax-button>
+      <ax-button (click)="showDialogLarge = true">Large Dialog</ax-button>
+      <ax-button (click)="showDialogSmall = true">Small Dialog</ax-button>
+      <ax-button (click)="showDialogFull = true">Fullscreen Dialog</ax-button>
     </div>
+
+    <!-- Medium Dialog -->
+    <ax-dialog [(open)]="showDialog" title="Medium Dialog" size="md">
+      <p>This is a medium-sized dialog with standard width.</p>
+      <div footer>
+        <ax-button
+          variant="outline"
+          color="neutral"
+          (click)="showDialog = false"
+          >Cancel</ax-button
+        >
+        <ax-button variant="solid" color="primary" (click)="showDialog = false"
+          >Confirm</ax-button
+        >
+      </div>
+    </ax-dialog>
+
+    <!-- Large Dialog -->
+    <ax-dialog [(open)]="showDialogLarge" title="Large Dialog" size="lg">
+      <p>This is a large dialog with wider content area.</p>
+      <div footer>
+        <ax-button
+          variant="outline"
+          color="neutral"
+          (click)="showDialogLarge = false"
+          >Cancel</ax-button
+        >
+        <ax-button
+          variant="solid"
+          color="primary"
+          (click)="showDialogLarge = false"
+          >Confirm</ax-button
+        >
+      </div>
+    </ax-dialog>
+
+    <!-- Small Dialog -->
+    <ax-dialog [(open)]="showDialogSmall" title="Small Dialog" size="sm">
+      <p>This is a compact small dialog.</p>
+      <div footer>
+        <ax-button
+          variant="outline"
+          color="neutral"
+          (click)="showDialogSmall = false"
+          >Cancel</ax-button
+        >
+        <ax-button
+          variant="solid"
+          color="primary"
+          (click)="showDialogSmall = false"
+          >Confirm</ax-button
+        >
+      </div>
+    </ax-dialog>
+
+    <!-- Fullscreen Dialog -->
+    <ax-dialog [(open)]="showDialogFull" title="Fullscreen Dialog" size="full">
+      <p>This dialog takes up the entire screen.</p>
+      <div footer>
+        <ax-button
+          variant="outline"
+          color="neutral"
+          (click)="showDialogFull = false"
+          >Cancel</ax-button
+        >
+        <ax-button
+          variant="solid"
+          color="primary"
+          (click)="showDialogFull = false"
+          >Confirm</ax-button
+        >
+      </div>
+    </ax-dialog>
   </div>
 
   <!-- 23. Loading Bar -->
@@ -339,13 +583,50 @@
   <!-- 29. Drawer -->
   <div class="demo-section">
     <h3>29. Drawer Component</h3>
+
+    <h4>Positions</h4>
     <div class="demo-container">
-      <ax-button (click)="showDrawer = true">Open Drawer</ax-button>
-      <ax-drawer [(open)]="showDrawer" position="right">
-        <h3>Drawer Content</h3>
-        <p>This is the drawer content area.</p>
-      </ax-drawer>
+      <ax-button (click)="showDrawer = true">Right Drawer</ax-button>
+      <ax-button (click)="showDrawerLeft = true">Left Drawer</ax-button>
+      <ax-button (click)="showDrawerTop = true">Top Drawer</ax-button>
+      <ax-button (click)="showDrawerBottom = true">Bottom Drawer</ax-button>
     </div>
+
+    <!-- Right Drawer -->
+    <ax-drawer [(open)]="showDrawer" position="right">
+      <h3>Right Drawer</h3>
+      <p>This drawer slides in from the right side.</p>
+      <ax-button variant="outline" (click)="showDrawer = false"
+        >Close</ax-button
+      >
+    </ax-drawer>
+
+    <!-- Left Drawer -->
+    <ax-drawer [(open)]="showDrawerLeft" position="left">
+      <h3>Left Drawer</h3>
+      <p>This drawer slides in from the left side.</p>
+      <ax-button variant="outline" (click)="showDrawerLeft = false"
+        >Close</ax-button
+      >
+    </ax-drawer>
+
+    <!-- Top Drawer -->
+    <ax-drawer [(open)]="showDrawerTop" position="top">
+      <h3>Top Drawer</h3>
+      <p>This drawer slides in from the top.</p>
+      <ax-button variant="outline" (click)="showDrawerTop = false"
+        >Close</ax-button
+      >
+    </ax-drawer>
+
+    <!-- Bottom Drawer -->
+    <ax-drawer [(open)]="showDrawerBottom" position="bottom">
+      <h3>Bottom Drawer</h3>
+      <p>This drawer slides in from the bottom.</p>
+      <ax-button variant="outline" (click)="showDrawerBottom = false"
+        >Close</ax-button
+      >
+    </ax-drawer>
   </div>
 
   <!-- 30. Pagination -->

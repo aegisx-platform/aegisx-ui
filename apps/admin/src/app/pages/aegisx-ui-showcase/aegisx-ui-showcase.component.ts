@@ -149,7 +149,13 @@ export class AegisxUiShowcaseComponent {
 
   // Feedback
   showDialog = false;
+  showDialogSmall = false;
+  showDialogLarge = false;
+  showDialogFull = false;
   showDrawer = false;
+  showDrawerLeft = false;
+  showDrawerTop = false;
+  showDrawerBottom = false;
   progressValue = 45;
 
   // Navigation
