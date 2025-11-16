@@ -12,8 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { Subject, takeUntil } from 'rxjs';
 import {
-  AegisxCardComponent,
-  AegisxAlertComponent,
+  AxCardComponent,
+  AxAlertComponent,
   AxThemeSwitcherComponent,
 } from '@aegisx/ui';
 import { SettingsService } from '../services/settings.service';
@@ -34,8 +34,8 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
     MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxCardComponent,
+    AxAlertComponent,
     AxThemeSwitcherComponent,
   ],
   template: `

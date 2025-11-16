@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { AxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   CdkDragDrop,
@@ -909,7 +909,7 @@ export class NavigationManagementComponent implements OnInit {
   readonly rolePermissions = signal<Permission[]>([]);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     {
       id: 'dashboard',
       title: 'Dashboard',

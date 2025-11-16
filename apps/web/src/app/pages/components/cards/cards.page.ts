@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 
 @Component({
   selector: 'ax-cards-page',
@@ -11,8 +11,8 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    AegisxCardComponent,
-    AegisxAlertComponent
+    AxCardComponent,
+    AxAlertComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -217,10 +217,12 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
       </section>
     </div>
   `,
-  styles: [`
-    .text-primary {
-      color: #1976d2;
-    }
-  `]
+  styles: [
+    `
+      .text-primary {
+        color: #1976d2;
+      }
+    `,
+  ],
 })
 export class CardsPage {}

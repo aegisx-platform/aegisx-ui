@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { AxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
 import {
@@ -509,7 +509,7 @@ export class RoleManagementComponent implements OnInit {
   readonly currentPage = signal(0);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     {
       id: 'dashboard',
       title: 'Dashboard',

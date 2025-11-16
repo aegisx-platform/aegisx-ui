@@ -2,18 +2,18 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { AppComponent } from './app';
-import { AegisxNavigationService, AegisxConfigService } from '@aegisx/ui';
+import { AxNavigationService, AxConfigService } from '@aegisx/ui';
 import { AuthService } from './core/auth.service';
 import { NavigationService } from './core/navigation.service';
 
 describe('App', () => {
-  let mockAegisxNavigationService: Partial<AegisxNavigationService>;
-  let mockConfigService: Partial<AegisxConfigService>;
+  let mockAxNavigationService: Partial<AxNavigationService>;
+  let mockConfigService: Partial<AxConfigService>;
   let mockAuthService: Partial<AuthService>;
   let mockNavigationService: Partial<NavigationService>;
 
   beforeEach(async () => {
-    mockAegisxNavigationService = {
+    mockAxNavigationService = {
       setNavigation: jest.fn(),
     };
     mockConfigService = {
@@ -41,8 +41,8 @@ describe('App', () => {
       providers: [
         provideRouter([]),
         provideHttpClient(),
-        { provide: AegisxNavigationService, useValue: mockAegisxNavigationService },
-        { provide: AegisxConfigService, useValue: mockConfigService },
+        { provide: AxNavigationService, useValue: mockAxNavigationService },
+        { provide: AxConfigService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: NavigationService, useValue: mockNavigationService },
       ],

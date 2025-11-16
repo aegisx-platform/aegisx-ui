@@ -31,7 +31,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 // Import AegisX UI Components for interactive demos
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 
 interface InteractiveDemo {
   id: string;
@@ -71,8 +71,8 @@ interface InteractiveDemo {
     MatDatepickerModule,
     MatNativeDateModule,
     // AegisX UI Components
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxCardComponent,
+    AxAlertComponent,
   ],
   template: ` <div class="interactive-demos-section">
     <!-- Interactive Demos Header -->

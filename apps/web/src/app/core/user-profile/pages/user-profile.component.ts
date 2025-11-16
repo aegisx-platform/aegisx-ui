@@ -9,7 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 import { ProfileInfoComponent } from '../components/profile-info.component';
 import { ProfileSecurityComponent } from '../components/profile-security.component';
 import { UserPreferencesComponent } from '../components/user-preferences.component';
@@ -33,8 +33,8 @@ import {
     MatSnackBarModule,
     MatTooltipModule,
     MatDividerModule,
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxCardComponent,
+    AxAlertComponent,
     ProfileInfoComponent,
     ProfileSecurityComponent,
     UserPreferencesComponent,

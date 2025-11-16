@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { AxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -496,7 +496,7 @@ export class ErrorLogsComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     { id: 'home', title: 'Home', type: 'basic', link: '/', icon: 'home' },
     {
       id: 'error-logs',

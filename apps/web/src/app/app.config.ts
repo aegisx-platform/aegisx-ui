@@ -10,8 +10,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import {
-  AegisxConfigService,
-  AegisxNavigationService,
+  AxConfigService,
+  AxNavigationService,
   IconService,
   provideAx,
 } from '@aegisx/ui';
@@ -71,8 +71,8 @@ export const appConfig: ApplicationConfig = {
       },
     }),
 
-    AegisxConfigService,
-    AegisxNavigationService,
+    AxConfigService,
+    AxNavigationService,
     IconService,
 
     // Monaco Editor configuration

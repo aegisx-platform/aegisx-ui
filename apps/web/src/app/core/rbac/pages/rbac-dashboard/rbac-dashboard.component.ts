@@ -10,7 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { BreadcrumbComponent, AegisxNavigationItem } from '@aegisx/ui';
+import { BreadcrumbComponent, AxNavigationItem } from '@aegisx/ui';
 import {
   DashboardCard,
   RbacStats,
@@ -453,7 +453,7 @@ export class RbacDashboardComponent implements OnInit {
   readonly recentActivity = signal<RecentActivity[]>([]);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     {
       id: 'dashboard',
       title: 'Dashboard',

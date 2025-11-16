@@ -41,9 +41,9 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import {
-  AegisxNavigationItem,
-  AegisxEmptyStateComponent,
-  AegisxErrorStateComponent,
+  AxNavigationItem,
+  AxEmptyStateComponent,
+  AxErrorStateComponent,
   AxDialogService,
   BreadcrumbComponent,
 } from '@aegisx/ui';
@@ -53,7 +53,10 @@ import {
   SharedExportComponent,
 } from '../../../shared/components/shared-export/shared-export.component';
 import { TestProductService } from '../services/test-products.service';
-import { TestProduct, ListTestProductQuery } from '../types/test-products.types';
+import {
+  TestProduct,
+  ListTestProductQuery,
+} from '../types/test-products.types';
 import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import { TestProductCreateDialogComponent } from './test-products-create.dialog';
 import {
@@ -92,8 +95,8 @@ import { TestProductsListHeaderComponent } from './test-products-list-header.com
     TestProductsListHeaderComponent,
     TestProductsListFiltersComponent,
     // AegisX UI components
-    AegisxEmptyStateComponent,
-    AegisxErrorStateComponent,
+    AxEmptyStateComponent,
+    AxErrorStateComponent,
   ],
   templateUrl: './test-products-list.component.html',
   styleUrl: './test-products-list.component.scss',
@@ -117,7 +120,7 @@ export class TestProductsListComponent {
   private cdr = inject(ChangeDetectorRef);
 
   // Breadcrumb configuration
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     {
       id: 'home',
       title: 'Home',
@@ -348,7 +351,6 @@ export class TestProductsListComponent {
     this.is_featuredInputSignal.set(value);
   }
 
-
   // Stats from API (should come from dedicated stats endpoint)
   stats = computed(() => ({
     total: this.testProductsService.totalTestProduct(),
@@ -359,7 +361,8 @@ export class TestProductsListComponent {
 
   // Export configuration
   exportServiceAdapter: ExportService = {
-    export: (options: ExportOptions) => this.testProductsService.exportTestProduct(options),
+    export: (options: ExportOptions) =>
+      this.testProductsService.exportTestProduct(options),
   };
 
   availableExportFields = [
@@ -733,7 +736,8 @@ export class TestProductsListComponent {
   }
 
   onDeleteTestProduct(testProduct: TestProduct) {
-    const itemName = (testProduct as any).name || (testProduct as any).title || 'testproduct';
+    const itemName =
+      (testProduct as any).name || (testProduct as any).title || 'testproduct';
     this.axDialog.confirmDelete(itemName).subscribe(async (confirmed) => {
       if (confirmed) {
         try {

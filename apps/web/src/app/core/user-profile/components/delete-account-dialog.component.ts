@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
-import { AegisxAlertComponent } from '@aegisx/ui';
+import { AxAlertComponent } from '@aegisx/ui';
 
 export interface DeleteAccountDialogData {
   userEmail?: string;
@@ -35,7 +35,7 @@ export interface DeleteAccountResult {
     MatInputModule,
     MatFormFieldModule,
     MatStepperModule,
-    AegisxAlertComponent,
+    AxAlertComponent,
   ],
   template: `
     <div class="delete-account-dialog">
@@ -55,7 +55,9 @@ export interface DeleteAccountResult {
         <div class="space-y-6">
           <!-- Step 1: Confirmation Text -->
           <div>
-            <h3 class="text-lg font-medium mb-3">Step 1: Type DELETE to confirm</h3>
+            <h3 class="text-lg font-medium mb-3">
+              Step 1: Type DELETE to confirm
+            </h3>
             <p class="text-gray-600 dark:text-gray-400 mb-4">
               To confirm account deletion, please type
               <strong class="text-red-600 dark:text-red-400">DELETE</strong> in
@@ -125,16 +127,23 @@ export interface DeleteAccountResult {
 
           <!-- Recovery Information -->
           @if (confirmationValid() && passwordValid()) {
-            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+            <div
+              class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4"
+            >
               <div class="flex">
-                <mat-icon class="text-yellow-600 dark:text-yellow-400 mr-2">info</mat-icon>
+                <mat-icon class="text-yellow-600 dark:text-yellow-400 mr-2"
+                  >info</mat-icon
+                >
                 <div>
-                  <h4 class="font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+                  <h4
+                    class="font-medium text-yellow-800 dark:text-yellow-200 mb-1"
+                  >
                     Recovery Period
                   </h4>
                   <p class="text-yellow-700 dark:text-yellow-300 text-sm">
-                    You'll have <strong>30 days</strong> to recover your account before it's permanently deleted.
-                    During this time, you can contact support to restore your account.
+                    You'll have <strong>30 days</strong> to recover your account
+                    before it's permanently deleted. During this time, you can
+                    contact support to restore your account.
                   </p>
                 </div>
               </div>
@@ -144,9 +153,7 @@ export interface DeleteAccountResult {
       </mat-dialog-content>
 
       <mat-dialog-actions align="end" class="px-6 pb-4">
-        <button mat-button (click)="onCancel()" class="mr-2">
-          Cancel
-        </button>
+        <button mat-button (click)="onCancel()" class="mr-2">Cancel</button>
         <button
           mat-raised-button
           color="warn"

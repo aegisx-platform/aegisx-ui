@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface ActivityItem {
   id: string | number;
@@ -29,7 +29,7 @@ export interface ActivityItem {
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card

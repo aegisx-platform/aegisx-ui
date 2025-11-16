@@ -25,15 +25,15 @@ import {
 
 // Import AegisX UI Components
 import {
-  AegisxCardComponent,
-  AegisxAlertComponent,
+  AxCardComponent,
+  AxAlertComponent,
   BreadcrumbComponent,
   AxLoadingBarComponent,
   AxNavigationComponent,
   UserMenuComponent,
 } from '@aegisx/ui';
 
-interface AegisxSection {
+interface AxSection {
   id: string;
   title: string;
   description: string;
@@ -58,8 +58,8 @@ interface AegisxSection {
     MatButtonToggleModule,
     // Removed unused imports
     // AegisX UI Components
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxCardComponent,
+    AxAlertComponent,
     BreadcrumbComponent,
     AxLoadingBarComponent,
     UserMenuComponent,
@@ -286,7 +286,7 @@ interface AegisxSection {
     </div>`,
   styleUrls: ['./aegisx-ui-section.component.scss'],
 })
-export class AegisxUiSectionComponent implements OnInit {
+export class AxUiSectionComponent implements OnInit {
   @Input() searchQuery: string = '';
   @Input() theme: 'light' | 'dark' = 'light';
 

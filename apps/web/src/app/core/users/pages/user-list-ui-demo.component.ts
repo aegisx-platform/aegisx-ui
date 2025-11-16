@@ -1,4 +1,4 @@
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -55,7 +55,7 @@ interface MockUser {
     MatNativeDateModule,
     MatBadgeModule,
     MatProgressBarModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8 max-w-7xl">

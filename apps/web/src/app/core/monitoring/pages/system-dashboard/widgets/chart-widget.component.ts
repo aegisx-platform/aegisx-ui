@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface ChartData {
   labels: string[];
@@ -25,7 +25,7 @@ export interface ChartData {
     MatIconModule,
     MatMenuModule,
     MatProgressSpinnerModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card

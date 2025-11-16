@@ -1,4 +1,4 @@
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -50,7 +50,7 @@ import { UserService, UserStatus } from '../services/user.service';
     MatDividerModule,
     MatCheckboxModule,
     MatTooltipModule,
-    AegisxCardComponent,
+    AxCardComponent,
     BulkStatusChangeDialogComponent,
     BulkRoleChangeDialogComponent,
     RoleAssignmentInfoModalComponent,

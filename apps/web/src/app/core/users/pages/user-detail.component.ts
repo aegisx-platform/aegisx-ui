@@ -9,7 +9,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 import { UserService, User } from '../services/user.service';
 import { UserFormDialogComponent } from '../components/user-form-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
@@ -25,7 +25,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
     MatListModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -124,10 +124,14 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     <span
                       class="px-2 py-1 text-xs font-medium rounded-full"
                       [ngClass]="{
-                        'bg-green-100 text-green-800': user()!.status === 'active',
-                        'bg-gray-100 text-gray-800': user()!.status === 'inactive',
-                        'bg-red-100 text-red-800': user()!.status === 'suspended',
-                        'bg-yellow-100 text-yellow-800': user()!.status === 'pending',
+                        'bg-green-100 text-green-800':
+                          user()!.status === 'active',
+                        'bg-gray-100 text-gray-800':
+                          user()!.status === 'inactive',
+                        'bg-red-100 text-red-800':
+                          user()!.status === 'suspended',
+                        'bg-yellow-100 text-yellow-800':
+                          user()!.status === 'pending',
                       }"
                     >
                       {{ user()!.status | titlecase }}

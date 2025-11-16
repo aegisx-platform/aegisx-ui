@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -12,16 +19,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { Subject, takeUntil, timer, switchMap } from 'rxjs';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 
 import { ActivityLogService } from './activity-log.service';
 import { ActivityLogStatsComponent } from './activity-log-stats.component';
 import { ActivityLogFilterComponent } from './activity-log-filter.component';
-import { 
-  ActivityLog, 
-  ActivityLogFilters, 
+import {
+  ActivityLog,
+  ActivityLogFilters,
   ActivityLogStats,
-  SEVERITY_CONFIG 
+  SEVERITY_CONFIG,
 } from './activity-log.types';
 
 @Component({
@@ -40,10 +47,10 @@ import {
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDividerModule,
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxCardComponent,
+    AxAlertComponent,
     ActivityLogStatsComponent,
-    ActivityLogFilterComponent
+    ActivityLogFilterComponent,
   ],
   template: `
     <div class="activity-log-container space-y-6">
@@ -62,7 +69,9 @@ import {
             mat-icon-button
             (click)="toggleAutoRefresh()"
             [color]="autoRefresh() ? 'accent' : 'default'"
-            [matTooltip]="autoRefresh() ? 'Disable auto refresh' : 'Enable auto refresh'"
+            [matTooltip]="
+              autoRefresh() ? 'Disable auto refresh' : 'Enable auto refresh'
+            "
           >
             <mat-icon [class.animate-spin]="autoRefresh() && isLoading()">
               {{ autoRefresh() ? 'sync' : 'sync_disabled' }}
@@ -84,7 +93,7 @@ import {
 
       <!-- Statistics Section -->
       @if (showStats()) {
-        <ax-activity-log-stats 
+        <ax-activity-log-stats
           [stats]="stats()"
           [autoRefresh]="autoRefresh()"
         ></ax-activity-log-stats>
@@ -102,7 +111,9 @@ import {
         <div class="p-4 border-b dark:border-gray-700">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2
+                class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+              >
                 Activities
               </h2>
               @if (totalActivities() > 0) {
@@ -118,9 +129,13 @@ import {
               <button
                 mat-icon-button
                 (click)="toggleStats()"
-                [matTooltip]="showStats() ? 'Hide statistics' : 'Show statistics'"
+                [matTooltip]="
+                  showStats() ? 'Hide statistics' : 'Show statistics'
+                "
               >
-                <mat-icon>{{ showStats() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                <mat-icon>{{
+                  showStats() ? 'visibility_off' : 'visibility'
+                }}</mat-icon>
               </button>
             </div>
           </div>
@@ -155,24 +170,31 @@ import {
         <!-- Empty State -->
         @else if (!hasActivities() && !isLoading()) {
           <div class="text-center py-16">
-            <mat-icon 
-              class="text-gray-400 mb-4" 
+            <mat-icon
+              class="text-gray-400 mb-4"
               style="font-size: 64px; height: 64px; width: 64px;"
             >
               history
             </mat-icon>
-            <h3 class="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">
+            <h3
+              class="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2"
+            >
               No Activities Found
             </h3>
             <p class="text-gray-500 dark:text-gray-400 mb-4">
               @if (hasActiveFilters()) {
-                No activities match your current filters. Try adjusting your search criteria.
+                No activities match your current filters. Try adjusting your
+                search criteria.
               } @else {
                 You don't have any recorded activities yet.
               }
             </p>
             @if (hasActiveFilters()) {
-              <button mat-raised-button color="primary" (click)="clearFilters()">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="clearFilters()"
+              >
                 Clear Filters
               </button>
             }
@@ -190,7 +212,9 @@ import {
                 </th>
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <span
+                      class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
                       {{ formatDate(activity.created_at) }}
                     </span>
                     <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -207,10 +231,15 @@ import {
                 </th>
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   <div class="flex items-center">
-                    <mat-icon class="mr-2 text-gray-600 dark:text-gray-400" style="font-size: 18px;">
+                    <mat-icon
+                      class="mr-2 text-gray-600 dark:text-gray-400"
+                      style="font-size: 18px;"
+                    >
                       {{ getActionIcon(activity.action) }}
                     </mat-icon>
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <span
+                      class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
                       {{ formatActionName(activity.action) }}
                     </span>
                   </div>
@@ -236,7 +265,7 @@ import {
                 </th>
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   <mat-chip-listbox>
-                    <mat-chip-option 
+                    <mat-chip-option
                       [class]="getSeverityChipClass(activity.severity)"
                       [disabled]="true"
                     >
@@ -258,8 +287,15 @@ import {
                   <div class="flex flex-col">
                     @if (activity.device_info?.device) {
                       <div class="flex items-center mb-1">
-                        <mat-icon class="mr-1 text-gray-500" style="font-size: 14px;">
-                          {{ activity.device_info.isMobile ? 'phone_android' : 'computer' }}
+                        <mat-icon
+                          class="mr-1 text-gray-500"
+                          style="font-size: 14px;"
+                        >
+                          {{
+                            activity.device_info.isMobile
+                              ? 'phone_android'
+                              : 'computer'
+                          }}
                         </mat-icon>
                         <span class="text-xs text-gray-600 dark:text-gray-400">
                           {{ activity.device_info.device }}
@@ -267,7 +303,9 @@ import {
                       </div>
                     }
                     @if (activity.ip_address) {
-                      <span class="text-xs font-mono text-gray-500 dark:text-gray-500">
+                      <span
+                        class="text-xs font-mono text-gray-500 dark:text-gray-500"
+                      >
                         {{ activity.ip_address }}
                       </span>
                     }
@@ -282,7 +320,7 @@ import {
                 </th>
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   @if (activity.session_id) {
-                    <span 
+                    <span
                       class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded"
                       [matTooltip]="activity.session_id"
                     >
@@ -295,10 +333,13 @@ import {
               </ng-container>
 
               <!-- Table Header and Rows -->
-              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-              <tr 
-                mat-row 
-                *matRowDef="let activity; columns: displayedColumns;"
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedColumns; sticky: true"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let activity; columns: displayedColumns"
                 class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 (click)="onRowClick(activity)"
                 [matTooltip]="'Click for details'"
@@ -325,7 +366,7 @@ import {
       </ax-card>
     </div>
   `,
-  styleUrl: './activity-log.component.scss'
+  styleUrl: './activity-log.component.scss',
 })
 export class ActivityLogComponent implements OnInit, OnDestroy {
   private activityLogService = inject(ActivityLogService);
@@ -356,7 +397,14 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
   });
 
   // Table configuration
-  displayedColumns = ['timestamp', 'action', 'description', 'severity', 'device', 'session'];
+  displayedColumns = [
+    'timestamp',
+    'action',
+    'description',
+    'severity',
+    'device',
+    'session',
+  ];
   pageSizeOptions = [10, 20, 50, 100];
 
   ngOnInit(): void {
@@ -378,15 +426,15 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.snackBar.open('Failed to load activities', 'Close', {
           duration: 5000,
-          panelClass: ['error-snackbar']
+          panelClass: ['error-snackbar'],
         });
-      }
+      },
     });
 
     this.activityLogService.loadStats().subscribe({
       error: (error) => {
         console.warn('Failed to load activity stats:', error);
-      }
+      },
     });
   }
 
@@ -394,8 +442,8 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
     // Auto-refresh every 30 seconds when enabled
     timer(0, 30000)
       .pipe(
-        switchMap(() => this.autoRefresh() ? timer(0) : []),
-        takeUntil(this.destroy$)
+        switchMap(() => (this.autoRefresh() ? timer(0) : [])),
+        takeUntil(this.destroy$),
       )
       .subscribe(() => {
         if (!this.isLoading()) {
@@ -411,7 +459,7 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
   onPageChange(event: PageEvent): void {
     this.activityLogService.updateFilters({
       page: event.pageIndex + 1,
-      limit: event.pageSize
+      limit: event.pageSize,
     });
   }
 
@@ -420,7 +468,7 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
     const message = `Action: ${this.formatActionName(activity.action)}\nTime: ${this.formatDate(activity.created_at)}`;
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      verticalPosition: 'top'
+      verticalPosition: 'top',
     });
   }
 
@@ -430,8 +478,8 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
   }
 
   toggleAutoRefresh(): void {
-    this.autoRefresh.update(current => !current);
-    
+    this.autoRefresh.update((current) => !current);
+
     if (this.autoRefresh()) {
       this.snackBar.open('Auto-refresh enabled', 'Close', { duration: 2000 });
     } else {
@@ -440,7 +488,7 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
   }
 
   toggleStats(): void {
-    this.showStats.update(current => !current);
+    this.showStats.update((current) => !current);
   }
 
   clearFilters(): void {
@@ -459,7 +507,7 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
   formatActionName(action: string): string {
     return action
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 
@@ -475,17 +523,22 @@ export class ActivityLogComponent implements OnInit, OnDestroy {
       settings_change: 'settings',
       avatar_update: 'account_circle',
       preferences_update: 'tune',
-      security_event: 'security'
+      security_event: 'security',
     };
     return iconMap[action] || 'help_outline';
   }
 
   getSeverityLabel(severity: string): string {
-    return SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.label || severity;
+    return (
+      SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.label ||
+      severity
+    );
   }
 
   getSeverityIcon(severity: string): string {
-    return SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.icon || 'help';
+    return (
+      SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.icon || 'help'
+    );
   }
 
   getSeverityChipClass(severity: string): string {

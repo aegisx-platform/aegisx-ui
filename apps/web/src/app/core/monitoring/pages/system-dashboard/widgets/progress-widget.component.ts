@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface ProgressItem {
   label: string;
@@ -24,7 +24,7 @@ export interface ProgressItem {
     MatButtonModule,
     MatProgressBarModule,
     MatTooltipModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card

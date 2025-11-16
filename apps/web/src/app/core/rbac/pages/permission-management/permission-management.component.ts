@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { AxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
 import {
@@ -754,7 +754,7 @@ export class PermissionManagementComponent implements OnInit {
   readonly availableActions = signal<string[]>([]);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     {
       id: 'dashboard',
       title: 'Dashboard',

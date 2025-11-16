@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -14,7 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 
 @Component({
   selector: 'ax-forms-page',
@@ -35,14 +40,16 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
     MatIconModule,
     MatAutocompleteModule,
     MatChipsModule,
-    AegisxCardComponent,
-    AegisxAlertComponent
+    AxCardComponent,
+    AxAlertComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
       <!-- Page Header -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Form Components</h1>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          Form Components
+        </h1>
         <p class="text-gray-600 dark:text-gray-400 mt-2">
           Examples of form controls and input fields using Angular Material.
         </p>
@@ -50,17 +57,26 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 
       <!-- Alert -->
       <ax-alert type="info" class="mb-8">
-        Angular Material forms integrate with Angular's reactive forms for powerful form handling.
+        Angular Material forms integrate with Angular's reactive forms for
+        powerful form handling.
       </ax-alert>
 
       <!-- Basic Form Controls -->
       <section class="mb-12">
-        <ax-card title="Basic Form Controls" subtitle="Common input types" appearance="outlined">
+        <ax-card
+          title="Basic Form Controls"
+          subtitle="Common input types"
+          appearance="outlined"
+        >
           <form [formGroup]="basicForm" class="space-y-4">
             <!-- Text Input -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Name</mat-label>
-              <input matInput formControlName="name" placeholder="Enter your name">
+              <input
+                matInput
+                formControlName="name"
+                placeholder="Enter your name"
+              />
               <mat-icon matPrefix>person</mat-icon>
               @if (basicForm.get('name')?.hasError('required')) {
                 <mat-error>Name is required</mat-error>
@@ -70,7 +86,12 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
             <!-- Email Input -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" placeholder="user@example.com">
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="user@example.com"
+              />
               <mat-icon matPrefix>email</mat-icon>
               @if (basicForm.get('email')?.hasError('required')) {
                 <mat-error>Email is required</mat-error>
@@ -83,10 +104,21 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
             <!-- Password Input -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Password</mat-label>
-              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+              />
               <mat-icon matPrefix>lock</mat-icon>
-              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
-                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              <button
+                mat-icon-button
+                matSuffix
+                (click)="hidePassword = !hidePassword"
+                type="button"
+              >
+                <mat-icon>{{
+                  hidePassword ? 'visibility_off' : 'visibility'
+                }}</mat-icon>
               </button>
               @if (basicForm.get('password')?.hasError('required')) {
                 <mat-error>Password is required</mat-error>
@@ -99,8 +131,17 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
             <!-- Textarea -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description" rows="4" placeholder="Tell us about yourself"></textarea>
-              <mat-hint align="end">{{ basicForm.get('description')?.value?.length || 0 }}/200</mat-hint>
+              <textarea
+                matInput
+                formControlName="description"
+                rows="4"
+                placeholder="Tell us about yourself"
+              ></textarea>
+              <mat-hint align="end"
+                >{{
+                  basicForm.get('description')?.value?.length || 0
+                }}/200</mat-hint
+              >
             </mat-form-field>
           </form>
         </ax-card>
@@ -108,7 +149,11 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 
       <!-- Selection Controls -->
       <section class="mb-12">
-        <ax-card title="Selection Controls" subtitle="Dropdowns, checkboxes, and radios" appearance="outlined">
+        <ax-card
+          title="Selection Controls"
+          subtitle="Dropdowns, checkboxes, and radios"
+          appearance="outlined"
+        >
           <form [formGroup]="selectionForm" class="space-y-4">
             <!-- Select -->
             <mat-form-field appearance="outline" class="w-full">
@@ -147,9 +192,15 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
             <div>
               <label class="block text-sm font-medium mb-2">Preferences</label>
               <div class="space-y-2">
-                <mat-checkbox formControlName="newsletter">Subscribe to newsletter</mat-checkbox>
-                <mat-checkbox formControlName="notifications">Enable notifications</mat-checkbox>
-                <mat-checkbox formControlName="marketing">Receive marketing emails</mat-checkbox>
+                <mat-checkbox formControlName="newsletter"
+                  >Subscribe to newsletter</mat-checkbox
+                >
+                <mat-checkbox formControlName="notifications"
+                  >Enable notifications</mat-checkbox
+                >
+                <mat-checkbox formControlName="marketing"
+                  >Receive marketing emails</mat-checkbox
+                >
               </div>
             </div>
           </form>
@@ -158,21 +209,38 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 
       <!-- Advanced Controls -->
       <section class="mb-12">
-        <ax-card title="Advanced Controls" subtitle="Date pickers, sliders, and toggles" appearance="outlined">
+        <ax-card
+          title="Advanced Controls"
+          subtitle="Date pickers, sliders, and toggles"
+          appearance="outlined"
+        >
           <form [formGroup]="advancedForm" class="space-y-4">
             <!-- Date Picker -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Birth Date</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="birthDate">
-              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                formControlName="birthDate"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
 
             <!-- Slide Toggle -->
             <div class="space-y-2">
-              <mat-slide-toggle formControlName="darkMode">Enable dark mode</mat-slide-toggle>
-              <mat-slide-toggle formControlName="autoSave" color="primary">Auto-save enabled</mat-slide-toggle>
-              <mat-slide-toggle formControlName="publicProfile" color="accent">Make profile public</mat-slide-toggle>
+              <mat-slide-toggle formControlName="darkMode"
+                >Enable dark mode</mat-slide-toggle
+              >
+              <mat-slide-toggle formControlName="autoSave" color="primary"
+                >Auto-save enabled</mat-slide-toggle
+              >
+              <mat-slide-toggle formControlName="publicProfile" color="accent"
+                >Make profile public</mat-slide-toggle
+              >
             </div>
 
             <!-- Slider -->
@@ -180,15 +248,26 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
               <label class="block text-sm font-medium mb-2">
                 Experience Level: {{ advancedForm.get('experience')?.value }}
               </label>
-              <mat-slider min="0" max="10" step="1" showTickMarks discrete class="w-full">
-                <input matSliderThumb formControlName="experience">
+              <mat-slider
+                min="0"
+                max="10"
+                step="1"
+                showTickMarks
+                discrete
+                class="w-full"
+              >
+                <input matSliderThumb formControlName="experience" />
               </mat-slider>
             </div>
 
             <!-- Autocomplete -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Programming Language</mat-label>
-              <input matInput formControlName="language" [matAutocomplete]="auto">
+              <input
+                matInput
+                formControlName="language"
+                [matAutocomplete]="auto"
+              />
               <mat-autocomplete #auto="matAutocomplete">
                 @for (option of filteredOptions; track option) {
                   <mat-option [value]="option">{{ option }}</mat-option>
@@ -206,9 +285,11 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip-row>
                 }
-                <input placeholder="Add tag..."
-                       [matChipInputFor]="chipGrid"
-                       (matChipInputTokenEnd)="addTag($event)">
+                <input
+                  placeholder="Add tag..."
+                  [matChipInputFor]="chipGrid"
+                  (matChipInputTokenEnd)="addTag($event)"
+                />
               </mat-chip-grid>
             </mat-form-field>
           </form>
@@ -217,28 +298,36 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 
       <!-- Form Layouts -->
       <section class="mb-12">
-        <ax-card title="Form Layout Example" subtitle="Complete form with validation" appearance="elevated">
-          <form [formGroup]="completeForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <ax-card
+          title="Form Layout Example"
+          subtitle="Complete form with validation"
+          appearance="elevated"
+        >
+          <form
+            [formGroup]="completeForm"
+            (ngSubmit)="onSubmit()"
+            class="space-y-4"
+          >
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <mat-form-field appearance="outline">
                 <mat-label>First Name</mat-label>
-                <input matInput formControlName="firstName">
+                <input matInput formControlName="firstName" />
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Last Name</mat-label>
-                <input matInput formControlName="lastName">
+                <input matInput formControlName="lastName" />
               </mat-form-field>
             </div>
 
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Email Address</mat-label>
-              <input matInput type="email" formControlName="email">
+              <input matInput type="email" formControlName="email" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Phone Number</mat-label>
-              <input matInput type="tel" formControlName="phone">
+              <input matInput type="tel" formControlName="phone" />
               <mat-icon matPrefix>phone</mat-icon>
             </mat-form-field>
 
@@ -250,7 +339,7 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <mat-form-field appearance="outline">
                 <mat-label>City</mat-label>
-                <input matInput formControlName="city">
+                <input matInput formControlName="city" />
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -264,17 +353,26 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
 
               <mat-form-field appearance="outline">
                 <mat-label>ZIP Code</mat-label>
-                <input matInput formControlName="zip">
+                <input matInput formControlName="zip" />
               </mat-form-field>
             </div>
 
             <div class="flex items-center space-x-2">
-              <mat-checkbox formControlName="terms">I agree to the terms and conditions</mat-checkbox>
+              <mat-checkbox formControlName="terms"
+                >I agree to the terms and conditions</mat-checkbox
+              >
             </div>
 
             <div card-actions class="flex justify-end space-x-2">
-              <button mat-button type="button" (click)="completeForm.reset()">Reset</button>
-              <button mat-raised-button color="primary" type="submit" [disabled]="!completeForm.valid">
+              <button mat-button type="button" (click)="completeForm.reset()">
+                Reset
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="!completeForm.valid"
+              >
                 Submit
               </button>
             </div>
@@ -289,17 +387,25 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
       </section>
     </div>
   `,
-  styles: []
+  styles: [],
 })
 export class FormsPage {
   hidePassword = true;
   formSubmitted = false;
   tags: string[] = ['Angular', 'TypeScript'];
   filteredOptions: string[] = [];
-  
+
   private languages = [
-    'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 
-    'C#', 'Ruby', 'Go', 'Rust', 'Swift'
+    'JavaScript',
+    'TypeScript',
+    'Python',
+    'Java',
+    'C++',
+    'C#',
+    'Ruby',
+    'Go',
+    'Rust',
+    'Swift',
   ];
 
   basicForm: FormGroup;
@@ -312,7 +418,7 @@ export class FormsPage {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      description: ['', Validators.maxLength(200)]
+      description: ['', Validators.maxLength(200)],
     });
 
     this.selectionForm = this.fb.group({
@@ -321,7 +427,7 @@ export class FormsPage {
       gender: [''],
       newsletter: [false],
       notifications: [true],
-      marketing: [false]
+      marketing: [false],
     });
 
     this.advancedForm = this.fb.group({
@@ -330,7 +436,7 @@ export class FormsPage {
       autoSave: [true],
       publicProfile: [false],
       experience: [5],
-      language: ['']
+      language: [''],
     });
 
     this.completeForm = this.fb.group({
@@ -342,11 +448,11 @@ export class FormsPage {
       city: [''],
       state: [''],
       zip: [''],
-      terms: [false, Validators.requiredTrue]
+      terms: [false, Validators.requiredTrue],
     });
 
     // Setup autocomplete
-    this.advancedForm.get('language')?.valueChanges.subscribe(value => {
+    this.advancedForm.get('language')?.valueChanges.subscribe((value) => {
       this.filteredOptions = this._filter(value || '');
     });
     this.filteredOptions = this.languages;
@@ -354,7 +460,9 @@ export class FormsPage {
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.languages.filter(option => option.toLowerCase().includes(filterValue));
+    return this.languages.filter((option) =>
+      option.toLowerCase().includes(filterValue),
+    );
   }
 
   addTag(event: any): void {

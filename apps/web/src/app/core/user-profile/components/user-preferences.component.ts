@@ -27,7 +27,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 import {
   UserService,
   UserPreferences,
@@ -51,8 +51,8 @@ import {
     MatSnackBarModule,
     MatDividerModule,
     MatTooltipModule,
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxCardComponent,
+    AxAlertComponent,
   ],
   template: `
     <div class="preferences-container">

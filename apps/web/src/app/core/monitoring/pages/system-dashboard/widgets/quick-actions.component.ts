@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRippleModule } from '@angular/material/core';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface QuickAction {
   id: string;
@@ -25,7 +25,7 @@ export interface QuickAction {
     MatIconModule,
     MatTooltipModule,
     MatRippleModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card

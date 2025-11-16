@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { AxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -426,7 +426,7 @@ export class SystemMonitoringComponent
   private dialog = inject(MatDialog);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: AxNavigationItem[] = [
     { id: 'home', title: 'Home', type: 'basic', link: '/', icon: 'home' },
     {
       id: 'system-monitoring',

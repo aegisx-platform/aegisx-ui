@@ -1,4 +1,4 @@
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, Input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +23,7 @@ export interface StatsCardData {
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card [appearance]="'elevated'" class="relative overflow-hidden h-full">
