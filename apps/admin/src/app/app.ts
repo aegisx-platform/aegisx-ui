@@ -133,6 +133,13 @@ export class App {
       icon: 'extension',
       children: [
         {
+          id: 'aegisx-ui-showcase',
+          title: 'AegisX UI Showcase',
+          type: 'item',
+          icon: 'view_carousel',
+          link: '/aegisx-ui',
+        },
+        {
           id: 'card-examples',
           title: 'KPI Cards',
           type: 'item',
