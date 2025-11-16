@@ -1,5 +1,5 @@
 // =============================================================================
-// NEW COMPONENT MODULES (v1.0.0 Redesign)
+// NEW COMPONENT MODULES (v1.0.0 Redesign - Ax Prefix Standard)
 // =============================================================================
 
 // Forms Module
@@ -20,12 +20,6 @@ export * from './navigation';
 
 // Individual Components (standardized names with actual component classes)
 export { AegisxCardComponent as AxCardComponent } from './card/card.component';
-
-// Legacy exports for backward compatibility (all standalone components)
-// Note: Removed exports that conflict with new module components:
-// - alert (now in feedback module)
-// - drawer (now in navigation module)
-// - breadcrumb (now in navigation module)
 
 // Additional Components
 export * from './ax-loading-bar.component';
