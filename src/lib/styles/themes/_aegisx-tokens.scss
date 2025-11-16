@@ -62,6 +62,14 @@ $aegisx-light-warning-default: #f59e0b;
 $aegisx-light-warning-emphasis: #d97706;
 $aegisx-light-warning-inverted: #ffffff;
 
+// Error Colors (6 tokens) - Custom error/danger palette
+$aegisx-light-error-faint: #fee2e2;
+$aegisx-light-error-muted: #fca5a5;
+$aegisx-light-error-subtle: #f87171;
+$aegisx-light-error-default: #ef4444;
+$aegisx-light-error-emphasis: #dc2626;
+$aegisx-light-error-inverted: #ffffff;
+
 // Info Colors (6 tokens) - Custom info palette
 $aegisx-light-info-faint: #dbeafe;
 $aegisx-light-info-muted: #93c5fd;
@@ -70,31 +78,64 @@ $aegisx-light-info-default: #3b82f6;
 $aegisx-light-info-emphasis: #2563eb;
 $aegisx-light-info-inverted: #ffffff;
 
+// Cyan Colors (6 tokens) - For completion/output metrics
+$aegisx-light-cyan-faint: #cffafe;
+$aegisx-light-cyan-muted: #67e8f9;
+$aegisx-light-cyan-subtle: #22d3ee;
+$aegisx-light-cyan-default: #06b6d4;
+$aegisx-light-cyan-emphasis: #0891b2;
+$aegisx-light-cyan-inverted: #ffffff;
+
+// Purple Colors (6 tokens) - For prompt/input metrics
+$aegisx-light-purple-faint: #f3e8ff;
+$aegisx-light-purple-muted: #c084fc;
+$aegisx-light-purple-subtle: #a855f7;
+$aegisx-light-purple-default: #9333ea;
+$aegisx-light-purple-emphasis: #7e22ce;
+$aegisx-light-purple-inverted: #ffffff;
+
+// Indigo Colors (6 tokens) - Alternative purple shade
+$aegisx-light-indigo-faint: #e0e7ff;
+$aegisx-light-indigo-muted: #a5b4fc;
+$aegisx-light-indigo-subtle: #818cf8;
+$aegisx-light-indigo-default: #6366f1;
+$aegisx-light-indigo-emphasis: #4f46e5;
+$aegisx-light-indigo-inverted: #ffffff;
+
+// Pink Colors (6 tokens) - For accent bars
+$aegisx-light-pink-faint: #fce7f3;
+$aegisx-light-pink-muted: #f9a8d4;
+$aegisx-light-pink-subtle: #f472b6;
+$aegisx-light-pink-default: #ec4899;
+$aegisx-light-pink-emphasis: #db2777;
+$aegisx-light-pink-inverted: #ffffff;
+
 // Background Variants (4 tokens) - Subtle background variations (Tremor design)
 $aegisx-light-background-muted: #f9fafb; // Tremor: tremor-background-muted
 $aegisx-light-background-subtle: #f3f4f6; // Tremor: tremor-background-subtle
 $aegisx-light-background-default: #ffffff; // Tremor: tremor-background
 $aegisx-light-background-emphasis: #374151; // Tremor: tremor-background-emphasis
 
-// Text Hierarchy (5 tokens) - Text color scales (Tremor design)
-$aegisx-light-text-subtle: #9ca3af; // Tremor: tremor-content-subtle
-$aegisx-light-text-body: #6b7280; // Tremor: tremor-content
-$aegisx-light-text-emphasis: #374151; // Tremor: tremor-content-emphasis
-$aegisx-light-text-strong: #111827; // Tremor: tremor-content-strong
-$aegisx-light-text-inverted: #ffffff; // Tremor: tremor-content-inverted
+// Text Hierarchy (6 tokens) - Lighter, more readable text colors (Tremor + M3 inspired)
+$aegisx-light-text-disabled: #d1d5db; // Gray-300 - Disabled/placeholder text
+$aegisx-light-text-subtle: #9ca3af; // Gray-400 - Subtle secondary text
+$aegisx-light-text-secondary: #6b7280; // Gray-500 - Secondary body text
+$aegisx-light-text-primary: #374151; // Gray-700 - Primary body text (lighter than before!)
+$aegisx-light-text-heading: #1f2937; // Gray-800 - Headings only (not for body)
+$aegisx-light-text-inverted: #ffffff; // White - Inverted text on dark backgrounds
 
 // Border (3 tokens) - Border color variants
 $aegisx-light-border-muted: #f3f4f6; // Subtle border
 $aegisx-light-border-default: #e5e7eb; // Standard border
 $aegisx-light-border-emphasis: #d1d5db; // Strong border
 
-// Brand/Primary (6 tokens) - Brand color palette (matches Tremor design)
-$aegisx-light-brand-faint: #eff6ff; // Tremor: tremor-brand-faint
-$aegisx-light-brand-muted: #bfdbfe; // Tremor: tremor-brand-muted
-$aegisx-light-brand-subtle: #60a5fa; // Tremor: tremor-brand-subtle
-$aegisx-light-brand-default: #3b82f6; // Tremor: tremor-brand
-$aegisx-light-brand-emphasis: #1d4ed8; // Tremor: tremor-brand-emphasis
-$aegisx-light-brand-inverted: #ffffff; // Tremor: tremor-brand-inverted
+// Brand/Primary (6 tokens) - Brand color palette (Material Indigo)
+$aegisx-light-brand-faint: #e8eaf6; // Material Indigo 50
+$aegisx-light-brand-muted: #9fa8da; // Material Indigo 200
+$aegisx-light-brand-subtle: #5c6bc0; // Material Indigo 400
+$aegisx-light-brand-default: #3f51b5; // Material Indigo 500 (main)
+$aegisx-light-brand-emphasis: #303f9f; // Material Indigo 700
+$aegisx-light-brand-inverted: #ffffff; // White
 
 // Border Radius (6 tokens) - Corner rounding
 $aegisx-radius-sm: 0.25rem; // 4px - Small elements
@@ -187,6 +228,102 @@ $aegisx-leading-normal: 1.5;
 $aegisx-leading-relaxed: 1.75;
 
 /* ============================================================
+   MATERIAL 3 TOKENS (NEW)
+   State layers, motion, elevation, and accessibility tokens
+   ============================================================ */
+
+// State Layer Opacity (4 tokens) - Material 3 interaction states
+$aegisx-state-hover-opacity: 0.08 !default;
+$aegisx-state-focus-opacity: 0.12 !default;
+$aegisx-state-pressed-opacity: 0.12 !default;
+$aegisx-state-dragged-opacity: 0.16 !default;
+
+// Motion Duration (7 tokens) - Material 3 motion system
+$aegisx-motion-duration-instant: 0ms !default;
+$aegisx-motion-duration-short1: 50ms !default;
+$aegisx-motion-duration-short2: 100ms !default;
+$aegisx-motion-duration-medium1: 250ms !default;
+$aegisx-motion-duration-medium2: 300ms !default;
+$aegisx-motion-duration-long1: 400ms !default;
+$aegisx-motion-duration-long2: 500ms !default;
+
+// Motion Easing (4 tokens) - Material 3 easing functions
+$aegisx-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1) !default;
+$aegisx-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1) !default;
+$aegisx-motion-easing-decelerated: cubic-bezier(0, 0, 0, 1) !default;
+$aegisx-motion-easing-accelerated: cubic-bezier(0.3, 0, 1, 1) !default;
+
+// Elevation Levels (6 tokens) - Material 3 elevation system (in dp)
+$aegisx-elevation-level0: 0 !default;
+$aegisx-elevation-level1: 1 !default;
+$aegisx-elevation-level2: 3 !default;
+$aegisx-elevation-level3: 6 !default;
+$aegisx-elevation-level4: 8 !default;
+$aegisx-elevation-level5: 12 !default;
+
+// M3 Typography Scale - Display (3 tokens)
+$aegisx-type-display-large: 57px !default;
+$aegisx-type-display-large-weight: 400 !default;
+$aegisx-type-display-large-line-height: 64px !default;
+$aegisx-type-display-medium: 45px !default;
+$aegisx-type-display-medium-weight: 400 !default;
+$aegisx-type-display-medium-line-height: 52px !default;
+$aegisx-type-display-small: 36px !default;
+$aegisx-type-display-small-weight: 400 !default;
+$aegisx-type-display-small-line-height: 44px !default;
+
+// M3 Typography Scale - Headline (3 tokens)
+$aegisx-type-headline-large: 32px !default;
+$aegisx-type-headline-large-weight: 400 !default;
+$aegisx-type-headline-large-line-height: 40px !default;
+$aegisx-type-headline-medium: 28px !default;
+$aegisx-type-headline-medium-weight: 400 !default;
+$aegisx-type-headline-medium-line-height: 36px !default;
+$aegisx-type-headline-small: 24px !default;
+$aegisx-type-headline-small-weight: 400 !default;
+$aegisx-type-headline-small-line-height: 32px !default;
+
+// M3 Typography Scale - Title (3 tokens)
+$aegisx-type-title-large: 22px !default;
+$aegisx-type-title-large-weight: 400 !default;
+$aegisx-type-title-large-line-height: 28px !default;
+$aegisx-type-title-medium: 16px !default;
+$aegisx-type-title-medium-weight: 500 !default;
+$aegisx-type-title-medium-line-height: 24px !default;
+$aegisx-type-title-small: 14px !default;
+$aegisx-type-title-small-weight: 500 !default;
+$aegisx-type-title-small-line-height: 20px !default;
+
+// M3 Typography Scale - Body (2 tokens)
+$aegisx-type-body-large: 16px !default;
+$aegisx-type-body-large-weight: 400 !default;
+$aegisx-type-body-large-line-height: 24px !default;
+$aegisx-type-body-medium: 14px !default;
+$aegisx-type-body-medium-weight: 400 !default;
+$aegisx-type-body-medium-line-height: 20px !default;
+$aegisx-type-body-small: 12px !default;
+$aegisx-type-body-small-weight: 400 !default;
+$aegisx-type-body-small-line-height: 16px !default;
+
+// M3 Typography Scale - Label (3 tokens)
+$aegisx-type-label-large: 14px !default;
+$aegisx-type-label-large-weight: 500 !default;
+$aegisx-type-label-large-line-height: 20px !default;
+$aegisx-type-label-medium: 12px !default;
+$aegisx-type-label-medium-weight: 500 !default;
+$aegisx-type-label-medium-line-height: 16px !default;
+$aegisx-type-label-small: 11px !default;
+$aegisx-type-label-small-weight: 500 !default;
+$aegisx-type-label-small-line-height: 16px !default;
+
+// Accessibility Tokens (5 tokens) - WCAG compliance
+$aegisx-a11y-focus-indicator-thickness: 2px !default;
+$aegisx-a11y-focus-indicator-offset: 2px !default;
+$aegisx-a11y-touch-target-min: 48px !default;
+$aegisx-a11y-text-min-contrast: 4.5 !default; // WCAG AA
+$aegisx-a11y-text-enhanced-contrast: 7 !default; // WCAG AAA
+
+/* ============================================================
    DARK THEME TOKEN VALUES
    ============================================================ */
 
@@ -216,6 +353,14 @@ $aegisx-dark-warning-default: #f59e0b;
 $aegisx-dark-warning-emphasis: #fbbf24;
 $aegisx-dark-warning-inverted: #111827;
 
+// Error Colors - Lighter for dark backgrounds
+$aegisx-dark-error-faint: #7f1d1d;
+$aegisx-dark-error-muted: #991b1b;
+$aegisx-dark-error-subtle: #dc2626;
+$aegisx-dark-error-default: #ef4444;
+$aegisx-dark-error-emphasis: #f87171;
+$aegisx-dark-error-inverted: #111827;
+
 // Info Colors - Lighter for dark backgrounds
 $aegisx-dark-info-faint: #1e3a8a;
 $aegisx-dark-info-muted: #1e40af;
@@ -224,18 +369,51 @@ $aegisx-dark-info-default: #3b82f6;
 $aegisx-dark-info-emphasis: #60a5fa;
 $aegisx-dark-info-inverted: #111827;
 
+// Cyan Colors - Lighter for dark backgrounds
+$aegisx-dark-cyan-faint: #164e63;
+$aegisx-dark-cyan-muted: #155e75;
+$aegisx-dark-cyan-subtle: #0891b2;
+$aegisx-dark-cyan-default: #06b6d4;
+$aegisx-dark-cyan-emphasis: #22d3ee;
+$aegisx-dark-cyan-inverted: #111827;
+
+// Purple Colors - Lighter for dark backgrounds
+$aegisx-dark-purple-faint: #581c87;
+$aegisx-dark-purple-muted: #6b21a8;
+$aegisx-dark-purple-subtle: #7e22ce;
+$aegisx-dark-purple-default: #9333ea;
+$aegisx-dark-purple-emphasis: #a855f7;
+$aegisx-dark-purple-inverted: #111827;
+
+// Indigo Colors - Lighter for dark backgrounds
+$aegisx-dark-indigo-faint: #312e81;
+$aegisx-dark-indigo-muted: #3730a3;
+$aegisx-dark-indigo-subtle: #4f46e5;
+$aegisx-dark-indigo-default: #6366f1;
+$aegisx-dark-indigo-emphasis: #818cf8;
+$aegisx-dark-indigo-inverted: #111827;
+
+// Pink Colors - Lighter for dark backgrounds
+$aegisx-dark-pink-faint: #831843;
+$aegisx-dark-pink-muted: #9f1239;
+$aegisx-dark-pink-subtle: #db2777;
+$aegisx-dark-pink-default: #ec4899;
+$aegisx-dark-pink-emphasis: #f472b6;
+$aegisx-dark-pink-inverted: #111827;
+
 // Background Variants - Dark mode backgrounds (Tremor design)
 $aegisx-dark-background-muted: #131a2b; // Tremor: dark-tremor-background-muted
 $aegisx-dark-background-subtle: #1f2937; // Tremor: dark-tremor-background-subtle
 $aegisx-dark-background-default: #111827; // Tremor: dark-tremor-background
 $aegisx-dark-background-emphasis: #d1d5db; // Tremor: dark-tremor-background-emphasis
 
-// Text Hierarchy - Lighter text for dark backgrounds (Tremor design)
-$aegisx-dark-text-subtle: #4b5563; // Tremor: dark-tremor-content-subtle
-$aegisx-dark-text-body: #6b7280; // Tremor: dark-tremor-content
-$aegisx-dark-text-emphasis: #e5e7eb; // Tremor: dark-tremor-content-emphasis
-$aegisx-dark-text-strong: #f9fafb; // Tremor: dark-tremor-content-strong
-$aegisx-dark-text-inverted: #000000; // Tremor: dark-tremor-content-inverted
+// Text Hierarchy - Lighter text for dark backgrounds (Tremor + M3 inspired)
+$aegisx-dark-text-disabled: #4b5563; // Gray-600 - Disabled/placeholder text
+$aegisx-dark-text-subtle: #6b7280; // Gray-500 - Subtle secondary text
+$aegisx-dark-text-secondary: #9ca3af; // Gray-400 - Secondary body text
+$aegisx-dark-text-primary: #d1d5db; // Gray-300 - Primary body text (good contrast!)
+$aegisx-dark-text-heading: #f3f4f6; // Gray-100 - Headings only
+$aegisx-dark-text-inverted: #111827; // Gray-900 - Inverted text on light backgrounds
 
 // Border (3 tokens) - Darker borders for dark mode
 $aegisx-dark-border-muted: #1f2937; // Subtle border
@@ -251,13 +429,13 @@ $aegisx-dark-shadow-lg:
   0 10px 15px -3px rgb(0 0 0 / 0.5),
   0 4px 6px -4px rgb(0 0 0 / 0.4);
 
-// Brand/Primary - Lighter brand colors for dark mode (Tremor design)
-$aegisx-dark-brand-faint: #0b1229; // Tremor: dark-tremor-brand-faint
-$aegisx-dark-brand-muted: #172554; // Tremor: dark-tremor-brand-muted
-$aegisx-dark-brand-subtle: #1e40af; // Tremor: dark-tremor-brand-subtle
-$aegisx-dark-brand-default: #3b82f6; // Tremor: dark-tremor-brand
-$aegisx-dark-brand-emphasis: #60a5fa; // Tremor: dark-tremor-brand-emphasis
-$aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
+// Brand/Primary - Lighter brand colors for dark mode (Material Indigo)
+$aegisx-dark-brand-faint: #1a237e; // Material Indigo 900 (dark base)
+$aegisx-dark-brand-muted: #283593; // Material Indigo 800
+$aegisx-dark-brand-subtle: #3949ab; // Material Indigo 600
+$aegisx-dark-brand-default: #5c6bc0; // Material Indigo 400 (brighter for dark mode)
+$aegisx-dark-brand-emphasis: #9fa8da; // Material Indigo 200 (very bright for contrast)
+$aegisx-dark-brand-inverted: #1a237e; // Material Indigo 900 (dark)
 
 /* ============================================================
    LIGHT THEME MIXIN
@@ -291,6 +469,14 @@ $aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
     --aegisx-warning-emphasis: #{$aegisx-light-warning-emphasis};
     --aegisx-warning-inverted: #{$aegisx-light-warning-inverted};
 
+    /* Error Colors */
+    --aegisx-error-faint: #{$aegisx-light-error-faint};
+    --aegisx-error-muted: #{$aegisx-light-error-muted};
+    --aegisx-error-subtle: #{$aegisx-light-error-subtle};
+    --aegisx-error-default: #{$aegisx-light-error-default};
+    --aegisx-error-emphasis: #{$aegisx-light-error-emphasis};
+    --aegisx-error-inverted: #{$aegisx-light-error-inverted};
+
     /* Info Colors */
     --aegisx-info-faint: #{$aegisx-light-info-faint};
     --aegisx-info-muted: #{$aegisx-light-info-muted};
@@ -299,18 +485,56 @@ $aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
     --aegisx-info-emphasis: #{$aegisx-light-info-emphasis};
     --aegisx-info-inverted: #{$aegisx-light-info-inverted};
 
+    /* Cyan Colors */
+    --aegisx-cyan-faint: #{$aegisx-light-cyan-faint};
+    --aegisx-cyan-muted: #{$aegisx-light-cyan-muted};
+    --aegisx-cyan-subtle: #{$aegisx-light-cyan-subtle};
+    --aegisx-cyan-default: #{$aegisx-light-cyan-default};
+    --aegisx-cyan-emphasis: #{$aegisx-light-cyan-emphasis};
+    --aegisx-cyan-inverted: #{$aegisx-light-cyan-inverted};
+
+    /* Purple Colors */
+    --aegisx-purple-faint: #{$aegisx-light-purple-faint};
+    --aegisx-purple-muted: #{$aegisx-light-purple-muted};
+    --aegisx-purple-subtle: #{$aegisx-light-purple-subtle};
+    --aegisx-purple-default: #{$aegisx-light-purple-default};
+    --aegisx-purple-emphasis: #{$aegisx-light-purple-emphasis};
+    --aegisx-purple-inverted: #{$aegisx-light-purple-inverted};
+
+    /* Indigo Colors */
+    --aegisx-indigo-faint: #{$aegisx-light-indigo-faint};
+    --aegisx-indigo-muted: #{$aegisx-light-indigo-muted};
+    --aegisx-indigo-subtle: #{$aegisx-light-indigo-subtle};
+    --aegisx-indigo-default: #{$aegisx-light-indigo-default};
+    --aegisx-indigo-emphasis: #{$aegisx-light-indigo-emphasis};
+    --aegisx-indigo-inverted: #{$aegisx-light-indigo-inverted};
+
+    /* Pink Colors */
+    --aegisx-pink-faint: #{$aegisx-light-pink-faint};
+    --aegisx-pink-muted: #{$aegisx-light-pink-muted};
+    --aegisx-pink-subtle: #{$aegisx-light-pink-subtle};
+    --aegisx-pink-default: #{$aegisx-light-pink-default};
+    --aegisx-pink-emphasis: #{$aegisx-light-pink-emphasis};
+    --aegisx-pink-inverted: #{$aegisx-light-pink-inverted};
+
     /* Background Variants */
     --aegisx-background-muted: #{$aegisx-light-background-muted};
     --aegisx-background-subtle: #{$aegisx-light-background-subtle};
     --aegisx-background-default: #{$aegisx-light-background-default};
     --aegisx-background-emphasis: #{$aegisx-light-background-emphasis};
 
-    /* Text Hierarchy */
+    /* Text Hierarchy - Lighter, more readable colors */
+    --aegisx-text-disabled: #{$aegisx-light-text-disabled};
     --aegisx-text-subtle: #{$aegisx-light-text-subtle};
-    --aegisx-text-body: #{$aegisx-light-text-body};
-    --aegisx-text-emphasis: #{$aegisx-light-text-emphasis};
-    --aegisx-text-strong: #{$aegisx-light-text-strong};
+    --aegisx-text-secondary: #{$aegisx-light-text-secondary};
+    --aegisx-text-primary: #{$aegisx-light-text-primary};
+    --aegisx-text-heading: #{$aegisx-light-text-heading};
     --aegisx-text-inverted: #{$aegisx-light-text-inverted};
+
+    /* Legacy aliases (deprecated - use new names above) */
+    --aegisx-text-body: #{$aegisx-light-text-secondary};
+    --aegisx-text-emphasis: #{$aegisx-light-text-primary};
+    --aegisx-text-strong: #{$aegisx-light-text-heading};
 
     /* Border Variants */
     --aegisx-border-muted: #{$aegisx-light-border-muted};
@@ -379,53 +603,96 @@ $aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
     --aegisx-leading-normal: #{$aegisx-leading-normal};
     --aegisx-leading-relaxed: #{$aegisx-leading-relaxed};
 
-    /* ============================================
-       MATERIAL DESIGN TOKEN OVERRIDES
-       Override Material's default tokens to match AegisX Design System
-       ============================================ */
+    /* Material 3 - State Layer Opacity */
+    --aegisx-state-hover-opacity: #{$aegisx-state-hover-opacity};
+    --aegisx-state-focus-opacity: #{$aegisx-state-focus-opacity};
+    --aegisx-state-pressed-opacity: #{$aegisx-state-pressed-opacity};
+    --aegisx-state-dragged-opacity: #{$aegisx-state-dragged-opacity};
 
-    /* Primary Color System - Override Material Purple → AegisX Blue */
-    --mat-sys-primary: var(--aegisx-brand-default);
-    --mat-sys-on-primary: var(--aegisx-brand-inverted);
-    --mat-sys-primary-container: var(--aegisx-brand-faint);
-    --mat-sys-on-primary-container: var(--aegisx-brand-emphasis);
+    /* Material 3 - Motion Duration */
+    --aegisx-motion-duration-instant: #{$aegisx-motion-duration-instant};
+    --aegisx-motion-duration-short1: #{$aegisx-motion-duration-short1};
+    --aegisx-motion-duration-short2: #{$aegisx-motion-duration-short2};
+    --aegisx-motion-duration-medium1: #{$aegisx-motion-duration-medium1};
+    --aegisx-motion-duration-medium2: #{$aegisx-motion-duration-medium2};
+    --aegisx-motion-duration-long1: #{$aegisx-motion-duration-long1};
+    --aegisx-motion-duration-long2: #{$aegisx-motion-duration-long2};
 
-    /* Surface & Background Colors - Use AegisX backgrounds */
-    --mat-sys-surface: var(--aegisx-background-default);
-    --mat-sys-surface-dim: var(--aegisx-background-subtle);
-    --mat-sys-surface-bright: var(--aegisx-background-emphasis);
-    --mat-sys-surface-container: var(--aegisx-background-muted);
-    --mat-sys-surface-container-low: var(--aegisx-background-subtle);
-    --mat-sys-surface-container-lowest: var(--aegisx-background-default);
-    --mat-sys-surface-container-high: var(--aegisx-background-subtle);
-    --mat-sys-surface-container-highest: var(--aegisx-background-muted);
+    /* Material 3 - Motion Easing */
+    --aegisx-motion-easing-standard: #{$aegisx-motion-easing-standard};
+    --aegisx-motion-easing-emphasized: #{$aegisx-motion-easing-emphasized};
+    --aegisx-motion-easing-decelerated: #{$aegisx-motion-easing-decelerated};
+    --aegisx-motion-easing-accelerated: #{$aegisx-motion-easing-accelerated};
 
-    --mat-sys-on-surface: var(--aegisx-text-strong);
-    --mat-sys-on-surface-variant: var(--aegisx-text-body);
+    /* Material 3 - Elevation Levels */
+    --aegisx-elevation-level0: #{$aegisx-elevation-level0};
+    --aegisx-elevation-level1: #{$aegisx-elevation-level1};
+    --aegisx-elevation-level2: #{$aegisx-elevation-level2};
+    --aegisx-elevation-level3: #{$aegisx-elevation-level3};
+    --aegisx-elevation-level4: #{$aegisx-elevation-level4};
+    --aegisx-elevation-level5: #{$aegisx-elevation-level5};
 
-    --mat-sys-background: var(--aegisx-background-default);
-    --mat-sys-on-background: var(--aegisx-text-strong);
+    /* Material 3 Typography Scale - Display */
+    --aegisx-type-display-large: #{$aegisx-type-display-large};
+    --aegisx-type-display-large-weight: #{$aegisx-type-display-large-weight};
+    --aegisx-type-display-large-line-height: #{$aegisx-type-display-large-line-height};
+    --aegisx-type-display-medium: #{$aegisx-type-display-medium};
+    --aegisx-type-display-medium-weight: #{$aegisx-type-display-medium-weight};
+    --aegisx-type-display-medium-line-height: #{$aegisx-type-display-medium-line-height};
+    --aegisx-type-display-small: #{$aegisx-type-display-small};
+    --aegisx-type-display-small-weight: #{$aegisx-type-display-small-weight};
+    --aegisx-type-display-small-line-height: #{$aegisx-type-display-small-line-height};
 
-    /* Outline & Border Colors - Use AegisX borders */
-    --mat-sys-outline: var(--aegisx-border-default);
-    --mat-sys-outline-variant: var(--aegisx-border-default);
+    /* Material 3 Typography Scale - Headline */
+    --aegisx-type-headline-large: #{$aegisx-type-headline-large};
+    --aegisx-type-headline-large-weight: #{$aegisx-type-headline-large-weight};
+    --aegisx-type-headline-large-line-height: #{$aegisx-type-headline-large-line-height};
+    --aegisx-type-headline-medium: #{$aegisx-type-headline-medium};
+    --aegisx-type-headline-medium-weight: #{$aegisx-type-headline-medium-weight};
+    --aegisx-type-headline-medium-line-height: #{$aegisx-type-headline-medium-line-height};
+    --aegisx-type-headline-small: #{$aegisx-type-headline-small};
+    --aegisx-type-headline-small-weight: #{$aegisx-type-headline-small-weight};
+    --aegisx-type-headline-small-line-height: #{$aegisx-type-headline-small-line-height};
 
-    /* Elevation & Shadows - Use AegisX shadows */
-    --mat-sys-level0: none;
-    --mat-sys-level1: var(--aegisx-shadow-sm);
-    --mat-sys-level2: var(--aegisx-shadow-sm);
-    --mat-sys-level3: var(--aegisx-shadow-md);
-    --mat-sys-level4: var(--aegisx-shadow-md);
-    --mat-sys-level5: var(--aegisx-shadow-lg);
+    /* Material 3 Typography Scale - Title */
+    --aegisx-type-title-large: #{$aegisx-type-title-large};
+    --aegisx-type-title-large-weight: #{$aegisx-type-title-large-weight};
+    --aegisx-type-title-large-line-height: #{$aegisx-type-title-large-line-height};
+    --aegisx-type-title-medium: #{$aegisx-type-title-medium};
+    --aegisx-type-title-medium-weight: #{$aegisx-type-title-medium-weight};
+    --aegisx-type-title-medium-line-height: #{$aegisx-type-title-medium-line-height};
+    --aegisx-type-title-small: #{$aegisx-type-title-small};
+    --aegisx-type-title-small-weight: #{$aegisx-type-title-small-weight};
+    --aegisx-type-title-small-line-height: #{$aegisx-type-title-small-line-height};
 
-    /* Shape & Border Radius - Use AegisX radius */
-    --mat-sys-corner-none: 0;
-    --mat-sys-corner-extra-small: var(--aegisx-radius-sm);
-    --mat-sys-corner-small: var(--aegisx-radius-sm);
-    --mat-sys-corner-medium: var(--aegisx-radius-md);
-    --mat-sys-corner-large: var(--aegisx-radius-lg);
-    --mat-sys-corner-extra-large: var(--aegisx-radius-xl);
-    --mat-sys-corner-full: var(--aegisx-radius-full);
+    /* Material 3 Typography Scale - Body */
+    --aegisx-type-body-large: #{$aegisx-type-body-large};
+    --aegisx-type-body-large-weight: #{$aegisx-type-body-large-weight};
+    --aegisx-type-body-large-line-height: #{$aegisx-type-body-large-line-height};
+    --aegisx-type-body-medium: #{$aegisx-type-body-medium};
+    --aegisx-type-body-medium-weight: #{$aegisx-type-body-medium-weight};
+    --aegisx-type-body-medium-line-height: #{$aegisx-type-body-medium-line-height};
+    --aegisx-type-body-small: #{$aegisx-type-body-small};
+    --aegisx-type-body-small-weight: #{$aegisx-type-body-small-weight};
+    --aegisx-type-body-small-line-height: #{$aegisx-type-body-small-line-height};
+
+    /* Material 3 Typography Scale - Label */
+    --aegisx-type-label-large: #{$aegisx-type-label-large};
+    --aegisx-type-label-large-weight: #{$aegisx-type-label-large-weight};
+    --aegisx-type-label-large-line-height: #{$aegisx-type-label-large-line-height};
+    --aegisx-type-label-medium: #{$aegisx-type-label-medium};
+    --aegisx-type-label-medium-weight: #{$aegisx-type-label-medium-weight};
+    --aegisx-type-label-medium-line-height: #{$aegisx-type-label-medium-line-height};
+    --aegisx-type-label-small: #{$aegisx-type-label-small};
+    --aegisx-type-label-small-weight: #{$aegisx-type-label-small-weight};
+    --aegisx-type-label-small-line-height: #{$aegisx-type-label-small-line-height};
+
+    /* Accessibility Tokens */
+    --aegisx-a11y-focus-indicator-thickness: #{$aegisx-a11y-focus-indicator-thickness};
+    --aegisx-a11y-focus-indicator-offset: #{$aegisx-a11y-focus-indicator-offset};
+    --aegisx-a11y-touch-target-min: #{$aegisx-a11y-touch-target-min};
+    --aegisx-a11y-text-min-contrast: #{$aegisx-a11y-text-min-contrast};
+    --aegisx-a11y-text-enhanced-contrast: #{$aegisx-a11y-text-enhanced-contrast};
   }
 }
 
@@ -461,6 +728,14 @@ $aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
     --aegisx-warning-emphasis: #{$aegisx-dark-warning-emphasis};
     --aegisx-warning-inverted: #{$aegisx-dark-warning-inverted};
 
+    /* Error Colors */
+    --aegisx-error-faint: #{$aegisx-dark-error-faint};
+    --aegisx-error-muted: #{$aegisx-dark-error-muted};
+    --aegisx-error-subtle: #{$aegisx-dark-error-subtle};
+    --aegisx-error-default: #{$aegisx-dark-error-default};
+    --aegisx-error-emphasis: #{$aegisx-dark-error-emphasis};
+    --aegisx-error-inverted: #{$aegisx-dark-error-inverted};
+
     /* Info Colors */
     --aegisx-info-faint: #{$aegisx-dark-info-faint};
     --aegisx-info-muted: #{$aegisx-dark-info-muted};
@@ -469,18 +744,56 @@ $aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
     --aegisx-info-emphasis: #{$aegisx-dark-info-emphasis};
     --aegisx-info-inverted: #{$aegisx-dark-info-inverted};
 
+    /* Cyan Colors */
+    --aegisx-cyan-faint: #{$aegisx-dark-cyan-faint};
+    --aegisx-cyan-muted: #{$aegisx-dark-cyan-muted};
+    --aegisx-cyan-subtle: #{$aegisx-dark-cyan-subtle};
+    --aegisx-cyan-default: #{$aegisx-dark-cyan-default};
+    --aegisx-cyan-emphasis: #{$aegisx-dark-cyan-emphasis};
+    --aegisx-cyan-inverted: #{$aegisx-dark-cyan-inverted};
+
+    /* Purple Colors */
+    --aegisx-purple-faint: #{$aegisx-dark-purple-faint};
+    --aegisx-purple-muted: #{$aegisx-dark-purple-muted};
+    --aegisx-purple-subtle: #{$aegisx-dark-purple-subtle};
+    --aegisx-purple-default: #{$aegisx-dark-purple-default};
+    --aegisx-purple-emphasis: #{$aegisx-dark-purple-emphasis};
+    --aegisx-purple-inverted: #{$aegisx-dark-purple-inverted};
+
+    /* Indigo Colors */
+    --aegisx-indigo-faint: #{$aegisx-dark-indigo-faint};
+    --aegisx-indigo-muted: #{$aegisx-dark-indigo-muted};
+    --aegisx-indigo-subtle: #{$aegisx-dark-indigo-subtle};
+    --aegisx-indigo-default: #{$aegisx-dark-indigo-default};
+    --aegisx-indigo-emphasis: #{$aegisx-dark-indigo-emphasis};
+    --aegisx-indigo-inverted: #{$aegisx-dark-indigo-inverted};
+
+    /* Pink Colors */
+    --aegisx-pink-faint: #{$aegisx-dark-pink-faint};
+    --aegisx-pink-muted: #{$aegisx-dark-pink-muted};
+    --aegisx-pink-subtle: #{$aegisx-dark-pink-subtle};
+    --aegisx-pink-default: #{$aegisx-dark-pink-default};
+    --aegisx-pink-emphasis: #{$aegisx-dark-pink-emphasis};
+    --aegisx-pink-inverted: #{$aegisx-dark-pink-inverted};
+
     /* Background Variants */
     --aegisx-background-muted: #{$aegisx-dark-background-muted};
     --aegisx-background-subtle: #{$aegisx-dark-background-subtle};
     --aegisx-background-default: #{$aegisx-dark-background-default};
     --aegisx-background-emphasis: #{$aegisx-dark-background-emphasis};
 
-    /* Text Hierarchy */
+    /* Text Hierarchy - Lighter, more readable colors for dark mode */
+    --aegisx-text-disabled: #{$aegisx-dark-text-disabled};
     --aegisx-text-subtle: #{$aegisx-dark-text-subtle};
-    --aegisx-text-body: #{$aegisx-dark-text-body};
-    --aegisx-text-emphasis: #{$aegisx-dark-text-emphasis};
-    --aegisx-text-strong: #{$aegisx-dark-text-strong};
+    --aegisx-text-secondary: #{$aegisx-dark-text-secondary};
+    --aegisx-text-primary: #{$aegisx-dark-text-primary};
+    --aegisx-text-heading: #{$aegisx-dark-text-heading};
     --aegisx-text-inverted: #{$aegisx-dark-text-inverted};
+
+    /* Legacy aliases (deprecated - use new names above) */
+    --aegisx-text-body: #{$aegisx-dark-text-secondary};
+    --aegisx-text-emphasis: #{$aegisx-dark-text-primary};
+    --aegisx-text-strong: #{$aegisx-dark-text-heading};
 
     /* Border Variants */
     --aegisx-border-muted: #{$aegisx-dark-border-muted};
@@ -549,52 +862,95 @@ $aegisx-dark-brand-inverted: #172554; // Tremor: dark-tremor-brand-inverted
     --aegisx-leading-normal: #{$aegisx-leading-normal};
     --aegisx-leading-relaxed: #{$aegisx-leading-relaxed};
 
-    /* ============================================
-       MATERIAL DESIGN TOKEN OVERRIDES (Dark Theme)
-       Override Material's dark theme tokens to match AegisX Dark Design
-       ============================================ */
+    /* Material 3 - State Layer Opacity (same for both themes) */
+    --aegisx-state-hover-opacity: #{$aegisx-state-hover-opacity};
+    --aegisx-state-focus-opacity: #{$aegisx-state-focus-opacity};
+    --aegisx-state-pressed-opacity: #{$aegisx-state-pressed-opacity};
+    --aegisx-state-dragged-opacity: #{$aegisx-state-dragged-opacity};
 
-    /* Primary Color System - Lighter blue for dark mode */
-    --mat-sys-primary: var(--aegisx-brand-default);
-    --mat-sys-on-primary: var(--aegisx-brand-inverted);
-    --mat-sys-primary-container: var(--aegisx-brand-faint);
-    --mat-sys-on-primary-container: var(--aegisx-brand-emphasis);
+    /* Material 3 - Motion Duration (same for both themes) */
+    --aegisx-motion-duration-instant: #{$aegisx-motion-duration-instant};
+    --aegisx-motion-duration-short1: #{$aegisx-motion-duration-short1};
+    --aegisx-motion-duration-short2: #{$aegisx-motion-duration-short2};
+    --aegisx-motion-duration-medium1: #{$aegisx-motion-duration-medium1};
+    --aegisx-motion-duration-medium2: #{$aegisx-motion-duration-medium2};
+    --aegisx-motion-duration-long1: #{$aegisx-motion-duration-long1};
+    --aegisx-motion-duration-long2: #{$aegisx-motion-duration-long2};
 
-    /* Surface & Background Colors - Dark mode surfaces */
-    --mat-sys-surface: var(--aegisx-background-default);
-    --mat-sys-surface-dim: var(--aegisx-background-subtle);
-    --mat-sys-surface-bright: var(--aegisx-background-emphasis);
-    --mat-sys-surface-container: var(--aegisx-background-muted);
-    --mat-sys-surface-container-low: var(--aegisx-background-subtle);
-    --mat-sys-surface-container-lowest: var(--aegisx-background-default);
-    --mat-sys-surface-container-high: var(--aegisx-background-subtle);
-    --mat-sys-surface-container-highest: var(--aegisx-background-muted);
+    /* Material 3 - Motion Easing (same for both themes) */
+    --aegisx-motion-easing-standard: #{$aegisx-motion-easing-standard};
+    --aegisx-motion-easing-emphasized: #{$aegisx-motion-easing-emphasized};
+    --aegisx-motion-easing-decelerated: #{$aegisx-motion-easing-decelerated};
+    --aegisx-motion-easing-accelerated: #{$aegisx-motion-easing-accelerated};
 
-    --mat-sys-on-surface: var(--aegisx-text-strong);
-    --mat-sys-on-surface-variant: var(--aegisx-text-body);
+    /* Material 3 - Elevation Levels (same for both themes) */
+    --aegisx-elevation-level0: #{$aegisx-elevation-level0};
+    --aegisx-elevation-level1: #{$aegisx-elevation-level1};
+    --aegisx-elevation-level2: #{$aegisx-elevation-level2};
+    --aegisx-elevation-level3: #{$aegisx-elevation-level3};
+    --aegisx-elevation-level4: #{$aegisx-elevation-level4};
+    --aegisx-elevation-level5: #{$aegisx-elevation-level5};
 
-    --mat-sys-background: var(--aegisx-background-default);
-    --mat-sys-on-background: var(--aegisx-text-strong);
+    /* Material 3 Typography Scale - Display (same for both themes) */
+    --aegisx-type-display-large: #{$aegisx-type-display-large};
+    --aegisx-type-display-large-weight: #{$aegisx-type-display-large-weight};
+    --aegisx-type-display-large-line-height: #{$aegisx-type-display-large-line-height};
+    --aegisx-type-display-medium: #{$aegisx-type-display-medium};
+    --aegisx-type-display-medium-weight: #{$aegisx-type-display-medium-weight};
+    --aegisx-type-display-medium-line-height: #{$aegisx-type-display-medium-line-height};
+    --aegisx-type-display-small: #{$aegisx-type-display-small};
+    --aegisx-type-display-small-weight: #{$aegisx-type-display-small-weight};
+    --aegisx-type-display-small-line-height: #{$aegisx-type-display-small-line-height};
 
-    /* Outline & Border Colors - Dark mode borders */
-    --mat-sys-outline: var(--aegisx-border-default);
-    --mat-sys-outline-variant: var(--aegisx-border-default);
+    /* Material 3 Typography Scale - Headline (same for both themes) */
+    --aegisx-type-headline-large: #{$aegisx-type-headline-large};
+    --aegisx-type-headline-large-weight: #{$aegisx-type-headline-large-weight};
+    --aegisx-type-headline-large-line-height: #{$aegisx-type-headline-large-line-height};
+    --aegisx-type-headline-medium: #{$aegisx-type-headline-medium};
+    --aegisx-type-headline-medium-weight: #{$aegisx-type-headline-medium-weight};
+    --aegisx-type-headline-medium-line-height: #{$aegisx-type-headline-medium-line-height};
+    --aegisx-type-headline-small: #{$aegisx-type-headline-small};
+    --aegisx-type-headline-small-weight: #{$aegisx-type-headline-small-weight};
+    --aegisx-type-headline-small-line-height: #{$aegisx-type-headline-small-line-height};
 
-    /* Elevation & Shadows - More subtle shadows for dark mode */
-    --mat-sys-level0: none;
-    --mat-sys-level1: var(--aegisx-shadow-sm);
-    --mat-sys-level2: var(--aegisx-shadow-sm);
-    --mat-sys-level3: var(--aegisx-shadow-md);
-    --mat-sys-level4: var(--aegisx-shadow-md);
-    --mat-sys-level5: var(--aegisx-shadow-lg);
+    /* Material 3 Typography Scale - Title (same for both themes) */
+    --aegisx-type-title-large: #{$aegisx-type-title-large};
+    --aegisx-type-title-large-weight: #{$aegisx-type-title-large-weight};
+    --aegisx-type-title-large-line-height: #{$aegisx-type-title-large-line-height};
+    --aegisx-type-title-medium: #{$aegisx-type-title-medium};
+    --aegisx-type-title-medium-weight: #{$aegisx-type-title-medium-weight};
+    --aegisx-type-title-medium-line-height: #{$aegisx-type-title-medium-line-height};
+    --aegisx-type-title-small: #{$aegisx-type-title-small};
+    --aegisx-type-title-small-weight: #{$aegisx-type-title-small-weight};
+    --aegisx-type-title-small-line-height: #{$aegisx-type-title-small-line-height};
 
-    /* Shape & Border Radius - Same as light theme */
-    --mat-sys-corner-none: 0;
-    --mat-sys-corner-extra-small: var(--aegisx-radius-sm);
-    --mat-sys-corner-small: var(--aegisx-radius-sm);
-    --mat-sys-corner-medium: var(--aegisx-radius-md);
-    --mat-sys-corner-large: var(--aegisx-radius-lg);
-    --mat-sys-corner-extra-large: var(--aegisx-radius-xl);
-    --mat-sys-corner-full: var(--aegisx-radius-full);
+    /* Material 3 Typography Scale - Body (same for both themes) */
+    --aegisx-type-body-large: #{$aegisx-type-body-large};
+    --aegisx-type-body-large-weight: #{$aegisx-type-body-large-weight};
+    --aegisx-type-body-large-line-height: #{$aegisx-type-body-large-line-height};
+    --aegisx-type-body-medium: #{$aegisx-type-body-medium};
+    --aegisx-type-body-medium-weight: #{$aegisx-type-body-medium-weight};
+    --aegisx-type-body-medium-line-height: #{$aegisx-type-body-medium-line-height};
+    --aegisx-type-body-small: #{$aegisx-type-body-small};
+    --aegisx-type-body-small-weight: #{$aegisx-type-body-small-weight};
+    --aegisx-type-body-small-line-height: #{$aegisx-type-body-small-line-height};
+
+    /* Material 3 Typography Scale - Label (same for both themes) */
+    --aegisx-type-label-large: #{$aegisx-type-label-large};
+    --aegisx-type-label-large-weight: #{$aegisx-type-label-large-weight};
+    --aegisx-type-label-large-line-height: #{$aegisx-type-label-large-line-height};
+    --aegisx-type-label-medium: #{$aegisx-type-label-medium};
+    --aegisx-type-label-medium-weight: #{$aegisx-type-label-medium-weight};
+    --aegisx-type-label-medium-line-height: #{$aegisx-type-label-medium-line-height};
+    --aegisx-type-label-small: #{$aegisx-type-label-small};
+    --aegisx-type-label-small-weight: #{$aegisx-type-label-small-weight};
+    --aegisx-type-label-small-line-height: #{$aegisx-type-label-small-line-height};
+
+    /* Accessibility Tokens (same for both themes) */
+    --aegisx-a11y-focus-indicator-thickness: #{$aegisx-a11y-focus-indicator-thickness};
+    --aegisx-a11y-focus-indicator-offset: #{$aegisx-a11y-focus-indicator-offset};
+    --aegisx-a11y-touch-target-min: #{$aegisx-a11y-touch-target-min};
+    --aegisx-a11y-text-min-contrast: #{$aegisx-a11y-text-min-contrast};
+    --aegisx-a11y-text-enhanced-contrast: #{$aegisx-a11y-text-enhanced-contrast};
   }
 }
