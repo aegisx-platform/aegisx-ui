@@ -413,13 +413,13 @@ export class UserManagementComponent {
   getRoleBadgeColor(role: string): string {
     switch (role) {
       case 'admin':
-        return 'var(--aegisx-brand-default)';
+        return 'var(--ax-brand-default)';
       case 'manager':
         return '#f59e0b';
       case 'user':
         return '#6b7280';
       default:
-        return 'var(--aegisx-text-body)';
+        return 'var(--ax-text-body)';
     }
   }
 

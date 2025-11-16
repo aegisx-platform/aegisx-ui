@@ -90,10 +90,10 @@ type ViewMode = 'preview' | 'code';
   styles: [
     `
       .code-preview-container {
-        border: 1px solid var(--aegisx-border-default);
-        border-radius: var(--aegisx-radius-md);
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-md);
         overflow: hidden;
-        background: var(--aegisx-bg-surface);
+        background: var(--ax-background-default);
         transition: all 0.2s ease;
       }
 
@@ -102,8 +102,8 @@ type ViewMode = 'preview' | 'code';
         align-items: center;
         justify-content: space-between;
         padding: 0.75rem 1rem;
-        background: var(--aegisx-bg-page);
-        border-bottom: 1px solid var(--aegisx-border-default);
+        background: var(--ax-background-subtle);
+        border-bottom: 1px solid var(--ax-border-default);
       }
 
       .view-tabs {
@@ -118,10 +118,10 @@ type ViewMode = 'preview' | 'code';
         padding: 0.5rem 1rem;
         border: none;
         background: transparent;
-        border-radius: var(--aegisx-radius-sm);
+        border-radius: var(--ax-radius-sm);
         font-size: 0.875rem;
         font-weight: 500;
-        color: var(--aegisx-text-secondary);
+        color: var(--ax-text-secondary);
         cursor: pointer;
         transition: all 0.15s ease;
 
@@ -132,16 +132,16 @@ type ViewMode = 'preview' | 'code';
         }
 
         &:hover {
-          background: var(--aegisx-bg-surface);
-          color: var(--aegisx-text-primary);
+          background: var(--ax-background-default);
+          color: var(--ax-text-primary);
         }
 
         &.active {
-          background: var(--aegisx-bg-surface);
-          color: var(--aegisx-brand-default);
+          background: var(--ax-background-default);
+          color: var(--ax-brand-default);
 
           mat-icon {
-            color: var(--aegisx-brand-default);
+            color: var(--ax-brand-default);
           }
         }
       }
@@ -152,12 +152,12 @@ type ViewMode = 'preview' | 'code';
       }
 
       .action-btn {
-        color: var(--aegisx-text-secondary);
+        color: var(--ax-text-secondary);
         transition: all 0.15s ease;
 
         &:hover {
-          background: var(--aegisx-bg-surface);
-          color: var(--aegisx-text-primary);
+          background: var(--ax-background-default);
+          color: var(--ax-text-primary);
         }
 
         mat-icon {

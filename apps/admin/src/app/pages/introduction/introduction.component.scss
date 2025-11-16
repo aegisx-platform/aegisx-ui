@@ -5,8 +5,8 @@
 
 // Quick Actions Card - Tremor Style
 .quick-actions-card {
-  background: var(--aegisx-background-default);
-  border: 1px solid var(--aegisx-border-muted);
+  background: var(--ax-background-default);
+  border: 1px solid var(--ax-border-muted);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -40,7 +40,7 @@
     font-size: 2rem;
     width: 2rem;
     height: 2rem;
-    color: var(--aegisx-brand-default);
+    color: var(--ax-brand-default);
     flex-shrink: 0;
   }
 
@@ -48,13 +48,13 @@
     h4 {
       font-size: 1rem;
       font-weight: 600;
-      color: var(--aegisx-text-heading);
+      color: var(--ax-text-heading);
       margin: 0 0 0.25rem 0;
     }
 
     p {
       font-size: 0.875rem;
-      color: var(--aegisx-text-secondary);
+      color: var(--ax-text-secondary);
       margin: 0;
     }
   }
@@ -69,15 +69,15 @@
 
 .quick-link-card {
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid var(--aegisx-border-muted);
-  background: var(--aegisx-background-default);
+  border: 1px solid var(--ax-border-muted);
+  background: var(--ax-background-default);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
   &:hover {
     box-shadow:
       0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border-color: var(--aegisx-border-default);
+    border-color: var(--ax-border-default);
   }
 
   mat-card-content {
@@ -91,20 +91,20 @@
     font-size: 2.5rem;
     width: 2.5rem;
     height: 2.5rem;
-    color: var(--aegisx-brand-default);
+    color: var(--ax-brand-default);
     margin-bottom: 1rem;
   }
 
   .link-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--aegisx-text-heading);
+    color: var(--ax-text-heading);
     margin: 0 0 0.5rem 0;
   }
 
   .link-description {
     font-size: 0.9375rem;
-    color: var(--aegisx-text-secondary);
+    color: var(--ax-text-secondary);
     margin: 0 0 1.25rem 0;
     flex: 1;
   }
@@ -124,8 +124,8 @@
 
 // Help Card - Tremor Style
 .help-card {
-  background: var(--aegisx-background-default);
-  border: 1px solid var(--aegisx-border-muted);
+  background: var(--ax-background-default);
+  border: 1px solid var(--ax-border-muted);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -140,13 +140,13 @@
     h3 {
       font-size: 1.25rem;
       font-weight: 600;
-      color: var(--aegisx-text-heading);
+      color: var(--ax-text-heading);
       margin: 0 0 0.5rem 0;
     }
 
     p {
       font-size: 1rem;
-      color: var(--aegisx-text-secondary);
+      color: var(--ax-text-secondary);
       margin: 0;
     }
   }

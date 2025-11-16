@@ -116,11 +116,11 @@ import { TremorThemeService } from '../services/tremor-theme.service';
 
       /* Override Material menu panel styles */
       ::ng-deep .theme-switcher-menu.mat-mdc-menu-panel {
-        background-color: var(--aegisx-background-default) !important;
+        background-color: var(--ax-background-default) !important;
         backdrop-filter: blur(10px) !important;
-        border-radius: var(--aegisx-radius-md) !important;
-        border: 1px solid var(--aegisx-border-default) !important;
-        box-shadow: var(--aegisx-shadow-lg) !important;
+        border-radius: var(--ax-radius-md) !important;
+        border: 1px solid var(--ax-border-default) !important;
+        box-shadow: var(--ax-shadow-lg) !important;
       }
 
       /* Material menu surface */
@@ -136,7 +136,7 @@ import { TremorThemeService } from '../services/tremor-theme.service';
         padding: 12px 16px 8px;
 
         span {
-          color: var(--aegisx-text-subtle) !important;
+          color: var(--ax-text-subtle) !important;
         }
       }
 
@@ -145,16 +145,16 @@ import { TremorThemeService } from '../services/tremor-theme.service';
         padding: 12px 16px !important;
 
         &.theme-active {
-          background-color: var(--aegisx-brand-faint) !important;
+          background-color: var(--ax-brand-faint) !important;
 
           .theme-name {
             font-weight: 500;
-            color: var(--aegisx-brand-emphasis) !important;
+            color: var(--ax-brand-emphasis) !important;
           }
         }
 
         &:hover {
-          background-color: var(--aegisx-background-muted) !important;
+          background-color: var(--ax-background-muted) !important;
         }
       }
 
@@ -168,19 +168,19 @@ import { TremorThemeService } from '../services/tremor-theme.service';
           width: 20px;
           height: 20px;
           font-size: 20px;
-          color: var(--aegisx-text-subtle);
+          color: var(--ax-text-subtle);
         }
       }
 
       .theme-name {
         flex: 1;
         font-size: 14px;
-        color: var(--aegisx-text-body);
+        color: var(--ax-text-body);
       }
 
       .theme-check-icon {
         margin-left: auto;
-        color: var(--aegisx-brand-default);
+        color: var(--ax-brand-default);
         font-size: 20px;
         width: 20px;
         height: 20px;
@@ -191,16 +191,16 @@ import { TremorThemeService } from '../services/tremor-theme.service';
         padding: 12px 16px !important;
 
         &:hover {
-          background-color: var(--aegisx-background-muted) !important;
+          background-color: var(--ax-background-muted) !important;
         }
 
         mat-icon {
           margin-right: 12px;
-          color: var(--aegisx-text-body);
+          color: var(--ax-text-body);
         }
 
         span {
-          color: var(--aegisx-text-body);
+          color: var(--ax-text-body);
         }
       }
     `,

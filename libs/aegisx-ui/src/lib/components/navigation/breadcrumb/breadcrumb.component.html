@@ -1,0 +1,35 @@
+<nav [class]="breadcrumbClasses" aria-label="Breadcrumb">
+  <ol class="ax-breadcrumb-list">
+    @for (item of items; track trackByIndex($index)) {
+      <li class="ax-breadcrumb-item">
+        @if (item.url && !isLastItem($index)) {
+          <a
+            [href]="item.url"
+            class="ax-breadcrumb-link"
+            (click)="onItemClick(item, $event)"
+          >
+            @if (item.icon) {
+              <span class="ax-breadcrumb-icon">{{ item.icon }}</span>
+            }
+            <span>{{ item.label }}</span>
+          </a>
+        } @else {
+          <span
+            class="ax-breadcrumb-current"
+            [attr.aria-current]="isLastItem($index) ? 'page' : null"
+          >
+            @if (item.icon) {
+              <span class="ax-breadcrumb-icon">{{ item.icon }}</span>
+            }
+            <span>{{ item.label }}</span>
+          </span>
+        }
+        @if (!isLastItem($index)) {
+          <span class="ax-breadcrumb-separator" aria-hidden="true">{{
+            separator
+          }}</span>
+        }
+      </li>
+    }
+  </ol>
+</nav>

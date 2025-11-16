@@ -62,13 +62,10 @@ interface MockUser {
       <!-- Page Header -->
       <div class="flex justify-between items-start mb-6">
         <div>
-          <h1
-            class="text-3xl font-bold"
-            style="color: var(--aegisx-text-strong)"
-          >
+          <h1 class="text-3xl font-bold" style="color: var(--ax-text-strong)">
             Users Management
           </h1>
-          <p class="mt-2 text-base" style="color: var(--aegisx-text-body)">
+          <p class="mt-2 text-base" style="color: var(--ax-text-body)">
             Manage {{ totalUsers() }} system users and their permissions
           </p>
         </div>
@@ -102,7 +99,7 @@ interface MockUser {
               @if (activeFilterCount() > 0) {
                 <span
                   class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none rounded-full"
-                  style="background-color: var(--aegisx-brand-default); color: white;"
+                  style="background-color: var(--ax-brand-default); color: white;"
                   matTooltip="{{ activeFilterCount() }} active filter(s)"
                 >
                   {{ activeFilterCount() }}
@@ -153,7 +150,7 @@ interface MockUser {
                   <mat-option value="admin">
                     <mat-icon
                       class="align-middle mr-2"
-                      style="color: var(--aegisx-brand-emphasis)"
+                      style="color: var(--ax-brand-emphasis)"
                       >admin_panel_settings</mat-icon
                     >
                     Admin
@@ -167,14 +164,14 @@ interface MockUser {
                   <mat-option value="user">
                     <mat-icon
                       class="align-middle mr-2"
-                      style="color: var(--aegisx-success-default)"
+                      style="color: var(--ax-success-default)"
                       >person</mat-icon
                     >
                     User
                   </mat-option>
                 </mat-select>
                 @if (selectedRoles.length > 0) {
-                  <mat-icon matSuffix style="color: var(--aegisx-brand-default)"
+                  <mat-icon matSuffix style="color: var(--ax-brand-default)"
                     >filter_alt</mat-icon
                   >
                 }
@@ -187,7 +184,7 @@ interface MockUser {
                   <mat-option value="active">
                     <mat-icon
                       class="align-middle mr-2"
-                      style="color: var(--aegisx-success-default)"
+                      style="color: var(--ax-success-default)"
                       >check_circle</mat-icon
                     >
                     Active
@@ -207,14 +204,14 @@ interface MockUser {
                   <mat-option value="pending">
                     <mat-icon
                       class="align-middle mr-2"
-                      style="color: var(--aegisx-warning-default)"
+                      style="color: var(--ax-warning-default)"
                       >schedule</mat-icon
                     >
                     Pending
                   </mat-option>
                 </mat-select>
                 @if (selectedStatuses.length > 0) {
-                  <mat-icon matSuffix style="color: var(--aegisx-brand-default)"
+                  <mat-icon matSuffix style="color: var(--ax-brand-default)"
                     >filter_alt</mat-icon
                   >
                 }
@@ -332,12 +329,12 @@ interface MockUser {
         <ax-card
           [appearance]="'outlined'"
           class="mb-4"
-          style="background-color: var(--aegisx-background-subtle);"
+          style="background-color: var(--ax-background-subtle);"
         >
           <div class="flex items-center gap-2 flex-wrap">
             <span
               class="text-sm font-medium"
-              style="color: var(--aegisx-text-emphasis)"
+              style="color: var(--ax-text-emphasis)"
             >
               Active filters ({{ activeFilterCount() }}):
             </span>
@@ -402,7 +399,7 @@ interface MockUser {
             <div class="flex items-center gap-2 flex-wrap">
               <button
                 mat-raised-button
-                style="background-color: var(--aegisx-success-default); color: white;"
+                style="background-color: var(--ax-success-default); color: white;"
               >
                 <mat-icon>check_circle</mat-icon>
                 <span class="ml-2">Activate</span>
@@ -474,7 +471,7 @@ interface MockUser {
                 <div class="flex items-center gap-3 py-2">
                   <div
                     class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                    style="background-color: var(--aegisx-brand-faint); color: var(--aegisx-brand-emphasis);"
+                    style="background-color: var(--ax-brand-faint); color: var(--ax-brand-emphasis);"
                   >
                     <span class="text-sm font-semibold">
                       {{ getInitials(user) }}
@@ -483,13 +480,13 @@ interface MockUser {
                   <div class="flex-1 min-w-0">
                     <p
                       class="font-medium truncate"
-                      style="color: var(--aegisx-text-strong)"
+                      style="color: var(--ax-text-strong)"
                     >
                       {{ user.firstName }} {{ user.lastName }}
                     </p>
                     <p
                       class="text-sm truncate"
-                      style="color: var(--aegisx-text-body)"
+                      style="color: var(--ax-text-body)"
                     >
                       {{ user.email }}
                     </p>
@@ -536,7 +533,7 @@ interface MockUser {
                 </button>
                 <mat-menu #statusMenu="matMenu">
                   <button mat-menu-item>
-                    <mat-icon style="color: var(--aegisx-success-default)"
+                    <mat-icon style="color: var(--ax-success-default)"
                       >check_circle</mat-icon
                     >
                     Active
@@ -550,7 +547,7 @@ interface MockUser {
                     Suspended
                   </button>
                   <button mat-menu-item>
-                    <mat-icon style="color: var(--aegisx-warning-default)"
+                    <mat-icon style="color: var(--ax-warning-default)"
                       >schedule</mat-icon
                     >
                     Pending
@@ -566,7 +563,7 @@ interface MockUser {
                 mat-cell
                 *matCellDef="let user"
                 class="text-sm"
-                style="color: var(--aegisx-text-body)"
+                style="color: var(--ax-text-body)"
               >
                 {{ formatDate(user.createdAt) }}
               </td>
@@ -579,7 +576,7 @@ interface MockUser {
                 mat-cell
                 *matCellDef="let user"
                 class="text-sm"
-                style="color: var(--aegisx-text-body)"
+                style="color: var(--ax-text-body)"
               >
                 {{ user.lastLoginAt ? formatDate(user.lastLoginAt) : 'Never' }}
               </td>
@@ -619,7 +616,7 @@ interface MockUser {
             <tr
               mat-header-row
               *matHeaderRowDef="displayedColumns; sticky: true"
-              style="background-color: var(--aegisx-background-subtle);"
+              style="background-color: var(--ax-background-subtle);"
             ></tr>
             <tr
               mat-row
@@ -630,7 +627,7 @@ interface MockUser {
         </div>
 
         <!-- Paginator -->
-        <div style="border-top: 1px solid var(--aegisx-border-default);">
+        <div style="border-top: 1px solid var(--ax-border-default);">
           <mat-paginator
             [pageSizeOptions]="[10, 25, 50]"
             [pageSize]="pageSize()"
@@ -968,8 +965,8 @@ export class UserListUiDemoComponent {
   getRoleColor(role: string): { background: string; text: string } {
     const colors: Record<string, { background: string; text: string }> = {
       admin: {
-        background: 'var(--aegisx-brand-faint)',
-        text: 'var(--aegisx-brand-emphasis)',
+        background: 'var(--ax-brand-faint)',
+        text: 'var(--ax-brand-emphasis)',
       },
       manager: {
         background: '#dbeafe',
@@ -985,10 +982,10 @@ export class UserListUiDemoComponent {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      active: 'var(--aegisx-success-default)',
+      active: 'var(--ax-success-default)',
       inactive: '#6b7280',
       suspended: '#dc2626',
-      pending: 'var(--aegisx-warning-default)',
+      pending: 'var(--ax-warning-default)',
     };
     return colors[status] || '#9ca3af';
   }

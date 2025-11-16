@@ -20,11 +20,11 @@ Theming Stack:
 │  └─ Density
 │
 ├─ AegisX Design Tokens (CSS Variables)
-│  ├─ --aegisx-background-*
-│  ├─ --aegisx-content-*
-│  ├─ --aegisx-brand-*
-│  ├─ --aegisx-border-*
-│  └─ --aegisx-success/warning/error-*
+│  ├─ --ax-background-*
+│  ├─ --ax-content-*
+│  ├─ --ax-brand-*
+│  ├─ --ax-border-*
+│  └─ --ax-success/warning/error-*
 │
 └─ Tailwind CSS
    └─ Layout utilities (flex, grid, gap, p-*, m-*)
@@ -83,7 +83,7 @@ Material prebuilt themes can be enabled in `tremor-theme.service.ts`:
 ✅ **DO:** Use Tremor CSS variables for colors
 
 ```html
-<div style="color: var(--aegisx-text-strong)">Strong text</div>
+<div style="color: var(--ax-text-strong)">Strong text</div>
 ```
 
 ❌ **DON'T:** Use hardcoded colors
@@ -115,11 +115,11 @@ Material prebuilt themes can be enabled in `tremor-theme.service.ts`:
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
   <mat-card class="cursor-pointer hover:shadow-md transition-shadow">
     <mat-card-header class="flex items-center justify-between">
-      <mat-card-title class="text-sm" style="color: var(--aegisx-text-body)"> Total Users </mat-card-title>
+      <mat-card-title class="text-sm" style="color: var(--ax-text-body)"> Total Users </mat-card-title>
       <mat-icon color="primary">people</mat-icon>
     </mat-card-header>
     <mat-card-content>
-      <div class="text-3xl font-bold" style="color: var(--aegisx-text-strong)">2,543</div>
+      <div class="text-3xl font-bold" style="color: var(--ax-text-strong)">2,543</div>
       <div class="flex items-center gap-1 text-sm">
         <mat-icon class="text-green-600">trending_up</mat-icon>
         <span class="text-green-600">+12.5%</span>
@@ -188,47 +188,47 @@ docs/themes/
 ### Background Colors
 
 ```scss
---aegisx-background-muted      // Subtle background
---aegisx-background-subtle     // Card/panel backgrounds
---aegisx-background-default    // Main background
---aegisx-background-emphasis   // Emphasized sections
+--ax-background-muted      // Subtle background
+--ax-background-subtle     // Card/panel backgrounds
+--ax-background-default    // Main background
+--ax-background-emphasis   // Emphasized sections
 ```
 
 ### Content Colors
 
 ```scss
---aegisx-text-subtle        // Muted text (hints)
---aegisx-text-body       // Standard text
---aegisx-text-emphasis      // Important text
---aegisx-text-strong        // Headlines
---aegisx-content-inverted      // Text on dark bg
+--ax-text-subtle        // Muted text (hints)
+--ax-text-body       // Standard text
+--ax-text-emphasis      // Important text
+--ax-text-strong        // Headlines
+--ax-content-inverted      // Text on dark bg
 ```
 
 ### Brand Colors
 
 ```scss
---aegisx-brand-faint          // Very light tint
---aegisx-brand-muted          // Light tint
---aegisx-brand-subtle         // Medium
---aegisx-brand-default        // Primary brand
---aegisx-brand-emphasis       // Darker
---aegisx-brand-inverted       // Text on brand
+--ax-brand-faint          // Very light tint
+--ax-brand-muted          // Light tint
+--ax-brand-subtle         // Medium
+--ax-brand-default        // Primary brand
+--ax-brand-emphasis       // Darker
+--ax-brand-inverted       // Text on brand
 ```
 
 ### Status Colors
 
 ```scss
 // Success (green)
---aegisx-success-{faint,muted,subtle,default,emphasis,inverted}
+--ax-success-{faint,muted,subtle,default,emphasis,inverted}
 
 // Warning (yellow/orange)
---aegisx-warning-{faint,muted,subtle,default,emphasis,inverted}
+--ax-warning-{faint,muted,subtle,default,emphasis,inverted}
 
 // Error (red)
---aegisx-error-{faint,muted,subtle,default,emphasis,inverted}
+--ax-error-{faint,muted,subtle,default,emphasis,inverted}
 
 // Info (blue)
---aegisx-info-{faint,muted,subtle,default,emphasis,inverted}
+--ax-info-{faint,muted,subtle,default,emphasis,inverted}
 ```
 
 ## See Also

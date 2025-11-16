@@ -1,0 +1,370 @@
+<div class="docs-page">
+  <!-- Page Header -->
+  <div class="docs-header">
+    <h1 class="docs-title">AegisX UI Components Showcase</h1>
+    <p class="docs-subtitle">
+      ตัวอย่างการใช้งาน Custom Components ทั้งหมด 31 ตัว ที่สร้างขึ้นใหม่สำหรับ
+      AegisX Design System v1.0.0
+    </p>
+  </div>
+
+  <!-- Forms Module -->
+  <div class="section-divider">
+    <h2 class="section-title">📝 Forms Module (8 Components)</h2>
+  </div>
+
+  <!-- 1. Button -->
+  <div class="demo-section">
+    <h3>1. Button Component</h3>
+    <div class="demo-container">
+      <ax-button>Default</ax-button>
+      <ax-button variant="solid" color="primary">Primary</ax-button>
+      <ax-button variant="solid" color="success">Success</ax-button>
+      <ax-button variant="solid" color="error">Error</ax-button>
+      <ax-button variant="solid" color="warning">Warning</ax-button>
+      <ax-button variant="outline" color="primary">Outline</ax-button>
+      <ax-button variant="ghost" color="primary">Ghost</ax-button>
+      <ax-button [disabled]="true">Disabled</ax-button>
+    </div>
+  </div>
+
+  <!-- 2. Checkbox -->
+  <div class="demo-section">
+    <h3>2. Checkbox Component</h3>
+    <div class="demo-container">
+      <ax-checkbox [(ngModel)]="checkboxValue">Accept Terms</ax-checkbox>
+      <ax-checkbox [disabled]="true">Disabled Checkbox</ax-checkbox>
+    </div>
+  </div>
+
+  <!-- 3. Radio -->
+  <div class="demo-section">
+    <h3>3. Radio Group Component</h3>
+    <div class="demo-container">
+      <ax-radio-group
+        [options]="radioOptions"
+        [(ngModel)]="radioValue"
+      ></ax-radio-group>
+    </div>
+  </div>
+
+  <!-- 4. Input -->
+  <div class="demo-section">
+    <h3>4. Input Component</h3>
+    <div class="demo-container">
+      <ax-input
+        [(ngModel)]="inputValue"
+        placeholder="Enter your name"
+        label="Name"
+      ></ax-input>
+      <ax-input
+        type="email"
+        placeholder="email@example.com"
+        label="Email"
+      ></ax-input>
+    </div>
+  </div>
+
+  <!-- 5. Select -->
+  <div class="demo-section">
+    <h3>5. Select Component</h3>
+    <div class="demo-container">
+      <ax-select
+        [(ngModel)]="selectValue"
+        [options]="selectOptions"
+        placeholder="Select an option"
+        label="Choose Option"
+      ></ax-select>
+    </div>
+  </div>
+
+  <!-- 6. Toggle -->
+  <div class="demo-section">
+    <h3>6. Toggle Component</h3>
+    <div class="demo-container">
+      <ax-toggle [(ngModel)]="toggleValue">Enable Notifications</ax-toggle>
+      <ax-toggle variant="success">Success Toggle</ax-toggle>
+    </div>
+  </div>
+
+  <!-- 7. Textarea -->
+  <div class="demo-section">
+    <h3>7. Textarea Component</h3>
+    <div class="demo-container">
+      <ax-textarea
+        [(ngModel)]="textareaValue"
+        placeholder="Enter your message"
+        label="Message"
+      ></ax-textarea>
+    </div>
+  </div>
+
+  <!-- 8. Date Picker -->
+  <div class="demo-section">
+    <h3>8. Date Picker Component</h3>
+    <div class="demo-container">
+      <ax-date-picker
+        [(ngModel)]="dateValue"
+        label="Select Date"
+      ></ax-date-picker>
+    </div>
+  </div>
+
+  <!-- Data Display Module -->
+  <div class="section-divider">
+    <h2 class="section-title">📊 Data Display Module (8 Components)</h2>
+  </div>
+
+  <!-- 9. Card -->
+  <div class="demo-section">
+    <h3>9. Card Component</h3>
+    <div class="demo-container">
+      <ax-card title="Card Title" subtitle="Card Subtitle">
+        <p>This is the card content area. You can place any content here.</p>
+      </ax-card>
+    </div>
+  </div>
+
+  <!-- 10. Badge -->
+  <div class="demo-section">
+    <h3>10. Badge Component</h3>
+    <div class="demo-container">
+      <ax-badge variant="default">Default</ax-badge>
+      <ax-badge variant="primary">Primary</ax-badge>
+      <ax-badge variant="success">Success</ax-badge>
+      <ax-badge variant="warning">Warning</ax-badge>
+      <ax-badge variant="error">Error</ax-badge>
+    </div>
+  </div>
+
+  <!-- 11. Avatar -->
+  <div class="demo-section">
+    <h3>11. Avatar Component</h3>
+    <div class="demo-container">
+      <ax-avatar text="JD" size="sm"></ax-avatar>
+      <ax-avatar text="AB" size="md"></ax-avatar>
+      <ax-avatar text="XY" size="lg"></ax-avatar>
+    </div>
+  </div>
+
+  <!-- 12. Chip -->
+  <div class="demo-section">
+    <h3>12. Chip Component</h3>
+    <div class="demo-container">
+      <ax-chip>Default Chip</ax-chip>
+      <ax-chip variant="primary">Primary Chip</ax-chip>
+      <ax-chip [removable]="true">Removable Chip</ax-chip>
+    </div>
+  </div>
+
+  <!-- 13. List -->
+  <div class="demo-section">
+    <h3>13. List Component</h3>
+    <div class="demo-container">
+      <ax-list [items]="listItems"></ax-list>
+    </div>
+  </div>
+
+  <!-- 14. Stats Card -->
+  <div class="demo-section">
+    <h3>14. Stats Card Component</h3>
+    <div class="demo-container">
+      <ax-stats-card
+        title="Total Users"
+        value="1,234"
+        change="+12.5%"
+        trend="up"
+      ></ax-stats-card>
+      <ax-stats-card
+        title="Revenue"
+        value="$45,678"
+        change="-3.2%"
+        trend="down"
+      ></ax-stats-card>
+    </div>
+  </div>
+
+  <!-- 15. Timeline -->
+  <div class="demo-section">
+    <h3>15. Timeline Component</h3>
+    <div class="demo-container">
+      <ax-timeline [items]="timelineItems"></ax-timeline>
+    </div>
+  </div>
+
+  <!-- 16. Table -->
+  <div class="demo-section">
+    <h3>16. Table Component</h3>
+    <div class="demo-container">
+      <ax-table [columns]="tableColumns" [data]="tableData"></ax-table>
+    </div>
+  </div>
+
+  <!-- Feedback Module -->
+  <div class="section-divider">
+    <h2 class="section-title">💬 Feedback Module (7 Components)</h2>
+  </div>
+
+  <!-- 17. Alert -->
+  <div class="demo-section">
+    <h3>17. Alert Component</h3>
+    <div class="demo-container">
+      <ax-alert variant="info">This is an info alert message</ax-alert>
+      <ax-alert variant="success">Operation completed successfully!</ax-alert>
+      <ax-alert variant="warning">Please review this warning</ax-alert>
+      <ax-alert variant="error">An error has occurred</ax-alert>
+    </div>
+  </div>
+
+  <!-- 18. Snackbar -->
+  <div class="demo-section">
+    <h3>18. Snackbar Component</h3>
+    <div class="demo-container">
+      <p>Snackbar notifications appear at the bottom of the screen</p>
+      <ax-snackbar-container></ax-snackbar-container>
+    </div>
+  </div>
+
+  <!-- 19. Tooltip -->
+  <div class="demo-section">
+    <h3>19. Tooltip Directive</h3>
+    <div class="demo-container">
+      <button axTooltip="This is a tooltip" tooltipPosition="top">
+        Hover me (Top)
+      </button>
+      <button axTooltip="Bottom tooltip" tooltipPosition="bottom">
+        Hover me (Bottom)
+      </button>
+    </div>
+  </div>
+
+  <!-- 20. Progress -->
+  <div class="demo-section">
+    <h3>20. Progress Component</h3>
+    <div class="demo-container">
+      <ax-progress [value]="progressValue" variant="primary"></ax-progress>
+      <ax-progress [value]="75" variant="success"></ax-progress>
+    </div>
+  </div>
+
+  <!-- 21. Skeleton -->
+  <div class="demo-section">
+    <h3>21. Skeleton Component</h3>
+    <div class="demo-container">
+      <ax-skeleton type="text"></ax-skeleton>
+      <ax-skeleton type="circle" width="48px" height="48px"></ax-skeleton>
+      <ax-skeleton type="rectangle" height="100px"></ax-skeleton>
+    </div>
+  </div>
+
+  <!-- 22. Dialog -->
+  <div class="demo-section">
+    <h3>22. Dialog Component</h3>
+    <div class="demo-container">
+      <ax-button (click)="showDialog = true">Open Dialog</ax-button>
+
+      <ax-dialog [(open)]="showDialog" title="Dialog Title" size="md">
+        <p>This is the dialog content. You can put any content here.</p>
+        <div footer>
+          <ax-button
+            variant="outline"
+            color="neutral"
+            (click)="showDialog = false"
+            >Cancel</ax-button
+          >
+          <ax-button
+            variant="solid"
+            color="primary"
+            (click)="showDialog = false"
+            >Confirm</ax-button
+          >
+        </div>
+      </ax-dialog>
+    </div>
+  </div>
+
+  <!-- 23. Loading Bar -->
+  <div class="demo-section">
+    <h3>23. Loading Bar Component</h3>
+    <div class="demo-container">
+      <ax-loading-bar></ax-loading-bar>
+    </div>
+  </div>
+
+  <!-- Navigation Module -->
+  <div class="section-divider">
+    <h2 class="section-title">🧭 Navigation Module (8 Components)</h2>
+  </div>
+
+  <!-- 24. Breadcrumb -->
+  <div class="demo-section">
+    <h3>24. Breadcrumb Component</h3>
+    <div class="demo-container">
+      <ax-breadcrumb [items]="breadcrumbs"></ax-breadcrumb>
+    </div>
+  </div>
+
+  <!-- 25. Menu -->
+  <div class="demo-section">
+    <h3>25. Menu Component</h3>
+    <div class="demo-container">
+      <ax-menu [items]="menuItems"></ax-menu>
+    </div>
+  </div>
+
+  <!-- 26. Tabs -->
+  <div class="demo-section">
+    <h3>26. Tabs Component</h3>
+    <div class="demo-container">
+      <ax-tabs [tabs]="tabs" [(activeIndex)]="activeTab"></ax-tabs>
+    </div>
+  </div>
+
+  <!-- 27. Navbar -->
+  <div class="demo-section">
+    <h3>27. Navbar Component</h3>
+    <div class="demo-container">
+      <ax-navbar brand="AegisX" [items]="navbarItems"></ax-navbar>
+    </div>
+  </div>
+
+  <!-- 28. Sidebar -->
+  <div class="demo-section">
+    <h3>28. Sidebar Component</h3>
+    <div class="demo-container">
+      <ax-sidebar [items]="sidebarItems"></ax-sidebar>
+    </div>
+  </div>
+
+  <!-- 29. Drawer -->
+  <div class="demo-section">
+    <h3>29. Drawer Component</h3>
+    <div class="demo-container">
+      <ax-button (click)="showDrawer = true">Open Drawer</ax-button>
+      <ax-drawer [(open)]="showDrawer" position="right">
+        <h3>Drawer Content</h3>
+        <p>This is the drawer content area.</p>
+      </ax-drawer>
+    </div>
+  </div>
+
+  <!-- 30. Pagination -->
+  <div class="demo-section">
+    <h3>30. Pagination Component</h3>
+    <div class="demo-container">
+      <ax-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)"
+      ></ax-pagination>
+    </div>
+  </div>
+
+  <!-- 31. Stepper -->
+  <div class="demo-section">
+    <h3>31. Stepper Component</h3>
+    <div class="demo-container">
+      <ax-stepper [steps]="steps" [activeIndex]="activeStep"></ax-stepper>
+    </div>
+  </div>
+</div>

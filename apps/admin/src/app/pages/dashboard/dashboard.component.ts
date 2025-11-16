@@ -79,7 +79,7 @@ export class DashboardComponent {
       change: '+12.5%',
       changeType: 'increase',
       icon: 'people',
-      iconColor: 'var(--aegisx-brand-default)',
+      iconColor: 'var(--ax-brand-default)',
     },
     {
       title: 'Active Sessions',
@@ -189,13 +189,13 @@ export class DashboardComponent {
       label: 'CPU Usage',
       value: 45,
       status: 'healthy',
-      statusColor: 'var(--aegisx-brand-default)',
+      statusColor: 'var(--ax-brand-default)',
     },
     {
       label: 'Memory',
       value: 68,
       status: 'healthy',
-      statusColor: 'var(--aegisx-brand-default)',
+      statusColor: 'var(--ax-brand-default)',
     },
     {
       label: 'Storage',
@@ -207,7 +207,7 @@ export class DashboardComponent {
       label: 'Network',
       value: 34,
       status: 'healthy',
-      statusColor: 'var(--aegisx-brand-default)',
+      statusColor: 'var(--ax-brand-default)',
     },
   ];
 
@@ -217,7 +217,7 @@ export class DashboardComponent {
       label: 'Page Views',
       value: '45.2K',
       icon: 'visibility',
-      color: 'var(--aegisx-brand-default)',
+      color: 'var(--ax-brand-default)',
     },
     {
       label: 'Conversions',
@@ -274,7 +274,7 @@ export class DashboardComponent {
       name: 'Sarah Johnson',
       role: 'Frontend Developer',
       initials: 'SJ',
-      avatarColor: 'var(--aegisx-brand-default)',
+      avatarColor: 'var(--ax-brand-default)',
       performance: 92,
     },
     {
@@ -303,13 +303,13 @@ export class DashboardComponent {
   getStatusColor(status: string): string {
     switch (status) {
       case 'success':
-        return 'var(--aegisx-brand-default)';
+        return 'var(--ax-brand-default)';
       case 'warning':
         return '#f59e0b';
       case 'error':
         return '#ef4444';
       default:
-        return 'var(--aegisx-text-body)';
+        return 'var(--ax-text-body)';
     }
   }
 

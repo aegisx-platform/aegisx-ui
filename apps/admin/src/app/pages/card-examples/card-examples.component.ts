@@ -26,7 +26,7 @@ import { CodePreviewComponent } from '../../components/code-preview/code-preview
 /**
  * Helper function to get CSS custom property value (design token)
  * Reads color values from AegisX Design System at runtime
- * @param propertyName - CSS variable name (e.g., '--aegisx-info-default')
+ * @param propertyName - CSS variable name (e.g., '--ax-info-default')
  * @returns Hex color string
  */
 function getCSSVariable(propertyName: string): string {
@@ -146,89 +146,81 @@ export class CardExamplesComponent implements OnInit, AfterViewInit {
     // This method kept for future theme switching functionality
 
     // Monthly charts
-    this.monthlyUsersData.datasets[0].borderColor = getCSSVariable(
-      '--aegisx-info-default',
-    );
+    this.monthlyUsersData.datasets[0].borderColor =
+      getCSSVariable('--ax-info-default');
     this.monthlyUsersData.datasets[0].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       0.1,
     );
 
-    this.monthlySessionsData.datasets[0].borderColor = getCSSVariable(
-      '--aegisx-info-default',
-    );
+    this.monthlySessionsData.datasets[0].borderColor =
+      getCSSVariable('--ax-info-default');
     this.monthlySessionsData.datasets[0].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       0.1,
     );
 
-    this.monthlyRevenueData.datasets[0].borderColor = getCSSVariable(
-      '--aegisx-info-default',
-    );
+    this.monthlyRevenueData.datasets[0].borderColor =
+      getCSSVariable('--ax-info-default');
     this.monthlyRevenueData.datasets[0].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       0.1,
     );
 
     // Trend comparison charts
-    this.callVolumeData.datasets[0].borderColor = getCSSVariable(
-      '--aegisx-info-default',
-    );
+    this.callVolumeData.datasets[0].borderColor =
+      getCSSVariable('--ax-info-default');
     this.callVolumeData.datasets[0].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       0.1,
     );
-    this.callVolumeData.datasets[1].borderColor = getCSSVariable(
-      '--aegisx-text-subtle',
-    );
+    this.callVolumeData.datasets[1].borderColor =
+      getCSSVariable('--ax-text-subtle');
     this.callVolumeData.datasets[1].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-text-subtle'),
+      getCSSVariable('--ax-text-subtle'),
       0.1,
     );
 
-    this.queryVolumeData.datasets[0].borderColor = getCSSVariable(
-      '--aegisx-info-default',
-    );
+    this.queryVolumeData.datasets[0].borderColor =
+      getCSSVariable('--ax-info-default');
     this.queryVolumeData.datasets[0].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       0.1,
     );
-    this.queryVolumeData.datasets[1].borderColor = getCSSVariable(
-      '--aegisx-text-subtle',
-    );
+    this.queryVolumeData.datasets[1].borderColor =
+      getCSSVariable('--ax-text-subtle');
     this.queryVolumeData.datasets[1].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-text-subtle'),
+      getCSSVariable('--ax-text-subtle'),
       0.1,
     );
 
     this.etlPerformanceData.datasets[0].borderColor = getCSSVariable(
-      '--aegisx-purple-default',
+      '--ax-purple-default',
     );
     this.etlPerformanceData.datasets[0].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-purple-default'),
+      getCSSVariable('--ax-purple-default'),
       0.1,
     );
-    this.etlPerformanceData.datasets[1].borderColor = getCSSVariable(
-      '--aegisx-info-subtle',
-    );
+    this.etlPerformanceData.datasets[1].borderColor =
+      getCSSVariable('--ax-info-subtle');
     this.etlPerformanceData.datasets[1].backgroundColor = hexToRgba(
-      getCSSVariable('--aegisx-info-subtle'),
+      getCSSVariable('--ax-info-subtle'),
       0.1,
     );
 
     // Donut charts
     this.slaPerformanceData.datasets[0].backgroundColor = [
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       getCSSVariable('--md-sys-error'),
     ];
 
     this.responseTimeData.datasets[0].backgroundColor = [
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       getCSSVariable('--md-sys-error'),
     ];
 
     this.cachePerformanceData.datasets[0].backgroundColor = [
-      getCSSVariable('--aegisx-info-default'),
+      getCSSVariable('--ax-info-default'),
       getCSSVariable('--md-sys-error'),
     ];
   }

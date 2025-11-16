@@ -1,0 +1,23 @@
+<div class="ax-timeline">
+  @for (item of items; track trackByIndex($index)) {
+    <div class="ax-timeline-item">
+      <div
+        class="ax-timeline-marker"
+        [style.background-color]="item.color || 'var(--ax-primary)'"
+      >
+        @if (item.icon) {
+          <span class="ax-timeline-icon">{{ item.icon }}</span>
+        }
+      </div>
+      <div class="ax-timeline-content">
+        <div class="ax-timeline-title">{{ item.title }}</div>
+        @if (item.description) {
+          <div class="ax-timeline-description">{{ item.description }}</div>
+        }
+        @if (item.timestamp) {
+          <div class="ax-timeline-timestamp">{{ item.timestamp }}</div>
+        }
+      </div>
+    </div>
+  }
+</div>

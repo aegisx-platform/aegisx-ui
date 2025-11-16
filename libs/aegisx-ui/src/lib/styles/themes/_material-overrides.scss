@@ -10,26 +10,26 @@
 @include mat.card-overrides(
   (
     // Outlined card styling (with border)
-    elevated-container-color: var(--aegisx-background-default),
-    elevated-container-shape: var(--aegisx-radius-md),
-    elevated-container-elevation: var(--aegisx-shadow-sm),
-    outlined-container-color: var(--aegisx-background-default),
-    outlined-container-shape: var(--aegisx-radius-md),
-    outlined-outline-color: var(--aegisx-border-default),
+    elevated-container-color: var(--ax-background-default),
+    elevated-container-shape: var(--ax-radius-md),
+    elevated-container-elevation: var(--ax-shadow-sm),
+    outlined-container-color: var(--ax-background-default),
+    outlined-container-shape: var(--ax-radius-md),
+    outlined-outline-color: var(--ax-border-default),
     outlined-outline-width: 1px,
-    outlined-container-elevation: var(--aegisx-shadow-sm)
+    outlined-container-elevation: var(--ax-shadow-sm)
   )
 );
 
 // Card header border and content padding (using AegisX spacing tokens)
 .mat-mdc-card {
   .mat-mdc-card-header {
-    border-bottom: 1px solid var(--aegisx-border-default);
-    padding-bottom: var(--aegisx-spacing-md) !important; // 16px
+    border-bottom: 1px solid var(--ax-border-default);
+    padding-bottom: var(--ax-spacing-md) !important; // 16px
   }
 
   .mat-mdc-card-content {
-    padding-top: var(--aegisx-spacing-md) !important; // 16px
+    padding-top: var(--ax-spacing-md) !important; // 16px
   }
 }
 
@@ -38,13 +38,13 @@
 @include mat.fab-overrides(
   (
     // Shape
-    container-shape: var(--aegisx-radius-md),
-    small-container-shape: var(--aegisx-radius-md),
+    container-shape: var(--ax-radius-md),
+    small-container-shape: var(--ax-radius-md),
     // Shadows
-    container-elevation-shadow: var(--aegisx-shadow-md),
-    hover-container-elevation-shadow: var(--aegisx-shadow-lg),
-    small-container-elevation-shadow: var(--aegisx-shadow-md),
-    small-hover-container-elevation-shadow: var(--aegisx-shadow-lg)
+    container-elevation-shadow: var(--ax-shadow-md),
+    hover-container-elevation-shadow: var(--ax-shadow-lg),
+    small-container-elevation-shadow: var(--ax-shadow-md),
+    small-hover-container-elevation-shadow: var(--ax-shadow-lg)
   )
 );
 
@@ -52,7 +52,7 @@
 @include mat.icon-button-overrides(
   (
     // Shape
-    container-shape: var(--aegisx-radius-md)
+    container-shape: var(--ax-radius-md)
   )
 );
 
@@ -60,7 +60,7 @@
 @include mat.icon-overrides(
   (
     // Use Tremor content color for icons
-    color: var(--aegisx-text-strong)
+    color: var(--ax-text-strong)
   )
 );
 
@@ -73,7 +73,7 @@
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-          border-color: var(--aegisx-border-default) !important;
+          border-color: var(--ax-border-default) !important;
         }
       }
     }
@@ -85,7 +85,7 @@
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: var(--aegisx-brand-default) !important;
+        border-color: var(--ax-brand-default) !important;
         border-width: 2px !important;
       }
     }
@@ -110,10 +110,10 @@
 
 // Input elements
 .mat-mdc-input-element {
-  color: var(--aegisx-text-strong) !important;
+  color: var(--ax-text-strong) !important;
 
   &::placeholder {
-    color: var(--aegisx-text-subtle) !important;
+    color: var(--ax-text-subtle) !important;
   }
 }
 
@@ -226,16 +226,16 @@
 
     // Container colors
     elevated-container-color: transparent,
-    elevated-selected-container-color: var(--aegisx-brand-faint),
-    elevated-disabled-container-color: var(--aegisx-background-subtle),
+    elevated-selected-container-color: var(--ax-brand-faint),
+    elevated-disabled-container-color: var(--ax-background-subtle),
     // Label text colors
-    label-text-color: var(--aegisx-text-strong),
-    selected-label-text-color: var(--aegisx-brand-emphasis),
-    disabled-label-text-color: var(--aegisx-text-subtle),
+    label-text-color: var(--ax-text-strong),
+    selected-label-text-color: var(--ax-brand-emphasis),
+    disabled-label-text-color: var(--ax-text-subtle),
     // Disabled outline - Ultra subtle
     disabled-outline-color: #eeeeee,
     // Shape (border radius)
-    container-shape-radius: var(--aegisx-radius-md),
+    container-shape-radius: var(--ax-radius-md),
     // Selected outline width
     flat-selected-outline-width: 1px
   )
@@ -244,128 +244,128 @@
 // ===== Dialogs - Tremor Style =====
 .mat-mdc-dialog-container {
   .mdc-dialog__surface {
-    border-radius: var(--aegisx-radius-lg) !important;
-    border: 1px solid var(--aegisx-border-default) !important;
-    box-shadow: var(--aegisx-shadow-lg) !important;
-    background: var(--aegisx-background-default) !important;
+    border-radius: var(--ax-radius-lg) !important;
+    border: 1px solid var(--ax-border-default) !important;
+    box-shadow: var(--ax-shadow-lg) !important;
+    background: var(--ax-background-default) !important;
   }
 }
 
 // ===== Menus - Tremor Style =====
 .mat-mdc-menu-panel {
-  border: 1px solid var(--aegisx-border-default) !important;
-  border-radius: var(--aegisx-radius-md) !important;
-  box-shadow: var(--aegisx-shadow-md) !important;
-  background: var(--aegisx-background-default) !important;
+  border: 1px solid var(--ax-border-default) !important;
+  border-radius: var(--ax-radius-md) !important;
+  box-shadow: var(--ax-shadow-md) !important;
+  background: var(--ax-background-default) !important;
 }
 
 .mat-mdc-menu-item {
   &:hover:not([disabled]) {
-    background: var(--aegisx-background-subtle) !important;
+    background: var(--ax-background-subtle) !important;
   }
 }
 
 // ===== Tabs - Tremor Style =====
 .mat-mdc-tab-group {
   .mat-mdc-tab-header {
-    border-bottom: 1px solid var(--aegisx-border-default);
+    border-bottom: 1px solid var(--ax-border-default);
   }
 
   .mat-mdc-tab {
     &:hover:not(.mat-mdc-tab-disabled) {
-      background: var(--aegisx-background-subtle);
+      background: var(--ax-background-subtle);
     }
   }
 
   .mat-mdc-tab-body-content {
-    padding: var(--aegisx-spacing-lg);
+    padding: var(--ax-spacing-lg);
   }
 }
 
 // ===== Expansion Panels - Tremor Style =====
 .mat-expansion-panel {
-  border: 1px solid var(--aegisx-border-default) !important;
-  border-radius: var(--aegisx-radius-md) !important;
+  border: 1px solid var(--ax-border-default) !important;
+  border-radius: var(--ax-radius-md) !important;
   box-shadow: none !important;
-  background: var(--aegisx-background-default) !important;
+  background: var(--ax-background-default) !important;
 
   & + .mat-expansion-panel {
-    margin-top: var(--aegisx-spacing-sm);
+    margin-top: var(--ax-spacing-sm);
   }
 
   &:not(.mat-expanded) {
     .mat-expansion-panel-header:hover {
-      background: var(--aegisx-background-subtle) !important;
+      background: var(--ax-background-subtle) !important;
     }
   }
 }
 
 // ===== Progress Bars - Minimal =====
 .mat-mdc-progress-bar {
-  border-radius: var(--aegisx-radius-sm);
+  border-radius: var(--ax-radius-sm);
   overflow: hidden;
 }
 
 // ===== Sliders - Clean style =====
 .mat-mdc-slider {
   .mdc-slider__track {
-    border-radius: var(--aegisx-radius-sm);
+    border-radius: var(--ax-radius-sm);
   }
 }
 
 // ===== Toolbar - Tremor Style =====
 .mat-toolbar {
-  border-bottom: 1px solid var(--aegisx-border-default);
-  box-shadow: var(--aegisx-shadow-sm);
+  border-bottom: 1px solid var(--ax-border-default);
+  box-shadow: var(--ax-shadow-sm);
 }
 
 // ===== Lists - Clean borders =====
 .mat-mdc-list {
   .mat-mdc-list-item {
-    border-bottom: 1px solid var(--aegisx-border-default);
+    border-bottom: 1px solid var(--ax-border-default);
 
     &:last-child {
       border-bottom: none;
     }
 
     &:hover:not([disabled]) {
-      background: var(--aegisx-background-subtle);
+      background: var(--ax-background-subtle);
     }
   }
 }
 
 // ===== Badges - Tremor Style =====
 .mat-badge-content {
-  border-radius: var(--aegisx-radius-sm);
-  box-shadow: var(--aegisx-shadow-sm);
+  border-radius: var(--ax-radius-sm);
+  box-shadow: var(--ax-shadow-sm);
 }
 
 // ===== Tooltips - Minimal =====
 .mat-mdc-tooltip {
-  border-radius: var(--aegisx-radius-sm);
-  box-shadow: var(--aegisx-shadow-md);
+  border-radius: var(--ax-radius-sm);
+  box-shadow: var(--ax-shadow-md);
 }
 
 // ===== Snackbars - Tremor Style =====
 .mat-mdc-snack-bar-container {
-  border-radius: var(--aegisx-radius-md) !important;
-  border: 1px solid var(--aegisx-border-default) !important;
-  box-shadow: var(--aegisx-shadow-lg) !important;
+  border-radius: var(--ax-radius-md) !important;
+  border: 1px solid var(--ax-border-default) !important;
+  box-shadow: var(--ax-shadow-lg) !important;
 }
 
 // ===== Button Toggle - Tremor Style =====
 .mat-button-toggle-group {
   box-shadow: none !important;
-  border: 1px solid var(--aegisx-border-default) !important;
-  border-radius: var(--aegisx-radius-md) !important;
+  border: 1px solid var(--ax-border-default) !important;
+  border-radius: var(--ax-radius-md) !important;
   overflow: hidden;
 
   .mat-button-toggle {
-    color: var(--aegisx-text-body);
+    color: var(--ax-text-body);
 
     // Clean divider between buttons
     &:not(:last-child) {
-      border-right: 1px solid var(--aegisx-border-default) !important;
+      border-right: 1px solid var(--ax-border-default) !important;
     }
 
     // Remove Material's default borders except the divider

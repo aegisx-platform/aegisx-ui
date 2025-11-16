@@ -1,0 +1,150 @@
+// AegisX UI Components Showcase Styles
+// Using documentation-patterns.scss global styles
+
+.docs-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  @media (min-width: 768px) {
+    padding: 2.5rem;
+  }
+}
+
+.docs-header {
+  margin-bottom: 3rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--ax-border-default);
+
+  .docs-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ax-text-heading);
+    margin-bottom: 0.75rem;
+  }
+
+  .docs-subtitle {
+    font-size: 1.125rem;
+    color: var(--ax-text-secondary);
+    line-height: 1.6;
+  }
+}
+
+.section-divider {
+  margin: 3rem 0 2rem 0;
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ax-text-heading);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--ax-primary-default);
+  }
+}
+
+.demo-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--ax-background-default);
+  border-radius: 0.75rem;
+  border: 1px solid var(--ax-border-default);
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ax-text-heading);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--ax-border-default);
+  }
+
+  .demo-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+
+    > * {
+      flex-shrink: 0;
+    }
+
+    // Card-like components
+    ax-card,
+    ax-list,
+    ax-timeline,
+    ax-table,
+    ax-sidebar,
+    ax-navbar {
+      min-width: 300px;
+      max-width: 600px;
+    }
+
+    // Form components
+    ax-textarea,
+    ax-input,
+    ax-select,
+    ax-date-picker {
+      min-width: 250px;
+      max-width: 400px;
+    }
+
+    // Tooltip demo buttons
+    button:not(ax-button button) {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--ax-border-default);
+      background-color: var(--ax-background-default);
+      color: var(--ax-text-body);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+
+      &:hover {
+        background-color: var(--ax-background-subtle);
+        border-color: var(--ax-primary-default);
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .docs-page {
+    padding: 1.5rem;
+  }
+
+  .docs-header {
+    .docs-title {
+      font-size: 1.5rem;
+    }
+
+    .docs-subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .section-divider {
+    .section-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  .demo-section {
+    padding: 1rem;
+
+    h3 {
+      font-size: 1.125rem;
+    }
+
+    .demo-container {
+      flex-direction: column;
+      gap: 0.75rem;
+
+      > * {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+      }
+    }
+  }
+}

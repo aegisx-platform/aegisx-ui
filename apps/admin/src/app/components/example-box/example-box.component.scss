@@ -13,13 +13,13 @@
   .example-title {
     font-size: 0.9375rem;
     font-weight: 600;
-    color: var(--aegisx-text-heading);
+    color: var(--ax-text-heading);
     margin: 0 0 0.5rem 0;
   }
 
   .example-description {
     font-size: 0.875rem;
-    color: var(--aegisx-text-secondary);
+    color: var(--ax-text-secondary);
     margin: 0;
     line-height: 1.5;
   }
@@ -27,7 +27,7 @@
 
 .example-box {
   display: flex;
-  border-radius: var(--aegisx-radius-lg);
+  border-radius: var(--ax-radius-lg);
   transition: all 0.2s;
 
   // Direction
@@ -71,34 +71,34 @@
 
   // Variants
   &.example-box-default {
-    background: var(--aegisx-background-muted);
-    border: 1px solid var(--aegisx-border-default);
+    background: var(--ax-background-muted);
+    border: 1px solid var(--ax-border-default);
   }
 
   &.example-box-dark {
-    background: var(--aegisx-background-emphasis);
-    border: 1px solid var(--aegisx-border-emphasis);
-    color: var(--aegisx-text-inverted);
+    background: var(--ax-background-emphasis);
+    border: 1px solid var(--ax-border-emphasis);
+    color: var(--ax-text-inverted);
   }
 
   &.example-box-subtle {
-    background: var(--aegisx-background-subtle);
-    border: 1px solid var(--aegisx-border-muted);
+    background: var(--ax-background-subtle);
+    border: 1px solid var(--ax-border-muted);
   }
 
   &.example-box-bordered {
-    background: var(--aegisx-background-default);
-    border: 2px dashed var(--aegisx-border-default);
+    background: var(--ax-background-default);
+    border: 2px dashed var(--ax-border-default);
 
     &:hover {
-      border-color: var(--aegisx-brand-default);
-      background: var(--aegisx-background-muted);
+      border-color: var(--ax-brand-default);
+      background: var(--ax-background-muted);
     }
   }
 
   // Interactive state
   &:hover {
-    box-shadow: var(--aegisx-shadow-sm);
+    box-shadow: var(--ax-shadow-sm);
   }
 }
 

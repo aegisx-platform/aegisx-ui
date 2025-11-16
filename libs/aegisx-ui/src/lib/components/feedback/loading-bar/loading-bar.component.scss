@@ -1,0 +1,47 @@
+.ax-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: var(--ax-gray-200);
+  overflow: hidden;
+}
+
+.ax-loading-bar-progress {
+  height: 100%;
+  transition: width 0.3s ease;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.ax-loading-bar-primary .ax-loading-bar-progress {
+  background-color: var(--ax-primary);
+}
+
+.ax-loading-bar-success .ax-loading-bar-progress {
+  background-color: var(--ax-success);
+}
+
+.ax-loading-bar-error .ax-loading-bar-progress {
+  background-color: var(--ax-error);
+}
+
+.ax-loading-bar-warning .ax-loading-bar-progress {
+  background-color: var(--ax-warning);
+}
+
+.ax-loading-bar-info .ax-loading-bar-progress {
+  background-color: var(--ax-info);
+}

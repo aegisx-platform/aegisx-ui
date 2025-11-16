@@ -5,27 +5,27 @@
 
 .code-block-container {
   position: relative;
-  border-radius: var(--aegisx-radius-md);
+  border-radius: var(--ax-radius-md);
   overflow: hidden;
   margin: 1rem 0;
 }
 
 .code-block-label {
-  background-color: var(--aegisx-background-subtle);
-  border: 1px solid var(--aegisx-border-default);
+  background-color: var(--ax-background-subtle);
+  border: 1px solid var(--ax-border-default);
   border-bottom: none;
-  border-radius: var(--aegisx-radius-md) var(--aegisx-radius-md) 0 0;
+  border-radius: var(--ax-radius-md) var(--ax-radius-md) 0 0;
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .code-block {
   background: #1e1e1e;
-  border-radius: var(--aegisx-radius-md);
+  border-radius: var(--ax-radius-md);
   padding: 1.25rem;
   overflow-x: auto;
   position: relative;
@@ -33,7 +33,7 @@
 
   // Adjust border radius if label exists
   .code-block-label + & {
-    border-radius: 0 0 var(--aegisx-radius-md) var(--aegisx-radius-md);
+    border-radius: 0 0 var(--ax-radius-md) var(--ax-radius-md);
   }
 
   pre {

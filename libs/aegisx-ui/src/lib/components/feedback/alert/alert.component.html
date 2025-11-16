@@ -1,0 +1,51 @@
+@if (visible) {
+  <div [class]="alertClasses" role="alert">
+    @if (icon) {
+      <div class="ax-alert-icon">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            [attr.d]="iconPath"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+    }
+
+    <div class="ax-alert-content">
+      @if (title) {
+        <div class="ax-alert-title">{{ title }}</div>
+      }
+      <div class="ax-alert-message">
+        <ng-content></ng-content>
+      </div>
+    </div>
+
+    @if (closeable) {
+      <button
+        type="button"
+        class="ax-alert-close"
+        (click)="onClose()"
+        aria-label="Close alert"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    }
+  </div>
+}

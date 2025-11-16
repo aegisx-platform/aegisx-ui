@@ -63,118 +63,118 @@ module.exports = {
 
         // Brand/Primary Colors
         brand: {
-          faint: 'var(--aegisx-brand-faint)',
-          muted: 'var(--aegisx-brand-muted)',
-          subtle: 'var(--aegisx-brand-subtle)',
-          DEFAULT: 'var(--aegisx-brand-default)',
-          emphasis: 'var(--aegisx-brand-emphasis)',
-          strong: 'var(--aegisx-brand-strong)',
-          inverted: 'var(--aegisx-brand-inverted)',
+          faint: 'var(--ax-brand-faint)',
+          muted: 'var(--ax-brand-muted)',
+          subtle: 'var(--ax-brand-subtle)',
+          DEFAULT: 'var(--ax-brand-default)',
+          emphasis: 'var(--ax-brand-emphasis)',
+          strong: 'var(--ax-brand-strong)',
+          inverted: 'var(--ax-brand-inverted)',
         },
 
         // Success Colors
         success: {
-          faint: 'var(--aegisx-success-faint)',
-          muted: 'var(--aegisx-success-muted)',
-          subtle: 'var(--aegisx-success-subtle)',
-          DEFAULT: 'var(--aegisx-success-default)',
-          emphasis: 'var(--aegisx-success-emphasis)',
-          inverted: 'var(--aegisx-success-inverted)',
+          faint: 'var(--ax-success-faint)',
+          muted: 'var(--ax-success-muted)',
+          subtle: 'var(--ax-success-subtle)',
+          DEFAULT: 'var(--ax-success-default)',
+          emphasis: 'var(--ax-success-emphasis)',
+          inverted: 'var(--ax-success-inverted)',
         },
 
         // Warning Colors
         warning: {
-          faint: 'var(--aegisx-warning-faint)',
-          muted: 'var(--aegisx-warning-muted)',
-          subtle: 'var(--aegisx-warning-subtle)',
-          DEFAULT: 'var(--aegisx-warning-default)',
-          emphasis: 'var(--aegisx-warning-emphasis)',
-          inverted: 'var(--aegisx-warning-inverted)',
+          faint: 'var(--ax-warning-faint)',
+          muted: 'var(--ax-warning-muted)',
+          subtle: 'var(--ax-warning-subtle)',
+          DEFAULT: 'var(--ax-warning-default)',
+          emphasis: 'var(--ax-warning-emphasis)',
+          inverted: 'var(--ax-warning-inverted)',
         },
 
         // Error/Danger Colors
         error: {
-          faint: 'var(--aegisx-error-faint)',
-          muted: 'var(--aegisx-error-muted)',
-          subtle: 'var(--aegisx-error-subtle)',
-          DEFAULT: 'var(--aegisx-error-default)',
-          emphasis: 'var(--aegisx-error-emphasis)',
-          inverted: 'var(--aegisx-error-inverted)',
+          faint: 'var(--ax-error-faint)',
+          muted: 'var(--ax-error-muted)',
+          subtle: 'var(--ax-error-subtle)',
+          DEFAULT: 'var(--ax-error-default)',
+          emphasis: 'var(--ax-error-emphasis)',
+          inverted: 'var(--ax-error-inverted)',
         },
 
         // Info Colors
         info: {
-          faint: 'var(--aegisx-info-faint)',
-          muted: 'var(--aegisx-info-muted)',
-          subtle: 'var(--aegisx-info-subtle)',
-          DEFAULT: 'var(--aegisx-info-default)',
-          emphasis: 'var(--aegisx-info-emphasis)',
-          inverted: 'var(--aegisx-info-inverted)',
+          faint: 'var(--ax-info-faint)',
+          muted: 'var(--ax-info-muted)',
+          subtle: 'var(--ax-info-subtle)',
+          DEFAULT: 'var(--ax-info-default)',
+          emphasis: 'var(--ax-info-emphasis)',
+          inverted: 'var(--ax-info-inverted)',
         },
 
         // Cyan Colors
         cyan: {
-          faint: 'var(--aegisx-cyan-faint)',
-          muted: 'var(--aegisx-cyan-muted)',
-          subtle: 'var(--aegisx-cyan-subtle)',
-          DEFAULT: 'var(--aegisx-cyan-default)',
-          emphasis: 'var(--aegisx-cyan-emphasis)',
-          inverted: 'var(--aegisx-cyan-inverted)',
+          faint: 'var(--ax-cyan-faint)',
+          muted: 'var(--ax-cyan-muted)',
+          subtle: 'var(--ax-cyan-subtle)',
+          DEFAULT: 'var(--ax-cyan-default)',
+          emphasis: 'var(--ax-cyan-emphasis)',
+          inverted: 'var(--ax-cyan-inverted)',
         },
 
         // Purple Colors
         purple: {
-          faint: 'var(--aegisx-purple-faint)',
-          muted: 'var(--aegisx-purple-muted)',
-          subtle: 'var(--aegisx-purple-subtle)',
-          DEFAULT: 'var(--aegisx-purple-default)',
-          emphasis: 'var(--aegisx-purple-emphasis)',
-          inverted: 'var(--aegisx-purple-inverted)',
+          faint: 'var(--ax-purple-faint)',
+          muted: 'var(--ax-purple-muted)',
+          subtle: 'var(--ax-purple-subtle)',
+          DEFAULT: 'var(--ax-purple-default)',
+          emphasis: 'var(--ax-purple-emphasis)',
+          inverted: 'var(--ax-purple-inverted)',
         },
 
         // Indigo Colors
         indigo: {
-          faint: 'var(--aegisx-indigo-faint)',
-          muted: 'var(--aegisx-indigo-muted)',
-          subtle: 'var(--aegisx-indigo-subtle)',
-          DEFAULT: 'var(--aegisx-indigo-default)',
-          emphasis: 'var(--aegisx-indigo-emphasis)',
-          inverted: 'var(--aegisx-indigo-inverted)',
+          faint: 'var(--ax-indigo-faint)',
+          muted: 'var(--ax-indigo-muted)',
+          subtle: 'var(--ax-indigo-subtle)',
+          DEFAULT: 'var(--ax-indigo-default)',
+          emphasis: 'var(--ax-indigo-emphasis)',
+          inverted: 'var(--ax-indigo-inverted)',
         },
 
         // Pink Colors
         pink: {
-          faint: 'var(--aegisx-pink-faint)',
-          muted: 'var(--aegisx-pink-muted)',
-          subtle: 'var(--aegisx-pink-subtle)',
-          DEFAULT: 'var(--aegisx-pink-default)',
-          emphasis: 'var(--aegisx-pink-emphasis)',
-          inverted: 'var(--aegisx-pink-inverted)',
+          faint: 'var(--ax-pink-faint)',
+          muted: 'var(--ax-pink-muted)',
+          subtle: 'var(--ax-pink-subtle)',
+          DEFAULT: 'var(--ax-pink-default)',
+          emphasis: 'var(--ax-pink-emphasis)',
+          inverted: 'var(--ax-pink-inverted)',
         },
 
         // Background Colors
         background: {
-          muted: 'var(--aegisx-background-muted)',
-          subtle: 'var(--aegisx-background-subtle)',
-          DEFAULT: 'var(--aegisx-background-default)',
-          emphasis: 'var(--aegisx-background-emphasis)',
+          muted: 'var(--ax-background-muted)',
+          subtle: 'var(--ax-background-subtle)',
+          DEFAULT: 'var(--ax-background-default)',
+          emphasis: 'var(--ax-background-emphasis)',
         },
 
         // Text Colors
         text: {
-          disabled: 'var(--aegisx-text-disabled)',
-          subtle: 'var(--aegisx-text-subtle)',
-          secondary: 'var(--aegisx-text-secondary)',
-          primary: 'var(--aegisx-text-primary)',
-          heading: 'var(--aegisx-text-heading)',
-          inverted: 'var(--aegisx-text-inverted)',
+          disabled: 'var(--ax-text-disabled)',
+          subtle: 'var(--ax-text-subtle)',
+          secondary: 'var(--ax-text-secondary)',
+          primary: 'var(--ax-text-primary)',
+          heading: 'var(--ax-text-heading)',
+          inverted: 'var(--ax-text-inverted)',
         },
 
         // Border Colors
         border: {
-          muted: 'var(--aegisx-border-muted)',
-          DEFAULT: 'var(--aegisx-border-default)',
-          emphasis: 'var(--aegisx-border-emphasis)',
+          muted: 'var(--ax-border-muted)',
+          DEFAULT: 'var(--ax-border-default)',
+          emphasis: 'var(--ax-border-emphasis)',
         },
 
         // Legacy Fuse colors (keep for backwards compatibility)

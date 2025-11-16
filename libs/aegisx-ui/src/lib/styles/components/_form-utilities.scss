@@ -152,11 +152,11 @@
 .form-compact,
 .form-standard {
   .mat-mdc-outlined-button {
-    --mdc-outlined-button-outline-color: var(--aegisx-border-default);
+    --mdc-outlined-button-outline-color: var(--ax-border-default);
 
     &:hover:not([disabled]) {
-      --mdc-outlined-button-outline-color: var(--aegisx-border-emphasis);
-      background-color: var(--aegisx-bg-subtle);
+      --mdc-outlined-button-outline-color: var(--ax-border-emphasis);
+      background-color: var(--ax-background-subtle);
     }
   }
 }

@@ -7,15 +7,15 @@
 // Progress Distribution Cards
 // ============================================
 .kpi-card-progress {
-  background: var(--aegisx-bg-surface);
-  border: 1px solid var(--aegisx-border-default) !important;
+  background: var(--ax-background-default);
+  border: 1px solid var(--ax-border-default) !important;
   border-radius: 8px;
   transition: all 0.2s ease;
   box-shadow: none !important;
 
   &:hover {
-    border-color: var(--aegisx-text-secondary) !important;
-    box-shadow: var(--aegisx-shadow-sm) !important;
+    border-color: var(--ax-text-secondary) !important;
+    box-shadow: var(--ax-shadow-sm) !important;
   }
 
   mat-card-content {
@@ -26,14 +26,14 @@
 .progress-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
   margin: 0 0 0.5rem 0;
 }
 
 .progress-value {
   font-size: 1.875rem;
   font-weight: 600;
-  color: var(--aegisx-text-heading);
+  color: var(--ax-text-heading);
   margin: 0 0 1rem 0;
   line-height: 1.2;
 }
@@ -47,7 +47,7 @@
   margin-bottom: 1rem;
   border-radius: 4px;
   overflow: hidden;
-  background: var(--aegisx-bg-page);
+  background: var(--ax-background-subtle);
 }
 
 .progress-segment {
@@ -63,11 +63,11 @@
   }
 
   &.progress-primary {
-    background: var(--aegisx-info-default); // Blue for primary/good metrics
+    background: var(--ax-info-default); // Blue for primary/good metrics
   }
 
   &.progress-muted {
-    background: var(--aegisx-text-subtle); // Gray for in-progress/neutral
+    background: var(--ax-text-subtle); // Gray for in-progress/neutral
   }
 
   &.progress-error {
@@ -75,11 +75,11 @@
   }
 
   &.progress-cyan {
-    background: var(--aegisx-cyan-default); // Cyan for completion/output
+    background: var(--ax-cyan-default); // Cyan for completion/output
   }
 
   &.progress-indigo {
-    background: var(--aegisx-indigo-default); // Indigo for prompt/input
+    background: var(--ax-indigo-default); // Indigo for prompt/input
   }
 }
 
@@ -103,11 +103,11 @@
   flex-shrink: 0;
 
   &.legend-primary {
-    background: var(--aegisx-info-default);
+    background: var(--ax-info-default);
   }
 
   &.legend-muted {
-    background: var(--aegisx-text-subtle);
+    background: var(--ax-text-subtle);
   }
 
   &.legend-error {
@@ -115,18 +115,18 @@
   }
 
   &.legend-cyan {
-    background: var(--aegisx-cyan-default);
+    background: var(--ax-cyan-default);
   }
 
   &.legend-indigo {
-    background: var(--aegisx-indigo-default);
+    background: var(--ax-indigo-default);
   }
 }
 
 .legend-text {
   font-size: 0.75rem;
   font-weight: 400;
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
   white-space: nowrap;
 }
 
@@ -134,15 +134,15 @@
 // Usage/Quota Cards
 // ============================================
 .kpi-card-quota {
-  background: var(--aegisx-bg-surface);
-  border: 1px solid var(--aegisx-border-default) !important;
+  background: var(--ax-background-default);
+  border: 1px solid var(--ax-border-default) !important;
   border-radius: 8px;
   transition: all 0.2s ease;
   box-shadow: none !important;
 
   &:hover {
-    border-color: var(--aegisx-text-secondary) !important;
-    box-shadow: var(--aegisx-shadow-sm) !important;
+    border-color: var(--ax-text-secondary) !important;
+    box-shadow: var(--ax-shadow-sm) !important;
   }
 
   mat-card-content {
@@ -153,14 +153,14 @@
 .quota-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
   margin: 0 0 0.5rem 0;
 }
 
 .quota-value {
   font-size: 1.875rem;
   font-weight: 600;
-  color: var(--aegisx-text-heading);
+  color: var(--ax-text-heading);
   margin: 0 0 1rem 0;
   line-height: 1.2;
 }
@@ -173,14 +173,14 @@
 .quota-bar-track {
   width: 100%;
   height: 8px;
-  background: var(--aegisx-info-faint); // Light blue background
+  background: var(--ax-info-faint); // Light blue background
   border-radius: 4px;
   overflow: hidden;
 }
 
 .quota-bar-fill {
   height: 100%;
-  background: var(--aegisx-info-default); // Blue fill
+  background: var(--ax-info-default); // Blue fill
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -195,13 +195,13 @@
 .quota-percentage {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--aegisx-info-default); // Blue to match progress bar
+  color: var(--ax-info-default); // Blue to match progress bar
 }
 
 .quota-total {
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
 }
 
 // Best Practices List
@@ -215,7 +215,7 @@
     align-items: flex-start;
     gap: 0.75rem;
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--aegisx-border-subtle);
+    border-bottom: 1px solid var(--ax-border-default);
 
     &:last-child {
       border-bottom: none;
@@ -226,17 +226,17 @@
       margin-top: 0.125rem;
 
       &.success-icon {
-        color: var(--aegisx-success-default);
+        color: var(--ax-success-default);
       }
     }
 
     code {
       font-size: 0.8125rem;
       padding: 0.125rem 0.375rem;
-      background: var(--aegisx-bg-page);
+      background: var(--ax-background-subtle);
       border-radius: 4px;
-      color: var(--aegisx-text-primary);
-      border: 1px solid var(--aegisx-border-subtle);
+      color: var(--ax-text-primary);
+      border: 1px solid var(--ax-border-default);
     }
   }
 }
@@ -245,15 +245,15 @@
 // Trend Cards with Sparklines
 // ============================================
 .kpi-card-trend {
-  background: var(--aegisx-bg-surface);
-  border: 1px solid var(--aegisx-border-default) !important;
+  background: var(--ax-background-default);
+  border: 1px solid var(--ax-border-default) !important;
   border-radius: 8px;
   transition: all 0.2s ease;
   box-shadow: none !important;
 
   &:hover {
-    border-color: var(--aegisx-text-secondary) !important;
-    box-shadow: var(--aegisx-shadow-sm) !important;
+    border-color: var(--ax-text-secondary) !important;
+    box-shadow: var(--ax-shadow-sm) !important;
   }
 
   mat-card-content {
@@ -264,14 +264,14 @@
 .trend-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
   margin: 0 0 0.5rem 0;
 }
 
 .trend-value {
   font-size: 1.875rem;
   font-weight: 600;
-  color: var(--aegisx-text-heading);
+  color: var(--ax-text-heading);
   margin: 0 0 0.75rem 0;
   line-height: 1.2;
 }
@@ -285,7 +285,7 @@
 }
 
 .trend-date {
-  color: var(--aegisx-text-secondary);
+  color: var(--ax-text-secondary);
   font-weight: 400;
 }
 
@@ -296,7 +296,7 @@
   font-weight: 500;
 
   &.trend-positive {
-    color: var(--aegisx-success-default); // Green for positive trends
+    color: var(--ax-success-default); // Green for positive trends
   }
 
   &.trend-negative {
@@ -323,26 +323,26 @@
   align-items: center;
   font-size: 0.75rem;
   font-weight: 400;
-  color: var(--aegisx-text-tertiary);
+  color: var(--ax-text-subtle);
 }
 
 // ============================================
 // SVG Circle/Ring Colors - Dark Mode Support
 // ============================================
 .svg-stroke-track {
-  stroke: var(--aegisx-border-default);
+  stroke: var(--ax-border-default);
 }
 
 .svg-stroke-info {
-  stroke: var(--aegisx-info-default);
+  stroke: var(--ax-info-default);
 }
 
 .svg-stroke-info-muted {
-  stroke: var(--aegisx-info-muted);
+  stroke: var(--ax-info-muted);
 }
 
 .svg-stroke-info-faint {
-  stroke: var(--aegisx-info-faint);
+  stroke: var(--ax-info-faint);
 }
 
 // ============================================
@@ -354,8 +354,8 @@
     mat-progress-bar {
       --mdc-linear-progress-track-height: 10px;
       --mdc-linear-progress-active-indicator-height: 10px;
-      --mdc-linear-progress-active-indicator-color: var(--aegisx-info-default);
-      --mdc-linear-progress-track-color: var(--aegisx-info-faint);
+      --mdc-linear-progress-active-indicator-color: var(--ax-info-default);
+      --mdc-linear-progress-track-color: var(--ax-info-faint);
 
       display: block;
       height: 10px !important;
@@ -375,16 +375,16 @@
       .mdc-linear-progress__bar-inner {
         border-top-width: 10px !important;
         border-top-style: solid !important;
-        border-top-color: var(--aegisx-info-default) !important;
+        border-top-color: var(--ax-info-default) !important;
       }
 
       .mdc-linear-progress__buffer {
         height: 10px !important;
-        background-color: var(--aegisx-info-faint) !important;
+        background-color: var(--ax-info-faint) !important;
       }
 
       .mdc-linear-progress__buffer-bar {
-        background-color: var(--aegisx-info-faint) !important;
+        background-color: var(--ax-info-faint) !important;
         height: 10px !important;
       }
 
@@ -403,29 +403,25 @@
   mat-progress-bar {
     &.progress-success {
       .mdc-linear-progress__buffer {
-        background-color: var(--aegisx-success-faint) !important; // Light green
+        background-color: var(--ax-success-faint) !important; // Light green
       }
       .mdc-linear-progress__bar-inner {
-        background-color: var(--aegisx-success-default) !important; // Green
+        background-color: var(--ax-success-default) !important; // Green
       }
     }
 
     &.progress-warning {
       .mdc-linear-progress__buffer {
-        background-color: var(
-          --aegisx-warning-faint
-        ) !important; // Light yellow
+        background-color: var(--ax-warning-faint) !important; // Light yellow
       }
       .mdc-linear-progress__bar-inner {
-        background-color: var(
-          --aegisx-warning-default
-        ) !important; // Yellow/Orange
+        background-color: var(--ax-warning-default) !important; // Yellow/Orange
       }
     }
 
     &.progress-critical {
       .mdc-linear-progress__buffer {
-        background-color: var(--aegisx-error-faint) !important; // Light red
+        background-color: var(--ax-error-faint) !important; // Light red
       }
       .mdc-linear-progress__bar-inner {
         background-color: var(--md-sys-error) !important; // Red
@@ -434,10 +430,10 @@
 
     &.progress-neutral {
       .mdc-linear-progress__buffer {
-        background-color: var(--aegisx-bg-subtle) !important; // Light gray
+        background-color: var(--ax-background-subtle) !important; // Light gray
       }
       .mdc-linear-progress__bar-inner {
-        background-color: var(--aegisx-info-default) !important; // Blue
+        background-color: var(--ax-info-default) !important; // Blue
       }
     }
   }

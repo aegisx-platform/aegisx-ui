@@ -58,7 +58,7 @@ describe('DesignTokensComponent', () => {
   });
 
   it('should copy CSS variable to clipboard', async () => {
-    const cssVar = '--aegisx-brand-default';
+    const cssVar = '--ax-brand-default';
     spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
 
     await component.copyToClipboard(cssVar);
@@ -75,7 +75,7 @@ describe('DesignTokensComponent', () => {
   });
 
   it('should return color value', () => {
-    const cssVar = '--aegisx-brand-default';
+    const cssVar = '--ax-brand-default';
     const result = component.getColorValue(cssVar);
     expect(result).toBe(`var(${cssVar})`);
   });

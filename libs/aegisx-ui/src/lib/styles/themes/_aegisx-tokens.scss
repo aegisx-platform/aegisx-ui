@@ -19,14 +19,14 @@
       - Typography → Material's built-in typography tokens
 
    ✅ USE AEGISX TOKENS for:
-      - Spacing scale → var(--aegisx-spacing-md)
-      - Success/Warning/Info colors → var(--aegisx-success-default)
-      - Custom backgrounds → var(--aegisx-background-muted)
-      - Text hierarchy → var(--aegisx-text-body)
-      - Border colors → var(--aegisx-border-default)
-      - Z-index layering → var(--aegisx-z-dropdown)
-      - Opacity levels → var(--aegisx-opacity-disabled)
-      - Transitions → var(--aegisx-transition-fast)
+      - Spacing scale → var(--ax-spacing-md)
+      - Success/Warning/Info colors → var(--ax-success-default)
+      - Custom backgrounds → var(--ax-background-muted)
+      - Text hierarchy → var(--ax-text-body)
+      - Border colors → var(--ax-border-default)
+      - Z-index layering → var(--ax-z-dropdown)
+      - Opacity levels → var(--ax-opacity-disabled)
+      - Transitions → var(--ax-transition-fast)
 
    ============================================================ */
 
@@ -444,255 +444,255 @@ $aegisx-dark-brand-inverted: #1a237e; // Material Indigo 900 (dark)
 @mixin aegisx-light-theme {
   :root {
     /* Spacing Scale */
-    --aegisx-spacing-xs: #{$aegisx-light-spacing-xs};
-    --aegisx-spacing-sm: #{$aegisx-light-spacing-sm};
-    --aegisx-spacing-md: #{$aegisx-light-spacing-md};
-    --aegisx-spacing-lg: #{$aegisx-light-spacing-lg};
-    --aegisx-spacing-xl: #{$aegisx-light-spacing-xl};
-    --aegisx-spacing-2xl: #{$aegisx-light-spacing-2xl};
-    --aegisx-spacing-3xl: #{$aegisx-light-spacing-3xl};
-    --aegisx-spacing-4xl: #{$aegisx-light-spacing-4xl};
+    --ax-spacing-xs: #{$aegisx-light-spacing-xs};
+    --ax-spacing-sm: #{$aegisx-light-spacing-sm};
+    --ax-spacing-md: #{$aegisx-light-spacing-md};
+    --ax-spacing-lg: #{$aegisx-light-spacing-lg};
+    --ax-spacing-xl: #{$aegisx-light-spacing-xl};
+    --ax-spacing-2xl: #{$aegisx-light-spacing-2xl};
+    --ax-spacing-3xl: #{$aegisx-light-spacing-3xl};
+    --ax-spacing-4xl: #{$aegisx-light-spacing-4xl};
 
     /* Success Colors */
-    --aegisx-success-faint: #{$aegisx-light-success-faint};
-    --aegisx-success-muted: #{$aegisx-light-success-muted};
-    --aegisx-success-subtle: #{$aegisx-light-success-subtle};
-    --aegisx-success-default: #{$aegisx-light-success-default};
-    --aegisx-success-emphasis: #{$aegisx-light-success-emphasis};
-    --aegisx-success-inverted: #{$aegisx-light-success-inverted};
+    --ax-success-faint: #{$aegisx-light-success-faint};
+    --ax-success-muted: #{$aegisx-light-success-muted};
+    --ax-success-subtle: #{$aegisx-light-success-subtle};
+    --ax-success-default: #{$aegisx-light-success-default};
+    --ax-success-emphasis: #{$aegisx-light-success-emphasis};
+    --ax-success-inverted: #{$aegisx-light-success-inverted};
 
     /* Warning Colors */
-    --aegisx-warning-faint: #{$aegisx-light-warning-faint};
-    --aegisx-warning-muted: #{$aegisx-light-warning-muted};
-    --aegisx-warning-subtle: #{$aegisx-light-warning-subtle};
-    --aegisx-warning-default: #{$aegisx-light-warning-default};
-    --aegisx-warning-emphasis: #{$aegisx-light-warning-emphasis};
-    --aegisx-warning-inverted: #{$aegisx-light-warning-inverted};
+    --ax-warning-faint: #{$aegisx-light-warning-faint};
+    --ax-warning-muted: #{$aegisx-light-warning-muted};
+    --ax-warning-subtle: #{$aegisx-light-warning-subtle};
+    --ax-warning-default: #{$aegisx-light-warning-default};
+    --ax-warning-emphasis: #{$aegisx-light-warning-emphasis};
+    --ax-warning-inverted: #{$aegisx-light-warning-inverted};
 
     /* Error Colors */
-    --aegisx-error-faint: #{$aegisx-light-error-faint};
-    --aegisx-error-muted: #{$aegisx-light-error-muted};
-    --aegisx-error-subtle: #{$aegisx-light-error-subtle};
-    --aegisx-error-default: #{$aegisx-light-error-default};
-    --aegisx-error-emphasis: #{$aegisx-light-error-emphasis};
-    --aegisx-error-inverted: #{$aegisx-light-error-inverted};
+    --ax-error-faint: #{$aegisx-light-error-faint};
+    --ax-error-muted: #{$aegisx-light-error-muted};
+    --ax-error-subtle: #{$aegisx-light-error-subtle};
+    --ax-error-default: #{$aegisx-light-error-default};
+    --ax-error-emphasis: #{$aegisx-light-error-emphasis};
+    --ax-error-inverted: #{$aegisx-light-error-inverted};
 
     /* Info Colors */
-    --aegisx-info-faint: #{$aegisx-light-info-faint};
-    --aegisx-info-muted: #{$aegisx-light-info-muted};
-    --aegisx-info-subtle: #{$aegisx-light-info-subtle};
-    --aegisx-info-default: #{$aegisx-light-info-default};
-    --aegisx-info-emphasis: #{$aegisx-light-info-emphasis};
-    --aegisx-info-inverted: #{$aegisx-light-info-inverted};
+    --ax-info-faint: #{$aegisx-light-info-faint};
+    --ax-info-muted: #{$aegisx-light-info-muted};
+    --ax-info-subtle: #{$aegisx-light-info-subtle};
+    --ax-info-default: #{$aegisx-light-info-default};
+    --ax-info-emphasis: #{$aegisx-light-info-emphasis};
+    --ax-info-inverted: #{$aegisx-light-info-inverted};
 
     /* Cyan Colors */
-    --aegisx-cyan-faint: #{$aegisx-light-cyan-faint};
-    --aegisx-cyan-muted: #{$aegisx-light-cyan-muted};
-    --aegisx-cyan-subtle: #{$aegisx-light-cyan-subtle};
-    --aegisx-cyan-default: #{$aegisx-light-cyan-default};
-    --aegisx-cyan-emphasis: #{$aegisx-light-cyan-emphasis};
-    --aegisx-cyan-inverted: #{$aegisx-light-cyan-inverted};
+    --ax-cyan-faint: #{$aegisx-light-cyan-faint};
+    --ax-cyan-muted: #{$aegisx-light-cyan-muted};
+    --ax-cyan-subtle: #{$aegisx-light-cyan-subtle};
+    --ax-cyan-default: #{$aegisx-light-cyan-default};
+    --ax-cyan-emphasis: #{$aegisx-light-cyan-emphasis};
+    --ax-cyan-inverted: #{$aegisx-light-cyan-inverted};
 
     /* Purple Colors */
-    --aegisx-purple-faint: #{$aegisx-light-purple-faint};
-    --aegisx-purple-muted: #{$aegisx-light-purple-muted};
-    --aegisx-purple-subtle: #{$aegisx-light-purple-subtle};
-    --aegisx-purple-default: #{$aegisx-light-purple-default};
-    --aegisx-purple-emphasis: #{$aegisx-light-purple-emphasis};
-    --aegisx-purple-inverted: #{$aegisx-light-purple-inverted};
+    --ax-purple-faint: #{$aegisx-light-purple-faint};
+    --ax-purple-muted: #{$aegisx-light-purple-muted};
+    --ax-purple-subtle: #{$aegisx-light-purple-subtle};
+    --ax-purple-default: #{$aegisx-light-purple-default};
+    --ax-purple-emphasis: #{$aegisx-light-purple-emphasis};
+    --ax-purple-inverted: #{$aegisx-light-purple-inverted};
 
     /* Indigo Colors */
-    --aegisx-indigo-faint: #{$aegisx-light-indigo-faint};
-    --aegisx-indigo-muted: #{$aegisx-light-indigo-muted};
-    --aegisx-indigo-subtle: #{$aegisx-light-indigo-subtle};
-    --aegisx-indigo-default: #{$aegisx-light-indigo-default};
-    --aegisx-indigo-emphasis: #{$aegisx-light-indigo-emphasis};
-    --aegisx-indigo-inverted: #{$aegisx-light-indigo-inverted};
+    --ax-indigo-faint: #{$aegisx-light-indigo-faint};
+    --ax-indigo-muted: #{$aegisx-light-indigo-muted};
+    --ax-indigo-subtle: #{$aegisx-light-indigo-subtle};
+    --ax-indigo-default: #{$aegisx-light-indigo-default};
+    --ax-indigo-emphasis: #{$aegisx-light-indigo-emphasis};
+    --ax-indigo-inverted: #{$aegisx-light-indigo-inverted};
 
     /* Pink Colors */
-    --aegisx-pink-faint: #{$aegisx-light-pink-faint};
-    --aegisx-pink-muted: #{$aegisx-light-pink-muted};
-    --aegisx-pink-subtle: #{$aegisx-light-pink-subtle};
-    --aegisx-pink-default: #{$aegisx-light-pink-default};
-    --aegisx-pink-emphasis: #{$aegisx-light-pink-emphasis};
-    --aegisx-pink-inverted: #{$aegisx-light-pink-inverted};
+    --ax-pink-faint: #{$aegisx-light-pink-faint};
+    --ax-pink-muted: #{$aegisx-light-pink-muted};
+    --ax-pink-subtle: #{$aegisx-light-pink-subtle};
+    --ax-pink-default: #{$aegisx-light-pink-default};
+    --ax-pink-emphasis: #{$aegisx-light-pink-emphasis};
+    --ax-pink-inverted: #{$aegisx-light-pink-inverted};
 
     /* Background Variants */
-    --aegisx-background-muted: #{$aegisx-light-background-muted};
-    --aegisx-background-subtle: #{$aegisx-light-background-subtle};
-    --aegisx-background-default: #{$aegisx-light-background-default};
-    --aegisx-background-emphasis: #{$aegisx-light-background-emphasis};
+    --ax-background-muted: #{$aegisx-light-background-muted};
+    --ax-background-subtle: #{$aegisx-light-background-subtle};
+    --ax-background-default: #{$aegisx-light-background-default};
+    --ax-background-emphasis: #{$aegisx-light-background-emphasis};
 
     /* Text Hierarchy - Lighter, more readable colors */
-    --aegisx-text-disabled: #{$aegisx-light-text-disabled};
-    --aegisx-text-subtle: #{$aegisx-light-text-subtle};
-    --aegisx-text-secondary: #{$aegisx-light-text-secondary};
-    --aegisx-text-primary: #{$aegisx-light-text-primary};
-    --aegisx-text-heading: #{$aegisx-light-text-heading};
-    --aegisx-text-inverted: #{$aegisx-light-text-inverted};
+    --ax-text-disabled: #{$aegisx-light-text-disabled};
+    --ax-text-subtle: #{$aegisx-light-text-subtle};
+    --ax-text-secondary: #{$aegisx-light-text-secondary};
+    --ax-text-primary: #{$aegisx-light-text-primary};
+    --ax-text-heading: #{$aegisx-light-text-heading};
+    --ax-text-inverted: #{$aegisx-light-text-inverted};
 
     /* Legacy aliases (deprecated - use new names above) */
-    --aegisx-text-body: #{$aegisx-light-text-secondary};
-    --aegisx-text-emphasis: #{$aegisx-light-text-primary};
-    --aegisx-text-strong: #{$aegisx-light-text-heading};
+    --ax-text-body: #{$aegisx-light-text-secondary};
+    --ax-text-emphasis: #{$aegisx-light-text-primary};
+    --ax-text-strong: #{$aegisx-light-text-heading};
 
     /* Border Variants */
-    --aegisx-border-muted: #{$aegisx-light-border-muted};
-    --aegisx-border-default: #{$aegisx-light-border-default};
-    --aegisx-border-emphasis: #{$aegisx-light-border-emphasis};
+    --ax-border-muted: #{$aegisx-light-border-muted};
+    --ax-border-default: #{$aegisx-light-border-default};
+    --ax-border-emphasis: #{$aegisx-light-border-emphasis};
 
     /* Border Radius (same for both themes) */
-    --aegisx-radius-sm: #{$aegisx-radius-sm};
-    --aegisx-radius-md: #{$aegisx-radius-md};
-    --aegisx-radius-lg: #{$aegisx-radius-lg};
-    --aegisx-radius-xl: #{$aegisx-radius-xl};
-    --aegisx-radius-2xl: #{$aegisx-radius-2xl};
-    --aegisx-radius-full: #{$aegisx-radius-full};
+    --ax-radius-sm: #{$aegisx-radius-sm};
+    --ax-radius-md: #{$aegisx-radius-md};
+    --ax-radius-lg: #{$aegisx-radius-lg};
+    --ax-radius-xl: #{$aegisx-radius-xl};
+    --ax-radius-2xl: #{$aegisx-radius-2xl};
+    --ax-radius-full: #{$aegisx-radius-full};
 
     /* Shadows */
-    --aegisx-shadow-sm: #{$aegisx-light-shadow-sm};
-    --aegisx-shadow-md: #{$aegisx-light-shadow-md};
-    --aegisx-shadow-lg: #{$aegisx-light-shadow-lg};
+    --ax-shadow-sm: #{$aegisx-light-shadow-sm};
+    --ax-shadow-md: #{$aegisx-light-shadow-md};
+    --ax-shadow-lg: #{$aegisx-light-shadow-lg};
 
     /* Brand/Primary */
-    --aegisx-brand-faint: #{$aegisx-light-brand-faint};
-    --aegisx-brand-muted: #{$aegisx-light-brand-muted};
-    --aegisx-brand-subtle: #{$aegisx-light-brand-subtle};
-    --aegisx-brand-default: #{$aegisx-light-brand-default};
-    --aegisx-brand-emphasis: #{$aegisx-light-brand-emphasis};
-    --aegisx-brand-inverted: #{$aegisx-light-brand-inverted};
+    --ax-brand-faint: #{$aegisx-light-brand-faint};
+    --ax-brand-muted: #{$aegisx-light-brand-muted};
+    --ax-brand-subtle: #{$aegisx-light-brand-subtle};
+    --ax-brand-default: #{$aegisx-light-brand-default};
+    --ax-brand-emphasis: #{$aegisx-light-brand-emphasis};
+    --ax-brand-inverted: #{$aegisx-light-brand-inverted};
 
     /* Z-Index Scale (same for both themes) */
-    --aegisx-z-base: #{$aegisx-z-base};
-    --aegisx-z-dropdown: #{$aegisx-z-dropdown};
-    --aegisx-z-sticky: #{$aegisx-z-sticky};
-    --aegisx-z-fixed: #{$aegisx-z-fixed};
-    --aegisx-z-overlay: #{$aegisx-z-overlay};
-    --aegisx-z-modal: #{$aegisx-z-modal};
-    --aegisx-z-toast: #{$aegisx-z-toast};
+    --ax-z-base: #{$aegisx-z-base};
+    --ax-z-dropdown: #{$aegisx-z-dropdown};
+    --ax-z-sticky: #{$aegisx-z-sticky};
+    --ax-z-fixed: #{$aegisx-z-fixed};
+    --ax-z-overlay: #{$aegisx-z-overlay};
+    --ax-z-modal: #{$aegisx-z-modal};
+    --ax-z-toast: #{$aegisx-z-toast};
 
     /* Opacity Levels (same for both themes) */
-    --aegisx-opacity-disabled: #{$aegisx-opacity-disabled};
-    --aegisx-opacity-hover: #{$aegisx-opacity-hover};
-    --aegisx-opacity-active: #{$aegisx-opacity-active};
+    --ax-opacity-disabled: #{$aegisx-opacity-disabled};
+    --ax-opacity-hover: #{$aegisx-opacity-hover};
+    --ax-opacity-active: #{$aegisx-opacity-active};
 
     /* Transitions (same for both themes) */
-    --aegisx-transition-fast: #{$aegisx-transition-fast};
-    --aegisx-transition-base: #{$aegisx-transition-base};
-    --aegisx-transition-slow: #{$aegisx-transition-slow};
-    --aegisx-transition-slower: #{$aegisx-transition-slower};
+    --ax-transition-fast: #{$aegisx-transition-fast};
+    --ax-transition-base: #{$aegisx-transition-base};
+    --ax-transition-slow: #{$aegisx-transition-slow};
+    --ax-transition-slower: #{$aegisx-transition-slower};
 
     /* Typography - Font Sizes */
-    --aegisx-text-xs: #{$aegisx-text-xs};
-    --aegisx-text-sm: #{$aegisx-text-sm};
-    --aegisx-text-base: #{$aegisx-text-base};
-    --aegisx-text-lg: #{$aegisx-text-lg};
-    --aegisx-text-xl: #{$aegisx-text-xl};
-    --aegisx-text-2xl: #{$aegisx-text-2xl};
-    --aegisx-text-3xl: #{$aegisx-text-3xl};
-    --aegisx-text-4xl: #{$aegisx-text-4xl};
+    --ax-text-xs: #{$aegisx-text-xs};
+    --ax-text-sm: #{$aegisx-text-sm};
+    --ax-text-base: #{$aegisx-text-base};
+    --ax-text-lg: #{$aegisx-text-lg};
+    --ax-text-xl: #{$aegisx-text-xl};
+    --ax-text-2xl: #{$aegisx-text-2xl};
+    --ax-text-3xl: #{$aegisx-text-3xl};
+    --ax-text-4xl: #{$aegisx-text-4xl};
 
     /* Typography - Font Weights */
-    --aegisx-font-normal: #{$aegisx-font-normal};
-    --aegisx-font-medium: #{$aegisx-font-medium};
-    --aegisx-font-semibold: #{$aegisx-font-semibold};
-    --aegisx-font-bold: #{$aegisx-font-bold};
+    --ax-font-normal: #{$aegisx-font-normal};
+    --ax-font-medium: #{$aegisx-font-medium};
+    --ax-font-semibold: #{$aegisx-font-semibold};
+    --ax-font-bold: #{$aegisx-font-bold};
 
     /* Typography - Line Heights */
-    --aegisx-leading-tight: #{$aegisx-leading-tight};
-    --aegisx-leading-normal: #{$aegisx-leading-normal};
-    --aegisx-leading-relaxed: #{$aegisx-leading-relaxed};
+    --ax-leading-tight: #{$aegisx-leading-tight};
+    --ax-leading-normal: #{$aegisx-leading-normal};
+    --ax-leading-relaxed: #{$aegisx-leading-relaxed};
 
     /* Material 3 - State Layer Opacity */
-    --aegisx-state-hover-opacity: #{$aegisx-state-hover-opacity};
-    --aegisx-state-focus-opacity: #{$aegisx-state-focus-opacity};
-    --aegisx-state-pressed-opacity: #{$aegisx-state-pressed-opacity};
-    --aegisx-state-dragged-opacity: #{$aegisx-state-dragged-opacity};
+    --ax-state-hover-opacity: #{$aegisx-state-hover-opacity};
+    --ax-state-focus-opacity: #{$aegisx-state-focus-opacity};
+    --ax-state-pressed-opacity: #{$aegisx-state-pressed-opacity};
+    --ax-state-dragged-opacity: #{$aegisx-state-dragged-opacity};
 
     /* Material 3 - Motion Duration */
-    --aegisx-motion-duration-instant: #{$aegisx-motion-duration-instant};
-    --aegisx-motion-duration-short1: #{$aegisx-motion-duration-short1};
-    --aegisx-motion-duration-short2: #{$aegisx-motion-duration-short2};
-    --aegisx-motion-duration-medium1: #{$aegisx-motion-duration-medium1};
-    --aegisx-motion-duration-medium2: #{$aegisx-motion-duration-medium2};
-    --aegisx-motion-duration-long1: #{$aegisx-motion-duration-long1};
-    --aegisx-motion-duration-long2: #{$aegisx-motion-duration-long2};
+    --ax-motion-duration-instant: #{$aegisx-motion-duration-instant};
+    --ax-motion-duration-short1: #{$aegisx-motion-duration-short1};
+    --ax-motion-duration-short2: #{$aegisx-motion-duration-short2};
+    --ax-motion-duration-medium1: #{$aegisx-motion-duration-medium1};
+    --ax-motion-duration-medium2: #{$aegisx-motion-duration-medium2};
+    --ax-motion-duration-long1: #{$aegisx-motion-duration-long1};
+    --ax-motion-duration-long2: #{$aegisx-motion-duration-long2};
 
     /* Material 3 - Motion Easing */
-    --aegisx-motion-easing-standard: #{$aegisx-motion-easing-standard};
-    --aegisx-motion-easing-emphasized: #{$aegisx-motion-easing-emphasized};
-    --aegisx-motion-easing-decelerated: #{$aegisx-motion-easing-decelerated};
-    --aegisx-motion-easing-accelerated: #{$aegisx-motion-easing-accelerated};
+    --ax-motion-easing-standard: #{$aegisx-motion-easing-standard};
+    --ax-motion-easing-emphasized: #{$aegisx-motion-easing-emphasized};
+    --ax-motion-easing-decelerated: #{$aegisx-motion-easing-decelerated};
+    --ax-motion-easing-accelerated: #{$aegisx-motion-easing-accelerated};
 
     /* Material 3 - Elevation Levels */
-    --aegisx-elevation-level0: #{$aegisx-elevation-level0};
-    --aegisx-elevation-level1: #{$aegisx-elevation-level1};
-    --aegisx-elevation-level2: #{$aegisx-elevation-level2};
-    --aegisx-elevation-level3: #{$aegisx-elevation-level3};
-    --aegisx-elevation-level4: #{$aegisx-elevation-level4};
-    --aegisx-elevation-level5: #{$aegisx-elevation-level5};
+    --ax-elevation-level0: #{$aegisx-elevation-level0};
+    --ax-elevation-level1: #{$aegisx-elevation-level1};
+    --ax-elevation-level2: #{$aegisx-elevation-level2};
+    --ax-elevation-level3: #{$aegisx-elevation-level3};
+    --ax-elevation-level4: #{$aegisx-elevation-level4};
+    --ax-elevation-level5: #{$aegisx-elevation-level5};
 
     /* Material 3 Typography Scale - Display */
-    --aegisx-type-display-large: #{$aegisx-type-display-large};
-    --aegisx-type-display-large-weight: #{$aegisx-type-display-large-weight};
-    --aegisx-type-display-large-line-height: #{$aegisx-type-display-large-line-height};
-    --aegisx-type-display-medium: #{$aegisx-type-display-medium};
-    --aegisx-type-display-medium-weight: #{$aegisx-type-display-medium-weight};
-    --aegisx-type-display-medium-line-height: #{$aegisx-type-display-medium-line-height};
-    --aegisx-type-display-small: #{$aegisx-type-display-small};
-    --aegisx-type-display-small-weight: #{$aegisx-type-display-small-weight};
-    --aegisx-type-display-small-line-height: #{$aegisx-type-display-small-line-height};
+    --ax-type-display-large: #{$aegisx-type-display-large};
+    --ax-type-display-large-weight: #{$aegisx-type-display-large-weight};
+    --ax-type-display-large-line-height: #{$aegisx-type-display-large-line-height};
+    --ax-type-display-medium: #{$aegisx-type-display-medium};
+    --ax-type-display-medium-weight: #{$aegisx-type-display-medium-weight};
+    --ax-type-display-medium-line-height: #{$aegisx-type-display-medium-line-height};
+    --ax-type-display-small: #{$aegisx-type-display-small};
+    --ax-type-display-small-weight: #{$aegisx-type-display-small-weight};
+    --ax-type-display-small-line-height: #{$aegisx-type-display-small-line-height};
 
     /* Material 3 Typography Scale - Headline */
-    --aegisx-type-headline-large: #{$aegisx-type-headline-large};
-    --aegisx-type-headline-large-weight: #{$aegisx-type-headline-large-weight};
-    --aegisx-type-headline-large-line-height: #{$aegisx-type-headline-large-line-height};
-    --aegisx-type-headline-medium: #{$aegisx-type-headline-medium};
-    --aegisx-type-headline-medium-weight: #{$aegisx-type-headline-medium-weight};
-    --aegisx-type-headline-medium-line-height: #{$aegisx-type-headline-medium-line-height};
-    --aegisx-type-headline-small: #{$aegisx-type-headline-small};
-    --aegisx-type-headline-small-weight: #{$aegisx-type-headline-small-weight};
-    --aegisx-type-headline-small-line-height: #{$aegisx-type-headline-small-line-height};
+    --ax-type-headline-large: #{$aegisx-type-headline-large};
+    --ax-type-headline-large-weight: #{$aegisx-type-headline-large-weight};
+    --ax-type-headline-large-line-height: #{$aegisx-type-headline-large-line-height};
+    --ax-type-headline-medium: #{$aegisx-type-headline-medium};
+    --ax-type-headline-medium-weight: #{$aegisx-type-headline-medium-weight};
+    --ax-type-headline-medium-line-height: #{$aegisx-type-headline-medium-line-height};
+    --ax-type-headline-small: #{$aegisx-type-headline-small};
+    --ax-type-headline-small-weight: #{$aegisx-type-headline-small-weight};
+    --ax-type-headline-small-line-height: #{$aegisx-type-headline-small-line-height};
 
     /* Material 3 Typography Scale - Title */
-    --aegisx-type-title-large: #{$aegisx-type-title-large};
-    --aegisx-type-title-large-weight: #{$aegisx-type-title-large-weight};
-    --aegisx-type-title-large-line-height: #{$aegisx-type-title-large-line-height};
-    --aegisx-type-title-medium: #{$aegisx-type-title-medium};
-    --aegisx-type-title-medium-weight: #{$aegisx-type-title-medium-weight};
-    --aegisx-type-title-medium-line-height: #{$aegisx-type-title-medium-line-height};
-    --aegisx-type-title-small: #{$aegisx-type-title-small};
-    --aegisx-type-title-small-weight: #{$aegisx-type-title-small-weight};
-    --aegisx-type-title-small-line-height: #{$aegisx-type-title-small-line-height};
+    --ax-type-title-large: #{$aegisx-type-title-large};
+    --ax-type-title-large-weight: #{$aegisx-type-title-large-weight};
+    --ax-type-title-large-line-height: #{$aegisx-type-title-large-line-height};
+    --ax-type-title-medium: #{$aegisx-type-title-medium};
+    --ax-type-title-medium-weight: #{$aegisx-type-title-medium-weight};
+    --ax-type-title-medium-line-height: #{$aegisx-type-title-medium-line-height};
+    --ax-type-title-small: #{$aegisx-type-title-small};
+    --ax-type-title-small-weight: #{$aegisx-type-title-small-weight};
+    --ax-type-title-small-line-height: #{$aegisx-type-title-small-line-height};
 
     /* Material 3 Typography Scale - Body */
-    --aegisx-type-body-large: #{$aegisx-type-body-large};
-    --aegisx-type-body-large-weight: #{$aegisx-type-body-large-weight};
-    --aegisx-type-body-large-line-height: #{$aegisx-type-body-large-line-height};
-    --aegisx-type-body-medium: #{$aegisx-type-body-medium};
-    --aegisx-type-body-medium-weight: #{$aegisx-type-body-medium-weight};
-    --aegisx-type-body-medium-line-height: #{$aegisx-type-body-medium-line-height};
-    --aegisx-type-body-small: #{$aegisx-type-body-small};
-    --aegisx-type-body-small-weight: #{$aegisx-type-body-small-weight};
-    --aegisx-type-body-small-line-height: #{$aegisx-type-body-small-line-height};
+    --ax-type-body-large: #{$aegisx-type-body-large};
+    --ax-type-body-large-weight: #{$aegisx-type-body-large-weight};
+    --ax-type-body-large-line-height: #{$aegisx-type-body-large-line-height};
+    --ax-type-body-medium: #{$aegisx-type-body-medium};
+    --ax-type-body-medium-weight: #{$aegisx-type-body-medium-weight};
+    --ax-type-body-medium-line-height: #{$aegisx-type-body-medium-line-height};
+    --ax-type-body-small: #{$aegisx-type-body-small};
+    --ax-type-body-small-weight: #{$aegisx-type-body-small-weight};
+    --ax-type-body-small-line-height: #{$aegisx-type-body-small-line-height};
 
     /* Material 3 Typography Scale - Label */
-    --aegisx-type-label-large: #{$aegisx-type-label-large};
-    --aegisx-type-label-large-weight: #{$aegisx-type-label-large-weight};
-    --aegisx-type-label-large-line-height: #{$aegisx-type-label-large-line-height};
-    --aegisx-type-label-medium: #{$aegisx-type-label-medium};
-    --aegisx-type-label-medium-weight: #{$aegisx-type-label-medium-weight};
-    --aegisx-type-label-medium-line-height: #{$aegisx-type-label-medium-line-height};
-    --aegisx-type-label-small: #{$aegisx-type-label-small};
-    --aegisx-type-label-small-weight: #{$aegisx-type-label-small-weight};
-    --aegisx-type-label-small-line-height: #{$aegisx-type-label-small-line-height};
+    --ax-type-label-large: #{$aegisx-type-label-large};
+    --ax-type-label-large-weight: #{$aegisx-type-label-large-weight};
+    --ax-type-label-large-line-height: #{$aegisx-type-label-large-line-height};
+    --ax-type-label-medium: #{$aegisx-type-label-medium};
+    --ax-type-label-medium-weight: #{$aegisx-type-label-medium-weight};
+    --ax-type-label-medium-line-height: #{$aegisx-type-label-medium-line-height};
+    --ax-type-label-small: #{$aegisx-type-label-small};
+    --ax-type-label-small-weight: #{$aegisx-type-label-small-weight};
+    --ax-type-label-small-line-height: #{$aegisx-type-label-small-line-height};
 
     /* Accessibility Tokens */
-    --aegisx-a11y-focus-indicator-thickness: #{$aegisx-a11y-focus-indicator-thickness};
-    --aegisx-a11y-focus-indicator-offset: #{$aegisx-a11y-focus-indicator-offset};
-    --aegisx-a11y-touch-target-min: #{$aegisx-a11y-touch-target-min};
-    --aegisx-a11y-text-min-contrast: #{$aegisx-a11y-text-min-contrast};
-    --aegisx-a11y-text-enhanced-contrast: #{$aegisx-a11y-text-enhanced-contrast};
+    --ax-a11y-focus-indicator-thickness: #{$aegisx-a11y-focus-indicator-thickness};
+    --ax-a11y-focus-indicator-offset: #{$aegisx-a11y-focus-indicator-offset};
+    --ax-a11y-touch-target-min: #{$aegisx-a11y-touch-target-min};
+    --ax-a11y-text-min-contrast: #{$aegisx-a11y-text-min-contrast};
+    --ax-a11y-text-enhanced-contrast: #{$aegisx-a11y-text-enhanced-contrast};
   }
 }
 
@@ -703,254 +703,254 @@ $aegisx-dark-brand-inverted: #1a237e; // Material Indigo 900 (dark)
 @mixin aegisx-dark-theme {
   :root {
     /* Spacing Scale (same for both themes) */
-    --aegisx-spacing-xs: #{$aegisx-dark-spacing-xs};
-    --aegisx-spacing-sm: #{$aegisx-dark-spacing-sm};
-    --aegisx-spacing-md: #{$aegisx-dark-spacing-md};
-    --aegisx-spacing-lg: #{$aegisx-dark-spacing-lg};
-    --aegisx-spacing-xl: #{$aegisx-dark-spacing-xl};
-    --aegisx-spacing-2xl: #{$aegisx-dark-spacing-2xl};
-    --aegisx-spacing-3xl: #{$aegisx-dark-spacing-3xl};
-    --aegisx-spacing-4xl: #{$aegisx-dark-spacing-4xl};
+    --ax-spacing-xs: #{$aegisx-dark-spacing-xs};
+    --ax-spacing-sm: #{$aegisx-dark-spacing-sm};
+    --ax-spacing-md: #{$aegisx-dark-spacing-md};
+    --ax-spacing-lg: #{$aegisx-dark-spacing-lg};
+    --ax-spacing-xl: #{$aegisx-dark-spacing-xl};
+    --ax-spacing-2xl: #{$aegisx-dark-spacing-2xl};
+    --ax-spacing-3xl: #{$aegisx-dark-spacing-3xl};
+    --ax-spacing-4xl: #{$aegisx-dark-spacing-4xl};
 
     /* Success Colors */
-    --aegisx-success-faint: #{$aegisx-dark-success-faint};
-    --aegisx-success-muted: #{$aegisx-dark-success-muted};
-    --aegisx-success-subtle: #{$aegisx-dark-success-subtle};
-    --aegisx-success-default: #{$aegisx-dark-success-default};
-    --aegisx-success-emphasis: #{$aegisx-dark-success-emphasis};
-    --aegisx-success-inverted: #{$aegisx-dark-success-inverted};
+    --ax-success-faint: #{$aegisx-dark-success-faint};
+    --ax-success-muted: #{$aegisx-dark-success-muted};
+    --ax-success-subtle: #{$aegisx-dark-success-subtle};
+    --ax-success-default: #{$aegisx-dark-success-default};
+    --ax-success-emphasis: #{$aegisx-dark-success-emphasis};
+    --ax-success-inverted: #{$aegisx-dark-success-inverted};
 
     /* Warning Colors */
-    --aegisx-warning-faint: #{$aegisx-dark-warning-faint};
-    --aegisx-warning-muted: #{$aegisx-dark-warning-muted};
-    --aegisx-warning-subtle: #{$aegisx-dark-warning-subtle};
-    --aegisx-warning-default: #{$aegisx-dark-warning-default};
-    --aegisx-warning-emphasis: #{$aegisx-dark-warning-emphasis};
-    --aegisx-warning-inverted: #{$aegisx-dark-warning-inverted};
+    --ax-warning-faint: #{$aegisx-dark-warning-faint};
+    --ax-warning-muted: #{$aegisx-dark-warning-muted};
+    --ax-warning-subtle: #{$aegisx-dark-warning-subtle};
+    --ax-warning-default: #{$aegisx-dark-warning-default};
+    --ax-warning-emphasis: #{$aegisx-dark-warning-emphasis};
+    --ax-warning-inverted: #{$aegisx-dark-warning-inverted};
 
     /* Error Colors */
-    --aegisx-error-faint: #{$aegisx-dark-error-faint};
-    --aegisx-error-muted: #{$aegisx-dark-error-muted};
-    --aegisx-error-subtle: #{$aegisx-dark-error-subtle};
-    --aegisx-error-default: #{$aegisx-dark-error-default};
-    --aegisx-error-emphasis: #{$aegisx-dark-error-emphasis};
-    --aegisx-error-inverted: #{$aegisx-dark-error-inverted};
+    --ax-error-faint: #{$aegisx-dark-error-faint};
+    --ax-error-muted: #{$aegisx-dark-error-muted};
+    --ax-error-subtle: #{$aegisx-dark-error-subtle};
+    --ax-error-default: #{$aegisx-dark-error-default};
+    --ax-error-emphasis: #{$aegisx-dark-error-emphasis};
+    --ax-error-inverted: #{$aegisx-dark-error-inverted};
 
     /* Info Colors */
-    --aegisx-info-faint: #{$aegisx-dark-info-faint};
-    --aegisx-info-muted: #{$aegisx-dark-info-muted};
-    --aegisx-info-subtle: #{$aegisx-dark-info-subtle};
-    --aegisx-info-default: #{$aegisx-dark-info-default};
-    --aegisx-info-emphasis: #{$aegisx-dark-info-emphasis};
-    --aegisx-info-inverted: #{$aegisx-dark-info-inverted};
+    --ax-info-faint: #{$aegisx-dark-info-faint};
+    --ax-info-muted: #{$aegisx-dark-info-muted};
+    --ax-info-subtle: #{$aegisx-dark-info-subtle};
+    --ax-info-default: #{$aegisx-dark-info-default};
+    --ax-info-emphasis: #{$aegisx-dark-info-emphasis};
+    --ax-info-inverted: #{$aegisx-dark-info-inverted};
 
     /* Cyan Colors */
-    --aegisx-cyan-faint: #{$aegisx-dark-cyan-faint};
-    --aegisx-cyan-muted: #{$aegisx-dark-cyan-muted};
-    --aegisx-cyan-subtle: #{$aegisx-dark-cyan-subtle};
-    --aegisx-cyan-default: #{$aegisx-dark-cyan-default};
-    --aegisx-cyan-emphasis: #{$aegisx-dark-cyan-emphasis};
-    --aegisx-cyan-inverted: #{$aegisx-dark-cyan-inverted};
+    --ax-cyan-faint: #{$aegisx-dark-cyan-faint};
+    --ax-cyan-muted: #{$aegisx-dark-cyan-muted};
+    --ax-cyan-subtle: #{$aegisx-dark-cyan-subtle};
+    --ax-cyan-default: #{$aegisx-dark-cyan-default};
+    --ax-cyan-emphasis: #{$aegisx-dark-cyan-emphasis};
+    --ax-cyan-inverted: #{$aegisx-dark-cyan-inverted};
 
     /* Purple Colors */
-    --aegisx-purple-faint: #{$aegisx-dark-purple-faint};
-    --aegisx-purple-muted: #{$aegisx-dark-purple-muted};
-    --aegisx-purple-subtle: #{$aegisx-dark-purple-subtle};
-    --aegisx-purple-default: #{$aegisx-dark-purple-default};
-    --aegisx-purple-emphasis: #{$aegisx-dark-purple-emphasis};
-    --aegisx-purple-inverted: #{$aegisx-dark-purple-inverted};
+    --ax-purple-faint: #{$aegisx-dark-purple-faint};
+    --ax-purple-muted: #{$aegisx-dark-purple-muted};
+    --ax-purple-subtle: #{$aegisx-dark-purple-subtle};
+    --ax-purple-default: #{$aegisx-dark-purple-default};
+    --ax-purple-emphasis: #{$aegisx-dark-purple-emphasis};
+    --ax-purple-inverted: #{$aegisx-dark-purple-inverted};
 
     /* Indigo Colors */
-    --aegisx-indigo-faint: #{$aegisx-dark-indigo-faint};
-    --aegisx-indigo-muted: #{$aegisx-dark-indigo-muted};
-    --aegisx-indigo-subtle: #{$aegisx-dark-indigo-subtle};
-    --aegisx-indigo-default: #{$aegisx-dark-indigo-default};
-    --aegisx-indigo-emphasis: #{$aegisx-dark-indigo-emphasis};
-    --aegisx-indigo-inverted: #{$aegisx-dark-indigo-inverted};
+    --ax-indigo-faint: #{$aegisx-dark-indigo-faint};
+    --ax-indigo-muted: #{$aegisx-dark-indigo-muted};
+    --ax-indigo-subtle: #{$aegisx-dark-indigo-subtle};
+    --ax-indigo-default: #{$aegisx-dark-indigo-default};
+    --ax-indigo-emphasis: #{$aegisx-dark-indigo-emphasis};
+    --ax-indigo-inverted: #{$aegisx-dark-indigo-inverted};
 
     /* Pink Colors */
-    --aegisx-pink-faint: #{$aegisx-dark-pink-faint};
-    --aegisx-pink-muted: #{$aegisx-dark-pink-muted};
-    --aegisx-pink-subtle: #{$aegisx-dark-pink-subtle};
-    --aegisx-pink-default: #{$aegisx-dark-pink-default};
-    --aegisx-pink-emphasis: #{$aegisx-dark-pink-emphasis};
-    --aegisx-pink-inverted: #{$aegisx-dark-pink-inverted};
+    --ax-pink-faint: #{$aegisx-dark-pink-faint};
+    --ax-pink-muted: #{$aegisx-dark-pink-muted};
+    --ax-pink-subtle: #{$aegisx-dark-pink-subtle};
+    --ax-pink-default: #{$aegisx-dark-pink-default};
+    --ax-pink-emphasis: #{$aegisx-dark-pink-emphasis};
+    --ax-pink-inverted: #{$aegisx-dark-pink-inverted};
 
     /* Background Variants */
-    --aegisx-background-muted: #{$aegisx-dark-background-muted};
-    --aegisx-background-subtle: #{$aegisx-dark-background-subtle};
-    --aegisx-background-default: #{$aegisx-dark-background-default};
-    --aegisx-background-emphasis: #{$aegisx-dark-background-emphasis};
+    --ax-background-muted: #{$aegisx-dark-background-muted};
+    --ax-background-subtle: #{$aegisx-dark-background-subtle};
+    --ax-background-default: #{$aegisx-dark-background-default};
+    --ax-background-emphasis: #{$aegisx-dark-background-emphasis};
 
     /* Text Hierarchy - Lighter, more readable colors for dark mode */
-    --aegisx-text-disabled: #{$aegisx-dark-text-disabled};
-    --aegisx-text-subtle: #{$aegisx-dark-text-subtle};
-    --aegisx-text-secondary: #{$aegisx-dark-text-secondary};
-    --aegisx-text-primary: #{$aegisx-dark-text-primary};
-    --aegisx-text-heading: #{$aegisx-dark-text-heading};
-    --aegisx-text-inverted: #{$aegisx-dark-text-inverted};
+    --ax-text-disabled: #{$aegisx-dark-text-disabled};
+    --ax-text-subtle: #{$aegisx-dark-text-subtle};
+    --ax-text-secondary: #{$aegisx-dark-text-secondary};
+    --ax-text-primary: #{$aegisx-dark-text-primary};
+    --ax-text-heading: #{$aegisx-dark-text-heading};
+    --ax-text-inverted: #{$aegisx-dark-text-inverted};
 
     /* Legacy aliases (deprecated - use new names above) */
-    --aegisx-text-body: #{$aegisx-dark-text-secondary};
-    --aegisx-text-emphasis: #{$aegisx-dark-text-primary};
-    --aegisx-text-strong: #{$aegisx-dark-text-heading};
+    --ax-text-body: #{$aegisx-dark-text-secondary};
+    --ax-text-emphasis: #{$aegisx-dark-text-primary};
+    --ax-text-strong: #{$aegisx-dark-text-heading};
 
     /* Border Variants */
-    --aegisx-border-muted: #{$aegisx-dark-border-muted};
-    --aegisx-border-default: #{$aegisx-dark-border-default};
-    --aegisx-border-emphasis: #{$aegisx-dark-border-emphasis};
+    --ax-border-muted: #{$aegisx-dark-border-muted};
+    --ax-border-default: #{$aegisx-dark-border-default};
+    --ax-border-emphasis: #{$aegisx-dark-border-emphasis};
 
     /* Border Radius (same for both themes) */
-    --aegisx-radius-sm: #{$aegisx-radius-sm};
-    --aegisx-radius-md: #{$aegisx-radius-md};
-    --aegisx-radius-lg: #{$aegisx-radius-lg};
-    --aegisx-radius-xl: #{$aegisx-radius-xl};
-    --aegisx-radius-2xl: #{$aegisx-radius-2xl};
-    --aegisx-radius-full: #{$aegisx-radius-full};
+    --ax-radius-sm: #{$aegisx-radius-sm};
+    --ax-radius-md: #{$aegisx-radius-md};
+    --ax-radius-lg: #{$aegisx-radius-lg};
+    --ax-radius-xl: #{$aegisx-radius-xl};
+    --ax-radius-2xl: #{$aegisx-radius-2xl};
+    --ax-radius-full: #{$aegisx-radius-full};
 
     /* Shadows */
-    --aegisx-shadow-sm: #{$aegisx-dark-shadow-sm};
-    --aegisx-shadow-md: #{$aegisx-dark-shadow-md};
-    --aegisx-shadow-lg: #{$aegisx-dark-shadow-lg};
+    --ax-shadow-sm: #{$aegisx-dark-shadow-sm};
+    --ax-shadow-md: #{$aegisx-dark-shadow-md};
+    --ax-shadow-lg: #{$aegisx-dark-shadow-lg};
 
     /* Brand/Primary */
-    --aegisx-brand-faint: #{$aegisx-dark-brand-faint};
-    --aegisx-brand-muted: #{$aegisx-dark-brand-muted};
-    --aegisx-brand-subtle: #{$aegisx-dark-brand-subtle};
-    --aegisx-brand-default: #{$aegisx-dark-brand-default};
-    --aegisx-brand-emphasis: #{$aegisx-dark-brand-emphasis};
-    --aegisx-brand-inverted: #{$aegisx-dark-brand-inverted};
+    --ax-brand-faint: #{$aegisx-dark-brand-faint};
+    --ax-brand-muted: #{$aegisx-dark-brand-muted};
+    --ax-brand-subtle: #{$aegisx-dark-brand-subtle};
+    --ax-brand-default: #{$aegisx-dark-brand-default};
+    --ax-brand-emphasis: #{$aegisx-dark-brand-emphasis};
+    --ax-brand-inverted: #{$aegisx-dark-brand-inverted};
 
     /* Z-Index Scale (same for both themes) */
-    --aegisx-z-base: #{$aegisx-z-base};
-    --aegisx-z-dropdown: #{$aegisx-z-dropdown};
-    --aegisx-z-sticky: #{$aegisx-z-sticky};
-    --aegisx-z-fixed: #{$aegisx-z-fixed};
-    --aegisx-z-overlay: #{$aegisx-z-overlay};
-    --aegisx-z-modal: #{$aegisx-z-modal};
-    --aegisx-z-toast: #{$aegisx-z-toast};
+    --ax-z-base: #{$aegisx-z-base};
+    --ax-z-dropdown: #{$aegisx-z-dropdown};
+    --ax-z-sticky: #{$aegisx-z-sticky};
+    --ax-z-fixed: #{$aegisx-z-fixed};
+    --ax-z-overlay: #{$aegisx-z-overlay};
+    --ax-z-modal: #{$aegisx-z-modal};
+    --ax-z-toast: #{$aegisx-z-toast};
 
     /* Opacity Levels (same for both themes) */
-    --aegisx-opacity-disabled: #{$aegisx-opacity-disabled};
-    --aegisx-opacity-hover: #{$aegisx-opacity-hover};
-    --aegisx-opacity-active: #{$aegisx-opacity-active};
+    --ax-opacity-disabled: #{$aegisx-opacity-disabled};
+    --ax-opacity-hover: #{$aegisx-opacity-hover};
+    --ax-opacity-active: #{$aegisx-opacity-active};
 
     /* Transitions (same for both themes) */
-    --aegisx-transition-fast: #{$aegisx-transition-fast};
-    --aegisx-transition-base: #{$aegisx-transition-base};
-    --aegisx-transition-slow: #{$aegisx-transition-slow};
-    --aegisx-transition-slower: #{$aegisx-transition-slower};
+    --ax-transition-fast: #{$aegisx-transition-fast};
+    --ax-transition-base: #{$aegisx-transition-base};
+    --ax-transition-slow: #{$aegisx-transition-slow};
+    --ax-transition-slower: #{$aegisx-transition-slower};
 
     /* Typography - Font Sizes */
-    --aegisx-text-xs: #{$aegisx-text-xs};
-    --aegisx-text-sm: #{$aegisx-text-sm};
-    --aegisx-text-base: #{$aegisx-text-base};
-    --aegisx-text-lg: #{$aegisx-text-lg};
-    --aegisx-text-xl: #{$aegisx-text-xl};
-    --aegisx-text-2xl: #{$aegisx-text-2xl};
-    --aegisx-text-3xl: #{$aegisx-text-3xl};
-    --aegisx-text-4xl: #{$aegisx-text-4xl};
+    --ax-text-xs: #{$aegisx-text-xs};
+    --ax-text-sm: #{$aegisx-text-sm};
+    --ax-text-base: #{$aegisx-text-base};
+    --ax-text-lg: #{$aegisx-text-lg};
+    --ax-text-xl: #{$aegisx-text-xl};
+    --ax-text-2xl: #{$aegisx-text-2xl};
+    --ax-text-3xl: #{$aegisx-text-3xl};
+    --ax-text-4xl: #{$aegisx-text-4xl};
 
     /* Typography - Font Weights */
-    --aegisx-font-normal: #{$aegisx-font-normal};
-    --aegisx-font-medium: #{$aegisx-font-medium};
-    --aegisx-font-semibold: #{$aegisx-font-semibold};
-    --aegisx-font-bold: #{$aegisx-font-bold};
+    --ax-font-normal: #{$aegisx-font-normal};
+    --ax-font-medium: #{$aegisx-font-medium};
+    --ax-font-semibold: #{$aegisx-font-semibold};
+    --ax-font-bold: #{$aegisx-font-bold};
 
     /* Typography - Line Heights */
-    --aegisx-leading-tight: #{$aegisx-leading-tight};
-    --aegisx-leading-normal: #{$aegisx-leading-normal};
-    --aegisx-leading-relaxed: #{$aegisx-leading-relaxed};
+    --ax-leading-tight: #{$aegisx-leading-tight};
+    --ax-leading-normal: #{$aegisx-leading-normal};
+    --ax-leading-relaxed: #{$aegisx-leading-relaxed};
 
     /* Material 3 - State Layer Opacity (same for both themes) */
-    --aegisx-state-hover-opacity: #{$aegisx-state-hover-opacity};
-    --aegisx-state-focus-opacity: #{$aegisx-state-focus-opacity};
-    --aegisx-state-pressed-opacity: #{$aegisx-state-pressed-opacity};
-    --aegisx-state-dragged-opacity: #{$aegisx-state-dragged-opacity};
+    --ax-state-hover-opacity: #{$aegisx-state-hover-opacity};
+    --ax-state-focus-opacity: #{$aegisx-state-focus-opacity};
+    --ax-state-pressed-opacity: #{$aegisx-state-pressed-opacity};
+    --ax-state-dragged-opacity: #{$aegisx-state-dragged-opacity};
 
     /* Material 3 - Motion Duration (same for both themes) */
-    --aegisx-motion-duration-instant: #{$aegisx-motion-duration-instant};
-    --aegisx-motion-duration-short1: #{$aegisx-motion-duration-short1};
-    --aegisx-motion-duration-short2: #{$aegisx-motion-duration-short2};
-    --aegisx-motion-duration-medium1: #{$aegisx-motion-duration-medium1};
-    --aegisx-motion-duration-medium2: #{$aegisx-motion-duration-medium2};
-    --aegisx-motion-duration-long1: #{$aegisx-motion-duration-long1};
-    --aegisx-motion-duration-long2: #{$aegisx-motion-duration-long2};
+    --ax-motion-duration-instant: #{$aegisx-motion-duration-instant};
+    --ax-motion-duration-short1: #{$aegisx-motion-duration-short1};
+    --ax-motion-duration-short2: #{$aegisx-motion-duration-short2};
+    --ax-motion-duration-medium1: #{$aegisx-motion-duration-medium1};
+    --ax-motion-duration-medium2: #{$aegisx-motion-duration-medium2};
+    --ax-motion-duration-long1: #{$aegisx-motion-duration-long1};
+    --ax-motion-duration-long2: #{$aegisx-motion-duration-long2};
 
     /* Material 3 - Motion Easing (same for both themes) */
-    --aegisx-motion-easing-standard: #{$aegisx-motion-easing-standard};
-    --aegisx-motion-easing-emphasized: #{$aegisx-motion-easing-emphasized};
-    --aegisx-motion-easing-decelerated: #{$aegisx-motion-easing-decelerated};
-    --aegisx-motion-easing-accelerated: #{$aegisx-motion-easing-accelerated};
+    --ax-motion-easing-standard: #{$aegisx-motion-easing-standard};
+    --ax-motion-easing-emphasized: #{$aegisx-motion-easing-emphasized};
+    --ax-motion-easing-decelerated: #{$aegisx-motion-easing-decelerated};
+    --ax-motion-easing-accelerated: #{$aegisx-motion-easing-accelerated};
 
     /* Material 3 - Elevation Levels (same for both themes) */
-    --aegisx-elevation-level0: #{$aegisx-elevation-level0};
-    --aegisx-elevation-level1: #{$aegisx-elevation-level1};
-    --aegisx-elevation-level2: #{$aegisx-elevation-level2};
-    --aegisx-elevation-level3: #{$aegisx-elevation-level3};
-    --aegisx-elevation-level4: #{$aegisx-elevation-level4};
-    --aegisx-elevation-level5: #{$aegisx-elevation-level5};
+    --ax-elevation-level0: #{$aegisx-elevation-level0};
+    --ax-elevation-level1: #{$aegisx-elevation-level1};
+    --ax-elevation-level2: #{$aegisx-elevation-level2};
+    --ax-elevation-level3: #{$aegisx-elevation-level3};
+    --ax-elevation-level4: #{$aegisx-elevation-level4};
+    --ax-elevation-level5: #{$aegisx-elevation-level5};
 
     /* Material 3 Typography Scale - Display (same for both themes) */
-    --aegisx-type-display-large: #{$aegisx-type-display-large};
-    --aegisx-type-display-large-weight: #{$aegisx-type-display-large-weight};
-    --aegisx-type-display-large-line-height: #{$aegisx-type-display-large-line-height};
-    --aegisx-type-display-medium: #{$aegisx-type-display-medium};
-    --aegisx-type-display-medium-weight: #{$aegisx-type-display-medium-weight};
-    --aegisx-type-display-medium-line-height: #{$aegisx-type-display-medium-line-height};
-    --aegisx-type-display-small: #{$aegisx-type-display-small};
-    --aegisx-type-display-small-weight: #{$aegisx-type-display-small-weight};
-    --aegisx-type-display-small-line-height: #{$aegisx-type-display-small-line-height};
+    --ax-type-display-large: #{$aegisx-type-display-large};
+    --ax-type-display-large-weight: #{$aegisx-type-display-large-weight};
+    --ax-type-display-large-line-height: #{$aegisx-type-display-large-line-height};
+    --ax-type-display-medium: #{$aegisx-type-display-medium};
+    --ax-type-display-medium-weight: #{$aegisx-type-display-medium-weight};
+    --ax-type-display-medium-line-height: #{$aegisx-type-display-medium-line-height};
+    --ax-type-display-small: #{$aegisx-type-display-small};
+    --ax-type-display-small-weight: #{$aegisx-type-display-small-weight};
+    --ax-type-display-small-line-height: #{$aegisx-type-display-small-line-height};
 
     /* Material 3 Typography Scale - Headline (same for both themes) */
-    --aegisx-type-headline-large: #{$aegisx-type-headline-large};
-    --aegisx-type-headline-large-weight: #{$aegisx-type-headline-large-weight};
-    --aegisx-type-headline-large-line-height: #{$aegisx-type-headline-large-line-height};
-    --aegisx-type-headline-medium: #{$aegisx-type-headline-medium};
-    --aegisx-type-headline-medium-weight: #{$aegisx-type-headline-medium-weight};
-    --aegisx-type-headline-medium-line-height: #{$aegisx-type-headline-medium-line-height};
-    --aegisx-type-headline-small: #{$aegisx-type-headline-small};
-    --aegisx-type-headline-small-weight: #{$aegisx-type-headline-small-weight};
-    --aegisx-type-headline-small-line-height: #{$aegisx-type-headline-small-line-height};
+    --ax-type-headline-large: #{$aegisx-type-headline-large};
+    --ax-type-headline-large-weight: #{$aegisx-type-headline-large-weight};
+    --ax-type-headline-large-line-height: #{$aegisx-type-headline-large-line-height};
+    --ax-type-headline-medium: #{$aegisx-type-headline-medium};
+    --ax-type-headline-medium-weight: #{$aegisx-type-headline-medium-weight};
+    --ax-type-headline-medium-line-height: #{$aegisx-type-headline-medium-line-height};
+    --ax-type-headline-small: #{$aegisx-type-headline-small};
+    --ax-type-headline-small-weight: #{$aegisx-type-headline-small-weight};
+    --ax-type-headline-small-line-height: #{$aegisx-type-headline-small-line-height};
 
     /* Material 3 Typography Scale - Title (same for both themes) */
-    --aegisx-type-title-large: #{$aegisx-type-title-large};
-    --aegisx-type-title-large-weight: #{$aegisx-type-title-large-weight};
-    --aegisx-type-title-large-line-height: #{$aegisx-type-title-large-line-height};
-    --aegisx-type-title-medium: #{$aegisx-type-title-medium};
-    --aegisx-type-title-medium-weight: #{$aegisx-type-title-medium-weight};
-    --aegisx-type-title-medium-line-height: #{$aegisx-type-title-medium-line-height};
-    --aegisx-type-title-small: #{$aegisx-type-title-small};
-    --aegisx-type-title-small-weight: #{$aegisx-type-title-small-weight};
-    --aegisx-type-title-small-line-height: #{$aegisx-type-title-small-line-height};
+    --ax-type-title-large: #{$aegisx-type-title-large};
+    --ax-type-title-large-weight: #{$aegisx-type-title-large-weight};
+    --ax-type-title-large-line-height: #{$aegisx-type-title-large-line-height};
+    --ax-type-title-medium: #{$aegisx-type-title-medium};
+    --ax-type-title-medium-weight: #{$aegisx-type-title-medium-weight};
+    --ax-type-title-medium-line-height: #{$aegisx-type-title-medium-line-height};
+    --ax-type-title-small: #{$aegisx-type-title-small};
+    --ax-type-title-small-weight: #{$aegisx-type-title-small-weight};
+    --ax-type-title-small-line-height: #{$aegisx-type-title-small-line-height};
 
     /* Material 3 Typography Scale - Body (same for both themes) */
-    --aegisx-type-body-large: #{$aegisx-type-body-large};
-    --aegisx-type-body-large-weight: #{$aegisx-type-body-large-weight};
-    --aegisx-type-body-large-line-height: #{$aegisx-type-body-large-line-height};
-    --aegisx-type-body-medium: #{$aegisx-type-body-medium};
-    --aegisx-type-body-medium-weight: #{$aegisx-type-body-medium-weight};
-    --aegisx-type-body-medium-line-height: #{$aegisx-type-body-medium-line-height};
-    --aegisx-type-body-small: #{$aegisx-type-body-small};
-    --aegisx-type-body-small-weight: #{$aegisx-type-body-small-weight};
-    --aegisx-type-body-small-line-height: #{$aegisx-type-body-small-line-height};
+    --ax-type-body-large: #{$aegisx-type-body-large};
+    --ax-type-body-large-weight: #{$aegisx-type-body-large-weight};
+    --ax-type-body-large-line-height: #{$aegisx-type-body-large-line-height};
+    --ax-type-body-medium: #{$aegisx-type-body-medium};
+    --ax-type-body-medium-weight: #{$aegisx-type-body-medium-weight};
+    --ax-type-body-medium-line-height: #{$aegisx-type-body-medium-line-height};
+    --ax-type-body-small: #{$aegisx-type-body-small};
+    --ax-type-body-small-weight: #{$aegisx-type-body-small-weight};
+    --ax-type-body-small-line-height: #{$aegisx-type-body-small-line-height};
 
     /* Material 3 Typography Scale - Label (same for both themes) */
-    --aegisx-type-label-large: #{$aegisx-type-label-large};
-    --aegisx-type-label-large-weight: #{$aegisx-type-label-large-weight};
-    --aegisx-type-label-large-line-height: #{$aegisx-type-label-large-line-height};
-    --aegisx-type-label-medium: #{$aegisx-type-label-medium};
-    --aegisx-type-label-medium-weight: #{$aegisx-type-label-medium-weight};
-    --aegisx-type-label-medium-line-height: #{$aegisx-type-label-medium-line-height};
-    --aegisx-type-label-small: #{$aegisx-type-label-small};
-    --aegisx-type-label-small-weight: #{$aegisx-type-label-small-weight};
-    --aegisx-type-label-small-line-height: #{$aegisx-type-label-small-line-height};
+    --ax-type-label-large: #{$aegisx-type-label-large};
+    --ax-type-label-large-weight: #{$aegisx-type-label-large-weight};
+    --ax-type-label-large-line-height: #{$aegisx-type-label-large-line-height};
+    --ax-type-label-medium: #{$aegisx-type-label-medium};
+    --ax-type-label-medium-weight: #{$aegisx-type-label-medium-weight};
+    --ax-type-label-medium-line-height: #{$aegisx-type-label-medium-line-height};
+    --ax-type-label-small: #{$aegisx-type-label-small};
+    --ax-type-label-small-weight: #{$aegisx-type-label-small-weight};
+    --ax-type-label-small-line-height: #{$aegisx-type-label-small-line-height};
 
     /* Accessibility Tokens (same for both themes) */
-    --aegisx-a11y-focus-indicator-thickness: #{$aegisx-a11y-focus-indicator-thickness};
-    --aegisx-a11y-focus-indicator-offset: #{$aegisx-a11y-focus-indicator-offset};
-    --aegisx-a11y-touch-target-min: #{$aegisx-a11y-touch-target-min};
-    --aegisx-a11y-text-min-contrast: #{$aegisx-a11y-text-min-contrast};
-    --aegisx-a11y-text-enhanced-contrast: #{$aegisx-a11y-text-enhanced-contrast};
+    --ax-a11y-focus-indicator-thickness: #{$aegisx-a11y-focus-indicator-thickness};
+    --ax-a11y-focus-indicator-offset: #{$aegisx-a11y-focus-indicator-offset};
+    --ax-a11y-touch-target-min: #{$aegisx-a11y-touch-target-min};
+    --ax-a11y-text-min-contrast: #{$aegisx-a11y-text-min-contrast};
+    --ax-a11y-text-enhanced-contrast: #{$aegisx-a11y-text-enhanced-contrast};
   }
 }

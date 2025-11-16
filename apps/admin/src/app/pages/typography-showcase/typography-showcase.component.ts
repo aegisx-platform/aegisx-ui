@@ -51,7 +51,7 @@ export class TypographyShowcaseComponent {
   m3TypeScale: TypographyScale[] = [
     {
       name: 'Display Large',
-      token: '--aegisx-type-display-large',
+      token: '--ax-type-display-large',
       size: '57px',
       weight: '400',
       lineHeight: '64px',
@@ -59,7 +59,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Display Medium',
-      token: '--aegisx-type-display-medium',
+      token: '--ax-type-display-medium',
       size: '45px',
       weight: '400',
       lineHeight: '52px',
@@ -67,7 +67,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Display Small',
-      token: '--aegisx-type-display-small',
+      token: '--ax-type-display-small',
       size: '36px',
       weight: '400',
       lineHeight: '44px',
@@ -75,7 +75,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Headline Large',
-      token: '--aegisx-type-headline-large',
+      token: '--ax-type-headline-large',
       size: '32px',
       weight: '400',
       lineHeight: '40px',
@@ -83,7 +83,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Headline Medium',
-      token: '--aegisx-type-headline-medium',
+      token: '--ax-type-headline-medium',
       size: '28px',
       weight: '400',
       lineHeight: '36px',
@@ -91,7 +91,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Headline Small',
-      token: '--aegisx-type-headline-small',
+      token: '--ax-type-headline-small',
       size: '24px',
       weight: '400',
       lineHeight: '32px',
@@ -99,7 +99,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Title Large',
-      token: '--aegisx-type-title-large',
+      token: '--ax-type-title-large',
       size: '22px',
       weight: '400',
       lineHeight: '28px',
@@ -107,7 +107,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Title Medium',
-      token: '--aegisx-type-title-medium',
+      token: '--ax-type-title-medium',
       size: '16px',
       weight: '500',
       lineHeight: '24px',
@@ -115,7 +115,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Title Small',
-      token: '--aegisx-type-title-small',
+      token: '--ax-type-title-small',
       size: '14px',
       weight: '500',
       lineHeight: '20px',
@@ -123,7 +123,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Body Large',
-      token: '--aegisx-type-body-large',
+      token: '--ax-type-body-large',
       size: '16px',
       weight: '400',
       lineHeight: '24px',
@@ -131,7 +131,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Body Medium',
-      token: '--aegisx-type-body-medium',
+      token: '--ax-type-body-medium',
       size: '14px',
       weight: '400',
       lineHeight: '20px',
@@ -139,7 +139,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Body Small',
-      token: '--aegisx-type-body-small',
+      token: '--ax-type-body-small',
       size: '12px',
       weight: '400',
       lineHeight: '16px',
@@ -148,7 +148,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Label Large',
-      token: '--aegisx-type-label-large',
+      token: '--ax-type-label-large',
       size: '14px',
       weight: '500',
       lineHeight: '20px',
@@ -156,7 +156,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Label Medium',
-      token: '--aegisx-type-label-medium',
+      token: '--ax-type-label-medium',
       size: '12px',
       weight: '500',
       lineHeight: '16px',
@@ -165,7 +165,7 @@ export class TypographyShowcaseComponent {
     },
     {
       name: 'Label Small',
-      token: '--aegisx-type-label-small',
+      token: '--ax-type-label-small',
       size: '11px',
       weight: '500',
       lineHeight: '16px',
@@ -177,37 +177,37 @@ export class TypographyShowcaseComponent {
   textColors: TextColor[] = [
     {
       name: 'Heading',
-      token: '--aegisx-text-heading',
+      token: '--ax-text-heading',
       hex: '#1f2937',
       usage: 'Headings only (h1-h6), not for body text',
     },
     {
       name: 'Primary',
-      token: '--aegisx-text-primary',
+      token: '--ax-text-primary',
       hex: '#374151',
       usage: 'Primary body text, main content',
     },
     {
       name: 'Secondary',
-      token: '--aegisx-text-secondary',
+      token: '--ax-text-secondary',
       hex: '#6b7280',
       usage: 'Secondary body text, descriptions',
     },
     {
       name: 'Subtle',
-      token: '--aegisx-text-subtle',
+      token: '--ax-text-subtle',
       hex: '#9ca3af',
       usage: 'Subtle text, metadata, timestamps',
     },
     {
       name: 'Disabled',
-      token: '--aegisx-text-disabled',
+      token: '--ax-text-disabled',
       hex: '#d1d5db',
       usage: 'Disabled text, placeholders',
     },
     {
       name: 'Inverted',
-      token: '--aegisx-text-inverted',
+      token: '--ax-text-inverted',
       hex: '#ffffff',
       usage: 'Text on dark backgrounds',
     },
@@ -217,25 +217,25 @@ export class TypographyShowcaseComponent {
   fontWeights = [
     {
       name: 'Normal',
-      token: '--aegisx-font-normal',
+      token: '--ax-font-normal',
       value: '400',
       usage: 'Body text',
     },
     {
       name: 'Medium',
-      token: '--aegisx-font-medium',
+      token: '--ax-font-medium',
       value: '500',
       usage: 'Emphasis, labels',
     },
     {
       name: 'Semibold',
-      token: '--aegisx-font-semibold',
+      token: '--ax-font-semibold',
       value: '600',
       usage: 'Headings, important text',
     },
     {
       name: 'Bold',
-      token: '--aegisx-font-bold',
+      token: '--ax-font-bold',
       value: '700',
       usage: 'Strong emphasis',
     },
@@ -245,19 +245,19 @@ export class TypographyShowcaseComponent {
   lineHeights = [
     {
       name: 'Tight',
-      token: '--aegisx-leading-tight',
+      token: '--ax-leading-tight',
       value: '1.25',
       usage: 'Headings, compact UI',
     },
     {
       name: 'Normal',
-      token: '--aegisx-leading-normal',
+      token: '--ax-leading-normal',
       value: '1.5',
       usage: 'Body text',
     },
     {
       name: 'Relaxed',
-      token: '--aegisx-leading-relaxed',
+      token: '--ax-leading-relaxed',
       value: '1.75',
       usage: 'Long-form content',
     },

@@ -89,53 +89,53 @@ Open `my-custom-theme.scss` and configure the Material theme:
 ```scss
 :root {
   /* Backgrounds - use light colors */
-  --aegisx-background-default: #ffffff;
-  --aegisx-background-subtle: #f9fafb;
-  --aegisx-background-muted: #f3f4f6;
-  --aegisx-background-emphasis: #f9fafb;
+  --ax-background-default: #ffffff;
+  --ax-background-subtle: #f9fafb;
+  --ax-background-muted: #f3f4f6;
+  --ax-background-emphasis: #f9fafb;
 
   /* Borders */
-  --aegisx-border-default: #e5e7eb;
+  --ax-border-default: #e5e7eb;
 
   /* Content - use dark text */
-  --aegisx-text-strong: #111827; // Darkest
-  --aegisx-text-emphasis: #374151;
-  --aegisx-text-body: #6b7280;
-  --aegisx-text-subtle: #9ca3af; // Lightest
-  --aegisx-content-inverted: #ffffff;
+  --ax-text-strong: #111827; // Darkest
+  --ax-text-emphasis: #374151;
+  --ax-text-body: #6b7280;
+  --ax-text-subtle: #9ca3af; // Lightest
+  --ax-content-inverted: #ffffff;
 
   /* Brand - match your Material primary color */
-  --aegisx-brand-default: #14b8a6; // Teal
-  --aegisx-brand-emphasis: #0d9488;
-  --aegisx-brand-subtle: #5eead4;
-  --aegisx-brand-muted: #99f6e4;
-  --aegisx-brand-faint: #ccfbf1;
-  --aegisx-brand-inverted: #ffffff;
+  --ax-brand-default: #14b8a6; // Teal
+  --ax-brand-emphasis: #0d9488;
+  --ax-brand-subtle: #5eead4;
+  --ax-brand-muted: #99f6e4;
+  --ax-brand-faint: #ccfbf1;
+  --ax-brand-inverted: #ffffff;
 
   /* Shadows - subtle */
-  --aegisx-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --aegisx-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --aegisx-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --ax-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ax-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --ax-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 
   /* Status Colors - Success (keep standard) */
-  --aegisx-success-default: #10b981;
-  --aegisx-success-emphasis: #059669;
-  --aegisx-success-faint: #d1fae5;
+  --ax-success-default: #10b981;
+  --ax-success-emphasis: #059669;
+  --ax-success-faint: #d1fae5;
 
   /* Status Colors - Warning */
-  --aegisx-warning-default: #f59e0b;
-  --aegisx-warning-emphasis: #d97706;
-  --aegisx-warning-faint: #fef3c7;
+  --ax-warning-default: #f59e0b;
+  --ax-warning-emphasis: #d97706;
+  --ax-warning-faint: #fef3c7;
 
   /* Status Colors - Error */
-  --aegisx-error-default: #ef4444;
-  --aegisx-error-emphasis: #dc2626;
-  --aegisx-error-faint: #fee2e2;
+  --ax-error-default: #ef4444;
+  --ax-error-emphasis: #dc2626;
+  --ax-error-faint: #fee2e2;
 
   /* Status Colors - Info */
-  --aegisx-info-default: #3b82f6;
-  --aegisx-info-emphasis: #2563eb;
-  --aegisx-info-faint: #dbeafe;
+  --ax-info-default: #3b82f6;
+  --ax-info-emphasis: #2563eb;
+  --ax-info-faint: #dbeafe;
 }
 ```
 
@@ -144,50 +144,50 @@ Open `my-custom-theme.scss` and configure the Material theme:
 ```scss
 :root {
   /* Backgrounds - use dark colors */
-  --aegisx-background-default: #111827;
-  --aegisx-background-subtle: #1f2937;
-  --aegisx-background-muted: #131a2b;
-  --aegisx-background-emphasis: #1f2937;
+  --ax-background-default: #111827;
+  --ax-background-subtle: #1f2937;
+  --ax-background-muted: #131a2b;
+  --ax-background-emphasis: #1f2937;
 
   /* Borders - darker */
-  --aegisx-border-default: #374151;
+  --ax-border-default: #374151;
 
   /* Content - use light text */
-  --aegisx-text-strong: #f9fafb; // Lightest
-  --aegisx-text-emphasis: #e5e7eb;
-  --aegisx-text-body: #9ca3af;
-  --aegisx-text-subtle: #6b7280; // Darkest
-  --aegisx-content-inverted: #111827;
+  --ax-text-strong: #f9fafb; // Lightest
+  --ax-text-emphasis: #e5e7eb;
+  --ax-text-body: #9ca3af;
+  --ax-text-subtle: #6b7280; // Darkest
+  --ax-content-inverted: #111827;
 
   /* Brand - lighter shades for dark backgrounds */
-  --aegisx-brand-default: #5eead4; // Lighter teal
-  --aegisx-brand-emphasis: #99f6e4;
-  --aegisx-brand-subtle: #14b8a6;
-  --aegisx-brand-muted: #0f766e;
-  --aegisx-brand-faint: #134e4a;
-  --aegisx-brand-inverted: #111827;
+  --ax-brand-default: #5eead4; // Lighter teal
+  --ax-brand-emphasis: #99f6e4;
+  --ax-brand-subtle: #14b8a6;
+  --ax-brand-muted: #0f766e;
+  --ax-brand-faint: #134e4a;
+  --ax-brand-inverted: #111827;
 
   /* Shadows - more pronounced */
-  --aegisx-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --aegisx-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-  --aegisx-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --ax-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --ax-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --ax-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
 
   /* Status colors - lighter for dark mode */
-  --aegisx-success-default: #10b981;
-  --aegisx-success-emphasis: #34d399;
-  --aegisx-success-faint: #064e3b;
+  --ax-success-default: #10b981;
+  --ax-success-emphasis: #34d399;
+  --ax-success-faint: #064e3b;
 
-  --aegisx-warning-default: #f59e0b;
-  --aegisx-warning-emphasis: #fbbf24;
-  --aegisx-warning-faint: #78350f;
+  --ax-warning-default: #f59e0b;
+  --ax-warning-emphasis: #fbbf24;
+  --ax-warning-faint: #78350f;
 
-  --aegisx-error-default: #ef4444;
-  --aegisx-error-emphasis: #f87171;
-  --aegisx-error-faint: #7f1d1d;
+  --ax-error-default: #ef4444;
+  --ax-error-emphasis: #f87171;
+  --ax-error-faint: #7f1d1d;
 
-  --aegisx-info-default: #3b82f6;
-  --aegisx-info-emphasis: #60a5fa;
-  --aegisx-info-faint: #1e3a8a;
+  --ax-info-default: #3b82f6;
+  --ax-info-emphasis: #60a5fa;
+  --ax-info-faint: #1e3a8a;
 }
 ```
 
@@ -350,7 +350,7 @@ Before marking your theme as complete:
 
 ### Colors not updating
 
-- Verify CSS variable names (must start with `--aegisx-`)
+- Verify CSS variable names (must start with `--ax-`)
 - Check browser DevTools for variable values
 - Ensure variables defined in `:root` block
 

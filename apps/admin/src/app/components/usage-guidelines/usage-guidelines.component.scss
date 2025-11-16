@@ -16,14 +16,14 @@
 
 .guidelines-column {
   padding: 1.5rem;
-  border-radius: var(--aegisx-radius-lg);
-  border: 1px solid var(--aegisx-border-default);
-  background-color: var(--aegisx-background-muted);
+  border-radius: var(--ax-radius-lg);
+  border: 1px solid var(--ax-border-default);
+  background-color: var(--ax-background-muted);
 
   h3 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--aegisx-text-heading);
+    color: var(--ax-text-heading);
     margin: 0 0 1.25rem 0;
     display: flex;
     align-items: center;
@@ -51,7 +51,7 @@
     gap: 0.75rem;
     font-size: 0.9375rem;
     line-height: 1.6;
-    color: var(--aegisx-text-primary);
+    color: var(--ax-text-primary);
 
     mat-icon {
       flex-shrink: 0;
@@ -69,37 +69,37 @@
 
 // Do Column Styling
 .do-column {
-  border-color: var(--aegisx-success-200);
+  border-color: var(--ax-success-200);
   background-color: rgba(16, 185, 129, 0.03);
 
   h3 {
-    color: var(--aegisx-success-700);
+    color: var(--ax-success-700);
 
     mat-icon {
-      color: var(--aegisx-success-default);
+      color: var(--ax-success-default);
     }
   }
 
   li mat-icon {
-    color: var(--aegisx-success-default);
+    color: var(--ax-success-default);
   }
 }
 
 // Don't Column Styling
 .dont-column {
-  border-color: var(--aegisx-error-200);
+  border-color: var(--ax-error-200);
   background-color: rgba(239, 68, 68, 0.03);
 
   h3 {
-    color: var(--aegisx-error-700);
+    color: var(--ax-error-700);
 
     mat-icon {
-      color: var(--aegisx-error-default);
+      color: var(--ax-error-default);
     }
   }
 
   li mat-icon {
-    color: var(--aegisx-error-default);
+    color: var(--ax-error-default);
   }
 }
 
@@ -109,7 +109,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: var(--aegisx-shadow-md);
+    box-shadow: var(--ax-shadow-md);
   }
 }
 

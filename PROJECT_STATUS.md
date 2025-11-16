@@ -319,7 +319,7 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - **Root Cause**: Design token system lacked typography scale and used non-standard color palette
 - **Solution Approach**:
   1. Added complete typography scale matching Tailwind conventions
-  2. Implemented Material Design token overrides using `var(--aegisx-*)` references
+  2. Implemented Material Design token overrides using `var(--ax-*)` references
   3. Mapped existing AegisX tokens to Tremor color palette equivalents
   4. Updated all color values while preserving token names and structure
   5. Maintained 100% backward compatibility through consistent naming
@@ -372,7 +372,7 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 **Key Learning:**
 
 `★ Insight ─────────────────────────────────────`
-Design token systems require three coordinated layers: (1) SCSS variables for compile-time values, (2) CSS custom properties for runtime theming, and (3) Material Design token overrides for framework integration. Using variable references (`var(--aegisx-*)`) instead of hard-coded values creates a single source of truth, ensuring color palette changes automatically propagate to Material components without manual updates. The Tremor Design System's semantic naming (faint → muted → subtle → default → emphasis → inverted) provides clear intention and better developer experience than numeric scales.
+Design token systems require three coordinated layers: (1) SCSS variables for compile-time values, (2) CSS custom properties for runtime theming, and (3) Material Design token overrides for framework integration. Using variable references (`var(--ax-*)`) instead of hard-coded values creates a single source of truth, ensuring color palette changes automatically propagate to Material components without manual updates. The Tremor Design System's semantic naming (faint → muted → subtle → default → emphasis → inverted) provides clear intention and better developer experience than numeric scales.
 `─────────────────────────────────────────────────`
 
 ---

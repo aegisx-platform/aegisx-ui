@@ -8,8 +8,8 @@
 .examples-card,
 .category-card {
   ::ng-deep .mat-mdc-card-header {
-    background: var(--aegisx-background-subtle);
-    border-bottom: 1px solid var(--aegisx-border-muted);
+    background: var(--ax-background-subtle);
+    border-bottom: 1px solid var(--ax-border-muted);
     padding: 1.25rem 1.5rem;
   }
 }
@@ -18,8 +18,8 @@
 .step .color-sample {
   width: 100%;
   height: 60px;
-  border-radius: var(--aegisx-radius-md);
-  border: 1px solid var(--aegisx-border-default);
+  border-radius: var(--ax-radius-md);
+  border: 1px solid var(--ax-border-default);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -35,7 +35,7 @@
   width: 100%;
   height: 100px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--aegisx-border-muted);
+  border-bottom: 1px solid var(--ax-border-muted);
   position: relative;
 
   &::after {
@@ -49,16 +49,16 @@
 // CSS Variable code styling
 .token-variable code {
   font-family: 'Courier New', monospace;
-  color: var(--aegisx-brand-default);
-  background-color: var(--aegisx-brand-faint);
-  border: 1px solid var(--aegisx-brand-muted);
+  color: var(--ax-brand-default);
+  background-color: var(--ax-brand-faint);
+  border: 1px solid var(--ax-brand-muted);
 }
 
 // Token value display
 .token-value {
   font-family: 'Courier New', monospace;
-  background-color: var(--aegisx-background-subtle);
-  border: 1px solid var(--aegisx-border-muted);
+  background-color: var(--ax-background-subtle);
+  border: 1px solid var(--ax-border-muted);
 }
 
 // Code Examples - Dark code block styling

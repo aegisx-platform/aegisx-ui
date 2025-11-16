@@ -44,28 +44,28 @@
   transition: box-shadow 0.2s ease;
 
   &:hover {
-    box-shadow: var(--aegisx-shadow-sm) !important;
+    box-shadow: var(--ax-shadow-sm) !important;
   }
 }
 
 .stat-label-tremor {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--aegisx-text-body);
+  color: var(--ax-text-body);
   margin: 0 0 0.375rem 0;
 }
 
 .stat-value-tremor {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--aegisx-text-strong);
+  color: var(--ax-text-strong);
   margin: 0 0 0.375rem 0;
   line-height: 1.2;
 }
 
 .stat-change-tremor {
   font-size: 0.75rem;
-  color: var(--aegisx-text-subtle);
+  color: var(--ax-text-subtle);
   margin: 0;
 
   &.stat-positive {
@@ -110,7 +110,7 @@
 .filter-section-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--aegisx-text-body);
+  color: var(--ax-text-body);
   white-space: nowrap;
 }
 
@@ -119,12 +119,12 @@
 
   mat-button-toggle {
     &.mat-button-toggle-checked {
-      background-color: var(--aegisx-brand-faint);
-      color: var(--aegisx-brand-emphasis);
+      background-color: var(--ax-brand-faint);
+      color: var(--ax-brand-emphasis);
     }
 
     &:hover:not(.mat-button-toggle-checked) {
-      background-color: var(--aegisx-background-muted);
+      background-color: var(--ax-background-muted);
     }
   }
 }
@@ -141,7 +141,7 @@
 }
 
 .toggle-btn-quick {
-  color: var(--aegisx-text-subtle);
+  color: var(--ax-text-subtle);
 }
 
 .section-divider {
@@ -175,7 +175,7 @@
 .bulk-actions-bar-tremor {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-left: 3px solid var(--aegisx-brand-default);
+  border-left: 3px solid var(--ax-brand-default);
   border-radius: 0.375rem;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
@@ -197,7 +197,7 @@
 .selection-count-tremor {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--aegisx-text-strong);
+  color: var(--ax-text-strong);
 }
 
 .bulk-action-buttons-tremor {
@@ -228,7 +228,7 @@
 }
 
 .clear-selection-tremor {
-  color: var(--aegisx-text-subtle);
+  color: var(--ax-text-subtle);
 }
 
 .bulk-progress-tremor {
@@ -248,13 +248,13 @@
 .user-name-tremor {
   font-weight: 500;
   font-size: 0.875rem;
-  color: var(--aegisx-text-strong);
+  color: var(--ax-text-strong);
   line-height: 1.25rem;
 }
 
 .user-email-tremor {
   font-size: 0.75rem;
-  color: var(--aegisx-text-subtle);
+  color: var(--ax-text-subtle);
   line-height: 1rem;
 }
 
@@ -317,7 +317,7 @@
 // ============================================================================
 .text-tremor {
   font-size: 0.875rem;
-  color: var(--aegisx-text-body);
+  color: var(--ax-text-body);
 }
 
 // ============================================================================
@@ -364,10 +364,10 @@
   gap: 0.25rem;
 
   .action-btn-tremor {
-    color: var(--aegisx-text-subtle);
+    color: var(--ax-text-subtle);
 
     &:hover {
-      color: var(--aegisx-text-strong);
+      color: var(--ax-text-strong);
       background-color: #f3f4f6;
     }
   }
@@ -398,18 +398,18 @@
     width: 64px;
     height: 64px;
     margin: 0 auto 1rem;
-    color: var(--aegisx-text-subtle);
+    color: var(--ax-text-subtle);
   }
 
   .no-data-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--aegisx-text-strong);
+    color: var(--ax-text-strong);
     margin-bottom: 0.5rem;
   }
 
   .no-data-description {
-    color: var(--aegisx-text-body);
+    color: var(--ax-text-body);
     margin-bottom: 1.5rem;
   }
 }

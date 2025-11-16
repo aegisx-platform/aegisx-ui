@@ -66,7 +66,7 @@ export const appConfig: ApplicationConfig = {
 /* Your custom styles */
 :root {
   /* Override design tokens if needed */
-  --aegisx-brand-default: #your-brand-color;
+  --ax-brand-default: #your-brand-color;
 }`;
 
   // Component usage example

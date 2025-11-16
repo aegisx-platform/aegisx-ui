@@ -116,17 +116,17 @@ import { FormsModule } from '@angular/forms';
         gap: 0.75rem;
         font-size: 1.125rem;
         font-weight: 600;
-        color: var(--aegisx-text-strong);
+        color: var(--ax-text-strong);
         padding: 1.5rem 1.5rem 1rem 1.5rem;
         margin: 0;
-        border-bottom: 1px solid var(--aegisx-border-default);
+        border-bottom: 1px solid var(--ax-border-default);
       }
 
       .dialog-icon {
         font-size: 24px;
         width: 24px;
         height: 24px;
-        color: var(--aegisx-brand-default);
+        color: var(--ax-brand-default);
       }
 
       .dialog-content {
@@ -139,7 +139,7 @@ import { FormsModule } from '@angular/forms';
         gap: 0.75rem;
         justify-content: flex-end;
         padding: 1rem 1.5rem;
-        border-top: 1px solid var(--aegisx-border-default);
+        border-top: 1px solid var(--ax-border-default);
         margin: 0;
       }
 
@@ -158,13 +158,13 @@ import { FormsModule } from '@angular/forms';
       .settings-label {
         font-size: 0.9375rem;
         font-weight: 500;
-        color: var(--aegisx-text-strong);
+        color: var(--ax-text-strong);
         margin: 0 0 0.25rem 0;
       }
 
       .settings-description {
         font-size: 0.8125rem;
-        color: var(--aegisx-text-subtle);
+        color: var(--ax-text-subtle);
         margin: 0;
         line-height: 1.4;
       }

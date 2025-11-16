@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
       </div>
 
       <mat-dialog-content class="dialog-content">
-        <p class="mb-4" style="color: var(--aegisx-text-body)">
+        <p class="mb-4" style="color: var(--ax-text-body)">
           Are you sure you want to delete this item? This action cannot be
           undone.
         </p>
@@ -62,20 +62,20 @@ import { MatIconModule } from '@angular/material/icon';
         gap: 0.75rem;
         font-size: 1.125rem;
         font-weight: 600;
-        color: var(--aegisx-text-strong);
+        color: var(--ax-text-strong);
         padding: 1.5rem 1.5rem 1rem 1.5rem;
         margin: 0;
-        border-bottom: 1px solid var(--aegisx-border-default);
+        border-bottom: 1px solid var(--ax-border-default);
       }
 
       .dialog-icon {
         font-size: 24px;
         width: 24px;
         height: 24px;
-        color: var(--aegisx-brand-default);
+        color: var(--ax-brand-default);
 
         &.warn-icon {
-          color: var(--aegisx-error-default);
+          color: var(--ax-error-default);
         }
       }
 
@@ -89,7 +89,7 @@ import { MatIconModule } from '@angular/material/icon';
         gap: 0.75rem;
         justify-content: flex-end;
         padding: 1rem 1.5rem;
-        border-top: 1px solid var(--aegisx-border-default);
+        border-top: 1px solid var(--ax-border-default);
         margin: 0;
       }
 
@@ -97,9 +97,9 @@ import { MatIconModule } from '@angular/material/icon';
         display: flex;
         gap: 0.75rem;
         padding: 1rem;
-        border-radius: var(--aegisx-radius-md);
-        background: var(--aegisx-warning-faint);
-        border: 1px solid var(--aegisx-warning-muted);
+        border-radius: var(--ax-radius-md);
+        background: var(--ax-warning-faint);
+        border: 1px solid var(--ax-warning-muted);
       }
 
       .warning-icon {
@@ -107,13 +107,13 @@ import { MatIconModule } from '@angular/material/icon';
         font-size: 20px;
         width: 20px;
         height: 20px;
-        color: var(--aegisx-warning-default);
+        color: var(--ax-warning-default);
       }
 
       .warning-title {
         font-size: 0.875rem;
         font-weight: 600;
-        color: var(--aegisx-text-strong);
+        color: var(--ax-text-strong);
         margin: 0 0 0.5rem 0;
       }
 
@@ -122,7 +122,7 @@ import { MatIconModule } from '@angular/material/icon';
         padding-left: 1.25rem;
         margin: 0;
         font-size: 0.8125rem;
-        color: var(--aegisx-text-body);
+        color: var(--ax-text-body);
 
         li {
           margin-bottom: 0.25rem;

@@ -109,4 +109,11 @@ export const appRoutes: Route[] = [
         (m) => m.TypographyShowcaseComponent,
       ),
   },
+  {
+    path: 'aegisx-ui',
+    loadComponent: () =>
+      import('./pages/aegisx-ui-showcase/aegisx-ui-showcase.component').then(
+        (m) => m.AegisxUiShowcaseComponent,
+      ),
+  },
 ];

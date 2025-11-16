@@ -109,7 +109,7 @@ import { MatIconModule } from '@angular/material/icon';
 
     .kpi-label {
       font-size: 0.875rem;
-      color: var(--aegisx-text-secondary);
+      color: var(--ax-text-secondary);
       text-transform: uppercase;
       font-weight: 600;
     }
@@ -117,7 +117,7 @@ import { MatIconModule } from '@angular/material/icon';
     .kpi-value {
       font-size: 2rem;
       font-weight: 700;
-      color: var(--aegisx-text-heading);
+      color: var(--ax-text-heading);
       margin-bottom: 0.5rem;
     }
 
@@ -125,7 +125,7 @@ import { MatIconModule } from '@angular/material/icon';
       font-size: 0.875rem;
 
       &.positive {
-        color: var(--aegisx-success-default);
+        color: var(--ax-success-default);
       }
     }
   \`,

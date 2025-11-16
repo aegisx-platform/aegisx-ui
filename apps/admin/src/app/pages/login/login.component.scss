@@ -13,7 +13,7 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: var(--aegisx-background-subtle, #f9fafb);
+  background: var(--ax-background-subtle, #f9fafb);
 
   // Responsive: Stack on mobile
   @media (max-width: 960px) {
@@ -32,8 +32,8 @@
   padding: 3rem;
   background: linear-gradient(
     135deg,
-    var(--aegisx-brand-default, #4f46e5) 0%,
-    var(--aegisx-brand-emphasis, #6366f1) 100%
+    var(--ax-brand-default, #4f46e5) 0%,
+    var(--ax-brand-emphasis, #6366f1) 100%
   );
   color: white;
   position: relative;
@@ -135,7 +135,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  background: var(--aegisx-background-default, #ffffff);
+  background: var(--ax-background-default, #ffffff);
 
   @media (max-width: 960px) {
     padding: 2rem 1.5rem;
@@ -145,7 +145,7 @@
 .login-card {
   width: 100%;
   max-width: 440px;
-  box-shadow: var(--aegisx-shadow-sm) !important;
+  box-shadow: var(--ax-shadow-sm) !important;
 }
 
 // ============================================================================
@@ -163,13 +163,13 @@
 .login-title {
   font-size: 1.75rem !important;
   font-weight: 600 !important;
-  color: var(--aegisx-text-strong) !important;
+  color: var(--ax-text-strong) !important;
   margin-bottom: 0.5rem !important;
 }
 
 .login-subtitle {
   font-size: 0.875rem !important;
-  color: var(--aegisx-text-subtle) !important;
+  color: var(--ax-text-subtle) !important;
   margin-bottom: 0 !important;
 }
 
@@ -198,7 +198,7 @@ form {
 mat-form-field {
   mat-icon[matPrefix] {
     margin-right: 0.75rem;
-    color: var(--aegisx-text-subtle);
+    color: var(--ax-text-subtle);
   }
 }
 
@@ -224,13 +224,13 @@ mat-form-field {
 
 .forgot-password {
   font-size: 0.875rem;
-  color: var(--aegisx-brand-default);
+  color: var(--ax-brand-default);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--aegisx-brand-emphasis);
+    color: var(--ax-brand-emphasis);
     text-decoration: underline;
   }
 }
@@ -279,7 +279,7 @@ mat-form-field {
 
 .divider-text {
   font-size: 0.75rem;
-  color: var(--aegisx-text-subtle);
+  color: var(--ax-text-subtle);
   white-space: nowrap;
 }
 
@@ -302,8 +302,8 @@ mat-form-field {
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: var(--aegisx-background-muted) !important;
-    border-color: var(--aegisx-brand-default) !important;
+    background-color: var(--ax-background-muted) !important;
+    border-color: var(--ax-brand-default) !important;
   }
 
   mat-icon {
@@ -322,13 +322,13 @@ mat-form-field {
 // ============================================================================
 .login-footer {
   padding: 1.5rem 2rem !important;
-  border-top: 1px solid var(--aegisx-border-default);
+  border-top: 1px solid var(--ax-border-default);
   text-align: center;
 
   p {
     margin: 0;
     font-size: 0.875rem;
-    color: var(--aegisx-text-body);
+    color: var(--ax-text-body);
   }
 
   @media (max-width: 960px) {
@@ -337,14 +337,14 @@ mat-form-field {
 }
 
 .signup-link {
-  color: var(--aegisx-brand-default);
+  color: var(--ax-brand-default);
   text-decoration: none;
   font-weight: 500;
   margin-left: 0.25rem;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--aegisx-brand-emphasis);
+    color: var(--ax-brand-emphasis);
     text-decoration: underline;
   }
 }
@@ -359,21 +359,21 @@ mat-form-field {
   gap: 0.75rem;
   margin-top: 2rem;
   font-size: 0.875rem;
-  color: var(--aegisx-text-subtle);
+  color: var(--ax-text-subtle);
 
   a {
-    color: var(--aegisx-text-body);
+    color: var(--ax-text-body);
     text-decoration: none;
     transition: color 0.2s ease;
 
     &:hover {
-      color: var(--aegisx-brand-default);
+      color: var(--ax-brand-default);
       text-decoration: underline;
     }
   }
 
   span {
-    color: var(--aegisx-text-subtle);
+    color: var(--ax-text-subtle);
   }
 }
 
