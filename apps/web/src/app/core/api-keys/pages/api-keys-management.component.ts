@@ -12,7 +12,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { BreadcrumbComponent, AxNavigationItem } from '@aegisx/ui';
+import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApiKeyWithPreview } from '../models/api-keys.types';
 import { GenerateKeyDialogComponent } from '../dialogs/generate-key-dialog.component';
@@ -315,18 +315,14 @@ export class ApiKeysManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  breadcrumbItems: AxNavigationItem[] = [
+  breadcrumbItems: BreadcrumbItem[] = [
     {
-      id: 'settings',
-      title: 'Settings',
-      link: '/settings',
-      type: 'basic',
+      label: 'Settings',
+      url: '/settings',
     },
     {
-      id: 'api-keys',
-      title: 'API Keys',
-      link: '/settings/api-keys',
-      type: 'basic',
+      label: 'API Keys',
+      url: '/settings/api-keys',
     },
   ];
 

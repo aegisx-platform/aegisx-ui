@@ -1,4 +1,4 @@
-import { AxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
 import {
@@ -626,32 +626,24 @@ export class UserRoleAssignmentComponent implements OnInit {
   readonly currentPage = signal(0);
 
   // Breadcrumb items
-  breadcrumbItems: AxNavigationItem[] = [
+  breadcrumbItems: BreadcrumbItem[] = [
     {
-      id: 'dashboard',
-      title: 'Dashboard',
+      label: 'Dashboard',
       icon: 'dashboard',
-      link: '/',
-      type: 'basic',
+      url: '/',
     },
     {
-      id: 'management',
-      title: 'Management',
+      label: 'Management',
       icon: 'settings',
-      type: 'basic',
     },
     {
-      id: 'rbac',
-      title: 'RBAC Management',
+      label: 'RBAC Management',
       icon: 'security',
-      link: '/rbac',
-      type: 'basic',
+      url: '/rbac',
     },
     {
-      id: 'user-roles',
-      title: 'User Role Assignments',
+      label: 'User Role Assignments',
       icon: 'assignment_ind',
-      type: 'basic',
     },
   ];
 
