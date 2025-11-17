@@ -124,14 +124,14 @@ export class TestProductsListComponent {
     {
       id: 'home',
       title: 'Home',
-      type: 'basic',
+      type: 'item',
       icon: 'home',
       link: '/',
     },
     {
       id: 'test_products',
       title: 'TestProducts',
-      type: 'basic',
+      type: 'item',
       icon: 'menu_book',
     },
   ];

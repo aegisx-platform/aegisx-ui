@@ -30,7 +30,6 @@ import {
   AxBreadcrumbComponent,
   AxLoadingBarComponent,
   AxNavigationComponent,
-  AxMenuComponent,
 } from '@aegisx/ui';
 
 interface AxSection {
@@ -62,7 +61,6 @@ interface AxSection {
     AxAlertComponent,
     AxBreadcrumbComponent,
     AxLoadingBarComponent,
-    AxMenuComponent,
   ],
   template: `
     <div class="aegisx-ui-section">
