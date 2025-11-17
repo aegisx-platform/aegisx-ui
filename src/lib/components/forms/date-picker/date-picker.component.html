@@ -226,20 +226,12 @@
               [class.ax-date-picker-day-selected]="day.isSelected"
               [class.ax-date-picker-day-focused]="day.isFocused"
               [class.ax-date-picker-day-disabled]="day.isDisabled"
-              [class.ax-date-picker-day-range-start]="day.isRangeStart"
-              [class.ax-date-picker-day-range-end]="day.isRangeEnd"
-              [class.ax-date-picker-day-in-range]="day.isInRange"
-              [class.ax-date-picker-day-range-hover]="day.isRangeHover"
               [disabled]="day.isDisabled"
               [attr.aria-label]="getDateAriaLabel(day.date)"
-              [attr.aria-selected]="
-                day.isSelected || day.isRangeStart || day.isRangeEnd
-              "
+              [attr.aria-selected]="day.isSelected"
               [attr.aria-disabled]="day.isDisabled"
               [attr.aria-current]="day.isToday ? 'date' : null"
               (click)="selectDate(day); $event.stopPropagation()"
-              (mouseenter)="onDayHover(day)"
-              (mouseleave)="onDayHoverEnd()"
             >
               {{ day.day }}
             </button>
