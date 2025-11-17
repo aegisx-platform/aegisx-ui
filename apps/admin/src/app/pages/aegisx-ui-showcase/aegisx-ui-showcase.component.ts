@@ -10,7 +10,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 
 // Forms
-import { AxDatePickerComponent, dateValidators, DateRange } from '@aegisx/ui';
+import { AxDatePickerComponent, dateValidators } from '@aegisx/ui';
 
 // Data Display
 import { AxCardComponent } from '@aegisx/ui';
@@ -141,30 +141,6 @@ export class AegisxUiShowcaseComponent {
       dateValidators.pastDate(),
     ]),
   });
-
-  // ===========================================
-  // Date Range Examples (NEW)
-  // ===========================================
-
-  // Basic range
-  dateRangeBasic = new FormControl<DateRange | null>(null);
-
-  // Required range
-  dateRangeRequired = new FormControl<DateRange | null>(null, [
-    dateValidators.required(),
-  ]);
-
-  // Range with min/max dates (e.g., hotel booking)
-  dateRangeHotel = new FormControl<DateRange | null>(null);
-  hotelMinDate = new Date(); // Today
-  hotelMaxDate = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
-
-  // Travel dates with constraints
-  travelDates = new FormControl<DateRange | null>(null, [
-    dateValidators.required(),
-  ]);
-  travelMinDate = new Date();
-  travelMaxDate = new Date(new Date().getTime() + 180 * 24 * 60 * 60 * 1000); // 6 months
 
   // Data Display
   listItems: ListItem[] = [
