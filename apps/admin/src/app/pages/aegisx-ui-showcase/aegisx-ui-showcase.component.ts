@@ -1,48 +1,32 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 
 // Forms
-import { AxButtonComponent } from '@aegisx/ui';
-import { AxCheckboxComponent } from '@aegisx/ui';
-import { AxRadioGroupComponent } from '@aegisx/ui';
-import { AxInputComponent } from '@aegisx/ui';
-import { AxSelectComponent } from '@aegisx/ui';
-import { AxToggleComponent } from '@aegisx/ui';
-import { AxTextareaComponent } from '@aegisx/ui';
-import { AxDatePickerComponent } from '@aegisx/ui';
+import { AxDatePickerComponent, dateValidators } from '@aegisx/ui';
 
 // Data Display
 import { AxCardComponent } from '@aegisx/ui';
-import { AxBadgeComponent } from '@aegisx/ui';
 import { AxAvatarComponent } from '@aegisx/ui';
-import { AxChipComponent } from '@aegisx/ui';
 import { AxListComponent, ListItem } from '@aegisx/ui';
 import { AxStatsCardComponent } from '@aegisx/ui';
 import { AxTimelineComponent, TimelineItem } from '@aegisx/ui';
-import { AxTableComponent, TableColumn } from '@aegisx/ui';
 import { AxFieldDisplayComponent } from '@aegisx/ui';
 import { AxDescriptionListComponent } from '@aegisx/ui';
-import { AxDataCardComponent } from '@aegisx/ui';
 
 // Feedback
 import { AxAlertComponent } from '@aegisx/ui';
-import { AxSnackbarContainerComponent } from '@aegisx/ui';
-import { TooltipDirective } from '@aegisx/ui';
-import { AxProgressComponent } from '@aegisx/ui';
-import { AxSkeletonComponent } from '@aegisx/ui';
-import { AxDialogComponent } from '@aegisx/ui';
 import { AxLoadingBarComponent, LoadingBarService } from '@aegisx/ui';
 
 // Navigation
 import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
-import { AxMenuComponent, MenuItem } from '@aegisx/ui';
-import { AxTabsComponent, Tab } from '@aegisx/ui';
-import { AxNavbarComponent, NavbarItem } from '@aegisx/ui';
-import { AxSidebarComponent, SidebarItem } from '@aegisx/ui';
-import { AxDrawerComponent } from '@aegisx/ui';
-import { AxPaginationComponent } from '@aegisx/ui';
-import { AxStepperComponent, Step } from '@aegisx/ui';
 
 @Component({
   selector: 'app-aegisx-ui-showcase',
@@ -50,44 +34,23 @@ import { AxStepperComponent, Step } from '@aegisx/ui';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
     // Forms
-    AxButtonComponent,
-    AxCheckboxComponent,
-    AxRadioGroupComponent,
-    AxInputComponent,
-    AxSelectComponent,
-    AxToggleComponent,
-    AxTextareaComponent,
     AxDatePickerComponent,
     // Data Display
     AxCardComponent,
-    AxBadgeComponent,
     AxAvatarComponent,
-    AxChipComponent,
     AxListComponent,
     AxStatsCardComponent,
     AxTimelineComponent,
-    AxTableComponent,
     AxFieldDisplayComponent,
     AxDescriptionListComponent,
-    AxDataCardComponent,
     // Feedback
     AxAlertComponent,
-    AxSnackbarContainerComponent,
-    TooltipDirective,
-    AxProgressComponent,
-    AxSkeletonComponent,
-    AxDialogComponent,
     AxLoadingBarComponent,
     // Navigation
     AxBreadcrumbComponent,
-    AxMenuComponent,
-    AxTabsComponent,
-    AxNavbarComponent,
-    AxSidebarComponent,
-    AxDrawerComponent,
-    AxPaginationComponent,
-    AxStepperComponent,
   ],
   templateUrl: './aegisx-ui-showcase.component.html',
   styleUrls: ['./aegisx-ui-showcase.component.scss'],
@@ -131,6 +94,46 @@ export class AegisxUiShowcaseComponent {
   dateValueWithActionsRestricted: Date | null = null;
   today = new Date();
   maxDate = new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+  // ===========================================
+  // Angular Forms Integration Examples
+  // ===========================================
+
+  // Template-driven Form Examples (ngModel)
+  dateTemplateRequired: Date | null = null;
+  dateTemplateMinMax: Date | null = null;
+  minDate2024 = new Date(2024, 0, 1); // Jan 1, 2024
+  maxDate2024 = new Date(2024, 11, 31); // Dec 31, 2024
+
+  // Reactive Forms Examples (FormControl)
+  dateReactiveBasic = new FormControl<Date | null>(null);
+  dateReactiveRequired = new FormControl<Date | null>(null, [
+    dateValidators.required(),
+  ]);
+  dateReactiveRange = new FormControl<Date | null>(null, [
+    dateValidators.minDate(new Date(2024, 0, 1)),
+    dateValidators.maxDate(new Date(2024, 11, 31)),
+  ]);
+  dateReactiveFuture = new FormControl<Date | null>(null, [
+    dateValidators.required(),
+    dateValidators.futureDate(),
+  ]);
+  dateReactiveWeekday = new FormControl<Date | null>(null, [
+    dateValidators.noWeekend(),
+  ]);
+
+  // Reactive Form Group Example
+  appointmentForm = new FormGroup({
+    appointmentDate: new FormControl<Date | null>(null, [
+      dateValidators.required(),
+      dateValidators.futureDate(),
+      dateValidators.noWeekend(),
+    ]),
+    birthDate: new FormControl<Date | null>(null, [
+      dateValidators.required(),
+      dateValidators.pastDate(),
+    ]),
+  });
 
   // Data Display
   listItems: ListItem[] = [
@@ -186,6 +189,12 @@ export class AegisxUiShowcaseComponent {
     isActive: true,
   };
 
+  // Validation demo data
+  validationDemo = {
+    username: 'sathit_dev',
+    email: 'sathit@example.com',
+  };
+
   orderData = {
     id: 'ORD-2024-001',
     customer: 'John Doe',
@@ -218,45 +227,6 @@ export class AegisxUiShowcaseComponent {
     { label: 'Components', url: '/components' },
     { label: 'Showcase' },
   ];
-
-  menuItems: MenuItem[] = [
-    { label: 'Profile', icon: '👤' },
-    { label: 'Settings', icon: '⚙️' },
-    { label: 'Logout', icon: '🚪' },
-  ];
-
-  tabs: Tab[] = [
-    { label: 'Tab 1', icon: '📋' },
-    { label: 'Tab 2', icon: '📊' },
-    { label: 'Tab 3', icon: '⚙️' },
-  ];
-  activeTab = 0;
-
-  navbarItems: NavbarItem[] = [
-    { label: 'Home', url: '/', active: true },
-    { label: 'About', url: '/about' },
-    { label: 'Contact', url: '/contact' },
-  ];
-
-  sidebarItems: SidebarItem[] = [
-    { label: 'Dashboard', icon: '📊', url: '/', active: true },
-    { label: 'Users', icon: '👥', url: '/users' },
-    { label: 'Settings', icon: '⚙️', url: '/settings' },
-  ];
-
-  steps: Step[] = [
-    { label: 'Step 1', description: 'First step', completed: true },
-    { label: 'Step 2', description: 'Second step', completed: false },
-    { label: 'Step 3', description: 'Third step', completed: false },
-  ];
-  activeStep = 1;
-
-  currentPage = 1;
-  totalPages = 10;
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-  }
 
   // ==========================================
   // Loading Bar Demo Methods

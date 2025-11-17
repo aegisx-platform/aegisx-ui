@@ -5,9 +5,18 @@ import {
   Input,
   forwardRef,
   inject,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  NG_VALIDATORS,
+  Validator,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 
 export type DatePickerSize = 'sm' | 'md' | 'lg';
 export type DatePickerLocale = 'en' | 'th';
@@ -98,9 +107,16 @@ const ENGLISH_MONTHS_SHORT = [
       useExisting: forwardRef(() => AxDatePickerComponent),
       multi: true,
     },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => AxDatePickerComponent),
+      multi: true,
+    },
   ],
 })
-export class AxDatePickerComponent implements ControlValueAccessor {
+export class AxDatePickerComponent
+  implements ControlValueAccessor, Validator, OnChanges
+{
   @Input() label = '';
   @Input() placeholder = 'Select date';
   @Input() disabled = false;
@@ -184,6 +200,7 @@ export class AxDatePickerComponent implements ControlValueAccessor {
 
   private onChange = (_value: unknown) => {}; // eslint-disable-line @typescript-eslint/no-empty-function
   private onTouched = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
+  private onValidatorChange = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 
   constructor() {
     this.generateCalendar();
@@ -282,7 +299,9 @@ export class AxDatePickerComponent implements ControlValueAccessor {
 
   toggleDropdown(): void {
     if (this.disabled || this.readonly) return;
+    const wasOpen = this.isOpen;
     this.isOpen = !this.isOpen;
+
     if (this.isOpen) {
       this.focused = true;
       // Initialize focused date for keyboard navigation
@@ -295,6 +314,10 @@ export class AxDatePickerComponent implements ControlValueAccessor {
         );
       }
       this.generateCalendar();
+    } else if (wasOpen) {
+      // Closing dropdown - mark as touched
+      this.focused = false;
+      this.onTouched();
     }
   }
 
@@ -362,6 +385,7 @@ export class AxDatePickerComponent implements ControlValueAccessor {
       event.preventDefault();
       this.isOpen = false;
       this.focused = false;
+      this.onTouched(); // Mark as touched when closing with Escape
     } else if (event.key === 'ArrowDown' && !this.isOpen) {
       event.preventDefault();
       this.toggleDropdown();
@@ -378,6 +402,7 @@ export class AxDatePickerComponent implements ControlValueAccessor {
       event.preventDefault();
       this.isOpen = false;
       this.focused = false;
+      this.onTouched(); // Mark as touched when closing with Escape
       return;
     }
 
@@ -779,8 +804,14 @@ export class AxDatePickerComponent implements ControlValueAccessor {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event): void {
     if (!this.elementRef.nativeElement.contains(event.target)) {
+      const wasOpen = this.isOpen;
       this.isOpen = false;
       this.focused = false;
+
+      // Mark as touched when dropdown closes due to outside click
+      if (wasOpen) {
+        this.onTouched();
+      }
     }
   }
 
@@ -803,5 +834,63 @@ export class AxDatePickerComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+
+  // Validator implementation
+  validate(_control: AbstractControl): ValidationErrors | null {
+    const errors: ValidationErrors = {};
+
+    // Required validation
+    if (this.required && !this.value) {
+      errors['required'] = true;
+    }
+
+    // Min date validation
+    if (this.value && this.minDate) {
+      const valueDate = new Date(this.value);
+      const minDate = new Date(this.minDate);
+      valueDate.setHours(0, 0, 0, 0);
+      minDate.setHours(0, 0, 0, 0);
+
+      if (valueDate < minDate) {
+        errors['minDate'] = {
+          minDate: this.formatDate(this.minDate),
+          actual: this.formatDate(this.value),
+        };
+      }
+    }
+
+    // Max date validation
+    if (this.value && this.maxDate) {
+      const valueDate = new Date(this.value);
+      const maxDate = new Date(this.maxDate);
+      valueDate.setHours(0, 0, 0, 0);
+      maxDate.setHours(0, 0, 0, 0);
+
+      if (valueDate > maxDate) {
+        errors['maxDate'] = {
+          maxDate: this.formatDate(this.maxDate),
+          actual: this.formatDate(this.value),
+        };
+      }
+    }
+
+    return Object.keys(errors).length > 0 ? errors : null;
+  }
+
+  registerOnValidatorChange(fn: () => void): void {
+    this.onValidatorChange = fn;
+  }
+
+  // OnChanges implementation - trigger validation when constraints change
+  ngOnChanges(changes: SimpleChanges): void {
+    const constraintChanges = ['required', 'minDate', 'maxDate'];
+    const hasConstraintChange = constraintChanges.some(
+      (key) => changes[key] && !changes[key].firstChange,
+    );
+
+    if (hasConstraintChange) {
+      this.onValidatorChange();
+    }
   }
 }

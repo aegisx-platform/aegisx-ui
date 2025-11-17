@@ -105,6 +105,59 @@
       }
     }
   }
+
+  // Subsection styling for feature groups
+  .demo-container.feature-group {
+    flex-direction: column;
+    padding: 1.25rem;
+    background-color: var(--ax-background-subtle);
+    border: 1px solid var(--ax-border-subtle);
+    border-radius: 0.5rem;
+    margin-top: 1.5rem;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ax-text-heading);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--ax-border-default);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      // Icon support
+      &::before {
+        display: inline-flex;
+        font-size: 1.125rem;
+      }
+    }
+
+    // Nested demo containers within feature groups
+    .demo-container {
+      margin-top: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+  }
+
+  // Improved h4 styling for standalone subsections
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ax-text-heading);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+
+    &.mb-4 {
+      margin-bottom: 1rem;
+    }
+  }
 }
 
 // Responsive adjustments

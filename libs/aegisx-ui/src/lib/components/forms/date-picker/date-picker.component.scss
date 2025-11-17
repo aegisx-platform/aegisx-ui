@@ -3,7 +3,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--ax-spacing-xs);
+  gap: var(--ax-spacing-sm);
   width: 100%;
 }
 
@@ -56,8 +56,12 @@
 
 .ax-date-picker-wrapper-disabled {
   background-color: var(--ax-gray-100);
-  opacity: 0.6;
   cursor: not-allowed;
+
+  .ax-date-picker-value,
+  .ax-date-picker-placeholder {
+    color: var(--ax-text-secondary);
+  }
 }
 
 // Readonly state - Enhanced for display-oriented appearance
