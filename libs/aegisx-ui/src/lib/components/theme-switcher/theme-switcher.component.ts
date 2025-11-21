@@ -1,11 +1,9 @@
 /**
  * AegisX Theme Switcher Component
  *
- * Provides a user interface for switching between Material 3 themes
- * and toggling light/dark mode.
- *
- * Usage:
- * <ax-theme-switcher></ax-theme-switcher>
+ * Provides theme switching UI for AegisX applications.
+ * Integrates with AxThemeService to switch between light/dark modes
+ * and different color themes.
  */
 
 import { Component, inject } from '@angular/core';
@@ -15,8 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { M3ThemeService } from '../../services/theme/m3-theme.service';
-import { StylePresetService } from '../../services/theme/style-preset.service';
+import { AxThemeService } from '../../services/theme/ax-theme.service';
 
 @Component({
   selector: 'ax-theme-switcher',
@@ -46,35 +43,29 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
       <div class="theme-menu-section">
         <div class="theme-menu-header">
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">
-            COLOR THEME
+            THEMES
           </span>
         </div>
 
         <!-- Theme Options -->
-        @for (theme of availableThemes(); track theme.id) {
+        @for (theme of themes; track theme.id) {
           <button
             mat-menu-item
             (click)="selectTheme(theme.id)"
-            [class.theme-active]="currentTheme() === theme.id"
+            [class.theme-active]="currentTheme()?.id === theme.id"
             class="theme-option"
           >
             <div class="theme-option-content">
-              <!-- Color Preview Dot -->
-              <div
-                class="theme-color-dot"
-                [style.background-color]="theme.seedColor"
-                [style.border]="
-                  currentTheme() === theme.id
-                    ? '2px solid ' + theme.seedColor
-                    : '2px solid transparent'
-                "
-              ></div>
+              <!-- Theme Icon -->
+              <mat-icon>
+                {{ theme.id.includes('dark') ? 'dark_mode' : 'light_mode' }}
+              </mat-icon>
 
               <!-- Theme Name -->
               <span class="theme-name">{{ theme.name }}</span>
 
               <!-- Check Icon (visible when active) -->
-              @if (currentTheme() === theme.id) {
+              @if (currentTheme()?.id === theme.id) {
                 <mat-icon class="theme-check-icon">check_circle</mat-icon>
               }
             </div>
@@ -85,57 +76,24 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
       <!-- Divider -->
       <mat-divider></mat-divider>
 
-      <!-- Style Preset Section -->
+      <!-- Quick Actions -->
       <div class="theme-menu-section">
         <div class="theme-menu-header">
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">
-            STYLE PRESET
+            QUICK ACTIONS
           </span>
         </div>
 
-        <!-- Style Preset Options -->
-        @for (preset of availablePresets(); track preset.id) {
-          <button
-            mat-menu-item
-            (click)="selectPreset(preset.id)"
-            [class.preset-active]="currentPreset() === preset.id"
-            class="preset-option"
-          >
-            <div class="preset-option-content">
-              <!-- Preset Icon -->
-              <mat-icon class="preset-icon">style</mat-icon>
-
-              <!-- Preset Name -->
-              <span class="preset-name">{{ preset.name }}</span>
-
-              <!-- Check Icon (visible when active) -->
-              @if (currentPreset() === preset.id) {
-                <mat-icon class="preset-check-icon">check_circle</mat-icon>
-              }
-            </div>
-          </button>
-        }
-      </div>
-
-      <!-- Divider -->
-      <mat-divider></mat-divider>
-
-      <!-- Appearance Section -->
-      <div class="theme-menu-section">
-        <div class="theme-menu-header">
-          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">
-            APPEARANCE
-          </span>
-        </div>
-
-        <!-- Dark Mode Toggle -->
+        <!-- Toggle Light/Dark -->
         <button
           mat-menu-item
           (click)="toggleDarkMode()"
           class="appearance-option"
         >
-          <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-          <span>{{ isDarkMode() ? 'Light Mode' : 'Dark Mode' }}</span>
+          <mat-icon>
+            {{ isDarkMode() ? 'light_mode' : 'dark_mode' }}
+          </mat-icon>
+          <span>{{ isDarkMode() ? 'Switch to Light' : 'Switch to Dark' }}</span>
         </button>
       </div>
     </mat-menu>
@@ -153,21 +111,16 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
       }
 
       .theme-switcher-menu {
-        min-width: 220px !important;
+        min-width: 240px !important;
       }
 
       /* Override Material menu panel styles */
       ::ng-deep .theme-switcher-menu.mat-mdc-menu-panel {
-        background-color: rgba(255, 255, 255, 0.98) !important;
+        background-color: var(--ax-background-default) !important;
         backdrop-filter: blur(10px) !important;
-        border-radius: 8px !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-      }
-
-      /* Dark mode */
-      ::ng-deep .dark .theme-switcher-menu.mat-mdc-menu-panel {
-        background-color: rgba(33, 33, 33, 0.98) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        border-radius: var(--ax-radius-md) !important;
+        border: 1px solid var(--ax-border-default) !important;
+        box-shadow: var(--ax-shadow-lg) !important;
       }
 
       /* Material menu surface */
@@ -181,6 +134,10 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
 
       .theme-menu-header {
         padding: 12px 16px 8px;
+
+        span {
+          color: var(--ax-text-subtle) !important;
+        }
       }
 
       .theme-option {
@@ -188,18 +145,16 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
         padding: 12px 16px !important;
 
         &.theme-active {
-          background-color: rgba(
-            var(--md-sys-color-primary-rgb, 57, 73, 171),
-            0.08
-          );
+          background-color: var(--ax-brand-faint) !important;
 
           .theme-name {
             font-weight: 500;
+            color: var(--ax-brand-emphasis) !important;
           }
         }
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.04);
+          background-color: var(--ax-background-muted) !important;
         }
       }
 
@@ -208,25 +163,24 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
         align-items: center;
         gap: 12px;
         width: 100%;
-      }
 
-      .theme-color-dot {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        mat-icon:first-child {
+          width: 20px;
+          height: 20px;
+          font-size: 20px;
+          color: var(--ax-text-subtle);
+        }
       }
 
       .theme-name {
         flex: 1;
         font-size: 14px;
-        color: rgba(0, 0, 0, 0.87);
+        color: var(--ax-text-body);
       }
 
       .theme-check-icon {
         margin-left: auto;
-        color: var(--md-sys-color-primary, #1976d2);
+        color: var(--ax-brand-default);
         font-size: 20px;
         width: 20px;
         height: 20px;
@@ -237,107 +191,34 @@ import { StylePresetService } from '../../services/theme/style-preset.service';
         padding: 12px 16px !important;
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.04);
-        }
-      }
-
-      /* Style Preset Options */
-      .preset-option {
-        height: auto !important;
-        padding: 12px 16px !important;
-
-        &.preset-active {
-          background-color: rgba(
-            var(--md-sys-color-primary-rgb, 57, 73, 171),
-            0.08
-          );
-
-          .preset-name {
-            font-weight: 500;
-          }
+          background-color: var(--ax-background-muted) !important;
         }
 
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.04);
-        }
-      }
-
-      .preset-option-content {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        width: 100%;
-      }
-
-      .preset-icon {
-        width: 20px;
-        height: 20px;
-        font-size: 16px;
-        color: rgba(0, 0, 0, 0.5);
-        flex-shrink: 0;
-      }
-
-      .preset-name {
-        flex: 1;
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.87);
-      }
-
-      .preset-check-icon {
-        margin-left: auto;
-        color: var(--md-sys-color-primary, #1976d2);
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-      }
-
-      /* Dark mode overrides */
-      :host-context(.dark) {
-        .theme-name {
-          color: rgba(255, 255, 255, 0.87);
+        mat-icon {
+          margin-right: 12px;
+          color: var(--ax-text-body);
         }
 
-        .theme-option {
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-          }
-        }
-
-        .preset-icon {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        .preset-name {
-          color: rgba(255, 255, 255, 0.87);
-        }
-
-        .preset-option {
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-          }
-        }
-
-        .appearance-option {
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-          }
+        span {
+          color: var(--ax-text-body);
         }
       }
     `,
   ],
 })
 export class AxThemeSwitcherComponent {
-  private readonly themeService = inject(M3ThemeService);
-  private readonly stylePresetService = inject(StylePresetService);
+  private readonly themeService = inject(AxThemeService);
 
   // Expose theme service properties
+  themes = this.themeService.themes;
   currentTheme = this.themeService.currentTheme;
-  isDarkMode = this.themeService.isDarkMode;
-  availableThemes = this.themeService.availableThemes;
 
-  // Expose style preset service properties
-  currentPreset = this.stylePresetService.currentPreset;
-  availablePresets = this.stylePresetService.availablePresets;
+  /**
+   * Check if current theme is dark mode
+   */
+  isDarkMode() {
+    return this.currentTheme()?.id.includes('dark') ?? false;
+  }
 
   /**
    * Select a theme by ID
@@ -347,18 +228,34 @@ export class AxThemeSwitcherComponent {
   }
 
   /**
-   * Select a style preset by ID
-   */
-  selectPreset(presetId: string): void {
-    this.stylePresetService.setPreset(presetId);
-    // Re-apply theme to include new preset CSS
-    this.themeService.reapplyTheme();
-  }
-
-  /**
-   * Toggle dark/light mode
+   * Toggle between light and dark mode
+   * For AegisX themes: switches between -light and -dark variants
+   * For Material prebuilt themes: falls back to AegisX light/dark
    */
   toggleDarkMode(): void {
-    this.themeService.toggleScheme();
+    const currentId = this.currentTheme()?.id;
+
+    if (!currentId) {
+      this.selectTheme('aegisx-light');
+      return;
+    }
+
+    // Check if it's an AegisX theme (has -light or -dark suffix)
+    const isAegisXTheme =
+      currentId.includes('-light') || currentId.includes('-dark');
+
+    if (isAegisXTheme) {
+      if (currentId.includes('dark')) {
+        // Switch to light version
+        this.selectTheme(currentId.replace('-dark', '-light'));
+      } else {
+        // Switch to dark version
+        this.selectTheme(currentId.replace('-light', '-dark'));
+      }
+    } else {
+      // Material prebuilt themes don't have light/dark variants
+      // Fall back to AegisX themes
+      this.selectTheme(this.isDarkMode() ? 'aegisx-light' : 'aegisx-dark');
+    }
   }
 }
