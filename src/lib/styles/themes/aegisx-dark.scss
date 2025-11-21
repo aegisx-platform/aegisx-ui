@@ -5,9 +5,10 @@
    ============================================================ */
 
 @use '@angular/material' as mat;
-@use './aegisx-tokens' as *;
+@use './_aegisx-tokens' as *;
 @use './material-overrides' as *;
 @use '../components/form-utilities' as *;
+@use '../components/dialog-shared'; // Dialog shared styles with theme support
 
 /* ============================================================
    Theme Configuration
@@ -66,6 +67,64 @@ $aegisx-dark-theme: mat.define-theme(
   --md-sys-color-surface-container: #1f2937;
   --md-sys-color-surface-container-high: #374151;
   --md-sys-color-surface-container-highest: #4b5563;
+
+  /* Material 3 Card Color Overrides - Dark Mode */
+  /* Raised/Elevated Card */
+  --mat-card-elevated-container-color: var(--ax-background-subtle);
+  --mdc-elevated-card-container-color: var(--ax-background-subtle);
+
+  /* Outlined Card */
+  --mat-card-outlined-container-color: var(--ax-background-default);
+  --mdc-outlined-card-container-color: var(--ax-background-default);
+
+  /* Filled Card */
+  --mat-card-filled-container-color: var(--ax-background-muted);
+  --mdc-filled-card-container-color: var(--ax-background-muted);
+
+  /* Generic card container */
+  --mat-card-container-color: var(--ax-background-subtle);
+
+  /* Card Border Color - Use AegisX border token */
+  --mat-card-outlined-outline-color: var(--ax-border-default);
+  --mdc-outlined-card-outline-color: var(--ax-border-default);
+
+  /* Button Text Color - Use AegisX text tokens */
+  --mat-button-outlined-label-text-color: var(--ax-text-emphasis);
+  --mdc-outlined-button-label-text-color: var(--ax-text-emphasis);
+
+  /* Button Outline/Border Color - Use AegisX border tokens */
+  --mat-button-outlined-outline-color: var(--ax-border-default);
+  --mdc-outlined-button-outline-color: var(--ax-border-default);
+
+  /* Button Shape - Override all button border-radius to --ax-radius-sm (4px) */
+  /* Regular buttons - Material variants */
+  --mat-button-filled-container-shape: var(--ax-radius-sm);
+  --mat-button-outlined-container-shape: var(--ax-radius-sm);
+  --mat-button-text-container-shape: var(--ax-radius-sm);
+  --mat-button-tonal-container-shape: var(--ax-radius-sm);
+  --mat-button-protected-container-shape: var(--ax-radius-sm);
+
+  /* Regular buttons - MDC variants */
+  --mdc-filled-button-container-shape: var(--ax-radius-sm);
+  --mdc-outlined-button-container-shape: var(--ax-radius-sm);
+  --mdc-text-button-container-shape: var(--ax-radius-sm);
+  --mdc-protected-button-container-shape: var(--ax-radius-sm);
+
+  /* FAB buttons - Material variants */
+  --mat-fab-container-shape: var(--ax-radius-sm);
+  --mat-fab-small-container-shape: var(--ax-radius-sm);
+  --mat-fab-extended-container-shape: var(--ax-radius-sm);
+
+  /* FAB buttons - MDC variants */
+  --mdc-fab-container-shape: var(--ax-radius-sm);
+  --mdc-fab-small-container-shape: var(--ax-radius-sm);
+  --mdc-extended-fab-container-shape: var(--ax-radius-sm);
+
+  /* Icon buttons - Material variants */
+  --mat-icon-button-container-shape: var(--ax-radius-sm);
+
+  /* Icon buttons - MDC variants */
+  --mdc-icon-button-container-shape: var(--ax-radius-sm);
 }
 
 /* ============================================================
