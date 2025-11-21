@@ -1,6 +1,6 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-11-13 (Session 69 - Design Token Enhancement & Tremor Migration)
+**Last Updated:** 2025-11-21 (Session 70 - Token-Based Dialog Headers & Test Products Refactor)
 **Current Status:** ✅ **PLATFORM COMPLETE** - All core features implemented, tested, and production-ready with complete design system
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 **CRUD Generator Version:** v2.2.0 (Ready for npm publish)
@@ -209,6 +209,13 @@ aegisx-starter/
     - **Semantic Classes**: bg-error, text-error, border-error work correctly in both themes
     - **KPI Cards Fixed**: Donut chart colors optimized (Slate 200), visual indicators corrected
     - **Full Dark Mode Support**: All error states properly visible in dark theme
+32. **Token-Based Dialog Headers** - Standardized dialog header system with theme support (Session 70):
+    - **8 New Semantic Tokens**: surface/border tokens for info, warning, success, error dialog headers
+    - **Light & Dark Themes**: 16 SASS variables with appropriate contrast for both themes
+    - **5 Header Classes**: `.ax-header-info`, `.ax-header-warning`, `.ax-header-success`, `.ax-header-error`, `.ax-header-neutral`
+    - **Test Products Refactor**: Migrated 10 dialog components to use standardized classes
+    - **Code Reduction**: -646 lines through design system standardization
+    - **Runtime Theme Switching**: CSS custom properties enable instant theme changes
 
 ### 🎯 Optional Platform Enhancements
 
@@ -293,13 +300,70 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 - **Enterprise Use Cases** - RBAC, audit trails, security features, performance optimization
 - **Rapid Prototyping** - Generate full-stack CRUD in minutes with --with-import and --with-events flags
 
-**Last Updated:** 2025-11-13 (Session 69 - Design Token Enhancement & Tremor Migration)
+**Last Updated:** 2025-11-21 (Session 70 - Token-Based Dialog Headers & Test Products Refactor)
 
 ---
 
 ## 🚀 Recent Development Sessions
 
 > **📦 For older sessions (38-46), see [Session Archive](./docs/sessions/ARCHIVE_2024_Q4.md)**
+
+### Session 70 (2025-11-21) ✅ COMPLETED
+
+**Session Focus:** Token-Based Dialog Headers with Light/Dark Theme Support
+
+**Main Achievements:**
+
+- ✅ **New Dialog Surface/Border Tokens** - Added 8 semantic tokens for dialog headers (info, warning, success, error)
+- ✅ **Light & Dark Theme Support** - 16 SASS variables (8 light + 8 dark) with proper contrast
+- ✅ **Test Products Dialog Refactor** - Migrated 10 files from custom "tremor" styles to standardized `.ax-header-*` classes
+- ✅ **Code Reduction** - Reduced 646 lines through design system standardization
+
+**Technical Details:**
+
+**New Design Tokens Added:**
+
+| Token                  | Light Theme | Dark Theme | Usage                     |
+| ---------------------- | ----------- | ---------- | ------------------------- |
+| `--ax-info-surface`    | #f2f7ff     | #1a2942    | Info dialog background    |
+| `--ax-info-border`     | #c8e2ff     | #2d4a73    | Info dialog border        |
+| `--ax-warning-surface` | #fffbf0     | #2d2410    | Warning dialog background |
+| `--ax-warning-border`  | #ffe1a8     | #4a3d1a    | Warning dialog border     |
+| `--ax-success-surface` | #f0fdf4     | #0a2e23    | Success dialog background |
+| `--ax-success-border`  | #a6f4c5     | #0f4c3b    | Success dialog border     |
+| `--ax-error-surface`   | #fff1f0     | #2d1414    | Error dialog background   |
+| `--ax-error-border`    | #ffb3b0     | #4a1f1f    | Error dialog border       |
+
+**Dialog Header Classes:**
+
+```scss
+.ax-header-info     // Create dialogs (blue)
+.ax-header-warning  // Edit dialogs (amber)
+.ax-header-success  // Success dialogs (green)
+.ax-header-error    // Error/Delete dialogs (red)
+.ax-header-neutral  // View dialogs (gray)
+```
+
+**Files Modified:**
+
+**Commit #1: Token System** (`a3f0fd6`)
+
+- `libs/aegisx-ui/src/lib/styles/themes/_aegisx-tokens.scss` (+40 lines)
+- `libs/aegisx-ui/src/lib/styles/components/_dialog-shared.scss` (+376 lines)
+
+**Commit #2: Test Products Refactor** (`5f238ee`)
+
+- 10 files in `apps/web/src/app/features/test-products/components/`
+- Net reduction: -646 lines (1,122 insertions, 1,768 deletions)
+
+**Impact:**
+
+- 🎯 **Theme Switching** - Dialog headers automatically adapt to light/dark mode
+- 🎨 **Consistent Design** - All dialogs follow AegisX design system standards
+- 📉 **Less Code** - Shared styles eliminate per-component custom styling
+- 🔧 **Maintainable** - Single source of truth for dialog header appearance
+
+---
 
 ### Session 69 (2025-11-13) ✅ COMPLETED
 
