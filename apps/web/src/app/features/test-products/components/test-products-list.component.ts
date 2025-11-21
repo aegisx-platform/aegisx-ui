@@ -1,3 +1,10 @@
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectorRef,
@@ -12,18 +19,12 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { fromEventPattern } from 'rxjs';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from '@angular/animations';
 
 // Material imports for table
 import { SelectionModel } from '@angular/cdk/collections';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -41,10 +42,10 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import {
-  AxNavigationItem,
+  AxDialogService,
   AxEmptyStateComponent,
   AxErrorStateComponent,
-  AxDialogService,
+  AxNavigationItem,
   BreadcrumbComponent,
 } from '@aegisx/ui';
 import {
@@ -52,22 +53,22 @@ import {
   ExportService,
   SharedExportComponent,
 } from '../../../shared/components/shared-export/shared-export.component';
+import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import { TestProductService } from '../services/test-products.service';
 import {
-  TestProduct,
   ListTestProductQuery,
+  TestProduct,
 } from '../types/test-products.types';
-import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import { TestProductCreateDialogComponent } from './test-products-create.dialog';
 import {
   TestProductEditDialogComponent,
   TestProductEditDialogData,
 } from './test-products-edit.dialog';
+import { TestProductImportDialogComponent } from './test-products-import.dialog';
 import {
   TestProductViewDialogComponent,
   TestProductViewDialogData,
 } from './test-products-view.dialog';
-import { TestProductImportDialogComponent } from './test-products-import.dialog';
 
 // Import child components
 import { TestProductsListFiltersComponent } from './test-products-list-filters.component';
@@ -81,6 +82,7 @@ import { TestProductsListHeaderComponent } from './test-products-list-header.com
     RouterModule,
     FormsModule,
     MatButtonModule,
+    MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatTableModule,
@@ -139,6 +141,7 @@ export class TestProductsListComponent {
   // Mat-Table setup
   displayedColumns: string[] = [
     'select',
+    'expand',
     'code',
     'name',
     'slug',

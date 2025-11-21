@@ -1,148 +1,150 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-test-products-list-header',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatCardModule],
   template: `
-    <!-- Header with Stats Summary -->
-    <div class="flex items-start justify-between mt-4">
-      <div class="flex-1">
-        <div class="flex items-center gap-3">
-          <h1 class="text-2xl font-semibold text-gray-900">TestProducts</h1>
-        </div>
-        <p class="text-sm text-gray-600">Manage your testproduct collection</p>
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Test Products
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-1">
+          Manage your test product collection
+        </p>
       </div>
-      <div class="flex items-center gap-2">
+
+      <div class="flex gap-2">
+        <!-- Import Button -->
         <button
+          mat-stroked-button
           (click)="importClicked.emit()"
           [disabled]="loading || hasError"
-          class="px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
         >
-          <mat-icon class="!text-lg !w-5 !h-5">upload_file</mat-icon>
-          Import
+          <mat-icon>upload</mat-icon>
+          <span>Import</span>
         </button>
+
+        <!-- Add Product Button -->
         <button
+          mat-flat-button
+          color="primary"
           (click)="createClicked.emit()"
           [disabled]="loading || hasError"
-          class="px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
         >
-          <mat-icon class="!text-lg !w-5 !h-5">add</mat-icon>
-          Add testproduct
+          <mat-icon>add</mat-icon>
+          <span>Add Product</span>
         </button>
       </div>
     </div>
 
     <!-- Permission Error -->
     @if (permissionError) {
-      <div class="bg-red-50 border border-red-200 rounded-lg p-2 mb-6">
+      <div
+        class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2 mb-6"
+      >
         <div class="flex items-start gap-3">
           <div
-            class="flex items-center justify-center w-18 h-18  bg-red-100 rounded-full flex-shrink-0"
+            class="flex items-center justify-center w-18 h-18 bg-red-100 dark:bg-red-900/50 rounded-full flex-shrink-0"
           >
-            <mat-icon class="text-red-600 !text-4xl !w-7 !h-7">lock</mat-icon>
+            <mat-icon class="text-red-600 dark:text-red-400 !text-4xl !w-7 !h-7"
+              >lock</mat-icon
+            >
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-medium text-red-900">Access Denied</h3>
-            <p class=" text-sm text-red-700">
+            <h3 class="text-lg font-medium text-red-900 dark:text-red-300">
+              Access Denied
+            </h3>
+            <p class="text-sm text-red-700 dark:text-red-400">
               You don't have permission to access or modify test_products.
             </p>
           </div>
           <button
+            mat-icon-button
+            color="warn"
             (click)="clearPermissionError.emit()"
-            class="text-red-400 hover:text-red-600"
           >
-            <mat-icon class="!text-xl !w-5 !h-5">close</mat-icon>
+            <mat-icon>close</mat-icon>
           </button>
         </div>
       </div>
     }
 
-    <!-- Minimal Stats Cards - Separated (hide when any error exists) -->
+    <!-- Statistics Cards Grid -->
     @if (!hasError) {
       <div
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2 mb-4"
       >
         <!-- Total TestProducts Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full"
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Total TestProducts
+            </p>
+            <h3
+              class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-2"
             >
-              <mat-icon class="!w-5 !h-5 text-blue-600">library_books</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">Total TestProducts</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.total }}
-              </div>
-            </div>
-          </div>
-        </div>
+              {{ stats.total }}
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <span>All products</span>
+            </p>
+          </mat-card-content>
+        </mat-card>
 
         <!-- Available Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full"
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Available</p>
+            <h3
+              class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-2"
             >
-              <mat-icon class="!w-5 !h-5 text-green-600">check_circle</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">Available</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.available }}
-                <span class="text-xs text-green-600"
-                  >{{ getPercentage(stats.available) }}%</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+              {{ stats.available }}
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <span>{{ getPercentage(stats.available) }}% available</span>
+            </p>
+          </mat-card-content>
+        </mat-card>
 
         <!-- Unavailable Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full"
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Unavailable</p>
+            <h3
+              class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-2"
             >
-              <mat-icon class="!w-5 !h-5 text-red-600">block</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">Unavailable</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.unavailable }}
-                <span class="text-xs text-red-600"
-                  >{{ getPercentage(stats.unavailable) }}%</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+              {{ stats.unavailable }}
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <span>{{ getPercentage(stats.unavailable) }}% unavailable</span>
+            </p>
+          </mat-card-content>
+        </mat-card>
 
         <!-- This Week Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-orange-100 rounded-full"
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <p class="text-sm text-gray-600 dark:text-gray-400">This Week</p>
+            <h3
+              class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-2"
             >
-              <mat-icon class="!w-5 !h-5 text-orange-600">trending_up</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">This Week</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.recentWeek }}
-              </div>
-            </div>
-          </div>
-        </div>
+              {{ stats.recentWeek }}
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <span>New products</span>
+            </p>
+          </mat-card-content>
+        </mat-card>
       </div>
     }
   `,
-  styles: [],
 })
 export class TestProductsListHeaderComponent {
   @Input({ required: true }) stats!: {

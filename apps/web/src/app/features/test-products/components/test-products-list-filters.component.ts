@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
@@ -12,327 +19,265 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   imports: [
     CommonModule,
     FormsModule,
+    MatBadgeModule,
     MatIconModule,
     MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     MatTooltipModule,
-    
   ],
   template: `
-    <!-- Filters Panel -->
-    <div class="bg-slate-100 rounded-lg border border-gray-200 p-5 mb-4">
-      <!-- Main Filter Row -->
-      <div class="flex flex-col md:flex-row gap-3 md:items-center">
-        <!-- Search Input with Buttons (single row, no wrap) -->
-        <div class="flex flex-row flex-nowrap gap-2 items-center md:w-2/5">
-          <div class="relative flex-1 min-w-0">
-            <!-- Search icon - hide when loading -->
-            @if (!loading) {
-              <mat-icon
-                class="absolute left-3 top-3 !text-lg !w-5 !h-5 text-gray-400"
-                >search</mat-icon
-              >
+    <!-- ============================================
+         Filters Panel
+         ============================================ -->
+    <mat-card appearance="outlined" class="mb-4">
+      <mat-card-content>
+        <!-- Quick Filters Section -->
+        <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
+          <!-- Quick Filter Buttons -->
+          <mat-button-toggle-group
+            [value]="quickFilter"
+            (change)="onQuickFilterChange($event.value)"
+          >
+            <mat-button-toggle value="all">All</mat-button-toggle>
+            <mat-button-toggle value="active">Available</mat-button-toggle>
+            <mat-button-toggle value="unavailable"
+              >Unavailable</mat-button-toggle
+            >
+          </mat-button-toggle-group>
+
+          <!-- Right Actions -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Advanced Filters Toggle -->
+            <button
+              mat-stroked-button
+              [color]="showAdvancedFilters() ? 'primary' : undefined"
+              (click)="showAdvancedFilters.set(!showAdvancedFilters())"
+            >
+              <mat-icon>tune</mat-icon>
+              Advanced Filters
+              @if (activeFilterCount > 0) {
+                <mat-icon
+                  matBadge="{{ activeFilterCount }}"
+                  matBadgeColor="primary"
+                ></mat-icon>
+              }
+            </button>
+
+            <!-- Export Button -->
+            <ng-content select="[export]"></ng-content>
+
+            <!-- Clear All (show when filters active) -->
+            @if (activeFilterCount > 0) {
+              <button mat-button color="warn" (click)="clearAllClicked.emit()">
+                <mat-icon>clear</mat-icon>
+                Clear
+              </button>
             }
-            <!-- Loading spinner - left side when loading -->
-            @if (loading) {
-              <mat-spinner
-                class="absolute left-3 top-1/2 -translate-y-1/2"
-                [diameter]="20"
-                [strokeWidth]="3"
-              >
-              </mat-spinner>
-            }
+          </div>
+        </div>
+
+        <!-- Search & Refresh Section -->
+        <div class="flex items-center gap-3">
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Search</mat-label>
             <input
+              matInput
               type="text"
               [(ngModel)]="searchTerm"
               (keyup.enter)="onSearch()"
-              placeholder="Search by ... (Press Enter or click Search)"
+              placeholder="Search by ..."
               aria-label="Search test_products"
-              [class.pr-10]="searchTerm"
-              class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <!-- Clear button (show when search term exists and not loading) -->
-            @if (searchTerm && !loading) {
+            <mat-icon matPrefix>search</mat-icon>
+            @if (searchTerm) {
               <button
+                mat-icon-button
+                matSuffix
                 (click)="onClearSearch()"
                 aria-label="Clear search"
-                class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                [disabled]="loading"
               >
-                <mat-icon class="!text-lg !w-5 !h-5">close</mat-icon>
+                <mat-icon>close</mat-icon>
               </button>
             }
-            <!-- Clear button with loading (show when both) -->
-            @if (searchTerm && loading) {
-              <button
-                (click)="onClearSearch()"
-                aria-label="Clear search"
-                class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors opacity-50"
-              >
-                <mat-icon class="!text-lg !w-5 !h-5">close</mat-icon>
-              </button>
+            @if (loading) {
+              <mat-spinner
+                matSuffix
+                [diameter]="20"
+                [strokeWidth]="3"
+              ></mat-spinner>
             }
-          </div>
+          </mat-form-field>
           <button
+            mat-icon-button
+            color="primary"
             (click)="onSearch()"
-            class="flex-shrink-0 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
+            [disabled]="loading"
             aria-label="Search"
             [matTooltip]="
-              searchTerm.trim() ? 'Search test_products' : 'Enter search term to search'
+              searchTerm.trim() ? 'Search test_products' : 'Enter search term'
             "
           >
-            <mat-icon class="!text-lg !w-5 !h-5">search</mat-icon>
-            Search
+            <mat-icon>search</mat-icon>
           </button>
           <button
+            mat-icon-button
             (click)="refreshClicked.emit()"
-            class="flex-shrink-0 px-3 py-2.5 border border-gray-300 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-50 transition-colors flex items-center gap-2"
-            [class.opacity-50]="loading"
-            [class.cursor-wait]="loading"
+            [disabled]="loading"
             aria-label="Refresh"
             [matTooltip]="loading ? 'Loading...' : 'Reload all test_products'"
           >
-            <mat-icon class="!text-lg !w-5 !h-5">refresh</mat-icon>
+            <mat-icon>refresh</mat-icon>
           </button>
         </div>
 
-        <!-- Quick Filters - flex grow -->
-        <div class="flex items-center gap-2 flex-wrap flex-1">
-          <button
-            (click)="onQuickFilterChange('all')"
-            [class]="
-              quickFilter === 'all'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            "
-            class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
-          >
-            All
-          </button>
-          <button
-            (click)="onQuickFilterChange('active')"
-            [class]="
-              quickFilter === 'active'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            "
-            class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
-          >
-            Available
-          </button>
-          <button
-            (click)="onQuickFilterChange('unavailable')"
-            [class]="
-              quickFilter === 'unavailable'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            "
-            class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
-          >
-            Unavailable
-          </button>
-
-          <!-- Divider -->
-          <div class="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
-
-          <!-- Advanced Filters Toggle -->
-          <button
-            (click)="showAdvancedFilters.set(!showAdvancedFilters())"
-            [class]="
-              showAdvancedFilters()
-                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                : 'bg-white text-gray-700 border-gray-300'
-            "
-            class="px-3 py-2 text-sm font-medium rounded-md border hover:bg-gray-50 transition-colors flex items-center gap-1"
-          >
-            <mat-icon class="!text-base !w-4 !h-4">tune</mat-icon>
-            Advanced Filters
-            @if (activeFilterCount > 0) {
-              <span class="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">{{ activeFilterCount }}</span>
-            }
-          </button>
-
-          <!-- Spacer to push items to right -->
-          <div class="flex-1"></div>
-
-          <!-- Export Button -->
-          <ng-content select="[export]"></ng-content>
-
-          <!-- Clear All (show when filters active) -->
-          @if (activeFilterCount > 0) {
-            <button
-              (click)="clearAllClicked.emit()"
-              class="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center gap-1"
-            >
-              <mat-icon class="!text-base !w-4 !h-4">clear</mat-icon>
-              Clear
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- Active Filter Chips -->
-      @if (activeFilterCount > 0) {
-        <div class="mt-3 flex flex-wrap gap-2">
-          <ng-content select="[filter-chips]"></ng-content>
-        </div>
-      }
-
-      <!-- Advanced Filters Panel -->
-      @if (showAdvancedFilters()) {
-        <div class="mt-4 pt-4 border-t border-gray-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Code Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Code</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="codeFilter"
-                (ngModelChange)="codeFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter code"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Name Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Name</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="nameFilter"
-                (ngModelChange)="nameFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter name"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Slug Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Slug</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="slugFilter"
-                (ngModelChange)="slugFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter slug"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Description Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Description</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="descriptionFilter"
-                (ngModelChange)="descriptionFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter description"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Status Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Status</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="statusFilter"
-                (ngModelChange)="statusFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Select status"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Created By Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Created By</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="created_byFilter"
-                (ngModelChange)="created_byFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter created by"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Updated By Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Updated By</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="updated_byFilter"
-                (ngModelChange)="updated_byFilterChange.emit($event)"
-                (keyup.enter)="applyFiltersClicked.emit()"
-                placeholder="Enter updated by"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <!-- Is Active Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Is Active</label
-              >
-              <select
-                [(ngModel)]="is_activeFilter"
-                (ngModelChange)="is_activeFilterChange.emit($event)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option [ngValue]="undefined">All</option>
-                <option [ngValue]="true">Yes</option>
-                <option [ngValue]="false">No</option>
-              </select>
-            </div>
-            <!-- Is Featured Filter -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Is Featured</label
-              >
-              <select
-                [(ngModel)]="is_featuredFilter"
-                (ngModelChange)="is_featuredFilterChange.emit($event)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option [ngValue]="undefined">All</option>
-                <option [ngValue]="true">Yes</option>
-                <option [ngValue]="false">No</option>
-              </select>
-            </div>
-
-
+        <!-- Active Filter Chips -->
+        @if (activeFilterCount > 0) {
+          <div class="mt-3 flex flex-wrap gap-2">
+            <ng-content select="[filter-chips]"></ng-content>
           </div>
+        }
 
-          <!-- Apply Filters Button -->
-          <div class="mt-4 flex justify-end gap-2">
-            <button
-              (click)="clearAllClicked.emit()"
-              class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Clear All
-            </button>
-            <button
-              (click)="applyFiltersClicked.emit()"
-              [disabled]="loading"
-              class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              Apply Filters
-            </button>
+        <!-- Advanced Filters Panel -->
+        @if (showAdvancedFilters()) {
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <!-- Filter Fields Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Code Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Code</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="codeFilter"
+                  (ngModelChange)="codeFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter code"
+                />
+              </mat-form-field>
+
+              <!-- Name Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="nameFilter"
+                  (ngModelChange)="nameFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter name"
+                />
+              </mat-form-field>
+
+              <!-- Slug Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Slug</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="slugFilter"
+                  (ngModelChange)="slugFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter slug"
+                />
+              </mat-form-field>
+
+              <!-- Description Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Description</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="descriptionFilter"
+                  (ngModelChange)="descriptionFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter description"
+                />
+              </mat-form-field>
+
+              <!-- Status Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="statusFilter"
+                  (ngModelChange)="statusFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter status"
+                />
+              </mat-form-field>
+
+              <!-- Created By Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Created By</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="created_byFilter"
+                  (ngModelChange)="created_byFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter created by"
+                />
+              </mat-form-field>
+
+              <!-- Updated By Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Updated By</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="updated_byFilter"
+                  (ngModelChange)="updated_byFilterChange.emit($event)"
+                  (keyup.enter)="applyFiltersClicked.emit()"
+                  placeholder="Enter updated by"
+                />
+              </mat-form-field>
+
+              <!-- Is Active Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Is Active</mat-label>
+                <mat-select
+                  [(ngModel)]="is_activeFilter"
+                  (ngModelChange)="is_activeFilterChange.emit($event)"
+                >
+                  <mat-option [value]="undefined">All</mat-option>
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- Is Featured Filter -->
+              <mat-form-field appearance="outline">
+                <mat-label>Is Featured</mat-label>
+                <mat-select
+                  [(ngModel)]="is_featuredFilter"
+                  (ngModelChange)="is_featuredFilterChange.emit($event)"
+                >
+                  <mat-option [value]="undefined">All</mat-option>
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <!-- Apply Filters Actions -->
+            <div class="mt-4 flex justify-end gap-2">
+              <button mat-stroked-button (click)="clearAllClicked.emit()">
+                Clear All
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="applyFiltersClicked.emit()"
+                [disabled]="loading"
+              >
+                Apply Filters
+              </button>
+            </div>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </mat-card-content>
+    </mat-card>
   `,
   styles: [],
 })

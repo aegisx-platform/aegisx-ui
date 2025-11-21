@@ -1,20 +1,20 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import {
-  MatDialogRef,
   MAT_DIALOG_DATA,
   MatDialogModule,
+  MatDialogRef,
 } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import { TestProductService } from '../services/test-products.service';
 import {
   TestProduct,
   UpdateTestProductRequest,
 } from '../types/test-products.types';
-import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import {
   TestProductFormComponent,
   TestProductFormData,
@@ -35,146 +35,62 @@ export interface TestProductEditDialogData {
     MatIconModule,
   ],
   template: `
-    <div class="dialog-container">
-      <!-- Fixed Header (mat-dialog-title) -->
-      <h2 mat-dialog-title class="dialog-header">
-        <div class="header-content">
-          <div class="flex items-center gap-3">
-            <div class="tremor-icon-wrapper tremor-icon-orange">
-              <mat-icon>edit</mat-icon>
-            </div>
-            <div>
-              <h3 class="tremor-dialog-title">Edit TestProduct</h3>
-              <p class="tremor-dialog-subtitle">
-                Update testproduct information
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            mat-icon-button
-            class="tremor-close-button"
-            [mat-dialog-close]="false"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-      </h2>
+    <h2
+      mat-dialog-title
+      class="flex items-start justify-between gap-3 ax-header-warning"
+    >
+      <div class="ax-icon-warning flex-shrink-0">
+        <mat-icon>edit</mat-icon>
+      </div>
+      <div class="flex-1">
+        <div class="ax-title">แก้ไขข้อมูล</div>
+        <div class="ax-subtitle">แก้ไข Test Product</div>
+      </div>
+      <button
+        type="button"
+        mat-icon-button
+        [mat-dialog-close]="false"
+        [disabled]="loading()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
 
-      <!-- Scrollable Content -->
-      <mat-dialog-content class="dialog-content">
-        <app-test-products-form
-          mode="edit"
-          [initialData]="data.testProducts"
-          [loading]="loading()"
-          (formSubmit)="onFormSubmit($event)"
-          (formCancel)="onCancel()"
-        ></app-test-products-form>
-      </mat-dialog-content>
+    <mat-dialog-content>
+      <app-test-products-form
+        mode="edit"
+        [initialData]="data.testProducts"
+        [loading]="loading()"
+        (formSubmit)="onFormSubmit($event)"
+        (formCancel)="onCancel()"
+      />
+    </mat-dialog-content>
+
+    <div mat-dialog-actions align="end" class="flex gap-2">
+      <button
+        mat-button
+        type="button"
+        (click)="onCancel()"
+        [disabled]="loading()"
+      >
+        ยกเลิก
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="onSubmit()"
+        [disabled]="
+          !formComponent?.testProductsForm?.valid ||
+          !formComponent?.hasChanges() ||
+          loading()
+        "
+      >
+        บันทึก
+      </button>
     </div>
   `,
-  styles: [
-    `
-      /* Material Dialog Container */
-      .dialog-container {
-        display: flex;
-        flex-direction: column;
-        min-width: 600px;
-        max-width: 900px;
-      }
-
-      /* Fixed Header (mat-dialog-title) */
-      .dialog-header {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: linear-gradient(to bottom, #ffffff, #f9fafb);
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.5rem !important;
-        margin: 0 !important;
-      }
-
-      .header-content {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-      }
-
-      /* Icon Styles */
-      .tremor-icon-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 3rem;
-        height: 3rem;
-        border-radius: 0.75rem;
-      }
-
-      .tremor-icon-orange {
-        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-        color: white;
-        box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
-      }
-
-      /* Title & Subtitle */
-      .tremor-dialog-title {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #111827;
-        line-height: 1.4;
-      }
-
-      .tremor-dialog-subtitle {
-        margin: 0.25rem 0 0 0;
-        font-size: 0.875rem;
-        color: #6b7280;
-      }
-
-      /* Close Button */
-      .tremor-close-button {
-        color: #6b7280;
-      }
-
-      .tremor-close-button:hover {
-        color: #111827;
-        background: #f3f4f6;
-      }
-
-      /* Scrollable Content */
-      .dialog-content {
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 1.5rem;
-      }
-
-      /* Utility Classes */
-      .flex {
-        display: flex;
-      }
-      .items-center {
-        align-items: center;
-      }
-      .gap-3 {
-        gap: 0.75rem;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .dialog-container {
-          min-width: 90vw;
-        }
-
-        .dialog-header {
-          padding: 1rem !important;
-        }
-
-        .dialog-content {
-          padding: 1rem;
-        }
-      }
-    `,
-  ],
+  styles: [],
 })
 export class TestProductEditDialogComponent implements OnInit {
   private testProductsService = inject(TestProductService);
@@ -183,10 +99,18 @@ export class TestProductEditDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TestProductEditDialogComponent>);
   public data = inject<TestProductEditDialogData>(MAT_DIALOG_DATA);
 
+  @ViewChild(TestProductFormComponent) formComponent?: TestProductFormComponent;
+
   loading = signal<boolean>(false);
 
   ngOnInit() {
     // No additional setup needed since shared form handles data population
+  }
+
+  onSubmit() {
+    if (this.formComponent) {
+      this.formComponent.onSubmit();
+    }
   }
 
   async onFormSubmit(formData: TestProductFormData) {

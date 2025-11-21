@@ -1,25 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
-import { FormsModule } from '@angular/forms';
-import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { WebSocketService } from '../../../shared/business/services/websocket.service';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/services/auth.service';
+import { WebSocketService } from '../../../shared/business/services/websocket.service';
 
 import { TestProductService } from '../services/test-products.service';
 import {
+  ImportJob,
   ImportOptions,
   ValidateImportResponse,
-  ImportJob,
-  ImportRowPreview,
 } from '../types/test-products.types';
 
 type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
@@ -41,28 +40,26 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
   template: `
     <div class="tremor-dialog-container">
       <!-- Header -->
-      <div class="tremor-dialog-header bg-green-50">
-        <div class="flex items-center gap-3">
-          <div class="tremor-icon-wrapper tremor-icon-green">
-            <mat-icon>upload_file</mat-icon>
-          </div>
-          <div>
-            <h2 class="tremor-dialog-title">Bulk Import Test Products</h2>
-            <p class="tremor-dialog-subtitle">
-              {{ getStepTitle() }}
-            </p>
-          </div>
+      <h2
+        mat-dialog-title
+        class="flex items-start justify-between gap-3 ax-header-success"
+      >
+        <div class="ax-icon-success flex-shrink-0">
+          <mat-icon>upload_file</mat-icon>
+        </div>
+        <div class="flex-1">
+          <div class="ax-title">Bulk Import Test Products</div>
+          <div class="ax-subtitle">{{ getStepTitle() }}</div>
         </div>
         <button
           type="button"
           mat-icon-button
-          class="tremor-close-button"
           [mat-dialog-close]="false"
           [disabled]="currentStep() === 'progress'"
         >
           <mat-icon>close</mat-icon>
         </button>
-      </div>
+      </h2>
 
       <!-- Step Indicator -->
       <div class="step-indicator">
@@ -475,7 +472,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
             Cancel
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="validateFile()"
             [disabled]="!selectedFile() || loading()"
@@ -488,7 +485,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
         @if (currentStep() === 'review') {
           <button mat-button (click)="goToStep('upload')">Back</button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="goToStep('options')"
             [disabled]="validationResult()?.validRows === 0"
@@ -501,7 +498,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
         @if (currentStep() === 'options') {
           <button mat-button (click)="goToStep('review')">Back</button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="executeImport()"
             [disabled]="loading()"
@@ -513,7 +510,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
 
         @if (currentStep() === 'complete') {
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             [mat-dialog-close]="importJob()"
           >
@@ -534,49 +531,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
         max-height: 90vh;
       }
 
-      .tremor-dialog-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
-      }
-
-      .bg-green-50 {
-        background: linear-gradient(to bottom, #ffffff, #f0fdf4);
-      }
-
-      .tremor-icon-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 3rem;
-        height: 3rem;
-        border-radius: 0.75rem;
-      }
-
-      .tremor-icon-green {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
-      }
-
-      .tremor-dialog-title {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #111827;
-      }
-
-      .tremor-dialog-subtitle {
-        margin: 0.25rem 0 0 0;
-        font-size: 0.875rem;
-        color: #6b7280;
-      }
-
-      .tremor-close-button {
-        color: #6b7280;
-      }
+      /* Header styles now use shared dialog classes from _dialog-shared.scss */
 
       .step-indicator {
         display: flex;

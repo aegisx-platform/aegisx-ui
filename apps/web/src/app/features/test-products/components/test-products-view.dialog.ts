@@ -19,312 +19,178 @@ export interface TestProductViewDialogData {
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   template: `
-    <div class="dialog-container">
-      <!-- Fixed Header (mat-dialog-title) -->
-      <h2 mat-dialog-title class="dialog-header">TestProduct Details</h2>
+    <!-- Fixed Header with theme-aware styling -->
+    <h2
+      mat-dialog-title
+      class="flex items-start justify-between gap-3 ax-header-neutral"
+    >
+      <div class="ax-icon-neutral flex-shrink-0">
+        <mat-icon>visibility</mat-icon>
+      </div>
+      <div class="flex-1">
+        <div class="ax-title">Test Product Details</div>
+        <div class="ax-subtitle">View complete product information</div>
+      </div>
+      <button type="button" mat-icon-button (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
 
-      <!-- Scrollable Content -->
-      <mat-dialog-content class="dialog-content">
-        <div class="content-grid">
-          <!-- Basic Information -->
-          <div class="section">
-            <h3 class="section-title">Basic Information</h3>
+    <!-- Scrollable Content -->
+    <mat-dialog-content class="ax-dialog-content">
+      <div class="ax-dialog-flex-column ax-dialog-gap-lg">
+        <!-- Basic Information -->
+        <div class="ax-dialog-section">
+          <h3 class="ax-dialog-section-title">Basic Information</h3>
 
-            <div class="field-row">
-              <label>Code</label>
-              <div class="field-value">
-                {{ data.testProducts?.code || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Name</label>
-              <div class="field-value">
-                {{ data.testProducts?.name || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Slug</label>
-              <div class="field-value">
-                {{ data.testProducts?.slug || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Description</label>
-              <div class="field-value">
-                {{ data.testProducts?.description || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Is Active</label>
-              <div class="field-value">
-                @if (data.testProducts?.is_active) {
-                  <span class="status status-success">
-                    <span class="status-dot"></span>
-                    Yes
-                  </span>
-                } @else {
-                  <span class="status status-gray">
-                    <span class="status-dot"></span>
-                    No
-                  </span>
-                }
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Is Featured</label>
-              <div class="field-value">
-                @if (data.testProducts?.is_featured) {
-                  <span class="status status-success">
-                    <span class="status-dot"></span>
-                    Yes
-                  </span>
-                } @else {
-                  <span class="status status-gray">
-                    <span class="status-dot"></span>
-                    No
-                  </span>
-                }
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Display Order</label>
-              <div class="field-value">
-                {{ data.testProducts?.display_order ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Item Count</label>
-              <div class="field-value">
-                {{ data.testProducts?.item_count ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Discount Rate</label>
-              <div class="field-value">
-                {{ data.testProducts?.discount_rate ?? '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Metadata</label>
-              <div class="field-value">
-                {{ data.testProducts?.metadata || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Settings</label>
-              <div class="field-value">
-                {{ data.testProducts?.settings || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Status</label>
-              <div class="field-value">
-                {{ data.testProducts?.status || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Created By</label>
-              <div class="field-value">
-                {{ data.testProducts?.created_by || '-' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Updated By</label>
-              <div class="field-value">
-                {{ data.testProducts?.updated_by | date: 'mediumDate' }}
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Deleted At</label>
-              <div class="field-value">
-                {{ data.testProducts?.deleted_at | date: 'mediumDate' }}
-              </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Code</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.code || '-' }}
             </div>
           </div>
-          <!-- Record Information -->
-          <div class="section section-metadata">
-            <h3 class="section-title">Record Information</h3>
-
-            <div class="field-row">
-              <label>Id</label>
-              <div class="field-value">
-                <code>{{ data.testProducts?.id }}</code>
-              </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Name</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.name || '-' }}
             </div>
-            <div class="field-row">
-              <label>Created At</label>
-              <div class="field-value">
-                {{ data.testProducts?.created_at | date: 'medium' }}
-              </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Slug</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.slug || '-' }}
             </div>
-            <div class="field-row">
-              <label>Updated At</label>
-              <div class="field-value">
-                {{ data.testProducts?.updated_at | date: 'medium' }}
-              </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Description</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.description || '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Is Active</div>
+            <div class="ax-dialog-field-value">
+              @if (data.testProducts?.is_active) {
+                <span class="ax-dialog-status-success">
+                  <span class="ax-dialog-status-dot"></span>
+                  Yes
+                </span>
+              } @else {
+                <span class="ax-dialog-status-neutral">
+                  <span class="ax-dialog-status-dot"></span>
+                  No
+                </span>
+              }
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Is Featured</div>
+            <div class="ax-dialog-field-value">
+              @if (data.testProducts?.is_featured) {
+                <span class="ax-dialog-status-success">
+                  <span class="ax-dialog-status-dot"></span>
+                  Yes
+                </span>
+              } @else {
+                <span class="ax-dialog-status-neutral">
+                  <span class="ax-dialog-status-dot"></span>
+                  No
+                </span>
+              }
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Display Order</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.display_order ?? '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Item Count</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.item_count ?? '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Discount Rate</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.discount_rate ?? '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Metadata</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.metadata || '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Settings</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.settings || '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Status</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.status || '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Created By</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.created_by || '-' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Updated By</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.updated_by | date: 'mediumDate' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Deleted At</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.deleted_at | date: 'mediumDate' }}
             </div>
           </div>
         </div>
-      </mat-dialog-content>
 
-      <!-- Fixed Footer (mat-dialog-actions) -->
-      <mat-dialog-actions align="end" class="dialog-actions">
-        <button mat-button (click)="onClose()">Close</button>
-        <button mat-raised-button color="primary" (click)="onEdit()">
-          <mat-icon>edit</mat-icon>
-          Edit TestProduct
-        </button>
-      </mat-dialog-actions>
+        <!-- Record Information -->
+        <div class="ax-dialog-section-metadata">
+          <h3 class="ax-dialog-section-title">Record Information</h3>
+
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Id</div>
+            <div class="ax-dialog-field-value">
+              <code>{{ data.testProducts?.id }}</code>
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Created At</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.created_at | date: 'medium' }}
+            </div>
+          </div>
+          <div class="ax-dialog-field-row">
+            <div class="ax-dialog-field-label">Updated At</div>
+            <div class="ax-dialog-field-value">
+              {{ data.testProducts?.updated_at | date: 'medium' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <!-- Fixed Footer with theme-aware styling -->
+    <div mat-dialog-actions align="end" class="flex gap-2">
+      <button mat-button type="button" (click)="onClose()">Close</button>
+      <button mat-flat-button color="primary" type="button" (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+        Edit Test Product
+      </button>
     </div>
   `,
-  styles: [
-    `
-      /* Material Dialog Container */
-      .dialog-container {
-        display: flex;
-        flex-direction: column;
-        min-width: 600px;
-        max-width: 900px;
-      }
-
-      /* Fixed Header (mat-dialog-title) */
-      .dialog-header {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: #ffffff;
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.5rem !important;
-        margin: 0 !important;
-      }
-
-      /* Scrollable Content */
-      .dialog-content {
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 1.5rem;
-      }
-
-      /* Fixed Footer (mat-dialog-actions) */
-      .dialog-actions {
-        position: sticky;
-        bottom: 0;
-        z-index: 10;
-        background: #ffffff;
-        border-top: 1px solid #e5e7eb;
-        padding: 1rem 1.5rem !important;
-        margin: 0 !important;
-      }
-
-      /* Field Sections */
-      .section {
-        margin-bottom: 1.5rem;
-      }
-
-      .section:last-child {
-        margin-bottom: 0;
-      }
-
-      .section-title {
-        margin: 0 0 0.75rem 0;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #666;
-      }
-
-      .field-row {
-        display: flex;
-        margin-bottom: 0.75rem;
-      }
-
-      .field-row:last-child {
-        margin-bottom: 0;
-      }
-
-      .field-row label {
-        min-width: 140px;
-        font-size: 0.875rem;
-        color: #666;
-      }
-
-      .field-value {
-        flex: 1;
-        font-size: 0.875rem;
-      }
-
-      /* Badge Styles */
-      .badge-purple {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        background: #f3e8ff;
-        color: #7c3aed;
-        border-radius: 4px;
-        font-size: 0.75rem;
-      }
-
-      /* Status Indicators */
-      .status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-
-      .status-success .status-dot {
-        background: #16a34a;
-      }
-
-      .status-gray .status-dot {
-        background: #9ca3af;
-      }
-
-      /* Code Display */
-      code {
-        padding: 2px 6px;
-        background: #f5f5f5;
-        border-radius: 3px;
-        font-size: 0.85rem;
-        font-family: monospace;
-      }
-
-      /* Price Display */
-      .price {
-        font-weight: 600;
-        color: #059669;
-      }
-
-      /* Metadata Section */
-      .section-metadata {
-        background: #fafafa;
-        padding: 0.75rem;
-        border-radius: 4px;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .dialog-container {
-          min-width: 90vw;
-        }
-
-        .dialog-header {
-          padding: 1rem !important;
-        }
-
-        .dialog-content {
-          padding: 1rem;
-        }
-
-        .dialog-actions {
-          padding: 0.75rem 1rem !important;
-        }
-      }
-    `,
-  ],
+  styles: [],
 })
 export class TestProductViewDialogComponent {
   private dialogRef = inject(MatDialogRef<TestProductViewDialogComponent>);
