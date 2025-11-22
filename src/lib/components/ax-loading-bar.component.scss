@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 9999;
-  height: 4px;
+  height: var(--ax-spacing-xs);
   overflow: hidden;
   pointer-events: none;
 
@@ -41,7 +41,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  transition: width 0.3s ease-out;
+  transition: width var(--ax-motion-duration-medium2) ease-out;
   border-radius: 0 2px 2px 0;
 
   &.ax-loading-bar-color-primary {
@@ -136,7 +136,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  animation: ax-loading-bar-slide 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  animation: ax-loading-bar-slide 2s infinite var(--ax-easing-easeInOut);
   transform: translateX(-100%);
 }
 
