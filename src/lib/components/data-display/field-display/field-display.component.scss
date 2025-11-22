@@ -47,8 +47,14 @@
 
   // Horizontal layout specific
   .ax-field-display-horizontal & {
-    min-width: var(--label-width, 120px);
-    max-width: var(--label-width, 200px);
+    min-width: var(
+      --ax-field-label-min-width,
+      7.5rem
+    ); // 120px → 7.5rem for scalability
+    max-width: var(
+      --ax-field-label-max-width,
+      12.5rem
+    ); // 200px → 12.5rem for scalability
   }
 
   // Vertical layout specific
