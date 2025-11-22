@@ -79,14 +79,7 @@
       content: 'A';
       font-size: 2.5rem; // Larger when collapsed (2rem → 2.5rem)
       font-weight: 900;
-      background: linear-gradient(
-        135deg,
-        var(--ax-primary) 0%,
-        var(--ax-primary-light) 100%
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--ax-primary); // Solid color that adapts to light/dark theme
       font-family:
         'Helvetica Neue',
         -apple-system,
