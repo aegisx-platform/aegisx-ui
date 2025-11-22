@@ -33,7 +33,7 @@
   min-width: 0; // Allow flex shrinking
   border: 1px solid var(--ax-border-color);
   border-radius: var(--ax-radius-md);
-  background-color: var(--ax-white);
+  background-color: var(--ax-background-default);
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -57,7 +57,7 @@
 }
 
 .ax-date-picker-wrapper-disabled {
-  background-color: var(--ax-gray-100);
+  background-color: var(--ax-background-muted);
   cursor: not-allowed;
 
   .ax-date-picker-value,
@@ -175,12 +175,10 @@
   flex-direction: column;
   width: 320px;
   padding: 16px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background-color: var(--ax-background-default);
+  border: 1px solid var(--ax-border-default);
+  border-radius: var(--ax-radius-md);
+  box-shadow: var(--ax-shadow-lg);
   animation: slideDown 0.2s ease-out;
 }
 
@@ -202,7 +200,7 @@
   justify-content: space-between;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--ax-border-muted);
 }
 
 .ax-date-picker-nav-btn {
@@ -243,7 +241,7 @@
   text-align: center;
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--ax-text-primary);
   letter-spacing: -0.01em;
   padding: 0;
   border: none;
@@ -252,7 +250,7 @@
   transition: color 0.2s ease;
 
   &:hover {
-    color: #3b82f6;
+    color: var(--ax-primary);
   }
 }
 
@@ -272,7 +270,7 @@
   height: 32px;
   font-size: 11px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--ax-text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -295,24 +293,24 @@
   border-radius: 6px;
   background: transparent;
   font-size: 14px;
-  color: #1f2937;
+  color: var(--ax-text-primary);
   cursor: pointer;
   transition: all 0.15s ease;
   font-weight: 500;
 
   &:hover:not(.ax-date-picker-day-disabled):not(.ax-date-picker-day-selected) {
-    background-color: #f3f4f6;
+    background-color: var(--ax-background-muted);
   }
 }
 
 .ax-date-picker-day-other-month {
-  color: #9ca3af;
+  color: var(--ax-text-disabled);
   font-weight: 400;
 }
 
 .ax-date-picker-day-today {
   font-weight: 700;
-  color: #3b82f6;
+  color: var(--ax-primary);
   position: relative;
 
   &::after {
@@ -324,33 +322,33 @@
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: #3b82f6;
+    background-color: var(--ax-primary);
   }
 }
 
 .ax-date-picker-day-selected {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
+  background-color: var(--ax-primary) !important;
+  color: var(--ax-white) !important;
   font-weight: 600;
 
   &:hover {
-    background-color: #2563eb !important;
+    background-color: var(--ax-primary-dark) !important;
   }
 
   &.ax-date-picker-day-today::after {
-    background-color: #ffffff;
+    background-color: var(--ax-white);
   }
 }
 
 .ax-date-picker-day-focused {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--ax-primary);
   outline-offset: -2px;
   z-index: 1;
   position: relative;
 }
 
 .ax-date-picker-day-disabled {
-  color: #d1d5db;
+  color: var(--ax-text-disabled);
   opacity: 0.5;
   cursor: not-allowed;
 
@@ -388,23 +386,23 @@
   border-radius: 6px;
   background: transparent;
   font-size: 14px;
-  color: #1f2937;
+  color: var(--ax-text-primary);
   cursor: pointer;
   transition: all 0.15s ease;
   font-weight: 500;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: var(--ax-background-muted);
   }
 }
 
 .ax-date-picker-month-selected {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
+  background-color: var(--ax-primary) !important;
+  color: var(--ax-white) !important;
   font-weight: 600;
 
   &:hover {
-    background-color: #2563eb !important;
+    background-color: var(--ax-primary-dark) !important;
   }
 }
 
@@ -426,23 +424,23 @@
   border-radius: 6px;
   background: transparent;
   font-size: 14px;
-  color: #1f2937;
+  color: var(--ax-text-primary);
   cursor: pointer;
   transition: all 0.15s ease;
   font-weight: 500;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: var(--ax-background-muted);
   }
 }
 
 .ax-date-picker-year-selected {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
+  background-color: var(--ax-primary) !important;
+  color: var(--ax-white) !important;
   font-weight: 600;
 
   &:hover {
-    background-color: #2563eb !important;
+    background-color: var(--ax-primary-dark) !important;
   }
 }
 
@@ -452,7 +450,7 @@
   gap: 8px;
   padding-top: 12px;
   margin-top: 12px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--ax-border-muted);
 }
 
 .ax-date-picker-action-btn {
@@ -472,30 +470,30 @@
 }
 
 .ax-date-picker-action-btn-primary {
-  background-color: #3b82f6;
-  color: #ffffff;
+  background-color: var(--ax-primary);
+  color: var(--ax-white);
 
   &:hover {
-    background-color: #2563eb;
+    background-color: var(--ax-primary-dark);
   }
 
   &:active {
-    background-color: #1d4ed8;
+    background-color: var(--ax-primary-dark);
   }
 }
 
 .ax-date-picker-action-btn-secondary {
   background-color: transparent;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
+  color: var(--ax-text-secondary);
+  border: 1px solid var(--ax-border-default);
 
   &:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
-    color: #374151;
+    background-color: var(--ax-background-subtle);
+    border-color: var(--ax-border-emphasis);
+    color: var(--ax-text-primary);
   }
 
   &:active {
-    background-color: #f3f4f6;
+    background-color: var(--ax-background-muted);
   }
 }
