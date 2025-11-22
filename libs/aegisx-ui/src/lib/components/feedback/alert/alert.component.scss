@@ -81,7 +81,7 @@ button.ax-alert-close {
 }
 
 .ax-alert-success {
-  background-color: rgba(var(--ax-success-rgb), 0.1);
+  background-color: var(--ax-success-faint);
   border-color: var(--ax-success);
   color: var(--ax-success-dark);
 
@@ -93,14 +93,14 @@ button.ax-alert-close {
     color: var(--ax-success);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--ax-success) 15%, transparent);
+      background-color: var(--ax-success-faint);
       color: var(--ax-success-dark);
     }
   }
 }
 
 .ax-alert-error {
-  background-color: rgba(var(--ax-error-rgb), 0.1);
+  background-color: var(--ax-error-faint);
   border-color: var(--ax-error);
   color: var(--ax-error-dark);
 
@@ -112,14 +112,14 @@ button.ax-alert-close {
     color: var(--ax-error);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--ax-error) 15%, transparent);
+      background-color: var(--ax-error-faint);
       color: var(--ax-error-dark);
     }
   }
 }
 
 .ax-alert-warning {
-  background-color: rgba(var(--ax-warning-rgb), 0.1);
+  background-color: var(--ax-warning-faint);
   border-color: var(--ax-warning);
   color: var(--ax-warning-dark);
 
@@ -131,14 +131,14 @@ button.ax-alert-close {
     color: var(--ax-warning);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--ax-warning) 15%, transparent);
+      background-color: var(--ax-warning-faint);
       color: var(--ax-warning-dark);
     }
   }
 }
 
 .ax-alert-info {
-  background-color: rgba(var(--ax-info-rgb), 0.1);
+  background-color: var(--ax-info-faint);
   border-color: var(--ax-info);
   color: var(--ax-info-dark);
 
@@ -150,7 +150,7 @@ button.ax-alert-close {
     color: var(--ax-info);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--ax-info) 15%, transparent);
+      background-color: var(--ax-info-faint);
       color: var(--ax-info-dark);
     }
   }
