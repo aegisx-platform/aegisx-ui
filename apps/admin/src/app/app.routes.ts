@@ -181,11 +181,18 @@ export const appRoutes: Route[] = [
       ),
   },
   {
-    path: 'aegisx-ui/feedback',
+    path: 'aegisx-ui/alerts',
     loadComponent: () =>
-      import('./pages/aegisx-ui/feedback-demo/feedback-demo.component').then(
-        (m) => m.FeedbackDemoComponent,
+      import('./pages/aegisx-ui/alerts-demo/alerts-demo.component').then(
+        (m) => m.AlertsDemoComponent,
       ),
+  },
+  {
+    path: 'aegisx-ui/loading-bar',
+    loadComponent: () =>
+      import(
+        './pages/aegisx-ui/loading-bar-demo/loading-bar-demo.component'
+      ).then((m) => m.LoadingBarDemoComponent),
   },
   {
     path: 'aegisx-ui/breadcrumb',
@@ -193,5 +200,12 @@ export const appRoutes: Route[] = [
       import(
         './pages/aegisx-ui/breadcrumb-demo/breadcrumb-demo.component'
       ).then((m) => m.BreadcrumbDemoComponent),
+  },
+  {
+    path: 'aegisx-ui/card-colors',
+    loadComponent: () =>
+      import(
+        './pages/aegisx-ui/card-colors-demo/card-colors-demo.component'
+      ).then((m) => m.CardColorsDemoComponent),
   },
 ];
