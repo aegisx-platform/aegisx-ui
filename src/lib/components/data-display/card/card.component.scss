@@ -24,6 +24,207 @@
   box-shadow: var(--ax-shadow-md);
 }
 
+// Color Variants
+// Filled intensity - full color background
+.ax-card-filled {
+  border-color: transparent;
+
+  .ax-card-title {
+    color: var(--ax-text-inverse);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: color-mix(in srgb, var(--ax-text-inverse) 85%, transparent);
+  }
+
+  .ax-card-header,
+  .ax-card-footer,
+  .ax-card-actions {
+    border-color: color-mix(in srgb, var(--ax-text-inverse) 15%, transparent);
+  }
+}
+
+// Subtle intensity - light background
+.ax-card-subtle {
+  .ax-card-header,
+  .ax-card-footer,
+  .ax-card-actions {
+    border-color: color-mix(in srgb, currentColor 15%, transparent);
+  }
+}
+
+// Primary Color
+.ax-card-primary.ax-card-filled {
+  background-color: var(--ax-brand-default);
+}
+
+.ax-card-primary.ax-card-subtle {
+  background-color: var(--ax-brand-surface);
+  border-color: var(--ax-brand-border);
+
+  .ax-card-title {
+    color: var(--ax-brand-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-brand-default);
+  }
+}
+
+// Success Color
+.ax-card-success.ax-card-filled {
+  background-color: var(--ax-success-default);
+}
+
+.ax-card-success.ax-card-subtle {
+  background-color: var(--ax-success-surface);
+  border-color: var(--ax-success-border);
+
+  .ax-card-title {
+    color: var(--ax-success-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-success-default);
+  }
+}
+
+// Warning Color
+.ax-card-warning.ax-card-filled {
+  background-color: var(--ax-warning-default);
+}
+
+.ax-card-warning.ax-card-subtle {
+  background-color: var(--ax-warning-surface);
+  border-color: var(--ax-warning-border);
+
+  .ax-card-title {
+    color: var(--ax-warning-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-warning-default);
+  }
+}
+
+// Error Color
+.ax-card-error.ax-card-filled {
+  background-color: var(--ax-error-default);
+}
+
+.ax-card-error.ax-card-subtle {
+  background-color: var(--ax-error-surface);
+  border-color: var(--ax-error-border);
+
+  .ax-card-title {
+    color: var(--ax-error-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-error-default);
+  }
+}
+
+// Info Color
+.ax-card-info.ax-card-filled {
+  background-color: var(--ax-info-default);
+}
+
+.ax-card-info.ax-card-subtle {
+  background-color: var(--ax-info-surface);
+  border-color: var(--ax-info-border);
+
+  .ax-card-title {
+    color: var(--ax-info-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-info-default);
+  }
+}
+
+// Cyan Color
+.ax-card-cyan.ax-card-filled {
+  background-color: var(--ax-cyan-default);
+}
+
+.ax-card-cyan.ax-card-subtle {
+  background-color: var(--ax-cyan-surface);
+  border-color: var(--ax-cyan-border);
+
+  .ax-card-title {
+    color: var(--ax-cyan-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-cyan-default);
+  }
+}
+
+// Purple Color
+.ax-card-purple.ax-card-filled {
+  background-color: var(--ax-purple-default);
+}
+
+.ax-card-purple.ax-card-subtle {
+  background-color: var(--ax-purple-surface);
+  border-color: var(--ax-purple-border);
+
+  .ax-card-title {
+    color: var(--ax-purple-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-purple-default);
+  }
+}
+
+// Indigo Color
+.ax-card-indigo.ax-card-filled {
+  background-color: var(--ax-indigo-default);
+}
+
+.ax-card-indigo.ax-card-subtle {
+  background-color: var(--ax-indigo-surface);
+  border-color: var(--ax-indigo-border);
+
+  .ax-card-title {
+    color: var(--ax-indigo-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-indigo-default);
+  }
+}
+
+// Pink Color
+.ax-card-pink.ax-card-filled {
+  background-color: var(--ax-pink-default);
+}
+
+.ax-card-pink.ax-card-subtle {
+  background-color: var(--ax-pink-surface);
+  border-color: var(--ax-pink-border);
+
+  .ax-card-title {
+    color: var(--ax-pink-emphasis);
+  }
+
+  .ax-card-subtitle,
+  .ax-card-body {
+    color: var(--ax-pink-default);
+  }
+}
+
 // Sizes
 .ax-card-sm {
   .ax-card-body {
