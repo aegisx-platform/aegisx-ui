@@ -9,11 +9,7 @@ export type CardColor =
   | 'success'
   | 'warning'
   | 'error'
-  | 'info'
-  | 'cyan'
-  | 'purple'
-  | 'indigo'
-  | 'pink';
+  | 'info';
 export type CardColorIntensity = 'filled' | 'subtle';
 
 @Component({

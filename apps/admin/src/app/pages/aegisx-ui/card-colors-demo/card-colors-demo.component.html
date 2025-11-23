@@ -5,8 +5,7 @@
       ax-card Color Variants
     </h1>
     <p class="mt-2 text-gray-600 dark:text-gray-400">
-      Comprehensive color palette with filled and subtle variants for all use
-      cases
+      5 semantic colors with filled and subtle variants for clear communication
     </p>
   </div>
 
@@ -17,7 +16,7 @@
         Task & Project Cards
       </h2>
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        Colored cards for projects, tasks, and features with progress tracking
+        Project tracking with progress indicators and status visualization
       </p>
     </div>
 
@@ -208,42 +207,6 @@
             </div>
           </div>
         </ax-card>
-
-        <!-- Cyan Project Card -->
-        <ax-card
-          color="cyan"
-          colorIntensity="filled"
-          variant="elevated"
-          size="md"
-        >
-          <div class="space-y-3">
-            <div class="flex items-start justify-between">
-              <div>
-                <h4 class="font-semibold text-base">UI Component Library</h4>
-                <p class="text-sm opacity-85 mt-1">Angular Material setup</p>
-              </div>
-              <mat-icon class="opacity-75">palette</mat-icon>
-            </div>
-            <div class="space-y-2">
-              <div class="flex justify-between text-xs opacity-90">
-                <span>Design System</span>
-                <span class="font-medium">88%</span>
-              </div>
-              <ax-sparkline
-                [data]="[45, 52, 58, 62, 68, 72, 75, 78, 82, 84, 86, 88]"
-                variant="area"
-                size="sm"
-                color="rgba(255,255,255,0.9)"
-                [fillOpacity]="0.2"
-                [showValue]="false"
-              />
-            </div>
-            <div class="flex items-center justify-between text-xs opacity-85">
-              <span>Near Completion</span>
-              <span>44/50 components</span>
-            </div>
-          </div>
-        </ax-card>
       </div>
     </div>
 
@@ -253,9 +216,9 @@
         Subtle Intensity
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Purple Project Card -->
+        <!-- Primary Subtle -->
         <ax-card
-          color="purple"
+          color="primary"
           colorIntensity="subtle"
           variant="default"
           size="md"
@@ -263,21 +226,21 @@
           <div class="space-y-3">
             <div class="flex items-start justify-between">
               <div>
-                <h4 class="font-semibold text-base">API Integration</h4>
-                <p class="text-sm text-gray-600 mt-1">External services</p>
+                <h4 class="font-semibold text-base">API Development</h4>
+                <p class="text-sm text-gray-600 mt-1">REST endpoints</p>
               </div>
-              <mat-icon class="text-purple-600">api</mat-icon>
+              <mat-icon class="text-blue-600">api</mat-icon>
             </div>
             <div class="space-y-2">
               <div class="flex justify-between text-xs text-gray-600">
-                <span>REST & WebSocket</span>
-                <span class="font-medium text-purple-700">65%</span>
+                <span>Implementation</span>
+                <span class="font-medium text-blue-700">65%</span>
               </div>
               <ax-sparkline
                 [data]="[25, 30, 35, 40, 45, 48, 52, 55, 58, 60, 62, 65]"
                 variant="line"
                 size="sm"
-                color="var(--ax-purple-default)"
+                color="var(--ax-brand-default)"
                 [strokeWidth]="2"
               />
             </div>
@@ -285,14 +248,14 @@
               class="flex items-center justify-between text-xs text-gray-600"
             >
               <span>Due: Jan 2026</span>
-              <span class="text-purple-700">13/20 endpoints</span>
+              <span class="text-blue-700">13/20 endpoints</span>
             </div>
           </div>
         </ax-card>
 
-        <!-- Indigo Project Card -->
+        <!-- Success Subtle -->
         <ax-card
-          color="indigo"
+          color="success"
           colorIntensity="subtle"
           variant="default"
           size="md"
@@ -303,33 +266,33 @@
                 <h4 class="font-semibold text-base">Testing Infrastructure</h4>
                 <p class="text-sm text-gray-600 mt-1">E2E with Playwright</p>
               </div>
-              <mat-icon class="text-indigo-600">science</mat-icon>
+              <mat-icon class="text-green-600">verified</mat-icon>
             </div>
             <div class="space-y-2">
               <div class="flex justify-between text-xs text-gray-600">
                 <span>Test Coverage</span>
-                <span class="font-medium text-indigo-700">82%</span>
+                <span class="font-medium text-green-700">92%</span>
               </div>
               <ax-sparkline
-                [data]="[45, 50, 55, 60, 65, 68, 72, 75, 77, 79, 81, 82]"
+                [data]="[60, 65, 70, 74, 78, 82, 84, 86, 88, 89, 91, 92]"
                 variant="area"
                 size="sm"
-                color="var(--ax-indigo-default)"
+                color="var(--ax-success-default)"
                 [fillOpacity]="0.15"
               />
             </div>
             <div
               class="flex items-center justify-between text-xs text-gray-600"
             >
-              <span>Automated</span>
-              <span class="text-indigo-700">164/200 tests</span>
+              <span>Comprehensive</span>
+              <span class="text-green-700">184/200 tests</span>
             </div>
           </div>
         </ax-card>
 
-        <!-- Pink Project Card -->
+        <!-- Info Subtle -->
         <ax-card
-          color="pink"
+          color="info"
           colorIntensity="subtle"
           variant="default"
           size="md"
@@ -337,29 +300,29 @@
           <div class="space-y-3">
             <div class="flex items-start justify-between">
               <div>
-                <h4 class="font-semibold text-base">Marketing Website</h4>
-                <p class="text-sm text-gray-600 mt-1">Landing pages</p>
+                <h4 class="font-semibold text-base">UI Component Library</h4>
+                <p class="text-sm text-gray-600 mt-1">Design system</p>
               </div>
-              <mat-icon class="text-pink-600">campaign</mat-icon>
+              <mat-icon class="text-blue-600">palette</mat-icon>
             </div>
             <div class="space-y-2">
               <div class="flex justify-between text-xs text-gray-600">
-                <span>Content Ready</span>
-                <span class="font-medium text-pink-700">92%</span>
+                <span>Components</span>
+                <span class="font-medium text-blue-700">88%</span>
               </div>
               <ax-sparkline
-                [data]="[60, 65, 70, 74, 78, 82, 84, 86, 88, 89, 91, 92]"
+                [data]="[45, 52, 58, 62, 68, 72, 75, 78, 82, 84, 86, 88]"
                 variant="line"
                 size="sm"
-                color="var(--ax-pink-default)"
+                color="var(--ax-info-default)"
                 [strokeWidth]="2"
               />
             </div>
             <div
               class="flex items-center justify-between text-xs text-gray-600"
             >
-              <span>Ready to Launch</span>
-              <span class="text-pink-700">11/12 pages</span>
+              <span>Near Complete</span>
+              <span class="text-blue-700">44/50 components</span>
             </div>
           </div>
         </ax-card>
@@ -374,7 +337,7 @@
         Status & Alert Cards
       </h2>
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        System health, notifications, and important messages
+        System notifications and important messages
       </p>
     </div>
 
@@ -391,8 +354,7 @@
           <div class="flex-1">
             <h4 class="font-semibold text-base mb-1">Deployment Successful</h4>
             <p class="text-sm opacity-85 mb-3">
-              v2.1.0 has been deployed to production successfully. All systems
-              operational.
+              v2.1.0 deployed to production. All systems operational.
             </p>
             <div class="text-xs opacity-75">2 minutes ago</div>
           </div>
@@ -413,8 +375,7 @@
               High Memory Usage Detected
             </h4>
             <p class="text-sm text-yellow-800 mb-3">
-              API server is consuming 85% memory. Consider scaling or
-              optimization.
+              API server consuming 85% memory. Consider scaling.
             </p>
             <div class="text-xs text-yellow-700">15 minutes ago</div>
           </div>
@@ -435,8 +396,7 @@
               Database Connection Failed
             </h4>
             <p class="text-sm opacity-85 mb-3">
-              Unable to connect to PostgreSQL. Attempting automatic
-              reconnection.
+              Unable to connect to PostgreSQL. Attempting reconnection.
             </p>
             <button
               mat-flat-button
@@ -457,8 +417,7 @@
               Scheduled Maintenance
             </h4>
             <p class="text-sm text-blue-800 mb-3">
-              System will undergo maintenance on Dec 25, 2025 from 2:00-4:00 AM
-              UTC.
+              System maintenance on Dec 25, 2025 from 2:00-4:00 AM UTC.
             </p>
             <div class="text-xs text-blue-700">Planned for next week</div>
           </div>
@@ -471,10 +430,10 @@
   <section class="space-y-4">
     <div>
       <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-        Feature Highlight Cards
+        Feature Highlights
       </h2>
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        Showcasing new features, capabilities, and product highlights
+        Showcase new features and capabilities
       </p>
     </div>
 
@@ -497,8 +456,7 @@
               AI-Powered Search
             </h4>
             <p class="text-sm text-blue-700 mt-2">
-              Find what you need instantly with intelligent semantic search and
-              natural language queries.
+              Intelligent semantic search with natural language queries.
             </p>
           </div>
           <button
@@ -511,87 +469,83 @@
         </div>
       </ax-card>
 
-      <!-- Cyan Feature -->
+      <!-- Success Feature -->
       <ax-card
-        color="cyan"
+        color="success"
         colorIntensity="subtle"
         variant="elevated"
         size="md"
       >
         <div class="space-y-3">
           <div
-            class="w-12 h-12 rounded-lg bg-cyan-600 flex items-center justify-center"
-          >
-            <mat-icon class="text-white">analytics</mat-icon>
-          </div>
-          <div>
-            <h4 class="font-semibold text-lg text-cyan-900">
-              Real-Time Analytics
-            </h4>
-            <p class="text-sm text-cyan-700 mt-2">
-              Track user behavior and system metrics with live dashboards and
-              WebSocket updates.
-            </p>
-          </div>
-          <button
-            mat-stroked-button
-            color="primary"
-            class="!text-xs !h-9 w-full !border-cyan-600 !text-cyan-700"
-          >
-            Explore Dashboard
-          </button>
-        </div>
-      </ax-card>
-
-      <!-- Purple Feature -->
-      <ax-card
-        color="purple"
-        colorIntensity="subtle"
-        variant="elevated"
-        size="md"
-      >
-        <div class="space-y-3">
-          <div
-            class="w-12 h-12 rounded-lg bg-purple-600 flex items-center justify-center"
+            class="w-12 h-12 rounded-lg bg-green-600 flex items-center justify-center"
           >
             <mat-icon class="text-white">security</mat-icon>
           </div>
           <div>
-            <h4 class="font-semibold text-lg text-purple-900">
+            <h4 class="font-semibold text-lg text-green-900">
               Enterprise Security
             </h4>
-            <p class="text-sm text-purple-700 mt-2">
-              JWT authentication, role-based access control, and comprehensive
-              audit logs.
+            <p class="text-sm text-green-700 mt-2">
+              JWT authentication, RBAC, and comprehensive audit logs.
             </p>
           </div>
           <button
             mat-stroked-button
-            color="primary"
-            class="!text-xs !h-9 w-full !border-purple-600 !text-purple-700"
+            class="!text-xs !h-9 w-full !border-green-600 !text-green-700"
           >
             View Security
+          </button>
+        </div>
+      </ax-card>
+
+      <!-- Info Feature -->
+      <ax-card
+        color="info"
+        colorIntensity="subtle"
+        variant="elevated"
+        size="md"
+      >
+        <div class="space-y-3">
+          <div
+            class="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center"
+          >
+            <mat-icon class="text-white">analytics</mat-icon>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg text-blue-900">
+              Real-Time Analytics
+            </h4>
+            <p class="text-sm text-blue-700 mt-2">
+              Live dashboards with WebSocket updates and metrics tracking.
+            </p>
+          </div>
+          <button
+            mat-stroked-button
+            class="!text-xs !h-9 w-full !border-blue-600 !text-blue-700"
+          >
+            Explore Dashboard
           </button>
         </div>
       </ax-card>
     </div>
   </section>
 
-  <!-- Section 4: Category/Section Cards -->
+  <!-- Section 4: Category Cards -->
   <section class="space-y-4">
     <div>
       <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-        Category & Section Cards
+        Category Cards
       </h2>
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        Organizing content by category with visual distinction
+        Organize content with visual distinction
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- Development -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <!-- Primary -->
       <ax-card
-        color="indigo"
+        color="primary"
         colorIntensity="filled"
         variant="default"
         size="sm"
@@ -603,17 +557,13 @@
         </div>
       </ax-card>
 
-      <!-- Design -->
-      <ax-card color="pink" colorIntensity="filled" variant="default" size="sm">
-        <div class="text-center space-y-2">
-          <mat-icon class="!text-4xl !h-10 !w-10 opacity-90">brush</mat-icon>
-          <h4 class="font-semibold text-base">Design</h4>
-          <p class="text-xs opacity-75">18 resources</p>
-        </div>
-      </ax-card>
-
-      <!-- Testing -->
-      <ax-card color="cyan" colorIntensity="filled" variant="default" size="sm">
+      <!-- Success -->
+      <ax-card
+        color="success"
+        colorIntensity="filled"
+        variant="default"
+        size="sm"
+      >
         <div class="text-center space-y-2">
           <mat-icon class="!text-4xl !h-10 !w-10 opacity-90">verified</mat-icon>
           <h4 class="font-semibold text-base">Testing</h4>
@@ -621,13 +571,40 @@
         </div>
       </ax-card>
 
-      <!-- Documentation -->
+      <!-- Warning -->
       <ax-card
-        color="success"
+        color="warning"
         colorIntensity="filled"
         variant="default"
         size="sm"
       >
+        <div class="text-center space-y-2">
+          <mat-icon class="!text-4xl !h-10 !w-10 opacity-90"
+            >hourglass_empty</mat-icon
+          >
+          <h4 class="font-semibold text-base">Pending</h4>
+          <p class="text-xs opacity-75">8 tasks</p>
+        </div>
+      </ax-card>
+
+      <!-- Error -->
+      <ax-card
+        color="error"
+        colorIntensity="filled"
+        variant="default"
+        size="sm"
+      >
+        <div class="text-center space-y-2">
+          <mat-icon class="!text-4xl !h-10 !w-10 opacity-90"
+            >priority_high</mat-icon
+          >
+          <h4 class="font-semibold text-base">Critical</h4>
+          <p class="text-xs opacity-75">3 issues</p>
+        </div>
+      </ax-card>
+
+      <!-- Info -->
+      <ax-card color="info" colorIntensity="filled" variant="default" size="sm">
         <div class="text-center space-y-2">
           <mat-icon class="!text-4xl !h-10 !w-10 opacity-90"
             >menu_book</mat-icon
@@ -639,14 +616,14 @@
     </div>
   </section>
 
-  <!-- All Colors Reference -->
+  <!-- Color Palette Reference -->
   <section class="space-y-4">
     <div>
       <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
         Complete Color Palette
       </h2>
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        All 9 colors in filled and subtle variants
+        5 semantic colors in filled and subtle variants (10 total)
       </p>
     </div>
 
@@ -655,58 +632,39 @@
       <h3 class="text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
         Filled Variants
       </h3>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
         <ax-card color="primary" colorIntensity="filled" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold">Primary</div>
+            <div class="text-xs opacity-75 mt-1">Main actions</div>
           </div>
         </ax-card>
 
         <ax-card color="success" colorIntensity="filled" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold">Success</div>
+            <div class="text-xs opacity-75 mt-1">Positive states</div>
           </div>
         </ax-card>
 
         <ax-card color="warning" colorIntensity="filled" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold">Warning</div>
+            <div class="text-xs opacity-75 mt-1">Caution needed</div>
           </div>
         </ax-card>
 
         <ax-card color="error" colorIntensity="filled" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold">Error</div>
+            <div class="text-xs opacity-75 mt-1">Critical issues</div>
           </div>
         </ax-card>
 
         <ax-card color="info" colorIntensity="filled" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold">Info</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="cyan" colorIntensity="filled" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold">Cyan</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="purple" colorIntensity="filled" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold">Purple</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="indigo" colorIntensity="filled" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold">Indigo</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="pink" colorIntensity="filled" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold">Pink</div>
+            <div class="text-xs opacity-75 mt-1">Informational</div>
           </div>
         </ax-card>
       </div>
@@ -717,58 +675,39 @@
       <h3 class="text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
         Subtle Variants
       </h3>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
         <ax-card color="primary" colorIntensity="subtle" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold text-blue-900">Primary</div>
+            <div class="text-xs text-blue-700 mt-1">Light background</div>
           </div>
         </ax-card>
 
         <ax-card color="success" colorIntensity="subtle" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold text-green-900">Success</div>
+            <div class="text-xs text-green-700 mt-1">Light background</div>
           </div>
         </ax-card>
 
         <ax-card color="warning" colorIntensity="subtle" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold text-yellow-900">Warning</div>
+            <div class="text-xs text-yellow-700 mt-1">Light background</div>
           </div>
         </ax-card>
 
         <ax-card color="error" colorIntensity="subtle" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold text-red-900">Error</div>
+            <div class="text-xs text-red-700 mt-1">Light background</div>
           </div>
         </ax-card>
 
         <ax-card color="info" colorIntensity="subtle" size="sm">
           <div class="text-center">
             <div class="text-sm font-semibold text-blue-900">Info</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="cyan" colorIntensity="subtle" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold text-cyan-900">Cyan</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="purple" colorIntensity="subtle" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold text-purple-900">Purple</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="indigo" colorIntensity="subtle" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold text-indigo-900">Indigo</div>
-          </div>
-        </ax-card>
-
-        <ax-card color="pink" colorIntensity="subtle" size="sm">
-          <div class="text-center">
-            <div class="text-sm font-semibold text-pink-900">Pink</div>
+            <div class="text-xs text-blue-700 mt-1">Light background</div>
           </div>
         </ax-card>
       </div>
