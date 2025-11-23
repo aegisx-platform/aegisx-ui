@@ -187,6 +187,224 @@
     </div>
   </div>
 
+  <!-- Semantic Color Palette -->
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold text-[var(--ax-text-heading)] mb-2">
+      Semantic Color Palette
+    </h2>
+    <p class="text-sm text-[var(--ax-text-secondary)] mb-4">
+      5 semantic colors used across the design system with their exact hex
+      values
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <!-- Brand/Primary -->
+      <mat-card>
+        <mat-card-content class="!p-0">
+          <div
+            class="h-32 flex items-center justify-center"
+            style="background-color: var(--ax-brand-default)"
+          >
+            <mat-icon class="!text-6xl !w-16 !h-16 text-white"
+              >verified</mat-icon
+            >
+          </div>
+          <div class="p-4 space-y-2">
+            <h3 class="font-semibold text-base m-0">Brand/Primary</h3>
+            <p class="text-xs text-[var(--ax-text-secondary)] m-0">
+              Material Indigo 500
+            </p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Default:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#3f51b5</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#303f9f</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Token:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
+                  >--ax-brand-default</code
+                >
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Success -->
+      <mat-card>
+        <mat-card-content class="!p-0">
+          <div
+            class="h-32 flex items-center justify-center"
+            style="background-color: var(--ax-success-default)"
+          >
+            <mat-icon class="!text-6xl !w-16 !h-16 text-white"
+              >check_circle</mat-icon
+            >
+          </div>
+          <div class="p-4 space-y-2">
+            <h3 class="font-semibold text-base m-0">Success</h3>
+            <p class="text-xs text-[var(--ax-text-secondary)] m-0">
+              Emerald 500
+            </p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Default:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#10b981</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#059669</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Token:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
+                  >--ax-success-default</code
+                >
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Warning -->
+      <mat-card>
+        <mat-card-content class="!p-0">
+          <div
+            class="h-32 flex items-center justify-center"
+            style="background-color: var(--ax-warning-default)"
+          >
+            <mat-icon class="!text-6xl !w-16 !h-16 text-white"
+              >warning</mat-icon
+            >
+          </div>
+          <div class="p-4 space-y-2">
+            <h3 class="font-semibold text-base m-0">Warning</h3>
+            <p class="text-xs text-[var(--ax-text-secondary)] m-0">Amber 500</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Default:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#f59e0b</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#d97706</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Token:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
+                  >--ax-warning-default</code
+                >
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Error -->
+      <mat-card>
+        <mat-card-content class="!p-0">
+          <div
+            class="h-32 flex items-center justify-center"
+            style="background-color: var(--ax-error-default)"
+          >
+            <mat-icon class="!text-6xl !w-16 !h-16 text-white">error</mat-icon>
+          </div>
+          <div class="p-4 space-y-2">
+            <h3 class="font-semibold text-base m-0">Error</h3>
+            <p class="text-xs text-[var(--ax-text-secondary)] m-0">Red 500</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Default:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#ef4444</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#dc2626</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Token:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
+                  >--ax-error-default</code
+                >
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Info -->
+      <mat-card>
+        <mat-card-content class="!p-0">
+          <div
+            class="h-32 flex items-center justify-center"
+            style="background-color: var(--ax-info-default)"
+          >
+            <mat-icon class="!text-6xl !w-16 !h-16 text-white">info</mat-icon>
+          </div>
+          <div class="p-4 space-y-2">
+            <h3 class="font-semibold text-base m-0">Info</h3>
+            <p class="text-xs text-[var(--ax-text-secondary)] m-0">Blue 500</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Default:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#3b82f6</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
+                  >#2563eb</code
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[var(--ax-text-secondary)]">Token:</span>
+                <code
+                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
+                  >--ax-info-default</code
+                >
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
   <!-- Search Box -->
   <mat-card>
     <mat-card-content>
