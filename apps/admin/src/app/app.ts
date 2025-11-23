@@ -161,8 +161,22 @@ export class App {
           link: '/segmented-progress-demo',
         },
         {
+          id: 'circular-progress-demo',
+          title: 'Circular Progress',
+          type: 'item',
+          icon: 'donut_large',
+          link: '/circular-progress-demo',
+        },
+        {
+          id: 'sparkline-demo',
+          title: 'Sparkline Charts',
+          type: 'item',
+          icon: 'show_chart',
+          link: '/sparkline-demo',
+        },
+        {
           id: 'spark-charts',
-          title: 'Spark Charts',
+          title: 'Spark Charts (Old)',
           type: 'item',
           icon: 'show_chart',
           link: '/spark-charts',

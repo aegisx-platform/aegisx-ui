@@ -96,6 +96,20 @@ export const appRoutes: Route[] = [
       ).then((m) => m.SegmentedProgressDemoComponent),
   },
   {
+    path: 'circular-progress-demo',
+    loadComponent: () =>
+      import(
+        './pages/circular-progress-demo/circular-progress-demo.component'
+      ).then((m) => m.CircularProgressDemoComponent),
+  },
+  {
+    path: 'sparkline-demo',
+    loadComponent: () =>
+      import('./pages/sparkline-demo/sparkline-demo.component').then(
+        (m) => m.SparklineDemoComponent,
+      ),
+  },
+  {
     path: 'badges',
     loadComponent: () =>
       import('./pages/badges-demo/badges-demo.component').then(
