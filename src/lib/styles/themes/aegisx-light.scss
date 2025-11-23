@@ -88,6 +88,35 @@ $aegisx-light-theme: mat.define-theme(
   --mat-button-filled-container-color: var(--ax-brand-default);
   --mdc-filled-button-container-color: var(--ax-brand-default);
 
+  /* ============================================================
+     Material 3 Primary Color Overrides
+     Override Material's primary color to use AegisX brand tokens
+     This ensures ALL Material components use consistent colors
+     ============================================================ */
+
+  /* Primary Color - System Tokens */
+  --mat-sys-primary: var(--ax-brand-default);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--ax-brand-subtle);
+  --mat-sys-on-primary-container: var(--ax-brand-emphasis);
+
+  /* Text Buttons Primary Color */
+  --mat-button-text-label-text-color: var(--ax-brand-default);
+  --mdc-text-button-label-text-color: var(--ax-brand-default);
+
+  /* Flat Buttons Primary Color */
+  --mat-button-flat-background-color: var(--ax-brand-default);
+  --mdc-flat-button-container-color: var(--ax-brand-default);
+
+  /* Icon Buttons Primary Color */
+  --mat-icon-button-color: var(--ax-brand-default);
+  --mdc-icon-button-icon-color: var(--ax-brand-default);
+
+  /* Form Controls Primary Color */
+  --mat-checkbox-selected-checkmark-color: var(--ax-brand-default);
+  --mat-radio-checked-ripple-color: var(--ax-brand-default);
+  --mat-slide-toggle-selected-track-color: var(--ax-brand-default);
+
   /* Button Shape - Override all button border-radius to --ax-radius-sm (4px) */
   /* Regular buttons - Material variants */
   --mat-button-filled-container-shape: var(--ax-radius-sm);
