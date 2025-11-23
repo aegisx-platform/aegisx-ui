@@ -6,6 +6,8 @@
 
 // Components
 export * from './card';
+export * from './kpi-card';
+export * from './segmented-progress';
 export * from './avatar';
 export * from './list';
 export * from './stats-card';

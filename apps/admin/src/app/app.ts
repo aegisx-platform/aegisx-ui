@@ -147,6 +147,20 @@ export class App {
           link: '/card-examples',
         },
         {
+          id: 'kpi-card-demo',
+          title: 'KPI Card Component',
+          type: 'item',
+          icon: 'view_agenda',
+          link: '/kpi-card-demo',
+        },
+        {
+          id: 'segmented-progress-demo',
+          title: 'Segmented Progress',
+          type: 'item',
+          icon: 'data_usage',
+          link: '/segmented-progress-demo',
+        },
+        {
           id: 'spark-charts',
           title: 'Spark Charts',
           type: 'item',

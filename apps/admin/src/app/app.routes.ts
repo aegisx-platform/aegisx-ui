@@ -82,6 +82,20 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'kpi-card-demo',
+    loadComponent: () =>
+      import('./pages/kpi-card-demo/kpi-card-demo.component').then(
+        (m) => m.KpiCardDemoComponent,
+      ),
+  },
+  {
+    path: 'segmented-progress-demo',
+    loadComponent: () =>
+      import(
+        './pages/segmented-progress-demo/segmented-progress-demo.component'
+      ).then((m) => m.SegmentedProgressDemoComponent),
+  },
+  {
     path: 'badges',
     loadComponent: () =>
       import('./pages/badges-demo/badges-demo.component').then(
