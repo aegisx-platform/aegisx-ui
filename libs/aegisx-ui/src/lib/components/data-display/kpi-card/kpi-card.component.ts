@@ -1,7 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type KpiCardVariant = 'simple' | 'badge' | 'compact' | 'accent';
+export type KpiCardVariant =
+  | 'simple'
+  | 'badge'
+  | 'compact'
+  | 'accent'
+  | 'visual-indicator';
 export type KpiCardSize = 'sm' | 'md' | 'lg';
 export type KpiCardTrend = 'up' | 'down' | 'neutral';
 export type KpiCardBadgeType =
@@ -108,6 +113,18 @@ export class AxKpiCardComponent {
   /** Clickable cursor */
   @Input() clickable = false;
 
+  /** Number of filled bars (for visual-indicator variant, 0-3) */
+  @Input() barsFilled = 0;
+
+  /** Total number of bars (for visual-indicator variant) */
+  @Input() barsTotal = 3;
+
+  /** Bar color (for visual-indicator variant) */
+  @Input() barColor: KpiCardAccentColor = 'info';
+
+  /** Supplementary text (for visual-indicator variant, e.g., "450/752") */
+  @Input() supplementary = '';
+
   get cardClasses(): string {
     const classes = ['ax-kpi-card'];
     classes.push(`ax-kpi-card--${this.variant}`);
@@ -152,5 +169,18 @@ export class AxKpiCardComponent {
     if (this.change > 0) return 'up';
     if (this.change < 0) return 'down';
     return 'neutral';
+  }
+
+  /** Get array for rendering bars (visual-indicator variant) */
+  get barsArray(): boolean[] {
+    return Array(this.barsTotal)
+      .fill(false)
+      .map((_, index) => index < this.barsFilled);
+  }
+
+  get barClasses(): string {
+    const classes = ['ax-kpi-card__bar'];
+    classes.push(`ax-kpi-card__bar--${this.barColor}`);
+    return classes.join(' ');
   }
 }

@@ -460,6 +460,59 @@ import { AxKpiCardComponent } from '@aegisx/ui';
         </div>
       </section>
 
+      <!-- ========================================
+           Pattern 7: Visual Indicator Bars
+           ======================================== -->
+      <div class="section-header">
+        <h2>Pattern 7: Visual Indicator Bars</h2>
+        <p>
+          Overview metrics with visual bar indicators showing ratios and
+          progress.
+        </p>
+      </div>
+
+      <section>
+        <h3
+          class="text-lg font-semibold mb-4 text-green-700 dark:text-green-400"
+        >
+          ✨ New: Visual Indicator Variant
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Lead-to-Quote Ratio (2 out of 3 bars filled - Warning) -->
+          <ax-kpi-card
+            variant="visual-indicator"
+            label="Lead-to-Quote Ratio"
+            value="59.8%"
+            supplementary="450/752"
+            [barsFilled]="2"
+            [barsTotal]="3"
+            barColor="warning"
+          ></ax-kpi-card>
+
+          <!-- Project Load (1 out of 3 bars filled - Error) -->
+          <ax-kpi-card
+            variant="visual-indicator"
+            label="Project Load"
+            value="30.2%"
+            supplementary="25/83"
+            [barsFilled]="1"
+            [barsTotal]="3"
+            barColor="error"
+          ></ax-kpi-card>
+
+          <!-- Success Rate (3 out of 3 bars filled - Success) -->
+          <ax-kpi-card
+            variant="visual-indicator"
+            label="Success Rate"
+            value="94.7%"
+            supplementary="161/170"
+            [barsFilled]="3"
+            [barsTotal]="3"
+            barColor="success"
+          ></ax-kpi-card>
+        </div>
+      </section>
+
       <!-- Summary -->
       <div class="section-header mt-12">
         <h2>📊 Benefits Summary</h2>
