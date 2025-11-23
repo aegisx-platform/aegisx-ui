@@ -36,7 +36,8 @@
    LIGHT THEME TOKEN VALUES
    ============================================================ */
 
-// Spacing Scale (8 tokens) - Consistent spacing system
+// Spacing Scale (9 tokens) - Consistent spacing system
+$aegisx-light-spacing-2xs: 0.125rem; // 2px
 $aegisx-light-spacing-xs: 0.25rem; // 4px
 $aegisx-light-spacing-sm: 0.5rem; // 8px
 $aegisx-light-spacing-md: 1rem; // 16px
@@ -338,6 +339,7 @@ $aegisx-a11y-text-enhanced-contrast: 7 !default; // WCAG AAA
    ============================================================ */
 
 // Spacing Scale (same for both themes)
+$aegisx-dark-spacing-2xs: $aegisx-light-spacing-2xs;
 $aegisx-dark-spacing-xs: $aegisx-light-spacing-xs;
 $aegisx-dark-spacing-sm: $aegisx-light-spacing-sm;
 $aegisx-dark-spacing-md: $aegisx-light-spacing-md;
@@ -464,6 +466,7 @@ $aegisx-dark-brand-inverted: #1a237e; // Material Indigo 900 (dark)
 @mixin aegisx-light-theme {
   :root {
     /* Spacing Scale */
+    --ax-spacing-2xs: #{$aegisx-light-spacing-2xs};
     --ax-spacing-xs: #{$aegisx-light-spacing-xs};
     --ax-spacing-sm: #{$aegisx-light-spacing-sm};
     --ax-spacing-md: #{$aegisx-light-spacing-md};
@@ -835,6 +838,7 @@ $aegisx-dark-brand-inverted: #1a237e; // Material Indigo 900 (dark)
 @mixin aegisx-dark-theme {
   :root {
     /* Spacing Scale (same for both themes) */
+    --ax-spacing-2xs: #{$aegisx-dark-spacing-2xs};
     --ax-spacing-xs: #{$aegisx-dark-spacing-xs};
     --ax-spacing-sm: #{$aegisx-dark-spacing-sm};
     --ax-spacing-md: #{$aegisx-dark-spacing-md};
