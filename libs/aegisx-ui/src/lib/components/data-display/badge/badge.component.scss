@@ -13,6 +13,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ax-spacing-2xs);
+  padding: var(--ax-spacing-2xs) var(--ax-spacing-md); // Default padding (same as md)
   border-radius: var(--ax-radius-sm);
   font-size: var(--ax-text-xs);
   font-weight: var(--ax-font-semibold);
