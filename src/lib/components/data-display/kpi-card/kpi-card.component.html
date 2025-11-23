@@ -61,6 +61,35 @@
       </div>
     }
 
+    <!-- Visual Indicator Variant: Bars + Value + Supplementary -->
+    @if (variant === 'visual-indicator') {
+      <div class="ax-kpi-card__header">
+        <div class="ax-kpi-card__label">{{ label }}</div>
+      </div>
+      <div class="ax-kpi-card__body ax-kpi-card__body--visual-indicator">
+        <div class="ax-kpi-card__bars">
+          @for (filled of barsArray; track $index) {
+            <div
+              class="ax-kpi-card__bar"
+              [class.ax-kpi-card__bar--filled]="filled"
+              [class.ax-kpi-card__bar--empty]="!filled"
+              [style.background-color]="
+                filled
+                  ? 'var(--ax-' + barColor + '-default)'
+                  : 'var(--ax-border-default)'
+              "
+            ></div>
+          }
+        </div>
+        <div class="ax-kpi-card__value-group">
+          <div class="ax-kpi-card__value">{{ value }}</div>
+          @if (supplementary) {
+            <div class="ax-kpi-card__supplementary">{{ supplementary }}</div>
+          }
+        </div>
+      </div>
+    }
+
     <!-- Optional subtitle -->
     @if (subtitle) {
       <div class="ax-kpi-card__subtitle">{{ subtitle }}</div>

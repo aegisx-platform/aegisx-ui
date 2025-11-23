@@ -345,6 +345,49 @@
 }
 
 // ----------------------------------------------------------------------------
+// Visual Indicator Variant (Bars)
+// ----------------------------------------------------------------------------
+
+.ax-kpi-card__body--visual-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-spacing-md);
+}
+
+.ax-kpi-card__bars {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.ax-kpi-card__bar {
+  width: 4px;
+  height: 24px;
+  border-radius: var(--ax-radius-sm);
+  transition: background-color 0.2s ease;
+
+  &--filled {
+    // Color set via inline style from component
+  }
+
+  &--empty {
+    background-color: var(--ax-border-default);
+  }
+}
+
+.ax-kpi-card__value-group {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ax-spacing-sm);
+}
+
+.ax-kpi-card__supplementary {
+  font-size: var(--ax-text-lg);
+  color: var(--ax-text-subtle);
+  font-weight: var(--ax-font-normal);
+}
+
+// ----------------------------------------------------------------------------
 // Responsive
 // ----------------------------------------------------------------------------
 
