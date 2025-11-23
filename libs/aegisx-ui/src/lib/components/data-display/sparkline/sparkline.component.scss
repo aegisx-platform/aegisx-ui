@@ -5,8 +5,22 @@
  */
 
 .ax-sparkline {
-  display: inline-block;
+  display: block;
+  width: 100%;
   vertical-align: middle;
+
+  // Size-specific heights (width is now responsive)
+  &--sm {
+    height: 24px;
+  }
+
+  &--md {
+    height: 40px;
+  }
+
+  &--lg {
+    height: 60px;
+  }
 }
 
 .ax-sparkline__line {

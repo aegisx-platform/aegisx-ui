@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { AxKpiCardComponent, AxSparklineComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
 
 @Component({
   selector: 'app-sparkline-demo',
@@ -49,9 +49,10 @@ import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
               <ax-sparkline
                 [data]="revenueData"
                 variant="area"
-                size="md"
+                size="lg"
                 color="var(--ax-success-default)"
                 [fillOpacity]="0.2"
+                class="w-full"
               >
               </ax-sparkline>
             </mat-card-content>
@@ -68,9 +69,10 @@ import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
               <ax-sparkline
                 [data]="usersData"
                 variant="area"
-                size="md"
+                size="lg"
                 color="var(--ax-info-default)"
                 [fillOpacity]="0.2"
+                class="w-full"
               >
               </ax-sparkline>
             </mat-card-content>
@@ -87,9 +89,10 @@ import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
               <ax-sparkline
                 [data]="ordersData"
                 variant="area"
-                size="md"
+                size="lg"
                 color="var(--ax-error)"
                 [fillOpacity]="0.2"
+                class="w-full"
               >
               </ax-sparkline>
             </mat-card-content>
@@ -332,6 +335,240 @@ import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
         </mat-card>
       </section>
 
+      <!-- Pattern 7: Stock Ticker Cards -->
+      <div class="section-header">
+        <h2>Pattern 7: Stock Ticker Cards</h2>
+        <p>
+          Complete stock ticker cards with company info, price, change, and
+          sparkline trend.
+        </p>
+      </div>
+
+      <section>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Amazon Stock -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex items-center justify-between gap-4">
+                <!-- Left: Company Info -->
+                <div class="flex-shrink-0">
+                  <div class="text-sm font-semibold text-heading">AMZN</div>
+                  <div class="text-xs text-secondary">Amazon.com Inc.</div>
+                </div>
+
+                <!-- Right: Price + Sparkline -->
+                <div class="flex items-center gap-3 flex-1 justify-end">
+                  <div class="text-right">
+                    <div class="text-lg font-semibold text-heading">
+                      $178.25
+                    </div>
+                    <div class="text-xs font-medium text-success">
+                      +$4.75 (+2.74%)
+                    </div>
+                  </div>
+                  <ax-sparkline
+                    [data]="amznData"
+                    variant="area"
+                    size="sm"
+                    color="var(--ax-success-default)"
+                    [fillOpacity]="0.15"
+                    [smooth]="true"
+                  >
+                  </ax-sparkline>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Tesla Stock -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex items-center justify-between gap-4">
+                <!-- Left: Company Info -->
+                <div class="flex-shrink-0">
+                  <div class="text-sm font-semibold text-heading">TSLA</div>
+                  <div class="text-xs text-secondary">Tesla Inc.</div>
+                </div>
+
+                <!-- Right: Price + Sparkline -->
+                <div class="flex items-center gap-3 flex-1 justify-end">
+                  <div class="text-right">
+                    <div class="text-lg font-semibold text-heading">
+                      $231.75
+                    </div>
+                    <div class="text-xs font-medium text-error">
+                      -$6.25 (-2.62%)
+                    </div>
+                  </div>
+                  <ax-sparkline
+                    [data]="tslaData"
+                    variant="area"
+                    size="sm"
+                    color="var(--ax-error)"
+                    [fillOpacity]="0.15"
+                    [smooth]="true"
+                  >
+                  </ax-sparkline>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Google Stock -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex items-center justify-between gap-4">
+                <!-- Left: Company Info -->
+                <div class="flex-shrink-0">
+                  <div class="text-sm font-semibold text-heading">GOOGL</div>
+                  <div class="text-xs text-secondary">Alphabet Inc.</div>
+                </div>
+
+                <!-- Right: Price + Sparkline -->
+                <div class="flex items-center gap-3 flex-1 justify-end">
+                  <div class="text-right">
+                    <div class="text-lg font-semibold text-heading">
+                      $149.85
+                    </div>
+                    <div class="text-xs font-medium text-success">
+                      +$3.65 (+2.50%)
+                    </div>
+                  </div>
+                  <ax-sparkline
+                    [data]="googlData"
+                    variant="area"
+                    size="sm"
+                    color="var(--ax-success-default)"
+                    [fillOpacity]="0.15"
+                    [smooth]="true"
+                  >
+                  </ax-sparkline>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </section>
+
+      <!-- Pattern 8: Custom Width Examples -->
+      <div class="section-header">
+        <h2>Pattern 8: Custom Width Examples</h2>
+        <p class="text-secondary">
+          Sparklines with custom widths using customWidth input
+        </p>
+      </div>
+
+      <section>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Fixed 200px Width -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-sm text-secondary"
+                    >Fixed Width (200px)</span
+                  >
+                  <span class="text-lg font-semibold text-heading"
+                    >$45,678</span
+                  >
+                </div>
+                <ax-sparkline
+                  [data]="revenueData"
+                  variant="area"
+                  size="md"
+                  color="var(--ax-info-default)"
+                  [fillOpacity]="0.2"
+                  customWidth="200px"
+                >
+                </ax-sparkline>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Fixed 300px Width -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-sm text-secondary"
+                    >Fixed Width (300px)</span
+                  >
+                  <span class="text-lg font-semibold text-heading">12,345</span>
+                </div>
+                <ax-sparkline
+                  [data]="userActivityData"
+                  variant="line"
+                  size="md"
+                  color="var(--ax-success-default)"
+                  [strokeWidth]="2"
+                  customWidth="300px"
+                >
+                </ax-sparkline>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- 50% Width -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-sm text-secondary">50% Width</span>
+                  <span class="text-lg font-semibold text-heading">98.5%</span>
+                </div>
+                <ax-sparkline
+                  [data]="systemHealthData"
+                  variant="area"
+                  size="sm"
+                  color="var(--ax-success-default)"
+                  [fillOpacity]="0.15"
+                  customWidth="50%"
+                >
+                </ax-sparkline>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- 75% Width -->
+          <mat-card class="kpi-card">
+            <mat-card-content>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-sm text-secondary">75% Width</span>
+                  <span class="text-lg font-semibold text-heading">234ms</span>
+                </div>
+                <ax-sparkline
+                  [data]="responseTimeData"
+                  variant="line"
+                  size="sm"
+                  color="var(--ax-warning-default)"
+                  [strokeWidth]="2"
+                  customWidth="75%"
+                >
+                </ax-sparkline>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Code Example -->
+        <mat-card class="kpi-card mt-6">
+          <mat-card-content>
+            <h3 class="text-lg font-semibold mb-3">Usage Example</h3>
+            <pre
+              class="text-xs bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto"
+            ><code>&lt;!-- Default: 100% width --&gt;
+&lt;ax-sparkline [data]="revenueData" variant="area" size="md"&gt;&lt;/ax-sparkline&gt;
+
+&lt;!-- Fixed pixel width --&gt;
+&lt;ax-sparkline [data]="revenueData" variant="area" size="md" customWidth="200px"&gt;&lt;/ax-sparkline&gt;
+
+&lt;!-- Percentage width --&gt;
+&lt;ax-sparkline [data]="revenueData" variant="area" size="md" customWidth="50%"&gt;&lt;/ax-sparkline&gt;</code></pre>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
       <!-- Benefits Summary -->
       <div class="section-header">
         <h2>Component Benefits</h2>
@@ -351,6 +588,10 @@ import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
                   <li>✅ Optional data point dots</li>
                   <li>✅ Custom colors via design tokens</li>
                   <li>✅ Automatic scaling</li>
+                  <li>
+                    ✅ <strong>Custom width support</strong> (100%, 200px, 50%,
+                    etc.)
+                  </li>
                   <li>✅ Full dark mode support</li>
                 </ul>
               </div>
@@ -382,6 +623,16 @@ import { AxSparklineComponent, AxKpiCardComponent } from '@aegisx/ui';
       .kpi-card:hover {
         box-shadow: var(--ax-shadow-sm);
       }
+
+      /* Make sparkline full width */
+      .w-full {
+        width: 100%;
+      }
+
+      ax-sparkline {
+        display: block;
+        width: 100%;
+      }
     `,
   ],
 })
@@ -393,4 +644,30 @@ export class SparklineDemoComponent {
   trendData = [1500, 2100, 1800, 2400, 2800, 2600, 3000, 2845];
   sampleData = [10, 30, 20, 50, 40, 60, 55, 70];
   volatileData = [20, 45, 28, 60, 35, 75, 40, 85, 50, 90, 65, 95];
+
+  // Stock ticker data (Pattern 7)
+  // Amazon - Positive trend
+  amznData = [165.5, 167.2, 169.8, 171.5, 170.3, 173.8, 175.2, 176.5, 178.25];
+  amznPrice = 178.25;
+  amznChange = 4.75;
+  amznChangePercent = 2.74;
+
+  // Tesla - Negative trend
+  tslaData = [248.5, 245.3, 242.8, 240.5, 238.2, 236.5, 234.8, 233.2, 231.75];
+  tslaPrice = 231.75;
+  tslaChange = 6.25;
+  tslaChangePercent = -2.62;
+
+  // Google - Positive trend
+  googlData = [138.5, 140.2, 139.8, 142.5, 143.8, 145.2, 146.8, 148.5, 149.85];
+  googlPrice = 149.85;
+  googlChange = 3.65;
+  googlChangePercent = 2.5;
+
+  // Additional data for Pattern 8 (Custom Width Examples)
+  userActivityData = [
+    8500, 9200, 10100, 9800, 11200, 12300, 11800, 13100, 12345,
+  ];
+  systemHealthData = [95.5, 96.2, 97.1, 96.8, 97.5, 98.2, 97.9, 98.8, 98.5];
+  responseTimeData = [245, 238, 251, 242, 235, 228, 233, 239, 234];
 }

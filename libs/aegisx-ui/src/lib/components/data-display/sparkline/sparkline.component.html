@@ -3,9 +3,9 @@
   [class.ax-sparkline--sm]="size === 'sm'"
   [class.ax-sparkline--md]="size === 'md'"
   [class.ax-sparkline--lg]="size === 'lg'"
-  [attr.width]="svgWidth"
-  [attr.height]="svgHeight"
+  [style.width]="customWidth"
   [attr.viewBox]="'0 0 ' + svgWidth + ' ' + svgHeight"
+  preserveAspectRatio="none"
 >
   <!-- Area fill (for area variant) -->
   <path

@@ -61,6 +61,9 @@ export class AxSparklineComponent implements OnInit {
   /** Smooth curve (true) or straight lines (false) */
   @Input() smooth = true;
 
+  /** Custom width (e.g., "200px", "50%"). If not set, defaults to 100% */
+  @Input() customWidth?: string;
+
   // SVG properties
   svgWidth = 0;
   svgHeight = 0;
@@ -83,9 +86,9 @@ export class AxSparklineComponent implements OnInit {
    */
   private calculateDimensions(): void {
     const sizeMap = {
-      sm: { width: 60, height: 24 },
-      md: { width: 100, height: 40 },
-      lg: { width: 150, height: 60 },
+      sm: { width: 300, height: 24 },
+      md: { width: 300, height: 40 },
+      lg: { width: 300, height: 60 },
     };
 
     const config = sizeMap[this.size];
