@@ -1,0 +1,41 @@
+<svg
+  class="ax-sparkline"
+  [class.ax-sparkline--sm]="size === 'sm'"
+  [class.ax-sparkline--md]="size === 'md'"
+  [class.ax-sparkline--lg]="size === 'lg'"
+  [attr.width]="svgWidth"
+  [attr.height]="svgHeight"
+  [attr.viewBox]="'0 0 ' + svgWidth + ' ' + svgHeight"
+>
+  <!-- Area fill (for area variant) -->
+  <path
+    *ngIf="variant === 'area' && areaPathD"
+    class="ax-sparkline__area"
+    [attr.d]="areaPathD"
+    [attr.fill]="getFillColor()"
+    [style.opacity]="fillOpacity"
+  />
+
+  <!-- Line path -->
+  <path
+    *ngIf="pathD"
+    class="ax-sparkline__line"
+    [attr.d]="pathD"
+    [attr.stroke]="color"
+    [attr.stroke-width]="strokeWidth"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Data point dots -->
+  <circle
+    *ngFor="let point of points"
+    [attr.cx]="point.x"
+    [attr.cy]="point.y"
+    [attr.r]="dotRadius"
+    [attr.fill]="color"
+    class="ax-sparkline__dot"
+    [class.ax-sparkline__dot--visible]="showDots"
+  />
+</svg>

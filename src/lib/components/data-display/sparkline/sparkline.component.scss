@@ -1,0 +1,32 @@
+/**
+ * AX Sparkline Component Styles
+ *
+ * Lightweight SVG sparkline charts using AegisX design tokens
+ */
+
+.ax-sparkline {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ax-sparkline__line {
+  vector-effect: non-scaling-stroke;
+}
+
+.ax-sparkline__area {
+  transition: opacity 0.3s ease;
+}
+
+.ax-sparkline__dot {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  &--visible {
+    opacity: 1;
+  }
+}
+
+// Show dots on hover
+.ax-sparkline:hover .ax-sparkline__dot {
+  opacity: 1;
+}
