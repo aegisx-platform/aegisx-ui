@@ -1,0 +1,79 @@
+<div [class]="cardClasses">
+  <!-- Color Accent Bar -->
+  @if (accentColor) {
+    <div [class]="accentClasses"></div>
+  }
+
+  <div class="ax-kpi-card__content">
+    <!-- Simple Variant: Label + Value + Change -->
+    @if (variant === 'simple') {
+      <div class="ax-kpi-card__header">
+        <div class="ax-kpi-card__label">{{ label }}</div>
+      </div>
+      <div class="ax-kpi-card__body">
+        <div class="ax-kpi-card__value-row">
+          <div class="ax-kpi-card__value">{{ value }}</div>
+          @if (change !== undefined) {
+            <div [class]="changeClasses">{{ formattedChange }}</div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Badge Variant: Label with Badge + Value -->
+    @if (variant === 'badge') {
+      <div class="ax-kpi-card__header ax-kpi-card__header--with-badge">
+        <div class="ax-kpi-card__label">{{ label }}</div>
+        @if (badge) {
+          <div [class]="badgeClasses">{{ badge }}</div>
+        }
+      </div>
+      <div class="ax-kpi-card__body">
+        <div class="ax-kpi-card__value">{{ value }}</div>
+      </div>
+    }
+
+    <!-- Compact Variant: Minimal spacing -->
+    @if (variant === 'compact') {
+      <div class="ax-kpi-card__header ax-kpi-card__header--compact">
+        <span class="ax-kpi-card__label ax-kpi-card__label--compact">{{
+          label
+        }}</span>
+        @if (change !== undefined) {
+          <span [class]="changeClasses">{{ formattedChange }}</span>
+        }
+      </div>
+      <div class="ax-kpi-card__body ax-kpi-card__body--compact">
+        <div class="ax-kpi-card__value">{{ value }}</div>
+      </div>
+    }
+
+    <!-- Accent Variant: With color accent bar -->
+    @if (variant === 'accent') {
+      <div class="ax-kpi-card__header ax-kpi-card__header--with-badge">
+        <span class="ax-kpi-card__label">{{ label }}</span>
+        @if (change !== undefined) {
+          <span [class]="changeClasses">{{ formattedChange }}</span>
+        }
+      </div>
+      <div class="ax-kpi-card__body">
+        <div class="ax-kpi-card__value">{{ value }}</div>
+      </div>
+    }
+
+    <!-- Optional subtitle -->
+    @if (subtitle) {
+      <div class="ax-kpi-card__subtitle">{{ subtitle }}</div>
+    }
+
+    <!-- Content projection for custom content (progress bars, charts, etc.) -->
+    <div class="ax-kpi-card__custom">
+      <ng-content></ng-content>
+    </div>
+  </div>
+
+  <!-- Footer content projection -->
+  <div class="ax-kpi-card__footer">
+    <ng-content select="[footer]"></ng-content>
+  </div>
+</div>
