@@ -140,12 +140,12 @@ $aegisx-light-success-border: #a6f4c5; // Light success border
 $aegisx-light-error-surface: #fff1f0; // Lightest error background
 $aegisx-light-error-border: #ffb3b0; // Light error border
 
-// Brand/Primary (6 tokens) - Brand color palette (Azure Blue / Light Blue)
-$aegisx-light-brand-faint: #e1f5fe; // Light Blue 50
-$aegisx-light-brand-muted: #81d4fa; // Light Blue 200
-$aegisx-light-brand-subtle: #4fc3f7; // Light Blue 300
-$aegisx-light-brand-default: #03a9f4; // Light Blue 500 (main) - Azure Blue
-$aegisx-light-brand-emphasis: #0288d1; // Light Blue 700
+// Brand/Primary (6 tokens) - Brand color palette (Material Indigo)
+$aegisx-light-brand-faint: #e8eaf6; // Indigo 50
+$aegisx-light-brand-muted: #9fa8da; // Indigo 200
+$aegisx-light-brand-subtle: #7986cb; // Indigo 300
+$aegisx-light-brand-default: #3f51b5; // Indigo 500 (main) - Material Indigo
+$aegisx-light-brand-emphasis: #303f9f; // Indigo 700
 $aegisx-light-brand-inverted: #ffffff; // White
 
 // Border Radius (6 tokens) - Corner rounding
@@ -452,12 +452,12 @@ $aegisx-dark-shadow-lg:
   0 4px 6px -4px rgb(0 0 0 / 0.4);
 
 // Brand/Primary - Lighter brand colors for dark mode (Material Indigo)
-$aegisx-dark-brand-faint: #01579b; // Light Blue 900 (dark base)
-$aegisx-dark-brand-muted: #0277bd; // Light Blue 800
-$aegisx-dark-brand-subtle: #0288d1; // Light Blue 700
-$aegisx-dark-brand-default: #29b6f6; // Light Blue 400 (brighter for dark mode)
-$aegisx-dark-brand-emphasis: #81d4fa; // Light Blue 200 (very bright for contrast)
-$aegisx-dark-brand-inverted: #01579b; // Light Blue 900 (dark)
+$aegisx-dark-brand-faint: #1a237e; // Indigo 900 (dark base)
+$aegisx-dark-brand-muted: #283593; // Indigo 800
+$aegisx-dark-brand-subtle: #303f9f; // Indigo 700
+$aegisx-dark-brand-default: #5c6bc0; // Indigo 400 (brighter for dark mode)
+$aegisx-dark-brand-emphasis: #9fa8da; // Indigo 200 (very bright for contrast)
+$aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
 
 /* ============================================================
    LIGHT THEME MIXIN
