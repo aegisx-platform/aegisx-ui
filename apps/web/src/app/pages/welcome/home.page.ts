@@ -36,7 +36,7 @@ interface Feature {
           </p>
           <div class="hero-actions">
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="navigateTo('/profile')"
             >
@@ -237,7 +237,15 @@ interface Feature {
         &:hover {
           transform: translateY(-2px);
           box-shadow: var(--ax-shadow-md);
-          border-color: var(--ax-brand-muted);
+          border-color: var(--ax-brand-default);
+
+          .action-icon-wrapper {
+            background-color: var(--ax-brand-default);
+
+            mat-icon {
+              color: white;
+            }
+          }
         }
 
         ::ng-deep .mat-mdc-card-content {
@@ -253,14 +261,16 @@ interface Feature {
         width: 48px;
         height: 48px;
         margin: 0 auto var(--ax-spacing-md);
-        background-color: var(--ax-brand-subtle);
+        background-color: var(--ax-background-muted);
         border-radius: var(--ax-radius-lg);
+        transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
 
         mat-icon {
-          color: var(--ax-brand-emphasis);
+          color: var(--ax-text-subtle);
           font-size: 24px;
           width: 24px;
           height: 24px;
+          transition: color 200ms cubic-bezier(0.2, 0, 0, 1);
         }
       }
 
@@ -288,6 +298,12 @@ interface Feature {
       .feature-card {
         background-color: var(--ax-background-default);
         border: 1px solid var(--ax-border-default);
+        transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+
+        &:hover {
+          border-color: var(--ax-border-emphasis);
+          box-shadow: var(--ax-shadow-sm);
+        }
 
         ::ng-deep .mat-mdc-card-content {
           padding: var(--ax-spacing-lg) !important;
@@ -304,11 +320,11 @@ interface Feature {
         width: 40px;
         height: 40px;
         flex-shrink: 0;
-        background-color: var(--ax-success-subtle);
+        background-color: var(--ax-background-muted);
         border-radius: var(--ax-radius-md);
 
         mat-icon {
-          color: var(--ax-success-emphasis);
+          color: var(--ax-text-default);
           font-size: 20px;
           width: 20px;
           height: 20px;
@@ -348,52 +364,70 @@ interface Feature {
         }
 
         &.info-card--primary {
-          background-color: var(--ax-brand-subtle);
-          border-color: var(--ax-brand-muted);
+          background: linear-gradient(
+            135deg,
+            var(--ax-brand-default),
+            var(--ax-brand-emphasis)
+          );
+          border: none;
+          box-shadow: 0 8px 20px -4px var(--ax-brand-muted);
 
           .info-title {
-            color: var(--ax-brand-emphasis);
+            color: white;
           }
 
           .info-description {
-            color: var(--ax-text-default);
+            color: rgba(255, 255, 255, 0.95);
           }
 
           .info-icon-wrapper {
-            background-color: var(--ax-brand-muted);
+            background-color: rgba(255, 255, 255, 0.25);
 
             mat-icon {
-              color: var(--ax-brand-emphasis);
+              color: white;
             }
           }
 
           .info-button {
-            color: var(--ax-brand-emphasis);
+            color: white;
+
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
           }
         }
 
         &.info-card--accent {
-          background-color: var(--ax-info-subtle);
-          border-color: var(--ax-info-muted);
+          background: linear-gradient(
+            135deg,
+            var(--ax-success-default),
+            var(--ax-success-emphasis)
+          );
+          border: none;
+          box-shadow: 0 8px 20px -4px var(--ax-success-muted);
 
           .info-title {
-            color: var(--ax-info-emphasis);
+            color: white;
           }
 
           .info-description {
-            color: var(--ax-text-default);
+            color: rgba(255, 255, 255, 0.95);
           }
 
           .info-icon-wrapper {
-            background-color: var(--ax-info-muted);
+            background-color: rgba(255, 255, 255, 0.25);
 
             mat-icon {
-              color: var(--ax-info-emphasis);
+              color: white;
             }
           }
 
           .info-button {
-            color: var(--ax-info-emphasis);
+            color: white;
+
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
           }
         }
       }
