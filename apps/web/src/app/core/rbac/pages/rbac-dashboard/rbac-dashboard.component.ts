@@ -37,24 +37,20 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
     HasPermissionDirective,
   ],
   template: `
-    <div class="rbac-dashboard p-6 space-y-6">
+    <div class="rbac-dashboard">
       <!-- Breadcrumb -->
       <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
 
       <!-- Header -->
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-      >
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            RBAC Management
-          </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">
+      <div class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">RBAC Management</h1>
+          <p class="page-subtitle">
             Manage roles, permissions, and user access
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="header-actions">
           <button
             *hasPermission="'roles:read'"
             mat-raised-button
@@ -86,41 +82,32 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       </div>
 
       <!-- Loading State -->
-      <div *ngIf="isLoading()" class="flex justify-center items-center py-12">
+      <div *ngIf="isLoading()" class="loading-container">
         <mat-spinner diameter="48"></mat-spinner>
       </div>
 
       <!-- Dashboard Content -->
-      <div *ngIf="!isLoading()" class="space-y-6">
+      <div *ngIf="!isLoading()" class="dashboard-content">
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stats-grid">
           <mat-card
             appearance="outlined"
             *ngFor="let card of dashboardCards()"
-            class="cursor-pointer transition-transform hover:scale-105"
+            class="stat-card"
             (click)="handleCardClick(card)"
           >
-            <mat-card-content class="p-6">
-              <div class="flex items-center justify-between">
-                <div class="flex-1">
-                  <div
-                    class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1"
-                  >
-                    {{ card.title }}
-                  </div>
-                  <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ card.value | number }}
-                  </div>
-                  <div
-                    *ngIf="card.trend"
-                    class="flex items-center mt-2 text-sm"
-                  >
+            <mat-card-content>
+              <div class="stat-card-content">
+                <div class="stat-info">
+                  <div class="stat-title">{{ card.title }}</div>
+                  <div class="stat-value">{{ card.value | number }}</div>
+                  <div *ngIf="card.trend" class="stat-trend">
                     <mat-icon
                       [class]="
-                        'mr-1 text-base ' +
+                        'trend-icon ' +
                         (card.trend.direction === 'up'
-                          ? 'text-green-600'
-                          : 'text-red-600')
+                          ? 'trend-up'
+                          : 'trend-down')
                       "
                     >
                       {{
@@ -131,21 +118,20 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
                     </mat-icon>
                     <span
                       [class]="
-                        card.trend.direction === 'up'
-                          ? 'text-green-600'
-                          : 'text-red-600'
+                        'trend-value ' +
+                        (card.trend.direction === 'up'
+                          ? 'trend-up'
+                          : 'trend-down')
                       "
                     >
                       {{ card.trend.value }}%
                     </span>
-                    <span class="text-gray-500 ml-1">{{
-                      card.trend.period
-                    }}</span>
+                    <span class="trend-period">{{ card.trend.period }}</span>
                   </div>
                 </div>
-                <div class="ml-4">
+                <div class="stat-icon-container">
                   <mat-icon
-                    [class]="'text-4xl ' + getCardIconColor(card.color)"
+                    [class]="'stat-icon ' + getCardIconClass(card.color)"
                   >
                     {{ card.icon }}
                   </mat-icon>
@@ -156,45 +142,45 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         </div>
 
         <!-- Quick Actions & Recent Activity -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="actions-activity-grid">
           <!-- Quick Actions -->
-          <div class="lg:col-span-1">
+          <div class="quick-actions-section">
             <mat-card appearance="outlined">
               <mat-card-header>
-                <mat-card-title class="flex items-center">
-                  <mat-icon class="mr-2">flash_on</mat-icon>
+                <mat-card-title class="section-card-title">
+                  <mat-icon class="section-icon">flash_on</mat-icon>
                   Quick Actions
                 </mat-card-title>
               </mat-card-header>
-              <mat-card-content class="p-6">
-                <div class="space-y-3">
+              <mat-card-content>
+                <div class="actions-list">
                   <button
                     *hasPermission="'roles:create'"
                     mat-stroked-button
-                    class="w-full justify-start"
+                    class="action-button"
                     (click)="quickCreateRole()"
                   >
-                    <mat-icon class="mr-2">add_circle_outline</mat-icon>
+                    <mat-icon class="action-icon">add_circle_outline</mat-icon>
                     Create New Role
                   </button>
 
                   <button
                     *hasPermission="'permissions:assign'"
                     mat-stroked-button
-                    class="w-full justify-start"
+                    class="action-button"
                     (click)="quickCreatePermission()"
                   >
-                    <mat-icon class="mr-2">verified_user</mat-icon>
+                    <mat-icon class="action-icon">verified_user</mat-icon>
                     Create Permission
                   </button>
 
                   <button
                     *hasPermission="'roles:update'"
                     mat-stroked-button
-                    class="w-full justify-start"
+                    class="action-button"
                     (click)="bulkAssignRoles()"
                   >
-                    <mat-icon class="mr-2">group_add</mat-icon>
+                    <mat-icon class="action-icon">group_add</mat-icon>
                     Bulk Assign Roles
                   </button>
 
@@ -203,20 +189,20 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
                   <button
                     *hasPermission="'dashboard:view'"
                     mat-stroked-button
-                    class="w-full justify-start"
+                    class="action-button"
                     (click)="viewAuditLog()"
                   >
-                    <mat-icon class="mr-2">history</mat-icon>
+                    <mat-icon class="action-icon">history</mat-icon>
                     View Audit Log
                   </button>
 
                   <button
                     *hasPermission="'dashboard:view'"
                     mat-stroked-button
-                    class="w-full justify-start"
+                    class="action-button"
                     (click)="exportReport()"
                   >
-                    <mat-icon class="mr-2">download</mat-icon>
+                    <mat-icon class="action-icon">download</mat-icon>
                     Export Report
                   </button>
                 </div>
@@ -225,14 +211,12 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
           </div>
 
           <!-- Recent Activity -->
-          <div class="lg:col-span-2">
+          <div class="recent-activity-section">
             <mat-card appearance="outlined">
               <mat-card-header>
-                <mat-card-title
-                  class="flex items-center justify-between w-full"
-                >
-                  <div class="flex items-center">
-                    <mat-icon class="mr-2">timeline</mat-icon>
+                <mat-card-title class="section-card-title-row">
+                  <div class="section-title-with-icon">
+                    <mat-icon class="section-icon">timeline</mat-icon>
                     Recent Activity
                   </div>
                   <button
@@ -244,62 +228,52 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
                   </button>
                 </mat-card-title>
               </mat-card-header>
-              <mat-card-content class="p-0">
+              <mat-card-content class="activity-content">
                 <mat-list *ngIf="recentActivity().length > 0; else noActivity">
                   <mat-list-item
                     *ngFor="
                       let activity of recentActivity();
                       trackBy: trackByActivityId
                     "
-                    class="border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                    class="activity-item"
                   >
                     <mat-icon
                       matListItemIcon
-                      [class]="'text-' + getActivityIconColor(activity.type)"
+                      [class]="
+                        'activity-icon ' + getActivityIconClass(activity.type)
+                      "
                     >
                       {{ getActivityIcon(activity.type) }}
                     </mat-icon>
 
-                    <div
-                      matListItemTitle
-                      class="font-medium text-gray-900 dark:text-white"
-                    >
+                    <div matListItemTitle class="activity-title">
                       {{ activity.title }}
                     </div>
 
-                    <div
-                      matListItemLine
-                      class="text-sm text-gray-600 dark:text-gray-400"
-                    >
+                    <div matListItemLine class="activity-description">
                       {{ activity.description }}
                     </div>
 
-                    <div
-                      matListItemMeta
-                      class="flex flex-col items-end text-xs text-gray-500"
-                    >
-                      <span>{{ activity.user.name }}</span>
-                      <span>{{ formatRelativeTime(activity.timestamp) }}</span>
+                    <div matListItemMeta class="activity-meta">
+                      <span class="activity-user">{{
+                        activity.user.name
+                      }}</span>
+                      <span class="activity-time">{{
+                        formatRelativeTime(activity.timestamp)
+                      }}</span>
                     </div>
                   </mat-list-item>
                 </mat-list>
 
                 <ng-template #noActivity>
-                  <div
-                    class="flex flex-col items-center justify-center py-12 text-gray-500"
-                  >
-                    <mat-icon class="text-4xl mb-2 opacity-50"
-                      >timeline</mat-icon
-                    >
-                    <p>No recent activity</p>
+                  <div class="empty-state">
+                    <mat-icon class="empty-icon">timeline</mat-icon>
+                    <p class="empty-text">No recent activity</p>
                   </div>
                 </ng-template>
               </mat-card-content>
 
-              <mat-card-actions
-                *ngIf="recentActivity().length > 0"
-                class="p-4 pt-0"
-              >
+              <mat-card-actions *ngIf="recentActivity().length > 0">
                 <button
                   *hasPermission="'dashboard:view'"
                   mat-button
@@ -315,55 +289,39 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         <!-- System Status -->
         <mat-card appearance="outlined" *ngIf="stats()">
           <mat-card-header>
-            <mat-card-title class="flex items-center">
-              <mat-icon class="mr-2">dashboard</mat-icon>
+            <mat-card-title class="section-card-title">
+              <mat-icon class="section-icon">dashboard</mat-icon>
               System Overview
             </mat-card-title>
           </mat-card-header>
-          <mat-card-content class="p-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <div
-                  class="text-2xl font-bold text-blue-600 dark:text-blue-400"
-                >
+          <mat-card-content>
+            <div class="system-stats-grid">
+              <div class="system-stat-box stat-primary">
+                <div class="system-stat-value">
                   {{ stats()?.active_roles || 0 }}
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  Active Roles
-                </div>
+                <div class="system-stat-label">Active Roles</div>
               </div>
 
-              <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div
-                  class="text-2xl font-bold text-green-600 dark:text-green-400"
-                >
+              <div class="system-stat-box stat-success">
+                <div class="system-stat-value">
                   {{ stats()?.active_permissions || 0 }}
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  Active Permissions
-                </div>
+                <div class="system-stat-label">Active Permissions</div>
               </div>
 
-              <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                <div
-                  class="text-2xl font-bold text-purple-600 dark:text-purple-400"
-                >
+              <div class="system-stat-box stat-info">
+                <div class="system-stat-value">
                   {{ stats()?.total_user_roles || 0 }}
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  User Assignments
-                </div>
+                <div class="system-stat-label">User Assignments</div>
               </div>
 
-              <div class="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                <div
-                  class="text-2xl font-bold text-orange-600 dark:text-orange-400"
-                >
+              <div class="system-stat-box stat-warning">
+                <div class="system-stat-value">
                   {{ stats()?.expiring_user_roles || 0 }}
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  Expiring Soon
-                </div>
+                <div class="system-stat-label">Expiring Soon</div>
               </div>
             </div>
           </mat-card-content>
@@ -373,71 +331,379 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
   `,
   styles: [
     `
+      :host {
+        display: block;
+      }
+
+      /* ===== CONTAINER ===== */
       .rbac-dashboard {
-        min-height: 100vh;
-        background: var(--background-color);
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-lg);
+        max-width: 1400px;
+        margin: 0 auto;
       }
 
-      mat-card {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        border: 1px solid var(--border-color);
+      /* ===== PAGE HEADER ===== */
+      .page-header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
+        margin-bottom: var(--ax-spacing-2xl);
       }
 
-      mat-card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      @media (min-width: 640px) {
+        .page-header {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
       }
 
-      .mat-mdc-raised-button {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      .header-content {
+        flex: 1;
       }
 
-      .mat-mdc-card-content {
-        padding: 24px !important;
+      .page-title {
+        margin: 0 0 var(--ax-spacing-xs) 0;
+        font-size: var(--ax-font-size-3xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+        letter-spacing: -0.02em;
       }
 
-      .mat-mdc-list-item {
-        padding: 16px !important;
+      .page-subtitle {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
       }
 
-      /* Dark theme adjustments */
-      :host-context(.dark) {
-        --background-color: #1f2937;
-        --border-color: #374151;
+      .header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--ax-spacing-sm);
       }
 
-      /* Light theme adjustments */
-      :host-context(.light) {
-        --background-color: #f9fafb;
-        --border-color: #e5e7eb;
+      /* ===== LOADING STATE ===== */
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: var(--ax-spacing-3xl) 0;
       }
 
-      /* Material Icons styling now handled by aegisx-ui */
-
-      /* Fix icon size and alignment */
-      .text-4xl mat-icon,
-      mat-icon.text-4xl {
-        font-size: 2.25rem !important;
-        width: 2.25rem !important;
-        height: 2.25rem !important;
-        min-width: 2.25rem !important;
-        min-height: 2.25rem !important;
+      /* ===== DASHBOARD CONTENT ===== */
+      .dashboard-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-xl);
       }
 
-      /* Ensure button icons are properly aligned */
-      button mat-icon {
-        margin-right: 0 !important;
-        vertical-align: middle;
+      /* ===== STATS GRID ===== */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: var(--ax-spacing-lg);
       }
 
-      /* Loading state for icons */
-      mat-icon:empty::before {
-        content: '';
-        display: inline-block;
-        width: 1em;
-        height: 1em;
-        background: rgba(0, 0, 0, 0.12);
-        border-radius: 2px;
+      @media (min-width: 768px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .stats-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .stat-card {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .stat-card:hover {
+        transform: scale(1.05);
+      }
+
+      .stat-card-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .stat-info {
+        flex: 1;
+      }
+
+      .stat-title {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-text-subtle);
+        margin-bottom: var(--ax-spacing-xs);
+      }
+
+      .stat-value {
+        font-size: var(--ax-font-size-2xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+      }
+
+      .stat-trend {
+        display: flex;
+        align-items: center;
+        margin-top: var(--ax-spacing-sm);
+        font-size: var(--ax-font-size-sm);
+        gap: var(--ax-spacing-xs);
+      }
+
+      .trend-icon {
+        font-size: var(--ax-font-size-base);
+      }
+
+      .trend-up {
+        color: var(--ax-success-default);
+      }
+
+      .trend-down {
+        color: var(--ax-error-default);
+      }
+
+      .trend-period {
+        color: var(--ax-text-subtle);
+      }
+
+      .stat-icon-container {
+        margin-left: var(--ax-spacing-lg);
+      }
+
+      .stat-icon {
+        font-size: 2.25rem;
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      .stat-icon-primary {
+        color: var(--ax-primary-default);
+      }
+
+      .stat-icon-accent {
+        color: var(--ax-accent-default);
+      }
+
+      .stat-icon-warn {
+        color: var(--ax-warning-default);
+      }
+
+      /* ===== ACTIONS & ACTIVITY GRID ===== */
+      .actions-activity-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: var(--ax-spacing-xl);
+      }
+
+      @media (min-width: 1024px) {
+        .actions-activity-grid {
+          grid-template-columns: 1fr 2fr;
+        }
+      }
+
+      /* ===== QUICK ACTIONS ===== */
+      .actions-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .action-button {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .action-icon {
+        margin-right: var(--ax-spacing-sm);
+      }
+
+      /* ===== RECENT ACTIVITY ===== */
+      .section-card-title {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .section-card-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .section-title-with-icon {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .section-icon {
+        margin-right: 0;
+      }
+
+      .activity-content {
+        padding: 0;
+      }
+
+      .activity-item {
+        border-bottom: 1px solid var(--ax-border-default);
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon {
+        margin-right: var(--ax-spacing-md);
+      }
+
+      .activity-icon-green {
+        color: var(--ax-success-default);
+      }
+
+      .activity-icon-blue {
+        color: var(--ax-primary-default);
+      }
+
+      .activity-icon-red {
+        color: var(--ax-error-default);
+      }
+
+      .activity-icon-orange {
+        color: var(--ax-warning-default);
+      }
+
+      .activity-icon-purple {
+        color: var(--ax-accent-default);
+      }
+
+      .activity-icon-gray {
+        color: var(--ax-text-subtle);
+      }
+
+      .activity-title {
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-text-heading);
+      }
+
+      .activity-description {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+      }
+
+      .activity-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        font-size: var(--ax-font-size-xs);
+        gap: var(--ax-spacing-xs);
+      }
+
+      .activity-user {
+        color: var(--ax-text-body);
+      }
+
+      .activity-time {
+        color: var(--ax-text-subtle);
+      }
+
+      /* ===== EMPTY STATE ===== */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--ax-spacing-3xl) 0;
+        color: var(--ax-text-subtle);
+      }
+
+      .empty-icon {
+        font-size: 2.25rem;
+        margin-bottom: var(--ax-spacing-sm);
+        opacity: 0.5;
+      }
+
+      .empty-text {
+        margin: 0;
+      }
+
+      /* ===== SYSTEM OVERVIEW ===== */
+      .system-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--ax-spacing-lg);
+        text-align: center;
+      }
+
+      @media (min-width: 768px) {
+        .system-stats-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .system-stat-box {
+        padding: var(--ax-spacing-lg);
+        border-radius: var(--ax-radius-md);
+      }
+
+      .stat-primary {
+        background-color: var(--ax-primary-subtle);
+      }
+
+      .stat-success {
+        background-color: var(--ax-success-subtle);
+      }
+
+      .stat-info {
+        background-color: var(--ax-info-subtle);
+      }
+
+      .stat-warning {
+        background-color: var(--ax-warning-subtle);
+      }
+
+      .system-stat-value {
+        font-size: var(--ax-font-size-2xl);
+        font-weight: var(--ax-font-weight-bold);
+        margin-bottom: var(--ax-spacing-xs);
+      }
+
+      .stat-primary .system-stat-value {
+        color: var(--ax-primary-emphasis);
+      }
+
+      .stat-success .system-stat-value {
+        color: var(--ax-success-emphasis);
+      }
+
+      .stat-info .system-stat-value {
+        color: var(--ax-info-emphasis);
+      }
+
+      .stat-warning .system-stat-value {
+        color: var(--ax-warning-emphasis);
+      }
+
+      .system-stat-label {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .rbac-dashboard {
+          padding: var(--ax-spacing-lg) var(--ax-spacing-md);
+        }
+
+        .page-title {
+          font-size: var(--ax-font-size-2xl);
+        }
       }
     `,
   ],
@@ -645,13 +911,13 @@ export class RbacDashboardComponent implements OnInit {
   }
 
   // Utility methods
-  getCardIconColor(color: 'primary' | 'accent' | 'warn'): string {
-    const colorMap = {
-      primary: 'text-blue-500',
-      accent: 'text-purple-500',
-      warn: 'text-orange-500',
+  getCardIconClass(color: 'primary' | 'accent' | 'warn'): string {
+    const classMap = {
+      primary: 'stat-icon-primary',
+      accent: 'stat-icon-accent',
+      warn: 'stat-icon-warn',
     };
-    return colorMap[color];
+    return classMap[color];
   }
 
   getActivityIcon(type: string): string {
@@ -669,19 +935,19 @@ export class RbacDashboardComponent implements OnInit {
     return iconMap[type] || 'info';
   }
 
-  getActivityIconColor(type: string): string {
-    const colorMap: Record<string, string> = {
-      role_created: 'green-500',
-      role_updated: 'blue-500',
-      role_deleted: 'red-500',
-      role_assigned: 'green-500',
-      role_removed: 'orange-500',
-      permission_created: 'green-500',
-      permission_updated: 'blue-500',
-      permission_deleted: 'red-500',
-      bulk_operation: 'purple-500',
+  getActivityIconClass(type: string): string {
+    const classMap: Record<string, string> = {
+      role_created: 'activity-icon-green',
+      role_updated: 'activity-icon-blue',
+      role_deleted: 'activity-icon-red',
+      role_assigned: 'activity-icon-green',
+      role_removed: 'activity-icon-orange',
+      permission_created: 'activity-icon-green',
+      permission_updated: 'activity-icon-blue',
+      permission_deleted: 'activity-icon-red',
+      bulk_operation: 'activity-icon-purple',
     };
-    return colorMap[type] || 'gray-500';
+    return classMap[type] || 'activity-icon-gray';
   }
 
   formatRelativeTime(timestamp: string): string {
