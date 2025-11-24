@@ -309,11 +309,17 @@ import { UserService } from '../../users/services/user.service';
       }
 
       .success-message {
-        @apply bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200;
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-md);
+        background-color: var(--ax-success-subtle);
+        color: var(--ax-success-emphasis);
       }
 
       .error-message {
-        @apply bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200;
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-md);
+        background-color: var(--ax-error-subtle);
+        color: var(--ax-error-emphasis);
       }
     `,
   ],
@@ -352,9 +358,7 @@ export class ProfileSecurityComponent {
     const message = this.passwordChangeMessage();
     if (!message) return '';
 
-    return message.type === 'success'
-      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'
-      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200';
+    return message.type === 'success' ? 'success-message' : 'error-message';
   }
 
   getCurrentLocation(): string {

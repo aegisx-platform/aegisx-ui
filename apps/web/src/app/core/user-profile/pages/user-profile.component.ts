@@ -7,9 +7,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
-import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
+import { AxAlertComponent } from '@aegisx/ui';
 import { ProfileInfoComponent } from '../components/profile-info.component';
 import { ProfileSecurityComponent } from '../components/profile-security.component';
 import { UserPreferencesComponent } from '../components/user-preferences.component';
@@ -33,7 +34,7 @@ import {
     MatSnackBarModule,
     MatTooltipModule,
     MatDividerModule,
-    AxCardComponent,
+    MatCardModule,
     AxAlertComponent,
     ProfileInfoComponent,
     ProfileSecurityComponent,
@@ -41,42 +42,40 @@ import {
     ActivityLogComponent,
   ],
   template: `
-    <div class="container mx-auto px-4 py-8">
+    <div class="profile-container">
       <!-- Page Header -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              My Profile
-            </h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">
-              Manage your account information and preferences
-            </p>
-          </div>
+      <div class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">My Profile</h1>
+          <p class="page-subtitle">
+            Manage your account information and preferences
+          </p>
         </div>
       </div>
 
       <!-- Loading State -->
       @if (isLoading()) {
-        <div class="flex justify-center items-center min-h-[400px]">
-          <div class="text-center">
+        <div class="loading-container">
+          <div class="loading-content">
             <mat-spinner diameter="48"></mat-spinner>
-            <p class="text-gray-600 dark:text-gray-400 mt-4">
-              Loading profile...
-            </p>
+            <p class="loading-text">Loading profile...</p>
           </div>
         </div>
       }
 
       <!-- Error State -->
       @else if (error()) {
-        <ax-alert type="error" title="Error Loading Profile" class="mb-6">
+        <ax-alert
+          type="error"
+          title="Error Loading Profile"
+          class="error-alert"
+        >
           {{ error() }}
           <button
             mat-button
             color="primary"
             (click)="loadProfile()"
-            class="ml-2"
+            class="retry-button"
           >
             Retry
           </button>
@@ -86,7 +85,7 @@ import {
       <!-- Main Content -->
       @else {
         <!-- Profile Tabs -->
-        <ax-card [variant]="'elevated'">
+        <mat-card appearance="outlined">
           <mat-tab-group
             [(selectedIndex)]="selectedTabIndex"
             animationDuration="200ms"
@@ -95,7 +94,7 @@ import {
             <!-- Profile Information Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
-                <mat-icon class="mr-2">person</mat-icon>
+                <mat-icon class="tab-icon">person</mat-icon>
                 <span>Profile Info</span>
               </ng-template>
               <div class="tab-content">
@@ -109,7 +108,7 @@ import {
             <!-- Security Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
-                <mat-icon class="mr-2">security</mat-icon>
+                <mat-icon class="tab-icon">security</mat-icon>
                 <span>Security</span>
               </ng-template>
               <div class="tab-content">
@@ -120,7 +119,7 @@ import {
             <!-- Preferences Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
-                <mat-icon class="mr-2">tune</mat-icon>
+                <mat-icon class="tab-icon">tune</mat-icon>
                 <span>Preferences</span>
               </ng-template>
               <div class="tab-content">
@@ -134,10 +133,10 @@ import {
             <!-- Activity Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
-                <mat-icon class="mr-2">history</mat-icon>
+                <mat-icon class="tab-icon">history</mat-icon>
                 <span>Activity</span>
               </ng-template>
-              <div class="tab-content p-0">
+              <div class="tab-content-no-padding">
                 <ax-activity-log></ax-activity-log>
               </div>
             </mat-tab>
@@ -145,32 +144,22 @@ import {
             <!-- Account Management Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
-                <mat-icon class="mr-2">manage_accounts</mat-icon>
+                <mat-icon class="tab-icon">manage_accounts</mat-icon>
                 <span>Account</span>
               </ng-template>
               <div class="tab-content">
-                <div class="space-y-6">
+                <div class="danger-zone-container">
                   <!-- Danger Zone -->
                   <div>
-                    <h3
-                      class="text-lg font-semibold mb-4 text-red-600 dark:text-red-400"
-                    >
-                      Danger Zone
-                    </h3>
-                    <ax-alert type="warning" class="mb-4">
+                    <h3 class="danger-zone-title">Danger Zone</h3>
+                    <ax-alert type="warning" class="danger-zone-alert">
                       These actions cannot be undone. Please proceed with
                       caution.
                     </ax-alert>
-                    <div class="space-y-4">
-                      <div
-                        class="p-4 border border-red-200 dark:border-red-800 rounded-md"
-                      >
-                        <h4
-                          class="font-medium text-red-800 dark:text-red-200 mb-2"
-                        >
-                          Delete Account
-                        </h4>
-                        <p class="text-red-600 dark:text-red-300 text-sm mb-4">
+                    <div class="danger-zone-actions">
+                      <div class="delete-account-box">
+                        <h4 class="delete-account-title">Delete Account</h4>
+                        <p class="delete-account-description">
                           Permanently delete your account and all associated
                           data. This action cannot be reversed.
                         </p>
@@ -189,7 +178,7 @@ import {
               </div>
             </mat-tab>
           </mat-tab-group>
-        </ax-card>
+        </mat-card>
       }
     </div>
   `,
@@ -199,12 +188,77 @@ import {
         display: block;
       }
 
+      /* ===== CONTAINER ===== */
+      .profile-container {
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-lg);
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* ===== PAGE HEADER ===== */
+      .page-header {
+        margin-bottom: var(--ax-spacing-2xl);
+      }
+
+      .header-content {
+        flex: 1;
+      }
+
+      .page-title {
+        margin: 0 0 var(--ax-spacing-xs) 0;
+        font-size: var(--ax-font-size-3xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+        letter-spacing: -0.02em;
+      }
+
+      .page-subtitle {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+      }
+
+      /* ===== LOADING STATE ===== */
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+      }
+
+      .loading-content {
+        text-align: center;
+      }
+
+      .loading-text {
+        margin-top: var(--ax-spacing-md);
+        color: var(--ax-text-subtle);
+      }
+
+      /* ===== ERROR STATE ===== */
+      .error-alert {
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      .retry-button {
+        margin-left: var(--ax-spacing-sm);
+      }
+
+      /* ===== TABS ===== */
       .profile-tabs {
         min-height: 600px;
       }
 
+      .tab-icon {
+        margin-right: var(--ax-spacing-sm);
+      }
+
       .tab-content {
-        padding: 24px;
+        padding: var(--ax-spacing-2xl);
+      }
+
+      .tab-content-no-padding {
+        padding: 0;
       }
 
       ::ng-deep .mat-mdc-tab-body-wrapper {
@@ -212,20 +266,65 @@ import {
       }
 
       ::ng-deep .mat-mdc-tab-labels {
-        @apply border-b dark:border-gray-700;
+        border-bottom: 1px solid var(--ax-border-default);
       }
 
-      @keyframes spin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
+      /* ===== DANGER ZONE ===== */
+      .danger-zone-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
       }
 
-      .animate-spin {
-        animation: spin 1s linear infinite;
+      .danger-zone-title {
+        margin: 0 0 var(--ax-spacing-md) 0;
+        font-size: var(--ax-font-size-lg);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-error-emphasis);
+      }
+
+      .danger-zone-alert {
+        margin-bottom: var(--ax-spacing-md);
+      }
+
+      .danger-zone-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-md);
+      }
+
+      .delete-account-box {
+        padding: var(--ax-spacing-lg);
+        border: 1px solid var(--ax-error-muted);
+        border-radius: var(--ax-radius-md);
+        background-color: var(--ax-error-subtle);
+      }
+
+      .delete-account-title {
+        margin: 0 0 var(--ax-spacing-sm) 0;
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-error-emphasis);
+      }
+
+      .delete-account-description {
+        margin: 0 0 var(--ax-spacing-md) 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-error-default);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .profile-container {
+          padding: var(--ax-spacing-lg) var(--ax-spacing-md);
+        }
+
+        .page-title {
+          font-size: var(--ax-font-size-2xl);
+        }
+
+        .tab-content {
+          padding: var(--ax-spacing-lg);
+        }
       }
     `,
   ],
