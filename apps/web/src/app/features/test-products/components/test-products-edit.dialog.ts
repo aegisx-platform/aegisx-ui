@@ -35,14 +35,11 @@ export interface TestProductEditDialogData {
     MatIconModule,
   ],
   template: `
-    <h2
-      mat-dialog-title
-      class="flex items-start justify-between gap-3 ax-header-warning"
-    >
-      <div class="ax-icon-warning flex-shrink-0">
+    <h2 mat-dialog-title class="ax-header ax-header-warning">
+      <div class="ax-icon-warning">
         <mat-icon>edit</mat-icon>
       </div>
-      <div class="flex-1">
+      <div class="header-text">
         <div class="ax-title">แก้ไขข้อมูล</div>
         <div class="ax-subtitle">แก้ไข Test Product</div>
       </div>
@@ -66,7 +63,7 @@ export interface TestProductEditDialogData {
       />
     </mat-dialog-content>
 
-    <div mat-dialog-actions align="end" class="flex gap-2">
+    <mat-dialog-actions align="end">
       <button
         mat-button
         type="button"
@@ -88,7 +85,7 @@ export interface TestProductEditDialogData {
       >
         บันทึก
       </button>
-    </div>
+    </mat-dialog-actions>
   `,
   styles: [],
 })

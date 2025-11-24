@@ -33,16 +33,32 @@ interface BulkRoleChangeDialogData {
     MatSnackBarModule,
   ],
   template: `
-    <h2 mat-dialog-title>Change User Roles</h2>
+    <h2 mat-dialog-title class="ax-header ax-header-info">
+      <div class="ax-icon-info">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="header-text">
+        <div class="ax-title">Change User Roles</div>
+        <div class="ax-subtitle">Assign new roles to selected users</div>
+      </div>
+      <button
+        type="button"
+        mat-icon-button
+        [mat-dialog-close]="false"
+        [disabled]="isSubmitting()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
 
     <mat-dialog-content class="mat-dialog-content">
-      <p class="mb-4">
+      <p class="dialog-description">
         You are about to change the roles of
         <strong>{{ data.selectedUserCount }} user(s)</strong>.
       </p>
 
       <form [formGroup]="roleForm">
-        <mat-form-field appearance="outline" class="w-full">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Select Roles</mat-label>
           <mat-select formControlName="roleIds" multiple>
             @for (role of roles; track role.id) {
@@ -57,9 +73,9 @@ interface BulkRoleChangeDialogData {
         </mat-form-field>
       </form>
 
-      <div class="mt-4 p-3 bg-red-50 border border-red-300 rounded text-sm">
-        <mat-icon class="text-red-600 align-top font-bold">warning</mat-icon>
-        <span class="ml-2 font-medium text-red-800"
+      <div class="warning-box">
+        <mat-icon class="warning-icon">warning</mat-icon>
+        <span class="warning-text"
           ><strong>⚠️ CRITICAL:</strong> All existing roles will be
           <strong>PERMANENTLY REPLACED</strong> with the selected roles only.
           Users will lose all current permissions and must re-authenticate. This
@@ -84,7 +100,7 @@ interface BulkRoleChangeDialogData {
         [disabled]="roleForm.invalid || isSubmitting()"
       >
         @if (isSubmitting()) {
-          <mat-spinner diameter="20" class="inline mr-2"></mat-spinner>
+          <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
         }
         Change Roles
       </button>
@@ -95,23 +111,51 @@ interface BulkRoleChangeDialogData {
       .mat-dialog-content {
         max-height: 80vh;
         overflow-y: auto;
-        padding: 24px;
+        padding: var(--ax-spacing-xl);
         min-width: 400px;
+      }
+
+      .dialog-description {
+        margin-bottom: var(--ax-spacing-lg);
+        color: var(--ax-text-default);
+      }
+
+      .full-width {
+        width: 100%;
+        margin-bottom: var(--ax-spacing-sm);
+      }
+
+      .warning-box {
+        margin-top: var(--ax-spacing-lg);
+        padding: var(--ax-spacing-md);
+        background-color: var(--ax-error-subtle);
+        border: 1px solid var(--ax-error-muted);
+        border-radius: var(--ax-radius-md);
+        font-size: var(--ax-font-size-sm);
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .warning-icon {
+        color: var(--ax-error-emphasis);
+        flex-shrink: 0;
+      }
+
+      .warning-text {
+        flex: 1;
+        color: var(--ax-text-default);
+      }
+
+      .spinner-inline {
+        display: inline-block;
+        margin-right: var(--ax-spacing-sm);
       }
 
       @media (max-width: 768px) {
         .mat-dialog-content {
           min-width: auto;
         }
-      }
-
-      mat-form-field {
-        margin-bottom: 8px;
-      }
-
-      .inline {
-        display: inline-block;
-        margin-right: 8px;
       }
     `,
   ],

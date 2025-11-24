@@ -1,8 +1,8 @@
-import { AxCardComponent } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -50,422 +50,373 @@ import { UserService, UserStatus } from '../services/user.service';
     MatDividerModule,
     MatCheckboxModule,
     MatTooltipModule,
-    AxCardComponent,
+    MatCardModule,
     BulkStatusChangeDialogComponent,
     BulkRoleChangeDialogComponent,
     RoleAssignmentInfoModalComponent,
   ],
   template: `
-    <div class="container mx-auto px-4 py-8">
+    <div class="user-list-container">
       <!-- Page Header -->
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Users Management
-          </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">
-            Manage system users and their permissions
-          </p>
+      <div class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">Users Management</h1>
+          <p class="page-subtitle">Manage system users and their permissions</p>
         </div>
-        <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <button mat-flat-button color="primary" (click)="openCreateDialog()">
           <mat-icon>add</mat-icon>
           <span>Add User</span>
         </button>
       </div>
 
       <!-- Filters Card -->
-      <ax-card [variant]="'outlined'" class="mb-3">
-        <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-end">
-          <!-- LEFT GROUP: Filters (Primary User Intent) -->
-          <div
-            class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            <!-- Search Field with Integrated Clear Button -->
-            <mat-form-field
-              appearance="outline"
-              subscriptSizing="dynamic"
-              class="w-full"
-            >
-              <mat-label>Search Users</mat-label>
-              <input
-                matInput
-                [(ngModel)]="searchTerm"
-                (keyup.enter)="applyFilters()"
-                placeholder="Name or email"
-                aria-label="Search users by name or email"
-              />
-              <mat-icon matPrefix>search</mat-icon>
-              @if (searchTerm) {
-                <button
-                  mat-icon-button
-                  matSuffix
-                  (click)="searchTerm = ''; applyFilters()"
-                  matTooltip="Clear search"
-                  aria-label="Clear search field"
+      <mat-card appearance="outlined" class="filters-card">
+        <mat-card-content>
+          <div class="filters-container">
+            <!-- LEFT GROUP: Filters (Primary User Intent) -->
+            <div class="filters-grid">
+              <!-- Search Field with Integrated Clear Button -->
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Search Users</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="searchTerm"
+                  (keyup.enter)="applyFilters()"
+                  placeholder="Name or email"
+                  aria-label="Search users by name or email"
+                />
+                <mat-icon matPrefix>search</mat-icon>
+                @if (searchTerm) {
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    (click)="searchTerm = ''; applyFilters()"
+                    matTooltip="Clear search"
+                    aria-label="Clear search field"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+              </mat-form-field>
+
+              <!-- Role Filter -->
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Role</mat-label>
+                <mat-select
+                  [(ngModel)]="selectedRole"
+                  (ngModelChange)="applyFilters()"
+                  aria-label="Filter by role"
                 >
-                  <mat-icon>close</mat-icon>
+                  <mat-option value="">All Roles</mat-option>
+                  <mat-option value="admin">
+                    <mat-icon>admin_panel_settings</mat-icon>
+                    Admin
+                  </mat-option>
+                  <mat-option value="manager">
+                    <mat-icon>manage_accounts</mat-icon>
+                    Manager
+                  </mat-option>
+                  <mat-option value="user">
+                    <mat-icon>person</mat-icon>
+                    User
+                  </mat-option>
+                </mat-select>
+                @if (selectedRole) {
+                  <mat-icon matSuffix>filter_alt</mat-icon>
+                }
+              </mat-form-field>
+
+              <!-- Status Filter -->
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Status</mat-label>
+                <mat-select
+                  [(ngModel)]="selectedStatus"
+                  (ngModelChange)="applyFilters()"
+                  aria-label="Filter by status"
+                >
+                  <mat-option value="">All Status</mat-option>
+                  <mat-option value="active">
+                    <mat-icon>check_circle</mat-icon>
+                    Active
+                  </mat-option>
+                  <mat-option value="inactive">
+                    <mat-icon>cancel</mat-icon>
+                    Inactive
+                  </mat-option>
+                  <mat-option value="suspended">
+                    <mat-icon>block</mat-icon>
+                    Suspended
+                  </mat-option>
+                  <mat-option value="pending">
+                    <mat-icon>schedule</mat-icon>
+                    Pending
+                  </mat-option>
+                </mat-select>
+                @if (selectedStatus) {
+                  <mat-icon matSuffix>filter_alt</mat-icon>
+                }
+              </mat-form-field>
+            </div>
+
+            <!-- RIGHT GROUP: Actions (Secondary Intent) -->
+            <div class="filters-actions">
+              <!-- Search Button (Raised style - primary emphasis) -->
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="applyFilters()"
+                matTooltip="Search users"
+                aria-label="Search users"
+              >
+                <mat-icon>search</mat-icon>
+                <span class="btn-text">Search</span>
+              </button>
+
+              <!-- Reset Filters Button (Text style - low emphasis) -->
+              @if (hasActiveFilters()) {
+                <button
+                  mat-button
+                  (click)="resetFilters()"
+                  matTooltip="Clear all filters"
+                  aria-label="Clear all filters"
+                >
+                  <mat-icon>filter_alt_off</mat-icon>
+                  <span class="btn-text">Reset</span>
                 </button>
               }
-            </mat-form-field>
 
-            <!-- Role Filter -->
-            <mat-form-field
-              appearance="outline"
-              subscriptSizing="dynamic"
-              class="w-full"
-            >
-              <mat-label>Role</mat-label>
-              <mat-select
-                [(ngModel)]="selectedRole"
-                (ngModelChange)="applyFilters()"
-                aria-label="Filter by role"
-              >
-                <mat-option value="">All Roles</mat-option>
-                <mat-option value="admin">
-                  <mat-icon class="text-purple-600 align-middle mr-2"
-                    >admin_panel_settings</mat-icon
-                  >
-                  Admin
-                </mat-option>
-                <mat-option value="manager">
-                  <mat-icon class="text-blue-600 align-middle mr-2"
-                    >manage_accounts</mat-icon
-                  >
-                  Manager
-                </mat-option>
-                <mat-option value="user">
-                  <mat-icon class="text-green-600 align-middle mr-2"
-                    >person</mat-icon
-                  >
-                  User
-                </mat-option>
-              </mat-select>
-              @if (selectedRole) {
-                <mat-icon matSuffix class="text-primary-600"
-                  >filter_alt</mat-icon
-                >
-              }
-            </mat-form-field>
-
-            <!-- Status Filter -->
-            <mat-form-field
-              appearance="outline"
-              subscriptSizing="dynamic"
-              class="w-full"
-            >
-              <mat-label>Status</mat-label>
-              <mat-select
-                [(ngModel)]="selectedStatus"
-                (ngModelChange)="applyFilters()"
-                aria-label="Filter by status"
-              >
-                <mat-option value="">All Status</mat-option>
-                <mat-option value="active">
-                  <mat-icon class="text-green-600 align-middle mr-2"
-                    >check_circle</mat-icon
-                  >
-                  Active
-                </mat-option>
-                <mat-option value="inactive">
-                  <mat-icon class="text-gray-500 align-middle mr-2"
-                    >cancel</mat-icon
-                  >
-                  Inactive
-                </mat-option>
-                <mat-option value="suspended">
-                  <mat-icon class="text-red-600 align-middle mr-2"
-                    >block</mat-icon
-                  >
-                  Suspended
-                </mat-option>
-                <mat-option value="pending">
-                  <mat-icon class="text-yellow-600 align-middle mr-2"
-                    >schedule</mat-icon
-                  >
-                  Pending
-                </mat-option>
-              </mat-select>
-              @if (selectedStatus) {
-                <mat-icon matSuffix class="text-primary-600"
-                  >filter_alt</mat-icon
-                >
-              }
-            </mat-form-field>
-          </div>
-
-          <!-- RIGHT GROUP: Actions (Secondary Intent) -->
-          <div class="flex gap-2 flex-shrink-0">
-            <!-- Search Button (Raised style - primary emphasis) -->
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="applyFilters()"
-              class="whitespace-nowrap"
-              matTooltip="Search users"
-              aria-label="Search users"
-            >
-              <mat-icon>search</mat-icon>
-              <span class="hidden sm:inline">Search</span>
-            </button>
-
-            <!-- Reset Filters Button (Text style - low emphasis) -->
-            @if (hasActiveFilters()) {
+              <!-- Export Button (Stroked style - medium emphasis) -->
               <button
-                mat-button
-                (click)="resetFilters()"
-                class="whitespace-nowrap"
-                matTooltip="Clear all filters"
-                aria-label="Clear all filters"
+                mat-stroked-button
+                color="primary"
+                (click)="exportUsers()"
+                [disabled]="filteredUsers().length === 0"
+                matTooltip="Export filtered users to CSV"
+                aria-label="Export filtered users"
               >
-                <mat-icon>filter_alt_off</mat-icon>
-                <span class="hidden sm:inline">Reset</span>
+                <mat-icon>download</mat-icon>
+                <span class="btn-text">Export</span>
               </button>
-            }
-
-            <!-- Export Button (Stroked style - medium emphasis) -->
-            <button
-              mat-stroked-button
-              color="primary"
-              (click)="exportUsers()"
-              [disabled]="filteredUsers().length === 0"
-              class="whitespace-nowrap"
-              matTooltip="Export filtered users to CSV"
-              aria-label="Export filtered users"
-            >
-              <mat-icon>download</mat-icon>
-              <span class="hidden sm:inline">Export</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Active Filters Indicator -->
-        @if (hasActiveFilters()) {
-          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span
-                class="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Active filters:
-              </span>
-
-              @if (searchTerm) {
-                <mat-chip
-                  [removable]="true"
-                  (removed)="searchTerm = ''; applyFilters()"
-                  aria-label="Remove search filter"
-                >
-                  <mat-icon matChipAvatar>search</mat-icon>
-                  {{ searchTerm }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-
-              @if (selectedRole) {
-                <mat-chip
-                  [removable]="true"
-                  (removed)="selectedRole = ''; applyFilters()"
-                  aria-label="Remove role filter"
-                >
-                  <mat-icon matChipAvatar>work</mat-icon>
-                  {{ selectedRole | titlecase }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-
-              @if (selectedStatus) {
-                <mat-chip
-                  [removable]="true"
-                  (removed)="selectedStatus = ''; applyFilters()"
-                  aria-label="Remove status filter"
-                >
-                  <mat-icon matChipAvatar>info</mat-icon>
-                  {{ selectedStatus | titlecase }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
             </div>
           </div>
-        }
-      </ax-card>
+
+          <!-- Active Filters Indicator -->
+          @if (hasActiveFilters()) {
+            <div class="active-filters-section">
+              <div class="active-filters-container">
+                <span class="active-filters-label"> Active filters: </span>
+
+                @if (searchTerm) {
+                  <mat-chip
+                    [removable]="true"
+                    (removed)="searchTerm = ''; applyFilters()"
+                    aria-label="Remove search filter"
+                  >
+                    <mat-icon matChipAvatar>search</mat-icon>
+                    {{ searchTerm }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+
+                @if (selectedRole) {
+                  <mat-chip
+                    [removable]="true"
+                    (removed)="selectedRole = ''; applyFilters()"
+                    aria-label="Remove role filter"
+                  >
+                    <mat-icon matChipAvatar>work</mat-icon>
+                    {{ selectedRole | titlecase }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+
+                @if (selectedStatus) {
+                  <mat-chip
+                    [removable]="true"
+                    (removed)="selectedStatus = ''; applyFilters()"
+                    aria-label="Remove status filter"
+                  >
+                    <mat-icon matChipAvatar>info</mat-icon>
+                    {{ selectedStatus | titlecase }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+              </div>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
 
       <!-- Bulk Actions Bar -->
       @if (selectedUsers().length > 0) {
-        <ax-card [variant]="'elevated'" class="mb-3 bg-blue-50 border-blue-200">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <mat-icon class="text-blue-600">fact_check</mat-icon>
-              <span class="font-medium text-blue-800">
-                {{ selectedUsers().length }} user(s) selected
-              </span>
-              <button
-                mat-text-button
-                color="primary"
-                (click)="clearSelection()"
-              >
-                Clear Selection
-              </button>
+        <mat-card appearance="outlined" class="bulk-actions-card">
+          <mat-card-content>
+            <div class="bulk-actions-container">
+              <div class="bulk-actions-info">
+                <mat-icon class="bulk-actions-icon">fact_check</mat-icon>
+                <span class="bulk-actions-text">
+                  {{ selectedUsers().length }} user(s) selected
+                </span>
+                <button
+                  mat-text-button
+                  color="primary"
+                  (click)="clearSelection()"
+                >
+                  Clear Selection
+                </button>
+              </div>
+
+              <div class="bulk-actions-buttons">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  [disabled]="bulkLoading()"
+                  (click)="openBulkActivateDialog()"
+                  matTooltip="Activate selected users"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                  Activate
+                </button>
+
+                <button
+                  mat-raised-button
+                  color="warn"
+                  [disabled]="bulkLoading()"
+                  (click)="openBulkDeactivateDialog()"
+                  matTooltip="Deactivate selected users"
+                >
+                  <mat-icon>block</mat-icon>
+                  Deactivate
+                </button>
+
+                <button
+                  mat-button
+                  [matMenuTriggerFor]="bulkMenu"
+                  [disabled]="bulkLoading()"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                  More Actions
+                </button>
+
+                <mat-menu #bulkMenu="matMenu">
+                  <button mat-menu-item (click)="openBulkChangeStatusDialog()">
+                    <mat-icon>settings</mat-icon>
+                    Change Status
+                  </button>
+                  <button mat-menu-item (click)="openBulkRoleChangeDialog()">
+                    <mat-icon>manage_accounts</mat-icon>
+                    Change Role
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button
+                    mat-menu-item
+                    (click)="openBulkDeleteDialog()"
+                    class="delete-action"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete Users</span>
+                  </button>
+                </mat-menu>
+
+                @if (bulkLoading()) {
+                  <mat-spinner [diameter]="24"></mat-spinner>
+                }
+              </div>
             </div>
-
-            <div class="flex items-center space-x-2">
-              <button
-                mat-raised-button
-                color="primary"
-                [disabled]="bulkLoading()"
-                (click)="openBulkActivateDialog()"
-                matTooltip="Activate selected users"
-              >
-                <mat-icon>check_circle</mat-icon>
-                Activate
-              </button>
-
-              <button
-                mat-raised-button
-                color="warn"
-                [disabled]="bulkLoading()"
-                (click)="openBulkDeactivateDialog()"
-                matTooltip="Deactivate selected users"
-              >
-                <mat-icon>block</mat-icon>
-                Deactivate
-              </button>
-
-              <button
-                mat-button
-                [matMenuTriggerFor]="bulkMenu"
-                [disabled]="bulkLoading()"
-              >
-                <mat-icon>more_vert</mat-icon>
-                More Actions
-              </button>
-
-              <mat-menu #bulkMenu="matMenu">
-                <button mat-menu-item (click)="openBulkChangeStatusDialog()">
-                  <mat-icon>settings</mat-icon>
-                  Change Status
-                </button>
-                <button mat-menu-item (click)="openBulkRoleChangeDialog()">
-                  <mat-icon>manage_accounts</mat-icon>
-                  Change Role
-                </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="openBulkDeleteDialog()">
-                  <mat-icon class="text-red-600">delete</mat-icon>
-                  <span class="text-red-600">Delete Users</span>
-                </button>
-              </mat-menu>
-
-              @if (bulkLoading()) {
-                <mat-spinner [diameter]="24"></mat-spinner>
-              }
-            </div>
-          </div>
-        </ax-card>
+          </mat-card-content>
+        </mat-card>
       }
 
       <!-- Bulk Progress Indicator -->
       @if (bulkLoading() && bulkProgress().total > 0) {
-        <ax-card
-          [variant]="'elevated'"
-          class="mb-3 bg-green-50 border-green-200"
-        >
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3 flex-1">
-              <mat-icon class="text-green-600 animate-spin"
-                >hourglass_empty</mat-icon
-              >
-              <div class="flex-1">
-                <p class="font-medium text-green-800">
-                  Processing
-                  <strong
-                    >{{ bulkProgress().current }}/{{
-                      bulkProgress().total
-                    }}</strong
-                  >
-                  user(s)...
-                </p>
-                <p class="text-sm text-green-700 mt-1">
-                  Please wait while roles are being updated
-                </p>
+        <mat-card appearance="outlined" class="bulk-progress-card">
+          <mat-card-content>
+            <div class="bulk-progress-container">
+              <div class="bulk-progress-content">
+                <mat-icon class="bulk-progress-icon">hourglass_empty</mat-icon>
+                <div class="bulk-progress-text">
+                  <p class="bulk-progress-title">
+                    Processing
+                    <strong
+                      >{{ bulkProgress().current }}/{{
+                        bulkProgress().total
+                      }}</strong
+                    >
+                    user(s)...
+                  </p>
+                  <p class="bulk-progress-subtitle">
+                    Please wait while roles are being updated
+                  </p>
+                </div>
               </div>
-            </div>
-            <div class="text-right">
-              <div class="inline-flex items-center justify-center w-16 h-16">
-                <svg class="w-full h-full" viewBox="0 0 36 36">
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="16"
-                    fill="none"
-                    stroke="#e5e7eb"
-                    stroke-width="2"
-                  ></circle>
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="16"
-                    fill="none"
-                    stroke="#16a34a"
-                    stroke-width="2"
-                    [attr.stroke-dasharray]="
-                      (bulkProgress().current / bulkProgress().total) * 100.5 +
-                      ', 100.5'
-                    "
-                    stroke-linecap="round"
-                    [style.transform]="'rotate(-90deg)'"
-                    [style.transform-origin]="'50% 50%'"
-                    style="transition: stroke-dasharray 0.3s ease"
-                  ></circle>
-                </svg>
-                <div class="absolute text-center">
-                  <span class="text-sm font-bold text-green-800">
-                    {{
-                      (bulkProgress().current / bulkProgress().total) * 100
-                        | number: '1.0-0'
-                    }}%
-                  </span>
+              <div class="bulk-progress-chart">
+                <div class="progress-ring">
+                  <svg viewBox="0 0 36 36">
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="16"
+                      fill="none"
+                      class="progress-ring-bg"
+                      stroke-width="2"
+                    ></circle>
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="16"
+                      fill="none"
+                      class="progress-ring-fill"
+                      stroke-width="2"
+                      [attr.stroke-dasharray]="
+                        (bulkProgress().current / bulkProgress().total) *
+                          100.5 +
+                        ', 100.5'
+                      "
+                      stroke-linecap="round"
+                    ></circle>
+                  </svg>
+                  <div class="progress-percentage">
+                    <span>
+                      {{
+                        (bulkProgress().current / bulkProgress().total) * 100
+                          | number: '1.0-0'
+                      }}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </ax-card>
+          </mat-card-content>
+        </mat-card>
       }
 
       <!-- Users Table -->
-      <ax-card [variant]="'elevated'">
+      <mat-card appearance="outlined">
         @if (loading()) {
-          <div class="flex items-center justify-center h-64">
+          <div class="loading-container">
             <mat-spinner [diameter]="40"></mat-spinner>
           </div>
         } @else if (error()) {
-          <div class="text-center py-8">
-            <mat-icon class="text-6xl text-red-500">error_outline</mat-icon>
-            <p
-              class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-4"
-            >
-              Error loading users
-            </p>
-            <p class="text-gray-600 dark:text-gray-400">{{ error() }}</p>
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="loadUsers()"
-              class="mt-4"
-            >
+          <div class="error-container">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+            <p class="error-title">Error loading users</p>
+            <p class="error-message">{{ error() }}</p>
+            <button mat-raised-button color="primary" (click)="loadUsers()">
               <mat-icon>refresh</mat-icon>
               <span>Retry</span>
             </button>
           </div>
         } @else {
-          <div class="overflow-x-auto">
+          <div class="table-container">
             <table
               mat-table
               [dataSource]="filteredUsers()"
               matSort
-              class="w-full"
+              class="users-table"
             >
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
-                <th mat-header-cell *matHeaderCellDef class="w-16">
+                <th mat-header-cell *matHeaderCellDef class="col-checkbox">
                   <mat-checkbox
                     [checked]="isAllSelected()"
                     [indeterminate]="
@@ -494,22 +445,18 @@ import { UserService, UserStatus } from '../services/user.service';
                 <td
                   mat-cell
                   *matCellDef="let user"
-                  class="cursor-pointer"
+                  class="user-cell"
                   (click)="viewUser(user)"
                 >
-                  <div class="flex items-center space-x-3 py-2">
-                    <div
-                      class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center"
-                    >
-                      <span
-                        class="text-primary-600 dark:text-primary-400 font-semibold"
-                      >
+                  <div class="user-info">
+                    <div class="user-avatar">
+                      <span class="user-initials">
                         {{ getInitials(user) }}
                       </span>
                     </div>
-                    <div class="flex-1">
-                      <div class="flex items-center gap-2">
-                        <p class="font-medium text-gray-900 dark:text-gray-100">
+                    <div class="user-details">
+                      <div class="user-name-row">
+                        <p class="user-name">
                           {{ user.firstName }} {{ user.lastName }}
                         </p>
                         <!-- Role Count Badge -->
@@ -522,17 +469,15 @@ import { UserService, UserStatus } from '../services/user.service';
                             openRoleAssignmentInfoModal(user)
                           "
                           [ngClass]="{
-                            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200':
-                              getRoleCount(user) === 1,
-                            'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200':
-                              getRoleCount(user) > 1,
+                            'role-badge-single': getRoleCount(user) === 1,
+                            'role-badge-multiple': getRoleCount(user) > 1,
                           }"
-                          class="inline-flex items-center justify-center rounded-full text-xs font-semibold h-6 w-6 cursor-pointer hover:opacity-80 transition-opacity"
+                          class="role-badge"
                         >
                           {{ getRoleCount(user) }}
                         </span>
                       </div>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                      <p class="user-email">
                         {{ user.email }}
                       </p>
                     </div>
@@ -550,13 +495,7 @@ import { UserService, UserStatus } from '../services/user.service';
                       *ngFor="let role of user.roles"
                       [matTooltip]="formatRoleTooltip(role)"
                       matTooltipPosition="above"
-                      [ngClass]="{
-                        'bg-purple-100 text-purple-800':
-                          role.roleName === 'admin',
-                        'bg-blue-100 text-blue-800':
-                          role.roleName === 'manager',
-                        'bg-green-100 text-green-800': role.roleName === 'user',
-                      }"
+                      class="role-chip"
                     >
                       {{ role.roleName | titlecase }}
                     </mat-chip>
@@ -566,11 +505,7 @@ import { UserService, UserStatus } from '../services/user.service';
                     *ngIf="!user.roles || user.roles.length === 0"
                     [matTooltip]="'Single role assignment'"
                     matTooltipPosition="above"
-                    [ngClass]="{
-                      'bg-purple-100 text-purple-800': user.role === 'admin',
-                      'bg-blue-100 text-blue-800': user.role === 'manager',
-                      'bg-green-100 text-green-800': user.role === 'user',
-                    }"
+                    class="role-chip"
                   >
                     {{ user.role | titlecase }}
                   </mat-chip>
@@ -584,7 +519,7 @@ import { UserService, UserStatus } from '../services/user.service';
                   mat-cell
                   *matCellDef="let user"
                   (click)="$event.stopPropagation()"
-                  class="relative"
+                  class="status-cell"
                 >
                   <button
                     mat-icon-button
@@ -593,15 +528,15 @@ import { UserService, UserStatus } from '../services/user.service';
                       user.status ? (user.status | titlecase) : 'Unknown Status'
                     "
                     [ngClass]="{
-                      'text-green-600': user.status === 'active',
-                      'text-gray-500': user.status === 'inactive',
-                      'text-red-600': user.status === 'suspended',
-                      'text-yellow-600': user.status === 'pending',
-                      'text-gray-400': !user.status,
+                      'status-active': user.status === 'active',
+                      'status-inactive': user.status === 'inactive',
+                      'status-suspended': user.status === 'suspended',
+                      'status-pending': user.status === 'pending',
+                      'status-unknown': !user.status,
                     }"
-                    class="text-sm font-medium"
+                    class="status-button"
                   >
-                    <mat-icon class="mr-1">
+                    <mat-icon>
                       {{ getStatusIcon(user.status || '') }}
                     </mat-icon>
                     <span>{{
@@ -613,32 +548,36 @@ import { UserService, UserStatus } from '../services/user.service';
                       mat-menu-item
                       [disabled]="user.status === 'active'"
                       (click)="updateUserStatus(user, 'active')"
+                      class="status-menu-active"
                     >
-                      <mat-icon class="text-green-600">check_circle</mat-icon>
+                      <mat-icon>check_circle</mat-icon>
                       <span>Active</span>
                     </button>
                     <button
                       mat-menu-item
                       [disabled]="user.status === 'inactive'"
                       (click)="updateUserStatus(user, 'inactive')"
+                      class="status-menu-inactive"
                     >
-                      <mat-icon class="text-gray-500">cancel</mat-icon>
+                      <mat-icon>cancel</mat-icon>
                       <span>Inactive</span>
                     </button>
                     <button
                       mat-menu-item
                       [disabled]="user.status === 'suspended'"
                       (click)="updateUserStatus(user, 'suspended')"
+                      class="status-menu-suspended"
                     >
-                      <mat-icon class="text-red-600">block</mat-icon>
+                      <mat-icon>block</mat-icon>
                       <span>Suspended</span>
                     </button>
                     <button
                       mat-menu-item
                       [disabled]="user.status === 'pending'"
                       (click)="updateUserStatus(user, 'pending')"
+                      class="status-menu-pending"
                     >
-                      <mat-icon class="text-yellow-600">schedule</mat-icon>
+                      <mat-icon>schedule</mat-icon>
                       <span>Pending</span>
                     </button>
                   </mat-menu>
@@ -650,11 +589,7 @@ import { UserService, UserStatus } from '../services/user.service';
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
                   Last Login
                 </th>
-                <td
-                  mat-cell
-                  *matCellDef="let user"
-                  class="text-sm text-gray-600 dark:text-gray-400"
-                >
+                <td mat-cell *matCellDef="let user" class="last-login-cell">
                   {{
                     user.lastLoginAt ? formatDate(user.lastLoginAt) : 'Never'
                   }}
@@ -663,13 +598,13 @@ import { UserService, UserStatus } from '../services/user.service';
 
               <!-- Actions Column -->
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="text-right">
+                <th mat-header-cell *matHeaderCellDef class="col-actions">
                   Actions
                 </th>
                 <td
                   mat-cell
                   *matCellDef="let user"
-                  class="text-right"
+                  class="col-actions"
                   (click)="$event.stopPropagation()"
                 >
                   <button mat-icon-button [matMenuTriggerFor]="menu">
@@ -692,9 +627,9 @@ import { UserService, UserStatus } from '../services/user.service';
                     <button
                       mat-menu-item
                       (click)="deleteUser(user)"
-                      class="text-red-600"
+                      class="delete-action"
                     >
-                      <mat-icon class="text-red-600">delete</mat-icon>
+                      <mat-icon>delete</mat-icon>
                       <span>Delete User</span>
                     </button>
                   </mat-menu>
@@ -708,24 +643,18 @@ import { UserService, UserStatus } from '../services/user.service';
               <tr
                 mat-row
                 *matRowDef="let row; columns: displayedColumns"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800"
+                class="table-row"
               ></tr>
 
               <!-- No data row -->
               <tr class="mat-row" *matNoDataRow>
                 <td
-                  class="mat-cell text-center py-8"
+                  class="empty-state-cell"
                   [colSpan]="displayedColumns.length"
                 >
-                  <mat-icon class="text-6xl text-gray-400"
-                    >person_search</mat-icon
-                  >
-                  <p
-                    class="text-lg font-semibold text-gray-600 dark:text-gray-400 mt-4"
-                  >
-                    No users found
-                  </p>
-                  <p class="text-gray-500 dark:text-gray-500">
+                  <mat-icon class="empty-state-icon">person_search</mat-icon>
+                  <p class="empty-state-title">No users found</p>
+                  <p class="empty-state-subtitle">
                     Try adjusting your filters or add a new user
                   </p>
                 </td>
@@ -740,10 +669,10 @@ import { UserService, UserStatus } from '../services/user.service';
             [length]="totalUsers()"
             showFirstLastButtons
             (page)="onPageChange($event)"
-            class="border-t dark:border-gray-700"
+            class="paginator-border"
           ></mat-paginator>
         }
-      </ax-card>
+      </mat-card>
     </div>
   `,
   styles: [
@@ -752,20 +681,498 @@ import { UserService, UserStatus } from '../services/user.service';
         display: block;
       }
 
-      table {
+      /* ===== CONTAINER ===== */
+      .user-list-container {
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-lg);
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* ===== PAGE HEADER ===== */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--ax-spacing-2xl);
+        gap: var(--ax-spacing-lg);
+      }
+
+      .header-content {
+        flex: 1;
+      }
+
+      .page-title {
+        margin: 0 0 var(--ax-spacing-xs) 0;
+        font-size: var(--ax-font-size-3xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+        letter-spacing: -0.02em;
+      }
+
+      .page-subtitle {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+      }
+
+      /* ===== FILTERS CARD ===== */
+      .filters-card {
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      .filters-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-md);
+      }
+
+      .filters-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--ax-spacing-md);
+      }
+
+      .filters-actions {
+        display: flex;
+        gap: var(--ax-spacing-sm);
+        flex-shrink: 0;
+      }
+
+      .btn-text {
+        display: none;
+      }
+
+      .active-filters-section {
+        margin-top: var(--ax-spacing-md);
+        padding-top: var(--ax-spacing-md);
+        border-top: 1px solid var(--ax-border-default);
+      }
+
+      .active-filters-container {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+        flex-wrap: wrap;
+      }
+
+      .active-filters-label {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-text-default);
+      }
+
+      /* ===== BULK ACTIONS ===== */
+      .bulk-actions-card {
+        margin-bottom: var(--ax-spacing-lg);
+        background-color: var(--ax-info-subtle);
+        border-color: var(--ax-info-muted);
+      }
+
+      .bulk-actions-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .bulk-actions-info {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-md);
+      }
+
+      .bulk-actions-icon {
+        color: var(--ax-info-emphasis);
+      }
+
+      .bulk-actions-text {
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-info-emphasis);
+      }
+
+      .bulk-actions-buttons {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      /* ===== BULK PROGRESS ===== */
+      .bulk-progress-card {
+        margin-bottom: var(--ax-spacing-lg);
+        background-color: var(--ax-success-subtle);
+        border-color: var(--ax-success-muted);
+      }
+
+      .bulk-progress-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--ax-spacing-lg);
+      }
+
+      .bulk-progress-content {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-md);
+        flex: 1;
+      }
+
+      .bulk-progress-icon {
+        color: var(--ax-success-emphasis);
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .bulk-progress-text {
+        flex: 1;
+      }
+
+      .bulk-progress-title {
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-success-emphasis);
+        margin: 0 0 var(--ax-spacing-xs);
+      }
+
+      .bulk-progress-subtitle {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-success-default);
+        margin: 0;
+      }
+
+      .bulk-progress-chart {
+        text-align: right;
+      }
+
+      .progress-ring {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        position: relative;
+      }
+
+      .progress-ring svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+
+      .progress-ring-bg {
+        stroke: var(--ax-border-muted);
+      }
+
+      .progress-ring-fill {
+        stroke: var(--ax-success-emphasis);
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.3s ease;
+      }
+
+      .progress-percentage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .progress-percentage span {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-success-emphasis);
+      }
+
+      /* ===== LOADING & ERROR ===== */
+      .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 256px;
+      }
+
+      .error-container {
+        text-align: center;
+        padding: var(--ax-spacing-3xl) var(--ax-spacing-md);
+      }
+
+      .error-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: var(--ax-error-emphasis);
+      }
+
+      .error-title {
+        font-size: var(--ax-font-size-lg);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+        margin: var(--ax-spacing-md) 0 var(--ax-spacing-sm);
+      }
+
+      .error-message {
+        color: var(--ax-text-subtle);
+        margin: 0 0 var(--ax-spacing-lg);
+      }
+
+      /* ===== STATUS ICONS ===== */
+      .status-icon-active {
+        color: var(--ax-success-emphasis);
+      }
+
+      .status-icon-inactive {
+        color: var(--ax-text-subtle);
+      }
+
+      .status-icon-suspended {
+        color: var(--ax-error-emphasis);
+      }
+
+      .status-icon-pending {
+        color: var(--ax-warning-emphasis);
+      }
+
+      /* ===== TABLE ===== */
+      .table-container {
+        overflow-x: auto;
+      }
+
+      .users-table {
         width: 100%;
       }
 
       .mat-mdc-header-row {
-        background-color: rgba(0, 0, 0, 0.04);
-      }
-
-      :host-context(.dark) .mat-mdc-header-row {
-        background-color: rgba(255, 255, 255, 0.04);
+        background-color: var(--ax-background-muted);
       }
 
       .mat-column-select {
         overflow: initial;
+      }
+
+      .col-checkbox {
+        width: 64px;
+      }
+
+      .col-actions {
+        text-align: right;
+      }
+
+      /* User Cell */
+      .user-cell {
+        cursor: pointer;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-sm) 0;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--ax-radius-full);
+        background-color: var(--ax-gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .user-initials {
+        color: var(--ax-gray-700);
+        font-weight: var(--ax-font-weight-semibold);
+        font-size: var(--ax-font-size-sm);
+      }
+
+      .user-details {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .user-name-row {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .user-name {
+        margin: 0;
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-text-heading);
+        font-size: var(--ax-font-size-base);
+      }
+
+      .user-email {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .role-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: var(--ax-radius-full);
+        font-size: 11px;
+        font-weight: var(--ax-font-weight-medium);
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        background-color: var(--ax-gray-200);
+        color: var(--ax-gray-600);
+        border: 1px solid var(--ax-gray-300);
+      }
+
+      .role-badge:hover {
+        background-color: var(--ax-gray-300);
+        color: var(--ax-gray-700);
+      }
+
+      .role-badge-single {
+        /* Unified styling - no special color */
+      }
+
+      .role-badge-multiple {
+        /* Unified styling - no special color */
+      }
+
+      /* Role Chips in Role Column */
+      ::ng-deep .role-chip {
+        background-color: var(--ax-gray-100) !important;
+        color: var(--ax-gray-700) !important;
+        border: 1px solid var(--ax-gray-300) !important;
+        font-size: var(--ax-font-size-sm) !important;
+        font-weight: var(--ax-font-weight-medium) !important;
+      }
+
+      /* Status Cell */
+      .status-cell {
+        position: relative;
+      }
+
+      .status-button {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+      }
+
+      .status-active {
+        color: var(--ax-success-emphasis);
+      }
+
+      .status-inactive {
+        color: var(--ax-text-subtle);
+      }
+
+      .status-suspended {
+        color: var(--ax-error-emphasis);
+      }
+
+      .status-pending {
+        color: var(--ax-warning-emphasis);
+      }
+
+      .status-unknown {
+        color: var(--ax-text-disabled);
+      }
+
+      /* Last Login Cell */
+      .last-login-cell {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+      }
+
+      /* Delete Action */
+      .delete-action {
+        color: var(--ax-error-emphasis);
+      }
+
+      .delete-action mat-icon {
+        color: var(--ax-error-emphasis);
+      }
+
+      /* Table Row */
+      .table-row:hover {
+        background-color: var(--ax-background-muted);
+      }
+
+      /* Paginator */
+      .paginator-border {
+        border-top: 1px solid var(--ax-border-default);
+      }
+
+      /* Empty State */
+      .empty-state-cell {
+        text-align: center;
+        padding: var(--ax-spacing-3xl) var(--ax-spacing-md);
+      }
+
+      .empty-state-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: var(--ax-text-disabled);
+        margin-bottom: var(--ax-spacing-md);
+      }
+
+      .empty-state-title {
+        margin: 0 0 var(--ax-spacing-xs);
+        font-size: var(--ax-font-size-lg);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-subtle);
+      }
+
+      .empty-state-subtitle {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (min-width: 640px) {
+        .btn-text {
+          display: inline;
+        }
+
+        .filters-container {
+          flex-direction: row;
+          align-items: flex-end;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .user-list-container {
+          padding: var(--ax-spacing-lg) var(--ax-spacing-md);
+        }
+
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .page-title {
+          font-size: var(--ax-font-size-2xl);
+        }
+
+        .filters-actions {
+          width: 100%;
+        }
+
+        .filters-actions button {
+          flex: 1;
+        }
       }
     `,
   ],

@@ -40,14 +40,11 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
   template: `
     <div class="tremor-dialog-container">
       <!-- Header -->
-      <h2
-        mat-dialog-title
-        class="flex items-start justify-between gap-3 ax-header-success"
-      >
-        <div class="ax-icon-success flex-shrink-0">
+      <h2 mat-dialog-title class="ax-header ax-header-success">
+        <div class="ax-icon-success">
           <mat-icon>upload_file</mat-icon>
         </div>
-        <div class="flex-1">
+        <div class="header-text">
           <div class="ax-title">Bulk Import Test Products</div>
           <div class="ax-subtitle">{{ getStepTitle() }}</div>
         </div>

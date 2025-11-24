@@ -24,14 +24,11 @@ import {
     MatIconModule,
   ],
   template: `
-    <h2
-      mat-dialog-title
-      class="flex items-start justify-between gap-3 ax-header-info"
-    >
-      <div class="ax-icon-info flex-shrink-0">
+    <h2 mat-dialog-title class="ax-header ax-header-info">
+      <div class="ax-icon-info">
         <mat-icon>add_circle</mat-icon>
       </div>
-      <div class="flex-1">
+      <div class="header-text">
         <div class="ax-title">ข้อมูลเอกสาร</div>
         <div class="ax-subtitle">เพิ่ม Test Product ใหม่</div>
       </div>
@@ -54,7 +51,7 @@ import {
       />
     </mat-dialog-content>
 
-    <div mat-dialog-actions align="end" class="flex gap-2">
+    <div mat-dialog-actions align="end">
       <button
         mat-button
         type="button"

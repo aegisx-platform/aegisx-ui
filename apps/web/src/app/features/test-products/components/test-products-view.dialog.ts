@@ -20,14 +20,11 @@ export interface TestProductViewDialogData {
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <!-- Fixed Header with theme-aware styling -->
-    <h2
-      mat-dialog-title
-      class="flex items-start justify-between gap-3 ax-header-neutral"
-    >
-      <div class="ax-icon-neutral flex-shrink-0">
+    <h2 mat-dialog-title class="ax-header ax-header-neutral">
+      <div class="ax-icon-neutral">
         <mat-icon>visibility</mat-icon>
       </div>
-      <div class="flex-1">
+      <div class="header-text">
         <div class="ax-title">Test Product Details</div>
         <div class="ax-subtitle">View complete product information</div>
       </div>
@@ -182,13 +179,13 @@ export interface TestProductViewDialogData {
     </mat-dialog-content>
 
     <!-- Fixed Footer with theme-aware styling -->
-    <div mat-dialog-actions align="end" class="flex gap-2">
+    <mat-dialog-actions align="end">
       <button mat-button type="button" (click)="onClose()">Close</button>
       <button mat-flat-button color="primary" type="button" (click)="onEdit()">
         <mat-icon>edit</mat-icon>
         Edit Test Product
       </button>
-    </div>
+    </mat-dialog-actions>
   `,
   styles: [],
 })

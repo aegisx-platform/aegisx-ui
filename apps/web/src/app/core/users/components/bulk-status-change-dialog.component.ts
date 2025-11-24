@@ -36,29 +36,29 @@ interface BulkStatusChangeDialogData {
     <h2 mat-dialog-title>Change User Status</h2>
 
     <mat-dialog-content class="mat-dialog-content">
-      <p class="mb-4">
+      <p class="dialog-description">
         You are about to change the status of
         <strong>{{ data.selectedUserCount }} user(s)</strong>.
       </p>
 
       <form [formGroup]="statusForm">
-        <mat-form-field appearance="outline" class="w-full">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>New Status</mat-label>
           <mat-select formControlName="status">
             <mat-option value="active">
-              <mat-icon class="text-green-600 mr-2">check_circle</mat-icon>
+              <mat-icon class="status-icon-active">check_circle</mat-icon>
               Active
             </mat-option>
             <mat-option value="inactive">
-              <mat-icon class="text-gray-500 mr-2">cancel</mat-icon>
+              <mat-icon class="status-icon-inactive">cancel</mat-icon>
               Inactive
             </mat-option>
             <mat-option value="suspended">
-              <mat-icon class="text-red-600 mr-2">block</mat-icon>
+              <mat-icon class="status-icon-suspended">block</mat-icon>
               Suspended
             </mat-option>
             <mat-option value="pending">
-              <mat-icon class="text-yellow-600 mr-2">schedule</mat-icon>
+              <mat-icon class="status-icon-pending">schedule</mat-icon>
               Pending
             </mat-option>
           </mat-select>
@@ -68,11 +68,11 @@ interface BulkStatusChangeDialogData {
         </mat-form-field>
       </form>
 
-      <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
-        <mat-icon class="text-amber-600 align-top">info</mat-icon>
-        <span class="ml-2"
-          >Please note: Some operations may fail if users cannot be
-          transitioned to the selected status.</span
+      <div class="dialog-info-box">
+        <mat-icon class="info-icon">info</mat-icon>
+        <span class="info-text"
+          >Please note: Some operations may fail if users cannot be transitioned
+          to the selected status.</span
         >
       </div>
     </mat-dialog-content>
@@ -93,7 +93,7 @@ interface BulkStatusChangeDialogData {
         [disabled]="statusForm.invalid || isSubmitting()"
       >
         @if (isSubmitting()) {
-          <mat-spinner diameter="20" class="inline mr-2"></mat-spinner>
+          <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
         }
         Change Status
       </button>
@@ -104,18 +104,71 @@ interface BulkStatusChangeDialogData {
       .mat-dialog-content {
         max-height: 80vh;
         overflow-y: auto;
-        padding: 24px;
+        padding: var(--ax-spacing-xl);
         min-width: 400px;
+      }
+
+      .dialog-description {
+        margin-bottom: var(--ax-spacing-lg);
+        color: var(--ax-text-default);
+      }
+
+      .full-width {
+        width: 100%;
+        margin-bottom: var(--ax-spacing-sm);
+      }
+
+      .dialog-info-box {
+        margin-top: var(--ax-spacing-lg);
+        padding: var(--ax-spacing-md);
+        background-color: var(--ax-warning-subtle);
+        border: 1px solid var(--ax-warning-muted);
+        border-radius: var(--ax-radius-md);
+        font-size: var(--ax-font-size-sm);
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .info-icon {
+        color: var(--ax-warning-emphasis);
+        flex-shrink: 0;
+      }
+
+      .info-text {
+        flex: 1;
+        color: var(--ax-text-default);
+      }
+
+      .status-icon-active {
+        color: var(--ax-success-emphasis);
+        margin-right: var(--ax-spacing-sm);
+      }
+
+      .status-icon-inactive {
+        color: var(--ax-text-subtle);
+        margin-right: var(--ax-spacing-sm);
+      }
+
+      .status-icon-suspended {
+        color: var(--ax-error-emphasis);
+        margin-right: var(--ax-spacing-sm);
+      }
+
+      .status-icon-pending {
+        color: var(--ax-warning-emphasis);
+        margin-right: var(--ax-spacing-sm);
+      }
+
+      .spinner-inline {
+        display: inline-block;
+        margin-right: var(--ax-spacing-sm);
       }
 
       @media (max-width: 768px) {
         .mat-dialog-content {
           min-width: auto;
         }
-      }
-
-      mat-form-field {
-        margin-bottom: 8px;
       }
     `,
   ],
