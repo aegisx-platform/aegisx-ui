@@ -18,6 +18,7 @@ export interface BreadcrumbItem {
 export class AxBreadcrumbComponent {
   @Input() items: BreadcrumbItem[] = [];
   @Input() separator = '/';
+  @Input() separatorIcon?: string; // Material icon name for separator (e.g., 'chevron_right')
   @Output() itemClick = new EventEmitter<BreadcrumbItem>();
 
   get breadcrumbClasses(): string {

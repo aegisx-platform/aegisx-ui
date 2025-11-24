@@ -123,11 +123,23 @@ breadcrumbs: BreadcrumbItem[] = [
   (itemClick)="onBreadcrumbClick($event)"
 ></ax-breadcrumb>
 
-<!-- Available Separators -->
+<!-- Material Icon Separator -->
+<ax-breadcrumb
+  [items]="breadcrumbs"
+  separatorIcon="chevron_right"
+  (itemClick)="onBreadcrumbClick($event)"
+></ax-breadcrumb>
+
+<!-- Available Text Separators -->
 separator="/"  <!-- Default -->
 separator="›"  <!-- Arrow -->
 separator=">"  <!-- Chevron -->
-separator="•"  <!-- Dot -->`;
+separator="•"  <!-- Dot -->
+
+<!-- Available Icon Separators -->
+separatorIcon="chevron_right"
+separatorIcon="navigate_next"
+separatorIcon="arrow_forward_ios"`;
 
   dashboardExampleCode = `<!-- Dashboard Application -->
 <ax-breadcrumb

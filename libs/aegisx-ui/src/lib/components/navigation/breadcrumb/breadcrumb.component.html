@@ -25,9 +25,13 @@
           </span>
         }
         @if (!isLastItem($index)) {
-          <span class="ax-breadcrumb-separator" aria-hidden="true">{{
-            separator
-          }}</span>
+          <span class="ax-breadcrumb-separator" aria-hidden="true">
+            @if (separatorIcon) {
+              <mat-icon>{{ separatorIcon }}</mat-icon>
+            } @else {
+              {{ separator }}
+            }
+          </span>
         }
       </li>
     }

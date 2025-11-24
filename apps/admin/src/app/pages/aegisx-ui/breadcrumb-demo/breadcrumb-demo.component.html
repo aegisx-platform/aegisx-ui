@@ -133,6 +133,38 @@
             ></ax-breadcrumb>
           </div>
         </div>
+
+        <!-- Material Icon Separator (chevron_right) -->
+        <div>
+          <p class="type-body-small mb-2 text-gray-600 dark:text-gray-400">
+            Material Icon Separator (chevron_right)
+          </p>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+          >
+            <ax-breadcrumb
+              [items]="dashboardBreadcrumbs"
+              separatorIcon="chevron_right"
+              (itemClick)="onBreadcrumbClick($event)"
+            ></ax-breadcrumb>
+          </div>
+        </div>
+
+        <!-- Material Icon Separator (navigate_next) -->
+        <div>
+          <p class="type-body-small mb-2 text-gray-600 dark:text-gray-400">
+            Material Icon Separator (navigate_next)
+          </p>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+          >
+            <ax-breadcrumb
+              [items]="dashboardBreadcrumbs"
+              separatorIcon="navigate_next"
+              (itemClick)="onBreadcrumbClick($event)"
+            ></ax-breadcrumb>
+          </div>
+        </div>
       </div>
     </app-code-preview>
   </div>
@@ -255,6 +287,17 @@
               <td class="p-2 font-mono text-xs">string</td>
               <td class="p-2 font-mono text-xs">'/'</td>
               <td class="p-2">Character to separate breadcrumb items</td>
+            </tr>
+            <tr class="border-b border-gray-100 dark:border-gray-800">
+              <td class="p-2 font-mono text-blue-600 dark:text-blue-400">
+                separatorIcon
+              </td>
+              <td class="p-2 font-mono text-xs">string</td>
+              <td class="p-2 font-mono text-xs">undefined</td>
+              <td class="p-2">
+                Material icon name for separator (e.g., 'chevron_right'). If
+                provided, overrides separator text
+              </td>
             </tr>
           </tbody>
         </table>
