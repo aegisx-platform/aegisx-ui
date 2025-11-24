@@ -264,20 +264,20 @@ import {
 
       .profile-name {
         margin: 0 0 var(--ax-spacing-xs) 0;
-        font-size: var(--ax-font-size-xl);
-        font-weight: var(--ax-font-weight-semibold);
-        color: var(--ax-text-heading);
+        font-size: var(--ax-text-xl);
+        font-weight: var(--ax-font-semibold);
+        color: var(--mat-sys-on-surface);
       }
 
       .profile-email {
         margin: 0 0 var(--ax-spacing-xs) 0;
-        color: var(--ax-text-body);
+        color: var(--mat-sys-on-surface);
       }
 
       .profile-member-since {
         margin: 0;
-        font-size: var(--ax-font-size-sm);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== FORM ===== */
@@ -289,9 +289,9 @@ import {
 
       .section-title {
         margin: 0 0 var(--ax-spacing-md) 0;
-        font-size: var(--ax-font-size-lg);
-        font-weight: var(--ax-font-weight-semibold);
-        color: var(--ax-text-heading);
+        font-size: var(--ax-text-lg);
+        font-weight: var(--ax-font-semibold);
+        color: var(--mat-sys-on-surface);
       }
 
       .form-grid {
@@ -319,21 +319,21 @@ import {
       .account-status-box {
         padding: var(--ax-spacing-lg);
         border-radius: var(--ax-radius-md);
-        background-color: var(--ax-surface-secondary);
+        background-color: var(--mat-sys-surface-container-low);
       }
 
       .account-status-title {
         margin: 0 0 var(--ax-spacing-md) 0;
-        font-size: var(--ax-font-size-md);
-        font-weight: var(--ax-font-weight-medium);
-        color: var(--ax-text-heading);
+        font-size: var(--ax-text-md);
+        font-weight: var(--ax-font-medium);
+        color: var(--mat-sys-on-surface);
       }
 
       .status-grid {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
         gap: var(--ax-spacing-md);
-        font-size: var(--ax-font-size-sm);
+        font-size: var(--ax-text-sm);
       }
 
       @media (min-width: 768px) {
@@ -349,12 +349,12 @@ import {
       }
 
       .status-label {
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .status-value {
-        font-weight: var(--ax-font-weight-medium);
-        color: var(--ax-text-heading);
+        font-weight: var(--ax-font-medium);
+        color: var(--mat-sys-on-surface);
         text-transform: capitalize;
       }
 

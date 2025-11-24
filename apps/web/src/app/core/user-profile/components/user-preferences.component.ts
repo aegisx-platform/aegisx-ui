@@ -434,7 +434,7 @@ import {
 
       .loading-text {
         margin-top: var(--ax-spacing-lg);
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== ERROR STATE ===== */
@@ -458,8 +458,8 @@ import {
         display: flex;
         align-items: center;
         gap: var(--ax-spacing-sm);
-        font-size: var(--ax-font-size-lg);
-        font-weight: var(--ax-font-weight-semibold);
+        font-size: var(--ax-text-lg);
+        font-weight: var(--ax-font-semibold);
       }
 
       .section-icon {
@@ -503,14 +503,14 @@ import {
 
       .toggle-title {
         margin: 0 0 var(--ax-spacing-xs) 0;
-        font-weight: var(--ax-font-weight-medium);
-        color: var(--ax-text-heading);
+        font-weight: var(--ax-font-medium);
+        color: var(--mat-sys-on-surface);
       }
 
       .toggle-description {
         margin: 0;
-        font-size: var(--ax-font-size-sm);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== ACTION BUTTONS ===== */

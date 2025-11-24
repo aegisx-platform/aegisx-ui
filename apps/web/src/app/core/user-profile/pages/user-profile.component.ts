@@ -206,16 +206,16 @@ import {
 
       .page-title {
         margin: 0 0 var(--ax-spacing-xs) 0;
-        font-size: var(--ax-font-size-3xl);
-        font-weight: var(--ax-font-weight-bold);
-        color: var(--ax-text-heading);
+        font-size: var(--ax-text-3xl);
+        font-weight: var(--ax-font-bold);
+        color: var(--mat-sys-on-surface);
         letter-spacing: -0.02em;
       }
 
       .page-subtitle {
         margin: 0;
-        font-size: var(--ax-font-size-sm);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== LOADING STATE ===== */
@@ -232,7 +232,7 @@ import {
 
       .loading-text {
         margin-top: var(--ax-spacing-md);
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== ERROR STATE ===== */
@@ -266,7 +266,7 @@ import {
       }
 
       ::ng-deep .mat-mdc-tab-labels {
-        border-bottom: 1px solid var(--ax-border-default);
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
       }
 
       /* ===== DANGER ZONE ===== */
@@ -278,8 +278,8 @@ import {
 
       .danger-zone-title {
         margin: 0 0 var(--ax-spacing-md) 0;
-        font-size: var(--ax-font-size-lg);
-        font-weight: var(--ax-font-weight-semibold);
+        font-size: var(--ax-text-lg);
+        font-weight: var(--ax-font-semibold);
         color: var(--ax-error-emphasis);
       }
 
@@ -302,13 +302,13 @@ import {
 
       .delete-account-title {
         margin: 0 0 var(--ax-spacing-sm) 0;
-        font-weight: var(--ax-font-weight-medium);
+        font-weight: var(--ax-font-medium);
         color: var(--ax-error-emphasis);
       }
 
       .delete-account-description {
         margin: 0 0 var(--ax-spacing-md) 0;
-        font-size: var(--ax-font-size-sm);
+        font-size: var(--ax-text-sm);
         color: var(--ax-error-default);
       }
 
@@ -319,7 +319,7 @@ import {
         }
 
         .page-title {
-          font-size: var(--ax-font-size-2xl);
+          font-size: var(--ax-text-2xl);
         }
 
         .tab-content {
