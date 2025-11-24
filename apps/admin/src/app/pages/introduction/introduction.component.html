@@ -14,7 +14,7 @@
   </div>
 
   <!-- Quick Actions -->
-  <mat-card class="quick-actions-card">
+  <mat-card appearance="outlined" class="quick-actions-card">
     <mat-card-content>
       <div class="quick-actions">
         <a
@@ -74,7 +74,7 @@
     <h2>Built With</h2>
   </div>
 
-  <mat-card>
+  <mat-card appearance="outlined">
     <mat-card-content>
       <div class="tech-stack">
         <div class="tech-item">
@@ -116,7 +116,7 @@
 
   <div class="quick-links-grid">
     @for (link of quickLinks; track link.title) {
-      <mat-card class="quick-link-card">
+      <mat-card appearance="outlined" class="quick-link-card">
         <mat-card-content>
           <mat-icon class="link-icon">{{ link.icon }}</mat-icon>
           <h3 class="link-title">{{ link.title }}</h3>
@@ -136,7 +136,7 @@
   </div>
 
   <!-- Getting Help -->
-  <mat-card class="help-card">
+  <mat-card appearance="outlined" class="help-card">
     <mat-card-content>
       <div class="help-content">
         <div class="help-text">
