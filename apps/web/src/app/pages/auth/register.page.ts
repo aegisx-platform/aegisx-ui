@@ -438,13 +438,6 @@ import { AuthService } from '../../core/auth/services/auth.service';
         margin-bottom: var(--ax-spacing-md);
       }
 
-      .auth-field-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--ax-spacing-md);
-        margin-bottom: var(--ax-spacing-md);
-      }
-
       /* Submit Button */
       .auth-submit-btn {
         width: 100%;
