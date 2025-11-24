@@ -16,7 +16,9 @@
   padding: var(--ax-spacing-2xs) var(--ax-spacing-md); // Default padding (same as md)
   border-radius: var(--ax-radius-sm);
   font-size: var(--ax-text-xs);
-  font-weight: var(--ax-font-semibold);
+  font-weight: var(
+    --ax-font-normal
+  ); // Changed from semibold to normal for lighter appearance
   line-height: 1;
   transition: all 0.15s ease;
   white-space: nowrap;
@@ -291,6 +293,90 @@
   &.badge-neutral .dot {
     background: var(--ax-text-secondary);
     box-shadow: 0 0 0 2px var(--ax-background-subtle);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Badge with Square
+// ----------------------------------------------------------------------------
+
+.badge-square {
+  gap: var(--ax-spacing-sm);
+
+  .square {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  &.badge-success .square {
+    background: var(--ax-success-default);
+  }
+
+  &.badge-error .square {
+    background: var(--ax-error-default);
+  }
+
+  &.badge-warning .square {
+    background: var(--ax-warning-default);
+  }
+
+  &.badge-info .square {
+    background: var(--ax-info-default);
+  }
+
+  &.badge-neutral .square {
+    background: var(--ax-text-secondary);
+  }
+}
+
+// Square size adjustments for different badge sizes
+.badge-sm .square {
+  width: 6px;
+  height: 6px;
+}
+
+.badge-md .square {
+  width: 8px;
+  height: 8px;
+}
+
+.badge-lg .square {
+  width: 10px;
+  height: 10px;
+}
+
+// ----------------------------------------------------------------------------
+// Priority Badges - Neutral Border with Colored Indicators
+// ----------------------------------------------------------------------------
+// For priority badges: border/text stays neutral, only dot/square changes color
+
+.badge-outlined {
+  // Priority badges with dots - neutral border, colored dots
+  &.badge-dot {
+    color: var(--ax-text-secondary);
+    border-color: var(--ax-border-default);
+
+    &:hover {
+      background: var(--ax-background-subtle);
+    }
+
+    // Dots keep their semantic colors (defined above in .badge-dot section)
+  }
+
+  // Priority badges with squares - neutral border, colored squares
+  &.badge-square {
+    color: var(--ax-text-secondary);
+    border-color: var(--ax-border-default);
+
+    &:hover {
+      background: var(--ax-background-subtle);
+    }
+
+    // Squares keep their semantic colors (defined above in .badge-square section)
   }
 }
 
