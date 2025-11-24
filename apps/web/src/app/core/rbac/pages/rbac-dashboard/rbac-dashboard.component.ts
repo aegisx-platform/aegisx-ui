@@ -364,16 +364,16 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
 
       .page-title {
         margin: 0 0 var(--ax-spacing-xs) 0;
-        font-size: var(--ax-font-size-3xl);
-        font-weight: var(--ax-font-weight-bold);
-        color: var(--ax-text-heading);
+        font-size: var(--ax-text-3xl);
+        font-weight: var(--ax-font-bold);
+        color: var(--mat-sys-on-surface);
         letter-spacing: -0.02em;
       }
 
       .page-subtitle {
         margin: 0;
-        font-size: var(--ax-font-size-sm);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .header-actions {
@@ -436,28 +436,28 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       }
 
       .stat-title {
-        font-size: var(--ax-font-size-sm);
-        font-weight: var(--ax-font-weight-medium);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        font-weight: var(--ax-font-medium);
+        color: var(--mat-sys-on-surface-variant);
         margin-bottom: var(--ax-spacing-xs);
       }
 
       .stat-value {
-        font-size: var(--ax-font-size-2xl);
-        font-weight: var(--ax-font-weight-bold);
-        color: var(--ax-text-heading);
+        font-size: var(--ax-text-2xl);
+        font-weight: var(--ax-font-bold);
+        color: var(--mat-sys-on-surface);
       }
 
       .stat-trend {
         display: flex;
         align-items: center;
         margin-top: var(--ax-spacing-sm);
-        font-size: var(--ax-font-size-sm);
+        font-size: var(--ax-text-sm);
         gap: var(--ax-spacing-xs);
       }
 
       .trend-icon {
-        font-size: var(--ax-font-size-base);
+        font-size: var(--ax-text-base);
       }
 
       .trend-up {
@@ -469,7 +469,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       }
 
       .trend-period {
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .stat-icon-container {
@@ -552,7 +552,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       }
 
       .activity-item {
-        border-bottom: 1px solid var(--ax-border-default);
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
       }
 
       .activity-item:last-child {
@@ -584,33 +584,33 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       }
 
       .activity-icon-gray {
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .activity-title {
-        font-weight: var(--ax-font-weight-medium);
-        color: var(--ax-text-heading);
+        font-weight: var(--ax-font-medium);
+        color: var(--mat-sys-on-surface);
       }
 
       .activity-description {
-        font-size: var(--ax-font-size-sm);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .activity-meta {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        font-size: var(--ax-font-size-xs);
+        font-size: var(--ax-text-xs);
         gap: var(--ax-spacing-xs);
       }
 
       .activity-user {
-        color: var(--ax-text-body);
+        color: var(--mat-sys-on-surface);
       }
 
       .activity-time {
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== EMPTY STATE ===== */
@@ -620,7 +620,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         align-items: center;
         justify-content: center;
         padding: var(--ax-spacing-3xl) 0;
-        color: var(--ax-text-subtle);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .empty-icon {
@@ -669,8 +669,8 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       }
 
       .system-stat-value {
-        font-size: var(--ax-font-size-2xl);
-        font-weight: var(--ax-font-weight-bold);
+        font-size: var(--ax-text-2xl);
+        font-weight: var(--ax-font-bold);
         margin-bottom: var(--ax-spacing-xs);
       }
 
@@ -691,8 +691,8 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
       }
 
       .system-stat-label {
-        font-size: var(--ax-font-size-sm);
-        color: var(--ax-text-subtle);
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       /* ===== RESPONSIVE ===== */
