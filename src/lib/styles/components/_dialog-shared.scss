@@ -221,6 +221,27 @@
   border-bottom: 1px solid var(--ax-border-subtle);
 }
 
+/* Base header layout (use with color modifiers below) */
+.mat-mdc-dialog-title.ax-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: var(--ax-spacing-lg) !important;
+
+  .ax-icon-info,
+  .ax-icon-warning,
+  .ax-icon-success,
+  .ax-icon-error,
+  .ax-icon-neutral {
+    flex-shrink: 0;
+  }
+
+  .header-text {
+    flex: 1;
+  }
+}
+
+/* Header color modifiers (use with .ax-header) */
 .ax-header-info {
   background-color: var(--ax-info-surface);
   border-bottom: 1px solid var(--ax-info-border);
