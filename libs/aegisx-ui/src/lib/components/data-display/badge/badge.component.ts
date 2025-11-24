@@ -57,6 +57,9 @@ export class AxBadgeComponent {
   /** Show colored dot indicator */
   @Input() dot = false;
 
+  /** Show colored square indicator */
+  @Input() square = false;
+
   /** Show remove/close button (for tags) */
   @Input() removable = false;
 
@@ -75,6 +78,7 @@ export class AxBadgeComponent {
 
     if (this.icon) classes.push('badge-icon');
     if (this.dot) classes.push('badge-dot');
+    if (this.square) classes.push('badge-square');
     if (this.removable) classes.push('badge-removable');
     if (this.counter !== undefined) classes.push('badge-counter');
 

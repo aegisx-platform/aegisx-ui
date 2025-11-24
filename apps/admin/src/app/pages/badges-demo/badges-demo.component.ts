@@ -61,6 +61,14 @@ export class BadgesDemoComponent {
     { label: 'Offline', variant: 'neutral' as const },
   ];
 
+  // Priority Badges
+  priorityBadges = [
+    { label: 'Emergency', variant: 'error' as const, icon: 'priority_high' },
+    { label: 'High', variant: 'warning' as const, icon: 'keyboard_arrow_up' },
+    { label: 'Medium', variant: 'neutral' as const, icon: 'remove' },
+    { label: 'Low', variant: 'success' as const, icon: 'keyboard_arrow_down' },
+  ];
+
   // Counter Badges
   counterBadges = [
     { label: 'Messages', count: 12, variant: 'info' as const },
@@ -122,6 +130,40 @@ export class BadgesDemoComponent {
 <ax-badge variant="soft" type="error" [dot]="true">Busy</ax-badge>
 <ax-badge variant="soft" type="neutral" [dot]="true">Offline</ax-badge>`;
 
+  // Priority Badge Code Examples - Complete Use Cases
+  priorityDotCode = `<!-- Priority with Dots (Circle) - Most Common -->
+<ax-badge variant="outlined" type="error" [dot]="true">Emergency</ax-badge>
+<ax-badge variant="outlined" type="warning" [dot]="true">High</ax-badge>
+<ax-badge variant="outlined" type="neutral" [dot]="true">Medium</ax-badge>
+<ax-badge variant="outlined" type="success" [dot]="true">Low</ax-badge>`;
+
+  prioritySquareCode = `<!-- Priority with Squares - Alternative Style -->
+<ax-badge variant="outlined" type="error" [square]="true">Emergency</ax-badge>
+<ax-badge variant="outlined" type="warning" [square]="true">High</ax-badge>
+<ax-badge variant="outlined" type="neutral" [square]="true">Medium</ax-badge>
+<ax-badge variant="outlined" type="success" [square]="true">Low</ax-badge>`;
+
+  prioritySoftCode = `<!-- Soft/Filled Background Style -->
+<ax-badge variant="soft" type="error" [dot]="true">Emergency</ax-badge>
+<ax-badge variant="soft" type="warning" [dot]="true">High</ax-badge>
+<ax-badge variant="soft" type="neutral" [dot]="true">Medium</ax-badge>
+<ax-badge variant="soft" type="success" [dot]="true">Low</ax-badge>`;
+
+  priorityIconCode = `<!-- Priority with Icons (No Dots/Squares) -->
+<ax-badge variant="outlined" type="error" icon="priority_high">Emergency</ax-badge>
+<ax-badge variant="outlined" type="warning" icon="keyboard_arrow_up">High</ax-badge>
+<ax-badge variant="outlined" type="neutral" icon="remove">Medium</ax-badge>
+<ax-badge variant="outlined" type="success" icon="keyboard_arrow_down">Low</ax-badge>`;
+
+  prioritySizeCode = `<!-- Small Size - For Compact UI -->
+<ax-badge variant="outlined" type="error" [dot]="true" size="sm">Emergency</ax-badge>
+
+<!-- Medium Size - Default -->
+<ax-badge variant="outlined" type="warning" [dot]="true" size="md">High</ax-badge>
+
+<!-- Large Size - For Emphasis -->
+<ax-badge variant="outlined" type="success" [dot]="true" size="lg">Low</ax-badge>`;
+
   removableBadgeCode = `<!-- Removable Badge -->
 <ax-badge variant="soft" type="info" [removable]="true" (remove)="onRemove()">
   TypeScript
@@ -144,4 +186,66 @@ export class BadgesDemoComponent {
 <ax-badge variant="outlined" type="success" size="sm" icon="check">Small</ax-badge>
 <ax-badge variant="outlined" type="success" size="md" icon="check">Medium</ax-badge>
 <ax-badge variant="outlined" type="success" size="lg" icon="check">Large</ax-badge>`;
+
+  // Complete Feature Matrix Code
+  softSquareCode = `<!-- Soft Variant with Square Indicators -->
+<ax-badge variant="soft" type="error" [square]="true">Emergency</ax-badge>
+<ax-badge variant="soft" type="warning" [square]="true">High</ax-badge>
+<ax-badge variant="soft" type="neutral" [square]="true">Medium</ax-badge>
+<ax-badge variant="soft" type="success" [square]="true">Low</ax-badge>`;
+
+  outlinedStrongCode = `<!-- Outlined Strong (Thick Border) -->
+<ax-badge variant="outlined-strong" type="success">Active</ax-badge>
+<ax-badge variant="outlined-strong" type="warning">Pending</ax-badge>
+<ax-badge variant="outlined-strong" type="error">Error</ax-badge>
+
+<!-- With Dots -->
+<ax-badge variant="outlined-strong" type="success" [dot]="true">Active</ax-badge>
+<ax-badge variant="outlined-strong" type="warning" [dot]="true">Pending</ax-badge>
+
+<!-- With Icons -->
+<ax-badge variant="outlined-strong" type="success" icon="check">Verified</ax-badge>
+<ax-badge variant="outlined-strong" type="error" icon="warning">Alert</ax-badge>`;
+
+  counterVariantsCode = `<!-- Counter with Different Variants -->
+<!-- Outlined -->
+<ax-badge variant="outlined" type="info" [counter]="12">Messages</ax-badge>
+<ax-badge variant="outlined" type="error" [counter]="5">Errors</ax-badge>
+
+<!-- Soft -->
+<ax-badge variant="soft" type="info" [counter]="12">Messages</ax-badge>
+<ax-badge variant="soft" type="error" [counter]="5">Errors</ax-badge>
+
+<!-- Outlined Strong -->
+<ax-badge variant="outlined-strong" type="warning" [counter]="99">Updates</ax-badge>`;
+
+  combinationMatrixCode = `<!-- All Feature Combinations -->
+
+<!-- 1. Basic (No extras) -->
+<ax-badge variant="outlined" type="success">Simple</ax-badge>
+
+<!-- 2. With Icon -->
+<ax-badge variant="outlined" type="success" icon="check">With Icon</ax-badge>
+
+<!-- 3. With Dot -->
+<ax-badge variant="outlined" type="success" [dot]="true">With Dot</ax-badge>
+
+<!-- 4. With Square -->
+<ax-badge variant="outlined" type="success" [square]="true">With Square</ax-badge>
+
+<!-- 5. With Counter -->
+<ax-badge variant="outlined" type="success" [counter]="5">With Counter</ax-badge>
+
+<!-- 6. Removable -->
+<ax-badge variant="soft" type="info" [removable]="true">Removable</ax-badge>
+
+<!-- 7. Different Sizes -->
+<ax-badge variant="soft" type="info" size="sm">Small</ax-badge>
+<ax-badge variant="soft" type="info" size="md">Medium</ax-badge>
+<ax-badge variant="soft" type="info" size="lg">Large</ax-badge>
+
+<!-- 8. Combined Features -->
+<ax-badge variant="soft" type="success" icon="check" size="lg">Large with Icon</ax-badge>
+<ax-badge variant="outlined" type="warning" [dot]="true" size="sm">Small with Dot</ax-badge>
+<ax-badge variant="outlined-strong" type="error" [square]="true">Strong with Square</ax-badge>`;
 }

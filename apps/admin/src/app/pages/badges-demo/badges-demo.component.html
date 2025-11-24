@@ -43,6 +43,14 @@
       <mat-icon>fiber_manual_record</mat-icon>
       Dot Badges
     </button>
+    <button matButton="outlined" (click)="scrollToSection('priority-badges')">
+      <mat-icon>flag</mat-icon>
+      Priority
+    </button>
+    <button matButton="outlined" (click)="scrollToSection('feature-matrix')">
+      <mat-icon>grid_view</mat-icon>
+      All Features
+    </button>
     <button matButton="outlined" (click)="scrollToSection('removable-badges')">
       <mat-icon>close</mat-icon>
       Removable
@@ -155,6 +163,962 @@
         }
       </div>
     </app-code-preview>
+  </section>
+
+  <!-- ============================================
+       Priority Level Badges
+       ============================================ -->
+  <div id="priority-badges" class="section-header">
+    <h2>Priority Level Badges</h2>
+    <p>
+      Complete guide for using priority badges in your application. Choose the
+      style that best fits your use case.
+    </p>
+  </div>
+
+  <section class="space-y-8">
+    <!-- 1. Priority with Dots (Most Common) -->
+    <div>
+      <h3 class="heading-title-large mb-2">
+        1. Priority with Dots (Circle) - Recommended
+      </h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> Task lists, ticket systems, project
+        management dashboards
+      </p>
+      <app-code-preview [code]="priorityDotCode" language="html">
+        <div class="demo-row">
+          @for (badge of priorityBadges; track badge.label) {
+            <ax-badge variant="outlined" [type]="badge.variant" [dot]="true">
+              {{ badge.label }}
+            </ax-badge>
+          }
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- 2. Priority with Squares -->
+    <div>
+      <h3 class="heading-title-large mb-2">
+        2. Priority with Squares - Alternative Style
+      </h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> When you need visual distinction from status
+        indicators (dots)
+      </p>
+      <app-code-preview [code]="prioritySquareCode" language="html">
+        <div class="demo-row">
+          @for (badge of priorityBadges; track badge.label) {
+            <ax-badge variant="outlined" [type]="badge.variant" [square]="true">
+              {{ badge.label }}
+            </ax-badge>
+          }
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- 3. Soft/Filled Background -->
+    <div>
+      <h3 class="heading-title-large mb-2">3. Soft/Filled Background Style</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> Cards, highlighted sections, more prominent
+        display
+      </p>
+      <app-code-preview [code]="prioritySoftCode" language="html">
+        <div class="demo-row">
+          @for (badge of priorityBadges; track badge.label) {
+            <ax-badge variant="soft" [type]="badge.variant" [dot]="true">
+              {{ badge.label }}
+            </ax-badge>
+          }
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- 4. Priority with Icons -->
+    <div>
+      <h3 class="heading-title-large mb-2">4. Priority with Icons</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> When you need directional indicators or
+        clearer visual hierarchy
+      </p>
+      <app-code-preview [code]="priorityIconCode" language="html">
+        <div class="demo-row">
+          @for (badge of priorityBadges; track badge.label) {
+            <ax-badge
+              variant="outlined"
+              [type]="badge.variant"
+              [icon]="badge.icon"
+            >
+              {{ badge.label }}
+            </ax-badge>
+          }
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- 5. Different Sizes -->
+    <div>
+      <h3 class="heading-title-large mb-2">5. Different Sizes</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> Adapt to your UI density and context
+      </p>
+      <app-code-preview [code]="prioritySizeCode" language="html">
+        <div class="space-y-4">
+          <!-- Small -->
+          <div>
+            <p class="type-label-large mb-3">
+              Small (size="sm") - Compact tables, dense lists
+            </p>
+            <div class="demo-row">
+              @for (badge of priorityBadges; track badge.label) {
+                <ax-badge
+                  variant="outlined"
+                  [type]="badge.variant"
+                  [dot]="true"
+                  size="sm"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+
+          <!-- Medium (Default) -->
+          <div>
+            <p class="type-label-large mb-3">
+              Medium (default) - Standard UI, forms, cards
+            </p>
+            <div class="demo-row">
+              @for (badge of priorityBadges; track badge.label) {
+                <ax-badge
+                  variant="outlined"
+                  [type]="badge.variant"
+                  [dot]="true"
+                  size="md"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+
+          <!-- Large -->
+          <div>
+            <p class="type-label-large mb-3">
+              Large (size="lg") - Dashboards, emphasis areas
+            </p>
+            <div class="demo-row">
+              @for (badge of priorityBadges; track badge.label) {
+                <ax-badge
+                  variant="outlined"
+                  [type]="badge.variant"
+                  [dot]="true"
+                  size="lg"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- Quick Reference Table -->
+    <div>
+      <h3 class="heading-title-large mb-4">Quick Reference</h3>
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+      >
+        <table class="w-full">
+          <thead
+            class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
+          >
+            <tr>
+              <th class="px-4 py-3 text-left type-label-medium">Priority</th>
+              <th class="px-4 py-3 text-left type-label-medium">Type</th>
+              <th class="px-4 py-3 text-left type-label-medium">Color</th>
+              <th class="px-4 py-3 text-left type-label-medium">When to Use</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr>
+              <td class="px-4 py-3">
+                <ax-badge
+                  variant="outlined"
+                  type="error"
+                  [dot]="true"
+                  size="sm"
+                >
+                  Emergency
+                </ax-badge>
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                <code class="text-error">type="error"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">Red (#ef4444)</td>
+              <td class="px-4 py-3 type-body-small">
+                Critical bugs, system outages, security issues
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">
+                <ax-badge
+                  variant="outlined"
+                  type="warning"
+                  [dot]="true"
+                  size="sm"
+                >
+                  High
+                </ax-badge>
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                <code class="text-warning">type="warning"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">Orange (#f59e0b)</td>
+              <td class="px-4 py-3 type-body-small">
+                Important features, urgent requests, deadline approaching
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">
+                <ax-badge
+                  variant="outlined"
+                  type="neutral"
+                  [dot]="true"
+                  size="sm"
+                >
+                  Medium
+                </ax-badge>
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                <code class="text-secondary">type="neutral"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">Gray (#6b7280)</td>
+              <td class="px-4 py-3 type-body-small">
+                Standard tasks, normal priority work items
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">
+                <ax-badge
+                  variant="outlined"
+                  type="success"
+                  [dot]="true"
+                  size="sm"
+                >
+                  Low
+                </ax-badge>
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                <code class="text-success">type="success"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">Green (#10b981)</td>
+              <td class="px-4 py-3 type-body-small">
+                Minor improvements, nice-to-have features, low impact bugs
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Real-World Examples -->
+    <div>
+      <h3 class="heading-title-large mb-4">Real-World Examples</h3>
+      <div class="space-y-6">
+        <!-- Task List Example -->
+        <div>
+          <h4 class="type-title-medium mb-3">📋 Task List</h4>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700"
+          >
+            <div class="p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <ax-badge
+                  variant="outlined"
+                  type="error"
+                  [dot]="true"
+                  size="sm"
+                >
+                  Emergency
+                </ax-badge>
+                <span class="type-body-medium"
+                  >Fix database connection issue</span
+                >
+              </div>
+              <span class="type-body-small text-secondary">2h ago</span>
+            </div>
+            <div class="p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <ax-badge
+                  variant="outlined"
+                  type="warning"
+                  [dot]="true"
+                  size="sm"
+                >
+                  High
+                </ax-badge>
+                <span class="type-body-medium">Review pull request #234</span>
+              </div>
+              <span class="type-body-small text-secondary">5h ago</span>
+            </div>
+            <div class="p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <ax-badge
+                  variant="outlined"
+                  type="neutral"
+                  [dot]="true"
+                  size="sm"
+                >
+                  Medium
+                </ax-badge>
+                <span class="type-body-medium">Update user documentation</span>
+              </div>
+              <span class="type-body-small text-secondary">1d ago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticket System Example -->
+        <div>
+          <h4 class="type-title-medium mb-3">🎫 Support Tickets</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <span class="type-title-medium">TICKET-1234</span>
+                <ax-badge variant="soft" type="error" [square]="true" size="sm">
+                  Emergency
+                </ax-badge>
+              </div>
+              <p class="type-body-small text-secondary">
+                System cannot process payments
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <span class="type-title-medium">TICKET-1235</span>
+                <ax-badge
+                  variant="soft"
+                  type="success"
+                  [square]="true"
+                  size="sm"
+                >
+                  Low
+                </ax-badge>
+              </div>
+              <p class="type-body-small text-secondary">
+                Add dark mode to settings page
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Best Practices -->
+    <div
+      class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6"
+    >
+      <h4 class="type-title-large mb-4">💡 Best Practices & Guidelines</h4>
+
+      <div class="space-y-6">
+        <!-- Do's -->
+        <div>
+          <h5 class="type-title-medium mb-3">✅ Do</h5>
+          <ul
+            class="space-y-2 type-body-small text-blue-800 dark:text-blue-200"
+          >
+            <li>
+              • Use <strong>Emergency</strong> (red) sparingly - only for
+              critical issues
+            </li>
+            <li>
+              • Use <strong>outlined</strong> variant for most use cases - it's
+              lighter and less distracting
+            </li>
+            <li>
+              • Use <strong>dots</strong> for status/priority,
+              <strong>icons</strong>
+              for actions or trends
+            </li>
+            <li>
+              • Be consistent across your application - pick one style and stick
+              with it
+            </li>
+            <li>• Use smaller sizes in tables and dense layouts</li>
+            <li>• Combine with timestamps or assignees for complete context</li>
+          </ul>
+        </div>
+
+        <!-- Don'ts -->
+        <div>
+          <h5 class="type-title-medium mb-3">❌ Don't</h5>
+          <ul
+            class="space-y-2 type-body-small text-blue-800 dark:text-blue-200"
+          >
+            <li>
+              • Don't use too many Emergency badges - it dilutes their impact
+            </li>
+            <li>
+              • Don't mix dots and squares in the same view - choose one style
+            </li>
+            <li>• Don't use soft variant everywhere - save it for emphasis</li>
+            <li>• Don't forget to update priority when status changes</li>
+            <li>• Don't use priority badges for non-priority information</li>
+          </ul>
+        </div>
+
+        <!-- Combinations -->
+        <div>
+          <h5 class="type-title-medium mb-3">🎨 Recommended Combinations</h5>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+            >
+              <p class="type-label-small mb-2">Tables & Lists</p>
+              <div class="flex gap-2">
+                <ax-badge
+                  variant="outlined"
+                  type="warning"
+                  [dot]="true"
+                  size="sm"
+                >
+                  High
+                </ax-badge>
+                <span class="type-body-small text-secondary">+ size="sm"</span>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+            >
+              <p class="type-label-small mb-2">Cards & Highlights</p>
+              <div class="flex gap-2">
+                <ax-badge variant="soft" type="error" [dot]="true">
+                  Emergency
+                </ax-badge>
+                <span class="type-body-small text-secondary"
+                  >+ variant="soft"</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       Complete Feature Matrix
+       ============================================ -->
+  <div id="feature-matrix" class="section-header">
+    <h2>Complete Feature Matrix</h2>
+    <p>
+      Comprehensive overview of all badge features and their combinations. Use
+      this as a reference guide.
+    </p>
+  </div>
+
+  <section class="space-y-8">
+    <!-- Soft Variant with Squares -->
+    <div>
+      <h3 class="heading-title-large mb-2">Soft Variant with Squares</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> When you need filled backgrounds with square
+        indicators for better visual distinction
+      </p>
+      <app-code-preview [code]="softSquareCode" language="html">
+        <div class="demo-row">
+          @for (badge of priorityBadges; track badge.label) {
+            <ax-badge variant="soft" [type]="badge.variant" [square]="true">
+              {{ badge.label }}
+            </ax-badge>
+          }
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- Outlined Strong Variants -->
+    <div>
+      <h3 class="heading-title-large mb-2">Outlined Strong (Thick Border)</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> When you need high contrast and stronger
+        visual emphasis with thicker borders
+      </p>
+      <app-code-preview [code]="outlinedStrongCode" language="html">
+        <div class="space-y-4">
+          <!-- Basic -->
+          <div>
+            <p class="type-label-large mb-3">Basic Strong Borders</p>
+            <div class="demo-row">
+              @for (badge of statusBadges; track badge.label) {
+                <ax-badge variant="outlined-strong" [type]="badge.variant">
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+
+          <!-- With Dots -->
+          <div>
+            <p class="type-label-large mb-3">With Dot Indicators</p>
+            <div class="demo-row">
+              @for (badge of statusBadges; track badge.label) {
+                <ax-badge
+                  variant="outlined-strong"
+                  [type]="badge.variant"
+                  [dot]="true"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+
+          <!-- With Icons -->
+          <div>
+            <p class="type-label-large mb-3">With Icons</p>
+            <div class="demo-row">
+              <ax-badge variant="outlined-strong" type="success" icon="check">
+                Verified
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="warning" icon="warning">
+                Alert
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="error" icon="error">
+                Error
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="info" icon="info">
+                Info
+              </ax-badge>
+            </div>
+          </div>
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- Counter with All Variants -->
+    <div>
+      <h3 class="heading-title-large mb-2">Counter Badges - All Variants</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Use Case:</strong> Display numeric values with different visual
+        styles for various contexts
+      </p>
+      <app-code-preview [code]="counterVariantsCode" language="html">
+        <div class="space-y-4">
+          <!-- Outlined -->
+          <div>
+            <p class="type-label-large mb-3">Outlined Variant</p>
+            <div class="demo-row">
+              @for (badge of counterBadges; track badge.label) {
+                <ax-badge
+                  variant="outlined"
+                  [type]="badge.variant"
+                  [counter]="badge.count"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+
+          <!-- Soft -->
+          <div>
+            <p class="type-label-large mb-3">Soft Variant</p>
+            <div class="demo-row">
+              @for (badge of counterBadges; track badge.label) {
+                <ax-badge
+                  variant="soft"
+                  [type]="badge.variant"
+                  [counter]="badge.count"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+
+          <!-- Outlined Strong -->
+          <div>
+            <p class="type-label-large mb-3">Outlined Strong Variant</p>
+            <div class="demo-row">
+              @for (badge of counterBadges; track badge.label) {
+                <ax-badge
+                  variant="outlined-strong"
+                  [type]="badge.variant"
+                  [counter]="badge.count"
+                >
+                  {{ badge.label }}
+                </ax-badge>
+              }
+            </div>
+          </div>
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- All Feature Combinations -->
+    <div>
+      <h3 class="heading-title-large mb-2">All Feature Combinations</h3>
+      <p class="type-body-medium text-secondary mb-4">
+        <strong>Reference:</strong> Every possible badge feature and how to
+        combine them
+      </p>
+      <app-code-preview [code]="combinationMatrixCode" language="html">
+        <div class="space-y-6">
+          <!-- Row 1: Basic -->
+          <div>
+            <p class="type-label-large mb-3">1. Basic Badge (No extras)</p>
+            <div class="demo-row">
+              <ax-badge variant="outlined" type="success">Simple</ax-badge>
+              <ax-badge variant="soft" type="info">Filled</ax-badge>
+              <ax-badge variant="outlined-strong" type="warning">
+                Strong
+              </ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 2: With Icons -->
+          <div>
+            <p class="type-label-large mb-3">2. With Icons</p>
+            <div class="demo-row">
+              <ax-badge variant="outlined" type="success" icon="check">
+                With Icon
+              </ax-badge>
+              <ax-badge variant="soft" type="info" icon="info">
+                Info Icon
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="error" icon="warning">
+                Alert
+              </ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 3: With Dots -->
+          <div>
+            <p class="type-label-large mb-3">3. With Dot Indicators</p>
+            <div class="demo-row">
+              <ax-badge variant="outlined" type="success" [dot]="true">
+                With Dot
+              </ax-badge>
+              <ax-badge variant="soft" type="warning" [dot]="true">
+                Dot Soft
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="error" [dot]="true">
+                Dot Strong
+              </ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 4: With Squares -->
+          <div>
+            <p class="type-label-large mb-3">4. With Square Indicators</p>
+            <div class="demo-row">
+              <ax-badge variant="outlined" type="success" [square]="true">
+                With Square
+              </ax-badge>
+              <ax-badge variant="soft" type="warning" [square]="true">
+                Square Soft
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="error" [square]="true">
+                Square Strong
+              </ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 5: With Counters -->
+          <div>
+            <p class="type-label-large mb-3">5. With Counters</p>
+            <div class="demo-row">
+              <ax-badge variant="outlined" type="info" [counter]="12">
+                Messages
+              </ax-badge>
+              <ax-badge variant="soft" type="error" [counter]="5">
+                Errors
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="warning" [counter]="99">
+                Updates
+              </ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 6: Different Sizes -->
+          <div>
+            <p class="type-label-large mb-3">6. Different Sizes</p>
+            <div class="demo-row items-center">
+              <ax-badge variant="soft" type="info" size="sm">Small</ax-badge>
+              <ax-badge variant="soft" type="info" size="md">Medium</ax-badge>
+              <ax-badge variant="soft" type="info" size="lg">Large</ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 7: Removable -->
+          <div>
+            <p class="type-label-large mb-3">7. Removable (Tags)</p>
+            <div class="demo-row">
+              <ax-badge variant="soft" type="info" [removable]="true">
+                Removable
+              </ax-badge>
+              <ax-badge variant="soft" type="success" [removable]="true">
+                Tag
+              </ax-badge>
+              <ax-badge variant="soft" type="warning" [removable]="true">
+                Filter
+              </ax-badge>
+            </div>
+          </div>
+
+          <!-- Row 8: Combined Features -->
+          <div>
+            <p class="type-label-large mb-3">8. Combined Features (Examples)</p>
+            <div class="demo-row items-center">
+              <ax-badge
+                variant="soft"
+                type="success"
+                icon="trending_up"
+                size="lg"
+              >
+                Large + Icon
+              </ax-badge>
+              <ax-badge
+                variant="outlined"
+                type="warning"
+                [dot]="true"
+                size="sm"
+              >
+                Small + Dot
+              </ax-badge>
+              <ax-badge variant="outlined-strong" type="error" [square]="true">
+                Strong + Square
+              </ax-badge>
+              <ax-badge
+                variant="soft"
+                type="info"
+                icon="notifications"
+                [counter]="5"
+              >
+                Icon + Counter
+              </ax-badge>
+            </div>
+          </div>
+        </div>
+      </app-code-preview>
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <div>
+      <h3 class="heading-title-large mb-4">Feature Comparison Matrix</h3>
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+      >
+        <table class="w-full">
+          <thead
+            class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
+          >
+            <tr>
+              <th class="px-4 py-3 text-left type-label-medium">Feature</th>
+              <th class="px-4 py-3 text-left type-label-medium">Property</th>
+              <th class="px-4 py-3 text-left type-label-medium">Values</th>
+              <th class="px-4 py-3 text-left type-label-medium">
+                Best Use Case
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Variant</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>variant</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                outlined | soft | outlined-strong
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                Controls visual style and emphasis level
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Type</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>type</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                success | error | warning | info | neutral
+              </td>
+              <td class="px-4 py-3 type-body-small">
+                Semantic meaning and color
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Size</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>size</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">sm | md | lg</td>
+              <td class="px-4 py-3 type-body-small">
+                Adapt to UI density (tables, cards, dashboards)
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Icon</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>icon</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">Material icon name</td>
+              <td class="px-4 py-3 type-body-small">
+                Trends, actions, directions
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Dot</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>[dot]="true"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">boolean</td>
+              <td class="px-4 py-3 type-body-small">
+                Status indicators, priority levels
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Square</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>[square]="true"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">boolean</td>
+              <td class="px-4 py-3 type-body-small">
+                Alternative to dots, visual distinction
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Counter</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>[counter]="number"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">number</td>
+              <td class="px-4 py-3 type-body-small">
+                Notifications, metrics, counts
+              </td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 type-body-medium">Removable</td>
+              <td class="px-4 py-3 type-body-small">
+                <code>[removable]="true"</code>
+              </td>
+              <td class="px-4 py-3 type-body-small">boolean</td>
+              <td class="px-4 py-3 type-body-small">
+                Tags, filters, temporary selections
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Usage Guidelines -->
+    <div
+      class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6"
+    >
+      <h4 class="type-title-large mb-4">📘 Complete Usage Guidelines</h4>
+
+      <div class="space-y-6">
+        <!-- When to Use Each Variant -->
+        <div>
+          <h5 class="type-title-medium mb-3">Choosing the Right Variant</h5>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+            >
+              <p class="type-label-medium mb-2">outlined</p>
+              <ax-badge variant="outlined" type="info" size="sm" class="mb-3">
+                Example
+              </ax-badge>
+              <p class="type-body-small text-secondary">
+                Default choice. Lightweight, subtle, works everywhere. Use 80%
+                of the time.
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+            >
+              <p class="type-label-medium mb-2">soft</p>
+              <ax-badge variant="soft" type="success" size="sm" class="mb-3">
+                Example
+              </ax-badge>
+              <p class="type-body-small text-secondary">
+                For emphasis. Use in cards, highlights, or when status needs to
+                stand out.
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+            >
+              <p class="type-label-medium mb-2">outlined-strong</p>
+              <ax-badge
+                variant="outlined-strong"
+                type="warning"
+                size="sm"
+                class="mb-3"
+              >
+                Example
+              </ax-badge>
+              <p class="type-body-small text-secondary">
+                High contrast. Use sparingly for critical information or alerts.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature Combinations -->
+        <div>
+          <h5 class="type-title-medium mb-3">Smart Feature Combinations</h5>
+          <ul
+            class="space-y-2 type-body-small text-purple-800 dark:text-purple-200"
+          >
+            <li>
+              • <strong>Icon + Size:</strong> Large icons (size="lg") for
+              dashboard KPIs
+            </li>
+            <li>
+              • <strong>Dot + Outlined:</strong> Perfect for priority badges
+              (neutral border, colored dot)
+            </li>
+            <li>
+              • <strong>Square + Soft:</strong> Alternative visual for category
+              tags
+            </li>
+            <li>
+              • <strong>Counter + Icon:</strong> Notification badges with icons
+            </li>
+            <li>
+              • <strong>Small + Removable:</strong> Filter chips in compact
+              toolbars
+            </li>
+          </ul>
+        </div>
+
+        <!-- Don't Combine -->
+        <div>
+          <h5 class="type-title-medium mb-3">⚠️ Invalid Combinations</h5>
+          <ul
+            class="space-y-2 type-body-small text-purple-800 dark:text-purple-200"
+          >
+            <li>❌ Don't use dot AND square together - choose one</li>
+            <li>❌ Don't use icon AND dot together - creates visual clutter</li>
+            <li>
+              ❌ Don't use removable with counter - unclear what's being removed
+            </li>
+            <li>
+              ❌ Don't use too many features - keep badges simple and focused
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ============================================
