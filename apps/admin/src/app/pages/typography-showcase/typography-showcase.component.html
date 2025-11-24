@@ -13,53 +13,87 @@
     </p>
   </div>
 
-  <!-- Quick Navigation -->
-  <mat-card>
+  <!-- Search Box -->
+  <mat-card appearance="outlined" class="mb-6">
     <mat-card-content>
-      <div class="flex flex-wrap gap-3">
-        <button
-          mat-stroked-button
-          (click)="scrollToSection('type-scale')"
-          class="flex items-center gap-2"
-        >
-          <mat-icon>format_size</mat-icon>
-          Type Scale
-        </button>
-        <button
-          mat-stroked-button
-          (click)="scrollToSection('text-colors')"
-          class="flex items-center gap-2"
-        >
-          <mat-icon>palette</mat-icon>
-          Text Colors
-        </button>
-        <button
-          mat-stroked-button
-          (click)="scrollToSection('font-weights')"
-          class="flex items-center gap-2"
-        >
-          <mat-icon>format_bold</mat-icon>
-          Font Weights
-        </button>
-        <button
-          mat-stroked-button
-          (click)="scrollToSection('line-heights')"
-          class="flex items-center gap-2"
-        >
-          <mat-icon>format_line_spacing</mat-icon>
-          Line Heights
-        </button>
-        <button
-          mat-stroked-button
-          (click)="scrollToSection('examples')"
-          class="flex items-center gap-2"
-        >
-          <mat-icon>article</mat-icon>
-          Real Examples
-        </button>
-      </div>
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Search typography styles...</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchQuery"
+          placeholder="Try 'Display', 'Heading', or 'Body'"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchQuery) {
+          <button
+            matSuffix
+            mat-icon-button
+            (click)="searchQuery = ''"
+            aria-label="Clear search"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
     </mat-card-content>
   </mat-card>
+
+  <!-- Quick Navigation -->
+  <div
+    class="sticky top-0 z-40 bg-[var(--ax-background-default)] pb-4 mb-6 border-b border-[var(--ax-border-default)] shadow-sm"
+  >
+    <mat-card appearance="outlined">
+      <mat-card-content>
+        <div class="flex flex-wrap gap-3">
+          <button
+            mat-stroked-button
+            [color]="activeSection === 'type-scale' ? 'primary' : ''"
+            (click)="scrollToSection('type-scale')"
+            class="flex items-center gap-2"
+          >
+            <mat-icon>format_size</mat-icon>
+            Type Scale
+          </button>
+          <button
+            mat-stroked-button
+            [color]="activeSection === 'text-colors' ? 'primary' : ''"
+            (click)="scrollToSection('text-colors')"
+            class="flex items-center gap-2"
+          >
+            <mat-icon>palette</mat-icon>
+            Text Colors
+          </button>
+          <button
+            mat-stroked-button
+            [color]="activeSection === 'font-weights' ? 'primary' : ''"
+            (click)="scrollToSection('font-weights')"
+            class="flex items-center gap-2"
+          >
+            <mat-icon>format_bold</mat-icon>
+            Font Weights
+          </button>
+          <button
+            mat-stroked-button
+            [color]="activeSection === 'line-heights' ? 'primary' : ''"
+            (click)="scrollToSection('line-heights')"
+            class="flex items-center gap-2"
+          >
+            <mat-icon>format_line_spacing</mat-icon>
+            Line Heights
+          </button>
+          <button
+            mat-stroked-button
+            [color]="activeSection === 'examples' ? 'primary' : ''"
+            (click)="scrollToSection('examples')"
+            class="flex items-center gap-2"
+          >
+            <mat-icon>article</mat-icon>
+            Real Examples
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
   <!-- ============================================
        SECTION: Material 3 Type Scale
@@ -79,6 +113,7 @@
     <div class="grid grid-cols-1 gap-6">
       @for (type of m3TypeScale; track type.name) {
         <mat-card
+          appearance="outlined"
           appearance="outlined"
           class="border border-[var(--ax-border-muted)] shadow-sm"
         >
@@ -193,6 +228,7 @@
       @for (color of textColors; track color.name) {
         <mat-card
           appearance="outlined"
+          appearance="outlined"
           class="border border-[var(--ax-border-muted)] shadow-sm"
         >
           <mat-card-content class="p-6">
@@ -283,6 +319,7 @@
       @for (weight of fontWeights; track weight.name) {
         <mat-card
           appearance="outlined"
+          appearance="outlined"
           class="border border-[var(--ax-border-muted)] shadow-sm"
         >
           <mat-card-content class="p-6">
@@ -345,6 +382,7 @@
       @for (leading of lineHeights; track leading.name) {
         <mat-card
           appearance="outlined"
+          appearance="outlined"
           class="border border-[var(--ax-border-muted)] shadow-sm"
         >
           <mat-card-content class="p-6">
@@ -406,6 +444,7 @@
     <!-- Blog Post Example -->
     <mat-card
       appearance="outlined"
+      appearance="outlined"
       class="mb-8 border border-[var(--ax-border-muted)] shadow-sm"
     >
       <mat-card-header>
@@ -446,6 +485,7 @@
     <!-- Dashboard Card Example -->
     <mat-card
       appearance="outlined"
+      appearance="outlined"
       class="mb-8 border border-[var(--ax-border-muted)] shadow-sm"
     >
       <mat-card-header>
@@ -472,6 +512,7 @@
 
     <!-- Form Example -->
     <mat-card
+      appearance="outlined"
       appearance="outlined"
       class="mb-8 border border-[var(--ax-border-muted)] shadow-sm"
     >
@@ -508,15 +549,17 @@
     </mat-card>
   </section>
 
-  <!-- Back to Top -->
-  <div class="flex justify-center mt-12">
+  <!-- Back to Top Floating Button -->
+  @if (showBackToTop) {
     <button
-      matButton="outlined"
+      mat-fab
+      color="primary"
+      class="fixed bottom-6 right-6 z-50 shadow-lg"
       (click)="scrollToTop()"
-      class="flex items-center gap-2"
+      matTooltip="Back to top"
+      aria-label="Back to top"
     >
       <mat-icon>arrow_upward</mat-icon>
-      Back to Top
     </button>
-  </div>
+  }
 </div>

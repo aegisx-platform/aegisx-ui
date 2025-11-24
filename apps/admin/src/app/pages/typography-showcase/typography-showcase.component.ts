@@ -1,11 +1,15 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 /**
  * Typography Scale Entry
@@ -36,17 +40,25 @@ interface TextColor {
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
     MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTooltipModule,
   ],
   templateUrl: './typography-showcase.component.html',
   styleUrl: './typography-showcase.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class TypographyShowcaseComponent {
+  // Search and UI state
+  searchQuery = '';
+  showBackToTop = false;
+  activeSection = '';
   // Material Design 3 Typography Scale
   m3TypeScale: TypographyScale[] = [
     {
@@ -269,6 +281,35 @@ export class TypographyShowcaseComponent {
     'Typography is the art and technique of arranging type to make written language legible, readable and appealing when displayed.';
   readonly sampleLongText =
     'Good typography establishes visual hierarchy, providing readers with a clear structure to navigate content. Through careful selection of typefaces, sizes, weights, and spacing, typography guides the eye and enhances comprehension. Material Design 3 emphasizes expressive yet functional type systems that adapt seamlessly across devices and contexts.';
+
+  /**
+   * Track scroll position for back-to-top button and active section
+   */
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    // Show/hide back to top button
+    this.showBackToTop = window.scrollY > 500;
+
+    // Track active section
+    const sections = [
+      'type-scale',
+      'text-colors',
+      'font-weights',
+      'line-heights',
+      'examples',
+    ];
+
+    for (const sectionId of sections) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (rect.top >= 0 && rect.top <= 300) {
+          this.activeSection = sectionId;
+          break;
+        }
+      }
+    }
+  }
 
   /**
    * Scroll to a specific section
