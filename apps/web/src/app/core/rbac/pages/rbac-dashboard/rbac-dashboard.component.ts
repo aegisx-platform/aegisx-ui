@@ -10,7 +10,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
+import {
+  BreadcrumbComponent,
+  BreadcrumbItem,
+  AxKpiCardComponent,
+} from '@aegisx/ui';
 import {
   DashboardCard,
   RbacStats,
@@ -34,6 +38,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
     MatDividerModule,
     MatListModule,
     BreadcrumbComponent,
+    AxKpiCardComponent,
     HasPermissionDirective,
   ],
   template: `
@@ -88,57 +93,25 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
 
       <!-- Dashboard Content -->
       <div *ngIf="!isLoading()" class="dashboard-content">
-        <!-- Statistics Cards -->
+        <!-- Statistics Cards using KPI Card Component -->
         <div class="stats-grid">
-          <mat-card
-            appearance="outlined"
+          <ax-kpi-card
             *ngFor="let card of dashboardCards()"
-            class="stat-card"
+            variant="simple"
+            [label]="card.title"
+            [value]="card.value"
+            [change]="card.trend?.value"
+            [changeType]="
+              card.trend?.direction === 'up'
+                ? 'up'
+                : card.trend?.direction === 'down'
+                  ? 'down'
+                  : 'neutral'
+            "
+            [hoverable]="true"
+            [clickable]="true"
             (click)="handleCardClick(card)"
-          >
-            <mat-card-content>
-              <div class="stat-card-content">
-                <div class="stat-info">
-                  <div class="stat-title">{{ card.title }}</div>
-                  <div class="stat-value">{{ card.value | number }}</div>
-                  <div *ngIf="card.trend" class="stat-trend">
-                    <mat-icon
-                      [class]="
-                        'trend-icon ' +
-                        (card.trend.direction === 'up'
-                          ? 'trend-up'
-                          : 'trend-down')
-                      "
-                    >
-                      {{
-                        card.trend.direction === 'up'
-                          ? 'trending_up'
-                          : 'trending_down'
-                      }}
-                    </mat-icon>
-                    <span
-                      [class]="
-                        'trend-value ' +
-                        (card.trend.direction === 'up'
-                          ? 'trend-up'
-                          : 'trend-down')
-                      "
-                    >
-                      {{ card.trend.value }}%
-                    </span>
-                    <span class="trend-period">{{ card.trend.period }}</span>
-                  </div>
-                </div>
-                <div class="stat-icon-container">
-                  <mat-icon
-                    [class]="'stat-icon ' + getCardIconClass(card.color)"
-                  >
-                    {{ card.icon }}
-                  </mat-icon>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
+          ></ax-kpi-card>
         </div>
 
         <!-- Quick Actions & Recent Activity -->
@@ -285,47 +258,6 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
             </mat-card>
           </div>
         </div>
-
-        <!-- System Status -->
-        <mat-card appearance="outlined" *ngIf="stats()">
-          <mat-card-header>
-            <mat-card-title class="section-card-title">
-              <mat-icon class="section-icon">dashboard</mat-icon>
-              System Overview
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="system-stats-grid">
-              <div class="system-stat-box stat-primary">
-                <div class="system-stat-value">
-                  {{ stats()?.active_roles || 0 }}
-                </div>
-                <div class="system-stat-label">Active Roles</div>
-              </div>
-
-              <div class="system-stat-box stat-success">
-                <div class="system-stat-value">
-                  {{ stats()?.active_permissions || 0 }}
-                </div>
-                <div class="system-stat-label">Active Permissions</div>
-              </div>
-
-              <div class="system-stat-box stat-info">
-                <div class="system-stat-value">
-                  {{ stats()?.total_user_roles || 0 }}
-                </div>
-                <div class="system-stat-label">User Assignments</div>
-              </div>
-
-              <div class="system-stat-box stat-warning">
-                <div class="system-stat-value">
-                  {{ stats()?.expiring_user_roles || 0 }}
-                </div>
-                <div class="system-stat-label">Expiring Soon</div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
       </div>
     </div>
   `,
@@ -414,84 +346,6 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         .stats-grid {
           grid-template-columns: repeat(4, 1fr);
         }
-      }
-
-      .stat-card {
-        cursor: pointer;
-        transition: transform 0.2s ease;
-      }
-
-      .stat-card:hover {
-        transform: scale(1.05);
-      }
-
-      .stat-card-content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .stat-info {
-        flex: 1;
-      }
-
-      .stat-title {
-        font-size: var(--ax-text-sm);
-        font-weight: var(--ax-font-medium);
-        color: var(--mat-sys-on-surface-variant);
-        margin-bottom: var(--ax-spacing-xs);
-      }
-
-      .stat-value {
-        font-size: var(--ax-text-2xl);
-        font-weight: var(--ax-font-bold);
-        color: var(--mat-sys-on-surface);
-      }
-
-      .stat-trend {
-        display: flex;
-        align-items: center;
-        margin-top: var(--ax-spacing-sm);
-        font-size: var(--ax-text-sm);
-        gap: var(--ax-spacing-xs);
-      }
-
-      .trend-icon {
-        font-size: var(--ax-text-base);
-      }
-
-      .trend-up {
-        color: var(--ax-success-default);
-      }
-
-      .trend-down {
-        color: var(--ax-error-default);
-      }
-
-      .trend-period {
-        color: var(--mat-sys-on-surface-variant);
-      }
-
-      .stat-icon-container {
-        margin-left: var(--ax-spacing-lg);
-      }
-
-      .stat-icon {
-        font-size: 2.25rem;
-        width: 2.25rem;
-        height: 2.25rem;
-      }
-
-      .stat-icon-primary {
-        color: var(--ax-primary-default);
-      }
-
-      .stat-icon-accent {
-        color: var(--ax-accent-default);
-      }
-
-      .stat-icon-warn {
-        color: var(--ax-warning-default);
       }
 
       /* ===== ACTIONS & ACTIVITY GRID ===== */
@@ -633,68 +487,6 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         margin: 0;
       }
 
-      /* ===== SYSTEM OVERVIEW ===== */
-      .system-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--ax-spacing-lg);
-        text-align: center;
-      }
-
-      @media (min-width: 768px) {
-        .system-stats-grid {
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-
-      .system-stat-box {
-        padding: var(--ax-spacing-lg);
-        border-radius: var(--ax-radius-md);
-      }
-
-      .stat-primary {
-        background-color: var(--ax-primary-subtle);
-      }
-
-      .stat-success {
-        background-color: var(--ax-success-subtle);
-      }
-
-      .stat-info {
-        background-color: var(--ax-info-subtle);
-      }
-
-      .stat-warning {
-        background-color: var(--ax-warning-subtle);
-      }
-
-      .system-stat-value {
-        font-size: var(--ax-text-2xl);
-        font-weight: var(--ax-font-bold);
-        margin-bottom: var(--ax-spacing-xs);
-      }
-
-      .stat-primary .system-stat-value {
-        color: var(--ax-primary-emphasis);
-      }
-
-      .stat-success .system-stat-value {
-        color: var(--ax-success-emphasis);
-      }
-
-      .stat-info .system-stat-value {
-        color: var(--ax-info-emphasis);
-      }
-
-      .stat-warning .system-stat-value {
-        color: var(--ax-warning-emphasis);
-      }
-
-      .system-stat-label {
-        font-size: var(--ax-text-sm);
-        color: var(--mat-sys-on-surface-variant);
-      }
-
       /* ===== RESPONSIVE ===== */
       @media (max-width: 768px) {
         .rbac-dashboard {
@@ -702,7 +494,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         }
 
         .page-title {
-          font-size: var(--ax-font-size-2xl);
+          font-size: var(--ax-text-2xl);
         }
       }
     `,
