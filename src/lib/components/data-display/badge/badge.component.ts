@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 export type BadgeVariant = 'outlined' | 'soft' | 'outlined-strong';
 export type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 export type BadgeSize = 'sm' | 'md' | 'lg';
+export type BadgeRounded = 'none' | 'sm' | 'md' | 'lg' | 'full';
 
 /**
  * Badge Component
@@ -51,6 +52,9 @@ export class AxBadgeComponent {
   /** Badge size */
   @Input() size: BadgeSize = 'md';
 
+  /** Border radius size */
+  @Input() rounded: BadgeRounded = 'sm';
+
   /** Optional Material icon name (e.g., 'trending_up') */
   @Input() icon?: string;
 
@@ -75,6 +79,7 @@ export class AxBadgeComponent {
     classes.push(`badge-${this.variant}`);
     classes.push(`badge-${this.type}`);
     classes.push(`badge-${this.size}`);
+    classes.push(`badge-rounded-${this.rounded}`);
 
     if (this.icon) classes.push('badge-icon');
     if (this.dot) classes.push('badge-dot');

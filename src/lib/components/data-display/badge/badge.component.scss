@@ -14,7 +14,9 @@
   align-items: center;
   gap: var(--ax-spacing-2xs);
   padding: var(--ax-spacing-2xs) var(--ax-spacing-md); // Default padding (same as md)
-  border-radius: var(--ax-radius-sm);
+  border-radius: var(
+    --ax-radius-sm
+  ); // Default border-radius, overridden by .badge-rounded-*
   font-size: var(--ax-text-xs);
   font-weight: var(
     --ax-font-normal
@@ -28,6 +30,30 @@
     width: 16px;
     height: 16px;
   }
+}
+
+// ----------------------------------------------------------------------------
+// Border Radius Sizes
+// ----------------------------------------------------------------------------
+
+.badge-rounded-none {
+  border-radius: 0;
+}
+
+.badge-rounded-sm {
+  border-radius: var(--ax-radius-sm); // 0.375rem (6px) - Default
+}
+
+.badge-rounded-md {
+  border-radius: var(--ax-radius-md); // 0.5rem (8px)
+}
+
+.badge-rounded-lg {
+  border-radius: var(--ax-radius-lg); // 0.75rem (12px)
+}
+
+.badge-rounded-full {
+  border-radius: 9999px; // Fully rounded (pill shape)
 }
 
 // ----------------------------------------------------------------------------
