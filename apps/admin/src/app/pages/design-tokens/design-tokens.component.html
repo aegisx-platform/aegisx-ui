@@ -24,8 +24,31 @@
   </div>
 
   <!-- Quick Summary -->
-  <mat-card class="mb-6">
+  <mat-card appearance="outlined" class="mb-6">
     <mat-card-content class="p-6">
+      <!-- Search Box -->
+      <div class="mb-6">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Search tokens...</mat-label>
+          <input
+            matInput
+            [(ngModel)]="searchQuery"
+            placeholder="Try 'brand', 'spacing-md', or 'success'"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchQuery) {
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="searchQuery = ''"
+              aria-label="Clear search"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Best Practice -->
         <div class="flex items-start gap-4">
@@ -147,288 +170,355 @@
   </mat-card>
 
   <!-- Quick Navigation -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold text-[var(--ax-text-heading)] mb-4">
+  <div
+    class="sticky top-0 z-40 bg-[var(--ax-background-default)] pb-4 mb-2 border-b border-[var(--ax-border-default)] shadow-sm"
+  >
+    <h2 class="text-xl font-semibold text-[var(--ax-text-heading)] mb-4 pt-4">
       Quick Navigation
     </h2>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-      <button mat-stroked-button (click)="scrollToSection('colors')">
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'color-palettes' ? 'primary' : ''"
+        (click)="scrollToSection('color-palettes')"
+      >
+        <mat-icon>palette</mat-icon>
+        Color Palettes (50-900)
+      </button>
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'colors' ? 'primary' : ''"
+        (click)="scrollToSection('colors')"
+      >
         <mat-icon>palette</mat-icon>
         Colors
       </button>
-      <button mat-stroked-button (click)="scrollToSection('typography')">
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'typography' ? 'primary' : ''"
+        (click)="scrollToSection('typography')"
+      >
         <mat-icon>text_fields</mat-icon>
         Typography
       </button>
-      <button mat-stroked-button (click)="scrollToSection('spacing')">
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'spacing' ? 'primary' : ''"
+        (click)="scrollToSection('spacing')"
+      >
         <mat-icon>space_bar</mat-icon>
         Spacing
       </button>
-      <button mat-stroked-button (click)="scrollToSection('components')">
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'components' ? 'primary' : ''"
+        (click)="scrollToSection('components')"
+      >
         <mat-icon>widgets</mat-icon>
         Components
       </button>
-      <button mat-stroked-button (click)="scrollToSection('layout')">
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'layout' ? 'primary' : ''"
+        (click)="scrollToSection('layout')"
+      >
         <mat-icon>view_quilt</mat-icon>
         Layout
       </button>
-      <button mat-stroked-button (click)="scrollToSection('effects')">
+      <button
+        mat-stroked-button
+        [color]="activeSection === 'effects' ? 'primary' : ''"
+        (click)="scrollToSection('effects')"
+      >
         <mat-icon>auto_awesome</mat-icon>
         Effects
       </button>
-      <button mat-stroked-button (click)="scrollToSection('migration')">
-        <mat-icon>swap_horiz</mat-icon>
-        Migration Guide
-      </button>
-      <button mat-stroked-button (click)="scrollToSection('best-practices')">
-        <mat-icon>checklist</mat-icon>
-        Best Practices
-      </button>
     </div>
   </div>
 
-  <!-- Semantic Color Palette -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold text-[var(--ax-text-heading)] mb-2">
-      Semantic Color Palette
+  <!-- Color Palettes with Levels (50-900) -->
+  <div id="color-palettes" class="mb-8">
+    <h2 class="text-2xl font-bold text-[var(--ax-text-heading)] mb-2">
+      Color Palettes
     </h2>
-    <p class="text-sm text-[var(--ax-text-secondary)] mb-4">
-      5 semantic colors used across the design system with their exact hex
-      values
+    <p class="text-sm text-[var(--ax-text-secondary)] mb-6">
+      Complete color scales with 10 levels (50-900) + semantic aliases for
+      flexible and accessible color usage.
     </p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-      <!-- Brand/Primary -->
-      <mat-card>
-        <mat-card-content class="!p-0">
-          <div
-            class="h-32 flex items-center justify-center"
-            style="background-color: var(--ax-brand-default)"
-          >
-            <mat-icon class="!text-6xl !w-16 !h-16 text-white"
-              >verified</mat-icon
+    @for (category of colorPaletteCategories; track category.id) {
+      <mat-card appearance="outlined" class="mb-6">
+        <mat-card-header>
+          <mat-card-title class="flex items-center gap-2">
+            {{ category.title }}
+            <mat-chip class="scale-75"
+              >{{ category.colors.length }} colors</mat-chip
             >
-          </div>
-          <div class="p-4 space-y-2">
-            <h3 class="font-semibold text-base m-0">Brand/Primary</h3>
-            <p class="text-xs text-[var(--ax-text-secondary)] m-0">
-              Material Indigo 500
-            </p>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Default:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#3f51b5</code
+          </mat-card-title>
+          <mat-card-subtitle>{{ category.description }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="p-6">
+          @for (colorPalette of category.colors; track colorPalette.colorName) {
+            <div class="mb-8 last:mb-0">
+              <!-- Color Palette Header -->
+              <div class="flex items-center justify-between mb-4">
+                <h3
+                  class="text-lg font-semibold text-[var(--ax-text-heading)] m-0"
                 >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#303f9f</code
+                  {{ colorPalette.name }}
+                </h3>
+                <button
+                  mat-button
+                  (click)="togglePaletteDetails(colorPalette.colorName)"
+                  class="text-sm"
                 >
+                  <mat-icon>{{
+                    isPaletteExpanded(colorPalette.colorName)
+                      ? 'expand_less'
+                      : 'expand_more'
+                  }}</mat-icon>
+                  {{
+                    isPaletteExpanded(colorPalette.colorName)
+                      ? 'Hide Details'
+                      : 'Show All Levels'
+                  }}
+                </button>
               </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Token:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
-                  >--ax-brand-default</code
-                >
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
 
-      <!-- Success -->
-      <mat-card>
-        <mat-card-content class="!p-0">
-          <div
-            class="h-32 flex items-center justify-center"
-            style="background-color: var(--ax-success-default)"
-          >
-            <mat-icon class="!text-6xl !w-16 !h-16 text-white"
-              >check_circle</mat-icon
-            >
-          </div>
-          <div class="p-4 space-y-2">
-            <h3 class="font-semibold text-base m-0">Success</h3>
-            <p class="text-xs text-[var(--ax-text-secondary)] m-0">
-              Emerald 500
-            </p>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Default:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#10b981</code
-                >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#059669</code
-                >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Token:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
-                  >--ax-success-default</code
-                >
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+              <!-- Color Intensity Scale - Primary View -->
+              <div class="mb-4">
+                <div class="flex items-center justify-between mb-3">
+                  <span
+                    class="text-xs text-[var(--ax-text-subtle)] font-medium uppercase tracking-wide"
+                    >Lightest</span
+                  >
+                  <span
+                    class="text-xs text-[var(--ax-text-subtle)] font-medium uppercase tracking-wide"
+                    >Darkest</span
+                  >
+                </div>
 
-      <!-- Warning -->
-      <mat-card>
-        <mat-card-content class="!p-0">
-          <div
-            class="h-32 flex items-center justify-center"
-            style="background-color: var(--ax-warning-default)"
-          >
-            <mat-icon class="!text-6xl !w-16 !h-16 text-white"
-              >warning</mat-icon
-            >
-          </div>
-          <div class="p-4 space-y-2">
-            <h3 class="font-semibold text-base m-0">Warning</h3>
-            <p class="text-xs text-[var(--ax-text-secondary)] m-0">Amber 500</p>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Default:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#f59e0b</code
-                >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#d97706</code
-                >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Token:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
-                  >--ax-warning-default</code
-                >
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+                  @for (level of [50, 200, 300, 500, 700, 900]; track level) {
+                    <div class="flex flex-col">
+                      <!-- Color Swatch -->
+                      <div
+                        class="h-24 md:h-32 rounded-lg shadow-lg cursor-pointer transition-all hover:scale-105 hover:shadow-xl mb-3"
+                        [class.ring-2]="level === 500"
+                        [class.ring-offset-2]="level === 500"
+                        [class.ring-[var(--ax-brand-default)]]="level === 500"
+                        [style.backgroundColor]="
+                          getColorValue(
+                            '--ax-' + colorPalette.colorName + '-' + level
+                          )
+                        "
+                        [matTooltip]="'Click to copy'"
+                        (click)="
+                          copyToClipboard(
+                            '--ax-' + colorPalette.colorName + '-' + level
+                          )
+                        "
+                      ></div>
 
-      <!-- Error -->
-      <mat-card>
-        <mat-card-content class="!p-0">
-          <div
-            class="h-32 flex items-center justify-center"
-            style="background-color: var(--ax-error-default)"
-          >
-            <mat-icon class="!text-6xl !w-16 !h-16 text-white">error</mat-icon>
-          </div>
-          <div class="p-4 space-y-2">
-            <h3 class="font-semibold text-base m-0">Error</h3>
-            <p class="text-xs text-[var(--ax-text-secondary)] m-0">Red 500</p>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Default:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#ef4444</code
-                >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#dc2626</code
-                >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Token:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
-                  >--ax-error-default</code
-                >
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+                      <!-- Label -->
+                      <div class="text-center mb-2">
+                        <div
+                          class="text-sm font-semibold text-[var(--ax-text-heading)]"
+                          [class.font-bold]="level === 500"
+                        >
+                          {{
+                            getSemanticName(level) ||
+                              (level === 900 ? 'strong' : level)
+                          }}
+                        </div>
+                        <div
+                          class="text-xs text-[var(--ax-text-subtle)]"
+                          [class.text-[var(--ax-brand-default)]]="level === 500"
+                          [class.font-semibold]="level === 500"
+                        >
+                          {{ level }}
+                        </div>
+                      </div>
 
-      <!-- Info -->
-      <mat-card>
-        <mat-card-content class="!p-0">
-          <div
-            class="h-32 flex items-center justify-center"
-            style="background-color: var(--ax-info-default)"
-          >
-            <mat-icon class="!text-6xl !w-16 !h-16 text-white">info</mat-icon>
-          </div>
-          <div class="p-4 space-y-2">
-            <h3 class="font-semibold text-base m-0">Info</h3>
-            <p class="text-xs text-[var(--ax-text-secondary)] m-0">Blue 500</p>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Default:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#3b82f6</code
-                >
+                      <!-- Copy Button -->
+                      <button
+                        mat-stroked-button
+                        class="w-full text-xs py-1"
+                        (click)="
+                          copyToClipboard(
+                            '--ax-' + colorPalette.colorName + '-' + level
+                          )
+                        "
+                      >
+                        @if (
+                          copiedToken ===
+                          '--ax-' + colorPalette.colorName + '-' + level
+                        ) {
+                          <mat-icon
+                            class="text-[var(--ax-success-default)] !text-base !w-4 !h-4"
+                            >check</mat-icon
+                          >
+                          <span class="text-[var(--ax-success-default)]"
+                            >Copied!</span
+                          >
+                        } @else {
+                          <mat-icon class="!text-base !w-4 !h-4"
+                            >content_copy</mat-icon
+                          >
+                          Copy
+                        }
+                      </button>
+                    </div>
+                  }
+                </div>
               </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Emphasis:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono"
-                  >#2563eb</code
+
+              <!-- Expandable Details Section -->
+              @if (isPaletteExpanded(colorPalette.colorName)) {
+                <div
+                  class="mt-6 border-t border-[var(--ax-border-default)] pt-6"
                 >
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-[var(--ax-text-secondary)]">Token:</span>
-                <code
-                  class="bg-[var(--ax-background-subtle)] px-2 py-0.5 rounded font-mono text-[10px]"
-                  >--ax-info-default</code
-                >
-              </div>
+                  <!-- All 10 Levels Grid -->
+                  <div class="mb-6">
+                    <h4
+                      class="text-sm font-semibold text-[var(--ax-text-heading)] mb-3"
+                    >
+                      All Levels (50-900)
+                    </h4>
+                    <div class="grid grid-cols-5 md:grid-cols-10 gap-3">
+                      @for (level of colorPalette.levels; track level.level) {
+                        <div class="flex flex-col items-center">
+                          <div
+                            class="w-full aspect-square rounded-lg shadow-md cursor-pointer transition-transform hover:scale-110 mb-2"
+                            [style.backgroundColor]="
+                              getColorValue(level.cssVar)
+                            "
+                            (click)="copyToClipboard(level.cssVar)"
+                            [matTooltip]="
+                              level.cssVar +
+                              ': ' +
+                              (level.value || 'Loading...')
+                            "
+                          ></div>
+                          <span
+                            class="text-xs font-mono font-semibold text-[var(--ax-text-primary)]"
+                          >
+                            {{ level.level }}
+                          </span>
+                          @if (getSemanticName(level.level)) {
+                            <span
+                              class="text-[10px] text-[var(--ax-text-subtle)]"
+                            >
+                              {{ getSemanticName(level.level) }}
+                            </span>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Detailed Information Table -->
+                  <div class="overflow-x-auto">
+                    <h4
+                      class="text-sm font-semibold text-[var(--ax-text-heading)] mb-3"
+                    >
+                      Detailed Information
+                    </h4>
+                    <table class="w-full text-sm">
+                      <thead class="bg-[var(--ax-background-subtle)]">
+                        <tr>
+                          <th class="text-left p-3 font-semibold">Level</th>
+                          <th class="text-left p-3 font-semibold">
+                            CSS Variable
+                          </th>
+                          <th class="text-left p-3 font-semibold">Hex Value</th>
+                          <th class="text-left p-3 font-semibold">
+                            Usage Guidelines
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (level of colorPalette.levels; track level.level) {
+                          <tr
+                            class="border-t border-[var(--ax-border-default)] hover:bg-[var(--ax-background-subtle)] transition-colors"
+                          >
+                            <td class="p-3">
+                              <div class="flex items-center gap-3">
+                                <div
+                                  class="w-8 h-8 rounded border border-[var(--ax-border-default)] shadow-sm shrink-0"
+                                  [style.backgroundColor]="
+                                    getColorValue(level.cssVar)
+                                  "
+                                ></div>
+                                <span class="font-mono font-semibold">{{
+                                  level.level
+                                }}</span>
+                                @if (getSemanticName(level.level)) {
+                                  <mat-chip class="scale-75" highlighted>{{
+                                    getSemanticName(level.level)
+                                  }}</mat-chip>
+                                }
+                              </div>
+                            </td>
+                            <td class="p-3">
+                              <code
+                                class="text-xs bg-[var(--ax-background-default)] px-3 py-1.5 rounded cursor-pointer hover:bg-[var(--ax-info-faint)] transition-colors"
+                                (click)="copyToClipboard(level.cssVar)"
+                              >
+                                {{ level.cssVar }}
+                              </code>
+                              @if (copiedToken === level.cssVar) {
+                                <span
+                                  class="ml-2 text-[var(--ax-success-default)] text-xs font-medium"
+                                  >✓ Copied!</span
+                                >
+                              }
+                            </td>
+                            <td class="p-3">
+                              <code
+                                class="text-xs font-mono text-[var(--ax-text-secondary)] bg-[var(--ax-background-subtle)] px-2 py-1 rounded"
+                              >
+                                {{ level.value || 'Loading...' }}
+                              </code>
+                            </td>
+                            <td
+                              class="p-3 text-xs text-[var(--ax-text-subtle)]"
+                            >
+                              @if (level.level === 50) {
+                                Lightest - Subtle backgrounds, hover states
+                              } @else if (level.level === 100) {
+                                Very light backgrounds, disabled states
+                              } @else if (level.level === 200) {
+                                Light backgrounds, muted states
+                              } @else if (level.level === 300) {
+                                Subtle borders, light text on dark backgrounds
+                              } @else if (level.level === 400) {
+                                Hover states, secondary buttons
+                              } @else if (level.level === 500) {
+                                Main color - Primary usage, default state
+                              } @else if (level.level === 600) {
+                                Darker hover states, pressed states
+                              } @else if (level.level === 700) {
+                                Active states, emphasis, focus rings
+                              } @else if (level.level === 800) {
+                                Strong emphasis, high contrast text
+                              } @else if (level.level === 900) {
+                                Darkest - Maximum contrast, headers
+                              }
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              }
             </div>
-          </div>
+          }
         </mat-card-content>
       </mat-card>
-    </div>
+    }
   </div>
-
-  <!-- Search Box -->
-  <mat-card>
-    <mat-card-content>
-      <mat-form-field class="search-field" appearance="outline">
-        <mat-label>Search tokens...</mat-label>
-        <input
-          matInput
-          [(ngModel)]="searchQuery"
-          placeholder="Try 'brand', 'spacing-md', or 'success'"
-        />
-        <mat-icon matPrefix>search</mat-icon>
-        @if (searchQuery) {
-          <button
-            matSuffix
-            mat-icon-button
-            (click)="searchQuery = ''"
-            aria-label="Clear search"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </mat-form-field>
-    </mat-card-content>
-  </mat-card>
 
   <!-- Naming Convention Guide -->
   <div class="naming-convention-section">
@@ -442,7 +532,7 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-4">
+        <div class="flex flex-col gap-4 py-4">
           <div
             class="flex items-center gap-3 p-4 bg-[var(--ax-background-subtle)] rounded-lg border border-[var(--ax-border-default)]"
           >
@@ -847,7 +937,7 @@
             <mat-icon class="text-[var(--ax-brand-default)]">palette</mat-icon>
             Semantic Color Mapping
           </h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="flex flex-col gap-4">
             <div
               class="flex flex-col gap-2 p-4 bg-[var(--ax-background-default)] rounded-md border border-[var(--ax-border-default)]"
             >
@@ -916,7 +1006,12 @@
         >
           <mat-card-header>
             <mat-icon mat-card-avatar>{{ category.icon }}</mat-icon>
-            <mat-card-title>{{ category.title }}</mat-card-title>
+            <mat-card-title class="flex items-center gap-2">
+              {{ category.title }}
+              <mat-chip class="scale-75"
+                >{{ category.tokens.length }} tokens</mat-chip
+              >
+            </mat-card-title>
             <mat-card-subtitle>{{ category.description }}</mat-card-subtitle>
           </mat-card-header>
 
@@ -1080,59 +1175,69 @@
                 </div>
               </div>
 
-              <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
-              >
+              <div class="flex flex-col gap-4 mt-6">
                 @for (token of category.tokens; track token.cssVar) {
                   <div
-                    class="token-card color-token border border-[var(--ax-border-muted)] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                    class="flex items-center gap-4 p-4 border border-[var(--ax-border-muted)] rounded-lg hover:bg-[var(--ax-background-subtle)] transition-colors"
                   >
-                    <div
-                      class="color-swatch"
-                      [style.backgroundColor]="getColorValue(token.cssVar)"
-                    ></div>
-                    <div class="p-5 flex flex-col gap-3">
-                      <h4
-                        class="text-lg font-semibold text-[var(--ax-text-heading)] m-0"
-                      >
-                        {{ token.name }}
-                      </h4>
-                      <div class="flex items-center gap-2">
-                        <code class="flex-1 text-sm px-3 py-2 rounded-md">{{
-                          token.cssVar
-                        }}</code>
-                        <button
-                          mat-icon-button
-                          class="w-8 h-8 shrink-0"
-                          (click)="copyToClipboard(token.cssVar)"
-                          [matTooltip]="
-                            copiedToken === token.cssVar
-                              ? 'Copied!'
-                              : 'Copy CSS variable'
-                          "
+                    <!-- Color Swatch -->
+                    @if (category.id === 'colors') {
+                      <div
+                        class="w-16 h-16 rounded-lg border border-[var(--ax-border-default)] shrink-0 shadow-sm"
+                        [style.backgroundColor]="getColorValue(token.cssVar)"
+                      ></div>
+                    }
+
+                    <!-- Token Info -->
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between gap-4 mb-2">
+                        <h4
+                          class="text-base font-semibold text-[var(--ax-text-heading)] m-0"
                         >
-                          <mat-icon
-                            class="text-base text-[var(--ax-text-secondary)]"
-                            >{{
-                              copiedToken === token.cssVar
-                                ? 'check'
-                                : 'content_copy'
-                            }}</mat-icon
-                          >
-                        </button>
-                      </div>
-                      <div class="text-sm px-3 py-2 rounded font-mono">
-                        {{ token.value || 'N/A' }}
+                          {{ token.name }}
+                        </h4>
+                        <mat-chip class="shrink-0 text-xs h-6">{{
+                          token.category
+                        }}</mat-chip>
                       </div>
                       <p
-                        class="text-sm text-[var(--ax-text-secondary)] leading-relaxed m-0"
+                        class="text-sm text-[var(--ax-text-secondary)] m-0 mb-3"
                       >
                         {{ token.description }}
                       </p>
-                      <mat-chip class="self-start text-xs h-6 border">{{
-                        token.category
-                      }}</mat-chip>
+                      <div class="flex items-center gap-3 flex-wrap">
+                        <code
+                          class="text-xs px-3 py-1.5 bg-[var(--ax-background-subtle)] rounded-md border border-[var(--ax-border-muted)]"
+                        >
+                          {{ token.cssVar }}
+                        </code>
+                        <code
+                          class="text-xs px-3 py-1.5 bg-[var(--ax-background-default)] rounded-md font-mono text-[var(--ax-text-secondary)]"
+                        >
+                          {{ token.value || 'N/A' }}
+                        </code>
+                      </div>
                     </div>
+
+                    <!-- Copy Button -->
+                    <button
+                      mat-icon-button
+                      class="shrink-0"
+                      (click)="copyToClipboard(token.cssVar)"
+                      [matTooltip]="
+                        copiedToken === token.cssVar
+                          ? 'Copied!'
+                          : 'Copy CSS variable'
+                      "
+                    >
+                      <mat-icon class="text-[var(--ax-text-secondary)]">
+                        {{
+                          copiedToken === token.cssVar
+                            ? 'check'
+                            : 'content_copy'
+                        }}
+                      </mat-icon>
+                    </button>
                   </div>
                 }
               </div>
@@ -2626,3 +2731,17 @@
     </mat-card>
   </section>
 </div>
+
+<!-- Back to Top Button -->
+@if (showBackToTop) {
+  <button
+    mat-fab
+    color="primary"
+    class="fixed bottom-6 right-6 z-50 shadow-lg"
+    (click)="scrollToTop()"
+    matTooltip="Back to top"
+    aria-label="Back to top"
+  >
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+}

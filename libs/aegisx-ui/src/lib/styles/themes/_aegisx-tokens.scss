@@ -476,69 +476,213 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-spacing-3xl: #{$aegisx-light-spacing-3xl};
     --ax-spacing-4xl: #{$aegisx-light-spacing-4xl};
 
-    /* Success Colors */
-    --ax-success-faint: #{$aegisx-light-success-faint};
-    --ax-success-muted: #{$aegisx-light-success-muted};
-    --ax-success-subtle: #{$aegisx-light-success-subtle};
-    --ax-success-default: #{$aegisx-light-success-default};
-    --ax-success-emphasis: #{$aegisx-light-success-emphasis};
-    --ax-success-inverted: #{$aegisx-light-success-inverted};
+    /* Success Colors - Levels (50-900) */
+    --ax-success-50: #f0fdf4;
+    --ax-success-100: #dcfce7;
+    --ax-success-200: #bbf7d0;
+    --ax-success-300: #86efac;
+    --ax-success-400: #4ade80;
+    --ax-success-500: #22c55e; /* Main */
+    --ax-success-600: #16a34a;
+    --ax-success-700: #15803d;
+    --ax-success-800: #166534;
+    --ax-success-900: #14532d;
 
-    /* Warning Colors */
-    --ax-warning-faint: #{$aegisx-light-warning-faint};
-    --ax-warning-muted: #{$aegisx-light-warning-muted};
-    --ax-warning-subtle: #{$aegisx-light-warning-subtle};
-    --ax-warning-default: #{$aegisx-light-warning-default};
-    --ax-warning-emphasis: #{$aegisx-light-warning-emphasis};
-    --ax-warning-inverted: #{$aegisx-light-warning-inverted};
+    /* Success - Semantic aliases (backwards compatibility) */
+    --ax-success-faint: var(--ax-success-50);
+    --ax-success-muted: var(--ax-success-200);
+    --ax-success-subtle: var(--ax-success-300);
+    --ax-success-default: var(--ax-success-500);
+    --ax-success-emphasis: var(--ax-success-700);
+    --ax-success-inverted: #ffffff;
 
-    /* Error Colors */
-    --ax-error-faint: #{$aegisx-light-error-faint};
-    --ax-error-muted: #{$aegisx-light-error-muted};
-    --ax-error-subtle: #{$aegisx-light-error-subtle};
-    --ax-error-default: #{$aegisx-light-error-default};
-    --ax-error-emphasis: #{$aegisx-light-error-emphasis};
-    --ax-error-inverted: #{$aegisx-light-error-inverted};
+    /* Success - Standard aliases */
+    --ax-success-main: var(--ax-success-500);
+    --ax-success-light: var(--ax-success-300);
+    --ax-success-dark: var(--ax-success-700);
+    --ax-success: var(--ax-success-500); /* Shorthand */
 
-    /* Info Colors */
-    --ax-info-faint: #{$aegisx-light-info-faint};
-    --ax-info-muted: #{$aegisx-light-info-muted};
-    --ax-info-subtle: #{$aegisx-light-info-subtle};
-    --ax-info-default: #{$aegisx-light-info-default};
-    --ax-info-emphasis: #{$aegisx-light-info-emphasis};
-    --ax-info-inverted: #{$aegisx-light-info-inverted};
+    /* Warning Colors - Levels (50-900) */
+    --ax-warning-50: #fffbeb;
+    --ax-warning-100: #fef3c7;
+    --ax-warning-200: #fde68a;
+    --ax-warning-300: #fcd34d;
+    --ax-warning-400: #fbbf24;
+    --ax-warning-500: #f59e0b; /* Main */
+    --ax-warning-600: #d97706;
+    --ax-warning-700: #b45309;
+    --ax-warning-800: #92400e;
+    --ax-warning-900: #78350f;
 
-    /* Cyan Colors */
-    --ax-cyan-faint: #{$aegisx-light-cyan-faint};
-    --ax-cyan-muted: #{$aegisx-light-cyan-muted};
-    --ax-cyan-subtle: #{$aegisx-light-cyan-subtle};
-    --ax-cyan-default: #{$aegisx-light-cyan-default};
-    --ax-cyan-emphasis: #{$aegisx-light-cyan-emphasis};
-    --ax-cyan-inverted: #{$aegisx-light-cyan-inverted};
+    /* Warning - Semantic aliases (backwards compatibility) */
+    --ax-warning-faint: var(--ax-warning-50);
+    --ax-warning-muted: var(--ax-warning-200);
+    --ax-warning-subtle: var(--ax-warning-300);
+    --ax-warning-default: var(--ax-warning-500);
+    --ax-warning-emphasis: var(--ax-warning-700);
+    --ax-warning-inverted: #ffffff;
 
-    /* Purple Colors */
-    --ax-purple-faint: #{$aegisx-light-purple-faint};
-    --ax-purple-muted: #{$aegisx-light-purple-muted};
-    --ax-purple-subtle: #{$aegisx-light-purple-subtle};
-    --ax-purple-default: #{$aegisx-light-purple-default};
-    --ax-purple-emphasis: #{$aegisx-light-purple-emphasis};
-    --ax-purple-inverted: #{$aegisx-light-purple-inverted};
+    /* Warning - Standard aliases */
+    --ax-warning-main: var(--ax-warning-500);
+    --ax-warning-light: var(--ax-warning-300);
+    --ax-warning-dark: var(--ax-warning-700);
+    --ax-warning: var(--ax-warning-500); /* Shorthand */
 
-    /* Indigo Colors */
-    --ax-indigo-faint: #{$aegisx-light-indigo-faint};
-    --ax-indigo-muted: #{$aegisx-light-indigo-muted};
-    --ax-indigo-subtle: #{$aegisx-light-indigo-subtle};
-    --ax-indigo-default: #{$aegisx-light-indigo-default};
-    --ax-indigo-emphasis: #{$aegisx-light-indigo-emphasis};
-    --ax-indigo-inverted: #{$aegisx-light-indigo-inverted};
+    /* Error Colors - Levels (50-900) */
+    --ax-error-50: #fef2f2;
+    --ax-error-100: #fee2e2;
+    --ax-error-200: #fecaca;
+    --ax-error-300: #fca5a5;
+    --ax-error-400: #f87171;
+    --ax-error-500: #ef4444; /* Main */
+    --ax-error-600: #dc2626;
+    --ax-error-700: #b91c1c;
+    --ax-error-800: #991b1b;
+    --ax-error-900: #7f1d1d;
 
-    /* Pink Colors */
-    --ax-pink-faint: #{$aegisx-light-pink-faint};
-    --ax-pink-muted: #{$aegisx-light-pink-muted};
-    --ax-pink-subtle: #{$aegisx-light-pink-subtle};
-    --ax-pink-default: #{$aegisx-light-pink-default};
-    --ax-pink-emphasis: #{$aegisx-light-pink-emphasis};
-    --ax-pink-inverted: #{$aegisx-light-pink-inverted};
+    /* Error - Semantic aliases (backwards compatibility) */
+    --ax-error-faint: var(--ax-error-50);
+    --ax-error-muted: var(--ax-error-200);
+    --ax-error-subtle: var(--ax-error-300);
+    --ax-error-default: var(--ax-error-500);
+    --ax-error-emphasis: var(--ax-error-700);
+    --ax-error-inverted: #ffffff;
+
+    /* Error - Standard aliases */
+    --ax-error-main: var(--ax-error-500);
+    --ax-error-light: var(--ax-error-300);
+    --ax-error-dark: var(--ax-error-700);
+    --ax-error: var(--ax-error-500); /* Shorthand */
+
+    /* Info Colors - Levels (50-900) */
+    --ax-info-50: #eff6ff;
+    --ax-info-100: #dbeafe;
+    --ax-info-200: #bfdbfe;
+    --ax-info-300: #93c5fd;
+    --ax-info-400: #60a5fa;
+    --ax-info-500: #3b82f6; /* Main */
+    --ax-info-600: #2563eb;
+    --ax-info-700: #1d4ed8;
+    --ax-info-800: #1e40af;
+    --ax-info-900: #1e3a8a;
+
+    /* Info - Semantic aliases (backwards compatibility) */
+    --ax-info-faint: var(--ax-info-50);
+    --ax-info-muted: var(--ax-info-200);
+    --ax-info-subtle: var(--ax-info-300);
+    --ax-info-default: var(--ax-info-500);
+    --ax-info-emphasis: var(--ax-info-700);
+    --ax-info-inverted: #ffffff;
+
+    /* Info - Standard aliases */
+    --ax-info-main: var(--ax-info-500);
+    --ax-info-light: var(--ax-info-300);
+    --ax-info-dark: var(--ax-info-700);
+    --ax-info: var(--ax-info-500); /* Shorthand */
+
+    /* Cyan Colors - Levels (50-900) */
+    --ax-cyan-50: #ecfeff;
+    --ax-cyan-100: #cffafe;
+    --ax-cyan-200: #a5f3fc;
+    --ax-cyan-300: #67e8f9;
+    --ax-cyan-400: #22d3ee;
+    --ax-cyan-500: #06b6d4; /* Main */
+    --ax-cyan-600: #0891b2;
+    --ax-cyan-700: #0e7490;
+    --ax-cyan-800: #155e75;
+    --ax-cyan-900: #164e63;
+
+    /* Cyan - Semantic aliases (backwards compatibility) */
+    --ax-cyan-faint: var(--ax-cyan-50);
+    --ax-cyan-muted: var(--ax-cyan-200);
+    --ax-cyan-subtle: var(--ax-cyan-300);
+    --ax-cyan-default: var(--ax-cyan-500);
+    --ax-cyan-emphasis: var(--ax-cyan-700);
+    --ax-cyan-inverted: #ffffff;
+
+    /* Cyan - Standard aliases */
+    --ax-cyan-main: var(--ax-cyan-500);
+    --ax-cyan-light: var(--ax-cyan-300);
+    --ax-cyan-dark: var(--ax-cyan-700);
+    --ax-cyan: var(--ax-cyan-500); /* Shorthand */
+
+    /* Purple Colors - Levels (50-900) */
+    --ax-purple-50: #faf5ff;
+    --ax-purple-100: #f3e8ff;
+    --ax-purple-200: #e9d5ff;
+    --ax-purple-300: #d8b4fe;
+    --ax-purple-400: #c084fc;
+    --ax-purple-500: #a855f7; /* Main */
+    --ax-purple-600: #9333ea;
+    --ax-purple-700: #7e22ce;
+    --ax-purple-800: #6b21a8;
+    --ax-purple-900: #581c87;
+
+    /* Purple - Semantic aliases (backwards compatibility) */
+    --ax-purple-faint: var(--ax-purple-50);
+    --ax-purple-muted: var(--ax-purple-200);
+    --ax-purple-subtle: var(--ax-purple-300);
+    --ax-purple-default: var(--ax-purple-500);
+    --ax-purple-emphasis: var(--ax-purple-700);
+    --ax-purple-inverted: #ffffff;
+
+    /* Purple - Standard aliases */
+    --ax-purple-main: var(--ax-purple-500);
+    --ax-purple-light: var(--ax-purple-300);
+    --ax-purple-dark: var(--ax-purple-700);
+    --ax-purple: var(--ax-purple-500); /* Shorthand */
+
+    /* Indigo Colors - Levels (50-900) */
+    --ax-indigo-50: #eef2ff;
+    --ax-indigo-100: #e0e7ff;
+    --ax-indigo-200: #c7d2fe;
+    --ax-indigo-300: #a5b4fc;
+    --ax-indigo-400: #818cf8;
+    --ax-indigo-500: #6366f1; /* Main */
+    --ax-indigo-600: #4f46e5;
+    --ax-indigo-700: #4338ca;
+    --ax-indigo-800: #3730a3;
+    --ax-indigo-900: #312e81;
+
+    /* Indigo - Semantic aliases (backwards compatibility) */
+    --ax-indigo-faint: var(--ax-indigo-50);
+    --ax-indigo-muted: var(--ax-indigo-200);
+    --ax-indigo-subtle: var(--ax-indigo-300);
+    --ax-indigo-default: var(--ax-indigo-500);
+    --ax-indigo-emphasis: var(--ax-indigo-700);
+    --ax-indigo-inverted: #ffffff;
+
+    /* Indigo - Standard aliases */
+    --ax-indigo-main: var(--ax-indigo-500);
+    --ax-indigo-light: var(--ax-indigo-300);
+    --ax-indigo-dark: var(--ax-indigo-700);
+    --ax-indigo: var(--ax-indigo-500); /* Shorthand */
+
+    /* Pink Colors - Levels (50-900) */
+    --ax-pink-50: #fdf2f8;
+    --ax-pink-100: #fce7f3;
+    --ax-pink-200: #fbcfe8;
+    --ax-pink-300: #f9a8d4;
+    --ax-pink-400: #f472b6;
+    --ax-pink-500: #ec4899; /* Main */
+    --ax-pink-600: #db2777;
+    --ax-pink-700: #be185d;
+    --ax-pink-800: #9f1239;
+    --ax-pink-900: #831843;
+
+    /* Pink - Semantic aliases (backwards compatibility) */
+    --ax-pink-faint: var(--ax-pink-50);
+    --ax-pink-muted: var(--ax-pink-200);
+    --ax-pink-subtle: var(--ax-pink-300);
+    --ax-pink-default: var(--ax-pink-500);
+    --ax-pink-emphasis: var(--ax-pink-700);
+    --ax-pink-inverted: #ffffff;
+
+    /* Pink - Standard aliases */
+    --ax-pink-main: var(--ax-pink-500);
+    --ax-pink-light: var(--ax-pink-300);
+    --ax-pink-dark: var(--ax-pink-700);
+    --ax-pink: var(--ax-pink-500); /* Shorthand */
 
     /* Background Variants */
     --ax-background-muted: #{$aegisx-light-background-muted};
@@ -587,13 +731,31 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-shadow-md: #{$aegisx-light-shadow-md};
     --ax-shadow-lg: #{$aegisx-light-shadow-lg};
 
-    /* Brand/Primary */
-    --ax-brand-faint: #{$aegisx-light-brand-faint};
-    --ax-brand-muted: #{$aegisx-light-brand-muted};
-    --ax-brand-subtle: #{$aegisx-light-brand-subtle};
-    --ax-brand-default: #{$aegisx-light-brand-default};
-    --ax-brand-emphasis: #{$aegisx-light-brand-emphasis};
-    --ax-brand-inverted: #{$aegisx-light-brand-inverted};
+    /* Brand/Primary Colors - Levels (50-900) */
+    --ax-brand-50: #eef2ff;
+    --ax-brand-100: #e0e7ff;
+    --ax-brand-200: #c7d2fe;
+    --ax-brand-300: #a5b4fc;
+    --ax-brand-400: #818cf8;
+    --ax-brand-500: #6366f1; /* Main */
+    --ax-brand-600: #4f46e5;
+    --ax-brand-700: #4338ca;
+    --ax-brand-800: #3730a3;
+    --ax-brand-900: #312e81;
+
+    /* Brand - Semantic aliases (backwards compatibility) */
+    --ax-brand-faint: var(--ax-brand-50);
+    --ax-brand-muted: var(--ax-brand-200);
+    --ax-brand-subtle: var(--ax-brand-300);
+    --ax-brand-default: var(--ax-brand-500);
+    --ax-brand-emphasis: var(--ax-brand-700);
+    --ax-brand-inverted: #ffffff;
+
+    /* Brand - Standard aliases */
+    --ax-brand-main: var(--ax-brand-500);
+    --ax-brand-light: var(--ax-brand-300);
+    --ax-brand-dark: var(--ax-brand-700);
+    --ax-brand: var(--ax-brand-500); /* Shorthand */
 
     /* Z-Index Scale (same for both themes) */
     --ax-z-base: #{$aegisx-z-base};

@@ -1,4 +1,10 @@
-import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  ViewEncapsulation,
+  HostListener,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +23,7 @@ interface DesignToken {
   value?: string;
   description: string;
   category: string;
+  level?: number; // For MUI-style levels (50-900)
 }
 
 interface TokenCategory {
@@ -25,6 +32,26 @@ interface TokenCategory {
   icon: string;
   description: string;
   tokens: DesignToken[];
+}
+
+interface ColorPaletteCategory {
+  id: string;
+  title: string;
+  description: string;
+  colors: ColorPalette[];
+}
+
+interface ColorPalette {
+  name: string;
+  colorName: string; // e.g., 'success', 'warning'
+  levels: ColorLevel[];
+}
+
+interface ColorLevel {
+  level: number; // 50, 100, 200, etc.
+  cssVar: string;
+  value?: string;
+  description: string;
 }
 
 @Component({
@@ -51,6 +78,110 @@ export class DesignTokensComponent implements OnInit {
 
   searchQuery = '';
   copiedToken = '';
+  showBackToTop = false;
+  activeSection = '';
+
+  // Track expanded state for each palette
+  private expandedPalettes = new Set<string>();
+
+  // Color Palette Categories (with levels 50-900)
+  colorPaletteCategories: ColorPaletteCategory[] = [
+    {
+      id: 'brand-colors',
+      title: 'Brand Colors',
+      description: 'Primary brand color palette with full scale',
+      colors: [
+        {
+          name: 'Brand',
+          colorName: 'brand',
+          levels: this.generateColorLevels(
+            'brand',
+            'Primary brand color (Indigo)',
+          ),
+        },
+      ],
+    },
+    {
+      id: 'semantic-colors',
+      title: 'Semantic Colors',
+      description:
+        'State colors with full scale (50-900) for success, warning, error, and info',
+      colors: [
+        {
+          name: 'Success',
+          colorName: 'success',
+          levels: this.generateColorLevels(
+            'success',
+            'Green palette for success states',
+          ),
+        },
+        {
+          name: 'Warning',
+          colorName: 'warning',
+          levels: this.generateColorLevels(
+            'warning',
+            'Amber palette for warning states',
+          ),
+        },
+        {
+          name: 'Error',
+          colorName: 'error',
+          levels: this.generateColorLevels(
+            'error',
+            'Red palette for error states',
+          ),
+        },
+        {
+          name: 'Info',
+          colorName: 'info',
+          levels: this.generateColorLevels(
+            'info',
+            'Blue palette for informational states',
+          ),
+        },
+      ],
+    },
+    {
+      id: 'extended-colors',
+      title: 'Extended Colors',
+      description:
+        'Additional color palettes with full scale for diverse UI needs',
+      colors: [
+        {
+          name: 'Cyan',
+          colorName: 'cyan',
+          levels: this.generateColorLevels(
+            'cyan',
+            'Cyan palette for completion metrics',
+          ),
+        },
+        {
+          name: 'Purple',
+          colorName: 'purple',
+          levels: this.generateColorLevels(
+            'purple',
+            'Purple palette for input metrics',
+          ),
+        },
+        {
+          name: 'Indigo',
+          colorName: 'indigo',
+          levels: this.generateColorLevels(
+            'indigo',
+            'Indigo palette for accents',
+          ),
+        },
+        {
+          name: 'Pink',
+          colorName: 'pink',
+          levels: this.generateColorLevels(
+            'pink',
+            'Pink palette for accent bars',
+          ),
+        },
+      ],
+    },
+  ];
 
   // Token Categories Data
   tokenCategories: TokenCategory[] = [
@@ -742,7 +873,20 @@ export class DesignTokensComponent implements OnInit {
     // Compute actual CSS variable values after view init
     setTimeout(() => {
       this.computeTokenValues();
+      this.computeColorPaletteValues();
     }, 100);
+  }
+
+  /**
+   * Generate color levels (50-900) for a color category
+   */
+  generateColorLevels(colorName: string, description: string): ColorLevel[] {
+    const levels = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+    return levels.map((level) => ({
+      level,
+      cssVar: `--ax-${colorName}-${level}`,
+      description: level === 500 ? `${description} (Main)` : description,
+    }));
   }
 
   computeTokenValues() {
@@ -754,6 +898,21 @@ export class DesignTokensComponent implements OnInit {
         if (value) {
           token.value = value;
         }
+      });
+    });
+  }
+
+  computeColorPaletteValues() {
+    const rootStyles = getComputedStyle(document.documentElement);
+
+    this.colorPaletteCategories.forEach((category) => {
+      category.colors.forEach((colorPalette) => {
+        colorPalette.levels.forEach((level) => {
+          const value = rootStyles.getPropertyValue(level.cssVar).trim();
+          if (value) {
+            level.value = value;
+          }
+        });
       });
     });
   }
@@ -801,6 +960,7 @@ export class DesignTokensComponent implements OnInit {
     // Recompute values after theme change
     setTimeout(() => {
       this.computeTokenValues();
+      this.computeColorPaletteValues();
     }, 100);
   }
 
@@ -816,5 +976,75 @@ export class DesignTokensComponent implements OnInit {
       (total, category) => total + category.tokens.length,
       0,
     );
+  }
+
+  /**
+   * Toggle expanded/collapsed state for a color palette
+   */
+  togglePaletteDetails(colorName: string): void {
+    if (this.expandedPalettes.has(colorName)) {
+      this.expandedPalettes.delete(colorName);
+    } else {
+      this.expandedPalettes.add(colorName);
+    }
+  }
+
+  /**
+   * Check if a color palette is expanded
+   */
+  isPaletteExpanded(colorName: string): boolean {
+    return this.expandedPalettes.has(colorName);
+  }
+
+  /**
+   * Get semantic name for a color level
+   */
+  getSemanticName(level: number): string | null {
+    const semanticMap: Record<number, string> = {
+      50: 'faint',
+      200: 'muted',
+      300: 'subtle',
+      500: 'default/main',
+      700: 'emphasis',
+    };
+    return semanticMap[level] || null;
+  }
+
+  /**
+   * Handle window scroll events
+   */
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    // Show/hide back to top button
+    this.showBackToTop = window.scrollY > 500;
+
+    // Track active section
+    const sections = [
+      'color-palettes',
+      'colors',
+      'typography',
+      'spacing',
+      'components',
+      'layout',
+      'effects',
+    ];
+
+    for (const sectionId of sections) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (rect.top >= 0 && rect.top <= 300) {
+          this.activeSection = sectionId;
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Scroll to top of page
+   */
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
