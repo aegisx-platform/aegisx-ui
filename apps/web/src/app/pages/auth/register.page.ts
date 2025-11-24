@@ -338,7 +338,7 @@ import { AuthService } from '../../core/auth/services/auth.service';
           font-size: 48px;
           width: 48px;
           height: 48px;
-          color: var(--ax-text-inverse);
+          color: white;
         }
       }
 

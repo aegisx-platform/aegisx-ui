@@ -206,7 +206,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
           font-size: 48px;
           width: 48px;
           height: 48px;
-          color: var(--ax-text-inverse);
+          color: white;
         }
       }
 
@@ -397,9 +397,9 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
 
         mat-icon {
           flex-shrink: 0;
-          font-size: 14px;
-          width: 14px;
-          height: 14px;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
           margin-top: 2px;
           color: var(--ax-brand-default);
         }
