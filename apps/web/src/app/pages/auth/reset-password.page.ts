@@ -8,7 +8,11 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PasswordResetService } from '../../core/auth/services/password-reset.service';
@@ -20,382 +24,539 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatProgressSpinnerModule,
   ],
   template: `
-    <div
-      class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
-      <div class="max-w-md w-full space-y-6">
+    <div class="auth-container">
+      <div class="auth-wrapper">
         <!-- Logo and Header -->
-        <div class="text-center">
-          <div
-            class="mx-auto h-20 w-20 flex items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl shadow-blue-500/30"
-          >
-            <mat-icon class="text-white text-3xl">lock_open</mat-icon>
+        <div class="auth-header">
+          <div class="auth-logo">
+            <mat-icon>lock_open</mat-icon>
           </div>
-          <h2 class="mt-6 text-3xl font-bold text-slate-900 tracking-tight">
-            Set new password
-          </h2>
-          <p class="mt-2 text-sm text-slate-600">
-            Enter your new password below
-          </p>
+          <h1 class="auth-title">Set new password</h1>
+          <p class="auth-subtitle">Enter your new password below</p>
         </div>
 
         <!-- Verifying Token State -->
         @if (isVerifying()) {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div class="flex flex-col items-center justify-center gap-4">
-              <mat-spinner diameter="40"></mat-spinner>
-              <p class="text-sm text-slate-600">Verifying reset link...</p>
-            </div>
-          </div>
+          <mat-card class="auth-card">
+            <mat-card-content>
+              <div class="auth-loading">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Verifying reset link...</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
         }
 
         <!-- Invalid Token State -->
         @if (!isVerifying() && !isTokenValid()) {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div
-              class="rounded-lg bg-red-50 p-4 border border-red-200"
-              role="alert"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100"
-                  >
-                    <mat-icon class="text-red-600 !text-sm">error</mat-icon>
-                  </div>
+          <mat-card class="auth-card">
+            <mat-card-content>
+              <div
+                class="auth-alert auth-alert-error"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>error</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-red-900">
-                    Invalid or expired reset link
-                  </p>
-                  <p class="mt-1 text-xs text-red-700">
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">Invalid or expired reset link</p>
+                  <p class="auth-alert-subtitle">
                     This reset link is invalid or has expired. Please request a
                     new one.
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div class="mt-6 text-center">
-              <a
-                routerLink="/forgot-password"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1"
-              >
-                Request new reset link
-              </a>
-            </div>
-          </div>
+              <div class="auth-footer-link">
+                <a routerLink="/forgot-password" mat-button color="primary">
+                  Request new reset link
+                </a>
+              </div>
+            </mat-card-content>
+          </mat-card>
         }
 
         <!-- Valid Token - Show Form -->
         @if (!isVerifying() && isTokenValid()) {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <!-- Success Message -->
-            @if (successMessage()) {
-              <div
-                class="rounded-lg bg-green-50 p-4 border border-green-200 mb-6"
-                role="alert"
-                aria-live="polite"
-              >
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0">
-                    <div
-                      class="flex h-5 w-5 items-center justify-center rounded-full bg-green-100"
-                    >
-                      <mat-icon class="text-green-600 !text-sm"
-                        >check_circle</mat-icon
-                      >
-                    </div>
+          <mat-card class="auth-card">
+            <mat-card-content>
+              <!-- Success Message -->
+              @if (successMessage()) {
+                <div
+                  class="auth-alert auth-alert-success"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  <div class="auth-alert-icon">
+                    <mat-icon>check_circle</mat-icon>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-green-900">
-                      {{ successMessage() }}
-                    </p>
-                    <p class="mt-1 text-xs text-green-700">
+                  <div class="auth-alert-content">
+                    <p class="auth-alert-title">{{ successMessage() }}</p>
+                    <p class="auth-alert-subtitle">
                       Redirecting to login page...
                     </p>
                   </div>
                 </div>
-              </div>
-            }
+              }
 
-            <!-- Error Alert -->
-            @if (errorMessage()) {
-              <div
-                class="rounded-lg bg-red-50 p-4 border border-red-200 mb-6"
-                role="alert"
-                aria-live="polite"
-              >
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0">
-                    <div
-                      class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100"
-                    >
-                      <mat-icon class="text-red-600 !text-sm">error</mat-icon>
-                    </div>
+              <!-- Error Alert -->
+              @if (errorMessage()) {
+                <div
+                  class="auth-alert auth-alert-error"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  <div class="auth-alert-icon">
+                    <mat-icon>error</mat-icon>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-red-900">
-                      {{ errorMessage() }}
-                    </p>
+                  <div class="auth-alert-content">
+                    <p class="auth-alert-title">{{ errorMessage() }}</p>
                   </div>
                 </div>
-              </div>
-            }
+              }
 
-            <form [formGroup]="resetPasswordForm" (ngSubmit)="onSubmit()">
-              <!-- New Password Field - Tremor Style -->
-              <div class="mb-5">
-                <label class="block text-sm font-medium text-slate-700 mb-2">
-                  New Password
-                </label>
-                <div class="relative">
+              <form [formGroup]="resetPasswordForm" (ngSubmit)="onSubmit()">
+                <!-- New Password Field -->
+                <mat-form-field appearance="outline" class="auth-field">
+                  <mat-label>New Password</mat-label>
                   <input
+                    matInput
                     [type]="hidePassword() ? 'password' : 'text'"
                     formControlName="newPassword"
                     placeholder="Enter new password"
                     autocomplete="new-password"
-                    class="w-full px-4 py-2.5 text-sm border rounded-lg transition-colors pr-10
-                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed
-                           placeholder:text-slate-400"
-                    [class.border-slate-300]="
-                      !resetPasswordForm.get('newPassword')?.invalid ||
-                      !resetPasswordForm.get('newPassword')?.touched
-                    "
-                    [class.border-red-500]="
-                      resetPasswordForm.get('newPassword')?.invalid &&
-                      resetPasswordForm.get('newPassword')?.touched
-                    "
-                    [class.bg-red-50]="
-                      resetPasswordForm.get('newPassword')?.invalid &&
-                      resetPasswordForm.get('newPassword')?.touched
-                    "
-                    [attr.aria-invalid]="
-                      resetPasswordForm.get('newPassword')?.invalid &&
-                      resetPasswordForm.get('newPassword')?.touched
-                    "
                     required
                   />
                   <button
+                    mat-icon-button
+                    matSuffix
                     type="button"
                     (click)="togglePasswordVisibility()"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
                     [attr.aria-label]="
                       hidePassword() ? 'Show password' : 'Hide password'
                     "
                   >
-                    <mat-icon class="!text-base">{{
+                    <mat-icon>{{
                       hidePassword() ? 'visibility' : 'visibility_off'
                     }}</mat-icon>
                   </button>
-                </div>
-                @if (
-                  resetPasswordForm.get('newPassword')?.hasError('required') &&
-                  resetPasswordForm.get('newPassword')?.touched
-                ) {
-                  <p class="mt-1.5 text-xs text-red-600">
+                  <mat-error
+                    *ngIf="
+                      resetPasswordForm.get('newPassword')?.hasError('required')
+                    "
+                  >
                     Password is required
-                  </p>
-                }
-                @if (
-                  resetPasswordForm.get('newPassword')?.hasError('minlength') &&
-                  resetPasswordForm.get('newPassword')?.touched
-                ) {
-                  <p class="mt-1.5 text-xs text-red-600">
+                  </mat-error>
+                  <mat-error
+                    *ngIf="
+                      resetPasswordForm
+                        .get('newPassword')
+                        ?.hasError('minlength')
+                    "
+                  >
                     Password must be at least 8 characters
-                  </p>
-                }
-              </div>
+                  </mat-error>
+                </mat-form-field>
 
-              <!-- Confirm Password Field - Tremor Style -->
-              <div class="mb-6">
-                <label class="block text-sm font-medium text-slate-700 mb-2">
-                  Confirm Password
-                </label>
-                <div class="relative">
+                <!-- Confirm Password Field -->
+                <mat-form-field appearance="outline" class="auth-field">
+                  <mat-label>Confirm Password</mat-label>
                   <input
+                    matInput
                     [type]="hideConfirmPassword() ? 'password' : 'text'"
                     formControlName="confirmPassword"
                     placeholder="Confirm new password"
                     autocomplete="new-password"
-                    class="w-full px-4 py-2.5 text-sm border rounded-lg transition-colors pr-10
-                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed
-                           placeholder:text-slate-400"
-                    [class.border-slate-300]="
-                      !resetPasswordForm.get('confirmPassword')?.invalid ||
-                      !resetPasswordForm.get('confirmPassword')?.touched
-                    "
-                    [class.border-red-500]="
-                      resetPasswordForm.get('confirmPassword')?.invalid &&
-                      resetPasswordForm.get('confirmPassword')?.touched
-                    "
-                    [class.bg-red-50]="
-                      resetPasswordForm.get('confirmPassword')?.invalid &&
-                      resetPasswordForm.get('confirmPassword')?.touched
-                    "
-                    [attr.aria-invalid]="
-                      resetPasswordForm.get('confirmPassword')?.invalid &&
-                      resetPasswordForm.get('confirmPassword')?.touched
-                    "
                     required
                   />
                   <button
+                    mat-icon-button
+                    matSuffix
                     type="button"
                     (click)="toggleConfirmPasswordVisibility()"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
                     [attr.aria-label]="
                       hideConfirmPassword() ? 'Show password' : 'Hide password'
                     "
                   >
-                    <mat-icon class="!text-base">{{
+                    <mat-icon>{{
                       hideConfirmPassword() ? 'visibility' : 'visibility_off'
                     }}</mat-icon>
                   </button>
-                </div>
-                @if (
-                  resetPasswordForm
-                    .get('confirmPassword')
-                    ?.hasError('required') &&
-                  resetPasswordForm.get('confirmPassword')?.touched
-                ) {
-                  <p class="mt-1.5 text-xs text-red-600">
+                  <mat-error
+                    *ngIf="
+                      resetPasswordForm
+                        .get('confirmPassword')
+                        ?.hasError('required')
+                    "
+                  >
                     Please confirm your password
-                  </p>
-                }
-                @if (
-                  resetPasswordForm.hasError('passwordMismatch') &&
-                  resetPasswordForm.get('confirmPassword')?.touched
-                ) {
-                  <p class="mt-1.5 text-xs text-red-600">
+                  </mat-error>
+                  <mat-error
+                    *ngIf="resetPasswordForm.hasError('passwordMismatch')"
+                  >
                     Passwords do not match
-                  </p>
-                }
-              </div>
+                  </mat-error>
+                </mat-form-field>
 
-              <!-- Submit Button - Tremor Style -->
-              <button
-                type="submit"
-                class="w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg
-                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                       disabled:bg-slate-300 disabled:cursor-not-allowed
-                       transition-colors duration-200 shadow-sm"
-                [disabled]="resetPasswordForm.invalid || isLoading()"
-              >
-                @if (isLoading()) {
-                  <span class="flex items-center justify-center gap-2">
-                    <mat-spinner diameter="16" class="inline"></mat-spinner>
-                    <span>Resetting password...</span>
-                  </span>
-                } @else {
-                  Reset password
-                }
-              </button>
-
-              <!-- Back to Login Link -->
-              <div class="mt-6 text-center">
-                <a
-                  routerLink="/login"
-                  class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1"
+                <!-- Submit Button -->
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="submit"
+                  class="auth-submit-btn"
+                  [disabled]="resetPasswordForm.invalid || isLoading()"
                 >
-                  <mat-icon class="!text-base">arrow_back</mat-icon>
-                  Back to login
-                </a>
-              </div>
-            </form>
-          </div>
+                  @if (isLoading()) {
+                    <span class="auth-btn-loading">
+                      <mat-spinner diameter="20"></mat-spinner>
+                      <span>Resetting password...</span>
+                    </span>
+                  } @else {
+                    Reset password
+                  }
+                </button>
+
+                <!-- Back to Login Link -->
+                <div class="auth-footer-link">
+                  <a routerLink="/login" mat-button color="primary">
+                    <mat-icon>arrow_back</mat-icon>
+                    Back to login
+                  </a>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
         }
 
-        <!-- Password Requirements Info - Tremor Style -->
+        <!-- Password Requirements Info -->
         @if (!isVerifying() && isTokenValid() && !successMessage()) {
-          <div class="bg-white rounded-xl border border-blue-200 p-5 shadow-sm">
-            <div class="flex items-start gap-3">
-              <div class="flex-shrink-0">
-                <div
-                  class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50"
-                >
-                  <mat-icon class="text-blue-600 !text-base">info</mat-icon>
+          <mat-card class="auth-info-card">
+            <mat-card-content>
+              <div class="auth-info-header">
+                <div class="auth-info-icon">
+                  <mat-icon>info</mat-icon>
                 </div>
+                <h4>Password Requirements</h4>
               </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-semibold text-slate-900 mb-2">
-                  Password Requirements
-                </h4>
-                <ul class="space-y-1.5 text-xs text-slate-600">
-                  <li class="flex items-start gap-2">
-                    <mat-icon class="text-blue-500 !text-xs mt-0.5"
-                      >check_circle</mat-icon
-                    >
-                    <span>At least 8 characters long</span>
-                  </li>
-                  <li class="flex items-start gap-2">
-                    <mat-icon class="text-blue-500 !text-xs mt-0.5"
-                      >check_circle</mat-icon
-                    >
-                    <span>Both passwords must match</span>
-                  </li>
-                  <li class="flex items-start gap-2">
-                    <mat-icon class="text-blue-500 !text-xs mt-0.5"
-                      >check_circle</mat-icon
-                    >
-                    <span>All active sessions will be terminated</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+              <ul class="auth-info-list">
+                <li>
+                  <mat-icon>check_circle</mat-icon>
+                  <span>At least 8 characters long</span>
+                </li>
+                <li>
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Both passwords must match</span>
+                </li>
+                <li>
+                  <mat-icon>check_circle</mat-icon>
+                  <span>All active sessions will be terminated</span>
+                </li>
+              </ul>
+            </mat-card-content>
+          </mat-card>
         }
       </div>
     </div>
   `,
   styles: [
     `
-      :host {
-        display: block;
+      .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         min-height: 100vh;
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-md);
+        background-color: var(--ax-background-muted);
       }
 
-      /* Tremor-inspired spinner styling */
-      .mat-spinner {
-        --mdc-circular-progress-active-indicator-color: white !important;
+      .auth-wrapper {
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
       }
 
-      ::ng-deep .mat-mdc-progress-spinner circle {
-        stroke: white !important;
+      /* Header Styles */
+      .auth-header {
+        text-align: center;
       }
 
-      /* Blue spinner for verification */
-      .mat-spinner:not(.inline) {
-        --mdc-circular-progress-active-indicator-color: #2563eb !important;
+      .auth-logo {
+        margin: 0 auto var(--ax-spacing-lg);
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-2xl);
+        background: linear-gradient(
+          135deg,
+          var(--ax-brand-default),
+          var(--ax-brand-emphasis)
+        );
+        box-shadow: 0 8px 20px -4px var(--ax-brand-muted);
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: white;
+        }
       }
 
-      .mat-spinner:not(.inline) ::ng-deep circle {
-        stroke: #2563eb !important;
+      .auth-title {
+        font-size: var(--ax-font-size-2xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+        margin: 0 0 var(--ax-spacing-sm);
+        letter-spacing: -0.02em;
       }
 
-      /* Icon size adjustments */
-      .mat-icon {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+      .auth-subtitle {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+        margin: 0;
+      }
+
+      /* Card Styles */
+      .auth-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        box-shadow: var(--ax-shadow-sm);
+      }
+
+      ::ng-deep .auth-card .mat-mdc-card-content {
+        padding: var(--ax-spacing-2xl) !important;
+      }
+
+      /* Loading State */
+      .auth-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-xl) 0;
+
+        p {
+          font-size: var(--ax-font-size-sm);
+          color: var(--ax-text-subtle);
+          margin: 0;
+        }
+      }
+
+      /* Alert Styles */
+      .auth-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-lg);
+        margin-bottom: var(--ax-spacing-lg);
+        border: 1px solid;
+      }
+
+      .auth-alert-success {
+        background-color: var(--ax-success-subtle);
+        border-color: var(--ax-success-muted);
+        color: var(--ax-success-emphasis);
+      }
+
+      .auth-alert-error {
+        background-color: var(--ax-error-subtle);
+        border-color: var(--ax-error-muted);
+        color: var(--ax-error-emphasis);
+      }
+
+      .auth-alert-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .auth-alert-success .auth-alert-icon {
+        background-color: var(--ax-success-muted);
+        color: var(--ax-success-emphasis);
+      }
+
+      .auth-alert-error .auth-alert-icon {
+        background-color: var(--ax-error-muted);
+        color: var(--ax-error-emphasis);
+      }
+
+      .auth-alert-content {
+        flex: 1;
+      }
+
+      .auth-alert-title {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        margin: 0 0 var(--ax-spacing-xs);
+      }
+
+      .auth-alert-subtitle {
+        font-size: var(--ax-font-size-xs);
+        margin: 0;
+        opacity: 0.9;
+      }
+
+      /* Form Field Styles */
+      .auth-field {
+        width: 100%;
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      /* Submit Button */
+      .auth-submit-btn {
+        width: 100%;
+        height: 44px;
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        margin-top: var(--ax-spacing-sm);
+      }
+
+      .auth-btn-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      /* Footer Link */
+      .auth-footer-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: var(--ax-spacing-lg);
+      }
+
+      .auth-footer-link a {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--ax-spacing-xs);
+      }
+
+      /* Info Card Styles */
+      .auth-info-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-brand-muted);
+        box-shadow: var(--ax-shadow-sm);
+      }
+
+      ::ng-deep .auth-info-card .mat-mdc-card-content {
+        padding: var(--ax-spacing-lg) !important;
+      }
+
+      .auth-info-header {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-md);
+        margin-bottom: var(--ax-spacing-md);
+      }
+
+      .auth-info-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-lg);
+        background-color: var(--ax-brand-subtle);
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: var(--ax-brand-emphasis);
+        }
+      }
+
+      .auth-info-header h4 {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+        margin: 0;
+      }
+
+      .auth-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .auth-info-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-sm);
+        font-size: var(--ax-font-size-xs);
+        color: var(--ax-text-default);
+
+        mat-icon {
+          flex-shrink: 0;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          margin-top: 2px;
+          color: var(--ax-brand-default);
+        }
+
+        span {
+          flex: 1;
+        }
+      }
+
+      /* Spinner styling */
+      ::ng-deep .auth-btn-loading .mat-mdc-progress-spinner {
+        --mdc-circular-progress-active-indicator-color: currentColor !important;
+      }
+
+      ::ng-deep .auth-btn-loading .mat-mdc-progress-spinner circle {
+        stroke: currentColor !important;
+      }
+
+      ::ng-deep .auth-loading .mat-mdc-progress-spinner {
+        --mdc-circular-progress-active-indicator-color: var(
+          --ax-brand-default
+        ) !important;
+      }
+
+      ::ng-deep .auth-loading .mat-mdc-progress-spinner circle {
+        stroke: var(--ax-brand-default) !important;
       }
 
       /* Smooth transitions */
-      input,
-      button,
-      a {
-        transition: all 0.15s ease-in-out;
+      .auth-card,
+      .auth-info-card {
+        transition: all 0.2s ease-in-out;
+      }
+
+      .auth-card:hover,
+      .auth-info-card:hover {
+        box-shadow: var(--ax-shadow-md);
       }
     `,
   ],
