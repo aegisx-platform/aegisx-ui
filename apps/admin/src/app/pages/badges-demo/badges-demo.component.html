@@ -63,6 +63,10 @@
       <mat-icon>photo_size_select_small</mat-icon>
       Sizes
     </button>
+    <button matButton="outlined" (click)="scrollToSection('rounded')">
+      <mat-icon>rounded_corner</mat-icon>
+      Border Radius
+    </button>
   </div>
 
   <!-- ============================================
@@ -1200,6 +1204,106 @@
             <ax-badge variant="outlined" type="success" size="lg" icon="check">
               Large
             </ax-badge>
+          </div>
+        </div>
+      </div>
+    </app-code-preview>
+  </section>
+
+  <!-- ============================================
+       Border Radius
+       ============================================ -->
+  <div id="rounded" class="section-header">
+    <h2>Border Radius</h2>
+    <p>Customize badge roundedness from sharp corners to pill shapes.</p>
+  </div>
+
+  <section>
+    <app-code-preview [code]="roundedBadgeCode">
+      <div class="space-y-6">
+        <!-- All Rounded Sizes -->
+        <div>
+          <p class="type-label-large mb-3">All Border Radius Options</p>
+          <div class="demo-row items-center">
+            <ax-badge variant="soft" type="info" rounded="none"
+              >No Radius</ax-badge
+            >
+            <ax-badge variant="soft" type="info" rounded="sm"
+              >Small (Default)</ax-badge
+            >
+            <ax-badge variant="soft" type="info" rounded="md">Medium</ax-badge>
+            <ax-badge variant="soft" type="info" rounded="lg">Large</ax-badge>
+            <ax-badge variant="soft" type="info" rounded="full"
+              >Full (Pill)</ax-badge
+            >
+          </div>
+        </div>
+
+        <!-- Real-World Examples -->
+        <div>
+          <p class="type-label-large mb-3">Real-World Examples with Dots</p>
+          <div class="demo-row items-center">
+            <ax-badge
+              variant="outlined"
+              type="success"
+              rounded="none"
+              [dot]="true"
+            >
+              Closed
+            </ax-badge>
+            <ax-badge
+              variant="outlined"
+              type="neutral"
+              rounded="sm"
+              [dot]="true"
+            >
+              Drafted
+            </ax-badge>
+            <ax-badge variant="outlined" type="info" rounded="md" [dot]="true">
+              Sent
+            </ax-badge>
+            <ax-badge
+              variant="outlined"
+              type="warning"
+              rounded="lg"
+              [dot]="true"
+            >
+              Pending
+            </ax-badge>
+            <ax-badge variant="soft" type="error" rounded="full" [dot]="true">
+              Urgent
+            </ax-badge>
+          </div>
+        </div>
+
+        <!-- Comparison -->
+        <div>
+          <p class="type-label-large mb-3">Visual Comparison</p>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <ax-badge variant="soft" type="success" rounded="none">
+                Sharp Corners
+              </ax-badge>
+              <span class="type-body-small text-secondary">
+                rounded="none" - Modern, geometric look
+              </span>
+            </div>
+            <div class="flex items-center gap-3">
+              <ax-badge variant="soft" type="success" rounded="sm">
+                Default Rounded
+              </ax-badge>
+              <span class="type-body-small text-secondary">
+                rounded="sm" - Balanced, professional (default)
+              </span>
+            </div>
+            <div class="flex items-center gap-3">
+              <ax-badge variant="soft" type="success" rounded="full">
+                Pill Shape
+              </ax-badge>
+              <span class="type-body-small text-secondary">
+                rounded="full" - Friendly, approachable
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -187,6 +187,29 @@ export class BadgesDemoComponent {
 <ax-badge variant="outlined" type="success" size="md" icon="check">Medium</ax-badge>
 <ax-badge variant="outlined" type="success" size="lg" icon="check">Large</ax-badge>`;
 
+  roundedBadgeCode = `<!-- Border Radius Variations -->
+<!-- None - Sharp corners (0px) -->
+<ax-badge variant="soft" type="info" rounded="none">No Radius</ax-badge>
+
+<!-- Small - Subtle rounded (6px) - Default -->
+<ax-badge variant="soft" type="info" rounded="sm">Small Radius</ax-badge>
+
+<!-- Medium - Moderate rounded (8px) -->
+<ax-badge variant="soft" type="info" rounded="md">Medium Radius</ax-badge>
+
+<!-- Large - More rounded (12px) -->
+<ax-badge variant="soft" type="info" rounded="lg">Large Radius</ax-badge>
+
+<!-- Full - Pill shape (9999px) -->
+<ax-badge variant="soft" type="info" rounded="full">Full Radius</ax-badge>
+
+<!-- Real-world examples with different variants -->
+<ax-badge variant="outlined" type="success" rounded="none" [dot]="true">Closed</ax-badge>
+<ax-badge variant="outlined" type="neutral" rounded="sm" [dot]="true">Drafted</ax-badge>
+<ax-badge variant="outlined" type="info" rounded="md" [dot]="true">Sent</ax-badge>
+<ax-badge variant="outlined" type="warning" rounded="lg" [dot]="true">Pending</ax-badge>
+<ax-badge variant="soft" type="error" rounded="full" [dot]="true">Urgent</ax-badge>`;
+
   // Complete Feature Matrix Code
   softSquareCode = `<!-- Soft Variant with Square Indicators -->
 <ax-badge variant="soft" type="error" [square]="true">Emergency</ax-badge>
