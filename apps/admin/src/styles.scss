@@ -10,6 +10,9 @@
 /* Import Documentation Patterns - Shared documentation styles */
 @import './styles/documentation-patterns.scss';
 
+/* Import AegisX UI Utilities */
+@import '../../../libs/aegisx-ui/src/lib/styles/utilities/typography-utilities';
+
 /* Import AegisX UI Components */
 @import '../../../libs/aegisx-ui/src/lib/styles/components/kpi-cards';
 
