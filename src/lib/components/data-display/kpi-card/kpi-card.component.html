@@ -13,7 +13,7 @@
       <div class="ax-kpi-card__body">
         <div class="ax-kpi-card__value-row">
           <div class="ax-kpi-card__value">{{ value }}</div>
-          @if (change !== undefined) {
+          @if (change !== undefined && change !== null) {
             <div [class]="changeClasses">{{ formattedChange }}</div>
           }
         </div>
@@ -39,7 +39,7 @@
         <span class="ax-kpi-card__label ax-kpi-card__label--compact">{{
           label
         }}</span>
-        @if (change !== undefined) {
+        @if (change !== undefined && change !== null) {
           <span [class]="changeClasses">{{ formattedChange }}</span>
         }
       </div>
@@ -52,7 +52,7 @@
     @if (variant === 'accent') {
       <div class="ax-kpi-card__header ax-kpi-card__header--with-badge">
         <span class="ax-kpi-card__label">{{ label }}</span>
-        @if (change !== undefined) {
+        @if (change !== undefined && change !== null) {
           <span [class]="changeClasses">{{ formattedChange }}</span>
         }
       </div>
