@@ -1,4 +1,13 @@
-import { Component, output, input, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import {
+  Component,
+  output,
+  input,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -13,7 +22,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
-import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-log.types';
+import {
+  ActivityLogFilters,
+  ACTION_TYPES,
+  SEVERITY_CONFIG,
+} from './activity-log.types';
 
 @Component({
   selector: 'ax-activity-log-filter',
@@ -31,7 +44,7 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
     MatNativeDateModule,
     MatChipsModule,
     MatTooltipModule,
-    MatExpansionModule
+    MatExpansionModule,
   ],
   template: `
     <mat-card class="filter-card">
@@ -40,38 +53,49 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
               <mat-icon class="mr-2">filter_list</mat-icon>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h3
+                class="text-lg font-semibold"
+                style="color: var(--mat-sys-on-surface)"
+              >
                 Filters
               </h3>
             </div>
             <div class="flex items-center space-x-2">
               @if (hasActiveFilters()) {
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                <span
+                  class="chip-info inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                >
                   {{ activeFiltersCount() }} active
                 </span>
               }
-              <button 
+              <button
                 mat-icon-button
                 type="button"
                 (click)="toggleExpanded()"
-                [matTooltip]="isExpanded() ? 'Collapse filters' : 'Expand filters'"
+                [matTooltip]="
+                  isExpanded() ? 'Collapse filters' : 'Expand filters'
+                "
               >
-                <mat-icon>{{ isExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+                <mat-icon>{{
+                  isExpanded() ? 'expand_less' : 'expand_more'
+                }}</mat-icon>
               </button>
             </div>
           </div>
 
           <!-- Quick Filters (Always Visible) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4"
+          >
             <!-- Search -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Search</mat-label>
-              <input 
-                matInput 
-                formControlName="search" 
+              <input
+                matInput
+                formControlName="search"
                 placeholder="Search activities..."
                 autocomplete="off"
-              >
+              />
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
 
@@ -96,7 +120,10 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
                 @for (severity of severityTypes; track severity.value) {
                   <mat-option [value]="severity.value">
                     <div class="flex items-center">
-                      <mat-icon [class]="severity.iconClass" class="mr-2 text-sm">
+                      <mat-icon
+                        class="mr-2 text-sm"
+                        [style.color]="getSeverityColor(severity.value)"
+                      >
                         {{ severity.icon }}
                       </mat-icon>
                       {{ severity.label }}
@@ -108,18 +135,18 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
 
             <!-- Quick Actions -->
             <div class="flex items-end">
-              <button 
-                mat-raised-button 
+              <button
+                mat-raised-button
                 type="button"
-                color="primary" 
+                color="primary"
                 (click)="applyFilters()"
                 class="mr-2"
               >
                 <mat-icon class="mr-1">search</mat-icon>
                 Apply
               </button>
-              <button 
-                mat-button 
+              <button
+                mat-button
                 type="button"
                 (click)="clearAllFilters()"
                 [disabled]="!hasActiveFilters()"
@@ -130,38 +157,46 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
           </div>
 
           <!-- Advanced Filters (Expandable) -->
-          <mat-expansion-panel 
+          <mat-expansion-panel
             [expanded]="isExpanded()"
             (expandedChange)="onExpandedChange($event)"
             class="advanced-filters"
             hideToggle
           >
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4"
+            >
               <!-- Date From -->
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>From Date</mat-label>
-                <input 
-                  matInput 
-                  [matDatepicker]="dateFromPicker" 
+                <input
+                  matInput
+                  [matDatepicker]="dateFromPicker"
                   formControlName="dateFrom"
                   placeholder="Start date"
                   readonly
-                >
-                <mat-datepicker-toggle matSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="dateFromPicker"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #dateFromPicker></mat-datepicker>
               </mat-form-field>
 
               <!-- Date To -->
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>To Date</mat-label>
-                <input 
-                  matInput 
-                  [matDatepicker]="dateToPicker" 
+                <input
+                  matInput
+                  [matDatepicker]="dateToPicker"
                   formControlName="dateTo"
                   placeholder="End date"
                   readonly
-                >
-                <mat-datepicker-toggle matSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="dateToPicker"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #dateToPicker></mat-datepicker>
               </mat-form-field>
 
@@ -180,12 +215,18 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
 
             <!-- Quick Date Filters -->
             <div class="mt-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+              <p
+                class="text-sm font-medium mb-2"
+                style="color: var(--mat-sys-on-surface-variant)"
+              >
                 Quick Date Filters
               </p>
               <div class="flex flex-wrap gap-2">
-                @for (quickFilter of quickDateFilters; track quickFilter.label) {
-                  <button 
+                @for (
+                  quickFilter of quickDateFilters;
+                  track quickFilter.label
+                ) {
+                  <button
                     mat-stroked-button
                     type="button"
                     size="small"
@@ -201,14 +242,20 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
 
           <!-- Active Filters Display -->
           @if (hasActiveFilters()) {
-            <div class="mt-4 pt-4 border-t dark:border-gray-700">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              class="mt-4 pt-4 border-t"
+              style="border-color: var(--mat-sys-outline-variant)"
+            >
+              <p
+                class="text-sm font-medium mb-2"
+                style="color: var(--mat-sys-on-surface-variant)"
+              >
                 Active Filters
               </p>
               <div class="flex flex-wrap gap-2">
                 @for (filter of activeFilters(); track filter.key) {
                   <mat-chip-listbox>
-                    <mat-chip-option 
+                    <mat-chip-option
                       [removable]="true"
                       (removed)="removeFilter(filter.key)"
                       class="text-xs"
@@ -225,42 +272,44 @@ import { ActivityLogFilters, ACTION_TYPES, SEVERITY_CONFIG } from './activity-lo
       </mat-card-content>
     </mat-card>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+      }
 
-    .filter-card {
-      margin-bottom: 24px;
-    }
+      .filter-card {
+        margin-bottom: 24px;
+      }
 
-    .advanced-filters {
-      box-shadow: none !important;
-      margin: 0;
-      border: none;
-    }
+      .advanced-filters {
+        box-shadow: none !important;
+        margin: 0;
+        border: none;
+      }
 
-    ::ng-deep .advanced-filters .mat-expansion-panel-header {
-      display: none;
-    }
+      ::ng-deep .advanced-filters .mat-expansion-panel-header {
+        display: none;
+      }
 
-    ::ng-deep .advanced-filters .mat-expansion-panel-body {
-      padding: 0;
-    }
+      ::ng-deep .advanced-filters .mat-expansion-panel-body {
+        padding: 0;
+      }
 
-    ::ng-deep .mat-mdc-form-field {
-      width: 100%;
-    }
+      ::ng-deep .mat-mdc-form-field {
+        width: 100%;
+      }
 
-    ::ng-deep .mat-mdc-chip {
-      font-size: 0.75rem;
-    }
+      ::ng-deep .mat-mdc-chip {
+        font-size: 0.75rem;
+      }
 
-    .mat-expansion-panel {
-      border-radius: 0;
-      box-shadow: none;
-    }
-  `]
+      .mat-expansion-panel {
+        border-radius: 0;
+        box-shadow: none;
+      }
+    `,
+  ],
 })
 export class ActivityLogFilterComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
@@ -282,17 +331,17 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
     value: key,
     label: config.label,
     icon: config.icon,
-    iconClass: this.getSeverityIconClass(key)
+    iconClass: this.getSeverityIconClass(key),
   }));
-  
+
   pageSizeOptions = [10, 20, 50, 100];
-  
+
   quickDateFilters = [
     { label: 'Today', days: 0 },
     { label: 'Last 3 days', days: 3 },
     { label: 'Last week', days: 7 },
     { label: 'Last month', days: 30 },
-    { label: 'Last 3 months', days: 90 }
+    { label: 'Last 3 months', days: 90 },
   ];
 
   // Computed signals
@@ -320,20 +369,24 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
       if (key === 'page' || key === 'limit') return;
       if (value !== null && value !== undefined && value !== '') {
         let displayValue = String(value);
-        let displayLabel = this.getFilterLabel(key);
+        const displayLabel = this.getFilterLabel(key);
 
         if (key === 'dateFrom' || key === 'dateTo') {
-          displayValue = new Date(value as string | number | Date).toLocaleDateString();
+          displayValue = new Date(
+            value as string | number | Date,
+          ).toLocaleDateString();
         } else if (key === 'action') {
           displayValue = this.formatActionName(String(value));
         } else if (key === 'severity') {
-          displayValue = SEVERITY_CONFIG[value as keyof typeof SEVERITY_CONFIG]?.label || String(value);
+          displayValue =
+            SEVERITY_CONFIG[value as keyof typeof SEVERITY_CONFIG]?.label ||
+            String(value);
         }
 
         filters.push({
           key,
           label: displayLabel,
-          value: displayValue
+          value: displayValue,
         });
       }
     });
@@ -349,7 +402,7 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
       dateFrom: [null],
       dateTo: [null],
       page: [1],
-      limit: [20]
+      limit: [20],
     });
   }
 
@@ -359,11 +412,12 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
     this.filterForm.patchValue(initial);
 
     // Set up form value changes with debounce for search
-    this.filterForm.get('search')?.valueChanges
-      .pipe(
+    this.filterForm
+      .get('search')
+      ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
       .subscribe(() => {
         this.applyFilters();
@@ -371,11 +425,7 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
 
     // Set up immediate changes for other fields
     this.filterForm.valueChanges
-      .pipe(
-        debounceTime(100),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
+      .pipe(debounceTime(100), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((values) => {
         // Only auto-apply for non-search fields
         if (this.shouldAutoApply(values)) {
@@ -395,7 +445,7 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
   }
 
   toggleExpanded(): void {
-    this.isExpanded.update(expanded => !expanded);
+    this.isExpanded.update((expanded) => !expanded);
   }
 
   onExpandedChange(expanded: boolean): void {
@@ -404,17 +454,21 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
 
   applyFilters(): void {
     const formValues = this.filterForm.getRawValue();
-    
+
     // Convert dates to ISO strings
     const filters: ActivityLogFilters = {
       ...formValues,
-      dateFrom: formValues.dateFrom ? this.formatDateForApi(formValues.dateFrom) : undefined,
-      dateTo: formValues.dateTo ? this.formatDateForApi(formValues.dateTo) : undefined,
-      page: 1 // Reset to first page when applying filters
+      dateFrom: formValues.dateFrom
+        ? this.formatDateForApi(formValues.dateFrom)
+        : undefined,
+      dateTo: formValues.dateTo
+        ? this.formatDateForApi(formValues.dateTo)
+        : undefined,
+      page: 1, // Reset to first page when applying filters
     };
 
     // Remove empty values
-    Object.keys(filters).forEach(key => {
+    Object.keys(filters).forEach((key) => {
       const value = filters[key as keyof ActivityLogFilters];
       if (value === '' || value === null || value === undefined) {
         delete filters[key as keyof ActivityLogFilters];
@@ -432,7 +486,7 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
       dateFrom: null,
       dateTo: null,
       page: 1,
-      limit: 20
+      limit: 20,
     });
     this.applyFilters();
   }
@@ -449,7 +503,7 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
   applyQuickDateFilter(quickFilter: { label: string; days: number }): void {
     const today = new Date();
     const fromDate = new Date();
-    
+
     if (quickFilter.days === 0) {
       // Today only
       fromDate.setHours(0, 0, 0, 0);
@@ -463,30 +517,35 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
 
     this.filterForm.patchValue({
       dateFrom: fromDate,
-      dateTo: today
+      dateTo: today,
     });
-    
+
     this.applyFilters();
   }
 
   formatActionName(action: string): string {
     return action
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 
   private getSeverityIconClass(severity: string): string {
+    // Return empty string - colors will be handled by CSS custom properties inline
+    return '';
+  }
+
+  getSeverityColor(severity: string): string {
     switch (severity) {
       case 'info':
-        return 'text-blue-600 dark:text-blue-400';
+        return 'var(--mat-sys-primary)';
       case 'warning':
-        return 'text-yellow-600 dark:text-yellow-400';
+        return 'var(--ax-warning-500)';
       case 'error':
       case 'critical':
-        return 'text-red-600 dark:text-red-400';
+        return 'var(--mat-sys-error)';
       default:
-        return 'text-gray-600 dark:text-gray-400';
+        return 'var(--mat-sys-on-surface-variant)';
     }
   }
 
@@ -496,7 +555,7 @@ export class ActivityLogFilterComponent implements OnInit, OnDestroy {
       action: 'Action',
       severity: 'Severity',
       dateFrom: 'From',
-      dateTo: 'To'
+      dateTo: 'To',
     };
     return labels[key] || key;
   }

@@ -156,7 +156,9 @@ interface MockUser {
                     Admin
                   </mat-option>
                   <mat-option value="manager">
-                    <mat-icon class="align-middle mr-2 text-blue-600"
+                    <mat-icon
+                      class="align-middle mr-2"
+                      style="color: var(--ax-brand-emphasis)"
                       >manage_accounts</mat-icon
                     >
                     Manager
@@ -190,13 +192,17 @@ interface MockUser {
                     Active
                   </mat-option>
                   <mat-option value="inactive">
-                    <mat-icon class="align-middle mr-2 text-gray-500"
+                    <mat-icon
+                      class="align-middle mr-2"
+                      style="color: var(--ax-text-subtle)"
                       >cancel</mat-icon
                     >
                     Inactive
                   </mat-option>
                   <mat-option value="suspended">
-                    <mat-icon class="align-middle mr-2 text-red-600"
+                    <mat-icon
+                      class="align-middle mr-2"
+                      style="color: var(--ax-error-emphasis)"
                       >block</mat-icon
                     >
                     Suspended
@@ -379,12 +385,17 @@ interface MockUser {
         <ax-card
           [variant]="'elevated'"
           class="mb-4"
-          style="background-color: #dbeafe; border: 1px solid #3b82f6;"
+          style="background-color: var(--ax-info-subtle); border: 1px solid var(--ax-info-muted);"
         >
           <div class="flex items-center justify-between flex-wrap gap-4">
             <div class="flex items-center gap-4">
-              <mat-icon class="text-blue-600">fact_check</mat-icon>
-              <span class="font-semibold text-blue-800">
+              <mat-icon style="color: var(--ax-info-emphasis)"
+                >fact_check</mat-icon
+              >
+              <span
+                class="font-semibold"
+                style="color: var(--ax-info-emphasis)"
+              >
                 {{ selectedUsers().length }} user(s) selected
               </span>
               <button
@@ -430,8 +441,12 @@ interface MockUser {
                 </button>
                 <mat-divider></mat-divider>
                 <button mat-menu-item>
-                  <mat-icon class="text-red-600">delete</mat-icon>
-                  <span class="text-red-600">Delete Users</span>
+                  <mat-icon style="color: var(--ax-error-emphasis)"
+                    >delete</mat-icon
+                  >
+                  <span style="color: var(--ax-error-emphasis)"
+                    >Delete Users</span
+                  >
                 </button>
               </mat-menu>
             </div>
@@ -539,11 +554,15 @@ interface MockUser {
                     Active
                   </button>
                   <button mat-menu-item>
-                    <mat-icon class="text-gray-500">cancel</mat-icon>
+                    <mat-icon style="color: var(--ax-text-subtle)"
+                      >cancel</mat-icon
+                    >
                     Inactive
                   </button>
                   <button mat-menu-item>
-                    <mat-icon class="text-red-600">block</mat-icon>
+                    <mat-icon style="color: var(--ax-error-emphasis)"
+                      >block</mat-icon
+                    >
                     Suspended
                   </button>
                   <button mat-menu-item>
@@ -605,8 +624,10 @@ interface MockUser {
                     Reset Password
                   </button>
                   <mat-divider></mat-divider>
-                  <button mat-menu-item class="text-red-600">
-                    <mat-icon class="text-red-600">delete</mat-icon>
+                  <button mat-menu-item style="color: var(--ax-error-emphasis)">
+                    <mat-icon style="color: var(--ax-error-emphasis)"
+                      >delete</mat-icon
+                    >
                     Delete User
                   </button>
                 </mat-menu>
@@ -621,7 +642,7 @@ interface MockUser {
             <tr
               mat-row
               *matRowDef="let row; columns: displayedColumns"
-              class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              class="table-row-hover transition-colors"
             ></tr>
           </table>
         </div>
@@ -678,6 +699,10 @@ interface MockUser {
 
       ::ng-deep .mat-mdc-chip:hover {
         opacity: 0.8;
+      }
+
+      .table-row-hover:hover {
+        background-color: var(--ax-background-muted);
       }
     `,
   ],
@@ -969,25 +994,30 @@ export class UserListUiDemoComponent {
         text: 'var(--ax-brand-emphasis)',
       },
       manager: {
-        background: '#dbeafe',
-        text: '#1e40af',
+        background: 'var(--ax-info-subtle)',
+        text: 'var(--ax-info-emphasis)',
       },
       user: {
-        background: '#dcfce7',
-        text: '#166534',
+        background: 'var(--ax-success-subtle)',
+        text: 'var(--ax-success-emphasis)',
       },
     };
-    return colors[role] || { background: '#f3f4f6', text: '#6b7280' };
+    return (
+      colors[role] || {
+        background: 'var(--ax-background-subtle)',
+        text: 'var(--ax-text-subtle)',
+      }
+    );
   }
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
       active: 'var(--ax-success-default)',
-      inactive: '#6b7280',
-      suspended: '#dc2626',
+      inactive: 'var(--ax-text-subtle)',
+      suspended: 'var(--ax-error-emphasis)',
       pending: 'var(--ax-warning-default)',
     };
-    return colors[status] || '#9ca3af';
+    return colors[status] || 'var(--ax-text-disabled)';
   }
 
   getStatusIcon(status: string): string {

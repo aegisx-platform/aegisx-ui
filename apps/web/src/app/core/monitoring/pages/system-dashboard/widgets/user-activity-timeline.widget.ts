@@ -19,11 +19,9 @@ interface Activity {
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
+    <div>
       <!-- Card Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50"
@@ -31,10 +29,10 @@ interface Activity {
             <mat-icon class="text-purple-600 !text-xl">timeline</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               Activity Timeline
             </h3>
-            <p class="text-xs text-slate-600">Recent user actions</p>
+            <p class="text-xs text-muted">Recent user actions</p>
           </div>
         </div>
       </div>
@@ -60,8 +58,8 @@ interface Activity {
                 >
                   <mat-icon
                     class="!text-base"
-                    [class.text-blue-600]="activity.color === 'primary'"
-                    [class.text-green-600]="activity.color === 'success'"
+                    [class.text-primary]="activity.color === 'primary'"
+                    [class.text-success]="activity.color === 'success'"
                     [class.text-yellow-600]="activity.color === 'warning'"
                     [class.text-cyan-600]="activity.color === 'info'"
                   >
@@ -70,30 +68,30 @@ interface Activity {
                 </div>
                 <!-- Vertical Line (if not last) -->
                 @if (!isLast) {
-                  <div class="w-px h-full bg-slate-200 mt-1"></div>
+                  <div class="w-px h-full bg-surface-container-high mt-1"></div>
                 }
               </div>
 
               <!-- Content -->
               <div class="flex-1 pb-4">
                 <div class="flex items-start justify-between gap-2 mb-1">
-                  <h4 class="text-sm font-medium text-slate-900">
+                  <h4 class="text-sm font-medium text-on-surface">
                     {{ activity.action }}
                   </h4>
-                  <span class="text-xs text-slate-500 whitespace-nowrap">
+                  <span class="text-xs text-muted whitespace-nowrap">
                     {{ timeAgo(activity.timestamp) }}
                   </span>
                 </div>
-                <p class="text-xs text-slate-600 mb-1">
+                <p class="text-xs text-muted mb-1">
                   {{ activity.description }}
                 </p>
                 <div class="flex items-center gap-2">
                   <div
-                    class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center"
+                    class="w-5 h-5 rounded-full bg-surface-container-high flex items-center justify-center"
                   >
-                    <mat-icon class="text-slate-600 !text-xs">person</mat-icon>
+                    <mat-icon class="text-muted !text-xs">person</mat-icon>
                   </div>
-                  <span class="text-xs text-slate-700 font-medium">{{
+                  <span class="text-xs text-on-surface font-medium">{{
                     activity.user
                   }}</span>
                 </div>
@@ -104,15 +102,13 @@ interface Activity {
       </div>
 
       <!-- Card Footer -->
-      <div
-        class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between"
-      >
+      <div>
         <button
           class="text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors"
         >
           View Full Timeline
         </button>
-        <span class="text-xs text-slate-500">
+        <span class="text-xs text-muted">
           {{ activities().length }} recent activities
         </span>
       </div>
@@ -131,17 +127,17 @@ interface Activity {
       }
 
       .overflow-y-auto::-webkit-scrollbar-track {
-        background: #f1f5f9;
+        background: var(--mat-sys-surface-container);
         border-radius: 3px;
       }
 
       .overflow-y-auto::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: var(--mat-sys-surface-container-high);
         border-radius: 3px;
       }
 
       .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: var(--mat-sys-outline);
       }
     `,
   ],

@@ -19,22 +19,20 @@ interface AuthActivity {
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
+    <div>
       <!-- Card Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50"
           >
-            <mat-icon class="text-indigo-600 !text-xl">lock</mat-icon>
+            <mat-icon class="text-primary !text-xl">lock</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               Authentication Activity
             </h3>
-            <p class="text-xs text-slate-600">Recent auth events</p>
+            <p class="text-xs text-muted">Recent auth events</p>
           </div>
         </div>
       </div>
@@ -43,9 +41,7 @@ interface AuthActivity {
       <div class="p-6">
         <div class="space-y-2 max-h-96 overflow-y-auto">
           @for (activity of activities(); track activity.id) {
-            <div
-              class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
-            >
+            <div>
               <!-- Icon -->
               <div
                 class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
@@ -53,19 +49,19 @@ interface AuthActivity {
                   activity.type === 'login' && activity.success
                 "
                 [class.bg-blue-100]="activity.type === 'register'"
-                [class.bg-slate-100]="activity.type === 'logout'"
+                [class.bg-surface-container]="activity.type === 'logout'"
                 [class.bg-red-100]="
                   activity.type === 'failed_login' || !activity.success
                 "
               >
                 <mat-icon
                   class="!text-base"
-                  [class.text-green-600]="
+                  [class.text-success]="
                     activity.type === 'login' && activity.success
                   "
-                  [class.text-blue-600]="activity.type === 'register'"
-                  [class.text-slate-600]="activity.type === 'logout'"
-                  [class.text-red-600]="
+                  [class.text-primary]="activity.type === 'register'"
+                  [class.text-muted]="activity.type === 'logout'"
+                  [class.text-error]="
                     activity.type === 'failed_login' || !activity.success
                   "
                 >
@@ -83,12 +79,10 @@ interface AuthActivity {
 
               <!-- Content -->
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-slate-900">
+                <p class="text-sm font-medium text-on-surface">
                   {{ getActivityTitle(activity) }}
                 </p>
-                <div
-                  class="flex items-center gap-3 mt-1 text-xs text-slate-500"
-                >
+                <div class="flex items-center gap-3 mt-1 text-xs text-muted">
                   <span>{{ timeAgo(activity.timestamp) }}</span>
                   @if (activity.ip) {
                     <span class="font-mono">{{ activity.ip }}</span>
@@ -100,9 +94,9 @@ interface AuthActivity {
               <div
                 class="flex-shrink-0 px-2 py-1 rounded text-xs font-medium"
                 [class.bg-green-100]="activity.success"
-                [class.text-green-700]="activity.success"
+                [class.text-success]="activity.success"
                 [class.bg-red-100]="!activity.success"
-                [class.text-red-700]="!activity.success"
+                [class.text-error]="!activity.success"
               >
                 {{ activity.success ? 'SUCCESS' : 'FAILED' }}
               </div>
@@ -112,13 +106,11 @@ interface AuthActivity {
       </div>
 
       <!-- Card Footer -->
-      <div
-        class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between"
-      >
-        <span class="text-xs text-slate-500"
+      <div>
+        <span class="text-xs text-muted"
           >{{ successCount() }} successful / {{ failedCount() }} failed</span
         >
-        <span class="text-xs text-indigo-600 font-medium"> Last 24 hours </span>
+        <span class="text-xs text-primary font-medium"> Last 24 hours </span>
       </div>
     </div>
   `,
@@ -135,17 +127,17 @@ interface AuthActivity {
       }
 
       .overflow-y-auto::-webkit-scrollbar-track {
-        background: #f1f5f9;
+        background: var(--mat-sys-surface-container);
         border-radius: 3px;
       }
 
       .overflow-y-auto::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: var(--mat-sys-surface-container-high);
         border-radius: 3px;
       }
 
       .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: var(--mat-sys-outline);
       }
     `,
   ],

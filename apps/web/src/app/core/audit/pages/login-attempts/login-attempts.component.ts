@@ -38,8 +38,8 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Login Attempts</h1>
-          <p class="text-sm text-gray-600 mt-1">
+          <h1 class="text-2xl font-bold text-on-surface">Login Attempts</h1>
+          <p class="text-sm text-muted mt-1">
             Track and monitor login attempts
           </p>
         </div>
@@ -114,9 +114,9 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
       </div>
 
       <!-- Error Message -->
-      <mat-card *ngIf="error()" class="mb-4 bg-red-50">
+      <mat-card *ngIf="error()" class="mb-4 bg-error-container">
         <mat-card-content class="p-4">
-          <div class="flex items-center gap-2 text-red-800">
+          <div class="flex items-center gap-2 text-on-error-container">
             <mat-icon>error</mat-icon>
             <span>{{ error() }}</span>
           </div>
@@ -145,7 +145,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
               <td mat-cell *matCellDef="let attempt" class="py-3">
                 <div class="flex flex-col">
                   <span class="font-medium">{{ attempt.email || 'N/A' }}</span>
-                  <span class="text-xs text-gray-500" *ngIf="attempt.username">
+                  <span class="text-xs text-muted" *ngIf="attempt.username">
                     {{ attempt.username }}
                   </span>
                 </div>
@@ -159,11 +159,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
               </th>
               <td mat-cell *matCellDef="let attempt" class="py-3">
                 <mat-chip
-                  [class]="
-                    attempt.success
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  "
+                  [class]="attempt.success ? 'chip-success' : 'chip-error'"
                 >
                   {{ attempt.success ? 'Success' : 'Failed' }}
                 </mat-chip>
@@ -182,7 +178,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
                 >
                   {{ formatFailureReason(attempt.failureReason) }}
                 </span>
-                <span *ngIf="attempt.success" class="text-gray-400">-</span>
+                <span *ngIf="attempt.success" class="text-muted">-</span>
               </td>
             </ng-container>
 
@@ -192,7 +188,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
                 IP Address
               </th>
               <td mat-cell *matCellDef="let attempt" class="py-3">
-                <code class="text-xs bg-gray-100 px-2 py-1 rounded">
+                <code class="text-xs bg-surface-container px-2 py-1 rounded">
                   {{ attempt.ipAddress }}
                 </code>
               </td>
@@ -205,7 +201,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
               </th>
               <td mat-cell *matCellDef="let attempt" class="py-3">
                 <span
-                  class="text-xs text-gray-600 truncate max-w-xs block"
+                  class="text-xs text-muted truncate max-w-xs block"
                   [matTooltip]="attempt.userAgent || ''"
                 >
                   {{ truncateUserAgent(attempt.userAgent) }}
@@ -219,7 +215,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
             <!-- No Data Row -->
             <tr class="mat-row" *matNoDataRow>
               <td
-                class="mat-cell text-center py-8 text-gray-500"
+                class="mat-cell text-center py-8 text-muted"
                 [attr.colspan]="displayedColumns.length"
               >
                 <mat-icon class="text-5xl opacity-30 mb-2">inbox</mat-icon>

@@ -26,16 +26,13 @@ import { ActivityLog } from '../../models/monitoring.types';
   ],
   template: `
     <!-- Header -->
-    <div
-      mat-dialog-title
-      class="flex items-center justify-between pb-4 border-b border-slate-200"
-    >
+    <div mat-dialog-title>
       <div class="flex items-center gap-2">
         <mat-icon [class]="getSeverityIconClass()" class="!leading-[1]">
           {{ getSeverityIcon() }}
         </mat-icon>
         <h2 class="text-base font-semibold m-0">Activity Log Details</h2>
-        <span class="text-xs text-slate-500">{{
+        <span class="text-xs text-muted">{{
           data.created_at | date: 'medium'
         }}</span>
       </div>
@@ -47,14 +44,11 @@ import { ActivityLog } from '../../models/monitoring.types';
     <!-- Content -->
     <mat-dialog-content class="dialog-content">
       <!-- Activity Info Section -->
-      <mat-card
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-blue-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-primary !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >info</mat-icon
             >
             <span>Activity Information</span>
@@ -98,11 +92,7 @@ import { ActivityLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Device Information Section -->
-      <mat-card
-        *ngIf="hasDeviceInfo()"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="hasDeviceInfo()" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
@@ -163,15 +153,11 @@ import { ActivityLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Location Information Section -->
-      <mat-card
-        *ngIf="hasLocationInfo()"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="hasLocationInfo()" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-emerald-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-success !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >location_on</mat-icon
             >
             <span>Location Information</span>
@@ -196,15 +182,11 @@ import { ActivityLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Session Context Section -->
-      <mat-card
-        *ngIf="hasSessionContext()"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="hasSessionContext()" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-purple-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-secondary !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >key</mat-icon
             >
             <span>Session Context</span>
@@ -235,15 +217,11 @@ import { ActivityLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Additional Metadata Section -->
-      <mat-card
-        *ngIf="data.metadata"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="data.metadata" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-orange-400 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-warning !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >data_object</mat-icon
             >
             <span>Additional Metadata</span>
@@ -255,14 +233,11 @@ import { ActivityLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Timestamp Section -->
-      <mat-card
-        appearance="outlined"
-        class="info-card border border-slate-200 rounded-xl"
-      >
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-slate-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-muted !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >schedule</mat-icon
             >
             <span>Timestamp</span>
@@ -303,7 +278,7 @@ import { ActivityLog } from '../../models/monitoring.types';
 
       .dialog-footer {
         padding: 16px 24px;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid var(--mat-sys-outline-variant);
         gap: 12px;
       }
 
@@ -318,7 +293,7 @@ import { ActivityLog } from '../../models/monitoring.types';
       .info-card mat-card-title {
         font-size: 1rem;
         font-weight: 600;
-        color: #374151;
+        color: var(--mat-sys-on-surface);
       }
 
       .info-card mat-card-content {
@@ -344,93 +319,93 @@ import { ActivityLog } from '../../models/monitoring.types';
       .info-label {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6b7280;
+        color: var(--mat-sys-on-surface-variant);
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       .info-value {
         font-size: 0.875rem;
-        color: #1f2937;
+        color: var(--mat-sys-on-surface);
         line-height: 1.5;
       }
 
       .id-code {
         font-family: 'Courier New', monospace;
         font-size: 0.813rem;
-        background-color: #f3f4f6;
+        background-color: var(--mat-sys-surface-container);
         padding: 6px 10px;
         border-radius: 4px;
-        color: #374151;
+        color: var(--mat-sys-on-surface);
         display: inline-block;
       }
 
       .metadata-json {
         font-family: 'Courier New', monospace;
         font-size: 0.813rem;
-        background-color: #f9fafb;
-        border: 1px solid #e5e7eb;
+        background-color: var(--mat-sys-surface);
+        border: 1px solid var(--mat-sys-outline-variant);
         padding: 16px;
         border-radius: 6px;
         overflow-x: auto;
         margin: 0;
         line-height: 1.6;
-        color: #1f2937;
+        color: var(--mat-sys-on-surface);
       }
 
       mat-chip.severity-critical {
-        background-color: #fee2e2 !important;
-        color: #991b1b !important;
+        background-color: rgb(var(--ax-error-100)) !important;
+        color: rgb(var(--ax-error-800)) !important;
       }
 
       mat-chip.severity-error {
-        background-color: #fecaca !important;
-        color: #b91c1c !important;
+        background-color: rgb(var(--ax-error-200)) !important;
+        color: rgb(var(--ax-error-700)) !important;
       }
 
       mat-chip.severity-warning {
-        background-color: #fef3c7 !important;
-        color: #92400e !important;
+        background-color: rgb(var(--ax-warning-100)) !important;
+        color: rgb(var(--ax-warning-900)) !important;
       }
 
       mat-chip.severity-info {
-        background-color: #d1fae5 !important;
-        color: #065f46 !important;
+        background-color: rgb(var(--ax-success-100)) !important;
+        color: rgb(var(--ax-success-900)) !important;
       }
 
       mat-chip.action-chip {
-        background-color: #dbeafe !important;
-        color: #1e40af !important;
+        background-color: rgb(var(--ax-primary-100)) !important;
+        color: rgb(var(--ax-primary-900)) !important;
       }
 
       mat-chip.device-type-chip {
-        background-color: #e0e7ff !important;
-        color: #3730a3 !important;
+        background-color: rgb(var(--ax-primary-100)) !important;
+        color: rgb(var(--ax-primary-900)) !important;
       }
 
       .icon-critical {
-        color: #dc2626;
+        color: rgb(var(--ax-error-600));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;
       }
 
       .icon-error {
-        color: #ef4444;
+        color: rgb(var(--ax-error-500));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;
       }
 
       .icon-warning {
-        color: #f59e0b;
+        color: rgb(var(--ax-warning-500));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;
       }
 
       .icon-info {
-        color: #10b981;
+        color: rgb(var(--ax-success-500));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;

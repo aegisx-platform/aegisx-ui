@@ -29,7 +29,7 @@ export interface StatsCardData {
     <ax-card [variant]="'elevated'" class="relative overflow-hidden h-full">
       <div class="flex items-center justify-between">
         <div class="flex-1">
-          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <p class="text-sm font-medium text-muted dark:text-gray-400">
             {{ data.title }}
           </p>
           <p class="text-2xl font-bold mt-2" [ngClass]="valueColorClass()">
@@ -43,7 +43,7 @@ export interface StatsCardData {
               <mat-icon class="text-lg mr-1">{{ trendIcon() }}</mat-icon>
               <span class="font-medium">{{ Math.abs(data.change) }}%</span>
               @if (data.changeLabel) {
-                <span class="ml-1 text-gray-600 dark:text-gray-400">{{
+                <span class="ml-1 text-muted dark:text-gray-400">{{
                   data.changeLabel
                 }}</span>
               }
@@ -96,35 +96,35 @@ export interface StatsCardData {
 
       /* Tremor Color Palette */
       .text-primary {
-        color: #3b82f6; /* blue-500 */
+        color: rgb(var(--ax-primary-500)); /* blue-500 */
       }
       .text-accent {
-        color: #8b5cf6; /* violet-500 */
+        color: rgb(var(--ax-secondary-500)); /* violet-500 */
       }
       .text-warn {
-        color: #f59e0b; /* amber-500 */
+        color: rgb(var(--ax-warning-500)); /* amber-500 */
       }
       .text-success {
-        color: #10b981; /* emerald-500 */
+        color: rgb(var(--ax-success-500)); /* emerald-500 */
       }
       .text-info {
-        color: #06b6d4; /* cyan-500 */
+        color: rgb(var(--ax-info-500)); /* cyan-500 */
       }
 
       .bg-primary {
-        background-color: #3b82f6; /* blue-500 */
+        background-color: rgb(var(--ax-primary-500)); /* blue-500 */
       }
       .bg-accent {
-        background-color: #8b5cf6; /* violet-500 */
+        background-color: rgb(var(--ax-secondary-500)); /* violet-500 */
       }
       .bg-warn {
-        background-color: #f59e0b; /* amber-500 */
+        background-color: rgb(var(--ax-warning-500)); /* amber-500 */
       }
       .bg-success {
-        background-color: #10b981; /* emerald-500 */
+        background-color: rgb(var(--ax-success-500)); /* emerald-500 */
       }
       .bg-info {
-        background-color: #06b6d4; /* cyan-500 */
+        background-color: rgb(var(--ax-info-500)); /* cyan-500 */
       }
     `,
   ],
@@ -173,9 +173,9 @@ export class StatsCardComponent {
 
   changeColorClass(): string {
     const change = this.data.change || 0;
-    if (change > 0) return 'text-green-600 dark:text-green-400';
-    if (change < 0) return 'text-red-600 dark:text-red-400';
-    return 'text-gray-600 dark:text-gray-400';
+    if (change > 0) return 'text-success dark:text-green-400';
+    if (change < 0) return 'text-error:text-red-400';
+    return 'text-muted:text-gray-400';
   }
 
   valueColorClass(): string {

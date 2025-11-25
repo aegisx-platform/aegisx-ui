@@ -64,10 +64,10 @@ export interface ChartData {
             class="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg"
           >
             <div class="text-center">
-              <mat-icon class="text-6xl text-gray-400 dark:text-gray-600">{{
+              <mat-icon class="text-6xl text-gray-400 dark:text-muted">{{
                 chartIcon
               }}</mat-icon>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              <p class="text-sm text-muted dark:text-gray-400 mt-2">
                 {{ chartType | titlecase }} Chart
               </p>
             </div>
@@ -81,9 +81,11 @@ export interface ChartData {
             <div class="flex items-center space-x-2">
               <div
                 class="w-3 h-3 rounded-full"
-                [style.backgroundColor]="dataset.backgroundColor || '#1976d2'"
+                [style.backgroundColor]="
+                  dataset.backgroundColor || 'rgb(var(--ax-primary-600))'
+                "
               ></div>
-              <span class="text-sm text-gray-600 dark:text-gray-400">{{
+              <span class="text-sm text-muted dark:text-gray-400">{{
                 dataset.label
               }}</span>
             </div>

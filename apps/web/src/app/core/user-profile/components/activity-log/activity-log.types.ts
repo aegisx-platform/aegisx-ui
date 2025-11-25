@@ -66,26 +66,26 @@ export const SEVERITY_CONFIG = {
     label: 'Info',
     color: 'primary',
     icon: 'info',
-    badgeClass: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+    badgeClass: 'chip-info',
   },
   warning: {
     label: 'Warning',
     color: 'accent',
     icon: 'warning',
-    badgeClass: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+    badgeClass: 'chip-warning',
   },
   error: {
     label: 'Error',
     color: 'warn',
     icon: 'error',
-    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+    badgeClass: 'chip-error',
   },
   critical: {
     label: 'Critical',
     color: 'warn',
     icon: 'dangerous',
-    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-  }
+    badgeClass: 'chip-error',
+  },
 } as const;
 
 // Common action types
@@ -100,7 +100,7 @@ export const ACTION_TYPES = [
   'settings_change',
   'avatar_update',
   'preferences_update',
-  'security_event'
+  'security_event',
 ] as const;
 
-export type ActionType = typeof ACTION_TYPES[number];
+export type ActionType = (typeof ACTION_TYPES)[number];

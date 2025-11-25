@@ -37,8 +37,13 @@ export interface AvatarUploadResult {
       <!-- Avatar Display -->
       <div class="relative">
         <div
-          class="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center overflow-hidden border-2 border-gray-200 dark:border-gray-700"
-          [class.border-primary]="isDragOver()"
+          class="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden border-2"
+          [style.background-color]="'var(--mat-sys-surface-container-high)'"
+          [style.border-color]="
+            isDragOver()
+              ? 'var(--mat-sys-primary)'
+              : 'var(--mat-sys-outline-variant)'
+          "
         >
           @if (currentAvatarUrl()) {
             <img
@@ -48,8 +53,7 @@ export interface AvatarUploadResult {
             />
           } @else {
             <mat-icon
-              class="text-gray-500 dark:text-gray-400"
-              style="font-size: 48px; height: 48px; width: 48px;"
+              style="font-size: 48px; height: 48px; width: 48px; color: var(--mat-sys-on-surface-variant)"
             >
               person
             </mat-icon>
@@ -95,30 +99,40 @@ export interface AvatarUploadResult {
       <!-- Drag & Drop Zone (when no avatar) -->
       @if (!currentAvatarUrl() && !isUploading()) {
         <div
-          class="mt-4 p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center transition-colors duration-200"
-          [class.border-primary]="isDragOver()"
-          [class.bg-primary-50]="isDragOver()"
+          class="mt-4 p-6 border-2 border-dashed rounded-lg text-center transition-colors duration-200"
+          [style.border-color]="
+            isDragOver()
+              ? 'var(--mat-sys-primary)'
+              : 'var(--mat-sys-outline-variant)'
+          "
+          [style.background-color]="
+            isDragOver() ? 'var(--mat-sys-primary-container)' : 'transparent'
+          "
           (dragover)="onDragOver($event)"
           (dragleave)="onDragLeave($event)"
           (drop)="onDrop($event)"
         >
           <mat-icon
-            class="text-gray-400 mb-2"
-            style="font-size: 48px; height: 48px; width: 48px;"
+            class="mb-2"
+            style="font-size: 48px; height: 48px; width: 48px; color: var(--mat-sys-on-surface-variant)"
           >
             cloud_upload
           </mat-icon>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <p
+            class="text-sm mb-2"
+            style="color: var(--mat-sys-on-surface-variant)"
+          >
             Drag and drop your photo here, or
             <button
               type="button"
-              class="text-primary-600 hover:text-primary-500 underline"
+              class="underline"
+              style="color: var(--mat-sys-primary)"
               (click)="triggerFileInput()"
             >
               browse
             </button>
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-500">
+          <p class="text-xs" style="color: var(--mat-sys-on-surface-variant)">
             JPG, PNG or WebP up to 5MB
           </p>
         </div>
@@ -132,7 +146,10 @@ export interface AvatarUploadResult {
             [value]="uploadProgressValue()"
             class="w-full"
           ></mat-progress-bar>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 text-center">
+          <p
+            class="text-sm mt-1 text-center"
+            style="color: var(--mat-sys-on-surface-variant)"
+          >
             Uploading... {{ uploadProgressValue() }}%
           </p>
         </div>
@@ -169,22 +186,6 @@ export interface AvatarUploadResult {
 
       .animate-spin {
         animation: spin 1s linear infinite;
-      }
-
-      .border-primary {
-        border-color: rgb(var(--mat-primary-500-rgb)) !important;
-      }
-
-      .bg-primary-50 {
-        background-color: rgb(var(--mat-primary-50-rgb)) !important;
-      }
-
-      .text-primary-600 {
-        color: rgb(var(--mat-primary-600-rgb)) !important;
-      }
-
-      .text-primary-500:hover {
-        color: rgb(var(--mat-primary-500-rgb)) !important;
       }
     `,
   ],

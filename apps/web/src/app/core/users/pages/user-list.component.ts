@@ -980,7 +980,7 @@ import { UserService, UserStatus } from '../services/user.service';
         width: 40px;
         height: 40px;
         border-radius: var(--ax-radius-full);
-        background-color: var(--ax-gray-200);
+        background-color: var(--ax-brand-faint);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -988,7 +988,7 @@ import { UserService, UserStatus } from '../services/user.service';
       }
 
       .user-initials {
-        color: var(--ax-gray-700);
+        color: var(--ax-brand-emphasis);
         font-weight: var(--ax-font-weight-semibold);
         font-size: var(--ax-font-size-sm);
       }
@@ -1031,14 +1031,14 @@ import { UserService, UserStatus } from '../services/user.service';
         font-weight: var(--ax-font-weight-medium);
         cursor: pointer;
         transition: all 0.2s ease-in-out;
-        background-color: var(--ax-gray-200);
-        color: var(--ax-gray-600);
-        border: 1px solid var(--ax-gray-300);
+        background-color: var(--ax-background-subtle);
+        color: var(--ax-text-default);
+        border: 1px solid var(--ax-border-default);
       }
 
       .role-badge:hover {
-        background-color: var(--ax-gray-300);
-        color: var(--ax-gray-700);
+        background-color: var(--ax-background-muted);
+        color: var(--ax-text-heading);
       }
 
       .role-badge-single {
@@ -1051,9 +1051,9 @@ import { UserService, UserStatus } from '../services/user.service';
 
       /* Role Chips in Role Column */
       ::ng-deep .role-chip {
-        background-color: var(--ax-gray-100) !important;
-        color: var(--ax-gray-700) !important;
-        border: 1px solid var(--ax-gray-300) !important;
+        background-color: var(--ax-background-subtle) !important;
+        color: var(--ax-text-default) !important;
+        border: 1px solid var(--ax-border-default) !important;
         font-size: var(--ax-font-size-sm) !important;
         font-weight: var(--ax-font-weight-medium) !important;
       }

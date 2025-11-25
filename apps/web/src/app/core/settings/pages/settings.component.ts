@@ -42,10 +42,10 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
     <div class="container mx-auto px-4 py-8">
       <!-- Page Header -->
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-2xl font-bold" style="color: var(--mat-sys-on-surface)">
           Settings
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">
+        <p class="text-muted mt-1">
           Manage your application preferences and configurations
         </p>
       </div>
@@ -55,9 +55,7 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
         <div class="flex justify-center items-center min-h-[400px]">
           <div class="text-center">
             <mat-spinner diameter="48"></mat-spinner>
-            <p class="text-gray-600 dark:text-gray-400 mt-4">
-              Loading settings...
-            </p>
+            <p class="text-muted mt-4">Loading settings...</p>
           </div>
         </div>
       }
@@ -102,29 +100,32 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
               <div class="tab-content">
                 <div class="space-y-6">
                   <!-- Theme Selection Card -->
-                  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+                  <div
+                    class="rounded-lg p-6"
+                    style="background: var(--mat-sys-surface-container)"
+                  >
                     <h3
-                      class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                      class="text-lg font-medium mb-4"
+                      style="color: var(--mat-sys-on-surface)"
                     >
                       Theme & Color
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">
+                    <p class="text-muted mb-6">
                       Customize your application theme and appearance
                       preferences
                     </p>
 
                     <!-- Theme Switcher Component -->
                     <div
-                      class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-700"
+                      class="rounded-lg p-4"
+                      style="background: var(--mat-sys-surface); border: 1px solid var(--mat-sys-outline-variant)"
                     >
                       <ax-theme-switcher></ax-theme-switcher>
                     </div>
 
                     <!-- Theme Info -->
-                    <div
-                      class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
-                    >
-                      <p class="text-sm text-blue-800 dark:text-blue-200">
+                    <div class="mt-6 p-4 rounded-lg chip-info">
+                      <p class="text-sm">
                         <mat-icon class="inline-block w-5 h-5 mr-2"
                           >info</mat-icon
                         >
@@ -145,13 +146,17 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
               </ng-template>
               <div class="tab-content">
                 <div class="space-y-6">
-                  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div
+                    class="rounded-lg p-4"
+                    style="background: var(--mat-sys-surface-container)"
+                  >
                     <h3
-                      class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                      class="text-lg font-medium mb-4"
+                      style="color: var(--mat-sys-on-surface)"
                     >
                       Security Settings
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-400">
+                    <p class="text-muted">
                       Advanced security configurations will be available in a
                       future update.
                     </p>
@@ -185,9 +190,13 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
                   <!-- Dynamic Settings Form -->
                   <div class="space-y-6">
                     @for (group of categoryGroup.groups; track group.name) {
-                      <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                      <div
+                        class="rounded-lg p-4"
+                        style="background: var(--mat-sys-surface-container)"
+                      >
                         <h3
-                          class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                          class="text-lg font-medium mb-4"
+                          style="color: var(--mat-sys-on-surface)"
                         >
                           {{ group.name || 'General' }}
                         </h3>
@@ -195,7 +204,8 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
                           @for (setting of group.settings; track setting.key) {
                             <div class="flex flex-col">
                               <label
-                                class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                class="text-sm font-medium mb-1"
+                                style="color: var(--mat-sys-on-surface-variant)"
                               >
                                 {{ setting.label || setting.key }}
                               </label>
@@ -281,7 +291,8 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
 
           <!-- Action Buttons -->
           <div
-            class="flex justify-end space-x-2 p-4 border-t dark:border-gray-700"
+            class="flex justify-end space-x-2 p-4 border-t"
+            style="border-color: var(--mat-sys-outline-variant)"
           >
             <button
               mat-button
@@ -328,7 +339,7 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
       }
 
       ::ng-deep .mat-mdc-tab-labels {
-        @apply border-b dark:border-gray-700;
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
       }
 
       @keyframes spin {

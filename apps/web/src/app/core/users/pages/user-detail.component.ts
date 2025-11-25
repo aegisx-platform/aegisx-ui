@@ -36,13 +36,16 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
       } @else if (error()) {
         <ax-card [variant]="'elevated'" class="max-w-2xl mx-auto">
           <div class="text-center py-8">
-            <mat-icon class="text-6xl text-red-500">error_outline</mat-icon>
+            <mat-icon class="text-6xl" style="color: var(--ax-error-emphasis)"
+              >error_outline</mat-icon
+            >
             <p
-              class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-4"
+              class="text-lg font-semibold mt-4"
+              style="color: var(--ax-text-heading)"
             >
               Error loading user
             </p>
-            <p class="text-gray-600 dark:text-gray-400">{{ error() }}</p>
+            <p style="color: var(--ax-text-subtle)">{{ error() }}</p>
             <button
               mat-raised-button
               color="primary"
@@ -71,10 +74,13 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
               </span>
             </div>
             <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <h1
+                class="text-2xl font-bold"
+                style="color: var(--ax-text-heading)"
+              >
                 {{ user()!.firstName }} {{ user()!.lastName }}
               </h1>
-              <p class="text-gray-600 dark:text-gray-400">
+              <p style="color: var(--ax-text-subtle)">
                 {{ user()!.email }}
               </p>
             </div>
@@ -124,14 +130,10 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     <span
                       class="px-2 py-1 text-xs font-medium rounded-full"
                       [ngClass]="{
-                        'bg-green-100 text-green-800':
-                          user()!.status === 'active',
-                        'bg-gray-100 text-gray-800':
-                          user()!.status === 'inactive',
-                        'bg-red-100 text-red-800':
-                          user()!.status === 'suspended',
-                        'bg-yellow-100 text-yellow-800':
-                          user()!.status === 'pending',
+                        'chip-success': user()!.status === 'active',
+                        'chip-info': user()!.status === 'inactive',
+                        'chip-error': user()!.status === 'suspended',
+                        'chip-warning': user()!.status === 'pending',
                       }"
                     >
                       {{ user()!.status | titlecase }}
@@ -172,7 +174,10 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
           <mat-tab label="Activity">
             <ax-card [variant]="'elevated'" class="mt-6">
               <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
-              <div class="text-center py-8 text-gray-500">
+              <div
+                class="text-center py-8"
+                style="color: var(--ax-text-subtle)"
+              >
                 <mat-icon class="text-4xl">history</mat-icon>
                 <p class="mt-2">Activity tracking coming soon</p>
               </div>
@@ -183,7 +188,10 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
           <mat-tab label="Permissions">
             <ax-card [variant]="'elevated'" class="mt-6">
               <h3 class="text-lg font-semibold mb-4">User Permissions</h3>
-              <div class="text-center py-8 text-gray-500">
+              <div
+                class="text-center py-8"
+                style="color: var(--ax-text-subtle)"
+              >
                 <mat-icon class="text-4xl">security</mat-icon>
                 <p class="mt-2">Permission management coming soon</p>
               </div>
@@ -194,7 +202,10 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
           <mat-tab label="Sessions">
             <ax-card [variant]="'elevated'" class="mt-6">
               <h3 class="text-lg font-semibold mb-4">Active Sessions</h3>
-              <div class="text-center py-8 text-gray-500">
+              <div
+                class="text-center py-8"
+                style="color: var(--ax-text-subtle)"
+              >
                 <mat-icon class="text-4xl">devices</mat-icon>
                 <p class="mt-2">Session management coming soon</p>
               </div>
@@ -215,7 +226,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
       }
 
       ::ng-deep .mat-mdc-list-item-meta {
-        @apply text-gray-600 dark:text-gray-400;
+        color: var(--ax-text-subtle);
       }
     `,
   ],

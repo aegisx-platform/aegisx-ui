@@ -41,7 +41,7 @@ import { ApiKeysService } from '../services/api-keys.service';
       @if (!generatedKey()) {
         <h2 mat-dialog-title class="text-2xl font-bold">Generate API Key</h2>
         <mat-dialog-content class="!max-h-[70vh]">
-          <p class="text-gray-600 mb-4">
+          <p class="text-muted mb-4">
             Create a new API key for programmatic access to your account.
           </p>
 
@@ -100,15 +100,15 @@ import { ApiKeysService } from '../services/api-keys.service';
 
           <!-- Security Warning -->
           <div
-            class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4 rounded"
+            class="bg-warning-faint border-l-4 border-warning p-4 mt-4 rounded"
           >
             <div class="flex items-start">
-              <mat-icon class="text-yellow-600 mr-2">warning</mat-icon>
+              <mat-icon class="text-warning-emphasis mr-2">warning</mat-icon>
               <div>
-                <h4 class="text-sm font-semibold text-yellow-800 mb-1">
+                <h4 class="text-sm font-semibold text-warning-emphasis mb-1">
                   Important Security Notice
                 </h4>
-                <p class="text-sm text-yellow-700">
+                <p class="text-sm text-warning-emphasis">
                   The full API key will be displayed <strong>only once</strong>
                   after generation. Make sure to copy and store it securely. You
                   won't be able to see it again!
@@ -152,22 +152,22 @@ import { ApiKeysService } from '../services/api-keys.service';
 
       <!-- Success Mode (One-Time Display) -->
       @if (generatedKey()) {
-        <h2 mat-dialog-title class="text-2xl font-bold text-green-600">
+        <h2 mat-dialog-title class="text-2xl font-bold text-success-emphasis">
           <mat-icon class="align-middle mr-2">check_circle</mat-icon>
           API Key Generated Successfully!
         </h2>
         <mat-dialog-content class="!max-h-[70vh]">
           <!-- Critical Warning -->
           <div
-            class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded animate-pulse"
+            class="bg-error-faint border-l-4 border-error p-4 mb-6 rounded animate-pulse"
           >
             <div class="flex items-start">
-              <mat-icon class="text-red-600 mr-2">error</mat-icon>
+              <mat-icon class="text-error-emphasis mr-2">error</mat-icon>
               <div>
-                <h4 class="text-sm font-bold text-red-800 mb-2">
+                <h4 class="text-sm font-bold text-error-emphasis mb-2">
                   ⚠️ COPY YOUR API KEY NOW
                 </h4>
-                <p class="text-sm text-red-700 font-semibold">
+                <p class="text-sm text-error-emphasis font-semibold">
                   This is the <strong>ONLY TIME</strong> you will see the full
                   API key. Copy it now and store it in a secure location. Once
                   you close this dialog, you will NOT be able to retrieve it
@@ -179,15 +179,16 @@ import { ApiKeysService } from '../services/api-keys.service';
 
           <!-- API Key Display -->
           <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <label class="block text-sm font-semibold mb-2">
               Your API Key:
             </label>
             <div
-              class="relative bg-gray-50 border-2 border-green-500 rounded-lg p-4 font-mono text-sm break-all"
+              class="relative bg-surface border-2 border-success rounded-lg p-4 font-mono text-sm break-all"
             >
-              <code class="text-green-700 font-bold select-all pr-12 block">{{
-                generatedKey()?.fullKey
-              }}</code>
+              <code
+                class="text-success-emphasis font-bold select-all pr-12 block"
+                >{{ generatedKey()?.fullKey }}</code
+              >
               <button
                 mat-icon-button
                 class="absolute top-2 right-2"
@@ -211,11 +212,11 @@ import { ApiKeysService } from '../services/api-keys.service';
             </div>
             <div>
               <span class="font-semibold">Preview:</span>
-              <code class="text-gray-600">{{ generatedKey()?.preview }}</code>
+              <code class="text-muted">{{ generatedKey()?.preview }}</code>
             </div>
             <div>
               <span class="font-semibold">Status:</span>
-              <span class="text-green-600 font-semibold">Active</span>
+              <span class="text-success-emphasis font-semibold">Active</span>
             </div>
             @if (generatedKey()?.apiKey?.expires_at) {
               <div>
@@ -225,21 +226,21 @@ import { ApiKeysService } from '../services/api-keys.service';
             } @else {
               <div>
                 <span class="font-semibold">Expires:</span>
-                <span class="text-gray-600">Never</span>
+                <span class="text-muted">Never</span>
               </div>
             }
           </div>
 
           <!-- Instructions -->
-          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6 rounded">
+          <div class="bg-info-faint border-l-4 border-info p-4 mt-6 rounded">
             <div class="flex items-start">
-              <mat-icon class="text-blue-600 mr-2">info</mat-icon>
+              <mat-icon class="text-info-emphasis mr-2">info</mat-icon>
               <div>
-                <h4 class="text-sm font-semibold text-blue-800 mb-1">
+                <h4 class="text-sm font-semibold text-info-emphasis mb-1">
                   Next Steps:
                 </h4>
                 <ul
-                  class="text-sm text-blue-700 list-disc list-inside space-y-1"
+                  class="text-sm text-info-emphasis list-disc list-inside space-y-1"
                 >
                   <li>Copy the API key above to a secure password manager</li>
                   <li>Never commit this key to version control (Git, etc.)</li>

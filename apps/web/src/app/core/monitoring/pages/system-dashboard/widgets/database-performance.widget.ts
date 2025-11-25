@@ -14,24 +14,20 @@ import { switchMap } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div
-      class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
+    <div>
       <!-- Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50"
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-container"
           >
-            <mat-icon class="text-emerald-600 !text-xl">storage</mat-icon>
+            <mat-icon class="text-success !text-xl">storage</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               Database & Cache
             </h3>
-            <p class="text-xs text-slate-600">Performance metrics</p>
+            <p class="text-xs text-muted">Performance metrics</p>
           </div>
         </div>
       </div>
@@ -42,83 +38,85 @@ import { switchMap } from 'rxjs/operators';
           <div
             class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"
           ></div>
-          <p class="mt-3 text-sm text-slate-500">Loading stats...</p>
+          <p class="mt-3 text-sm text-muted">Loading stats...</p>
         </div>
       } @else if (error()) {
         <div class="px-6 py-8 text-center">
-          <mat-icon class="text-red-500 !text-4xl mb-2">error_outline</mat-icon>
-          <p class="text-sm text-slate-600">{{ error() }}</p>
+          <mat-icon class="text-error !text-4xl mb-2">error_outline</mat-icon>
+          <p class="text-sm text-muted">{{ error() }}</p>
         </div>
       } @else if (dbStats() && cacheStats()) {
         <div class="p-6 space-y-6">
           <!-- Database Connection Pool -->
           <div>
             <div class="flex items-center gap-2 mb-3">
-              <mat-icon class="text-emerald-600 !text-lg">hub</mat-icon>
-              <h4 class="text-sm font-semibold text-slate-900">
+              <mat-icon class="text-success !text-lg">hub</mat-icon>
+              <h4 class="text-sm font-semibold text-on-surface">
                 Connection Pool
               </h4>
             </div>
 
             <!-- Pool Stats Grid -->
             <div class="grid grid-cols-3 gap-3 mb-3">
-              <div class="bg-slate-50 rounded-lg p-3 text-center">
-                <div class="text-2xl font-bold text-slate-900">
+              <div class="bg-surface-container rounded-lg p-3 text-center">
+                <div class="text-2xl font-bold text-on-surface">
                   {{ dbStats()!.pool.total }}
                 </div>
-                <div class="text-xs text-slate-600 mt-1">Total</div>
+                <div class="text-xs text-muted mt-1">Total</div>
               </div>
-              <div class="bg-emerald-50 rounded-lg p-3 text-center">
-                <div class="text-2xl font-bold text-emerald-700">
+              <div class="bg-surface-container rounded-lg p-3 text-center">
+                <div class="text-2xl font-bold text-success">
                   {{ dbStats()!.pool.active }}
                 </div>
-                <div class="text-xs text-emerald-600 mt-1">Active</div>
+                <div class="text-xs text-success mt-1">Active</div>
               </div>
-              <div class="bg-blue-50 rounded-lg p-3 text-center">
-                <div class="text-2xl font-bold text-blue-700">
+              <div class="bg-surface-container rounded-lg p-3 text-center">
+                <div class="text-2xl font-bold text-primary">
                   {{ dbStats()!.pool.idle }}
                 </div>
-                <div class="text-xs text-blue-600 mt-1">Idle</div>
+                <div class="text-xs text-primary mt-1">Idle</div>
               </div>
             </div>
 
             <!-- Pool Usage Bar -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-xs text-slate-600">Pool Usage</span>
+                <span class="text-xs text-muted">Pool Usage</span>
                 <span
                   class="text-xs font-semibold"
-                  [class.text-red-600]="poolUsagePercent() > 90"
-                  [class.text-amber-600]="
+                  [class.text-error]="poolUsagePercent() > 90"
+                  [class.text-warning]="
                     poolUsagePercent() > 70 && poolUsagePercent() <= 90
                   "
-                  [class.text-emerald-600]="poolUsagePercent() <= 70"
+                  [class.text-success]="poolUsagePercent() <= 70"
                 >
                   {{ poolUsagePercent() }}%
                 </span>
               </div>
-              <div class="flex h-2 rounded-full overflow-hidden bg-slate-100">
+              <div
+                class="flex h-2 rounded-full overflow-hidden bg-surface-container"
+              >
                 <div
                   class="transition-all duration-500"
                   [style.width.%]="poolUsagePercent()"
-                  [class.bg-red-500]="poolUsagePercent() > 90"
-                  [class.bg-amber-500]="
+                  [class.bg-error]="poolUsagePercent() > 90"
+                  [class.bg-warning]="
                     poolUsagePercent() > 70 && poolUsagePercent() <= 90
                   "
-                  [class.bg-emerald-500]="poolUsagePercent() <= 70"
+                  [class.bg-surface-container0]="poolUsagePercent() <= 70"
                 ></div>
               </div>
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="border-t border-slate-200"></div>
+          <div></div>
 
           <!-- Redis Cache Stats -->
           <div>
             <div class="flex items-center gap-2 mb-3">
-              <mat-icon class="text-red-600 !text-lg">flash_on</mat-icon>
-              <h4 class="text-sm font-semibold text-slate-900">Redis Cache</h4>
+              <mat-icon class="text-error !text-lg">flash_on</mat-icon>
+              <h4 class="text-sm font-semibold text-on-surface">Redis Cache</h4>
             </div>
 
             <!-- Hit Rate Circle -->
@@ -145,33 +143,33 @@ import { switchMap } from 'rxjs/operators';
                     fill="none"
                     [attr.stroke-dasharray]="'201.06'"
                     [attr.stroke-dashoffset]="circleOffset()"
-                    [class.text-emerald-500]="hitRate() >= 80"
+                    [class.text-success]="hitRate() >= 80"
                     [class.text-amber-500]="hitRate() >= 50 && hitRate() < 80"
-                    [class.text-red-500]="hitRate() < 50"
+                    [class.text-error]="hitRate() < 50"
                     class="transition-all duration-500"
                   />
                 </svg>
                 <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="text-lg font-bold text-slate-900"
+                  <span class="text-lg font-bold text-on-surface"
                     >{{ hitRate() }}%</span
                   >
                 </div>
               </div>
 
               <div class="flex-1">
-                <div class="text-xs font-semibold text-slate-700 mb-2">
+                <div class="text-xs font-semibold text-on-surface mb-2">
                   Cache Hit Rate
                 </div>
                 <div class="space-y-1">
                   <div class="flex items-center justify-between text-xs">
-                    <span class="text-emerald-600">Hits</span>
-                    <span class="font-semibold text-slate-700">{{
+                    <span class="text-success">Hits</span>
+                    <span class="font-semibold text-on-surface">{{
                       formatNumber(cacheStats()!.cache.hits)
                     }}</span>
                   </div>
                   <div class="flex items-center justify-between text-xs">
-                    <span class="text-red-600">Misses</span>
-                    <span class="font-semibold text-slate-700">{{
+                    <span class="text-error">Misses</span>
+                    <span class="font-semibold text-on-surface">{{
                       formatNumber(cacheStats()!.cache.misses)
                     }}</span>
                   </div>
@@ -181,21 +179,21 @@ import { switchMap } from 'rxjs/operators';
 
             <!-- Cache Details Grid -->
             <div class="grid grid-cols-2 gap-3">
-              <div class="bg-slate-50 rounded-lg p-3">
+              <div class="bg-surface-container rounded-lg p-3">
                 <div class="flex items-center gap-2 mb-1">
-                  <mat-icon class="text-slate-600 !text-sm">key</mat-icon>
-                  <span class="text-xs text-slate-600">Keys</span>
+                  <mat-icon class="text-muted !text-sm">key</mat-icon>
+                  <span class="text-xs text-muted">Keys</span>
                 </div>
-                <div class="text-lg font-bold text-slate-900">
+                <div class="text-lg font-bold text-on-surface">
                   {{ formatNumber(cacheStats()!.cache.keys) }}
                 </div>
               </div>
-              <div class="bg-slate-50 rounded-lg p-3">
+              <div class="bg-surface-container rounded-lg p-3">
                 <div class="flex items-center gap-2 mb-1">
-                  <mat-icon class="text-slate-600 !text-sm">memory</mat-icon>
-                  <span class="text-xs text-slate-600">Memory</span>
+                  <mat-icon class="text-muted !text-sm">memory</mat-icon>
+                  <span class="text-xs text-muted">Memory</span>
                 </div>
-                <div class="text-lg font-bold text-slate-900">
+                <div class="text-lg font-bold text-on-surface">
                   {{ formatBytes(cacheStats()!.cache.memory) }}
                 </div>
               </div>
@@ -204,14 +202,14 @@ import { switchMap } from 'rxjs/operators';
         </div>
 
         <!-- Footer -->
-        <div class="px-6 py-3 border-t border-slate-200 bg-slate-50">
-          <div class="flex items-center justify-between text-xs text-slate-500">
+        <div>
+          <div class="flex items-center justify-between text-xs text-muted">
             <span
               >Last updated: {{ formatTimestamp(dbStats()!.timestamp) }}</span
             >
             <button
               (click)="loadStats()"
-              class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+              class="text-primary hover:text-primary font-medium flex items-center gap-1"
             >
               <mat-icon class="!text-sm">refresh</mat-icon>
               <span>Refresh</span>

@@ -32,11 +32,11 @@
 }
 
 @keyframes spin {
-  from { 
-    transform: rotate(0deg); 
+  from {
+    transform: rotate(0deg);
   }
-  to { 
-    transform: rotate(360deg); 
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -89,20 +89,14 @@
   }
 
   // Row hover effects
-  .mat-mdc-row {
+  .mat-mdc-row.activity-row {
     transition: all 0.2s ease-in-out;
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.04);
+      background-color: var(--mat-sys-surface-container);
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-      // Dark theme
-      @media (prefers-color-scheme: dark) {
-        background-color: rgba(255, 255, 255, 0.04);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
     }
 
     &:active {
@@ -141,45 +135,24 @@
   font-size: 0.75rem;
   border-radius: 12px;
   height: 24px;
-  
+
   &.severity-info {
-    background-color: #e3f2fd;
-    color: #0d47a1;
-    border: 1px solid #90caf9;
-    
-    // Dark theme
-    @media (prefers-color-scheme: dark) {
-      background-color: #0d47a1;
-      color: #e3f2fd;
-      border-color: #1976d2;
-    }
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    border: 1px solid var(--mat-sys-primary);
   }
 
   &.severity-warning {
-    background-color: #fff3e0;
-    color: #e65100;
-    border: 1px solid #ffb74d;
-    
-    // Dark theme
-    @media (prefers-color-scheme: dark) {
-      background-color: #e65100;
-      color: #fff3e0;
-      border-color: #ff9800;
-    }
+    background-color: var(--ax-warning-container);
+    color: var(--ax-warning-emphasis);
+    border: 1px solid var(--ax-warning-500);
   }
 
   &.severity-error,
   &.severity-critical {
-    background-color: #ffebee;
-    color: #b71c1c;
-    border: 1px solid #ef5350;
-    
-    // Dark theme
-    @media (prefers-color-scheme: dark) {
-      background-color: #b71c1c;
-      color: #ffebee;
-      border-color: #d32f2f;
-    }
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+    border: 1px solid var(--mat-sys-error);
   }
 
   .mat-icon {
@@ -194,7 +167,7 @@
 ::ng-deep .mat-mdc-paginator {
   background: transparent;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
-  
+
   // Dark theme
   @media (prefers-color-scheme: dark) {
     border-top-color: rgba(255, 255, 255, 0.12);
@@ -202,7 +175,7 @@
 
   .mat-mdc-paginator-range-label {
     margin: 0 32px 0 24px;
-    
+
     @media (max-width: 768px) {
       margin: 0 16px 0 12px;
       font-size: 0.8rem;
@@ -212,7 +185,7 @@
   .mat-mdc-icon-button {
     width: 40px;
     height: 40px;
-    
+
     @media (max-width: 768px) {
       width: 32px;
       height: 32px;
@@ -309,7 +282,7 @@
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .filter-grid {
     grid-template-columns: repeat(2, 1fr);
   }

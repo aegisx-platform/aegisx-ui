@@ -57,10 +57,13 @@ import {
       <!-- Page Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1
+            class="text-2xl font-bold"
+            style="color: var(--mat-sys-on-surface)"
+          >
             Activity Log
           </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">
+          <p class="mt-1" style="color: var(--mat-sys-on-surface-variant)">
             Track your account activities and system events
           </p>
         </div>
@@ -108,16 +111,23 @@ import {
       <!-- Activity Table -->
       <ax-card [variant]="'elevated'">
         <!-- Table Header -->
-        <div class="p-4 border-b dark:border-gray-700">
+        <div
+          class="p-4 border-b"
+          style="border-color: var(--mat-sys-outline-variant)"
+        >
           <div class="flex items-center justify-between">
             <div>
               <h2
-                class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                class="text-lg font-semibold"
+                style="color: var(--mat-sys-on-surface)"
               >
                 Activities
               </h2>
               @if (totalActivities() > 0) {
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p
+                  class="text-sm"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                >
                   {{ totalActivities() | number }} total activities
                 </p>
               }
@@ -160,7 +170,7 @@ import {
           <div class="flex justify-center items-center p-16">
             <div class="text-center">
               <mat-spinner diameter="48"></mat-spinner>
-              <p class="text-gray-600 dark:text-gray-400 mt-4">
+              <p class="mt-4" style="color: var(--mat-sys-on-surface-variant)">
                 Loading activities...
               </p>
             </div>
@@ -171,17 +181,18 @@ import {
         @else if (!hasActivities() && !isLoading()) {
           <div class="text-center py-16">
             <mat-icon
-              class="text-gray-400 mb-4"
-              style="font-size: 64px; height: 64px; width: 64px;"
+              class="mb-4"
+              style="font-size: 64px; height: 64px; width: 64px; color: var(--mat-sys-on-surface-variant)"
             >
               history
             </mat-icon>
             <h3
-              class="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2"
+              class="text-lg font-medium mb-2"
+              style="color: var(--mat-sys-on-surface)"
             >
               No Activities Found
             </h3>
-            <p class="text-gray-500 dark:text-gray-400 mb-4">
+            <p class="mb-4" style="color: var(--mat-sys-on-surface-variant)">
               @if (hasActiveFilters()) {
                 No activities match your current filters. Try adjusting your
                 search criteria.
@@ -213,11 +224,15 @@ import {
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   <div class="flex flex-col">
                     <span
-                      class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                      class="text-sm font-medium"
+                      style="color: var(--mat-sys-on-surface)"
                     >
                       {{ formatDate(activity.created_at) }}
                     </span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                    <span
+                      class="text-xs"
+                      style="color: var(--mat-sys-on-surface-variant)"
+                    >
                       {{ getRelativeTime(activity.created_at) }}
                     </span>
                   </div>
@@ -232,13 +247,14 @@ import {
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   <div class="flex items-center">
                     <mat-icon
-                      class="mr-2 text-gray-600 dark:text-gray-400"
-                      style="font-size: 18px;"
+                      class="mr-2"
+                      style="font-size: 18px; color: var(--mat-sys-on-surface-variant)"
                     >
                       {{ getActionIcon(activity.action) }}
                     </mat-icon>
                     <span
-                      class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                      class="text-sm font-medium"
+                      style="color: var(--mat-sys-on-surface)"
                     >
                       {{ formatActionName(activity.action) }}
                     </span>
@@ -252,7 +268,10 @@ import {
                   Description
                 </th>
                 <td mat-cell *matCellDef="let activity" class="py-3">
-                  <span class="text-sm text-gray-700 dark:text-gray-300">
+                  <span
+                    class="text-sm"
+                    style="color: var(--mat-sys-on-surface)"
+                  >
                     {{ activity.description }}
                   </span>
                 </td>
@@ -288,8 +307,8 @@ import {
                     @if (activity.device_info?.device) {
                       <div class="flex items-center mb-1">
                         <mat-icon
-                          class="mr-1 text-gray-500"
-                          style="font-size: 14px;"
+                          class="mr-1"
+                          style="font-size: 14px; color: var(--mat-sys-on-surface-variant)"
                         >
                           {{
                             activity.device_info.isMobile
@@ -297,14 +316,18 @@ import {
                               : 'computer'
                           }}
                         </mat-icon>
-                        <span class="text-xs text-gray-600 dark:text-gray-400">
+                        <span
+                          class="text-xs"
+                          style="color: var(--mat-sys-on-surface-variant)"
+                        >
                           {{ activity.device_info.device }}
                         </span>
                       </div>
                     }
                     @if (activity.ip_address) {
                       <span
-                        class="text-xs font-mono text-gray-500 dark:text-gray-500"
+                        class="text-xs font-mono"
+                        style="color: var(--mat-sys-on-surface-variant)"
                       >
                         {{ activity.ip_address }}
                       </span>
@@ -321,13 +344,18 @@ import {
                 <td mat-cell *matCellDef="let activity" class="py-3">
                   @if (activity.session_id) {
                     <span
-                      class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded"
+                      class="text-xs font-mono px-2 py-1 rounded"
+                      style="background-color: var(--mat-sys-surface-container-high)"
                       [matTooltip]="activity.session_id"
                     >
                       {{ activity.session_id.substring(0, 8) }}...
                     </span>
                   } @else {
-                    <span class="text-xs text-gray-400">-</span>
+                    <span
+                      class="text-xs"
+                      style="color: var(--mat-sys-on-surface-variant)"
+                      >-</span
+                    >
                   }
                 </td>
               </ng-container>
@@ -340,7 +368,7 @@ import {
               <tr
                 mat-row
                 *matRowDef="let activity; columns: displayedColumns"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                class="transition-colors cursor-pointer activity-row"
                 (click)="onRowClick(activity)"
                 [matTooltip]="'Click for details'"
               ></tr>
@@ -349,7 +377,10 @@ import {
 
           <!-- Pagination -->
           @if (pagination()) {
-            <div class="border-t dark:border-gray-700 px-4 py-3">
+            <div
+              class="border-t px-4 py-3"
+              style="border-color: var(--mat-sys-outline-variant)"
+            >
               <mat-paginator
                 [length]="pagination()!.total"
                 [pageSize]="pagination()!.limit"

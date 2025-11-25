@@ -68,7 +68,7 @@ export interface ProgressItem {
             ></mat-progress-bar>
 
             @if (item.description) {
-              <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <p class="text-xs text-muted dark:text-gray-400 mt-1">
                 {{ item.description }}
               </p>
             }
@@ -79,7 +79,7 @@ export interface ProgressItem {
       @if (showTotal) {
         <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <span class="text-sm font-medium text-muted dark:text-gray-400">
               Total Progress
             </span>
             <span class="text-lg font-bold text-primary">
@@ -123,16 +123,16 @@ export interface ProgressItem {
       }
 
       .text-primary {
-        color: #1976d2;
+        color: rgb(var(--ax-primary-600));
       }
       .text-accent {
-        color: #ff4081;
+        color: rgb(var(--ax-secondary-400));
       }
       .text-warn {
-        color: #ff9800;
+        color: rgb(var(--ax-warning-500));
       }
       .text-success {
-        color: #4caf50;
+        color: rgb(var(--ax-success-500));
       }
 
       ::ng-deep .mat-mdc-progress-bar {

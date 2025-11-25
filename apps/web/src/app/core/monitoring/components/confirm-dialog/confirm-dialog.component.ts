@@ -29,11 +29,11 @@ export interface ConfirmDialogData {
     </h2>
 
     <mat-dialog-content class="py-6">
-      <p class="text-slate-600">{{ data.message }}</p>
+      <p class="text-muted">{{ data.message }}</p>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" class="gap-2 pb-4 px-6">
-      <button mat-stroked-button (click)="onCancel()" class="border-slate-300">
+      <button mat-stroked-button (click)="onCancel()" class="border-outline">
         {{ data.cancelText || 'Cancel' }}
       </button>
       <button
@@ -67,9 +67,7 @@ export class ConfirmDialogComponent {
   }
 
   get iconClass(): string {
-    return this.data.confirmColor === 'warn'
-      ? 'text-orange-600'
-      : 'text-blue-600';
+    return this.data.confirmColor === 'warn' ? 'text-warning' : 'text-primary';
   }
 
   onCancel(): void {

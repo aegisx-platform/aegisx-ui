@@ -1,4 +1,12 @@
-import { Component, input, computed, signal, OnInit, OnDestroy, inject } from '@angular/core';
+import {
+  Component,
+  input,
+  computed,
+  signal,
+  OnInit,
+  OnDestroy,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +28,7 @@ import { ActivityLogService } from './activity-log.service';
     MatProgressSpinnerModule,
     MatButtonModule,
     MatTooltipModule,
-    MatDividerModule
+    MatDividerModule,
   ],
   template: `
     <div class="stats-container">
@@ -31,19 +39,30 @@ import { ActivityLogService } from './activity-log.service';
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p
+                  class="text-sm font-medium"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                >
                   Total Activities
                 </p>
                 @if (isLoading()) {
                   <mat-spinner diameter="20" class="mt-2"></mat-spinner>
                 } @else {
-                  <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p
+                    class="text-2xl font-bold"
+                    style="color: var(--mat-sys-on-surface)"
+                  >
                     {{ stats()?.total_activities || 0 | number }}
                   </p>
                 }
               </div>
-              <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                <mat-icon class="text-blue-600 dark:text-blue-400">timeline</mat-icon>
+              <div
+                class="p-3 rounded-full"
+                style="background-color: var(--mat-sys-primary-container)"
+              >
+                <mat-icon style="color: var(--mat-sys-primary)"
+                  >timeline</mat-icon
+                >
               </div>
             </div>
           </mat-card-content>
@@ -54,19 +73,28 @@ import { ActivityLogService } from './activity-log.service';
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p
+                  class="text-sm font-medium"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                >
                   Today
                 </p>
                 @if (isLoading()) {
                   <mat-spinner diameter="20" class="mt-2"></mat-spinner>
                 } @else {
-                  <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p
+                    class="text-2xl font-bold"
+                    style="color: var(--mat-sys-on-surface)"
+                  >
                     {{ stats()?.recent_activities_count?.today || 0 | number }}
                   </p>
                 }
               </div>
-              <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                <mat-icon class="text-green-600 dark:text-green-400">today</mat-icon>
+              <div
+                class="p-3 rounded-full"
+                style="background-color: var(--ax-success-container)"
+              >
+                <mat-icon style="color: var(--ax-success-500)">today</mat-icon>
               </div>
             </div>
           </mat-card-content>
@@ -77,19 +105,32 @@ import { ActivityLogService } from './activity-log.service';
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p
+                  class="text-sm font-medium"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                >
                   This Week
                 </p>
                 @if (isLoading()) {
                   <mat-spinner diameter="20" class="mt-2"></mat-spinner>
                 } @else {
-                  <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {{ stats()?.recent_activities_count?.this_week || 0 | number }}
+                  <p
+                    class="text-2xl font-bold"
+                    style="color: var(--mat-sys-on-surface)"
+                  >
+                    {{
+                      stats()?.recent_activities_count?.this_week || 0 | number
+                    }}
                   </p>
                 }
               </div>
-              <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-                <mat-icon class="text-purple-600 dark:text-purple-400">date_range</mat-icon>
+              <div
+                class="p-3 rounded-full"
+                style="background-color: var(--mat-sys-tertiary-container)"
+              >
+                <mat-icon style="color: var(--mat-sys-tertiary)"
+                  >date_range</mat-icon
+                >
               </div>
             </div>
           </mat-card-content>
@@ -100,19 +141,30 @@ import { ActivityLogService } from './activity-log.service';
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p
+                  class="text-sm font-medium"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                >
                   Devices
                 </p>
                 @if (isLoading()) {
                   <mat-spinner diameter="20" class="mt-2"></mat-spinner>
                 } @else {
-                  <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p
+                    class="text-2xl font-bold"
+                    style="color: var(--mat-sys-on-surface)"
+                  >
                     {{ stats()?.unique_devices || 0 | number }}
                   </p>
                 }
               </div>
-              <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
-                <mat-icon class="text-orange-600 dark:text-orange-400">devices</mat-icon>
+              <div
+                class="p-3 rounded-full"
+                style="background-color: var(--ax-warning-container)"
+              >
+                <mat-icon style="color: var(--ax-warning-500)"
+                  >devices</mat-icon
+                >
               </div>
             </div>
           </mat-card-content>
@@ -139,31 +191,47 @@ import { ActivityLogService } from './activity-log.service';
               </div>
             } @else if (actionEntries().length === 0) {
               <div class="text-center py-8">
-                <mat-icon class="text-gray-400 mb-2" style="font-size: 32px; height: 32px; width: 32px;">
+                <mat-icon
+                  class="mb-2"
+                  style="font-size: 32px; height: 32px; width: 32px; color: var(--mat-sys-on-surface-variant)"
+                >
                   category
                 </mat-icon>
-                <p class="text-gray-500 dark:text-gray-400">No activity data available</p>
+                <p style="color: var(--mat-sys-on-surface-variant)">
+                  No activity data available
+                </p>
               </div>
             } @else {
               <div class="space-y-4">
                 @for (entry of actionEntries(); track entry.action) {
                   <div class="flex items-center justify-between py-2">
                     <div class="flex items-center flex-1">
-                      <div class="w-3 h-3 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                      <span class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                      <div
+                        class="w-3 h-3 rounded-full mr-3 flex-shrink-0"
+                        style="background-color: var(--mat-sys-primary)"
+                      ></div>
+                      <span
+                        class="text-sm font-medium truncate"
+                        style="color: var(--mat-sys-on-surface)"
+                      >
                         {{ formatActionName(entry.action) }}
                       </span>
                     </div>
                     <div class="flex items-center ml-4">
-                      <span class="text-sm font-bold text-gray-900 dark:text-gray-100 mr-3 min-w-[2rem] text-right">
+                      <span
+                        class="text-sm font-bold mr-3 min-w-[2rem] text-right"
+                        style="color: var(--mat-sys-on-surface)"
+                      >
                         {{ entry.count | number }}
                       </span>
-                      <div 
-                        class="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+                      <div
+                        class="w-20 h-2 rounded-full overflow-hidden"
+                        style="background-color: var(--mat-sys-surface-container-high)"
                         [matTooltip]="entry.percentage + '%'"
                       >
-                        <div 
-                          class="h-full bg-blue-500 transition-all duration-300"
+                        <div
+                          class="h-full transition-all duration-300"
+                          style="background-color: var(--mat-sys-primary)"
                           [style.width.%]="entry.percentage"
                         ></div>
                       </div>
@@ -193,37 +261,51 @@ import { ActivityLogService } from './activity-log.service';
               </div>
             } @else if (severityEntries().length === 0) {
               <div class="text-center py-8">
-                <mat-icon class="text-gray-400 mb-2" style="font-size: 32px; height: 32px; width: 32px;">
+                <mat-icon
+                  class="mb-2"
+                  style="font-size: 32px; height: 32px; width: 32px; color: var(--mat-sys-on-surface-variant)"
+                >
                   priority_high
                 </mat-icon>
-                <p class="text-gray-500 dark:text-gray-400">No severity data available</p>
+                <p style="color: var(--mat-sys-on-surface-variant)">
+                  No severity data available
+                </p>
               </div>
             } @else {
               <div class="space-y-4">
                 @for (entry of severityEntries(); track entry.severity) {
                   <div class="flex items-center justify-between py-2">
                     <div class="flex items-center flex-1">
-                      <mat-icon 
-                        [class]="getSeverityIconClass(entry.severity)"
+                      <mat-icon
                         class="mr-3 text-lg flex-shrink-0"
+                        [style.color]="getSeverityColorValue(entry.severity)"
                       >
                         {{ getSeverityIcon(entry.severity) }}
                       </mat-icon>
-                      <span class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                      <span
+                        class="text-sm font-medium truncate"
+                        style="color: var(--mat-sys-on-surface)"
+                      >
                         {{ getSeverityLabel(entry.severity) }}
                       </span>
                     </div>
                     <div class="flex items-center ml-4">
-                      <span class="text-sm font-bold text-gray-900 dark:text-gray-100 mr-3 min-w-[2rem] text-right">
+                      <span
+                        class="text-sm font-bold mr-3 min-w-[2rem] text-right"
+                        style="color: var(--mat-sys-on-surface)"
+                      >
                         {{ entry.count | number }}
                       </span>
-                      <div 
-                        class="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+                      <div
+                        class="w-20 h-2 rounded-full overflow-hidden"
+                        style="background-color: var(--mat-sys-surface-container-high)"
                         [matTooltip]="entry.percentage + '%'"
                       >
-                        <div 
-                          [class]="getSeverityBarClass(entry.severity)"
+                        <div
                           class="h-full transition-all duration-300"
+                          [style.background-color]="
+                            getSeverityColorValue(entry.severity)
+                          "
                           [style.width.%]="entry.percentage"
                         ></div>
                       </div>
@@ -242,19 +324,26 @@ import { ActivityLogService } from './activity-log.service';
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
-                <mat-icon class="mr-3 text-gray-600 dark:text-gray-400">access_time</mat-icon>
+                <mat-icon
+                  class="mr-3"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                  >access_time</mat-icon
+                >
                 <div>
-                  <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <p
+                    class="text-sm font-medium"
+                    style="color: var(--mat-sys-on-surface-variant)"
+                  >
                     Last Activity
                   </p>
-                  <p class="text-sm text-gray-900 dark:text-gray-100">
+                  <p class="text-sm" style="color: var(--mat-sys-on-surface)">
                     {{ formatLastActivity() }}
                   </p>
                 </div>
               </div>
-              <button 
-                mat-icon-button 
-                (click)="refresh()" 
+              <button
+                mat-icon-button
+                (click)="refresh()"
                 [disabled]="isLoading()"
                 matTooltip="Refresh statistics"
               >
@@ -266,79 +355,81 @@ import { ActivityLogService } from './activity-log.service';
       }
     </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+        width: 100%;
+      }
 
-    .stats-container {
-      width: 100%;
-      padding: 0 16px;
-    }
-
-    @media (min-width: 640px) {
       .stats-container {
-        padding: 0;
+        width: 100%;
+        padding: 0 16px;
       }
-    }
 
-    .stat-card {
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .animate-spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    /* Improved Material card styling */
-    ::ng-deep .mat-mdc-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 0;
-    }
-
-    ::ng-deep .mat-mdc-card-header {
-      padding: 20px 24px 8px 24px;
-    }
-
-    ::ng-deep .mat-mdc-card-content {
-      padding: 0 24px 24px 24px;
-    }
-
-    ::ng-deep .mat-mdc-card-content:last-child {
-      padding-bottom: 24px;
-    }
-
-    /* Enhanced responsive spacing */
-    @media (max-width: 1023px) {
-      ::ng-deep .mat-mdc-card-content {
-        padding: 0 20px 20px 20px;
+      @media (min-width: 640px) {
+        .stats-container {
+          padding: 0;
+        }
       }
-      
+
+      .stat-card {
+        transition:
+          transform 0.2s ease-in-out,
+          box-shadow 0.2s ease-in-out;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Improved Material card styling */
+      ::ng-deep .mat-mdc-card {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 0;
+      }
+
       ::ng-deep .mat-mdc-card-header {
-        padding: 16px 20px 8px 20px;
+        padding: 20px 24px 8px 24px;
       }
-    }
 
-    /* Progress bar hover effects */
-    .space-y-4 > div:hover .bg-blue-500,
-    .space-y-4 > div:hover .bg-red-500,
-    .space-y-4 > div:hover .bg-yellow-500,
-    .space-y-4 > div:hover .bg-gray-500 {
-      opacity: 0.8;
-    }
-  `]
+      ::ng-deep .mat-mdc-card-content {
+        padding: 0 24px 24px 24px;
+      }
+
+      ::ng-deep .mat-mdc-card-content:last-child {
+        padding-bottom: 24px;
+      }
+
+      /* Enhanced responsive spacing */
+      @media (max-width: 1023px) {
+        ::ng-deep .mat-mdc-card-content {
+          padding: 0 20px 20px 20px;
+        }
+
+        ::ng-deep .mat-mdc-card-header {
+          padding: 16px 20px 8px 20px;
+        }
+      }
+
+      /* Progress bar hover effects - removed color-specific hover classes */
+    `,
+  ],
 })
 export class ActivityLogStatsComponent implements OnInit, OnDestroy {
   private activityLogService = inject(ActivityLogService);
@@ -362,7 +453,7 @@ export class ActivityLogStatsComponent implements OnInit, OnDestroy {
       .map(([action, count]) => ({
         action,
         count,
-        percentage: Math.round((count / total) * 100)
+        percentage: Math.round((count / total) * 100),
       }))
       .sort((a, b) => b.count - a.count);
   });
@@ -377,9 +468,9 @@ export class ActivityLogStatsComponent implements OnInit, OnDestroy {
       .map(([severity, count]) => ({
         severity: severity as keyof typeof SEVERITY_CONFIG,
         count,
-        percentage: Math.round((count / total) * 100)
+        percentage: Math.round((count / total) * 100),
       }))
-      .filter(entry => entry.count > 0)
+      .filter((entry) => entry.count > 0)
       .sort((a, b) => b.count - a.count);
   });
 
@@ -404,7 +495,8 @@ export class ActivityLogStatsComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.activityLogService.loadStats()
+    this.activityLogService
+      .loadStats()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -413,7 +505,7 @@ export class ActivityLogStatsComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.error.set(error.message || 'Failed to load statistics');
           this.isLoading.set(false);
-        }
+        },
       });
   }
 
@@ -438,45 +530,45 @@ export class ActivityLogStatsComponent implements OnInit, OnDestroy {
   formatActionName(action: string): string {
     return action
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 
   getSeverityLabel(severity: string): string {
-    return SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.label || severity;
+    return (
+      SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.label ||
+      severity
+    );
   }
 
   getSeverityIcon(severity: string): string {
-    return SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.icon || 'help';
+    return (
+      SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG]?.icon || 'help'
+    );
   }
 
   getSeverityIconClass(severity: string): string {
-    const config = SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG];
+    // Deprecated - use getSeverityColorValue instead
+    return '';
+  }
+
+  getSeverityColorValue(severity: string): string {
     switch (severity) {
       case 'info':
-        return 'text-blue-600 dark:text-blue-400';
+        return 'var(--mat-sys-primary)';
       case 'warning':
-        return 'text-yellow-600 dark:text-yellow-400';
+        return 'var(--ax-warning-500)';
       case 'error':
       case 'critical':
-        return 'text-red-600 dark:text-red-400';
+        return 'var(--mat-sys-error)';
       default:
-        return 'text-gray-600 dark:text-gray-400';
+        return 'var(--mat-sys-on-surface-variant)';
     }
   }
 
   getSeverityBarClass(severity: string): string {
-    switch (severity) {
-      case 'info':
-        return 'bg-blue-500';
-      case 'warning':
-        return 'bg-yellow-500';
-      case 'error':
-      case 'critical':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
+    // Deprecated - use getSeverityColorValue instead
+    return '';
   }
 
   formatLastActivity(): string {
@@ -485,7 +577,9 @@ export class ActivityLogStatsComponent implements OnInit, OnDestroy {
 
     const date = new Date(lastActivity);
     const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60),
+    );
 
     if (diffInMinutes < 1) {
       return 'Just now';

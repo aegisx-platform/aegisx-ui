@@ -39,12 +39,12 @@ export interface DeleteAccountResult {
   ],
   template: `
     <div class="delete-account-dialog">
-      <h2 mat-dialog-title class="text-red-600 dark:text-red-400">
+      <h2 mat-dialog-title style="color: var(--mat-sys-error)">
         <mat-icon class="mr-2">warning</mat-icon>
         Delete Account
       </h2>
 
-      <mat-dialog-content class="py-6">
+      <mat-dialog-content class="py-6 form-compact">
         <!-- Warning Alert -->
         <ax-alert type="error" class="mb-6">
           <strong>This action cannot be undone!</strong>
@@ -58,10 +58,10 @@ export interface DeleteAccountResult {
             <h3 class="text-lg font-medium mb-3">
               Step 1: Type DELETE to confirm
             </h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">
+            <p class="mb-4" style="color: var(--mat-sys-on-surface-variant)">
               To confirm account deletion, please type
-              <strong class="text-red-600 dark:text-red-400">DELETE</strong> in
-              the field below:
+              <strong style="color: var(--mat-sys-error)">DELETE</strong> in the
+              field below:
             </p>
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Type "DELETE" to confirm</mat-label>
@@ -83,7 +83,7 @@ export interface DeleteAccountResult {
               <h3 class="text-lg font-medium mb-3">
                 Step 2: Enter your password
               </h3>
-              <p class="text-gray-600 dark:text-gray-400 mb-4">
+              <p class="mb-4" style="color: var(--mat-sys-on-surface-variant)">
                 Please enter your current password for additional security:
               </p>
               <mat-form-field appearance="outline" class="w-full">
@@ -108,7 +108,7 @@ export interface DeleteAccountResult {
               <h3 class="text-lg font-medium mb-3">
                 Step 3: Reason (Optional)
               </h3>
-              <p class="text-gray-600 dark:text-gray-400 mb-4">
+              <p class="mb-4" style="color: var(--mat-sys-on-surface-variant)">
                 Please tell us why you're leaving (optional):
               </p>
               <mat-form-field appearance="outline" class="w-full">
@@ -127,20 +127,14 @@ export interface DeleteAccountResult {
 
           <!-- Recovery Information -->
           @if (confirmationValid() && passwordValid()) {
-            <div
-              class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4"
-            >
+            <div class="chip-warning rounded-lg p-4">
               <div class="flex">
-                <mat-icon class="text-yellow-600 dark:text-yellow-400 mr-2"
+                <mat-icon class="mr-2" style="color: var(--ax-warning-500)"
                   >info</mat-icon
                 >
                 <div>
-                  <h4
-                    class="font-medium text-yellow-800 dark:text-yellow-200 mb-1"
-                  >
-                    Recovery Period
-                  </h4>
-                  <p class="text-yellow-700 dark:text-yellow-300 text-sm">
+                  <h4 class="font-medium mb-1">Recovery Period</h4>
+                  <p class="text-sm">
                     You'll have <strong>30 days</strong> to recover your account
                     before it's permanently deleted. During this time, you can
                     contact support to restore your account.
@@ -189,12 +183,7 @@ export interface DeleteAccountResult {
       h2[mat-dialog-title] {
         display: flex;
         align-items: center;
-        color: rgb(220, 38, 38);
         margin-bottom: 0;
-      }
-
-      .dark h2[mat-dialog-title] {
-        color: rgb(248, 113, 113);
       }
     `,
   ],
