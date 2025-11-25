@@ -1,6 +1,6 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-11-21 (Session 70 - Token-Based Dialog Headers & Test Products Refactor)
+**Last Updated:** 2025-11-25 (Session 71 - Material Dialog Size & Layout System)
 **Current Status:** ✅ **PLATFORM COMPLETE** - All core features implemented, tested, and production-ready with complete design system
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
 **CRUD Generator Version:** v2.2.0 (Ready for npm publish)
@@ -307,6 +307,66 @@ The AegisX Starter monorepo is a clean, focused, enterprise-ready platform with:
 ## 🚀 Recent Development Sessions
 
 > **📦 For older sessions (38-46), see [Session Archive](./docs/sessions/ARCHIVE_2024_Q4.md)**
+
+### Session 71 (2025-11-25) ✅ COMPLETED
+
+**Session Focus:** Material Dialog Size System & Sticky Footer Layout
+
+**Main Achievements:**
+
+- ✅ **Dialog Size System Fixed** - Resolved CSS variable conflicts (`--mat-dialog-*` vs `--mdc-dialog-*`)
+- ✅ **Sticky Footer Solution** - Implemented `margin-top: auto` pattern for actions positioning
+- ✅ **Dialog Demo Page** - Complete interactive demo with all size variants and header styles
+- ✅ **Official Documentation** - Created dialog-standard.md with technical implementation details
+
+**Technical Details:**
+
+**Problem Solved:**
+
+- Dialog sizes (lg: 1000px, xl: 1200px) were limited to 560px default due to `.cdk-overlay-pane.mat-mdc-dialog-panel` using `--mat-dialog-container-max-width`
+- Actions footer not sticking to bottom when content is short
+
+**Solution Implemented:**
+
+```scss
+// Size variants must set both CSS variable types
+.dialog-lg {
+  --mat-dialog-container-max-width: 1000px; // For CDK overlay pane
+
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-max-width: 1000px; // For MDC container
+  }
+
+  .mat-mdc-dialog-surface {
+    max-width: 1000px; // Actual element size
+  }
+}
+
+// Sticky footer with flexbox
+.mat-mdc-dialog-container {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.mat-mdc-dialog-actions {
+  margin-top: auto !important; // Push to bottom
+}
+```
+
+**Files Modified:**
+
+- `libs/aegisx-ui/src/lib/styles/components/_dialog-shared.scss` - Fixed size system and layout
+- `docs/components/dialog-standard.md` - Added technical implementation section
+- `apps/admin/src/app/pages/aegisx-ui/dialogs-demo/` - Complete demo page (4 tabs)
+- `apps/admin/src/app/pages/aegisx-ui/aegisx-ui.component.ts` - Navigation entry (already exists)
+
+**Learning Points:**
+
+- Angular Material Dialog uses `panelClass` on CDK overlay pane, not container directly
+- Must target both `--mat-dialog-*` and `--mdc-dialog-*` CSS variables for full compatibility
+- `margin-top: auto` in flexbox is the standard pattern for sticky footers (from Stack Overflow community)
+
+---
 
 ### Session 70 (2025-11-21) ✅ COMPLETED
 

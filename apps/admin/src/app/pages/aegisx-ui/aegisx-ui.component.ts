@@ -105,6 +105,19 @@ export class AegisxUiComponent {
         },
       ],
     },
+    {
+      title: 'Overlays & Modals',
+      icon: 'open_in_new',
+      description: 'Dialog and overlay components for user interactions',
+      components: [
+        {
+          name: 'Dialogs',
+          route: '/aegisx-ui/dialogs',
+          description: 'Modal dialogs with Material Design 3 styling',
+          badge: 'New',
+        },
+      ],
+    },
   ];
 
   totalComponents = this.categories.reduce(

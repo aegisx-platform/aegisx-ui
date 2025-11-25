@@ -22,9 +22,10 @@
    ============================================================ */
 
 .mat-mdc-dialog-container {
-  // Container sizing
+  // Container sizing - DEFAULT (when no panelClass is specified)
+  // Note: Individual size variants (dialog-sm, dialog-md, etc.) override these
   --mdc-dialog-container-min-width: 400px;
-  --mdc-dialog-container-max-width: 900px;
+  --mdc-dialog-container-max-width: 800px; // Default fallback (was 900px)
   --mdc-dialog-container-shape: var(--ax-radius-lg); // Use AegisX token
 
   // Padding using AegisX spacing tokens (format: top left/right bottom)
@@ -36,6 +37,13 @@
 
   // Actions alignment
   --mat-dialog-actions-alignment: end;
+
+  // CRITICAL: Use flexbox to enable margin-top: auto on actions
+  display: flex !important;
+  flex-direction: column !important;
+
+  // Height configuration
+  max-height: calc(100vh - 64px) !important;
 
   @media (max-width: 768px) {
     --mdc-dialog-container-min-width: 90vw;
@@ -74,8 +82,8 @@
   padding: var(--mat-dialog-supporting-text-padding) !important;
   margin: 0 !important;
 
-  // Scrolling
-  max-height: calc(90vh - 200px);
+  // CRITICAL: Grid row takes remaining space (1fr in grid-template-rows)
+  // Content will expand to fill available space, pushing actions to bottom
   overflow-y: auto;
 
   // Remove Material's default max-height behavior
@@ -91,7 +99,12 @@
 .mat-mdc-dialog-actions {
   // Reset padding to use token
   padding: var(--mat-dialog-actions-padding) !important;
-  margin: 0 !important;
+
+  // CRITICAL: Use margin-top: auto to push actions to bottom
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 
   // Alignment from token
   justify-content: var(--mat-dialog-actions-alignment);
@@ -105,24 +118,116 @@
 }
 
 /* ============================================================
-   5. Size Variants (Optional)
+   5. Size Variants (Standard)
    Usage: MatDialog.open(Component, { panelClass: 'dialog-lg' })
+
+   STANDARD: These size variants are the official AegisX dialog sizes.
+   All dialogs should use one of these predefined sizes for consistency.
+
+   Available sizes:
+   - dialog-sm (600px)   : Confirmations, alerts, short forms
+   - dialog-md (800px)   : Standard forms, detailed information
+   - dialog-lg (1000px)  : Complex forms, multi-column layouts
+   - dialog-xl (1200px)  : Data tables, dashboards, extensive content
+   - dialog-fullscreen   : Full viewport coverage (mobile-first workflows)
+
+   TECHNICAL NOTE: panelClass applies to the CDK overlay pane (parent element),
+   not the dialog container itself. Use descendant selectors to target child elements.
    ============================================================ */
 
 .dialog-sm {
-  --mdc-dialog-container-max-width: 600px;
+  // CRITICAL: Set CSS variables at overlay pane level (where panelClass applies)
+  --mat-dialog-container-min-width: 400px;
+  --mat-dialog-container-max-width: 600px;
+
+  // Also target container for MDC variables
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-min-width: 400px;
+    --mdc-dialog-container-max-width: 600px;
+  }
+
+  // Target the dialog surface for actual size
+  .mat-mdc-dialog-surface {
+    width: 95vw;
+    max-width: 600px;
+  }
 }
 
 .dialog-md {
-  --mdc-dialog-container-max-width: 800px;
+  // CRITICAL: Set CSS variables at overlay pane level (where panelClass applies)
+  --mat-dialog-container-min-width: 600px;
+  --mat-dialog-container-max-width: 800px;
+
+  // Also target container for MDC variables
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-min-width: 600px;
+    --mdc-dialog-container-max-width: 800px;
+  }
+
+  // Target the dialog surface for actual size
+  .mat-mdc-dialog-surface {
+    width: 95vw;
+    max-width: 800px;
+  }
 }
 
 .dialog-lg {
-  --mdc-dialog-container-max-width: 1000px;
+  // CRITICAL: Set CSS variables at overlay pane level (where panelClass applies)
+  --mat-dialog-container-min-width: 800px;
+  --mat-dialog-container-max-width: 1000px;
+
+  // Also target container for MDC variables
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-min-width: 800px;
+    --mdc-dialog-container-max-width: 1000px;
+  }
+
+  // Target the dialog surface for actual size
+  .mat-mdc-dialog-surface {
+    width: 95vw;
+    max-width: 1000px;
+  }
 }
 
 .dialog-xl {
-  --mdc-dialog-container-max-width: 1200px;
+  // CRITICAL: Set CSS variables at overlay pane level (where panelClass applies)
+  --mat-dialog-container-min-width: 1000px;
+  --mat-dialog-container-max-width: 1200px;
+
+  // Also target container for MDC variables
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-min-width: 1000px;
+    --mdc-dialog-container-max-width: 1200px;
+  }
+
+  // Target the dialog surface for actual size
+  .mat-mdc-dialog-surface {
+    width: 95vw;
+    max-width: 1200px;
+  }
+}
+
+.dialog-fullscreen {
+  // CRITICAL: Set CSS variables at overlay pane level (where panelClass applies)
+  --mat-dialog-container-min-width: 100vw;
+  --mat-dialog-container-max-width: 100vw;
+
+  // Also target container for MDC variables
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-min-width: 100vw;
+    --mdc-dialog-container-max-width: 100vw;
+    border-radius: 0;
+  }
+
+  // Target the dialog surface for actual size
+  .mat-mdc-dialog-surface {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0;
+    border-radius: 0 !important;
+  }
 }
 
 /* ============================================================
