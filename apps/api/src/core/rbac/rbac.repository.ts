@@ -42,9 +42,10 @@ export class RbacRepository {
     // Only join user_role_counts if requested
     if (query.include_user_count) {
       baseQuery = baseQuery.leftJoin(
-        this.db('user_roles')
+        this.db
           .select('role_id')
           .count('* as user_count')
+          .from('user_roles')
           .where('is_active', true)
           .groupBy('role_id')
           .as('user_role_counts'),
@@ -88,16 +89,46 @@ export class RbacRepository {
     }
 
     // Build paginated query
+    console.log('[DEBUG] getRoles - SQL:', baseQuery.toSQL().sql);
+    console.log('[DEBUG] getRoles - Before buildPaginationQuery');
     const { items: roles, pagination } = await buildPaginationQuery(
       baseQuery,
       query,
       'roles.created_at',
       'desc',
     );
+    console.log(
+      '[DEBUG] getRoles - After buildPaginationQuery, got',
+      roles.length,
+      'roles',
+    );
+
+    // Convert user_count from string to number (PostgreSQL COUNT returns string)
+    // Map parent_id (database) to parent_role_id (schema)
+    const transformedRoles = (roles as any[]).map((role: any) => {
+      // Create new object with field order matching RoleSchema
+      return {
+        id: role.id,
+        name: role.name,
+        description: role.description,
+        category: role.category,
+        parent_role_id: role.parent_id, // Database uses parent_id, schema expects parent_role_id
+        hierarchy_level: role.hierarchy_level,
+        is_system_role: role.is_system_role,
+        is_active: role.is_active,
+        permissions: role.permissions || [],
+        user_count:
+          role.user_count !== undefined && role.user_count !== null
+            ? parseInt(role.user_count, 10) || 0
+            : 0,
+        created_at: role.created_at,
+        updated_at: role.updated_at,
+      };
+    }) as Role[];
 
     // Load permissions if requested
-    if (query.include_permissions && roles.length > 0) {
-      const roleIds = roles.map((role: any) => role.id);
+    if (query.include_permissions && transformedRoles.length > 0) {
+      const roleIds = transformedRoles.map((role: any) => role.id);
       const rolePermissions = await this.db('role_permissions')
         .join('permissions', 'role_permissions.permission_id', 'permissions.id')
         .select([
@@ -142,16 +173,20 @@ export class RbacRepository {
       );
 
       // Attach permissions to roles
-      (roles as any[]).forEach((role: any) => {
+      transformedRoles.forEach((role: any) => {
         role.permissions = permissionsByRole[role.id] || [];
       });
     } else {
-      (roles as any[]).forEach((role: any) => {
+      transformedRoles.forEach((role: any) => {
         role.permissions = [];
       });
     }
 
-    return { roles: roles as Role[], pagination };
+    console.log(
+      '[DEBUG] getRoles - Before return, roles count:',
+      transformedRoles.length,
+    );
+    return { roles: transformedRoles, pagination };
   }
 
   async getRoleById(
@@ -164,9 +199,10 @@ export class RbacRepository {
         this.db.raw('COALESCE(user_role_counts.user_count, 0) as user_count'),
       ])
       .leftJoin(
-        this.db('user_roles')
+        this.db
           .select('role_id')
           .count('* as user_count')
+          .from('user_roles')
           .where('is_active', true)
           .groupBy('role_id')
           .as('user_role_counts'),
@@ -177,6 +213,20 @@ export class RbacRepository {
       .first();
 
     if (!role) return null;
+
+    // Convert user_count from string to number (PostgreSQL COUNT returns string)
+    if (
+      (role as any).user_count !== undefined &&
+      (role as any).user_count !== null
+    ) {
+      (role as any).user_count = parseInt((role as any).user_count, 10) || 0;
+    }
+
+    // Database uses parent_id, but schema expects parent_role_id
+    if ((role as any).parent_id !== undefined) {
+      (role as any).parent_role_id = (role as any).parent_id;
+      delete (role as any).parent_id;
+    }
 
     // Load permissions
     if (includePermissions) {
@@ -369,9 +419,10 @@ export class RbacRepository {
         ),
       ])
       .leftJoin(
-        this.db('role_permissions')
+        this.db
           .select('permission_id')
           .count('* as role_count')
+          .from('role_permissions')
           .groupBy('permission_id')
           .as('role_permission_counts'),
         'permissions.id',
@@ -430,9 +481,10 @@ export class RbacRepository {
         ),
       ])
       .leftJoin(
-        this.db('role_permissions')
+        this.db
           .select('permission_id')
           .count('* as role_count')
+          .from('role_permissions')
           .groupBy('permission_id')
           .as('role_permission_counts'),
         'permissions.id',
@@ -673,7 +725,7 @@ export class RbacRepository {
         name: result.name,
         description: result.description,
         category: result.category,
-        parent_role_id: result.parent_role_id,
+        parent_role_id: result.parent_id, // Database uses parent_id, schema uses parent_role_id
         hierarchy_level: result.hierarchy_level,
         is_system_role: result.is_system_role,
         is_active: result.is_active,
