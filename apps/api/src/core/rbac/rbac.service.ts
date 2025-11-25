@@ -31,7 +31,14 @@ export class RbacService {
   async getRoles(
     query: RoleQuery,
   ): Promise<{ roles: Role[]; pagination: PaginationMeta }> {
-    return await this.rbacRepository.getRoles(query);
+    console.log('[DEBUG] Service getRoles - Before repository call');
+    const result = await this.rbacRepository.getRoles(query);
+    console.log(
+      '[DEBUG] Service getRoles - After repository, got',
+      result.roles.length,
+      'roles',
+    );
+    return result;
   }
 
   async getRoleById(

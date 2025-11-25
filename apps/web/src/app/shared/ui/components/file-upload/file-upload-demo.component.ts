@@ -232,12 +232,12 @@ import { UploadedFile } from './file-upload.types';
 
       .tab-content h3 {
         margin-top: 0;
-        color: #333;
+        color: var(--mat-sys-on-surface);
         font-weight: 500;
       }
 
       .tab-description {
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
         line-height: 1.6;
         margin-bottom: 2rem;
       }
@@ -258,11 +258,11 @@ import { UploadedFile } from './file-upload.types';
         gap: 1rem;
         padding: 0.5rem;
         border-radius: 8px;
-        background: #f5f5f5;
+        background: var(--mat-sys-surface-container-low);
       }
 
       .upload-item mat-icon:first-child {
-        color: #2196f3;
+        color: var(--mat-sys-primary);
       }
 
       .upload-details {
@@ -273,12 +273,12 @@ import { UploadedFile } from './file-upload.types';
 
       .file-name {
         font-weight: 500;
-        color: #333;
+        color: var(--mat-sys-on-surface);
       }
 
       .file-info {
         font-size: 0.875rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .avatar-upload {
@@ -304,7 +304,7 @@ import { UploadedFile } from './file-upload.types';
         height: 120px;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid #e0e0e0;
+        border: 4px solid var(--mat-sys-outline-variant);
       }
 
       .avatar-info p {
@@ -316,7 +316,7 @@ import { UploadedFile } from './file-upload.types';
       }
 
       .code-example pre {
-        background: #f5f5f5;
+        background: var(--mat-sys-surface-container-low);
         padding: 1rem;
         border-radius: 8px;
         overflow-x: auto;
@@ -326,34 +326,10 @@ import { UploadedFile } from './file-upload.types';
       }
 
       .code-example code {
-        color: #333;
+        color: var(--mat-sys-on-surface);
       }
 
-      /* Dark theme adjustments */
-      :host-context(.dark) .tab-content h3 {
-        color: #fff;
-      }
-
-      :host-context(.dark) .tab-description {
-        color: #ccc;
-      }
-
-      :host-context(.dark) .upload-item {
-        background: #424242;
-      }
-
-      :host-context(.dark) .file-name {
-        color: #fff;
-      }
-
-      :host-context(.dark) .file-info {
-        color: #ccc;
-      }
-
-      :host-context(.dark) .code-example pre {
-        background: #2d2d2d;
-        color: #f8f8f2;
-      }
+      /* Dark theme handled by CSS tokens */
 
       @media (max-width: 768px) {
         .demo-container {

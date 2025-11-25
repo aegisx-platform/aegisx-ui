@@ -29,7 +29,20 @@ export class RbacController {
     reply: FastifyReply,
   ) {
     try {
+      console.log('[DEBUG] Controller getRoles - Before service call');
       const result = await this.rbacService.getRoles(request.query);
+      console.log(
+        '[DEBUG] Controller getRoles - After service, sending response',
+      );
+
+      // Log first role to check schema compliance
+      if (result.roles.length > 0) {
+        console.log('[DEBUG] First role fields:', Object.keys(result.roles[0]));
+        console.log(
+          '[DEBUG] First role sample:',
+          JSON.stringify(result.roles[0], null, 2),
+        );
+      }
 
       return reply.code(200).send({
         success: true,
@@ -42,6 +55,7 @@ export class RbacController {
         },
       });
     } catch (error) {
+      console.log('[DEBUG] Controller getRoles - ERROR:', error);
       request.log.error({ err: error }, 'Error in getRoles');
       return reply.code(500).send({
         success: false,

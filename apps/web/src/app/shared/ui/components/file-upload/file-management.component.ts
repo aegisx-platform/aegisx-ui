@@ -97,15 +97,11 @@ interface EnhancedFile extends UploadedFile {
       <!-- Header -->
       <div class="file-management-header">
         <div>
-          <h2
-            class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1"
-          >
-            <mat-icon class="text-blue-600 dark:text-blue-400"
-              >folder_open</mat-icon
-            >
+          <h2 class="flex items-center gap-2 text-lg font-semibold mb-1">
+            <mat-icon class="text-brand">folder_open</mat-icon>
             <span>File Management</span>
           </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-muted">
             Manage uploaded files with attachment tracking
           </p>
         </div>
@@ -699,22 +695,23 @@ interface EnhancedFile extends UploadedFile {
         display: flex;
         flex-direction: column;
         padding: 1.5rem;
-        background: white;
-        border: 1px solid #e5e7eb;
+        background: var(--mat-sys-surface);
+        border: 1px solid var(--mat-sys-outline-variant);
         border-radius: 0.5rem;
         transition: all 0.15s ease;
       }
 
       .stat-card:hover {
+        background: var(--mat-sys-surface-container-high);
         box-shadow:
-          0 1px 3px 0 rgba(0, 0, 0, 0.1),
-          0 1px 2px -1px rgba(0, 0, 0, 0.1);
+          0 1px 3px 0 var(--mat-sys-shadow),
+          0 1px 2px -1px var(--mat-sys-shadow);
       }
 
       .stat-label {
         font-size: 0.875rem;
         font-weight: 500;
-        color: #6b7280;
+        color: var(--mat-sys-on-surface-variant);
         line-height: 1.25rem;
         margin-bottom: 0.5rem;
       }
@@ -722,30 +719,10 @@ interface EnhancedFile extends UploadedFile {
       .stat-value {
         font-size: 2rem;
         font-weight: 600;
-        color: #111827;
+        color: var(--mat-sys-on-surface);
         line-height: 1.25;
         letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
-      }
-
-      /* Dark mode support */
-      :host-context(.dark) .stat-card {
-        background-color: #1f2937;
-        border-color: #374151;
-      }
-
-      :host-context(.dark) .stat-card:hover {
-        box-shadow:
-          0 1px 3px 0 rgba(0, 0, 0, 0.3),
-          0 1px 2px -1px rgba(0, 0, 0, 0.3);
-      }
-
-      :host-context(.dark) .stat-label {
-        color: #9ca3af;
-      }
-
-      :host-context(.dark) .stat-value {
-        color: #f9fafb;
       }
 
       .filter-form {
@@ -768,7 +745,7 @@ interface EnhancedFile extends UploadedFile {
         align-items: center;
         justify-content: space-between;
         padding: 1rem;
-        background-color: #e3f2fd;
+        background: var(--mat-sys-primary-container);
         border-radius: 8px;
         margin-bottom: 1rem;
       }
@@ -807,7 +784,7 @@ interface EnhancedFile extends UploadedFile {
       }
 
       .file-type-icon {
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .file-name-cell {
@@ -835,24 +812,24 @@ interface EnhancedFile extends UploadedFile {
       .file-type {
         font-family: monospace;
         font-size: 0.875rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .delete-action {
-        color: #f44336 !important;
+        color: var(--mat-sys-error) !important;
       }
 
       .no-data {
         text-align: center;
         padding: 3rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .no-data mat-icon {
         font-size: 4rem;
         height: 4rem;
         width: 4rem;
-        color: #ccc;
+        color: var(--mat-sys-outline);
         margin-bottom: 1rem;
       }
 
@@ -867,26 +844,29 @@ interface EnhancedFile extends UploadedFile {
       }
 
       .file-card {
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--mat-sys-outline-variant);
         border-radius: 12px;
         overflow: hidden;
-        background: white;
+        background: var(--mat-sys-surface);
         transition: all 0.3s ease;
         position: relative;
       }
 
       .file-card:hover {
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        background: var(--mat-sys-surface-container-high);
+        box-shadow:
+          0 4px 6px -1px var(--mat-sys-shadow),
+          0 2px 4px -2px var(--mat-sys-shadow);
         transform: translateY(-4px);
       }
 
       .file-card.selected {
-        border-color: #2196f3;
-        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        border-color: var(--mat-sys-primary);
+        box-shadow: 0 0 0 2px var(--mat-sys-primary-container);
       }
 
       .file-card.in-use {
-        border-color: #4caf50;
+        border-color: var(--ax-success-500);
       }
 
       .card-selection {
@@ -953,7 +933,7 @@ interface EnhancedFile extends UploadedFile {
 
       .card-meta {
         font-size: 0.875rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
         margin: 0 0 0.5rem 0;
       }
 
@@ -988,74 +968,48 @@ interface EnhancedFile extends UploadedFile {
       }
 
       .in-use-chip {
-        background-color: #4caf50 !important;
+        background: var(--ax-success-500) !important;
         color: white !important;
       }
 
       .category-image {
-        background-color: #4caf50;
+        background: var(--ax-success-500);
         color: white;
       }
       .category-document {
-        background-color: #2196f3;
+        background: var(--mat-sys-primary);
         color: white;
       }
       .category-avatar {
-        background-color: #9c27b0;
+        background: var(--mat-sys-tertiary);
         color: white;
       }
       .category-media {
-        background-color: #ff9800;
+        background: var(--ax-warning-500);
         color: white;
       }
       .public-chip {
-        background-color: #00bcd4;
+        background: var(--mat-sys-secondary);
         color: white;
       }
       .temp-chip {
-        background-color: #ff5722;
+        background: var(--mat-sys-error);
         color: white;
       }
       .status-completed {
-        background-color: #4caf50;
+        background: var(--ax-success-500);
         color: white;
       }
       .status-processing {
-        background-color: #ff9800;
+        background: var(--ax-warning-500);
         color: white;
       }
       .status-failed {
-        background-color: #f44336;
+        background: var(--mat-sys-error);
         color: white;
       }
 
-      /* Dark theme adjustments */
-      :host-context(.dark) .file-stats {
-        background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
-        border-color: #666;
-      }
-
-      :host-context(.dark) .stat-card {
-        background-color: #424242;
-        color: white;
-      }
-
-      :host-context(.dark) .stat-value {
-        color: white;
-      }
-
-      :host-context(.dark) .bulk-actions {
-        background-color: #1e3a5f;
-      }
-
-      :host-context(.dark) .file-card {
-        background-color: #424242;
-        border-color: #666;
-      }
-
-      :host-context(.dark) .card-preview {
-        background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
-      }
+      /* Dark theme handled by CSS tokens */
 
       @media (max-width: 768px) {
         .filter-row {

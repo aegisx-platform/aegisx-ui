@@ -10,7 +10,7 @@ export const RoleSchema = Type.Object({
   id: Type.String({ format: 'uuid' }),
   name: Type.String(),
   description: Type.Union([Type.String(), Type.Null()]),
-  category: Type.String(),
+  category: Type.Union([Type.String(), Type.Null()]),
   parent_role_id: Type.Union([Type.String({ format: 'uuid' }), Type.Null()]),
   hierarchy_level: Type.Number({ minimum: 0 }),
   is_system_role: Type.Boolean(),
