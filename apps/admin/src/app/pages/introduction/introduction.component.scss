@@ -1,9 +1,9 @@
 /* ============================================
    Introduction Page Styles
-   Uses documentation-patterns.scss (imported globally)
+   Uses typography from aegisx-ui design system
    ============================================ */
 
-// Quick Actions Card - Tremor Style
+// Quick Actions Card
 .quick-actions-card {
   background: var(--ax-background-default);
   border: 1px solid var(--ax-border-default);
@@ -45,21 +45,11 @@
   }
 
   .tech-info {
-    h4 {
-      font: var(--ax-type-title-medium);
-      color: var(--ax-text-heading);
-      margin: 0 0 0.25rem 0;
-    }
-
-    p {
-      font: var(--ax-type-body-medium);
-      color: var(--ax-text-secondary);
-      margin: 0;
-    }
+    // Typography handled by .h4 and .text-secondary classes
   }
 }
 
-// Quick Links Grid - Tremor Style
+// Quick Links Grid
 .quick-links-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -94,23 +84,13 @@
     margin-bottom: 1rem;
   }
 
-  .link-title {
-    font: var(--ax-type-title-large);
-    color: var(--ax-text-heading);
-    margin: 0 0 0.5rem 0;
-  }
-
-  .link-description {
-    font: var(--ax-type-body-medium);
-    color: var(--ax-text-secondary);
-    margin: 0 0 1.25rem 0;
-    flex: 1;
-  }
+  // Typography handled by .h3 and .text-secondary classes
 
   .link-action {
     display: flex;
     align-items: center;
     gap: 0.375rem;
+    margin-top: 1.25rem;
 
     mat-icon {
       font-size: 1.125rem;
@@ -120,7 +100,7 @@
   }
 }
 
-// Help Card - Tremor Style
+// Help Card
 .help-card {
   background: var(--ax-background-default);
   border: 1px solid var(--ax-border-default);
@@ -135,17 +115,7 @@
   padding: 1rem 0;
 
   .help-text {
-    h3 {
-      font: var(--ax-type-title-large);
-      color: var(--ax-text-heading);
-      margin: 0 0 0.5rem 0;
-    }
-
-    p {
-      font: var(--ax-type-body-large);
-      color: var(--ax-text-secondary);
-      margin: 0;
-    }
+    // Typography handled by .h3 and .text-secondary classes
   }
 
   .help-actions {
