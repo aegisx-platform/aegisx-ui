@@ -63,8 +63,8 @@
     @for (feature of features; track feature.title) {
       <a [routerLink]="feature.link" class="quick-ref-card">
         <mat-icon class="ref-icon">{{ feature.icon }}</mat-icon>
-        <h3 class="h5">{{ feature.title }}</h3>
-        <p class="body-text">{{ feature.description }}</p>
+        <h3 class="h5 card-title">{{ feature.title }}</h3>
+        <p class="body-text card-description">{{ feature.description }}</p>
       </a>
     }
   </div>
