@@ -63,7 +63,7 @@
 }
 
 /* ===== PROSE CONTAINER ===== */
-.prose {
+.ax-prose {
   font-family: var(--prose-font-sans);
   font-size: var(--prose-text-base);
   line-height: var(--prose-leading-relaxed);
@@ -327,16 +327,16 @@
 }
 
 /* ===== PROSE CONTAINER VARIANTS ===== */
-.prose-wide {
+.ax-prose-wide {
   max-width: 75ch;
 }
 
-.prose-full {
+.ax-prose-full {
   max-width: none;
 }
 
 /* ===== PROSE NOTE BOXES ===== */
-.prose-note {
+.ax-prose-note {
   padding: var(--prose-space-4);
   border-left: 3px solid var(--prose-text-heading);
   background-color: var(--prose-bg-secondary);
@@ -345,37 +345,37 @@
   font-size: var(--prose-text-sm);
 }
 
-.prose-note.info {
+.ax-prose-note.info {
   border-left-color: #3b82f6;
 }
 
-.prose-note.warning {
+.ax-prose-note.warning {
   border-left-color: #eab308;
 }
 
-.prose-note.error {
+.ax-prose-note.error {
   border-left-color: #ef4444;
 }
 
-.prose-note.success {
+.ax-prose-note.success {
   border-left-color: #22c55e;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
-  .prose {
+  .ax-prose {
     font-size: var(--prose-text-sm);
   }
 
-  .prose h1 {
+  .ax-prose h1 {
     font-size: var(--prose-text-3xl); /* 30px on mobile */
   }
 
-  .prose h2 {
+  .ax-prose h2 {
     font-size: var(--prose-text-2xl); /* 24px on mobile */
   }
 
-  .prose h3 {
+  .ax-prose h3 {
     font-size: var(--prose-text-xl); /* 20px on mobile */
   }
 }
