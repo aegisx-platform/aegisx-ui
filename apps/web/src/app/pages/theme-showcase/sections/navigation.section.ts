@@ -26,10 +26,12 @@ import { MatDividerModule } from '@angular/material/divider';
   template: `
     <div class="section-container">
       <h2 class="section-title">Navigation</h2>
-      <p class="section-description">Toolbars, menus, tabs, and navigation components</p>
+      <p class="section-description">
+        Toolbars, menus, tabs, and navigation components
+      </p>
 
       <!-- Toolbar -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Toolbar</mat-card-title>
           <mat-card-subtitle>App header and navigation bar</mat-card-subtitle>
@@ -62,14 +64,18 @@ import { MatDividerModule } from '@angular/material/divider';
       </mat-card>
 
       <!-- Menu -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Menu</mat-card-title>
           <mat-card-subtitle>Dropdown and context menus</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div class="menu-container">
-            <button mat-raised-button color="primary" [matMenuTriggerFor]="basicMenu">
+            <button
+              mat-raised-button
+              color="primary"
+              [matMenuTriggerFor]="basicMenu"
+            >
               <mat-icon>menu</mat-icon>
               Open Menu
             </button>
@@ -109,7 +115,7 @@ import { MatDividerModule } from '@angular/material/divider';
       </mat-card>
 
       <!-- Tabs -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Tabs</mat-card-title>
           <mat-card-subtitle>Tab navigation between views</mat-card-subtitle>
@@ -165,8 +171,9 @@ import { MatDividerModule } from '@angular/material/divider';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 

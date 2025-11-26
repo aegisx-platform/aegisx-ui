@@ -268,7 +268,7 @@ import { UserService, UserStatus } from '../services/user.service';
 
               <div class="bulk-actions-buttons">
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   [disabled]="bulkLoading()"
                   (click)="openBulkActivateDialog()"
@@ -279,7 +279,7 @@ import { UserService, UserStatus } from '../services/user.service';
                 </button>
 
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="warn"
                   [disabled]="bulkLoading()"
                   (click)="openBulkDeactivateDialog()"
@@ -401,7 +401,7 @@ import { UserService, UserStatus } from '../services/user.service';
             <mat-icon class="error-icon">error_outline</mat-icon>
             <p class="error-title">Error loading users</p>
             <p class="error-message">{{ error() }}</p>
-            <button mat-raised-button color="primary" (click)="loadUsers()">
+            <button mat-flat-button color="primary" (click)="loadUsers()">
               <mat-icon>refresh</mat-icon>
               <span>Retry</span>
             </button>

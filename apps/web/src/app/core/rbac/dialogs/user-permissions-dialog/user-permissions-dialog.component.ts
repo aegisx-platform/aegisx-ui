@@ -76,6 +76,7 @@ interface PermissionGroup {
               <div class="py-4">
                 <div *ngIf="permissionGroups().length > 0" class="space-y-4">
                   <mat-card
+                    appearance="outlined"
                     *ngFor="let group of permissionGroups()"
                     class="p-4"
                   >
@@ -136,7 +137,11 @@ interface PermissionGroup {
             <mat-tab label="By Role" *ngIf="!data.userRole">
               <div class="py-4">
                 <div *ngIf="rolePermissions().length > 0" class="space-y-4">
-                  <mat-card *ngFor="let role of rolePermissions()" class="p-4">
+                  <mat-card
+                    appearance="outlined"
+                    *ngFor="let role of rolePermissions()"
+                    class="p-4"
+                  >
                     <div class="flex items-center gap-2 mb-3">
                       <mat-icon class="text-purple-600"
                         >account_circle</mat-icon
@@ -197,7 +202,7 @@ interface PermissionGroup {
               <div class="py-4 space-y-4">
                 <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <mat-card class="p-4 text-center">
+                  <mat-card appearance="outlined" class="p-4 text-center">
                     <div class="text-2xl font-bold text-blue-600 mb-1">
                       {{ totalPermissions() }}
                     </div>
@@ -206,7 +211,7 @@ interface PermissionGroup {
                     </div>
                   </mat-card>
 
-                  <mat-card class="p-4 text-center">
+                  <mat-card appearance="outlined" class="p-4 text-center">
                     <div class="text-2xl font-bold text-green-600 mb-1">
                       {{ uniqueResources() }}
                     </div>
@@ -215,7 +220,7 @@ interface PermissionGroup {
                     </div>
                   </mat-card>
 
-                  <mat-card class="p-4 text-center">
+                  <mat-card appearance="outlined" class="p-4 text-center">
                     <div class="text-2xl font-bold text-purple-600 mb-1">
                       {{ data.userRole ? 1 : activeRolesCount() }}
                     </div>
@@ -226,7 +231,7 @@ interface PermissionGroup {
                 </div>
 
                 <!-- Resource Breakdown -->
-                <mat-card class="p-4">
+                <mat-card appearance="outlined" class="p-4">
                   <h3 class="text-lg font-medium mb-3">Resource Access</h3>
                   <div class="space-y-2">
                     <div

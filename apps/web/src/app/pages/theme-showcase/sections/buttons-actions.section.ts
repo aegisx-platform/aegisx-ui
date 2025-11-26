@@ -24,13 +24,17 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
   template: `
     <div class="section-container">
       <h2 class="section-title">Buttons & Actions</h2>
-      <p class="section-description">Interactive buttons and action components</p>
+      <p class="section-description">
+        Interactive buttons and action components
+      </p>
 
       <!-- Button Variants -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Button Variants</mat-card-title>
-          <mat-card-subtitle>Different button styles and states</mat-card-subtitle>
+          <mat-card-subtitle
+            >Different button styles and states</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="button-grid">
@@ -49,7 +53,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       </mat-card>
 
       <!-- Icon Buttons -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Icon Buttons</mat-card-title>
           <mat-card-subtitle>Buttons with icons and FAB</mat-card-subtitle>
@@ -85,7 +89,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       </mat-card>
 
       <!-- Button with Text & Icon -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Buttons with Icons</mat-card-title>
           <mat-card-subtitle>Combined text and icon buttons</mat-card-subtitle>
@@ -113,10 +117,12 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       </mat-card>
 
       <!-- Button Toggle -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Button Toggle Group</mat-card-title>
-          <mat-card-subtitle>Mutually exclusive button selection</mat-card-subtitle>
+          <mat-card-subtitle
+            >Mutually exclusive button selection</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="toggle-group">
@@ -150,10 +156,12 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       </mat-card>
 
       <!-- Chips -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Chips</mat-card-title>
-          <mat-card-subtitle>Compact tags and selectable items</mat-card-subtitle>
+          <mat-card-subtitle
+            >Compact tags and selectable items</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="chip-section">
@@ -168,15 +176,11 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
           <div class="chip-section">
             <p class="chip-label">Removable Chips</p>
             <mat-chip-set>
-              <mat-chip removable (removed)="remove($event)">
-                React
-              </mat-chip>
+              <mat-chip removable (removed)="remove($event)"> React </mat-chip>
               <mat-chip removable (removed)="remove($event)">
                 Angular
               </mat-chip>
-              <mat-chip removable (removed)="remove($event)">
-                Vue
-              </mat-chip>
+              <mat-chip removable (removed)="remove($event)"> Vue </mat-chip>
             </mat-chip-set>
           </div>
 
@@ -192,7 +196,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       </mat-card>
 
       <!-- Badge -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Badge</mat-card-title>
           <mat-card-subtitle>Notification badges on elements</mat-card-subtitle>
@@ -245,8 +249,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 

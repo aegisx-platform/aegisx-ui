@@ -27,7 +27,7 @@ import { FileUploadDemoComponent } from '../../shared/ui/components/file-upload/
         </p>
       </div>
 
-      <mat-card class="demo-container">
+      <mat-card appearance="outlined" class="demo-container">
         <mat-card-header>
           <mat-card-title>
             <mat-icon>science</mat-icon>

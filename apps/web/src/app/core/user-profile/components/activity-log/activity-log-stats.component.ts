@@ -35,7 +35,7 @@ import { ActivityLogService } from './activity-log.service';
       <!-- Overview Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <!-- Total Activities -->
-        <mat-card class="stat-card">
+        <mat-card appearance="outlined" class="stat-card">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -69,7 +69,7 @@ import { ActivityLogService } from './activity-log.service';
         </mat-card>
 
         <!-- Today's Activities -->
-        <mat-card class="stat-card">
+        <mat-card appearance="outlined" class="stat-card">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -101,7 +101,7 @@ import { ActivityLogService } from './activity-log.service';
         </mat-card>
 
         <!-- This Week -->
-        <mat-card class="stat-card">
+        <mat-card appearance="outlined" class="stat-card">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -137,7 +137,7 @@ import { ActivityLogService } from './activity-log.service';
         </mat-card>
 
         <!-- Unique Devices -->
-        <mat-card class="stat-card">
+        <mat-card appearance="outlined" class="stat-card">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -174,7 +174,7 @@ import { ActivityLogService } from './activity-log.service';
       <!-- Detailed Stats -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 sm:px-0">
         <!-- Activity by Action -->
-        <mat-card class="h-fit">
+        <mat-card appearance="outlined" class="h-fit">
           <mat-card-header class="pb-2">
             <mat-card-title class="flex items-center">
               <mat-icon class="mr-2">category</mat-icon>
@@ -244,7 +244,7 @@ import { ActivityLogService } from './activity-log.service';
         </mat-card>
 
         <!-- Activity by Severity -->
-        <mat-card class="h-fit">
+        <mat-card appearance="outlined" class="h-fit">
           <mat-card-header class="pb-2">
             <mat-card-title class="flex items-center">
               <mat-icon class="mr-2">priority_high</mat-icon>
@@ -320,7 +320,7 @@ import { ActivityLogService } from './activity-log.service';
 
       <!-- Last Activity -->
       @if (stats()?.last_activity) {
-        <mat-card class="mt-6">
+        <mat-card appearance="outlined" class="mt-6">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center">

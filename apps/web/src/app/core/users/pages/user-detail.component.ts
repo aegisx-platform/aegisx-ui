@@ -47,7 +47,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
             </p>
             <p style="color: var(--ax-text-subtle)">{{ error() }}</p>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="loadUser()"
               class="mt-4"

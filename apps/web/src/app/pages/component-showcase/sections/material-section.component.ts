@@ -102,6 +102,7 @@ interface MaterialSection {
 
           <div class="component-grid">
             <mat-card
+              appearance="outlined"
               *ngFor="let component of filteredComponents()"
               class="component-card"
             >

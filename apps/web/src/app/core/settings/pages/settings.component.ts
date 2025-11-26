@@ -302,7 +302,7 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
               Reset Changes
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="saveSettings()"
               [disabled]="

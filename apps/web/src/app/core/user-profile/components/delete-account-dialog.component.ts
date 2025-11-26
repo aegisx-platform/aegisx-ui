@@ -149,7 +149,7 @@ export interface DeleteAccountResult {
       <mat-dialog-actions align="end" class="px-6 pb-4">
         <button mat-button (click)="onCancel()" class="mr-2">Cancel</button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="warn"
           (click)="onConfirm()"
           [disabled]="!canConfirm()"

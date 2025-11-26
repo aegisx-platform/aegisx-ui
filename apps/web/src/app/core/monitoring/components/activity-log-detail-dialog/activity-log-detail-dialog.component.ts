@@ -262,7 +262,7 @@ import { ActivityLog } from '../../models/monitoring.types';
         <mat-icon>close</mat-icon>
         Close
       </button>
-      <button mat-raised-button color="primary" (click)="copyToClipboard()">
+      <button mat-flat-button color="primary" (click)="copyToClipboard()">
         <mat-icon>content_copy</mat-icon>
         Copy Details
       </button>

@@ -159,7 +159,7 @@ export interface ExportService {
               Cancel
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               [disabled]="!selectedFormat() || isExporting()"
               (click)="executeExport()"

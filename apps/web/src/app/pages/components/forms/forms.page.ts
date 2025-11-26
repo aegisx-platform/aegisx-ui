@@ -368,7 +368,7 @@ import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
                 Reset
               </button>
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 type="submit"
                 [disabled]="!completeForm.valid"

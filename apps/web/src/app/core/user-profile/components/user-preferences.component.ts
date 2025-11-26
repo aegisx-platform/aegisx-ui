@@ -391,7 +391,7 @@ import {
                 </button>
                 <button
                   type="submit"
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   [disabled]="
                     !hasChanges() || preferencesForm.invalid || isSaving()

@@ -23,7 +23,7 @@
       <div class="error-state">
         <mat-icon class="error-icon">camera_off</mat-icon>
         <p class="error-text">{{ error }}</p>
-        <button mat-raised-button color="primary" (click)="retry()">
+        <button mat-flat-button color="primary" (click)="retry()">
           <mat-icon>refresh</mat-icon>
           Retry
         </button>
@@ -79,11 +79,11 @@
       } @else {
         <!-- Photo Captured Controls -->
         <div class="photo-controls">
-          <button mat-raised-button (click)="retake()">
+          <button mat-flat-button (click)="retake()">
             <mat-icon>refresh</mat-icon>
             Retake
           </button>
-          <button mat-raised-button color="primary" (click)="close()">
+          <button mat-flat-button color="primary" (click)="close()">
             <mat-icon>check</mat-icon>
             Use Photo
           </button>

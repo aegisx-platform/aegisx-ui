@@ -59,6 +59,7 @@ export interface UserRolesDialogData {
           </h3>
           <div class="space-y-2">
             <mat-card
+              appearance="outlined"
               *ngFor="let userRole of activeRoles()"
               class="p-4 border-l-4 border-green-500"
             >
@@ -116,6 +117,7 @@ export interface UserRolesDialogData {
           </h3>
           <div class="space-y-2">
             <mat-card
+              appearance="outlined"
               *ngFor="let userRole of inactiveRoles()"
               class="p-4 border-l-4 border-red-500 opacity-75"
             >

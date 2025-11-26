@@ -100,7 +100,7 @@ interface NavigationFilters {
         <div class="flex flex-wrap gap-2">
           <button
             *hasPermission="'navigation:create'"
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="openCreateDialog()"
             [disabled]="isLoading()"
@@ -109,7 +109,7 @@ interface NavigationFilters {
             Create Navigation Item
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             (click)="refreshNavigationItems()"
             [disabled]="isLoading()"
           >
@@ -120,7 +120,7 @@ interface NavigationFilters {
       </div>
 
       <!-- Filters -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <mat-card-content class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <mat-form-field
@@ -230,7 +230,7 @@ interface NavigationFilters {
       </mat-card>
 
       <!-- Role Preview Mode Section -->
-      <mat-card *hasPermission="'navigation:read'">
+      <mat-card appearance="outlined" *hasPermission="'navigation:read'">
         <mat-card-header class="p-6 pb-4">
           <mat-card-title class="text-lg font-semibold">
             <div class="flex items-center gap-2">
@@ -253,7 +253,7 @@ interface NavigationFilters {
             <div class="flex flex-wrap gap-2">
               @for (role of availableRoles(); track role.id) {
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   [color]="
                     selectedRole()?.id === role.id ? 'primary' : undefined
                   "
@@ -332,7 +332,7 @@ interface NavigationFilters {
       </mat-card>
 
       <!-- Navigation Table -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <!-- Drag Info Banner -->
         <div *ngIf="!isDragEnabled()" class="warning-banner">
           <mat-icon class="warning-banner-icon mt-0.5">info</mat-icon>
@@ -647,7 +647,7 @@ interface NavigationFilters {
             }}
           </p>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="hasActiveFilters() ? clearFilters() : openCreateDialog()"
           >

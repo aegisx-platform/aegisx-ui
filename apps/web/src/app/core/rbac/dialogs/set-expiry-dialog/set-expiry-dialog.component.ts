@@ -66,7 +66,7 @@ export interface SetExpiryResult {
 
       <mat-dialog-content class="space-y-6">
         <!-- Current Status -->
-        <mat-card class="p-4">
+        <mat-card appearance="outlined" class="p-4">
           <div class="flex items-center gap-3 mb-3">
             <mat-icon class="text-blue-600">info</mat-icon>
             <h3 class="text-md font-medium m-0">Current Status</h3>

@@ -70,7 +70,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
         </div>
 
         <!-- Login Form Card -->
-        <mat-card class="auth-card">
+        <mat-card appearance="outlined" class="auth-card">
           <mat-card-content>
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
               <!-- Error Alert -->
@@ -199,7 +199,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 
         <!-- Demo Credentials (Development Only) -->
         @if (isDevelopment()) {
-          <mat-card class="auth-demo-card">
+          <mat-card appearance="outlined" class="auth-demo-card">
             <mat-card-content>
               <div class="auth-demo-header">
                 <div class="auth-demo-header-icon">

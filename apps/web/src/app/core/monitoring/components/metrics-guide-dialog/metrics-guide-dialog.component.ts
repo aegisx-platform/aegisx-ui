@@ -172,7 +172,7 @@ interface MetricDetail {
 
       <!-- Footer -->
       <mat-dialog-actions align="end" class="dialog-footer">
-        <button mat-raised-button color="primary" [mat-dialog-close]="true">
+        <button mat-flat-button color="primary" [mat-dialog-close]="true">
           <mat-icon>check</mat-icon>
           เข้าใจแล้ว
         </button>

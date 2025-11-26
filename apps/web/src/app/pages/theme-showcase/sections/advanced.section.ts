@@ -20,17 +20,26 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   template: `
     <div class="section-container">
       <h2 class="section-title">Advanced</h2>
-      <p class="section-description">CDK features, drag & drop, and advanced interactions</p>
+      <p class="section-description">
+        CDK features, drag & drop, and advanced interactions
+      </p>
 
       <!-- Drag & Drop -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Drag & Drop</mat-card-title>
-          <mat-card-subtitle>Reorderable lists with CDK drag-drop</mat-card-subtitle>
+          <mat-card-subtitle
+            >Reorderable lists with CDK drag-drop</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="drag-drop-container">
-            <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="todos" class="todo-list">
+            <div
+              cdkDropList
+              #todoList="cdkDropList"
+              [cdkDropListData]="todos"
+              class="todo-list"
+            >
               @for (todo of todos; track todo.id) {
                 <div class="todo-item" cdkDrag>
                   <mat-icon cdkDragHandle>drag_indicator</mat-icon>
@@ -44,10 +53,12 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
       </mat-card>
 
       <!-- Virtual Scrolling Info -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Virtual Scrolling</mat-card-title>
-          <mat-card-subtitle>Efficient rendering of large lists</mat-card-subtitle>
+          <mat-card-subtitle
+            >Efficient rendering of large lists</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="scrolling-demo">
@@ -60,12 +71,14 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
               }
             </cdk-virtual-scroll-viewport>
           </div>
-          <p class="hint-text">Virtual scrolling renders only visible items for performance</p>
+          <p class="hint-text">
+            Virtual scrolling renders only visible items for performance
+          </p>
         </mat-card-content>
       </mat-card>
 
       <!-- CDK Features Info -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Advanced CDK Features</mat-card-title>
           <mat-card-subtitle>Component Dev Kit capabilities</mat-card-subtitle>
@@ -97,10 +110,12 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
       </mat-card>
 
       <!-- Performance Tips -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Performance Optimization</mat-card-title>
-          <mat-card-subtitle>Best practices with Material & Presets</mat-card-subtitle>
+          <mat-card-subtitle
+            >Best practices with Material & Presets</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="tips-list">
@@ -166,8 +181,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 
@@ -199,7 +215,10 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
       }
 
       .cdk-drop-list-dragging .cdk-drag:hover {
-        background-color: rgba(var(--md-sys-color-primary-rgb, 57, 73, 171), 0.05);
+        background-color: rgba(
+          var(--md-sys-color-primary-rgb, 57, 73, 171),
+          0.05
+        );
       }
 
       .cdk-drag-preview {

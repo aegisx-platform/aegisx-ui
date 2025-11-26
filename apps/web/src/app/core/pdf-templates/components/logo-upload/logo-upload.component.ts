@@ -49,7 +49,7 @@ export interface LogoUploadData {
           aria-label="Upload logo file"
         />
         <button
-          mat-raised-button
+          mat-flat-button
           color="accent"
           type="button"
           (click)="fileInput.click()"

@@ -78,7 +78,7 @@ interface MockUser {
             <mat-icon>upload</mat-icon>
             <span class="hidden sm:inline ml-2">Import</span>
           </button>
-          <button mat-raised-button color="primary">
+          <button mat-flat-button color="primary">
             <mat-icon>add</mat-icon>
             <span class="ml-2">Add User</span>
           </button>
@@ -317,7 +317,7 @@ interface MockUser {
                 </button>
 
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   matTooltip="Apply filters"
                 >
@@ -409,14 +409,14 @@ interface MockUser {
 
             <div class="flex items-center gap-2 flex-wrap">
               <button
-                mat-raised-button
+                mat-flat-button
                 style="background-color: var(--ax-success-default); color: white;"
               >
                 <mat-icon>check_circle</mat-icon>
                 <span class="ml-2">Activate</span>
               </button>
 
-              <button mat-raised-button color="warn">
+              <button mat-flat-button color="warn">
                 <mat-icon>block</mat-icon>
                 <span class="ml-2">Deactivate</span>
               </button>

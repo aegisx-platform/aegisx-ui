@@ -32,6 +32,7 @@ import { PdfTemplate } from '../types/pdf-templates.types';
       <div *ngIf="!loading()" class="templates-grid">
         <!-- Blank Template Card -->
         <mat-card
+          appearance="outlined"
           class="template-card blank-template"
           (click)="selectTemplate(null)"
           [class.selected]="selectedTemplate() === null"
@@ -49,6 +50,7 @@ import { PdfTemplate } from '../types/pdf-templates.types';
 
         <!-- Starter Template Cards -->
         <mat-card
+          appearance="outlined"
           *ngFor="let template of templates()"
           class="template-card"
           (click)="selectTemplate(template)"
@@ -79,7 +81,7 @@ import { PdfTemplate } from '../types/pdf-templates.types';
       <div *ngIf="!loading() && error()" class="error-container">
         <mat-icon>error_outline</mat-icon>
         <p>{{ error() }}</p>
-        <button mat-raised-button color="primary" (click)="loadTemplates()">
+        <button mat-flat-button color="primary" (click)="loadTemplates()">
           Retry
         </button>
       </div>
@@ -91,11 +93,7 @@ import { PdfTemplate } from '../types/pdf-templates.types';
       >
         <mat-icon>inbox</mat-icon>
         <p>No template starters available</p>
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="selectTemplate(null)"
-        >
+        <button mat-flat-button color="primary" (click)="selectTemplate(null)">
           Start from Blank
         </button>
       </div>

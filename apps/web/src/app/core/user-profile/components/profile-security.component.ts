@@ -111,7 +111,7 @@ import { UserService } from '../../users/services/user.service';
 
           <div class="flex gap-2">
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               type="submit"
               [disabled]="passwordForm.invalid || isChangingPassword()"

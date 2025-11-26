@@ -94,7 +94,7 @@ interface BulkRoleChangeDialogData {
         Cancel
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         (click)="onSubmit()"
         [disabled]="roleForm.invalid || isSubmitting()"

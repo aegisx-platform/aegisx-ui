@@ -26,7 +26,7 @@ import { UploadedFile } from './file-upload.types';
   ],
   template: `
     <div class="demo-container">
-      <mat-card class="demo-header">
+      <mat-card appearance="outlined" class="demo-header">
         <mat-card-header>
           <mat-card-title>
             <mat-icon>cloud_upload</mat-icon>
@@ -63,7 +63,11 @@ import { UploadedFile } from './file-upload.types';
             </app-file-upload>
 
             <!-- Upload Results -->
-            <mat-card *ngIf="recentUploads().length > 0" class="recent-uploads">
+            <mat-card
+              appearance="outlined"
+              *ngIf="recentUploads().length > 0"
+              class="recent-uploads"
+            >
               <mat-card-header>
                 <mat-card-title>Recently Uploaded Files</mat-card-title>
               </mat-card-header>
@@ -137,7 +141,11 @@ import { UploadedFile } from './file-upload.types';
             </app-file-upload>
 
             <!-- Avatar Preview -->
-            <mat-card *ngIf="currentAvatar()" class="avatar-preview">
+            <mat-card
+              appearance="outlined"
+              *ngIf="currentAvatar()"
+              class="avatar-preview"
+            >
               <mat-card-header>
                 <mat-card-title>Current Avatar</mat-card-title>
               </mat-card-header>
@@ -173,7 +181,7 @@ import { UploadedFile } from './file-upload.types';
               options, and event handling.
             </p>
 
-            <mat-card class="code-example">
+            <mat-card appearance="outlined" class="code-example">
               <mat-card-header>
                 <mat-card-title>Basic Usage</mat-card-title>
               </mat-card-header>
@@ -182,7 +190,7 @@ import { UploadedFile } from './file-upload.types';
               </mat-card-content>
             </mat-card>
 
-            <mat-card class="code-example">
+            <mat-card appearance="outlined" class="code-example">
               <mat-card-header>
                 <mat-card-title>Service Integration</mat-card-title>
               </mat-card-header>
@@ -191,7 +199,7 @@ import { UploadedFile } from './file-upload.types';
               </mat-card-content>
             </mat-card>
 
-            <mat-card class="code-example">
+            <mat-card appearance="outlined" class="code-example">
               <mat-card-header>
                 <mat-card-title>Configuration Options</mat-card-title>
               </mat-card-header>

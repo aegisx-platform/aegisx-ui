@@ -54,7 +54,7 @@ export interface AssetInsertEvent {
       <div class="manager-header">
         <h4>Template Assets</h4>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           type="button"
           (click)="fileInput.click()"
@@ -96,7 +96,7 @@ export interface AssetInsertEvent {
       @if (assets().length > 0) {
         <div class="assets-grid">
           @for (asset of assets(); track asset.id) {
-            <mat-card class="asset-card">
+            <mat-card appearance="outlined" class="asset-card">
               <mat-card-header>
                 <mat-card-title class="asset-title">
                   {{ asset.originalName }}

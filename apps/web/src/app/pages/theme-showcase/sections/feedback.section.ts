@@ -26,10 +26,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
   template: `
     <div class="section-container">
       <h2 class="section-title">Feedback</h2>
-      <p class="section-description">Progress indicators, notifications, and user feedback components</p>
+      <p class="section-description">
+        Progress indicators, notifications, and user feedback components
+      </p>
 
       <!-- Progress Bar -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Progress Bar</mat-card-title>
           <mat-card-subtitle>Linear progress indicators</mat-card-subtitle>
@@ -47,7 +49,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
           <div class="progress-section">
             <p class="progress-label">Buffered</p>
-            <mat-progress-bar mode="buffer" value="75" bufferValue="90"></mat-progress-bar>
+            <mat-progress-bar
+              mode="buffer"
+              value="75"
+              bufferValue="90"
+            ></mat-progress-bar>
           </div>
 
           <div class="progress-section">
@@ -58,7 +64,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
       </mat-card>
 
       <!-- Progress Spinner -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Progress Spinner</mat-card-title>
           <mat-card-subtitle>Circular progress indicators</mat-card-subtitle>
@@ -67,7 +73,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
           <div class="spinner-grid">
             <div class="spinner-item">
               <p class="spinner-label">Determinate (75%)</p>
-              <mat-spinner [value]="75" mode="determinate" diameter="100"></mat-spinner>
+              <mat-spinner
+                [value]="75"
+                mode="determinate"
+                diameter="100"
+              ></mat-spinner>
             </div>
 
             <div class="spinner-item">
@@ -89,23 +99,39 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
       </mat-card>
 
       <!-- Tooltip -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Tooltip</mat-card-title>
           <mat-card-subtitle>Hover information overlays</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div class="tooltip-grid">
-            <button mat-raised-button matTooltip="Right aligned tooltip" matTooltipPosition="right">
+            <button
+              mat-raised-button
+              matTooltip="Right aligned tooltip"
+              matTooltipPosition="right"
+            >
               Right
             </button>
-            <button mat-raised-button matTooltip="Left aligned tooltip" matTooltipPosition="left">
+            <button
+              mat-raised-button
+              matTooltip="Left aligned tooltip"
+              matTooltipPosition="left"
+            >
               Left
             </button>
-            <button mat-raised-button matTooltip="Above the button" matTooltipPosition="above">
+            <button
+              mat-raised-button
+              matTooltip="Above the button"
+              matTooltipPosition="above"
+            >
               Above
             </button>
-            <button mat-raised-button matTooltip="Below the button" matTooltipPosition="below">
+            <button
+              mat-raised-button
+              matTooltip="Below the button"
+              matTooltipPosition="below"
+            >
               Below
             </button>
           </div>
@@ -113,19 +139,27 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
       </mat-card>
 
       <!-- Notifications -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Snackbar & Notifications</mat-card-title>
           <mat-card-subtitle>User feedback and notifications</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div class="notification-buttons">
-            <button mat-raised-button color="primary" (click)="showSuccessSnackBar()">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="showSuccessSnackBar()"
+            >
               <mat-icon>check_circle</mat-icon>
               Success Message
             </button>
 
-            <button mat-raised-button color="warn" (click)="showErrorSnackBar()">
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="showErrorSnackBar()"
+            >
               <mat-icon>error</mat-icon>
               Error Message
             </button>
@@ -173,8 +207,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 

@@ -44,7 +44,7 @@ import { AuthService } from '../../core/auth/services/auth.service';
         </div>
 
         <!-- Form Card -->
-        <mat-card class="auth-card">
+        <mat-card appearance="outlined" class="auth-card">
           <mat-card-content>
             <!-- Success Message -->
             @if (successMessage()) {
@@ -268,7 +268,7 @@ import { AuthService } from '../../core/auth/services/auth.service';
         </mat-card>
 
         <!-- Info Card -->
-        <mat-card class="auth-info-card">
+        <mat-card appearance="outlined" class="auth-info-card">
           <mat-card-content>
             <div class="auth-info-header">
               <div class="auth-info-icon">

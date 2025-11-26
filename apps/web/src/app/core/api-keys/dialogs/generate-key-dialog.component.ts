@@ -128,7 +128,7 @@ import { ApiKeysService } from '../services/api-keys.service';
             Cancel
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="generateKey()"
             [disabled]="!form.valid || generating()"
@@ -269,7 +269,7 @@ import { ApiKeysService } from '../services/api-keys.service';
             {{ keyCopied() ? 'Copied!' : 'Copy Key Again' }}
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="close()"
             type="button"

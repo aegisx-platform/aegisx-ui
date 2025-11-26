@@ -47,7 +47,7 @@ import {
     MatExpansionModule,
   ],
   template: `
-    <mat-card class="filter-card">
+    <mat-card appearance="outlined" class="filter-card">
       <mat-card-content class="p-4">
         <form [formGroup]="filterForm" novalidate>
           <div class="flex items-center justify-between mb-4">
@@ -136,7 +136,7 @@ import {
             <!-- Quick Actions -->
             <div class="flex items-end">
               <button
-                mat-raised-button
+                mat-flat-button
                 type="button"
                 color="primary"
                 (click)="applyFilters()"

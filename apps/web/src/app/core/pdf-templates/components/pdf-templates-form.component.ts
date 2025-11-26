@@ -311,7 +311,7 @@ export interface PdfTemplateFormData {
           Cancel
         </button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           type="button"
           (click)="onSubmit()"

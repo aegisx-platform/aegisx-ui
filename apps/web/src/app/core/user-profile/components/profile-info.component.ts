@@ -216,7 +216,7 @@ import {
             Reset Changes
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             type="button"
             (click)="saveChanges()"

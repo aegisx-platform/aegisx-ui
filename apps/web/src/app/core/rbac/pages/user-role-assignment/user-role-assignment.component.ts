@@ -92,7 +92,7 @@ import { RbacService } from '../../services/rbac.service';
         <div class="flex flex-wrap gap-2">
           <button
             *hasPermission="'roles:update'"
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="openAssignDialog()"
             [disabled]="isLoading()"
@@ -102,7 +102,7 @@ import { RbacService } from '../../services/rbac.service';
           </button>
           <button
             *hasPermission="'roles:update'"
-            mat-raised-button
+            mat-flat-button
             color="accent"
             (click)="openBulkAssignDialog()"
             [disabled]="isLoading()"
@@ -111,7 +111,7 @@ import { RbacService } from '../../services/rbac.service';
             Bulk Assign
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             (click)="refreshAssignments()"
             [disabled]="isLoading()"
           >
@@ -123,28 +123,28 @@ import { RbacService } from '../../services/rbac.service';
 
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <mat-card class="p-4 text-center">
+        <mat-card appearance="outlined" class="p-4 text-center">
           <div class="stat-number stat-info">
             {{ totalAssignments() }}
           </div>
           <div class="secondary-text">Total Assignments</div>
         </mat-card>
 
-        <mat-card class="p-4 text-center">
+        <mat-card appearance="outlined" class="p-4 text-center">
           <div class="stat-number stat-success">
             {{ activeAssignments() }}
           </div>
           <div class="secondary-text">Active Assignments</div>
         </mat-card>
 
-        <mat-card class="p-4 text-center">
+        <mat-card appearance="outlined" class="p-4 text-center">
           <div class="stat-number stat-warning">
             {{ expiringAssignments() }}
           </div>
           <div class="secondary-text">Expiring Soon</div>
         </mat-card>
 
-        <mat-card class="p-4 text-center">
+        <mat-card appearance="outlined" class="p-4 text-center">
           <div class="stat-number stat-error">
             {{ expiredAssignments() }}
           </div>
@@ -153,7 +153,7 @@ import { RbacService } from '../../services/rbac.service';
       </div>
 
       <!-- Filters -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <mat-card-content class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <mat-form-field
@@ -265,7 +265,7 @@ import { RbacService } from '../../services/rbac.service';
       </mat-card>
 
       <!-- Assignments Table -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" matSort class="w-full">
             <!-- Selection Column -->
@@ -491,7 +491,7 @@ import { RbacService } from '../../services/rbac.service';
             }}
           </p>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="hasActiveFilters() ? clearFilters() : openAssignDialog()"
           >

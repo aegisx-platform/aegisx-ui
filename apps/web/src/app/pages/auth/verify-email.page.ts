@@ -102,7 +102,7 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
 
         <!-- Verifying State -->
         @if (isVerifying()) {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div class="auth-loading">
                 <mat-spinner diameter="40"></mat-spinner>
@@ -114,7 +114,7 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
 
         <!-- Success State -->
         @if (!isVerifying() && verificationState() === 'success') {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div
                 class="auth-alert auth-alert-success"
@@ -156,7 +156,7 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
 
         <!-- Already Verified State -->
         @if (!isVerifying() && verificationState() === 'already-verified') {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div
                 class="auth-alert auth-alert-info"
@@ -191,7 +191,7 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
 
         <!-- Expired Token State -->
         @if (!isVerifying() && verificationState() === 'expired') {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div
                 class="auth-alert auth-alert-warning"
@@ -269,7 +269,7 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
           !isVerifying() &&
           (verificationState() === 'invalid' || verificationState() === 'error')
         ) {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div
                 class="auth-alert auth-alert-error"

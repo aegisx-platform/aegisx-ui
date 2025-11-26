@@ -32,7 +32,7 @@ export interface ConfirmDialogData {
         {{ data.cancelText || 'Cancel' }}
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         [color]="data.confirmColor || 'primary'"
         (click)="onConfirm()"
       >

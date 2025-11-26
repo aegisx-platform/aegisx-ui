@@ -81,7 +81,7 @@ import {
             </mat-icon>
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="refresh()"
             [disabled]="isLoading()"
@@ -201,11 +201,7 @@ import {
               }
             </p>
             @if (hasActiveFilters()) {
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="clearFilters()"
-              >
+              <button mat-flat-button color="primary" (click)="clearFilters()">
                 Clear Filters
               </button>
             }

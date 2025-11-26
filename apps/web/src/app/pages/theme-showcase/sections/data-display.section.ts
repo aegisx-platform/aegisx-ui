@@ -20,13 +20,17 @@ import { MatIconModule } from '@angular/material/icon';
   template: `
     <div class="section-container">
       <h2 class="section-title">Data Display</h2>
-      <p class="section-description">Tables, pagination, and data visualization components</p>
+      <p class="section-description">
+        Tables, pagination, and data visualization components
+      </p>
 
       <!-- Data Table -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Data Table</mat-card-title>
-          <mat-card-subtitle>Sortable and paginated data display</mat-card-subtitle>
+          <mat-card-subtitle
+            >Sortable and paginated data display</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="table-container">
@@ -53,21 +57,24 @@ import { MatIconModule } from '@angular/material/icon';
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let element">
-                  <span class="status-badge" [class]="'status-' + element.status.toLowerCase()">
+                  <span
+                    class="status-badge"
+                    [class]="'status-' + element.status.toLowerCase()"
+                  >
                     {{ element.status }}
                   </span>
                 </td>
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
           </div>
         </mat-card-content>
       </mat-card>
 
       <!-- Simple Data Grid -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Data Grid</mat-card-title>
           <mat-card-subtitle>Grid layout for data display</mat-card-subtitle>
@@ -118,8 +125,9 @@ import { MatIconModule } from '@angular/material/icon';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 
@@ -237,15 +245,54 @@ export class DataDisplaySection {
   tableData = [
     { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
     { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Active' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Inactive' },
-    { id: 4, name: 'Alice Brown', email: 'alice@example.com', status: 'Pending' },
-    { id: 5, name: 'Charlie Davis', email: 'charlie@example.com', status: 'Active' },
+    {
+      id: 3,
+      name: 'Bob Johnson',
+      email: 'bob@example.com',
+      status: 'Inactive',
+    },
+    {
+      id: 4,
+      name: 'Alice Brown',
+      email: 'alice@example.com',
+      status: 'Pending',
+    },
+    {
+      id: 5,
+      name: 'Charlie Davis',
+      email: 'charlie@example.com',
+      status: 'Active',
+    },
   ];
 
   gridData = [
-    { id: 1, icon: 'people', title: 'Users', value: '1,234', subtitle: 'Active users' },
-    { id: 2, icon: 'trending_up', title: 'Revenue', value: '$45.2K', subtitle: 'This month' },
-    { id: 3, icon: 'shopping_cart', title: 'Orders', value: '567', subtitle: 'Completed' },
-    { id: 4, icon: 'star', title: 'Rating', value: '4.8/5', subtitle: 'Customer rating' },
+    {
+      id: 1,
+      icon: 'people',
+      title: 'Users',
+      value: '1,234',
+      subtitle: 'Active users',
+    },
+    {
+      id: 2,
+      icon: 'trending_up',
+      title: 'Revenue',
+      value: '$45.2K',
+      subtitle: 'This month',
+    },
+    {
+      id: 3,
+      icon: 'shopping_cart',
+      title: 'Orders',
+      value: '567',
+      subtitle: 'Completed',
+    },
+    {
+      id: 4,
+      icon: 'star',
+      title: 'Rating',
+      value: '4.8/5',
+      subtitle: 'Customer rating',
+    },
   ];
 }

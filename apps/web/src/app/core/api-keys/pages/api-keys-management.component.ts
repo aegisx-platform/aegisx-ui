@@ -52,7 +52,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
           </p>
         </div>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           (click)="openGenerateDialog()"
           [disabled]="loading()"
@@ -64,7 +64,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
 
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <mat-card class="shadow-sm">
+        <mat-card appearance="outlined" class="shadow-sm">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -76,7 +76,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="shadow-sm">
+        <mat-card appearance="outlined" class="shadow-sm">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -90,7 +90,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="shadow-sm">
+        <mat-card appearance="outlined" class="shadow-sm">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -106,7 +106,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
       </div>
 
       <!-- Table Card -->
-      <mat-card class="shadow-md">
+      <mat-card appearance="outlined" class="shadow-md">
         <mat-card-content class="p-6">
           @if (loading()) {
             <div class="flex justify-center items-center py-12">

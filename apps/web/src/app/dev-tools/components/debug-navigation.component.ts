@@ -24,7 +24,7 @@ import { RouterModule } from '@angular/router';
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Status Card -->
-        <mat-card>
+        <mat-card appearance="outlined">
           <mat-card-header>
             <mat-card-title>📊 Service Status</mat-card-title>
           </mat-card-header>
@@ -85,7 +85,7 @@ import { RouterModule } from '@angular/router';
           </mat-card-content>
           <mat-card-actions>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="refreshNavigation()"
             >
@@ -93,14 +93,14 @@ import { RouterModule } from '@angular/router';
               Refresh Default
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="accent"
               (click)="loadUserNavigation()"
             >
               <mat-icon>person</mat-icon>
               Load User Nav
             </button>
-            <button mat-raised-button color="warn" (click)="useFallback()">
+            <button mat-flat-button color="warn" (click)="useFallback()">
               <mat-icon>cached</mat-icon>
               Use Fallback
             </button>
@@ -108,7 +108,7 @@ import { RouterModule } from '@angular/router';
         </mat-card>
 
         <!-- Statistics Card -->
-        <mat-card>
+        <mat-card appearance="outlined">
           <mat-card-header>
             <mat-card-title>📈 Navigation Statistics</mat-card-title>
           </mat-card-header>
@@ -136,7 +136,7 @@ import { RouterModule } from '@angular/router';
       </div>
 
       <!-- Navigation Structure Card -->
-      <mat-card class="mt-6">
+      <mat-card appearance="outlined" class="mt-6">
         <mat-card-header>
           <mat-card-title>🗂️ Navigation Structure</mat-card-title>
           <mat-card-subtitle
@@ -153,7 +153,7 @@ import { RouterModule } from '@angular/router';
 
       <!-- Back to App -->
       <div class="mt-6 text-center">
-        <button mat-raised-button color="primary" routerLink="/dashboard">
+        <button mat-flat-button color="primary" routerLink="/dashboard">
           <mat-icon>home</mat-icon>
           Back to Dashboard
         </button>

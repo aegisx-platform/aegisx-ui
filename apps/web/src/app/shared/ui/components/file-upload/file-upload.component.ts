@@ -57,7 +57,7 @@ import {
     MatButtonToggleModule,
   ],
   template: `
-    <mat-card class="file-upload-container">
+    <mat-card appearance="outlined" class="file-upload-container">
       <mat-card-header>
         <mat-card-title>File Upload</mat-card-title>
         <mat-card-subtitle>
@@ -265,7 +265,7 @@ import {
           *ngIf="validationErrors().length > 0"
           class="validation-errors mt-4"
         >
-          <mat-card class="error-card">
+          <mat-card appearance="outlined" class="error-card">
             <mat-card-header>
               <mat-card-title class="text-red-600">
                 <mat-icon>error</mat-icon>
@@ -312,6 +312,7 @@ import {
 
     <!-- Uploaded Files Display -->
     <mat-card
+      appearance="outlined"
       class="uploaded-files-container mt-4"
       *ngIf="validUploadedFiles().length > 0"
     >

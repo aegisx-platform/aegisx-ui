@@ -93,7 +93,7 @@ import {
 
       <!-- Permission Error Banner -->
       @if (pdfTemplatesService.permissionError()) {
-        <mat-card class="permission-error-banner">
+        <mat-card appearance="outlined" class="permission-error-banner">
           <mat-card-content>
             <div class="permission-error-content">
               <div class="error-icon-section">
@@ -113,7 +113,7 @@ import {
               </div>
               <div class="error-actions-section">
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="warn"
                   (click)="pdfTemplatesService.clearPermissionError()"
                   class="dismiss-btn"
@@ -128,7 +128,7 @@ import {
       }
 
       <!-- Search & Filters Section -->
-      <mat-card class="search-filters-card">
+      <mat-card appearance="outlined" class="search-filters-card">
         <mat-card-content>
           <div class="search-filters-wrapper">
             <!-- Search Field -->
@@ -207,7 +207,7 @@ import {
                 <span>Reset</span>
               </button>
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 (click)="openCreateDialog()"
                 [disabled]="
@@ -257,7 +257,7 @@ import {
       }
 
       <!-- Summary Dashboard -->
-      <mat-card class="summary-dashboard-card">
+      <mat-card appearance="outlined" class="summary-dashboard-card">
         <mat-card-header>
           <mat-card-title>
             <mat-icon>analytics</mat-icon>
@@ -375,7 +375,7 @@ import {
 
       <!-- Error State -->
       @if (pdfTemplatesService.error()) {
-        <mat-card class="error-card">
+        <mat-card appearance="outlined" class="error-card">
           <mat-card-content>
             <div class="error-content">
               <mat-icon color="warn">error</mat-icon>
@@ -391,7 +391,7 @@ import {
 
       <!-- Data Table -->
       @if (!pdfTemplatesService.loading() && !pdfTemplatesService.error()) {
-        <mat-card class="table-card">
+        <mat-card appearance="outlined" class="table-card">
           <mat-card-content>
             <!-- Bulk Actions -->
             @if (hasSelected()) {
@@ -769,7 +769,7 @@ import {
                 <h3>No Pdf Templates found</h3>
                 <p>Create your first Pdf Templates to get started</p>
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   (click)="openCreateDialog()"
                 >

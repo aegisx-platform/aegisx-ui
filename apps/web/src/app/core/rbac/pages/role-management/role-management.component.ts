@@ -79,7 +79,7 @@ import { RbacService } from '../../services/rbac.service';
         <div class="flex flex-wrap gap-2">
           <button
             *hasPermission="'roles:create'"
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="openCreateDialog()"
             [disabled]="isLoading()"
@@ -88,7 +88,7 @@ import { RbacService } from '../../services/rbac.service';
             Create Role
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             (click)="refreshRoles()"
             [disabled]="isLoading()"
           >
@@ -99,7 +99,7 @@ import { RbacService } from '../../services/rbac.service';
       </div>
 
       <!-- Filters -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <mat-card-content class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <mat-form-field
@@ -211,7 +211,7 @@ import { RbacService } from '../../services/rbac.service';
       </mat-card>
 
       <!-- Role Table -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" matSort class="w-full">
             <!-- Selection Column -->
@@ -409,7 +409,7 @@ import { RbacService } from '../../services/rbac.service';
             }}
           </p>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="hasActiveFilters() ? clearFilters() : openCreateDialog()"
           >

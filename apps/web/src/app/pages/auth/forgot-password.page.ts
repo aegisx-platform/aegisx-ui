@@ -44,7 +44,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
         </div>
 
         <!-- Form Card -->
-        <mat-card class="auth-card">
+        <mat-card appearance="outlined" class="auth-card">
           <mat-card-content>
             <!-- Success Message -->
             @if (successMessage()) {
@@ -136,7 +136,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
         </mat-card>
 
         <!-- Info Card -->
-        <mat-card class="auth-info-card">
+        <mat-card appearance="outlined" class="auth-info-card">
           <mat-card-content>
             <div class="auth-info-header">
               <div class="auth-info-icon">

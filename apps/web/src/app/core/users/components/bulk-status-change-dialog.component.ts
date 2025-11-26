@@ -87,7 +87,7 @@ interface BulkStatusChangeDialogData {
         Cancel
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         (click)="onSubmit()"
         [disabled]="statusForm.invalid || isSubmitting()"

@@ -45,7 +45,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
         </div>
         <div class="flex gap-2">
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="exportData()"
             [disabled]="loading()"
@@ -54,7 +54,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
             Export
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="warn"
             (click)="cleanupOldData()"
             [disabled]="loading()"
@@ -74,7 +74,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
       </div>
 
       <!-- Filters -->
-      <mat-card class="mb-4">
+      <mat-card appearance="outlined" class="mb-4">
         <mat-card-content class="p-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <mat-form-field appearance="outline" class="w-full">
@@ -100,7 +100,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
               </mat-select>
             </mat-form-field>
 
-            <button mat-raised-button (click)="clearFilters()" class="h-14">
+            <button mat-flat-button (click)="clearFilters()" class="h-14">
               <mat-icon>clear</mat-icon>
               Clear Filters
             </button>
@@ -114,7 +114,11 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
       </div>
 
       <!-- Error Message -->
-      <mat-card *ngIf="error()" class="mb-4 bg-error-container">
+      <mat-card
+        appearance="outlined"
+        *ngIf="error()"
+        class="mb-4 bg-error-container"
+      >
         <mat-card-content class="p-4">
           <div class="flex items-center gap-2 text-on-error-container">
             <mat-icon>error</mat-icon>
@@ -124,7 +128,7 @@ import { LoginAttempt, LoginAttemptsQuery } from '../../models/audit.types';
       </mat-card>
 
       <!-- Table -->
-      <mat-card *ngIf="!loading()">
+      <mat-card appearance="outlined" *ngIf="!loading()">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="loginAttempts()" class="w-full">
             <!-- Timestamp Column -->

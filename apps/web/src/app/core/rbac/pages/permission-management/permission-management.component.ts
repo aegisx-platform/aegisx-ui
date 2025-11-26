@@ -88,7 +88,7 @@ import { RbacService } from '../../services/rbac.service';
         <div class="flex flex-wrap gap-2">
           <button
             *hasPermission="'permissions:assign'"
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="openCreateDialog()"
             [disabled]="isLoading()"
@@ -97,7 +97,7 @@ import { RbacService } from '../../services/rbac.service';
             Create Permission
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             (click)="toggleViewMode()"
             [disabled]="isLoading()"
           >
@@ -107,7 +107,7 @@ import { RbacService } from '../../services/rbac.service';
             {{ viewMode() === 'table' ? 'Category View' : 'Table View' }}
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             (click)="refreshPermissions()"
             [disabled]="isLoading()"
           >
@@ -118,7 +118,7 @@ import { RbacService } from '../../services/rbac.service';
       </div>
 
       <!-- Filters -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <mat-card-content class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <mat-form-field
@@ -260,7 +260,7 @@ import { RbacService } from '../../services/rbac.service';
 
       <!-- Table View -->
       <div *ngIf="!isLoading() && viewMode() === 'table'">
-        <mat-card>
+        <mat-card appearance="outlined">
           <div class="overflow-x-auto">
             <table mat-table [dataSource]="dataSource" matSort class="w-full">
               <!-- Selection Column -->
@@ -449,7 +449,7 @@ import { RbacService } from '../../services/rbac.service';
               }}
             </p>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="hasActiveFilters() ? clearFilters() : openCreateDialog()"
             >
@@ -498,6 +498,7 @@ import { RbacService } from '../../services/rbac.service';
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4"
             >
               <mat-card
+                appearance="outlined"
                 *ngFor="
                   let permission of category.permissions;
                   trackBy: trackByPermission
@@ -620,7 +621,7 @@ import { RbacService } from '../../services/rbac.service';
               }}
             </p>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="hasActiveFilters() ? clearFilters() : openCreateDialog()"
             >

@@ -24,7 +24,7 @@ import { AuthService } from '../../../core/auth';
   ],
   template: `
     <div class="realtime-demo-container p-6 max-w-6xl mx-auto">
-      <mat-card class="mb-6">
+      <mat-card appearance="outlined" class="mb-6">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2">
             <mat-icon>flash_on</mat-icon>
@@ -69,7 +69,7 @@ import { AuthService } from '../../../core/auth';
             <h3 class="text-lg font-medium mb-2">Quick Actions</h3>
             <div class="flex gap-2 flex-wrap">
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 (click)="connectWebSocket()"
                 [disabled]="websocketService.isConnected()"
@@ -111,7 +111,7 @@ import { AuthService } from '../../../core/auth';
 
         <mat-tab label="Event Monitor">
           <div class="tab-content p-4">
-            <mat-card>
+            <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title>Real-time Event Monitor</mat-card-title>
                 <mat-card-subtitle>Watch events in real-time</mat-card-subtitle>
@@ -183,7 +183,7 @@ import { AuthService } from '../../../core/auth';
 
         <mat-tab label="Performance">
           <div class="tab-content p-4">
-            <mat-card>
+            <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title>Performance Metrics</mat-card-title>
                 <mat-card-subtitle

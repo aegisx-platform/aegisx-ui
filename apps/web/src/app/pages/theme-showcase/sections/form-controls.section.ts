@@ -5,7 +5,13 @@
 
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -47,20 +53,27 @@ import { MatButtonModule } from '@angular/material/button';
     <div class="section-container">
       <h2 class="section-title">Form Controls</h2>
       <p class="section-description">
-        Essential form control components for user input with Material Design 3 styling
+        Essential form control components for user input with Material Design 3
+        styling
       </p>
 
       <!-- Text Input -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Text Input</mat-card-title>
-          <mat-card-subtitle>Basic text field with label and hint</mat-card-subtitle>
+          <mat-card-subtitle
+            >Basic text field with label and hint</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Standard Input</mat-label>
-              <input matInput placeholder="Enter text" [(ngModel)]="textValue" />
+              <input
+                matInput
+                placeholder="Enter text"
+                [(ngModel)]="textValue"
+              />
               <mat-hint>This is a hint text</mat-hint>
             </mat-form-field>
 
@@ -103,7 +116,7 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card>
 
       <!-- Select & Dropdown -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Select & Dropdown</mat-card-title>
           <mat-card-subtitle>Selection fields with options</mat-card-subtitle>
@@ -148,18 +161,24 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card>
 
       <!-- Checkbox -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Checkbox</mat-card-title>
-          <mat-card-subtitle>Selection with multiple independent options</mat-card-subtitle>
+          <mat-card-subtitle
+            >Selection with multiple independent options</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="checkbox-grid">
             <div class="checkbox-item">
-              <mat-checkbox [(ngModel)]="checkboxValue1">Unchecked</mat-checkbox>
+              <mat-checkbox [(ngModel)]="checkboxValue1"
+                >Unchecked</mat-checkbox
+              >
             </div>
             <div class="checkbox-item">
-              <mat-checkbox [(ngModel)]="checkboxValue2" checked>Checked</mat-checkbox>
+              <mat-checkbox [(ngModel)]="checkboxValue2" checked
+                >Checked</mat-checkbox
+              >
             </div>
             <div class="checkbox-item">
               <mat-checkbox [indeterminate]="true">Indeterminate</mat-checkbox>
@@ -178,10 +197,12 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card>
 
       <!-- Radio Button -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Radio Button</mat-card-title>
-          <mat-card-subtitle>Selection with mutually exclusive options</mat-card-subtitle>
+          <mat-card-subtitle
+            >Selection with mutually exclusive options</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="radio-group">
@@ -190,17 +211,21 @@ import { MatButtonModule } from '@angular/material/button';
               <mat-radio-button value="option1">Option 1</mat-radio-button>
               <mat-radio-button value="option2">Option 2</mat-radio-button>
               <mat-radio-button value="option3">Option 3</mat-radio-button>
-              <mat-radio-button value="option4" disabled>Option 4 (Disabled)</mat-radio-button>
+              <mat-radio-button value="option4" disabled
+                >Option 4 (Disabled)</mat-radio-button
+              >
             </mat-radio-group>
           </div>
         </mat-card-content>
       </mat-card>
 
       <!-- Slider -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Slider</mat-card-title>
-          <mat-card-subtitle>Range input with draggable thumb</mat-card-subtitle>
+          <mat-card-subtitle
+            >Range input with draggable thumb</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="slider-container">
@@ -230,7 +255,7 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card>
 
       <!-- Slide Toggle -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Slide Toggle</mat-card-title>
           <mat-card-subtitle>On/Off switch control</mat-card-subtitle>
@@ -238,10 +263,14 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-card-content>
           <div class="toggle-grid">
             <div class="toggle-item">
-              <mat-slide-toggle [(ngModel)]="toggleValue1">Default Toggle</mat-slide-toggle>
+              <mat-slide-toggle [(ngModel)]="toggleValue1"
+                >Default Toggle</mat-slide-toggle
+              >
             </div>
             <div class="toggle-item">
-              <mat-slide-toggle [(ngModel)]="toggleValue2" checked>Checked Toggle</mat-slide-toggle>
+              <mat-slide-toggle [(ngModel)]="toggleValue2" checked
+                >Checked Toggle</mat-slide-toggle
+              >
             </div>
             <div class="toggle-item">
               <mat-slide-toggle disabled>Disabled Toggle</mat-slide-toggle>
@@ -254,31 +283,54 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card>
 
       <!-- Datepicker -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Datepicker</mat-card-title>
-          <mat-card-subtitle>Date selection with calendar popup</mat-card-subtitle>
+          <mat-card-subtitle
+            >Date selection with calendar popup</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Select Date</mat-label>
-              <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" />
-              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                [(ngModel)]="selectedDate"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Date Range Start</mat-label>
-              <input matInput [matDatepicker]="startPicker" [(ngModel)]="dateRangeStart" />
-              <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="startPicker"
+                [(ngModel)]="dateRangeStart"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="startPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #startPicker></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Date Range End</mat-label>
-              <input matInput [matDatepicker]="endPicker" [(ngModel)]="dateRangeEnd" />
-              <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="endPicker"
+                [(ngModel)]="dateRangeEnd"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="endPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
             </mat-form-field>
           </div>
@@ -286,7 +338,7 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card>
 
       <!-- Form States -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Form States</mat-card-title>
           <mat-card-subtitle>Different states of form fields</mat-card-subtitle>
@@ -303,7 +355,11 @@ import { MatButtonModule } from '@angular/material/button';
               <input matInput value="Focused" />
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field" [class.ng-invalid]="true">
+            <mat-form-field
+              appearance="outline"
+              class="form-field"
+              [class.ng-invalid]="true"
+            >
               <mat-label>Error State</mat-label>
               <input matInput />
               <mat-error>Error message</mat-error>
@@ -348,8 +404,9 @@ import { MatButtonModule } from '@angular/material/button';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 

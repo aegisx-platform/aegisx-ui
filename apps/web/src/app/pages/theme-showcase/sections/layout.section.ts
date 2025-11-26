@@ -30,17 +30,21 @@ import { MatInputModule } from '@angular/material/input';
   template: `
     <div class="section-container">
       <h2 class="section-title">Layout</h2>
-      <p class="section-description">Cards, lists, expansion panels, and stepper components</p>
+      <p class="section-description">
+        Cards, lists, expansion panels, and stepper components
+      </p>
 
       <!-- Cards -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Cards</mat-card-title>
-          <mat-card-subtitle>Content containers with headers and actions</mat-card-subtitle>
+          <mat-card-subtitle
+            >Content containers with headers and actions</mat-card-subtitle
+          >
         </mat-card-header>
         <mat-card-content>
           <div class="card-grid">
-            <mat-card class="demo-card">
+            <mat-card appearance="outlined" class="demo-card">
               <mat-card-header>
                 <mat-card-title>Card Title</mat-card-title>
               </mat-card-header>
@@ -53,7 +57,7 @@ import { MatInputModule } from '@angular/material/input';
               </mat-card-actions>
             </mat-card>
 
-            <mat-card class="demo-card">
+            <mat-card appearance="outlined" class="demo-card">
               <mat-card-header>
                 <mat-card-title>Complex Card</mat-card-title>
                 <mat-card-subtitle>With avatar and actions</mat-card-subtitle>
@@ -78,7 +82,7 @@ import { MatInputModule } from '@angular/material/input';
       </mat-card>
 
       <!-- List -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>List</mat-card-title>
           <mat-card-subtitle>Single and multi-line lists</mat-card-subtitle>
@@ -105,7 +109,7 @@ import { MatInputModule } from '@angular/material/input';
       </mat-card>
 
       <!-- Expansion Panel -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Expansion Panel</mat-card-title>
           <mat-card-subtitle>Collapsible sections</mat-card-subtitle>
@@ -145,7 +149,7 @@ import { MatInputModule } from '@angular/material/input';
       </mat-card>
 
       <!-- Divider -->
-      <mat-card class="component-card">
+      <mat-card appearance="outlined" class="component-card">
         <mat-card-header>
           <mat-card-title>Divider</mat-card-title>
           <mat-card-subtitle>Visual separators</mat-card-subtitle>
@@ -191,8 +195,9 @@ import { MatInputModule } from '@angular/material/input';
       }
 
       .component-card mat-card-header {
-        padding: var(--preset-spacing-base, 24px) var(--preset-spacing-base, 24px)
-          var(--preset-spacing-md, 18px) var(--preset-spacing-base, 24px);
+        padding: var(--preset-spacing-base, 24px)
+          var(--preset-spacing-base, 24px) var(--preset-spacing-md, 18px)
+          var(--preset-spacing-base, 24px);
         border-bottom: 1px solid var(--theme-surface-border);
       }
 

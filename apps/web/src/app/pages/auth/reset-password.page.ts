@@ -45,7 +45,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
 
         <!-- Verifying Token State -->
         @if (isVerifying()) {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div class="auth-loading">
                 <mat-spinner diameter="40"></mat-spinner>
@@ -57,7 +57,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
 
         <!-- Invalid Token State -->
         @if (!isVerifying() && !isTokenValid()) {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <div
                 class="auth-alert auth-alert-error"
@@ -87,7 +87,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
 
         <!-- Valid Token - Show Form -->
         @if (!isVerifying() && isTokenValid()) {
-          <mat-card class="auth-card">
+          <mat-card appearance="outlined" class="auth-card">
             <mat-card-content>
               <!-- Success Message -->
               @if (successMessage()) {
@@ -239,7 +239,7 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
 
         <!-- Password Requirements Info -->
         @if (!isVerifying() && isTokenValid() && !successMessage()) {
-          <mat-card class="auth-info-card">
+          <mat-card appearance="outlined" class="auth-info-card">
             <mat-card-content>
               <div class="auth-info-header">
                 <div class="auth-info-icon">

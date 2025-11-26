@@ -71,7 +71,7 @@ export interface BulkSetExpiryResult {
 
       <mat-dialog-content class="space-y-6 max-h-[70vh] overflow-y-auto">
         <!-- Selected Assignments Summary -->
-        <mat-card class="p-4">
+        <mat-card appearance="outlined" class="p-4">
           <div class="flex items-center gap-3 mb-4">
             <mat-icon class="text-blue-600">group</mat-icon>
             <h3 class="text-md font-medium m-0">
@@ -211,7 +211,10 @@ export interface BulkSetExpiryResult {
           </div>
 
           <!-- Impact Preview -->
-          <mat-card class="p-4 bg-blue-50 dark:bg-blue-900/20">
+          <mat-card
+            appearance="outlined"
+            class="p-4 bg-blue-50 dark:bg-blue-900/20"
+          >
             <div class="flex items-center gap-3 mb-3">
               <mat-icon class="text-blue-600">preview</mat-icon>
               <h4

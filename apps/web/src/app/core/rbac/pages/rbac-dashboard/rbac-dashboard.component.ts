@@ -86,7 +86,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
         <div class="actions-activity-grid">
           <!-- Quick Actions -->
           <div class="quick-actions-section">
-            <mat-card appearance="filled">
+            <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title class="section-card-title">
                   <mat-icon class="section-icon">flash_on</mat-icon>
@@ -153,7 +153,7 @@ import { HasPermissionDirective } from '../../directives/has-permission.directiv
 
           <!-- Recent Activity -->
           <div class="recent-activity-section">
-            <mat-card appearance="filled">
+            <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title class="section-card-title-row">
                   <div class="section-title-with-icon">

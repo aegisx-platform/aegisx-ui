@@ -207,7 +207,7 @@ import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
                 </li>
               </ul>
               <div card-actions>
-                <button mat-raised-button color="primary" class="w-full">
+                <button mat-flat-button color="primary" class="w-full">
                   UPGRADE NOW
                 </button>
               </div>
