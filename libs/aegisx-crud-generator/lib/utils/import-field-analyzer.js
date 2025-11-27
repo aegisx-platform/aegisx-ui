@@ -43,6 +43,7 @@ function analyzeImportFields(schema, tableName, moduleName, ModuleName) {
     const isEmail = detectEmailField(fieldName, column);
     const isPhone = detectPhoneField(fieldName);
     const isUrl = detectUrlField(fieldName);
+    const isSlug = detectSlugField(fieldName);
     const isBoolean = column.type === 'boolean';
     const isDate = column.type === 'date' || column.type === 'timestamp';
     const isJson = column.type === 'json' || column.type === 'jsonb';
@@ -210,6 +211,37 @@ function analyzeImportFields(schema, tableName, moduleName, ModuleName) {
       });
     }
 
+    // Handle slug fields (auto-generate from name if empty)
+    if (isSlug) {
+      fieldConfig.hasTransformer = true;
+      fieldConfig.transformerName = 'generateSlug';
+      fieldConfig.isSlugField = true;
+
+      // Add generateSlug transformer only once
+      if (!transformers.find((t) => t.transformerName === 'generateSlug')) {
+        transformers.push({
+          name: 'slug',
+          transformerName: 'generateSlug',
+          returnType: 'string',
+          transformLogic: `
+    // If slug is provided, use it
+    if (value && typeof value === 'string' && value.trim()) {
+      return value.trim().toLowerCase()
+        .replace(/[^\\w\\s-]/g, '')
+        .replace(/[\\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+    // Auto-generate from name field in the row
+    const name = _row?.name || _row?.title || '';
+    if (!name) return '';
+    return name.toLowerCase().trim()
+      .replace(/[^\\w\\s-]/g, '')
+      .replace(/[\\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');`,
+        });
+      }
+    }
+
     // Add error messages if validators exist
     if (fieldConfig.hasValidator || isUnique) {
       fieldConfig.errorMessages = {};
@@ -347,6 +379,15 @@ function detectUrlField(fieldName) {
 }
 
 /**
+ * Detect slug field
+ * Slug fields should be auto-generated from name/title if not provided
+ */
+function detectSlugField(fieldName) {
+  const lowerName = fieldName.toLowerCase();
+  return lowerName === 'slug' || lowerName.endsWith('_slug');
+}
+
+/**
  * Generate human-readable field label
  */
 function generateFieldLabel(fieldName) {
@@ -383,6 +424,11 @@ function generateExampleValue(fieldName, column, fieldType) {
   // Email fields
   if (lowerName.includes('email')) {
     return 'user@example.com';
+  }
+
+  // Slug fields (auto-generated, can be left empty)
+  if (lowerName === 'slug' || lowerName.endsWith('_slug')) {
+    return ''; // Leave empty to auto-generate from name
   }
 
   // Name fields

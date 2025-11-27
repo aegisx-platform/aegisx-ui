@@ -326,13 +326,30 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
   }
 
   /**
+   * Generate slug from name
+   * Converts "Example Name" to "example-name"
+   */
+  private static generateSlug(name: string): string {
+    if (!name) return '';
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  }
+
+  /**
    * Transform row data to TestProducts entity format
    */
   private static transformRow(row: any): Partial<TestProducts> {
+    // Auto-generate slug from name if not provided
+    const slug = row.slug || TestProductsImportService.generateSlug(row.name);
+
     return {
       code: row.code,
       name: row.name,
-      slug: row.slug,
+      slug: slug,
       description: row.description,
       is_active: TestProductsImportService.transformIsActive(
         row.is_active,

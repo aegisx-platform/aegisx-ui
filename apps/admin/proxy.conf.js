@@ -20,7 +20,7 @@ module.exports = {
       'X-Proxy-Target': API_URL,
     },
   },
-  '/ws': {
+  '/api/ws': {
     target: API_URL,
     secure: false,
     changeOrigin: true,
