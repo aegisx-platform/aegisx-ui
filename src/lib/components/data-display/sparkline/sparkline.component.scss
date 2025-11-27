@@ -60,8 +60,5 @@
   fill: var(--ax-text-inverse, #ffffff);
   font-size: 10px;
   font-weight: 600;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--ax-font-sans);
 }

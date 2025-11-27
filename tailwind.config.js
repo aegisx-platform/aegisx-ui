@@ -103,10 +103,12 @@ module.exports = {
 
       // ============================================
       // TYPOGRAPHY (from design tokens)
+      // Single Source of Truth: _aegisx-tokens.scss
       // ============================================
       fontFamily: {
         sans: [
-          'system-ui',
+          'Inter',
+          '"Noto Sans Thai"',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -116,6 +118,8 @@ module.exports = {
           'sans-serif',
         ],
         mono: [
+          '"JetBrains Mono"',
+          '"Fira Code"',
           'ui-monospace',
           'SFMono-Regular',
           '"SF Mono"',
