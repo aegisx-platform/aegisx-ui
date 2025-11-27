@@ -112,23 +112,24 @@ $aegisx-light-pink-emphasis: #db2777;
 $aegisx-light-pink-inverted: #ffffff;
 
 // Background Variants (4 tokens) - Subtle background variations (Tremor design)
-$aegisx-light-background-muted: #f9fafb; // Tremor: tremor-background-muted
-$aegisx-light-background-subtle: #f3f4f6; // Tremor: tremor-background-subtle
-$aegisx-light-background-default: #ffffff; // Tremor: tremor-background
-$aegisx-light-background-emphasis: #374151; // Tremor: tremor-background-emphasis
+$aegisx-light-background-muted: #fafafa; // Zinc-50 - Muted background
+$aegisx-light-background-subtle: #f4f4f5; // Zinc-100 - Subtle background
+$aegisx-light-background-default: #ffffff; // White - Default background
+$aegisx-light-background-emphasis: #3f3f46; // Zinc-700 - Emphasis background
+$aegisx-light-background-code: #18181b; // Zinc-900 - Code block background (dark for high contrast)
 
 // Text Hierarchy (6 tokens) - Lighter, more readable text colors (Tremor + M3 inspired)
-$aegisx-light-text-disabled: #d1d5db; // Gray-300 - Disabled/placeholder text
-$aegisx-light-text-subtle: #9ca3af; // Gray-400 - Subtle secondary text
-$aegisx-light-text-secondary: #6b7280; // Gray-500 - Secondary body text
-$aegisx-light-text-primary: #374151; // Gray-700 - Primary body text (lighter than before!)
-$aegisx-light-text-heading: #1f2937; // Gray-800 - Headings only (not for body)
-$aegisx-light-text-inverted: #ffffff; // White - Inverted text on dark backgrounds
+$aegisx-light-text-disabled: #a1a1aa; // Zinc-400 - Disabled/placeholder text
+$aegisx-light-text-subtle: #a1a1aa; // Zinc-400 - Subtle secondary text
+$aegisx-light-text-secondary: #71717a; // Zinc-500 - Secondary body text
+$aegisx-light-text-primary: #3f3f46; // Zinc-700 - Primary body text (softer, easier to read!)
+$aegisx-light-text-heading: #0a0a0a; // Zinc-950 - Headings (darker, better contrast!)
+$aegisx-light-text-inverted: #fafafa; // Zinc-50 - Inverted text on dark backgrounds
 
 // Border (3 tokens) - Border color variants
-$aegisx-light-border-muted: #f3f4f6; // Subtle border
-$aegisx-light-border-default: #d1d5db; // Standard border (increased visibility)
-$aegisx-light-border-emphasis: #9ca3af; // Strong border
+$aegisx-light-border-muted: #f4f4f5; // Zinc-100 - Subtle border
+$aegisx-light-border-default: #e4e4e7; // Zinc-200 - Standard border
+$aegisx-light-border-emphasis: #d4d4d8; // Zinc-300 - Strong border
 
 // Surface/Border Colors (8 tokens) - Dialog headers & containers
 $aegisx-light-info-surface: #f2f7ff; // Lightest info background
@@ -418,6 +419,7 @@ $aegisx-dark-background-muted: #131a2b; // Tremor: dark-tremor-background-muted
 $aegisx-dark-background-subtle: #1f2937; // Tremor: dark-tremor-background-subtle
 $aegisx-dark-background-default: #111827; // Tremor: dark-tremor-background
 $aegisx-dark-background-emphasis: #d1d5db; // Tremor: dark-tremor-background-emphasis
+$aegisx-dark-background-code: #09090b; // Zinc-950 - Code block background (very dark for high contrast)
 
 // Text Hierarchy - Lighter text for dark backgrounds (Tremor + M3 inspired)
 $aegisx-dark-text-disabled: #4b5563; // Gray-600 - Disabled/placeholder text
@@ -689,8 +691,9 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-background-subtle: #{$aegisx-light-background-subtle};
     --ax-background-default: #{$aegisx-light-background-default};
     --ax-background-emphasis: #{$aegisx-light-background-emphasis};
+    --ax-background-code: #{$aegisx-light-background-code};
 
-    /* Text Hierarchy - Lighter, more readable colors */
+    /* Text Hierarchy - Zinc colors for better readability */
     --ax-text-disabled: #{$aegisx-light-text-disabled};
     --ax-text-subtle: #{$aegisx-light-text-subtle};
     --ax-text-secondary: #{$aegisx-light-text-secondary};
@@ -1081,6 +1084,7 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-background-subtle: #{$aegisx-dark-background-subtle};
     --ax-background-default: #{$aegisx-dark-background-default};
     --ax-background-emphasis: #{$aegisx-dark-background-emphasis};
+    --ax-background-code: #{$aegisx-dark-background-code};
 
     /* Text Hierarchy - Lighter, more readable colors for dark mode */
     --ax-text-disabled: #{$aegisx-dark-text-disabled};

@@ -143,17 +143,18 @@ export interface TypographyTokens {
 }
 
 /**
- * System font stack for sans-serif
+ * Primary font stack for sans-serif
+ * Inter + Noto Sans Thai for Thai language support
  */
-const systemFontStack = [
-  'system-ui',
+const primaryFontStack = [
+  'Inter',
+  '"Noto Sans Thai"',
   '-apple-system',
   'BlinkMacSystemFont',
   '"Segoe UI"',
   'Roboto',
   '"Helvetica Neue"',
   'Arial',
-  '"Noto Sans"',
   'sans-serif',
   '"Apple Color Emoji"',
   '"Segoe UI Emoji"',
@@ -162,14 +163,30 @@ const systemFontStack = [
 ].join(', ');
 
 /**
+ * Monospace font stack
+ * JetBrains Mono as primary for code
+ */
+const monoFontStack = [
+  '"JetBrains Mono"',
+  '"Fira Code"',
+  'ui-monospace',
+  'SFMono-Regular',
+  '"SF Mono"',
+  'Menlo',
+  'Consolas',
+  '"Liberation Mono"',
+  'monospace',
+].join(', ');
+
+/**
  * Default typography tokens
  */
 export const typographyTokens: TypographyTokens = {
   // Font Families
   fontFamily: {
-    sans: systemFontStack,
+    sans: primaryFontStack,
     serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
-    mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
+    mono: monoFontStack,
   },
 
   // Font Sizes (matching Tailwind)

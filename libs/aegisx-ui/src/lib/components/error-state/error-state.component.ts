@@ -92,51 +92,64 @@ export interface ErrorStateAction {
       }
 
       .ax-error-state {
-        @apply bg-white rounded-lg border border-gray-200 p-12 text-center;
+        background-color: var(--ax-background-default);
+        border-radius: var(--ax-radius-lg);
+        border: 1px solid var(--ax-border-default);
+        padding: var(--ax-spacing-3xl);
+        text-align: center;
 
         &.ax-error-state-compact {
-          @apply p-8;
+          padding: var(--ax-spacing-2xl);
         }
 
+        /* Warning variant */
         &.ax-error-state-warning {
-          @apply bg-yellow-50 border-yellow-200;
+          background-color: var(--ax-warning-faint);
+          border-color: var(--ax-warning-muted);
 
           .ax-error-state-icon {
-            @apply text-yellow-600;
+            color: var(--ax-warning-emphasis);
           }
 
           .ax-error-state-title {
-            @apply text-yellow-900;
+            color: var(--ax-warning-emphasis);
           }
 
           .ax-error-state-message {
-            @apply text-yellow-700;
+            color: var(--ax-warning-default);
           }
         }
 
+        /* Info variant */
         &.ax-error-state-info {
-          @apply bg-blue-50 border-blue-200;
+          background-color: var(--ax-info-faint);
+          border-color: var(--ax-info-muted);
 
           .ax-error-state-icon {
-            @apply text-blue-600;
+            color: var(--ax-info-emphasis);
           }
 
           .ax-error-state-title {
-            @apply text-blue-900;
+            color: var(--ax-info-emphasis);
           }
 
           .ax-error-state-message {
-            @apply text-blue-700;
+            color: var(--ax-info-default);
           }
         }
       }
 
       .ax-error-state-content {
-        @apply max-w-md mx-auto;
+        max-width: 28rem;
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .ax-error-state-icon {
-        @apply text-red-600 mx-auto;
+        color: var(--ax-error-default);
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
 
         &.ax-error-state-icon-lg {
           font-size: 48px;
@@ -152,39 +165,68 @@ export interface ErrorStateAction {
       }
 
       .ax-error-state-title {
-        @apply text-lg font-medium text-gray-900 mt-4;
+        font-size: var(--ax-text-lg);
+        font-weight: var(--ax-font-medium);
+        color: var(--ax-text-heading);
+        margin-top: var(--ax-spacing-md);
+        margin-bottom: 0;
       }
 
       .ax-error-state-message {
-        @apply text-sm text-gray-600 mt-2;
+        font-size: var(--ax-text-sm);
+        color: var(--ax-text-secondary);
+        margin-top: var(--ax-spacing-sm);
+        margin-bottom: 0;
+        line-height: var(--ax-leading-relaxed);
       }
 
       .ax-error-state-details {
-        @apply mt-4 text-left;
+        margin-top: var(--ax-spacing-md);
+        text-align: left;
       }
 
       .ax-error-state-details-toggle {
-        @apply text-xs text-gray-500 cursor-pointer hover:text-gray-700;
+        font-size: var(--ax-text-xs);
+        color: var(--ax-text-subtle);
+        cursor: pointer;
+        transition: color var(--ax-transition-fast);
+
+        &:hover {
+          color: var(--ax-text-primary);
+        }
       }
 
       .ax-error-state-details-content {
-        @apply mt-2 p-3 bg-gray-100 rounded text-xs text-gray-800 overflow-x-auto;
+        margin-top: var(--ax-spacing-sm);
+        padding: var(--ax-spacing-sm);
+        background-color: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-md);
+        font-size: var(--ax-text-xs);
+        color: var(--ax-text-primary);
+        overflow-x: auto;
+        font-family: var(--ax-font-mono);
       }
 
       .ax-error-state-body {
-        @apply mt-3;
+        margin-top: var(--ax-spacing-sm);
       }
 
       .ax-error-state-actions {
-        @apply flex items-center justify-center gap-2 mt-4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-sm);
+        margin-top: var(--ax-spacing-md);
       }
 
       .ax-error-state-custom-actions {
-        @apply mt-4;
+        margin-top: var(--ax-spacing-md);
       }
 
       .ax-error-state-action {
-        @apply inline-flex items-center gap-2;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
       }
     `,
   ],

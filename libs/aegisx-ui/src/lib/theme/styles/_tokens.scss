@@ -24,12 +24,14 @@
   // TYPOGRAPHY TOKENS
   // ============================================
 
-  // Font Families
+  // Font Families (Single Source of Truth: _aegisx-tokens.scss)
+  // These are fallbacks - primary fonts defined in _aegisx-tokens.scss
   --ax-font-sans:
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+    'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
   --ax-font-mono:
-    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, 'SF Mono',
+    Menlo, Consolas, monospace;
 
   // Font Sizes
   --ax-text-xs: 0.75rem; // 12px

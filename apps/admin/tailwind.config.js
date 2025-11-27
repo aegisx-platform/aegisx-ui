@@ -276,5 +276,8 @@ module.exports = {
       },
     },
   },
+  corePlugins: {
+    preflight: false, // ⚠️ สำคัญมาก!
+  },
   plugins: [],
 };

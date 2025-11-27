@@ -37,13 +37,14 @@ import {
     MatCardModule,
     MatProgressSpinnerModule,
   ],
+  styleUrls: ['./file-audit.component.scss'],
   template: `
     <div class="p-6">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
         <div>
-          <h1 class="text-2xl font-bold text-on-surface">File Activity</h1>
-          <p class="text-sm text-muted mt-1">
+          <h1 class="text-2xl font-bold text-heading">File Activity</h1>
+          <p class="text-sm text-secondary mt-1">
             Track and monitor file operations
           </p>
         </div>
@@ -133,13 +134,9 @@ import {
       </div>
 
       <!-- Error Message -->
-      <mat-card
-        appearance="outlined"
-        *ngIf="error()"
-        class="mb-4 bg-error-container"
-      >
+      <mat-card appearance="outlined" *ngIf="error()" class="mb-4 error-alert">
         <mat-card-content class="p-4">
-          <div class="flex items-center gap-2 text-on-error-container">
+          <div class="error-content">
             <mat-icon>error</mat-icon>
             <span>{{ error() }}</span>
           </div>
@@ -167,7 +164,7 @@ import {
               </th>
               <td mat-cell *matCellDef="let log" class="py-3">
                 <div class="flex items-center gap-2">
-                  <mat-icon class="text-muted">description</mat-icon>
+                  <mat-icon class="icon-muted">description</mat-icon>
                   <span class="font-medium">{{ log.fileName }}</span>
                 </div>
               </td>
@@ -213,7 +210,7 @@ import {
                 IP Address
               </th>
               <td mat-cell *matCellDef="let log" class="py-3">
-                <code class="text-xs bg-surface-container px-2 py-1 rounded">
+                <code class="code-display">
                   {{ log.ipAddress }}
                 </code>
               </td>
@@ -232,7 +229,7 @@ import {
                 >
                   {{ truncateError(log.errorMessage) }}
                 </span>
-                <span *ngIf="log.success" class="text-muted">-</span>
+                <span *ngIf="log.success" class="text-secondary">-</span>
               </td>
             </ng-container>
 
@@ -242,12 +239,10 @@ import {
             <!-- No Data Row -->
             <tr class="mat-row" *matNoDataRow>
               <td
-                class="mat-cell text-center py-8 text-muted"
+                class="mat-cell empty-state"
                 [attr.colspan]="displayedColumns.length"
               >
-                <mat-icon class="text-5xl opacity-30 mb-2"
-                  >folder_open</mat-icon
-                >
+                <mat-icon>folder_open</mat-icon>
                 <p>No file activity found</p>
               </td>
             </tr>
@@ -266,13 +261,6 @@ import {
       </mat-card>
     </div>
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-      }
-    `,
-  ],
 })
 export class FileAuditComponent implements OnInit {
   private fileAuditService = inject(FileAuditService);
