@@ -104,10 +104,93 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
             </section>
 
             <section class="toast-doc__section">
-              <h2>Provider Selection</h2>
+              <h2>ngx-toastr Stacking</h2>
               <p>
-                Choose between ngx-toastr (stacking support) and MatSnackBar
-                (action button support).
+                ngx-toastr supports stacking multiple toasts. Click the button
+                multiple times to see them stack. Each toast has a close button
+                and progress bar.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                gap="var(--ax-spacing-md)"
+              >
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="showStackingDemo()"
+                >
+                  <mat-icon>layers</mat-icon>
+                  Show Stacking Toasts
+                </button>
+                <button mat-stroked-button (click)="clearAllToasts()">
+                  <mat-icon>clear_all</mat-icon>
+                  Clear All
+                </button>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="stackingCode"></ax-code-tabs>
+            </section>
+
+            <section class="toast-doc__section">
+              <h2>Toast Positions</h2>
+              <p>
+                ngx-toastr supports various positions. Choose where toasts
+                appear on screen.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                gap="var(--ax-spacing-md)"
+              >
+                <button
+                  mat-stroked-button
+                  (click)="showPosition('toast-top-right')"
+                >
+                  Top Right
+                </button>
+                <button
+                  mat-stroked-button
+                  (click)="showPosition('toast-top-left')"
+                >
+                  Top Left
+                </button>
+                <button
+                  mat-stroked-button
+                  (click)="showPosition('toast-bottom-right')"
+                >
+                  Bottom Right
+                </button>
+                <button
+                  mat-stroked-button
+                  (click)="showPosition('toast-bottom-left')"
+                >
+                  Bottom Left
+                </button>
+                <button
+                  mat-stroked-button
+                  (click)="showPosition('toast-top-center')"
+                >
+                  Top Center
+                </button>
+                <button
+                  mat-stroked-button
+                  (click)="showPosition('toast-bottom-center')"
+                >
+                  Bottom Center
+                </button>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="positionCode"></ax-code-tabs>
+            </section>
+
+            <section class="toast-doc__section">
+              <h2>Provider Comparison</h2>
+              <p>
+                Choose between ngx-toastr (stacking, positions, progress bar)
+                and MatSnackBar (action button, Material Design style).
               </p>
 
               <ax-live-preview
@@ -117,11 +200,11 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
               >
                 <button mat-stroked-button (click)="showToastr()">
                   <mat-icon>layers</mat-icon>
-                  ngx-toastr (Stacking)
+                  ngx-toastr
                 </button>
                 <button mat-stroked-button (click)="showSnackbar()">
                   <mat-icon>crop_landscape</mat-icon>
-                  MatSnackBar (Action)
+                  MatSnackBar
                 </button>
               </ax-live-preview>
 
@@ -363,9 +446,51 @@ export class ToastDocComponent {
     });
   }
 
-  showToastr(): void {
-    this.toast.info('This uses ngx-toastr (can stack multiple)', {
+  showStackingDemo(): void {
+    this.toast.success('First notification', {
       provider: 'toastr',
+      title: 'Success',
+    });
+    setTimeout(() => {
+      this.toast.info('Second notification', {
+        provider: 'toastr',
+        title: 'Info',
+      });
+    }, 300);
+    setTimeout(() => {
+      this.toast.warning('Third notification', {
+        provider: 'toastr',
+        title: 'Warning',
+      });
+    }, 600);
+  }
+
+  clearAllToasts(): void {
+    this.toast.clear();
+  }
+
+  showPosition(position: string): void {
+    this.toast.info(
+      `Toast at ${position.replace('toast-', '').replace('-', ' ')}`,
+      {
+        provider: 'toastr',
+        position: position as
+          | 'toast-top-right'
+          | 'toast-top-left'
+          | 'toast-bottom-right'
+          | 'toast-bottom-left'
+          | 'toast-top-center'
+          | 'toast-bottom-center',
+      },
+    );
+  }
+
+  showToastr(): void {
+    this.toast.info('This uses ngx-toastr with progress bar', {
+      provider: 'toastr',
+      title: 'ngx-toastr',
+      progressBar: true,
+      closeButton: true,
     });
   }
 
@@ -422,6 +547,59 @@ export class MyComponent {
       language: 'typescript',
       code: `this.toast.success('Your changes have been saved.', {
   title: 'Saved Successfully'
+});`,
+    },
+  ];
+
+  readonly stackingCode: CodeTab[] = [
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `// ngx-toastr supports stacking multiple toasts
+// Each new toast appears above the previous one
+
+this.toast.success('First notification', {
+  provider: 'toastr',
+  title: 'Success'
+});
+
+this.toast.info('Second notification', {
+  provider: 'toastr',
+  title: 'Info'
+});
+
+this.toast.warning('Third notification', {
+  provider: 'toastr',
+  title: 'Warning'
+});
+
+// Clear all toasts
+this.toast.clear();`,
+    },
+  ];
+
+  readonly positionCode: CodeTab[] = [
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `// Available positions for ngx-toastr
+type ToastPosition =
+  | 'toast-top-right'     // Default
+  | 'toast-top-left'
+  | 'toast-top-center'
+  | 'toast-bottom-right'
+  | 'toast-bottom-left'
+  | 'toast-bottom-center';
+
+// Example usage
+this.toast.info('Message at top left', {
+  provider: 'toastr',
+  position: 'toast-top-left'
+});
+
+this.toast.success('Message at bottom center', {
+  provider: 'toastr',
+  position: 'toast-bottom-center'
 });`,
     },
   ];
