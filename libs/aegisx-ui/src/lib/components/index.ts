@@ -35,3 +35,12 @@ export * from './dialogs';
 // Theme & Layout Switchers
 export * from './theme-switcher'; // NEW: Enhanced theme switcher with dropdown mode
 export * from './ax-layout-switcher.component';
+
+// Skeleton Loader Components
+export * from './skeleton';
+
+// Drawer/Sheet Component
+export * from './drawer';
+
+// File Upload Component
+export * from './file-upload';
