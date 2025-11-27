@@ -10,7 +10,23 @@ console.log(`🔗 Angular Proxy Configuration:`);
 console.log(`   API Target: ${API_URL}`);
 console.log(`   API Port: ${API_PORT}`);
 
+// WebSocket URL uses ws:// protocol
+const WS_URL = API_URL.replace('http://', 'ws://').replace(
+  'https://',
+  'wss://',
+);
+
+console.log(`   WebSocket Target: ${WS_URL}`);
+
 module.exports = {
+  // WebSocket MUST be before /api (more specific path first)
+  '/api/ws': {
+    target: WS_URL,
+    secure: false,
+    changeOrigin: true,
+    ws: true,
+    logLevel: 'debug',
+  },
   '/api': {
     target: API_URL,
     secure: false,
@@ -21,12 +37,5 @@ module.exports = {
     headers: {
       'X-Proxy-Target': API_URL,
     },
-  },
-  '/api/ws': {
-    target: API_URL,
-    secure: false,
-    changeOrigin: true,
-    ws: true,
-    logLevel: 'debug',
   },
 };

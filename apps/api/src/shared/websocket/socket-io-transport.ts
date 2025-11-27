@@ -35,6 +35,8 @@ export class SocketIOTransport implements IWebSocketTransport {
       allowEIO3: true,
       transports: ['websocket', 'polling'], // Allow both transports
       upgradeTimeout: 3000, // Reduce upgrade timeout for faster WebSocket connection
+      // Required for proxy compatibility - don't close unhandled upgrade requests
+      destroyUpgrade: false,
     });
 
     // Setup Redis adapter if configured
