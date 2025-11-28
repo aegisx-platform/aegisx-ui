@@ -73,6 +73,9 @@ export class {{PascalCase}}Service {
 
   /**
    * Handle HTTP errors and set appropriate error signals
+   * - 400 errors: Don't set error state (validation errors should show toast only)
+   * - 403 errors: Set permission error for access denied
+   * - 5xx errors: Set error state for server errors (show full page error)
    */
   private handleError(error: any, defaultMessage: string): void {
     const status = error?.status || null;
@@ -82,7 +85,13 @@ export class {{PascalCase}}Service {
     if (status === 403) {
       this.permissionErrorSignal.set(true);
       this.errorSignal.set('You do not have permission to perform this action');
+    } else if (status === 400 || status === 404 || status === 409 || status === 422) {
+      // Client errors (validation, not found, conflict) - don't set error state
+      // These should be handled by the component showing a toast
+      this.permissionErrorSignal.set(false);
+      // Don't set errorSignal - let component handle with toast
     } else {
+      // Server errors (5xx) or unknown errors - show full page error
       this.permissionErrorSignal.set(false);
       this.errorSignal.set(error.message || defaultMessage);
     }

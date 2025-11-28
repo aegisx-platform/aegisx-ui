@@ -96,6 +96,11 @@ program
     'Skip auto-registration in plugin.loader.ts / app.routes.ts',
     false,
   )
+  .option(
+    '--include-audit-fields',
+    'Include audit fields (created_at, updated_at, deleted_at, created_by, updated_by) in forms',
+    false,
+  )
   .action(async (tableName, options) => {
     try {
       // Interactive mode if no table name provided
@@ -212,6 +217,7 @@ program
             force: options.force,
             withImport: options.withImport,
             withEvents: options.withEvents,
+            includeAuditFields: options.includeAuditFields,
           },
         );
 

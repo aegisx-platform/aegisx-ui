@@ -44,12 +44,10 @@ export interface ExportService {
   template: `
     <div class="export-container">
       <!-- Export Button with Menu -->
-      <button 
-        mat-raised-button 
-        color="accent"
+      <button
+        mat-stroked-button
         [matMenuTriggerFor]="exportMenu"
-        [disabled]="isExporting()"
-        class="export-button">
+        [disabled]="isExporting()">
         <mat-icon>download</mat-icon>
         @if (isExporting()) {
           <mat-spinner diameter="20" class="ml-2"></mat-spinner>
@@ -151,8 +149,8 @@ export interface ExportService {
               class="cancel-btn">
               Cancel
             </button>
-            <button 
-              mat-raised-button 
+            <button
+              mat-flat-button
               color="primary"
               [disabled]="!selectedFormat() || isExporting()"
               (click)="executeExport()"

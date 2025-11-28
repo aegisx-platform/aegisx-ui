@@ -1,4 +1,53 @@
-# Changelog Entry for v2.1.1
+# CRUD Generator Changelog
+
+## [2.2.1] - 2025-11-28
+
+### Added
+
+#### Audit Fields Control (`--include-audit-fields`)
+
+**New CLI flag** to control whether audit fields appear in generated frontend forms.
+
+**Problem Solved**: Previously, audit fields (`created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`) were inconsistently included in forms. Now they are excluded by default since they are typically auto-managed by the backend.
+
+**Default Behavior** (without flag):
+
+- Audit fields are **excluded** from forms
+- Users cannot manually set these values
+- Backend handles audit field population automatically
+
+**With `--include-audit-fields`**:
+
+- Audit fields are **included** in forms
+- Useful for admin interfaces or data migration tools
+- Provides manual control over audit timestamps
+
+**Usage**:
+
+```bash
+# Default: audit fields hidden from forms
+./bin/cli.js generate products --target frontend --force
+
+# Include audit fields (admin use case)
+./bin/cli.js generate products --target frontend --include-audit-fields --force
+```
+
+**Audit Fields Affected**:
+
+- `id` - Primary key (always excluded from forms)
+- `created_at` - Record creation timestamp
+- `updated_at` - Last update timestamp
+- `deleted_at` - Soft delete timestamp
+- `created_by` - User who created the record
+- `updated_by` - User who last updated the record
+- `deleted_by` - User who deleted the record
+
+**Files Modified**:
+
+- `bin/cli.js` - Added `--include-audit-fields` option
+- `lib/generators/frontend-generator.js` - Added `AUDIT_FIELDS` constant and filtering logic
+
+---
 
 ## [2.1.1] - 2025-10-31
 

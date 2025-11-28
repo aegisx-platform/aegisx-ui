@@ -18,6 +18,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -53,7 +54,7 @@ export type {{pascalCaseHelper singularName}}FormMode = 'create' | 'edit';
 
 export interface {{pascalCaseHelper singularName}}FormData {
 {{#each fields}}
-  {{this.name}}{{#unless this.required}}?{{/unless}}: {{#if (eq this.inputType 'checkbox')}}boolean{{else if (eq this.inputType 'number')}}number{{else}}string{{/if}};
+  {{this.name}}{{#unless this.required}}?{{/unless}}: {{#if (eq this.inputType 'checkbox')}}boolean{{else if (eq this.type 'json')}}unknown{{else if (eq this.inputType 'number')}}unknown{{else}}string{{/if}};
 {{/each}}
 }
 
@@ -64,6 +65,7 @@ export interface {{pascalCaseHelper singularName}}FormData {
     CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -77,7 +79,14 @@ export interface {{pascalCaseHelper singularName}}FormData {
     MatTooltipModule,
   ],
   template: `
-    <form [formGroup]="{{camelCaseHelper moduleName}}Form" class="{{kebabCaseHelper moduleName}}-form">
+    <!-- Dialog Content -->
+    <mat-dialog-content>
+      <form [formGroup]="{{camelCaseHelper moduleName}}Form" class="{{kebabCaseHelper moduleName}}-form">
+        <!-- Form Fields Section -->
+        <div class="ax-dialog-section">
+        <h3 class="ax-dialog-section-title">{{pascalCaseHelper singularName}} Information</h3>
+        <div class="ax-dialog-section-content">
+          <div class="form-grid">
       {{#each fields}}
       <!-- {{this.name}} Field -->
       {{#if (eq this.inputType 'textarea')}}
@@ -196,115 +205,73 @@ export interface {{pascalCaseHelper singularName}}FormData {
       {{/if}}
 
       {{/each}}
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button
-          mat-button
-          type="button"
-          (click)="onCancel()"
-          [disabled]="loading"
-        >
-          Cancel
-        </button>
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          (click)="onSubmit()"
-          [disabled]="
-            {{camelCaseHelper moduleName}}Form.invalid || loading || (mode === 'edit' && !hasChanges())
-          "
-        >
-          <mat-spinner
-            diameter="20"
-            class="inline-spinner"
-            *ngIf="loading"
-          ></mat-spinner>
-          \{{ mode === 'create' ? 'Create' : 'Update' }} {{pascalCaseHelper singularName}}
-        </button>
-      </div>
-    </form>
+          </div>
+        </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <!-- Form Actions - Outside mat-dialog-content, proper mat-dialog-actions -->
+    <mat-dialog-actions align="end">
+      <button
+        mat-button
+        type="button"
+        (click)="onCancel()"
+        [disabled]="loading"
+      >
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="onSubmit()"
+        [disabled]="
+          {{camelCaseHelper moduleName}}Form.invalid || loading || (mode === 'edit' && !hasChanges())
+        "
+      >
+        @if (loading) {
+          <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+        }
+        \{{ mode === 'create' ? 'Create' : 'Update' }} {{pascalCaseHelper singularName}}
+      </button>
+    </mat-dialog-actions>
   `,
   styles: [
     `
-      /* Tremor-inspired Form - Minimal Changes */
+      /* Form Container */
       .{{kebabCaseHelper moduleName}}-form {
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        padding: 16px 0;
+      }
+
+      /* Responsive Grid Layout for Form Fields */
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--ax-spacing-md, 16px);
       }
 
       .full-width {
         width: 100%;
       }
 
-      /* Tremor Border Colors - Darker (from Tremor Blocks) */
-      ::ng-deep .{{kebabCaseHelper moduleName}}-form {
-        .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
-          .mdc-notched-outline__leading,
-          .mdc-notched-outline__notch,
-          .mdc-notched-outline__trailing {
-            border-color: #d1d5db;
-            border-width: 1px;
-          }
-
-          &:hover .mdc-notched-outline {
-            .mdc-notched-outline__leading,
-            .mdc-notched-outline__notch,
-            .mdc-notched-outline__trailing {
-              border-color: #9ca3af;
-            }
-          }
-
-          &.mdc-text-field--focused .mdc-notched-outline {
-            .mdc-notched-outline__leading,
-            .mdc-notched-outline__notch,
-            .mdc-notched-outline__trailing {
-              border-color: #3b82f6;
-              border-width: 2px;
-            }
-          }
-        }
-
-        /* Error Messages - Tremor red */
-        .mat-mdc-form-field-error {
-          color: #ef4444;
-        }
-
-        /* Datepicker Toggle */
-        .mat-datepicker-toggle {
-          color: #6b7280;
-
-          &:hover {
-            color: #3b82f6;
-          }
-        }
-      }
-
       /* Checkbox Field */
       .checkbox-field {
-        margin: 8px 0;
-      }
-
-      /* Form Actions */
-      .form-actions {
         display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid #e5e7eb;
+        align-items: center;
+        min-height: 56px;
+        padding: var(--ax-spacing-sm, 8px) 0;
       }
 
       .inline-spinner {
         margin-right: 8px;
       }
 
+      /* Responsive */
       @media (max-width: 768px) {
-        .form-actions {
-          flex-direction: column;
-          gap: 8px;
+        .form-grid {
+          grid-template-columns: 1fr;
         }
       }
     `,
@@ -388,9 +355,17 @@ export class {{pascalCaseHelper singularName}}FormComponent implements OnInit, O
   private populateForm({{camelCaseHelper moduleName}}: {{pascalCaseHelper singularName}}) {
     const formValue = {
 {{#each fields}}
-      {{this.name}}: {{#if (eq this.inputType 'date')}}{{../camelCase}}.{{this.name}}
+{{#if (eq this.type 'json')}}
+      {{this.name}}: typeof {{../camelCase}}.{{this.name}} === 'object' && {{../camelCase}}.{{this.name}} !== null
+        ? JSON.stringify({{../camelCase}}.{{this.name}}, null, 2)
+        : {{../camelCase}}.{{this.name}} || '',
+{{else if (eq this.inputType 'date')}}
+      {{this.name}}: {{../camelCase}}.{{this.name}}
         ? new Date({{../camelCase}}.{{this.name}})
-        : null{{else}}{{../camelCase}}.{{this.name}}{{/if}},
+        : null,
+{{else}}
+      {{this.name}}: {{../camelCase}}.{{this.name}},
+{{/if}}
 {{/each}}
     };
 
@@ -417,6 +392,35 @@ export class {{pascalCaseHelper singularName}}FormComponent implements OnInit, O
         formData.{{this.name}} = formatDateForSubmission(
           formData.{{this.name}},
         );
+      }
+      {{/each}}
+      {{/if}}
+
+      {{#if hasNumberFields}}
+      // Convert number fields from string to number (TypeBox expects number, not string)
+      {{#each numberFields}}
+      if (formData.{{this.name}} !== undefined) {
+        const {{this.name}}Val = formData.{{this.name}};
+        formData.{{this.name}} = {{this.name}}Val === '' || {{this.name}}Val === null
+          ? null
+          : Number({{this.name}}Val);
+      }
+      {{/each}}
+      {{/if}}
+
+      {{#if hasJsonFields}}
+      // Parse JSON fields from string to object (TypeBox expects object, not string)
+      {{#each jsonFields}}
+      if (typeof formData.{{this.name}} === 'string') {
+        try {
+          formData.{{this.name}} = formData.{{this.name}}.trim() === ''
+            ? {}
+            : JSON.parse(formData.{{this.name}});
+        } catch {
+          formData.{{this.name}} = {};
+        }
+      } else if (!formData.{{this.name}}) {
+        formData.{{this.name}} = {};
       }
       {{/each}}
       {{/if}}

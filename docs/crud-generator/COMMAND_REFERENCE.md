@@ -507,6 +507,24 @@ Direct CLI commands for advanced usage:
 - **Description**: Generate multiple roles (admin, editor, viewer)
 - **Default**: Single role generation
 
+#### `--include-audit-fields`
+
+- **Default**: `false`
+- **Description**: Include audit fields in forms (created_at, updated_at, deleted_at, created_by, updated_by)
+- **Target**: Frontend only
+- **Use Case**: Admin interfaces, data migration tools, or when manual control over audit fields is needed
+- **Note**: By default, audit fields are excluded from forms as they are auto-managed by the backend
+
+**Example**:
+
+```bash
+# Default: audit fields hidden from forms
+./bin/cli.js generate products --target frontend --force
+
+# Include audit fields in forms (admin use case)
+./bin/cli.js generate products --target frontend --include-audit-fields --force
+```
+
 ---
 
 ### Generation Control Flags

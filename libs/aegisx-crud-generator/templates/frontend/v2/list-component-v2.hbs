@@ -39,13 +39,14 @@ import {
 } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
 
 import {
-  AegisxNavigationItem,
-  AegisxEmptyStateComponent,
-  AegisxErrorStateComponent,
+  AxEmptyStateComponent,
+  AxErrorStateComponent,
   AxDialogService,
   BreadcrumbComponent,
+  BreadcrumbItem,
 } from '@aegisx/ui';
 {{#if includeEnhanced}}
 import {
@@ -94,14 +95,15 @@ import { {{pascalCaseHelper moduleName}}ListHeaderComponent } from './{{kebabCas
     MatCheckboxModule,
     MatTooltipModule,
     MatMenuModule,
+    MatCardModule,
     SharedExportComponent,
     BreadcrumbComponent,
     // Child components
     {{pascalCaseHelper moduleName}}ListHeaderComponent,
     {{pascalCaseHelper moduleName}}ListFiltersComponent,
     // AegisX UI components
-    AegisxEmptyStateComponent,
-    AegisxErrorStateComponent,
+    AxEmptyStateComponent,
+    AxErrorStateComponent,
   ],
   templateUrl: './{{kebabCase}}-list.component.html',
   styleUrl: './{{kebabCase}}-list.component.scss',
@@ -127,19 +129,13 @@ export class {{pascalCaseHelper moduleName}}ListComponent {
   private cdr = inject(ChangeDetectorRef);
 
   // Breadcrumb configuration
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: BreadcrumbItem[] = [
     {
-      id: 'home',
-      title: 'Home',
-      type: 'basic',
-      icon: 'home',
-      link: '/',
+      label: 'Home',
+      url: '/',
     },
     {
-      id: '{{lowercase moduleName}}',
-      title: '{{pascalCaseHelper moduleName}}',
-      type: 'basic',
-      icon: 'menu_book',
+      label: '{{pascalCaseHelper moduleName}}',
     },
   ];
 
@@ -336,13 +332,32 @@ export class {{pascalCaseHelper moduleName}}ListComponent {
   }
   {{/each}}
 
-  // Stats from API (should come from dedicated stats endpoint)
-  stats = computed(() => ({
-    total: this.{{camelCaseHelper moduleName}}Service.total{{pascalCaseHelper singularName}}(),
-    available: 0,
-    unavailable: 0,
-    recentWeek: 0,
-  }));
+  // Stats computed from data
+  // Note: For accurate stats, consider implementing a dedicated stats endpoint
+  stats = computed(() => {
+    const list = this.{{camelCaseHelper moduleName}}Service.{{camelCaseHelper moduleName}}List();
+    const total = this.{{camelCaseHelper moduleName}}Service.total{{pascalCaseHelper singularName}}();
+
+    // Calculate available/unavailable from first boolean field (typically is_active)
+    // This is a client-side approximation - for accurate counts, use a stats API
+    const available = list.filter((item: any) => item.is_active === true).length;
+    const unavailable = list.filter((item: any) => item.is_active === false).length;
+
+    // Calculate items created this week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const recentWeek = list.filter((item: any) => {
+      const createdAt = item.created_at ? new Date(item.created_at) : null;
+      return createdAt && createdAt >= oneWeekAgo;
+    }).length;
+
+    return {
+      total,
+      available,
+      unavailable,
+      recentWeek,
+    };
+  });
 
 {{#if includeEnhanced}}
   // Export configuration

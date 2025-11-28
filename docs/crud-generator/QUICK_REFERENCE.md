@@ -99,12 +99,15 @@ Use direct CLI for advanced features or multiple flags:
 
 ### Features
 
-| Flag                | Default | Description                            |
-| ------------------- | ------- | -------------------------------------- |
-| `-e, --with-events` | `false` | WebSocket real-time events             |
-| `--with-import`     | `false` | Excel/CSV import                       |
-| `--smart-stats`     | `false` | Auto-detect stats fields               |
-| `--multiple-roles`  | `false` | Generate 3 roles (admin/editor/viewer) |
+| Flag                     | Default | Description                              |
+| ------------------------ | ------- | ---------------------------------------- |
+| `-e, --with-events`      | `false` | WebSocket real-time events               |
+| `--with-import`          | `false` | Excel/CSV import                         |
+| `--smart-stats`          | `false` | Auto-detect stats fields                 |
+| `--multiple-roles`       | `false` | Generate 3 roles (admin/editor/viewer)   |
+| `--include-audit-fields` | `false` | Include audit fields in forms (frontend) |
+
+**Audit Fields**: `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by` are excluded from forms by default. Use `--include-audit-fields` when you need manual control (admin interfaces, data migration).
 
 ### Generation Control
 

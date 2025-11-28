@@ -161,6 +161,32 @@ When you generate a CRUD module, you automatically get:
 - **EventService** - WebSocket event management (with `--with-events`)
 - **Angular Signals** - Modern reactive state management (frontend)
 
+### ✅ Smart Form Generation (Frontend)
+
+**Audit Fields Control** (`--include-audit-fields`):
+
+By default, audit fields are excluded from generated forms because they're auto-managed by the backend:
+
+| Field        | Description               | Default  |
+| ------------ | ------------------------- | -------- |
+| `id`         | Primary key               | Excluded |
+| `created_at` | Record creation timestamp | Excluded |
+| `updated_at` | Last update timestamp     | Excluded |
+| `deleted_at` | Soft delete timestamp     | Excluded |
+| `created_by` | User who created record   | Excluded |
+| `updated_by` | User who last updated     | Excluded |
+| `deleted_by` | User who deleted record   | Excluded |
+
+**Use `--include-audit-fields`** when you need manual control (admin interfaces, data migration):
+
+```bash
+# Default: audit fields hidden
+./bin/cli.js generate products --target frontend --force
+
+# Include audit fields for admin interface
+./bin/cli.js generate products --target frontend --include-audit-fields --force
+```
+
 ---
 
 ## 🔍 Automatic Error Detection

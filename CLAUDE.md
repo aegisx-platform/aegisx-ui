@@ -921,17 +921,18 @@ pnpm run crud:events -- notifications --force
 
 ### Available Flags
 
-| Flag                | Default    | Description                                 |
-| ------------------- | ---------- | ------------------------------------------- |
-| `-t, --target`      | `backend`  | Generation target (`backend` or `frontend`) |
-| `-f, --force`       | `false`    | Overwrite existing files without prompt     |
-| `-d, --dry-run`     | `false`    | Preview files without creating              |
-| `--package`         | `standard` | Package: `standard`, `enterprise`, `full`   |
-| `-e, --with-events` | `false`    | Include WebSocket events                    |
-| `--with-import`     | `false`    | Include bulk import (Excel/CSV)             |
-| `-a, --app`         | `api`      | Target app: `api`, `web`, `admin`           |
-| `--flat`            | `false`    | Use flat structure (not domain)             |
-| `--no-register`     | `false`    | Skip auto-registration                      |
+| Flag                     | Default    | Description                                                  |
+| ------------------------ | ---------- | ------------------------------------------------------------ |
+| `-t, --target`           | `backend`  | Generation target (`backend` or `frontend`)                  |
+| `-f, --force`            | `false`    | Overwrite existing files without prompt                      |
+| `-d, --dry-run`          | `false`    | Preview files without creating                               |
+| `--package`              | `standard` | Package: `standard`, `enterprise`, `full`                    |
+| `-e, --with-events`      | `false`    | Include WebSocket events                                     |
+| `--with-import`          | `false`    | Include bulk import (Excel/CSV)                              |
+| `-a, --app`              | `api`      | Target app: `api`, `web`, `admin`                            |
+| `--flat`                 | `false`    | Use flat structure (not domain)                              |
+| `--no-register`          | `false`    | Skip auto-registration                                       |
+| `--include-audit-fields` | `false`    | Include audit fields in forms (created_at, updated_at, etc.) |
 
 ### Table Name Conventions
 
