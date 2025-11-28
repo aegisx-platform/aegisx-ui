@@ -100,7 +100,14 @@ import { Subject, takeUntil } from 'rxjs';
     >
       <!-- Sidebar Overlay (mobile) -->
       @if (isMobile() && sidebarOpen()) {
-        <div class="ax-docs-layout__overlay" (click)="closeSidebar()"></div>
+        <div
+          class="ax-docs-layout__overlay"
+          (click)="closeSidebar()"
+          (keydown.escape)="closeSidebar()"
+          role="button"
+          tabindex="0"
+          aria-label="Close sidebar"
+        ></div>
       }
 
       <!-- Sidebar -->

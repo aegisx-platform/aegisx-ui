@@ -77,6 +77,11 @@ export interface FileItem {
       (dragleave)="onDragLeave($event)"
       (drop)="onDrop($event)"
       (click)="openFileDialog()"
+      (keydown.enter)="openFileDialog()"
+      (keydown.space)="openFileDialog()"
+      role="button"
+      tabindex="0"
+      [attr.aria-label]="label || 'Upload files'"
     >
       <!-- Hidden file input -->
       <input
