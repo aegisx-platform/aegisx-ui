@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -8,6 +8,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
+import {
+  DocHeaderComponent,
+  CodeTabsComponent,
+  LivePreviewComponent,
+} from '../../../../components/docs';
 
 interface SizeVariant {
   name: string;
@@ -32,28 +37,24 @@ interface SizeVariant {
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
+    DocHeaderComponent,
+    CodeTabsComponent,
+    LivePreviewComponent,
   ],
   template: `
-    <div class="docs-page p-6 max-w-6xl mx-auto">
-      <!-- Header -->
-      <header class="mb-8">
-        <div
-          class="flex items-center gap-2 text-sm text-on-surface-variant mb-2"
-        >
-          <a
-            routerLink="/docs/components/navigation/breadcrumb"
-            class="hover:text-primary"
-            >Patterns</a
-          >
-          <mat-icon class="text-base">chevron_right</mat-icon>
-          <span>Form Sizes</span>
-        </div>
-        <h1 class="text-4xl font-bold text-on-surface mb-2">Form Sizes</h1>
-        <p class="text-lg text-on-surface-variant">
-          Pre-configured form size utilities for consistent sizing across your
-          application.
-        </p>
-      </header>
+    <div class="form-sizes-doc">
+      <ax-doc-header
+        title="Form Sizes"
+        icon="format_size"
+        description="Pre-configured form size utilities for consistent sizing across your application."
+        [breadcrumbs]="[
+          { label: 'Patterns', link: '/docs/patterns/form-sizes' },
+          { label: 'Form Sizes' },
+        ]"
+        status="stable"
+        version="1.0.0"
+        [showImport]="false"
+      ></ax-doc-header>
 
       <!-- Tabs -->
       <mat-tab-group class="docs-tabs" animationDuration="200ms">
@@ -138,29 +139,7 @@ interface SizeVariant {
             <!-- Quick Usage -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Quick Usage</h3>
-              <mat-card appearance="outlined">
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre
-                    class="text-sm overflow-x-auto"
-                  ><code>&lt;!-- Compact forms for CRUD tables and dashboards --&gt;
-&lt;div class="form-compact"&gt;
-  &lt;mat-form-field appearance="outline"&gt;
-    &lt;mat-label&gt;Search&lt;/mat-label&gt;
-    &lt;input matInput&gt;
-  &lt;/mat-form-field&gt;
-  &lt;button mat-flat-button color="primary"&gt;Search&lt;/button&gt;
-&lt;/div&gt;
-
-&lt;!-- Standard forms for general use --&gt;
-&lt;div class="form-standard"&gt;
-  &lt;mat-form-field appearance="outline"&gt;
-    &lt;mat-label&gt;Full Name&lt;/mat-label&gt;
-    &lt;input matInput&gt;
-  &lt;/mat-form-field&gt;
-  &lt;button mat-flat-button color="primary"&gt;Save&lt;/button&gt;
-&lt;/div&gt;</code></pre>
-                </div>
-              </mat-card>
+              <ax-code-tabs [tabs]="quickUsageCode" />
             </section>
           </div>
         </mat-tab>
@@ -171,46 +150,41 @@ interface SizeVariant {
             <!-- Compact Example -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Compact (form-compact)</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <p class="text-sm text-on-surface-variant mb-4">
-                    40px form fields, 36px buttons - Ideal for dense interfaces
-                  </p>
-                  <div class="form-compact">
-                    <div class="grid md:grid-cols-3 gap-4 mb-4">
-                      <mat-form-field appearance="outline" class="w-full">
-                        <mat-label>Search Query</mat-label>
-                        <mat-icon matPrefix>search</mat-icon>
-                        <input matInput placeholder="Search..." />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" class="w-full">
-                        <mat-label>Filter By</mat-label>
-                        <mat-icon matPrefix>filter_list</mat-icon>
-                        <input matInput placeholder="Filter..." />
-                      </mat-form-field>
-                      <div class="flex items-end gap-2">
-                        <button mat-flat-button color="primary">
-                          <mat-icon>search</mat-icon>
-                          Search
-                        </button>
-                        <button mat-stroked-button>Clear</button>
-                      </div>
+              <p class="text-on-surface-variant mb-4">
+                40px form fields, 36px buttons - Ideal for dense interfaces
+              </p>
+              <ax-live-preview title="Compact Form Example">
+                <div class="form-compact">
+                  <div class="grid md:grid-cols-3 gap-4">
+                    <mat-form-field
+                      appearance="outline"
+                      subscriptSizing="dynamic"
+                      class="w-full"
+                    >
+                      <mat-label>Search Query</mat-label>
+                      <mat-icon matPrefix>search</mat-icon>
+                      <input matInput placeholder="Search..." />
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      subscriptSizing="dynamic"
+                      class="w-full"
+                    >
+                      <mat-label>Filter By</mat-label>
+                      <mat-icon matPrefix>filter_list</mat-icon>
+                      <input matInput placeholder="Filter..." />
+                    </mat-form-field>
+                    <div class="flex items-center gap-2">
+                      <button mat-flat-button color="primary">
+                        <mat-icon>search</mat-icon>
+                        Search
+                      </button>
+                      <button mat-stroked-button>Clear</button>
                     </div>
                   </div>
                 </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre
-                    class="text-sm overflow-x-auto"
-                  ><code>&lt;div class="form-compact"&gt;
-  &lt;mat-form-field appearance="outline"&gt;
-    &lt;mat-label&gt;Search Query&lt;/mat-label&gt;
-    &lt;mat-icon matPrefix&gt;search&lt;/mat-icon&gt;
-    &lt;input matInput&gt;
-  &lt;/mat-form-field&gt;
-  &lt;button mat-flat-button color="primary"&gt;Search&lt;/button&gt;
-&lt;/div&gt;</code></pre>
-                </div>
-              </mat-card>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="compactExampleCode" />
             </section>
 
             <!-- Standard Example -->
@@ -218,45 +192,33 @@ interface SizeVariant {
               <h3 class="text-xl font-semibold mb-4">
                 Standard (form-standard)
               </h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <p class="text-sm text-on-surface-variant mb-4">
-                    48px form fields, 40px buttons - Material Design 3 default
-                  </p>
-                  <div class="form-standard">
-                    <div class="grid md:grid-cols-2 gap-4 mb-4">
-                      <mat-form-field appearance="outline" class="w-full">
-                        <mat-label>Full Name</mat-label>
-                        <mat-icon matPrefix>person</mat-icon>
-                        <input matInput placeholder="Enter your name" />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" class="w-full">
-                        <mat-label>Email Address</mat-label>
-                        <mat-icon matPrefix>email</mat-icon>
-                        <input matInput placeholder="Enter your email" />
-                      </mat-form-field>
-                    </div>
-                    <div class="flex gap-2">
-                      <button mat-flat-button color="primary">
-                        <mat-icon>save</mat-icon>
-                        Save Changes
-                      </button>
-                      <button mat-stroked-button>Cancel</button>
-                    </div>
+              <p class="text-on-surface-variant mb-4">
+                48px form fields, 40px buttons - Material Design 3 default
+              </p>
+              <ax-live-preview title="Standard Form Example">
+                <div class="form-standard">
+                  <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <mat-form-field appearance="outline" class="w-full">
+                      <mat-label>Full Name</mat-label>
+                      <mat-icon matPrefix>person</mat-icon>
+                      <input matInput placeholder="Enter your name" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-full">
+                      <mat-label>Email Address</mat-label>
+                      <mat-icon matPrefix>email</mat-icon>
+                      <input matInput placeholder="Enter your email" />
+                    </mat-form-field>
+                  </div>
+                  <div class="flex gap-2">
+                    <button mat-flat-button color="primary">
+                      <mat-icon>save</mat-icon>
+                      Save Changes
+                    </button>
+                    <button mat-stroked-button>Cancel</button>
                   </div>
                 </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre
-                    class="text-sm overflow-x-auto"
-                  ><code>&lt;div class="form-standard"&gt;
-  &lt;mat-form-field appearance="outline"&gt;
-    &lt;mat-label&gt;Full Name&lt;/mat-label&gt;
-    &lt;input matInput&gt;
-  &lt;/mat-form-field&gt;
-  &lt;button mat-flat-button color="primary"&gt;Save Changes&lt;/button&gt;
-&lt;/div&gt;</code></pre>
-                </div>
-              </mat-card>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="standardExampleCode" />
             </section>
 
             <!-- Side by Side Comparison -->
@@ -416,35 +378,7 @@ interface SizeVariant {
             <!-- How It Works -->
             <section>
               <h3 class="text-xl font-semibold mb-4">How It Works</h3>
-              <mat-card appearance="outlined">
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre
-                    class="text-sm overflow-x-auto"
-                  ><code>/* The .form-compact class applies these styles */
-.form-compact {{'{'}}
-  /* Form fields */
-  --mdc-outlined-text-field-container-height: 40px;
-
-  /* Buttons */
-  button {{'{'}}
-    height: 36px;
-    font-size: 0.875rem;
-  {{'}'}}
-{{'}'}}
-
-/* The .form-standard class applies these styles */
-.form-standard {{'{'}}
-  /* Form fields - Material Design 3 default */
-  --mdc-outlined-text-field-container-height: 48px;
-
-  /* Buttons */
-  button {{'{'}}
-    height: 40px;
-    font-size: 1rem;
-  {{'}'}}
-{{'}'}}</code></pre>
-                </div>
-              </mat-card>
+              <ax-code-tabs [tabs]="howItWorksCode" />
             </section>
 
             <!-- Integration -->
@@ -480,29 +414,7 @@ interface SizeVariant {
             <!-- CSS Variables -->
             <section>
               <h3 class="text-xl font-semibold mb-4">CSS Variables</h3>
-              <mat-card appearance="outlined">
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre
-                    class="text-sm overflow-x-auto"
-                  ><code>/* Compact Form Variables */
-.form-compact {{'{'}}
-  --mdc-outlined-text-field-container-height: 40px;
-  --mdc-filled-text-field-container-height: 40px;
-  --mat-form-field-container-vertical-padding: 8px;
-{{'}'}}
-
-/* Standard Form Variables */
-.form-standard {{'{'}}
-  --mdc-outlined-text-field-container-height: 48px;
-  --mdc-filled-text-field-container-height: 48px;
-  --mat-form-field-container-vertical-padding: 12px;
-{{'}'}}
-
-/* Button Height Variables */
---ax-button-height-compact: 36px;
---ax-button-height-standard: 40px;</code></pre>
-                </div>
-              </mat-card>
+              <ax-code-tabs [tabs]="cssVariablesCode" />
             </section>
 
             <!-- Design Tokens Mapping -->
@@ -792,6 +704,145 @@ export class FormSizesDocComponent {
       name: 'mat-radio',
       icon: 'radio_button_checked',
       description: 'Radio button groups',
+    },
+  ];
+
+  // Code Examples
+  compactExampleCode = [
+    {
+      language: 'html' as const,
+      label: 'HTML',
+      code: `<div class="form-compact">
+  <div class="grid md:grid-cols-3 gap-4">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+      <mat-label>Search Query</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search...">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+      <mat-label>Filter By</mat-label>
+      <mat-icon matPrefix>filter_list</mat-icon>
+      <input matInput placeholder="Filter...">
+    </mat-form-field>
+
+    <div class="flex items-center gap-2">
+      <button mat-flat-button color="primary">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+      <button mat-stroked-button>Clear</button>
+    </div>
+  </div>
+</div>`,
+    },
+  ];
+
+  standardExampleCode = [
+    {
+      language: 'html' as const,
+      label: 'HTML',
+      code: `<div class="form-standard">
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Full Name</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput placeholder="Enter your name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Email Address</mat-label>
+      <mat-icon matPrefix>email</mat-icon>
+      <input matInput placeholder="Enter your email">
+    </mat-form-field>
+  </div>
+
+  <div class="flex gap-2">
+    <button mat-flat-button color="primary">
+      <mat-icon>save</mat-icon>
+      Save Changes
+    </button>
+    <button mat-stroked-button>Cancel</button>
+  </div>
+</div>`,
+    },
+  ];
+
+  quickUsageCode = [
+    {
+      language: 'html' as const,
+      label: 'HTML',
+      code: `<!-- Compact forms for CRUD tables and dashboards -->
+<div class="form-compact">
+  <mat-form-field appearance="outline">
+    <mat-label>Search</mat-label>
+    <input matInput>
+  </mat-form-field>
+  <button mat-flat-button color="primary">Search</button>
+</div>
+
+<!-- Standard forms for general use -->
+<div class="form-standard">
+  <mat-form-field appearance="outline">
+    <mat-label>Full Name</mat-label>
+    <input matInput>
+  </mat-form-field>
+  <button mat-flat-button color="primary">Save</button>
+</div>`,
+    },
+  ];
+
+  howItWorksCode = [
+    {
+      language: 'scss' as const,
+      label: 'SCSS',
+      code: `/* The .form-compact class applies these styles */
+.form-compact {
+  /* Form fields */
+  --mdc-outlined-text-field-container-height: 40px;
+
+  /* Buttons */
+  button {
+    height: 36px;
+    font-size: 0.875rem;
+  }
+}
+
+/* The .form-standard class applies these styles */
+.form-standard {
+  /* Form fields - Material Design 3 default */
+  --mdc-outlined-text-field-container-height: 48px;
+
+  /* Buttons */
+  button {
+    height: 40px;
+    font-size: 1rem;
+  }
+}`,
+    },
+  ];
+
+  cssVariablesCode = [
+    {
+      language: 'scss' as const,
+      label: 'SCSS',
+      code: `/* Compact Form Variables */
+.form-compact {
+  --mdc-outlined-text-field-container-height: 40px;
+  --mdc-filled-text-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+}
+
+/* Standard Form Variables */
+.form-standard {
+  --mdc-outlined-text-field-container-height: 48px;
+  --mdc-filled-text-field-container-height: 48px;
+  --mat-form-field-container-vertical-padding: 12px;
+}
+
+/* Button Height Variables */
+--ax-button-height-compact: 36px;
+--ax-button-height-standard: 40px;`,
     },
   ];
 }

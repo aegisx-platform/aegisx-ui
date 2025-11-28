@@ -1,4 +1,14 @@
-import { Component, Input, inject, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  inject,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,10 +18,21 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CodeTab, CodeLanguage } from '../../../types/docs.types';
 
+// Import Prism core and languages
+import Prism from 'prismjs';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-scss';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-json';
+
 /**
  * Code Tabs Component
  *
  * Displays code examples with syntax highlighting in tabbed format.
+ * Uses Prism.js for syntax highlighting.
  * Supports HTML, TypeScript, SCSS, Bash, and JSON.
  */
 @Component({
@@ -31,7 +52,12 @@ import { CodeTab, CodeLanguage } from '../../../types/docs.types';
         <!-- Single code block -->
         <div class="code-tabs__single">
           <div class="code-tabs__header">
-            <span class="code-tabs__label">{{ tabs[0].label }}</span>
+            <div class="code-tabs__dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <span class="code-tabs__filename">{{ tabs[0].label }}</span>
             <button
               mat-icon-button
               class="code-tabs__copy-btn"
@@ -41,193 +67,258 @@ import { CodeTab, CodeLanguage } from '../../../types/docs.types';
               <mat-icon>content_copy</mat-icon>
             </button>
           </div>
-          <pre
-            class="code-tabs__code code-tabs__code--{{ tabs[0].language }}"
-            [class.code-tabs__code--line-numbers]="showLineNumbers"
-          ><code [innerHTML]="highlightCode(tabs[0].code, tabs[0].language)"></code></pre>
+          <pre class="code-tabs__code"><code
+            #codeBlock
+            class="language-{{ getPrismLanguage(tabs[0].language) }}"
+          >{{ tabs[0].code.trim() }}</code></pre>
         </div>
       } @else {
         <!-- Tabbed code blocks -->
-        <mat-tab-group class="code-tabs__group" [animationDuration]="'150ms'">
-          @for (tab of tabs; track tab.label) {
-            <mat-tab [label]="tab.label">
-              <ng-template matTabContent>
-                <div class="code-tabs__tab-content">
-                  <button
-                    mat-icon-button
-                    class="code-tabs__copy-btn code-tabs__copy-btn--tab"
-                    matTooltip="Copy code"
-                    (click)="copyCode(tab.code)"
-                  >
-                    <mat-icon>content_copy</mat-icon>
-                  </button>
-                  <pre
-                    class="code-tabs__code code-tabs__code--{{ tab.language }}"
-                    [class.code-tabs__code--line-numbers]="showLineNumbers"
-                  ><code [innerHTML]="highlightCode(tab.code, tab.language)"></code></pre>
-                </div>
-              </ng-template>
-            </mat-tab>
+        <div class="code-tabs__tabbed">
+          <div class="code-tabs__tab-header">
+            <div class="code-tabs__dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <div class="code-tabs__tab-buttons">
+              @for (tab of tabs; track tab.label; let i = $index) {
+                <button
+                  class="code-tabs__tab-btn"
+                  [class.active]="activeTabIndex === i"
+                  (click)="selectTab(i)"
+                >
+                  {{ tab.label }}
+                </button>
+              }
+            </div>
+            <button
+              mat-icon-button
+              class="code-tabs__copy-btn"
+              matTooltip="Copy code"
+              (click)="copyCode(tabs[activeTabIndex].code)"
+            >
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          @for (tab of tabs; track tab.label; let i = $index) {
+            @if (activeTabIndex === i) {
+              <pre class="code-tabs__code"><code
+                #codeBlock
+                class="language-{{ getPrismLanguage(tab.language) }}"
+              >{{ tab.code.trim() }}</code></pre>
+            }
           }
-        </mat-tab-group>
+        </div>
       }
     </div>
   `,
   styles: [
     `
       .code-tabs {
-        margin: var(--ax-spacing-md, 0.75rem) 0;
-        border-radius: var(--ax-radius-lg, 0.75rem);
+        margin: 1rem 0;
+        border-radius: 16px;
         overflow: hidden;
-        border: 1px solid var(--ax-border-default);
+        background: #1e1e2e;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       }
-
-      .code-tabs__single {
+      .code-tabs__single,
+      .code-tabs__tabbed {
         position: relative;
       }
-
-      .code-tabs__header {
+      .code-tabs__header,
+      .code-tabs__tab-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: var(--ax-spacing-xs, 0.25rem) var(--ax-spacing-sm, 0.5rem);
-        background-color: var(--ax-background-subtle);
-        border-bottom: 1px solid var(--ax-border-default);
+        gap: 12px;
+        padding: 12px 16px;
+        background: #181825;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
-
-      .code-tabs__label {
-        font-size: var(--ax-text-xs, 0.75rem);
-        font-weight: 600;
-        color: var(--ax-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+      .code-tabs__dots {
+        display: flex;
+        gap: 8px;
       }
-
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .dot--red {
+        background: #ff5f56;
+      }
+      .dot--yellow {
+        background: #ffbd2e;
+      }
+      .dot--green {
+        background: #27c93f;
+      }
+      .code-tabs__filename {
+        flex: 1;
+        color: #6c7086;
+        font-size: 13px;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+      }
+      .code-tabs__tab-buttons {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+      }
+      .code-tabs__tab-btn {
+        padding: 6px 16px;
+        border: none;
+        background: transparent;
+        color: #6c7086;
+        font-size: 13px;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+      }
+      .code-tabs__tab-btn:hover {
+        color: #cdd6f4;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .code-tabs__tab-btn.active {
+        color: #cdd6f4;
+        background: rgba(255, 255, 255, 0.1);
+      }
       .code-tabs__copy-btn {
-        width: 28px;
-        height: 28px;
-        line-height: 28px;
-        color: var(--ax-text-secondary);
-
-        mat-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-        }
-
-        &:hover {
-          color: var(--ax-text-primary);
-        }
+        width: 32px !important;
+        height: 32px !important;
+        line-height: 32px;
+        color: #6c7086 !important;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
       }
-
-      .code-tabs__copy-btn--tab {
-        position: absolute;
-        top: var(--ax-spacing-xs, 0.25rem);
-        right: var(--ax-spacing-xs, 0.25rem);
-        z-index: 1;
+      .code-tabs__copy-btn mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
       }
-
-      .code-tabs__tab-content {
-        position: relative;
+      .code-tabs__copy-btn:hover {
+        color: #cdd6f4 !important;
+        background: rgba(255, 255, 255, 0.1);
       }
-
       .code-tabs__code {
         margin: 0;
-        padding: var(--ax-spacing-md, 0.75rem);
-        background-color: #1e1e1e;
+        padding: 20px;
+        background: #1e1e2e;
         overflow-x: auto;
-        font-family: var(--ax-font-mono);
-        font-size: var(--ax-text-sm, 0.875rem);
-        line-height: 1.6;
-        color: #d4d4d4;
-
-        code {
-          font-family: inherit;
-        }
+        font-family:
+          'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+        font-size: 14px;
+        line-height: 1.7;
+        color: #cdd6f4;
+        tab-size: 2;
+      }
+      .code-tabs__code code {
+        font-family: inherit;
+        background: transparent;
+        padding: 0;
       }
 
-      .code-tabs__code--line-numbers {
-        counter-reset: line;
-
-        code {
-          display: block;
+      /* Catppuccin Mocha Syntax Theme */
+      :host ::ng-deep .code-tabs__code {
+        .token.comment,
+        .token.prolog,
+        .token.doctype,
+        .token.cdata {
+          color: #6c7086;
+          font-style: italic;
         }
-      }
-
-      /* Mat Tab Group Styling */
-      .code-tabs__group {
-        ::ng-deep {
-          .mat-mdc-tab-header {
-            background-color: var(--ax-background-subtle);
-            border-bottom: 1px solid var(--ax-border-default);
-          }
-
-          .mat-mdc-tab {
-            min-width: 80px;
-            padding: 0 var(--ax-spacing-md, 0.75rem);
-          }
-
-          .mat-mdc-tab-body-wrapper {
-            flex-grow: 1;
-          }
-
-          .mat-mdc-tab-body-content {
-            overflow: hidden;
-          }
+        .token.punctuation {
+          color: #bac2de;
         }
-      }
-
-      /* Syntax Highlighting */
-      :host {
-        .keyword {
-          color: #569cd6;
+        .token.namespace {
+          opacity: 0.8;
         }
-        .string {
-          color: #ce9178;
+        .token.property,
+        .token.tag,
+        .token.constant,
+        .token.symbol,
+        .token.deleted {
+          color: #89b4fa;
         }
-        .comment {
-          color: #6a9955;
+        .token.boolean,
+        .token.number {
+          color: #fab387;
         }
-        .function {
-          color: #dcdcaa;
+        .token.selector,
+        .token.attr-name,
+        .token.string,
+        .token.char,
+        .token.builtin,
+        .token.inserted {
+          color: #a6e3a1;
         }
-        .property {
-          color: #9cdcfe;
+        .token.operator,
+        .token.entity,
+        .token.url {
+          color: #94e2d5;
         }
-        .tag {
-          color: #569cd6;
+        .language-css .token.string,
+        .style .token.string {
+          color: #a6e3a1;
         }
-        .attribute {
-          color: #9cdcfe;
+        .token.atrule,
+        .token.attr-value,
+        .token.keyword {
+          color: #cba6f7;
         }
-        .attribute-value {
-          color: #ce9178;
+        .token.function {
+          color: #89b4fa;
         }
-        .punctuation {
-          color: #d4d4d4;
+        .token.class-name {
+          color: #89dceb;
         }
-        .number {
-          color: #b5cea8;
+        .token.regex,
+        .token.important,
+        .token.variable {
+          color: #f38ba8;
         }
-        .operator {
-          color: #d4d4d4;
+        .token.important,
+        .token.bold {
+          font-weight: bold;
         }
-        .class-name {
-          color: #4ec9b0;
+        .token.italic {
+          font-style: italic;
         }
-        .decorator {
-          color: #dcdcaa;
+        .token.builtin {
+          color: #f9e2af;
+        }
+        .token.tag .token.tag {
+          color: #f38ba8;
+        }
+        .token.tag .token.attr-name {
+          color: #89b4fa;
+        }
+        .token.tag .token.attr-value {
+          color: #a6e3a1;
+        }
+        .token.selector {
+          color: #cba6f7;
+        }
+        .token.decorator {
+          color: #f9e2af;
+        }
+        .token.string {
+          color: #a6e3a1;
         }
       }
     `,
   ],
 })
-export class CodeTabsComponent {
+export class CodeTabsComponent implements AfterViewInit, OnChanges {
   private readonly clipboard = inject(Clipboard);
   private readonly snackBar = inject(MatSnackBar);
 
+  @ViewChildren('codeBlock') codeBlocks!: QueryList<ElementRef>;
+
   @Input() tabs: CodeTab[] = [];
   @Input() showLineNumbers = false;
+
+  activeTabIndex = 0;
 
   // Convenience inputs for single-tab usage
   @Input() set html(value: string) {
@@ -247,6 +338,41 @@ export class CodeTabsComponent {
     }
   }
 
+  ngAfterViewInit(): void {
+    // Initial highlighting
+    this.highlightAllCode();
+
+    // Subscribe to codeBlocks changes for dynamically added code blocks
+    this.codeBlocks.changes.subscribe(() => {
+      setTimeout(() => this.highlightAllCode(), 0);
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tabs']) {
+      // Use setTimeout to ensure DOM is updated
+      setTimeout(() => this.highlightAllCode(), 0);
+    }
+  }
+
+  selectTab(index: number): void {
+    this.activeTabIndex = index;
+    // Highlight code when tab changes (for lazy-loaded content)
+    setTimeout(() => this.highlightAllCode(), 0);
+  }
+
+  private highlightAllCode(): void {
+    if (this.codeBlocks && this.codeBlocks.length > 0) {
+      this.codeBlocks.forEach((codeBlock) => {
+        const element = codeBlock.nativeElement;
+        if (element && !element.classList.contains('prism-highlighted')) {
+          Prism.highlightElement(element);
+          element.classList.add('prism-highlighted');
+        }
+      });
+    }
+  }
+
   copyCode(code: string): void {
     this.clipboard.copy(code.trim());
     this.snackBar.open('Code copied to clipboard', 'Close', {
@@ -256,238 +382,14 @@ export class CodeTabsComponent {
     });
   }
 
-  highlightCode(code: string, language: CodeLanguage): string {
-    const trimmedCode = code.trim();
-
-    switch (language) {
-      case 'typescript':
-        return this.highlightTypeScript(trimmedCode);
-      case 'html':
-        return this.highlightHtml(trimmedCode);
-      case 'scss':
-        return this.highlightScss(trimmedCode);
-      case 'bash':
-        return this.highlightBash(trimmedCode);
-      case 'json':
-        return this.highlightJson(trimmedCode);
-      default:
-        return this.escapeHtml(trimmedCode);
-    }
-  }
-
-  private escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  private highlightTypeScript(code: string): string {
-    let result = this.escapeHtml(code);
-
-    // Comments
-    result = result.replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>');
-    result = result.replace(
-      /(\/\*[\s\S]*?\*\/)/g,
-      '<span class="comment">$1</span>',
-    );
-
-    // Strings
-    result = result.replace(
-      /('(?:[^'\\]|\\.)*')/g,
-      '<span class="string">$1</span>',
-    );
-    result = result.replace(
-      /("(?:[^"\\]|\\.)*")/g,
-      '<span class="string">$1</span>',
-    );
-    result = result.replace(
-      /(`(?:[^`\\]|\\.)*`)/g,
-      '<span class="string">$1</span>',
-    );
-
-    // Decorators
-    result = result.replace(/(@\w+)/g, '<span class="decorator">$1</span>');
-
-    // Keywords
-    const keywords = [
-      'import',
-      'export',
-      'from',
-      'const',
-      'let',
-      'var',
-      'function',
-      'class',
-      'interface',
-      'type',
-      'extends',
-      'implements',
-      'return',
-      'if',
-      'else',
-      'for',
-      'while',
-      'switch',
-      'case',
-      'break',
-      'continue',
-      'new',
-      'this',
-      'super',
-      'async',
-      'await',
-      'try',
-      'catch',
-      'throw',
-      'public',
-      'private',
-      'protected',
-      'readonly',
-      'static',
-      'abstract',
-      'true',
-      'false',
-      'null',
-      'undefined',
-      'void',
-      'never',
-      'any',
-    ];
-    const keywordRegex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'g');
-    result = result.replace(keywordRegex, '<span class="keyword">$1</span>');
-
-    // Numbers
-    result = result.replace(
-      /\b(\d+(?:\.\d+)?)\b/g,
-      '<span class="number">$1</span>',
-    );
-
-    return result;
-  }
-
-  private highlightHtml(code: string): string {
-    let result = this.escapeHtml(code);
-
-    // Comments
-    result = result.replace(
-      /(&lt;!--[\s\S]*?--&gt;)/g,
-      '<span class="comment">$1</span>',
-    );
-
-    // Tags
-    result = result.replace(
-      /(&lt;\/?)([\w-]+)/g,
-      '$1<span class="tag">$2</span>',
-    );
-
-    // Attributes
-    result = result.replace(
-      /\s([\w-]+)=/g,
-      ' <span class="attribute">$1</span>=',
-    );
-
-    // Attribute values
-    result = result.replace(
-      /="([^"]*)"/g,
-      '="<span class="attribute-value">$1</span>"',
-    );
-
-    return result;
-  }
-
-  private highlightScss(code: string): string {
-    let result = this.escapeHtml(code);
-
-    // Comments
-    result = result.replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>');
-    result = result.replace(
-      /(\/\*[\s\S]*?\*\/)/g,
-      '<span class="comment">$1</span>',
-    );
-
-    // Variables
-    result = result.replace(/(\$[\w-]+)/g, '<span class="property">$1</span>');
-
-    // Properties
-    result = result.replace(
-      /^(\s*)([\w-]+):/gm,
-      '$1<span class="property">$2</span>:',
-    );
-
-    // Values with units
-    result = result.replace(
-      /:\s*(\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|deg|s|ms)?)/g,
-      ': <span class="number">$1</span>',
-    );
-
-    // Strings
-    result = result.replace(
-      /('(?:[^'\\]|\\.)*')/g,
-      '<span class="string">$1</span>',
-    );
-    result = result.replace(
-      /("(?:[^"\\]|\\.)*")/g,
-      '<span class="string">$1</span>',
-    );
-
-    return result;
-  }
-
-  private highlightBash(code: string): string {
-    let result = this.escapeHtml(code);
-
-    // Comments
-    result = result.replace(/(#.*$)/gm, '<span class="comment">$1</span>');
-
-    // Strings
-    result = result.replace(
-      /('(?:[^'\\]|\\.)*')/g,
-      '<span class="string">$1</span>',
-    );
-    result = result.replace(
-      /("(?:[^"\\]|\\.)*")/g,
-      '<span class="string">$1</span>',
-    );
-
-    // Commands (first word of each line)
-    result = result.replace(
-      /^(\s*)([\w-]+)/gm,
-      '$1<span class="function">$2</span>',
-    );
-
-    return result;
-  }
-
-  private highlightJson(code: string): string {
-    let result = this.escapeHtml(code);
-
-    // Keys
-    result = result.replace(
-      /"([\w-]+)":/g,
-      '"<span class="property">$1</span>":',
-    );
-
-    // String values
-    result = result.replace(
-      /:\s*"([^"]*)"/g,
-      ': "<span class="string">$1</span>"',
-    );
-
-    // Numbers
-    result = result.replace(
-      /:\s*(\d+(?:\.\d+)?)/g,
-      ': <span class="number">$1</span>',
-    );
-
-    // Booleans and null
-    result = result.replace(
-      /:\s*(true|false|null)/g,
-      ': <span class="keyword">$1</span>',
-    );
-
-    return result;
+  getPrismLanguage(language: CodeLanguage): string {
+    const languageMap: Record<CodeLanguage, string> = {
+      html: 'markup',
+      typescript: 'typescript',
+      scss: 'scss',
+      bash: 'bash',
+      json: 'json',
+    };
+    return languageMap[language] || 'plaintext';
   }
 }
