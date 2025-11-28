@@ -64,7 +64,7 @@ interface Notification {
           <div class="ax-nav-footer-wrapper">
             <a
               routerLink="/profile"
-              class="nav-footer-profile flex items-center gap-3 px-4 w-full hover:bg-white/10 transition-all rounded-lg cursor-pointer no-underline"
+              class="nav-footer-profile flex items-center gap-2 py-1 w-full hover:bg-white/10 transition-all rounded-lg cursor-pointer no-underline overflow-hidden"
             >
               <!-- Avatar (always visible) -->
               <img
@@ -72,13 +72,13 @@ interface Notification {
                   currentUser()?.avatar || '/assets/images/avatars/default.png'
                 "
                 [alt]="currentUser()?.name || 'User'"
-                class="nav-footer-avatar w-10 h-10 rounded-full object-cover flex-shrink-0"
+                class="nav-footer-avatar w-9 h-9 rounded-full object-cover flex-shrink-0"
               />
 
               <!-- User Info (hidden when collapsed) -->
-              <div class="nav-footer-info flex-1 min-w-0">
+              <div class="nav-footer-info flex-1 min-w-0 overflow-hidden">
                 <p
-                  class="text-sm font-medium text-gray-900 dark:text-white truncate mb-0.5 m-0"
+                  class="text-sm font-medium text-gray-900 dark:text-white truncate m-0"
                 >
                   {{ currentUser()?.name || 'Guest User' }}
                 </p>
@@ -89,7 +89,7 @@ interface Notification {
 
               <!-- Arrows (hidden when collapsed) -->
               <div
-                class="nav-footer-arrows flex flex-col text-gray-400 text-xs leading-none gap-0.5"
+                class="nav-footer-arrows flex flex-col text-gray-400 text-xs leading-none flex-shrink-0"
               >
                 <span>▲</span>
                 <span>▼</span>

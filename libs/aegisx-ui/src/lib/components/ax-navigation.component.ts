@@ -116,26 +116,20 @@ import { filter } from 'rxjs/operators';
                   item.icon
                 }}</mat-icon>
               }
-              @if (state === 'expanded') {
-                <span class="ax-navigation__item-title" [@fadeIn]>{{
-                  item.title
-                }}</span>
-                @if (item.badge) {
-                  <span
-                    class="ax-navigation__item-badge"
-                    [attr.data-type]="item.badge.type || 'primary'"
-                    [@fadeIn]
-                  >
-                    {{ item.badge.content }}
-                  </span>
-                }
-                <mat-icon
-                  class="ax-navigation__item-arrow"
-                  [class.ax-navigation__item-arrow--rotated]="isExpanded(item)"
-                  [@fadeIn]
-                  >chevron_right</mat-icon
+              <span class="ax-navigation__item-title">{{ item.title }}</span>
+              @if (item.badge) {
+                <span
+                  class="ax-navigation__item-badge"
+                  [attr.data-type]="item.badge.type || 'primary'"
                 >
+                  {{ item.badge.content }}
+                </span>
               }
+              <mat-icon
+                class="ax-navigation__item-arrow"
+                [class.ax-navigation__item-arrow--rotated]="isExpanded(item)"
+                >chevron_right</mat-icon
+              >
             </button>
 
             <!-- Collapsible Children -->
@@ -168,24 +162,19 @@ import { filter } from 'rxjs/operators';
                   item.icon
                 }}</mat-icon>
               }
-              @if (state === 'expanded') {
-                <span class="ax-navigation__item-title" [@fadeIn]>{{
-                  item.title
-                }}</span>
-                @if (item.badge) {
-                  <span
-                    class="ax-navigation__item-badge"
-                    [attr.data-type]="item.badge.type || 'primary'"
-                    [@fadeIn]
-                  >
-                    {{ item.badge.content }}
-                  </span>
-                }
-                @if (item.externalLink) {
-                  <mat-icon class="ax-navigation__item-external" [@fadeIn]
-                    >open_in_new</mat-icon
-                  >
-                }
+              <span class="ax-navigation__item-title">{{ item.title }}</span>
+              @if (item.badge) {
+                <span
+                  class="ax-navigation__item-badge"
+                  [attr.data-type]="item.badge.type || 'primary'"
+                >
+                  {{ item.badge.content }}
+                </span>
+              }
+              @if (item.externalLink) {
+                <mat-icon class="ax-navigation__item-external"
+                  >open_in_new</mat-icon
+                >
               }
             </a>
           }

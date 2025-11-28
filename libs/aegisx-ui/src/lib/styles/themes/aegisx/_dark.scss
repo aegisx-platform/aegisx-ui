@@ -141,14 +141,14 @@
   --ax-radius-full: 9999px;
 
   // ===========================================
-  // NAVIGATION (Clean dark sidebar)
+  // NAVIGATION (VitePress style - darker than content)
   // ===========================================
-  --ax-nav-bg: #0a0a0a;
-  --ax-nav-text: #a3a3a3;
+  --ax-nav-bg: #131316; // Darker than content area
+  --ax-nav-text: #a8a8a8;
   --ax-nav-text-active: #fafafa;
-  --ax-nav-hover: #141414;
+  --ax-nav-hover: #1c1c20;
   --ax-nav-active: rgba(129, 140, 248, 0.15);
-  --ax-nav-border: rgba(255, 255, 255, 0.08);
+  --ax-nav-border: rgba(255, 255, 255, 0.06);
 
   // ===========================================
   // INTERACTIVE STATES

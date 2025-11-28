@@ -1,77 +1,163 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { ThemeOption } from './ax-theme.types';
+import { Injectable, signal, computed, effect } from '@angular/core';
+import {
+  ThemeOption,
+  ThemeConfig,
+  ColorScheme,
+  ThemeMode,
+} from './ax-theme.types';
 
 /**
  * AxThemeService
  *
  * Manages dynamic theme switching for AegisX applications.
- * Supports both AegisX custom themes and Material prebuilt themes.
+ * Supports multiple color schemes (aegisx, verus) and theme modes (light, dark).
  *
- * All themes are loaded dynamically via <link> tags - no static imports.
- * This ensures only one theme is active at a time, preventing CSS conflicts.
+ * Theme switching is done via data-theme attribute on document root.
+ * All themes are included in the main CSS bundle via _all-themes.scss.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class AxThemeService {
-  private readonly STORAGE_KEY = 'ax-theme-id';
+  private readonly STORAGE_KEY = 'ax-theme-config';
   private readonly THEME_LINK_ID = 'ax-theme-link';
 
-  // Available themes (AegisX themes generated from SCSS)
+  // Available color schemes
+  readonly colorSchemes: { id: ColorScheme; name: string }[] = [
+    { id: 'aegisx', name: 'AegisX' },
+    { id: 'verus', name: 'Verus' },
+  ];
+
+  // Available themes (for backward compatibility)
   readonly themes: ThemeOption[] = [
     // AegisX Themes
-    { id: 'aegisx-light', name: 'AegisX Light', path: 'aegisx-light.css' },
-    { id: 'aegisx-dark', name: 'AegisX Dark', path: 'aegisx-dark.css' },
-
-    // Material 3 Prebuilt Themes
     {
-      id: 'material-indigo-pink',
-      name: 'Material 3 Indigo-Pink',
-      path: 'themes/indigo-pink.css',
+      id: 'aegisx-light',
+      name: 'AegisX Light',
+      path: 'aegisx-light.css',
+      colorScheme: 'aegisx',
+      mode: 'light',
+      dataTheme: 'aegisx',
     },
     {
-      id: 'material-deeppurple-amber',
-      name: 'Material 3 Deep Purple-Amber',
-      path: 'themes/deeppurple-amber.css',
+      id: 'aegisx-dark',
+      name: 'AegisX Dark',
+      path: 'aegisx-dark.css',
+      colorScheme: 'aegisx',
+      mode: 'dark',
+      dataTheme: 'aegisx-dark',
+    },
+    // Verus Themes
+    {
+      id: 'verus-light',
+      name: 'Verus Light',
+      path: 'verus-light.css',
+      colorScheme: 'verus',
+      mode: 'light',
+      dataTheme: 'verus',
     },
     {
-      id: 'material-azure-blue',
-      name: 'Material 3 Azure-Blue',
-      path: 'themes/azure-blue.css',
-    },
-    {
-      id: 'material-cyan-orange',
-      name: 'Material 3 Cyan-Orange',
-      path: 'themes/cyan-orange.css',
-    },
-    {
-      id: 'material-pink-bluegrey',
-      name: 'Material 3 Pink-Blue Grey',
-      path: 'themes/pink-bluegrey.css',
-    },
-    {
-      id: 'material-purple-green',
-      name: 'Material 3 Purple-Green',
-      path: 'themes/purple-green.css',
+      id: 'verus-dark',
+      name: 'Verus Dark',
+      path: 'verus-dark.css',
+      colorScheme: 'verus',
+      mode: 'dark',
+      dataTheme: 'verus-dark',
     },
   ];
 
-  // Reactive state
-  private currentThemeId = signal<string>('aegisx-light');
+  // Reactive state - separate color scheme and mode
+  private _colorScheme = signal<ColorScheme>('aegisx');
+  private _mode = signal<ThemeMode>('light');
 
   // Public readonly signals
-  readonly themeId = this.currentThemeId.asReadonly();
+  readonly colorScheme = this._colorScheme.asReadonly();
+  readonly mode = this._mode.asReadonly();
+
+  // Computed theme ID and config
+  readonly themeId = computed(() => {
+    const scheme = this._colorScheme();
+    const mode = this._mode();
+    return `${scheme}-${mode}`; // Always include mode: aegisx-light, aegisx-dark, etc.
+  });
+
+  readonly dataTheme = computed(() => {
+    const scheme = this._colorScheme();
+    const mode = this._mode();
+    return mode === 'light' ? scheme : `${scheme}-dark`;
+  });
+
   readonly currentTheme = computed(() =>
-    this.themes.find((t) => t.id === this.currentThemeId()),
+    this.themes.find((t) => t.id === this.themeId()),
   );
+
+  readonly config = computed<ThemeConfig>(() => ({
+    colorScheme: this._colorScheme(),
+    mode: this._mode(),
+    themeId: this.themeId(),
+    dataTheme: this.dataTheme(),
+  }));
+
+  // Legacy support
+  private currentThemeId = computed(() => this.themeId());
 
   constructor() {
     // Initialize theme from storage or use default
     this.initializeTheme();
+
+    // Effect to apply theme when it changes
+    effect(() => {
+      const dataTheme = this.dataTheme();
+      this.applyDataTheme(dataTheme);
+    });
   }
 
   /**
-   * Set theme by ID
+   * Set color scheme (aegisx, verus)
+   */
+  setColorScheme(scheme: ColorScheme): void {
+    if (!this.colorSchemes.find((s) => s.id === scheme)) {
+      console.warn(
+        `Color scheme "${scheme}" not found. Available:`,
+        this.colorSchemes.map((s) => s.id),
+      );
+      return;
+    }
+
+    this._colorScheme.set(scheme);
+
+    // Apply theme immediately
+    const mode = this._mode();
+    const dataTheme = mode === 'light' ? scheme : `${scheme}-dark`;
+    this.applyDataTheme(dataTheme);
+
+    this.saveConfig();
+  }
+
+  /**
+   * Set theme mode (light, dark)
+   */
+  setMode(mode: ThemeMode): void {
+    this._mode.set(mode);
+
+    // Apply theme immediately
+    const scheme = this._colorScheme();
+    const dataTheme = mode === 'light' ? scheme : `${scheme}-dark`;
+    this.applyDataTheme(dataTheme);
+
+    this.saveConfig();
+  }
+
+  /**
+   * Toggle between light and dark modes
+   */
+  toggleMode(): void {
+    const newMode = this._mode() === 'light' ? 'dark' : 'light';
+    this.setMode(newMode);
+  }
+
+  /**
+   * Set theme by ID (backward compatible)
    */
   setTheme(themeId: string): void {
     const theme = this.themes.find((t) => t.id === themeId);
@@ -84,34 +170,89 @@ export class AxThemeService {
       return;
     }
 
-    // Update reactive state
-    this.currentThemeId.set(themeId);
+    // Update both scheme and mode
+    if (theme.colorScheme) {
+      this._colorScheme.set(theme.colorScheme);
+    }
+    if (theme.mode) {
+      this._mode.set(theme.mode);
+    }
 
-    // Apply theme (load CSS dynamically)
-    this.applyTheme(theme);
+    // Apply theme immediately (don't rely on effect which may not trigger)
+    const dataTheme =
+      theme.dataTheme ||
+      (theme.mode === 'light'
+        ? theme.colorScheme
+        : `${theme.colorScheme}-dark`);
+    if (dataTheme) {
+      this.applyDataTheme(dataTheme);
+    }
 
-    // Save to localStorage
-    this.saveTheme(themeId);
+    this.saveConfig();
   }
 
   /**
    * Initialize theme from localStorage or use default
    */
   private initializeTheme(): void {
-    const savedThemeId = this.loadTheme();
+    const savedConfig = this.loadConfig();
 
-    if (savedThemeId && this.themes.find((t) => t.id === savedThemeId)) {
-      this.setTheme(savedThemeId);
+    if (savedConfig) {
+      this._colorScheme.set(savedConfig.colorScheme);
+      this._mode.set(savedConfig.mode);
+      // Apply theme immediately on load!
+      this.applyDataTheme(savedConfig.dataTheme);
     } else {
-      // Use default theme
-      this.setTheme('aegisx-light');
+      // Use system preference for mode
+      const prefersDark = window.matchMedia?.(
+        '(prefers-color-scheme: dark)',
+      ).matches;
+      this._mode.set(prefersDark ? 'dark' : 'light');
+      // Apply default theme
+      const dataTheme = prefersDark ? 'aegisx-dark' : 'aegisx';
+      this.applyDataTheme(dataTheme);
     }
   }
 
   /**
-   * Apply theme by dynamically loading CSS file
+   * Apply theme via data-theme attribute
    */
-  private applyTheme(theme: ThemeOption): void {
+  private applyDataTheme(dataTheme: string): void {
+    const root = document.documentElement;
+
+    // Set data-theme attribute
+    root.setAttribute('data-theme', dataTheme);
+
+    // Also set class for compatibility
+    root.classList.remove(
+      'theme-aegisx',
+      'theme-aegisx-dark',
+      'theme-verus',
+      'theme-verus-dark',
+    );
+    root.classList.add(`theme-${dataTheme}`);
+
+    // Apply dark/light class for TailwindCSS dark mode
+    if (dataTheme.includes('dark')) {
+      root.classList.remove('light');
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    }
+
+    console.log(`[AxThemeService] Applied theme: data-theme="${dataTheme}"`);
+  }
+
+  /**
+   * Apply theme by dynamically loading CSS file (backward compatible)
+   */
+  private applyThemeLink(theme: ThemeOption): void {
+    // Only apply link for Material prebuilt themes
+    if (!theme.path.startsWith('themes/')) {
+      return;
+    }
+
     // Remove existing theme link if any
     const existingLink = document.getElementById(this.THEME_LINK_ID);
     if (existingLink) {
@@ -126,37 +267,37 @@ export class AxThemeService {
 
     // Add to document head
     document.head.appendChild(linkElement);
+  }
 
-    // Apply dark/light class to HTML root for TailwindCSS dark mode
-    const root = document.documentElement;
-    if (theme.id.includes('dark')) {
-      root.classList.remove('light');
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
+  /**
+   * Save theme config to localStorage
+   */
+  private saveConfig(): void {
+    try {
+      const config: ThemeConfig = {
+        colorScheme: this._colorScheme(),
+        mode: this._mode(),
+        themeId: this.themeId(),
+        dataTheme: this.dataTheme(),
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(config));
+    } catch (error) {
+      console.warn('Failed to save theme config to localStorage:', error);
     }
   }
 
   /**
-   * Save theme preference to localStorage
+   * Load theme config from localStorage
    */
-  private saveTheme(themeId: string): void {
+  private loadConfig(): ThemeConfig | null {
     try {
-      localStorage.setItem(this.STORAGE_KEY, themeId);
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved) as ThemeConfig;
+      }
+      return null;
     } catch (error) {
-      console.warn('Failed to save theme to localStorage:', error);
-    }
-  }
-
-  /**
-   * Load theme preference from localStorage
-   */
-  private loadTheme(): string | null {
-    try {
-      return localStorage.getItem(this.STORAGE_KEY);
-    } catch (error) {
-      console.warn('Failed to load theme from localStorage:', error);
+      console.warn('Failed to load theme config from localStorage:', error);
       return null;
     }
   }
