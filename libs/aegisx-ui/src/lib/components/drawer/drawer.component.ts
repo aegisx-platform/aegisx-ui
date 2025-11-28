@@ -133,6 +133,10 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
           class="ax-drawer-backdrop"
           [@backdrop]
           (click)="onBackdropClick()"
+          (keydown.escape)="onBackdropClick()"
+          role="button"
+          tabindex="0"
+          aria-label="Close drawer"
         ></div>
       }
 
