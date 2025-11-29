@@ -10,8 +10,6 @@ import {
   LauncherMenuAction,
   LauncherAppClickEvent,
   LauncherMenuActionEvent,
-  LauncherCardSize,
-  LauncherGridSpan,
 } from './launcher.types';
 
 @Component({
@@ -812,39 +810,8 @@ import {
       }
     }
 
-    /* Grid Span Classes for Bento Layout */
     :host {
-      display: contents;
-    }
-
-    /* Column spans */
-    .col-span-2 {
-      grid-column: span 2;
-    }
-    .col-span-3 {
-      grid-column: span 3;
-    }
-    .col-span-4 {
-      grid-column: span 4;
-    }
-
-    /* Row spans */
-    .row-span-2 {
-      grid-row: span 2;
-    }
-    .row-span-3 {
-      grid-row: span 3;
-    }
-    .row-span-4 {
-      grid-row: span 4;
-    }
-
-    /* Cards with row span need height: 100% to fill the grid cell */
-    .row-span-2,
-    .row-span-3,
-    .row-span-4 {
-      height: 100%;
-      min-height: auto;
+      display: block;
     }
   `,
 })
@@ -855,12 +822,6 @@ export class AxLauncherCardComponent {
   isFavorite = input<boolean>(false);
   /** Whether app is pinned */
   isPinned = input<boolean>(false);
-  /** Card size for bento grid layout */
-  size = input<LauncherCardSize>('md');
-  /** Custom grid span for precise bento grid control */
-  gridSpan = input<LauncherGridSpan | undefined>(undefined);
-  /** Whether to enable grid span classes (only for bento grid layout) */
-  enableGridSpan = input<boolean>(false);
 
   // Outputs
   cardClick = output<LauncherAppClickEvent>();
@@ -871,24 +832,7 @@ export class AxLauncherCardComponent {
   // Computed properties
   cardClasses = computed(() => {
     const colorClass = `launcher-card--${this.app().color}`;
-    const sizeClass = `launcher-card--size-${this.size()}`;
-    const gridSpanClasses = this.gridSpanClasses();
-    return `${colorClass} ${sizeClass} ${gridSpanClasses}`;
-  });
-
-  /** Grid span classes for CSS grid layout */
-  gridSpanClasses = computed(() => {
-    // Only apply grid span when explicitly enabled (for bento grid)
-    if (!this.enableGridSpan()) return '';
-
-    // Priority: input gridSpan > app.gridSpan
-    const span = this.gridSpan() || this.app().gridSpan;
-    if (!span) return '';
-
-    const classes: string[] = [];
-    if (span.cols > 1) classes.push(`col-span-${span.cols}`);
-    if (span.rows > 1) classes.push(`row-span-${span.rows}`);
-    return classes.join(' ');
+    return colorClass;
   });
 
   displayBadgeCount = computed(() => {

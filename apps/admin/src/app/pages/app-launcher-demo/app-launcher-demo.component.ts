@@ -318,8 +318,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 24,
       featured: true,
-      size: 'xl',
-      usageCount: 350,
       permission: { viewRoles: ['admin', 'doctor', 'nurse', 'receptionist'] },
     },
     {
@@ -334,8 +332,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 8,
       featured: true,
-      size: 'lg',
-      usageCount: 220,
       permission: { viewRoles: ['admin', 'doctor', 'nurse'] },
     },
     {
@@ -349,8 +345,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'lg',
-      usageCount: 280,
       permission: { viewRoles: ['admin', 'doctor', 'nurse'] },
     },
     {
@@ -365,8 +359,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 15,
       featured: true,
-      size: 'md',
-      usageCount: 180,
       permission: { viewRoles: ['admin', 'pharmacist', 'doctor'] },
     },
     {
@@ -459,8 +451,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 5,
       featured: true,
-      size: 'lg',
-      usageCount: 150,
       permission: { viewRoles: ['admin', 'inventory_staff', 'manager'] },
     },
     {
@@ -475,8 +465,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 8,
       featured: true,
-      size: 'md',
-      usageCount: 120,
       permission: { viewRoles: ['admin', 'pharmacist', 'inventory_staff'] },
     },
     {
@@ -544,8 +532,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 18,
       featured: true,
-      size: 'xl',
-      usageCount: 300,
       permission: { viewRoles: ['admin', 'cashier', 'finance'] },
     },
     {
@@ -560,8 +546,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 45,
       featured: true,
-      size: 'lg',
-      usageCount: 180,
       permission: { viewRoles: ['admin', 'claim_staff', 'finance'] },
     },
     {
@@ -575,8 +559,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'md',
-      usageCount: 90,
       permission: { viewRoles: ['admin', 'accountant', 'finance'] },
     },
     {
@@ -655,8 +637,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'lg',
-      usageCount: 100,
       permission: { viewRoles: ['admin', 'hr'] },
     },
     {
@@ -670,8 +650,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'md',
-      usageCount: 80,
       permission: { viewRoles: ['admin', 'hr', 'finance'] },
     },
     {
@@ -750,8 +728,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'xl',
-      usageCount: 200,
       permission: { viewRoles: ['admin', 'manager', 'director'] },
     },
     {
@@ -766,8 +742,6 @@ export class AppLauncherDemoComponent {
       enabled: true,
       notificationCount: 12,
       featured: true,
-      size: 'md',
-      usageCount: 150,
       permission: { viewRoles: ['admin', 'manager'] },
     },
     {
@@ -857,8 +831,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'lg',
-      usageCount: 120,
       permission: { viewRoles: ['admin', 'manager', 'doctor'] },
     },
     {
@@ -872,8 +844,6 @@ export class AppLauncherDemoComponent {
       status: 'active',
       enabled: true,
       featured: true,
-      size: 'md',
-      usageCount: 100,
       permission: { viewRoles: ['admin', 'accountant', 'manager'] },
     },
     {
