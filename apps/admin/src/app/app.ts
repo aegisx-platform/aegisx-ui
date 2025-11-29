@@ -49,13 +49,14 @@ export class App {
 
   protected readonly showLayout = computed(() => {
     const url = this.currentUrl();
-    // Don't show layout for standalone routes
+    // Don't show layout for standalone routes (pages with their own Enterprise Layout)
     return (
       !url.startsWith('/login') &&
       !url.startsWith('/enterprise-demo') &&
       !url.startsWith('/inventory-demo') &&
       !url.startsWith('/his-demo') &&
-      !url.startsWith('/app-launcher-demo')
+      !url.startsWith('/app-launcher-demo') &&
+      !url.startsWith('/playground/pages/dashboard')
     );
   });
 
