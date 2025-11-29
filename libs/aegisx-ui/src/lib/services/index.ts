@@ -1,14 +1,15 @@
 // All Services
 export * from './config/config.service';
-export * from './navigation/navigation.service';
+export { AegisxNavigationService } from './navigation/navigation.service';
+// Note: AegisxNavigation interface is exported from types/navigation.types.ts
 export * from './media-watcher/media-watcher.service';
 export * from './icon.service';
-export * from './ax-media-watcher.service';
 export * from './ax-dialog.service';
 
 // Export aliases for backward compatibility
 export { AegisxConfigService as AxConfigService } from './config/config.service';
 export { AegisxNavigationService as AxNavigationService } from './navigation/navigation.service';
+export { AegisxMediaWatcherService as AxMediaWatcherService } from './media-watcher/media-watcher.service';
 
 // AegisX Theme Service
 export * from './theme/ax-theme.service';

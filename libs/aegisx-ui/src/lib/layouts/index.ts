@@ -9,4 +9,7 @@ export * from './docs';
 // Direct exports for backward compatibility
 export * from './ax-compact/ax-compact-layout.component';
 export * from './empty/empty-layout.component';
-export * from './enterprise/enterprise-layout.component';
+export { EnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
+
+// Re-export navigation types from central location
+export type { EnterpriseNavItem, DocsNavItem, AxNavigationItem } from '../types/ax-navigation.types';

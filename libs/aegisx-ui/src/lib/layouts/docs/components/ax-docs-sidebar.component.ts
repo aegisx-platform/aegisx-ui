@@ -11,17 +11,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { filter, Subject, takeUntil } from 'rxjs';
-
-/**
- * Documentation navigation item interface
- */
-export interface DocsNavItem {
-  id: string;
-  title: string;
-  link?: string;
-  children?: DocsNavItem[];
-  defaultOpen?: boolean;
-}
+import { DocsNavItem } from '../../../types/ax-navigation.types';
 
 /**
  * Documentation Sidebar Component
@@ -187,7 +177,7 @@ export interface DocsNavItem {
         margin-bottom: 0.5rem;
         border: none;
         background: transparent;
-        color: #111827;
+        color: var(--ax-text-default, #111827);
         font-size: 0.875rem;
         font-weight: 600;
         text-align: left;
@@ -195,11 +185,11 @@ export interface DocsNavItem {
         transition: color 150ms ease;
 
         &:hover {
-          color: #6366f1;
+          color: var(--ax-primary, #6366f1);
         }
 
         &:focus-visible {
-          outline: 2px solid var(--ax-primary-default, #6366f1);
+          outline: 2px solid var(--ax-primary, #6366f1);
           outline-offset: 2px;
           border-radius: 0.25rem;
         }
@@ -213,7 +203,7 @@ export interface DocsNavItem {
         font-size: 16px;
         width: 16px;
         height: 16px;
-        color: #9ca3af;
+        color: var(--ax-text-secondary, #9ca3af);
         transition: transform 200ms ease;
       }
 
@@ -251,7 +241,7 @@ export interface DocsNavItem {
         margin-bottom: 0.25rem;
         border: none;
         background: transparent;
-        color: #6b7280;
+        color: var(--ax-text-secondary, #6b7280);
         font-size: 0.8125rem;
         font-weight: 500;
         text-align: left;
@@ -259,7 +249,7 @@ export interface DocsNavItem {
         transition: color 150ms ease;
 
         &:hover {
-          color: #111827;
+          color: var(--ax-text-default, #111827);
         }
       }
 
@@ -267,7 +257,7 @@ export interface DocsNavItem {
         font-size: 14px;
         width: 14px;
         height: 14px;
-        color: #9ca3af;
+        color: var(--ax-text-secondary, #9ca3af);
         transition: transform 200ms ease;
       }
 
@@ -290,7 +280,7 @@ export interface DocsNavItem {
       .docs-nav-item {
         display: block;
         padding: 0.375rem 0.75rem;
-        color: #6b7280;
+        color: var(--ax-text-secondary, #6b7280);
         font-size: 0.875rem;
         line-height: 1.5;
         text-decoration: none;
@@ -300,19 +290,19 @@ export interface DocsNavItem {
         margin-left: 0;
 
         &:hover {
-          color: #111827;
-          background-color: #f3f4f6;
+          color: var(--ax-text-default, #111827);
+          background-color: var(--ax-background-subtle, #f3f4f6);
         }
       }
 
       .docs-nav-item--active {
-        color: #6366f1;
+        color: var(--ax-primary, #6366f1);
         font-weight: 500;
-        border-left-color: #6366f1;
-        background-color: #eef2ff;
+        border-left-color: var(--ax-primary, #6366f1);
+        background-color: var(--ax-brand-faint, #eef2ff);
 
         &:hover {
-          background-color: #e0e7ff;
+          background-color: var(--ax-brand-muted, #e0e7ff);
         }
       }
 
@@ -325,47 +315,6 @@ export interface DocsNavItem {
       /* Items inside subgroup - slight indent */
       .docs-nav-subgroup__items .docs-nav-item {
         padding-left: 1.25rem;
-      }
-
-      /* Dark mode support */
-      :host-context(.dark) {
-        .docs-nav-group__header {
-          color: #f9fafb;
-
-          &:hover {
-            color: #818cf8;
-          }
-        }
-
-        .docs-nav-group__icon {
-          color: #6b7280;
-        }
-
-        .docs-nav-subgroup__header {
-          color: #9ca3af;
-
-          &:hover {
-            color: #f9fafb;
-          }
-        }
-
-        .docs-nav-item {
-          color: #9ca3af;
-
-          &:hover {
-            color: #f9fafb;
-            background-color: #1f2937;
-          }
-        }
-
-        .docs-nav-item--active {
-          color: #818cf8;
-          background-color: rgba(99, 102, 241, 0.1);
-
-          &:hover {
-            background-color: rgba(99, 102, 241, 0.15);
-          }
-        }
       }
     `,
   ],
@@ -441,8 +390,11 @@ export class AxDocsSidebarComponent implements OnInit, OnDestroy {
   }
 
   private groupContainsRoute(group: DocsNavItem, url: string): boolean {
-    if (group.link && url.includes(group.link)) {
-      return true;
+    if (group.link) {
+      const link = Array.isArray(group.link) ? group.link.join('/') : group.link;
+      if (url.includes(link)) {
+        return true;
+      }
     }
     if (group.children) {
       return group.children.some((item) => this.groupContainsRoute(item, url));

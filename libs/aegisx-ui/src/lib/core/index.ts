@@ -3,9 +3,9 @@ export * from './aegisx-core.module';
 
 // Core Services (re-export from main services)
 export * from '../services/config/config.service';
-export * from '../services/navigation/navigation.service';
+export { AegisxNavigationService } from '../services/navigation/navigation.service';
 export * from '../services/media-watcher/media-watcher.service';
 
 // Core Types
 export * from '../types/config.types';
-export * from '../types/navigation.types';
+// Note: AegisxNavigation and AegisxNavigationItem are exported from ../types/index.ts

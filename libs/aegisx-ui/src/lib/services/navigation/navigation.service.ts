@@ -1,10 +1,8 @@
 import { Injectable, computed, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import {
-  AegisxNavigation,
-  AegisxNavigationItem,
-} from '../../types/navigation.types';
+import { AegisxNavigationItem } from '../../types/ax-navigation.types';
+import { AegisxNavigation } from '../../types/navigation.types';
 import { cloneDeep } from 'lodash-es';
 
 @Injectable({ providedIn: 'root' })
