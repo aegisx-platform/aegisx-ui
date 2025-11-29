@@ -339,3 +339,38 @@ export interface LauncherGroupedApps {
   category: LauncherCategory | null;
   apps: LauncherApp[];
 }
+
+// ============================================
+// GRID CONFIGURATION
+// ============================================
+
+/** Configuration for LauncherGrid component */
+export interface LauncherGridConfig {
+  /** Number of columns in the grid */
+  columns?: number;
+
+  /** Gap between grid items in pixels */
+  gap?: number;
+
+  /** Minimum row height in pixels */
+  rowHeight?: number;
+
+  /** Enable drag-and-drop reordering */
+  draggable?: boolean;
+
+  /** Show drag handle on hover */
+  showDragHandle?: boolean;
+
+  /** Persist order to localStorage */
+  persistOrder?: boolean;
+
+  /** LocalStorage key for persisting order */
+  storageKey?: string;
+}
+
+/** Order change event */
+export interface LauncherOrderChangeEvent {
+  apps: LauncherApp[];
+  previousIndex: number;
+  currentIndex: number;
+}
