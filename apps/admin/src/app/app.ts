@@ -9,7 +9,6 @@ import {
   AxLayoutSwitcherComponent,
   LayoutType,
   AxDocsLayoutComponent,
-  DocsNavItem,
 } from '@aegisx/ui';
 import { TremorThemeSwitcherComponent } from './components/tremor-theme-switcher.component';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -55,7 +54,8 @@ export class App {
       !url.startsWith('/login') &&
       !url.startsWith('/enterprise-demo') &&
       !url.startsWith('/inventory-demo') &&
-      !url.startsWith('/his-demo')
+      !url.startsWith('/his-demo') &&
+      !url.startsWith('/app-launcher-demo')
     );
   });
 
@@ -376,6 +376,13 @@ export class App {
               icon: 'local_hospital',
               link: '/his-demo',
             },
+            {
+              id: 'app-launcher-demo',
+              title: 'App Launcher Demo',
+              type: 'item',
+              icon: 'apps',
+              link: '/app-launcher-demo',
+            },
           ],
         },
       ],
@@ -532,7 +539,7 @@ export class App {
   }
 
   // Documentation navigation for Shadcn/ui-style sidebar
-  docsNavigation: DocsNavItem[] = [
+  docsNavigation: AxNavigationItem[] = [
     {
       id: 'getting-started',
       title: 'Getting Started',
@@ -752,6 +759,11 @@ export class App {
               id: 'his-demo',
               title: 'HIS Demo',
               link: '/his-demo',
+            },
+            {
+              id: 'app-launcher-demo',
+              title: 'App Launcher Demo',
+              link: '/app-launcher-demo',
             },
           ],
         },

@@ -11,7 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import {
   AxEnterpriseLayoutComponent,
-  EnterpriseNavItem,
+  AxNavigationItem,
   AxBreadcrumbComponent,
   BreadcrumbItem,
 } from '@aegisx/ui';
@@ -849,7 +849,7 @@ export class HisDemoComponent {
     { label: 'Dashboard' },
   ];
 
-  navigation: EnterpriseNavItem[] = [
+  navigation: AxNavigationItem[] = [
     {
       id: 'dashboard',
       title: 'Dashboard',

@@ -36,7 +36,14 @@ export interface AxNavigationItem {
   subtitle?: string;
 
   /** Item type - determines rendering behavior */
-  type?: 'item' | 'basic' | 'group' | 'collapsible' | 'collapsable' | 'divider' | 'spacer';
+  type?:
+    | 'item'
+    | 'basic'
+    | 'group'
+    | 'collapsible'
+    | 'collapsable'
+    | 'divider'
+    | 'spacer';
 
   /** Material icon name */
   icon?: string;
@@ -94,12 +101,15 @@ export interface AxNavigationItem {
 }
 
 /**
- * Navigation Item Type Aliases
- * For backward compatibility with existing code
+ * Navigation Collection Interface
+ * Contains navigation items for different layout modes
  */
-export type EnterpriseNavItem = AxNavigationItem;
-export type DocsNavItem = AxNavigationItem;
-export type AegisxNavigationItem = AxNavigationItem;
+export interface AxNavigation {
+  default: AxNavigationItem[];
+  compact: AxNavigationItem[];
+  horizontal?: AxNavigationItem[];
+  mobile?: AxNavigationItem[];
+}
 
 /**
  * Navigation Component Configuration

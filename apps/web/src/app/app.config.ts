@@ -10,7 +10,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import {
-  AxConfigService,
+  AegisxConfigService,
   AxNavigationService,
   IconService,
   provideAx,
@@ -71,7 +71,7 @@ export const appConfig: ApplicationConfig = {
       },
     }),
 
-    AxConfigService,
+    AegisxConfigService,
     AxNavigationService,
     IconService,
 

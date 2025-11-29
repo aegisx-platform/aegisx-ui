@@ -16,7 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loading-bar.component';
-import { EnterpriseNavItem } from '../../types/ax-navigation.types';
+import { AxNavigationItem } from '../../types/ax-navigation.types';
 
 /**
  * Enterprise Layout Component
@@ -68,7 +68,10 @@ import { EnterpriseNavItem } from '../../types/ax-navigation.types';
       <ax-loading-bar variant="primary" />
 
       <!-- Header -->
-      <header class="ax-enterprise-header" [class.dark-header]="headerTheme === 'dark'">
+      <header
+        class="ax-enterprise-header"
+        [class.dark-header]="headerTheme === 'dark'"
+      >
         <div class="ax-enterprise-header-primary">
           <div class="ax-enterprise-header-container">
             <!-- Brand -->
@@ -95,7 +98,9 @@ import { EnterpriseNavItem } from '../../types/ax-navigation.types';
                     <a
                       [routerLink]="item.link"
                       routerLinkActive="active"
-                      [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
+                      [routerLinkActiveOptions]="{
+                        exact: item.exactMatch ?? false,
+                      }"
                       class="ax-enterprise-nav-link"
                       [class.disabled]="item.disabled"
                     >
@@ -123,7 +128,9 @@ import { EnterpriseNavItem } from '../../types/ax-navigation.types';
                         <mat-icon>{{ item.icon }}</mat-icon>
                       }
                       <span>{{ item.title }}</span>
-                      <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+                      <mat-icon class="dropdown-arrow"
+                        >arrow_drop_down</mat-icon
+                      >
                     </button>
                     <mat-menu #navMenu="matMenu">
                       @for (child of item.children; track child.id) {
@@ -197,13 +204,19 @@ import { EnterpriseNavItem } from '../../types/ax-navigation.types';
         @if (showSubNavAsTabs && navigation.length > 0) {
           <div class="ax-enterprise-subnav">
             <div class="ax-enterprise-subnav-container">
-              <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="ax-enterprise-tabs">
+              <nav
+                mat-tab-nav-bar
+                [tabPanel]="tabPanel"
+                class="ax-enterprise-tabs"
+              >
                 @for (item of navigation; track item.id) {
                   <a
                     mat-tab-link
                     [routerLink]="item.link"
                     routerLinkActive
-                    [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
+                    [routerLinkActiveOptions]="{
+                      exact: item.exactMatch ?? false,
+                    }"
                     #rla="routerLinkActive"
                     [active]="rla.isActive"
                     [disabled]="item.disabled || false"
@@ -229,13 +242,19 @@ import { EnterpriseNavItem } from '../../types/ax-navigation.types';
         @if (subNavigation.length > 0) {
           <div class="ax-enterprise-subnav">
             <div class="ax-enterprise-subnav-container">
-              <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="ax-enterprise-tabs">
+              <nav
+                mat-tab-nav-bar
+                [tabPanel]="tabPanel"
+                class="ax-enterprise-tabs"
+              >
                 @for (item of subNavigation; track item.id) {
                   <a
                     mat-tab-link
                     [routerLink]="item.link"
                     routerLinkActive
-                    [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
+                    [routerLinkActiveOptions]="{
+                      exact: item.exactMatch ?? false,
+                    }"
                     #rla="routerLinkActive"
                     [active]="rla.isActive"
                     [disabled]="item.disabled || false"
@@ -262,7 +281,11 @@ import { EnterpriseNavItem } from '../../types/ax-navigation.types';
       </header>
 
       <!-- Main Content -->
-      <main class="ax-enterprise-main" [class.has-subnav]="subNavigation.length > 0 || showSubNavAsTabs" [class.bg-gray]="contentBackground === 'gray'">
+      <main
+        class="ax-enterprise-main"
+        [class.has-subnav]="subNavigation.length > 0 || showSubNavAsTabs"
+        [class.bg-gray]="contentBackground === 'gray'"
+      >
         <div
           class="ax-enterprise-content"
           [class.full-width]="fullWidth"
@@ -624,8 +647,8 @@ export class EnterpriseLayoutComponent {
   @Input() contentBackground: 'white' | 'gray' = 'white';
 
   // Navigation
-  @Input() navigation: EnterpriseNavItem[] = [];
-  @Input() subNavigation: EnterpriseNavItem[] = [];
+  @Input() navigation: AxNavigationItem[] = [];
+  @Input() subNavigation: AxNavigationItem[] = [];
   @Input() showSubNavAsTabs = false;
 
   // Events

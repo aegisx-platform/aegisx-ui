@@ -4,7 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AxEnterpriseLayoutComponent, EnterpriseNavItem } from '@aegisx/ui';
+import { AxEnterpriseLayoutComponent, AxNavigationItem } from '@aegisx/ui';
 
 @Component({
   selector: 'ax-his-shell',
@@ -64,7 +64,7 @@ import { AxEnterpriseLayoutComponent, EnterpriseNavItem } from '@aegisx/ui';
   ],
 })
 export class HisShellComponent {
-  navigation: EnterpriseNavItem[] = [
+  navigation: AxNavigationItem[] = [
     {
       id: 'dashboard',
       title: 'Dashboard',

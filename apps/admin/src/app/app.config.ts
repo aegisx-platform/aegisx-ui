@@ -11,12 +11,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
 import {
   AegisxConfigService,
-  AegisxNavigationService,
+  AxNavigationService,
   IconService,
+  AxThemeService,
   provideAx,
 } from '@aegisx/ui';
 import { appRoutes } from './app.routes';
-import { TremorThemeService } from './services/tremor-theme.service';
 
 // Factory function to initialize icons
 function initializeIcons() {
@@ -27,10 +27,10 @@ function initializeIcons() {
   };
 }
 
-// Factory function to initialize Tremor theme
-function initializeTremorTheme() {
+// Factory function to initialize theme
+function initializeTheme() {
   return () => {
-    const themeService = inject(TremorThemeService);
+    const themeService = inject(AxThemeService);
     // Theme is initialized in the constructor
     return Promise.resolve();
   };
@@ -65,10 +65,10 @@ export const appConfig: ApplicationConfig = {
       multi: true,
     },
 
-    // Initialize Tremor theme
+    // Initialize theme
     {
       provide: APP_INITIALIZER,
-      useFactory: initializeTremorTheme,
+      useFactory: initializeTheme,
       multi: true,
     },
 
@@ -94,8 +94,8 @@ export const appConfig: ApplicationConfig = {
     }),
 
     AegisxConfigService,
-    AegisxNavigationService,
+    AxNavigationService,
     IconService,
-    TremorThemeService,
+    AxThemeService,
   ],
 };

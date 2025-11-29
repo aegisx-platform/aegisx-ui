@@ -5,7 +5,7 @@ import {
   AEGISX_CONFIG,
   AegisxConfigService,
 } from '../services/config/config.service';
-import { AegisxNavigationService } from '../services/navigation/navigation.service';
+import { AxNavigationService } from '../services/navigation/navigation.service';
 import { AegisxMediaWatcherService } from '../services/media-watcher/media-watcher.service';
 
 /**
@@ -16,7 +16,7 @@ import { AegisxMediaWatcherService } from '../services/media-watcher/media-watch
   imports: [CommonModule],
   providers: [
     AegisxConfigService,
-    AegisxNavigationService,
+    AxNavigationService,
     AegisxMediaWatcherService,
   ],
 })

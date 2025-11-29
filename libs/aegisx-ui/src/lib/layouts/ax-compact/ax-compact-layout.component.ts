@@ -20,7 +20,7 @@ import {
   AxNavigationConfig,
 } from '../../types/ax-navigation.types';
 import { AxLoadingBarComponent } from '../../components/ax-loading-bar.component';
-import { AxMediaWatcherService } from '../../services/ax-media-watcher.service';
+import { AegisxMediaWatcherService } from '../../services/media-watcher/media-watcher.service';
 import {
   LoadingBarService,
   LoadingBarState,
@@ -76,7 +76,7 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
   });
 
   private _unsubscribeAll = new Subject<void>();
-  private _mediaWatcher = inject(AxMediaWatcherService);
+  private _mediaWatcher = inject(AegisxMediaWatcherService);
   private _loadingBarService = inject(LoadingBarService);
 
   // Expose loading bar state as a signal for reactive template binding

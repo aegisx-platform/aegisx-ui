@@ -12,4 +12,7 @@ export * from './empty/empty-layout.component';
 export { EnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
 
 // Re-export navigation types from central location
-export type { EnterpriseNavItem, DocsNavItem, AxNavigationItem } from '../types/ax-navigation.types';
+export type {
+  AxNavigationItem,
+  AxNavigation,
+} from '../types/ax-navigation.types';
