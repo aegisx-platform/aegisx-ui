@@ -204,28 +204,26 @@ import { CodeTab } from '../../../../../../types/docs.types';
               <ax-code-tabs [tabs]="fullLauncherTabs"></ax-code-tabs>
             </section>
 
-            <!-- Card Sizes -->
+            <!-- Bento Grid with gridSpan -->
             <section>
               <h3 class="text-xl font-semibold mb-4">
-                Card Sizes (Bento Grid)
+                Bento Grid with gridSpan
               </h3>
               <p class="text-on-surface-variant mb-4">
-                Use different sizes for featured apps in a bento grid layout.
+                Use
+                <code class="bg-surface-container px-2 py-1 rounded"
+                  >gridSpan</code
+                >
+                for precise control over card dimensions. Configure exact column
+                and row spans.
               </p>
-              <ax-live-preview title="Different Card Sizes">
+              <ax-live-preview title="Custom Grid Spans">
                 <div
                   class="grid grid-cols-4 gap-4"
                   style="grid-auto-rows: minmax(140px, auto);"
                 >
                   @for (app of bentoApps; track app.id) {
-                    <ax-launcher-card
-                      [app]="app"
-                      [size]="app.size || 'md'"
-                      [class.col-span-2]="
-                        app.size === 'lg' || app.size === 'xl'
-                      "
-                      [class.row-span-2]="app.size === 'xl'"
-                    />
+                    <ax-launcher-card [app]="app" />
                   }
                 </div>
               </ax-live-preview>
@@ -645,12 +643,12 @@ export class LauncherDocComponent {
     {
       id: 'main',
       name: 'Main App',
-      description: 'Primary application',
+      description: 'Primary application with full feature access',
       icon: 'apps',
       color: 'blue',
       status: 'active',
       enabled: true,
-      size: 'xl',
+      gridSpan: { cols: 2, rows: 2 }, // Large square: 2x2
     },
     {
       id: 'quick1',
@@ -659,7 +657,7 @@ export class LauncherDocComponent {
       color: 'yellow',
       status: 'active',
       enabled: true,
-      size: 'sm',
+      gridSpan: { cols: 1, rows: 1 }, // Small: 1x1
     },
     {
       id: 'quick2',
@@ -668,17 +666,36 @@ export class LauncherDocComponent {
       color: 'neutral',
       status: 'active',
       enabled: true,
-      size: 'sm',
+      gridSpan: { cols: 1, rows: 1 }, // Small: 1x1
     },
     {
       id: 'featured',
       name: 'Featured',
-      description: 'Featured content',
+      description: 'Featured content and highlights',
       icon: 'star',
       color: 'lavender',
       status: 'active',
       enabled: true,
-      size: 'lg',
+      gridSpan: { cols: 2, rows: 1 }, // Wide: 2 cols, 1 row
+    },
+    {
+      id: 'analytics',
+      name: 'Analytics',
+      description: 'View detailed statistics and insights',
+      icon: 'analytics',
+      color: 'mint',
+      status: 'active',
+      enabled: true,
+      gridSpan: { cols: 1, rows: 2 }, // Tall: 1 col, 2 rows
+    },
+    {
+      id: 'reports',
+      name: 'Reports',
+      icon: 'assessment',
+      color: 'rose',
+      status: 'new',
+      enabled: true,
+      gridSpan: { cols: 1, rows: 1 },
     },
   ];
 
@@ -861,21 +878,19 @@ onAppClick(event: { app: LauncherApp }): void {
     {
       label: 'HTML',
       language: 'html',
-      code: `<div class="grid grid-cols-4 gap-4" style="grid-auto-rows: minmax(140px, auto);">
+      code: `<!-- gridSpan is automatically applied via CSS classes -->
+<div class="grid grid-cols-4 gap-4" style="grid-auto-rows: minmax(140px, auto);">
   @for (app of bentoApps; track app.id) {
-    <ax-launcher-card
-      [app]="app"
-      [size]="app.size || 'md'"
-      [class.col-span-2]="app.size === 'lg' || app.size === 'xl'"
-      [class.row-span-2]="app.size === 'xl'"
-    />
+    <ax-launcher-card [app]="app" />
   }
 </div>`,
     },
     {
       label: 'TypeScript',
       language: 'typescript',
-      code: `bentoApps: LauncherApp[] = [
+      code: `import { LauncherApp, LauncherGridSpan } from '@aegisx/ui';
+
+bentoApps: LauncherApp[] = [
   {
     id: 'main',
     name: 'Main App',
@@ -884,7 +899,7 @@ onAppClick(event: { app: LauncherApp }): void {
     color: 'blue',
     status: 'active',
     enabled: true,
-    size: 'xl', // Extra large card
+    gridSpan: { cols: 2, rows: 2 }, // 2x2 large square
   },
   {
     id: 'quick1',
@@ -893,7 +908,7 @@ onAppClick(event: { app: LauncherApp }): void {
     color: 'yellow',
     status: 'active',
     enabled: true,
-    size: 'sm', // Small card
+    gridSpan: { cols: 1, rows: 1 }, // 1x1 default
   },
   {
     id: 'featured',
@@ -903,19 +918,23 @@ onAppClick(event: { app: LauncherApp }): void {
     color: 'lavender',
     status: 'active',
     enabled: true,
-    size: 'lg', // Large card
+    gridSpan: { cols: 2, rows: 1 }, // Wide: 2 cols, 1 row
   },
-];`,
-    },
-    {
-      label: 'SCSS',
-      language: 'scss',
-      code: `.col-span-2 {
-  grid-column: span 2;
-}
+  {
+    id: 'analytics',
+    name: 'Analytics',
+    icon: 'analytics',
+    color: 'mint',
+    status: 'active',
+    enabled: true,
+    gridSpan: { cols: 1, rows: 2 }, // Tall: 1 col, 2 rows
+  },
+];
 
-.row-span-2 {
-  grid-row: span 2;
+// LauncherGridSpan interface
+interface LauncherGridSpan {
+  cols: 1 | 2 | 3 | 4;  // Number of columns to span
+  rows: 1 | 2 | 3 | 4;  // Number of rows to span
 }`,
     },
   ];
