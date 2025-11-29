@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { filter, Subject, takeUntil } from 'rxjs';
-import { DocsNavItem } from '../../../types/ax-navigation.types';
+import { AxNavigationItem } from '../../../types/ax-navigation.types';
 
 /**
  * Documentation Sidebar Component
@@ -320,7 +320,7 @@ import { DocsNavItem } from '../../../types/ax-navigation.types';
   ],
 })
 export class AxDocsSidebarComponent implements OnInit, OnDestroy {
-  @Input() navigation: DocsNavItem[] = [];
+  @Input() navigation: AxNavigationItem[] = [];
 
   private _router = inject(Router);
   private _destroy$ = new Subject<void>();
@@ -389,9 +389,11 @@ export class AxDocsSidebarComponent implements OnInit, OnDestroy {
     this._openGroups.set(openGroups);
   }
 
-  private groupContainsRoute(group: DocsNavItem, url: string): boolean {
+  private groupContainsRoute(group: AxNavigationItem, url: string): boolean {
     if (group.link) {
-      const link = Array.isArray(group.link) ? group.link.join('/') : group.link;
+      const link = Array.isArray(group.link)
+        ? group.link.join('/')
+        : group.link;
       if (url.includes(link)) {
         return true;
       }

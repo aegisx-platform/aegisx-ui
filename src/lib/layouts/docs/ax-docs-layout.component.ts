@@ -15,12 +15,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AxDocsSidebarComponent } from './components/ax-docs-sidebar.component';
-import { DocsNavItem } from '../../types/ax-navigation.types';
+import { AxNavigationItem } from '../../types/ax-navigation.types';
 import {
   AxDocsTocComponent,
   TocItem,
 } from './components/ax-docs-toc.component';
-import { AxMediaWatcherService } from '../../services/ax-media-watcher.service';
+import { AegisxMediaWatcherService } from '../../services/media-watcher/media-watcher.service';
 import { AxLoadingBarComponent } from '../../components/ax-loading-bar.component';
 import {
   LoadingBarService,
@@ -365,7 +365,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AxDocsLayoutComponent implements OnInit, OnDestroy {
   /** Navigation items for sidebar */
-  @Input() navigation: DocsNavItem[] = [];
+  @Input() navigation: AxNavigationItem[] = [];
 
   /** Show header bar */
   @Input() showHeader = true;
@@ -403,7 +403,7 @@ export class AxDocsLayoutComponent implements OnInit, OnDestroy {
   /** Custom sidebar footer template */
   @ContentChild('sidebarFooter') sidebarFooter?: TemplateRef<unknown>;
 
-  private _mediaWatcher = inject(AxMediaWatcherService);
+  private _mediaWatcher = inject(AegisxMediaWatcherService);
   private _loadingBarService = inject(LoadingBarService);
   private _destroy$ = new Subject<void>();
 

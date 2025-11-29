@@ -4,7 +4,7 @@ import {
   AEGISX_CONFIG,
   AegisxConfigService,
 } from '../services/config/config.service';
-import { AegisxNavigationService } from '../services/navigation/navigation.service';
+import { AxNavigationService } from '../services/navigation/navigation.service';
 import { AegisxMediaWatcherService } from '../services/media-watcher/media-watcher.service';
 
 /**
@@ -18,7 +18,7 @@ export function provideAegisxUI(config?: Partial<AegisxConfig>): Provider[] {
       useValue: config || {},
     },
     AegisxConfigService,
-    AegisxNavigationService,
+    AxNavigationService,
     AegisxMediaWatcherService,
   ];
 }
@@ -50,7 +50,7 @@ export function provideAegisxLayouts(
       useValue: config || {},
     },
     AegisxConfigService,
-    AegisxNavigationService,
+    AxNavigationService,
     AegisxMediaWatcherService,
   ];
 }
