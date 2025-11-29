@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import {
   AxLauncherComponent,
   AxLauncherCardComponent,
+  AxLauncherGridComponent,
   LauncherApp,
   LauncherCategory,
 } from '@aegisx/ui';
@@ -34,6 +35,7 @@ import { CodeTab } from '../../../../../../types/docs.types';
     MatChipsModule,
     AxLauncherComponent,
     AxLauncherCardComponent,
+    AxLauncherGridComponent,
     DocHeaderComponent,
     CodeTabsComponent,
     LivePreviewComponent,
@@ -256,6 +258,33 @@ import { CodeTab } from '../../../../../../types/docs.types';
               </ax-live-preview>
               <ax-code-tabs [tabs]="singleCardTabs"></ax-code-tabs>
             </section>
+
+            <!-- Drag and Drop -->
+            <section>
+              <h3 class="text-xl font-semibold mb-4">Drag & Drop Grid</h3>
+              <p class="text-on-surface-variant mb-4">
+                Use
+                <code class="bg-surface-container px-2 py-1 rounded"
+                  >ax-launcher-grid</code
+                >
+                for draggable bento grid. Cards can be reordered by
+                drag-and-drop.
+              </p>
+              <ax-live-preview title="Draggable Grid (Try dragging cards!)">
+                <ax-launcher-grid
+                  [apps]="dragApps"
+                  [draggable]="true"
+                  [columns]="4"
+                  [showDragHandle]="true"
+                  (orderChange)="onOrderChange($event)"
+                  (appClick)="onAppClick($event)"
+                />
+              </ax-live-preview>
+              <p class="text-sm text-on-surface-variant mt-2">
+                New order: {{ dragOrder().join(', ') || 'Drag to reorder' }}
+              </p>
+              <ax-code-tabs [tabs]="dragGridTabs"></ax-code-tabs>
+            </section>
           </div>
         </mat-tab>
 
@@ -423,6 +452,7 @@ export class LauncherDocComponent {
   lastClicked = signal<string>('None');
   favoriteApps = signal<string[]>([]);
   pinnedApps = signal<string[]>([]);
+  dragOrder = signal<string[]>([]);
 
   features = [
     {
@@ -702,6 +732,60 @@ export class LauncherDocComponent {
   demoCategories: LauncherCategory[] = [
     { id: 'main', name: 'Main', icon: 'home' },
     { id: 'tools', name: 'Tools', icon: 'build' },
+  ];
+
+  // Drag & Drop demo apps
+  dragApps: LauncherApp[] = [
+    {
+      id: 'drag-1',
+      name: 'Dashboard',
+      description: 'Main dashboard',
+      icon: 'dashboard',
+      color: 'blue',
+      status: 'active',
+      enabled: true,
+      gridSpan: { cols: 2, rows: 1 },
+    },
+    {
+      id: 'drag-2',
+      name: 'Analytics',
+      icon: 'analytics',
+      color: 'mint',
+      status: 'active',
+      enabled: true,
+    },
+    {
+      id: 'drag-3',
+      name: 'Users',
+      icon: 'people',
+      color: 'peach',
+      status: 'active',
+      enabled: true,
+    },
+    {
+      id: 'drag-4',
+      name: 'Settings',
+      icon: 'settings',
+      color: 'lavender',
+      status: 'active',
+      enabled: true,
+    },
+    {
+      id: 'drag-5',
+      name: 'Reports',
+      icon: 'assessment',
+      color: 'rose',
+      status: 'new',
+      enabled: true,
+    },
+    {
+      id: 'drag-6',
+      name: 'Calendar',
+      icon: 'calendar_month',
+      color: 'cyan',
+      status: 'active',
+      enabled: true,
+    },
   ];
 
   displayedColumns = ['property', 'type', 'default', 'description'];
@@ -995,6 +1079,103 @@ togglePin(app: LauncherApp): void {
     },
   ];
 
+  dragGridTabs: CodeTab[] = [
+    {
+      label: 'HTML',
+      language: 'html',
+      code: `<!-- Draggable Bento Grid with Angular CDK DragDrop -->
+<ax-launcher-grid
+  [apps]="apps"
+  [draggable]="true"
+  [columns]="4"
+  [gap]="16"
+  [rowHeight]="140"
+  [showDragHandle]="true"
+  (orderChange)="onOrderChange($event)"
+  (appClick)="onAppClick($event)"
+  (favoriteToggle)="toggleFavorite($event)"
+  (pinToggle)="togglePin($event)"
+/>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `import { signal } from '@angular/core';
+import { AxLauncherGridComponent, LauncherApp } from '@aegisx/ui';
+
+// Track new order after drag
+dragOrder = signal<string[]>([]);
+
+apps: LauncherApp[] = [
+  {
+    id: 'app-1',
+    name: 'Dashboard',
+    icon: 'dashboard',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+    gridSpan: { cols: 2, rows: 1 }, // Wide card
+  },
+  {
+    id: 'app-2',
+    name: 'Analytics',
+    icon: 'analytics',
+    color: 'mint',
+    status: 'active',
+    enabled: true,
+  },
+  // ... more apps
+];
+
+onOrderChange(apps: LauncherApp[]): void {
+  // Save new order
+  const ids = apps.map(app => app.id);
+  this.dragOrder.set(ids);
+  console.log('New order:', ids);
+
+  // Optional: persist to localStorage or API
+  localStorage.setItem('launcher-order', JSON.stringify(ids));
+}
+
+onAppClick(event: { app: LauncherApp }): void {
+  console.log('App clicked:', event.app.name);
+}`,
+    },
+    {
+      label: 'Config',
+      language: 'typescript',
+      code: `// LauncherGridConfig interface
+interface LauncherGridConfig {
+  /** Number of columns in the grid */
+  columns?: number;        // default: 4
+
+  /** Gap between grid items in pixels */
+  gap?: number;            // default: 16
+
+  /** Minimum row height in pixels */
+  rowHeight?: number;      // default: 140
+
+  /** Enable drag-and-drop reordering */
+  draggable?: boolean;     // default: true
+
+  /** Show drag handle on hover */
+  showDragHandle?: boolean; // default: false
+
+  /** Persist order to localStorage */
+  persistOrder?: boolean;  // default: false
+
+  /** LocalStorage key for persisting order */
+  storageKey?: string;     // default: 'launcher-order'
+}
+
+// GridSpan for precise card sizing
+interface LauncherGridSpan {
+  cols: 1 | 2 | 3 | 4;  // Number of columns to span
+  rows: 1 | 2 | 3 | 4;  // Number of rows to span
+}`,
+    },
+  ];
+
   interfaceTabs: CodeTab[] = [
     {
       label: 'LauncherApp',
@@ -1076,5 +1257,10 @@ togglePin(app: LauncherApp): void {
     } else {
       this.pinnedApps.set([...pins, app.id]);
     }
+  }
+
+  onOrderChange(apps: LauncherApp[]): void {
+    const ids = apps.map((app) => app.id);
+    this.dragOrder.set(ids);
   }
 }
