@@ -18,6 +18,7 @@ import {
   CodeTabsComponent,
   LivePreviewComponent,
 } from '../../../../../../components/docs';
+import { CodeTab } from '../../../../../../types/docs.types';
 
 @Component({
   selector: 'app-launcher-doc',
@@ -44,7 +45,10 @@ import {
         icon="apps"
         description="Application launcher with pastel-colored cards, categories, RBAC, bento grid, and full dark mode support."
         [breadcrumbs]="[
-          { label: 'Navigation', link: '/docs/components/aegisx/navigation/stepper' },
+          {
+            label: 'Navigation',
+            link: '/docs/components/aegisx/navigation/stepper',
+          },
           { label: 'Launcher' },
         ]"
         [showImport]="false"
@@ -59,10 +63,14 @@ import {
             <section class="mb-8">
               <h2 class="text-2xl font-semibold mb-4">Introduction</h2>
               <p class="text-on-surface-variant mb-4">
-                The <code class="bg-surface-container px-2 py-1 rounded">ax-launcher</code>
-                component provides a beautiful application launcher with pastel-colored cards,
-                category filtering, keyboard shortcuts, and full dark mode support. Perfect for
-                dashboards, admin panels, and enterprise applications.
+                The
+                <code class="bg-surface-container px-2 py-1 rounded"
+                  >ax-launcher</code
+                >
+                component provides a beautiful application launcher with
+                pastel-colored cards, category filtering, keyboard shortcuts,
+                and full dark mode support. Perfect for dashboards, admin
+                panels, and enterprise applications.
               </p>
             </section>
 
@@ -73,10 +81,14 @@ import {
                 @for (feature of features; track feature.title) {
                   <mat-card appearance="outlined" class="p-4">
                     <div class="flex items-center gap-3 mb-2">
-                      <mat-icon class="text-primary">{{ feature.icon }}</mat-icon>
+                      <mat-icon class="text-primary">{{
+                        feature.icon
+                      }}</mat-icon>
                       <h4 class="font-semibold">{{ feature.title }}</h4>
                     </div>
-                    <p class="text-sm text-on-surface-variant">{{ feature.description }}</p>
+                    <p class="text-sm text-on-surface-variant">
+                      {{ feature.description }}
+                    </p>
                   </mat-card>
                 }
               </div>
@@ -99,7 +111,8 @@ import {
                   }
                 </div>
                 <p class="text-sm text-on-surface-variant mt-4">
-                  Last clicked: <span class="font-mono">{{ lastClicked() }}</span>
+                  Last clicked:
+                  <span class="font-mono">{{ lastClicked() }}</span>
                 </p>
               </mat-card>
             </section>
@@ -112,7 +125,9 @@ import {
               </p>
               <div class="flex flex-wrap gap-2">
                 @for (color of colors; track color) {
-                  <mat-chip-option [selected]="false">{{ color }}</mat-chip-option>
+                  <mat-chip-option [selected]="false">{{
+                    color
+                  }}</mat-chip-option>
                 }
               </div>
             </section>
@@ -120,46 +135,7 @@ import {
             <!-- Basic Usage -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Basic Usage</h3>
-              <mat-card appearance="outlined">
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>import {{'{'}}
-  AxLauncherComponent,
-  LauncherApp,
-  LauncherCategory,
-{{'}'}} from '@aegisx/ui';
-
-// Define your apps
-apps: LauncherApp[] = [
-  {{'{'}}
-    id: 'app-1',
-    name: 'Dashboard',
-    description: 'Main dashboard',
-    icon: 'dashboard',
-    color: 'blue',
-    route: '/dashboard',
-    status: 'active',
-    enabled: true,
-    categoryId: 'main',
-  {{'}'}},
-  // ... more apps
-];
-
-// Define categories
-categories: LauncherCategory[] = [
-  {{'{'}} id: 'main', name: 'Main', icon: 'home' {{'}'}},
-  {{'{'}} id: 'tools', name: 'Tools', icon: 'build' {{'}'}},
-];
-
-// In template
-&lt;ax-launcher
-  [apps]="apps"
-  [categories]="categories"
-  title="Applications"
-  subtitle="Select an app to launch"
-  (appClick)="onAppClick($event)"
-/&gt;</code></pre>
-                </div>
-              </mat-card>
+              <ax-code-tabs [tabs]="basicUsageTabs"></ax-code-tabs>
             </section>
           </div>
         </mat-tab>
@@ -182,31 +158,67 @@ categories: LauncherCategory[] = [
                     enableFavorites: true,
                     enableRecent: true,
                     cardMinWidth: 220,
-                    cardGap: 16
+                    cardGap: 16,
                   }"
                   (appClick)="onAppClick($event)"
                 />
               </ax-live-preview>
+              <ax-code-tabs [tabs]="fullLauncherTabs"></ax-code-tabs>
             </section>
 
             <!-- Card Sizes -->
             <section>
-              <h3 class="text-xl font-semibold mb-4">Card Sizes (Bento Grid)</h3>
+              <h3 class="text-xl font-semibold mb-4">
+                Card Sizes (Bento Grid)
+              </h3>
               <p class="text-on-surface-variant mb-4">
                 Use different sizes for featured apps in a bento grid layout.
               </p>
               <ax-live-preview title="Different Card Sizes">
-                <div class="grid grid-cols-4 gap-4" style="grid-auto-rows: minmax(140px, auto);">
+                <div
+                  class="grid grid-cols-4 gap-4"
+                  style="grid-auto-rows: minmax(140px, auto);"
+                >
                   @for (app of bentoApps; track app.id) {
                     <ax-launcher-card
                       [app]="app"
                       [size]="app.size || 'md'"
-                      [class.col-span-2]="app.size === 'lg' || app.size === 'xl'"
+                      [class.col-span-2]="
+                        app.size === 'lg' || app.size === 'xl'
+                      "
                       [class.row-span-2]="app.size === 'xl'"
                     />
                   }
                 </div>
               </ax-live-preview>
+              <ax-code-tabs [tabs]="bentoGridTabs"></ax-code-tabs>
+            </section>
+
+            <!-- Single Card Example -->
+            <section>
+              <h3 class="text-xl font-semibold mb-4">Single Card Usage</h3>
+              <p class="text-on-surface-variant mb-4">
+                Use
+                <code class="bg-surface-container px-2 py-1 rounded"
+                  >ax-launcher-card</code
+                >
+                directly for individual app cards.
+              </p>
+              <ax-live-preview title="Individual Launcher Cards">
+                <div class="flex flex-wrap gap-4">
+                  @for (app of demoApps; track app.id) {
+                    <ax-launcher-card
+                      [app]="app"
+                      [isFavorite]="favoriteApps().includes(app.id)"
+                      [isPinned]="pinnedApps().includes(app.id)"
+                      (cardClick)="onAppClick($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  }
+                </div>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="singleCardTabs"></ax-code-tabs>
             </section>
           </div>
         </mat-tab>
@@ -237,10 +249,15 @@ categories: LauncherCategory[] = [
                   </ng-container>
                   <ng-container matColumnDef="description">
                     <th mat-header-cell *matHeaderCellDef>Description</th>
-                    <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.description }}
+                    </td>
                   </ng-container>
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                  <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                  ></tr>
                 </table>
               </div>
             </section>
@@ -264,7 +281,9 @@ categories: LauncherCategory[] = [
                   </ng-container>
                   <ng-container matColumnDef="description">
                     <th mat-header-cell *matHeaderCellDef>Description</th>
-                    <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.description }}
+                    </td>
                   </ng-container>
                   <tr mat-header-row *matHeaderRowDef="outputColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: outputColumns"></tr>
@@ -275,30 +294,7 @@ categories: LauncherCategory[] = [
             <!-- LauncherApp Interface -->
             <section>
               <h3 class="text-xl font-semibold mb-4">LauncherApp Interface</h3>
-              <mat-card appearance="outlined">
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>interface LauncherApp {{'{'}}
-  id: string;
-  name: string;
-  description?: string;
-  icon: string;
-  route?: string;
-  externalUrl?: string;
-  color: LauncherColor; // 'pink' | 'peach' | 'mint' | 'blue' | ...
-  categoryId?: string;
-  tags?: string[];
-  order?: number;
-  status: LauncherAppStatus; // 'active' | 'beta' | 'new' | ...
-  enabled: boolean;
-  notificationCount?: number;
-  size?: LauncherCardSize; // 'sm' | 'md' | 'lg' | 'xl'
-  featured?: boolean;
-  usageCount?: number;
-  permission?: LauncherPermission;
-  menuActions?: LauncherMenuAction[];
-{{'}'}}</code></pre>
-                </div>
-              </mat-card>
+              <ax-code-tabs [tabs]="interfaceTabs"></ax-code-tabs>
             </section>
           </div>
         </mat-tab>
@@ -319,19 +315,25 @@ categories: LauncherCategory[] = [
                   <tbody>
                     <tr class="border-b">
                       <td class="py-2">
-                        <code class="bg-surface-container px-2 py-1 rounded">Cmd/Ctrl + K</code>
+                        <code class="bg-surface-container px-2 py-1 rounded"
+                          >Cmd/Ctrl + K</code
+                        >
                       </td>
                       <td class="py-2">Focus search input</td>
                     </tr>
                     <tr class="border-b">
                       <td class="py-2">
-                        <code class="bg-surface-container px-2 py-1 rounded">Escape</code>
+                        <code class="bg-surface-container px-2 py-1 rounded"
+                          >Escape</code
+                        >
                       </td>
                       <td class="py-2">Clear search</td>
                     </tr>
                     <tr>
                       <td class="py-2">
-                        <code class="bg-surface-container px-2 py-1 rounded">Enter</code>
+                        <code class="bg-surface-container px-2 py-1 rounded"
+                          >Enter</code
+                        >
                       </td>
                       <td class="py-2">Open focused app</td>
                     </tr>
@@ -598,6 +600,291 @@ export class LauncherDocComponent {
       property: 'enabledChange',
       type: 'LauncherEnabledChangeEvent',
       description: 'Emitted when app enabled state changes',
+    },
+  ];
+
+  // Code Tabs Data
+  basicUsageTabs: CodeTab[] = [
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `import {
+  AxLauncherComponent,
+  LauncherApp,
+  LauncherCategory,
+} from '@aegisx/ui';
+
+// Define your apps
+apps: LauncherApp[] = [
+  {
+    id: 'app-1',
+    name: 'Dashboard',
+    description: 'Main dashboard',
+    icon: 'dashboard',
+    color: 'blue',
+    route: '/dashboard',
+    status: 'active',
+    enabled: true,
+    categoryId: 'main',
+  },
+  // ... more apps
+];
+
+// Define categories
+categories: LauncherCategory[] = [
+  { id: 'main', name: 'Main', icon: 'home' },
+  { id: 'tools', name: 'Tools', icon: 'build' },
+];`,
+    },
+    {
+      label: 'HTML',
+      language: 'html',
+      code: `<ax-launcher
+  [apps]="apps"
+  [categories]="categories"
+  title="Applications"
+  subtitle="Select an app to launch"
+  (appClick)="onAppClick($event)"
+/>`,
+    },
+  ];
+
+  fullLauncherTabs: CodeTab[] = [
+    {
+      label: 'HTML',
+      language: 'html',
+      code: `<ax-launcher
+  [apps]="apps"
+  [categories]="categories"
+  title="Applications"
+  subtitle="Select an application to launch"
+  [config]="{
+    showSearch: true,
+    showCategoryTabs: true,
+    enableFavorites: true,
+    enableRecent: true,
+    cardMinWidth: 220,
+    cardGap: 16
+  }"
+  (appClick)="onAppClick($event)"
+/>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `apps: LauncherApp[] = [
+  {
+    id: 'dashboard',
+    name: 'Dashboard',
+    description: 'Main dashboard',
+    icon: 'dashboard',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+    categoryId: 'main',
+  },
+  {
+    id: 'analytics',
+    name: 'Analytics',
+    description: 'View statistics',
+    icon: 'analytics',
+    color: 'mint',
+    status: 'active',
+    enabled: true,
+    categoryId: 'main',
+  },
+  // ... more apps
+];
+
+categories: LauncherCategory[] = [
+  { id: 'main', name: 'Main', icon: 'home' },
+  { id: 'tools', name: 'Tools', icon: 'build' },
+];
+
+onAppClick(event: { app: LauncherApp }): void {
+  console.log('App clicked:', event.app.name);
+  // Navigate or perform action
+}`,
+    },
+  ];
+
+  bentoGridTabs: CodeTab[] = [
+    {
+      label: 'HTML',
+      language: 'html',
+      code: `<div class="grid grid-cols-4 gap-4" style="grid-auto-rows: minmax(140px, auto);">
+  @for (app of bentoApps; track app.id) {
+    <ax-launcher-card
+      [app]="app"
+      [size]="app.size || 'md'"
+      [class.col-span-2]="app.size === 'lg' || app.size === 'xl'"
+      [class.row-span-2]="app.size === 'xl'"
+    />
+  }
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `bentoApps: LauncherApp[] = [
+  {
+    id: 'main',
+    name: 'Main App',
+    description: 'Primary application',
+    icon: 'apps',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+    size: 'xl', // Extra large card
+  },
+  {
+    id: 'quick1',
+    name: 'Quick Action',
+    icon: 'bolt',
+    color: 'yellow',
+    status: 'active',
+    enabled: true,
+    size: 'sm', // Small card
+  },
+  {
+    id: 'featured',
+    name: 'Featured',
+    description: 'Featured content',
+    icon: 'star',
+    color: 'lavender',
+    status: 'active',
+    enabled: true,
+    size: 'lg', // Large card
+  },
+];`,
+    },
+    {
+      label: 'SCSS',
+      language: 'scss',
+      code: `.col-span-2 {
+  grid-column: span 2;
+}
+
+.row-span-2 {
+  grid-row: span 2;
+}`,
+    },
+  ];
+
+  singleCardTabs: CodeTab[] = [
+    {
+      label: 'HTML',
+      language: 'html',
+      code: `<ax-launcher-card
+  [app]="app"
+  [isFavorite]="favoriteApps().includes(app.id)"
+  [isPinned]="pinnedApps().includes(app.id)"
+  (cardClick)="onAppClick($event)"
+  (favoriteToggle)="toggleFavorite($event)"
+  (pinToggle)="togglePin($event)"
+/>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `import { signal } from '@angular/core';
+import { AxLauncherCardComponent, LauncherApp } from '@aegisx/ui';
+
+favoriteApps = signal<string[]>([]);
+pinnedApps = signal<string[]>([]);
+
+app: LauncherApp = {
+  id: 'dashboard',
+  name: 'Dashboard',
+  description: 'Main dashboard',
+  icon: 'dashboard',
+  color: 'blue',
+  status: 'active',
+  enabled: true,
+};
+
+onAppClick(event: { app: LauncherApp }): void {
+  console.log('App clicked:', event.app.name);
+}
+
+toggleFavorite(app: LauncherApp): void {
+  const favs = this.favoriteApps();
+  if (favs.includes(app.id)) {
+    this.favoriteApps.set(favs.filter(id => id !== app.id));
+  } else {
+    this.favoriteApps.set([...favs, app.id]);
+  }
+}
+
+togglePin(app: LauncherApp): void {
+  const pins = this.pinnedApps();
+  if (pins.includes(app.id)) {
+    this.pinnedApps.set(pins.filter(id => id !== app.id));
+  } else {
+    this.pinnedApps.set([...pins, app.id]);
+  }
+}`,
+    },
+  ];
+
+  interfaceTabs: CodeTab[] = [
+    {
+      label: 'LauncherApp',
+      language: 'typescript',
+      code: `interface LauncherApp {
+  id: string;
+  name: string;
+  description?: string;
+  icon: string;
+  route?: string;
+  externalUrl?: string;
+  color: LauncherColor; // 'pink' | 'peach' | 'mint' | 'blue' | ...
+  categoryId?: string;
+  tags?: string[];
+  order?: number;
+  status: LauncherAppStatus; // 'active' | 'beta' | 'new' | ...
+  enabled: boolean;
+  notificationCount?: number;
+  size?: LauncherCardSize; // 'sm' | 'md' | 'lg' | 'xl'
+  featured?: boolean;
+  usageCount?: number;
+  permission?: LauncherPermission;
+  menuActions?: LauncherMenuAction[];
+}`,
+    },
+    {
+      label: 'LauncherConfig',
+      language: 'typescript',
+      code: `interface LauncherConfig {
+  showSearch?: boolean;
+  showCategoryTabs?: boolean;
+  showStatusFilter?: boolean;
+  showViewToggle?: boolean;
+  defaultViewMode?: LauncherViewMode;
+  defaultGroupBy?: LauncherGroupBy;
+  emptyMessage?: string;
+  noResultsMessage?: string;
+  enableFavorites?: boolean;
+  enableRecent?: boolean;
+  maxRecentApps?: number;
+  storageKeyPrefix?: string;
+  defaultMenuActions?: LauncherDefaultMenuActions;
+  cardMinWidth?: number;
+  cardMaxWidth?: number;
+  cardGap?: number;
+}`,
+    },
+    {
+      label: 'LauncherCategory',
+      language: 'typescript',
+      code: `interface LauncherCategory {
+  id: string;
+  name: string;
+  icon?: string;
+  description?: string;
+  order?: number;
+  color?: string;
+}`,
     },
   ];
 
