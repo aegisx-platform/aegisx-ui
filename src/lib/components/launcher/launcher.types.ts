@@ -28,21 +28,7 @@ export type LauncherAppStatus =
   | 'hidden'; // App is completely hidden
 
 /** View mode options */
-export type LauncherViewMode = 'grid' | 'list' | 'compact' | 'bento';
-
-/** Card size for bento grid layout */
-export type LauncherCardSize = 'sm' | 'md' | 'lg' | 'xl';
-
-/**
- * Custom grid span configuration for precise bento grid control
- * Allows setting exact column and row spans for each card
- */
-export interface LauncherGridSpan {
-  /** Number of columns to span (1-4) */
-  cols: 1 | 2 | 3 | 4;
-  /** Number of rows to span (1-4) */
-  rows: 1 | 2 | 3 | 4;
-}
+export type LauncherViewMode = 'grid' | 'list' | 'compact';
 
 /** Group by options */
 export type LauncherGroupBy = 'category' | 'status' | 'none';
@@ -198,26 +184,8 @@ export interface LauncherApp {
   /** Whether to show default menu actions */
   showDefaultMenu?: boolean;
 
-  // ============================================
-  // BENTO GRID
-  // ============================================
-
-  /** Card size for bento grid layout (featured/frequently used apps) */
-  size?: LauncherCardSize;
-
-  /**
-   * Custom grid span configuration for precise bento grid control
-   * @example { cols: 2, rows: 1 } - spans 2 columns, 1 row
-   * @example { cols: 1, rows: 2 } - spans 1 column, 2 rows
-   * @example { cols: 2, rows: 2 } - spans 2 columns, 2 rows (large square)
-   */
-  gridSpan?: LauncherGridSpan;
-
   /** Whether this is a featured/frequently used app */
   featured?: boolean;
-
-  /** Usage count for auto-sizing in bento grid */
-  usageCount?: number;
 }
 
 // ============================================
@@ -338,39 +306,4 @@ export interface LauncherEnabledChangeEvent {
 export interface LauncherGroupedApps {
   category: LauncherCategory | null;
   apps: LauncherApp[];
-}
-
-// ============================================
-// GRID CONFIGURATION
-// ============================================
-
-/** Configuration for LauncherGrid component */
-export interface LauncherGridConfig {
-  /** Number of columns in the grid */
-  columns?: number;
-
-  /** Gap between grid items in pixels */
-  gap?: number;
-
-  /** Minimum row height in pixels */
-  rowHeight?: number;
-
-  /** Enable drag-and-drop reordering */
-  draggable?: boolean;
-
-  /** Show drag handle on hover */
-  showDragHandle?: boolean;
-
-  /** Persist order to localStorage */
-  persistOrder?: boolean;
-
-  /** LocalStorage key for persisting order */
-  storageKey?: string;
-}
-
-/** Order change event */
-export interface LauncherOrderChangeEvent {
-  apps: LauncherApp[];
-  previousIndex: number;
-  currentIndex: number;
 }

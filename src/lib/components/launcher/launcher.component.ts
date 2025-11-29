@@ -34,8 +34,6 @@ import {
   LauncherMenuActionEvent,
   LauncherStatusChangeEvent,
   LauncherEnabledChangeEvent,
-  LauncherCardSize,
-  LauncherGridSpan,
 } from './launcher.types';
 
 /** Default configuration */
@@ -280,7 +278,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
             </div>
           </div>
         } @else if (showFeaturedView()) {
-          <!-- Featured/Bento Grid View -->
+          <!-- Featured Apps Grid View -->
           <div class="ax-launcher__section">
             <div class="ax-launcher__section-header">
               <mat-icon class="section-icon section-icon--featured"
@@ -291,22 +289,10 @@ const DEFAULT_CONFIG: LauncherConfig = {
                 >Popular and recommended applications</span
               >
             </div>
-            <div class="ax-launcher__bento-grid">
+            <div class="ax-launcher__grid">
               @for (app of featuredApps(); track app.id) {
                 <ax-launcher-card
-                  class="bento-item"
-                  [class.col-span-1]="getGridSpan(app).cols === 1"
-                  [class.col-span-2]="getGridSpan(app).cols === 2"
-                  [class.col-span-3]="getGridSpan(app).cols === 3"
-                  [class.col-span-4]="getGridSpan(app).cols === 4"
-                  [class.row-span-1]="getGridSpan(app).rows === 1"
-                  [class.row-span-2]="getGridSpan(app).rows === 2"
-                  [class.row-span-3]="getGridSpan(app).rows === 3"
-                  [class.row-span-4]="getGridSpan(app).rows === 4"
                   [app]="app"
-                  [size]="getCardSizeFromSpan(app)"
-                  [gridSpan]="app.gridSpan"
-                  [enableGridSpan]="true"
                   [isAdmin]="userContext().isAdmin || false"
                   [isFavorite]="isFavorite(app.id)"
                   [isPinned]="isPinned(app.id)"
@@ -649,59 +635,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
       color: var(--ax-warning-default, #f59e0b);
     }
 
-    /* Bento Grid Layout */
-    .ax-launcher__bento-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: minmax(160px, auto);
-      gap: 1.25rem;
-    }
-
-    .bento-item {
-      display: block;
-      height: 100%;
-    }
-
-    /* Column Spans */
-    .col-span-1 {
-      grid-column: span 1;
-    }
-    .col-span-2 {
-      grid-column: span 2;
-    }
-    .col-span-3 {
-      grid-column: span 3;
-    }
-    .col-span-4 {
-      grid-column: span 4;
-    }
-
-    /* Row Spans */
-    .row-span-1 {
-      grid-row: span 1;
-    }
-    .row-span-2 {
-      grid-row: span 2;
-    }
-    .row-span-3 {
-      grid-row: span 3;
-    }
-    .row-span-4 {
-      grid-row: span 4;
-    }
-
     /* Responsive */
-    @media (max-width: 1024px) {
-      .ax-launcher__bento-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      /* Limit spans on tablet */
-      .col-span-4 {
-        grid-column: span 3;
-      }
-    }
-
     @media (max-width: 768px) {
       .ax-launcher__header {
         flex-direction: column;
@@ -719,43 +653,6 @@ const DEFAULT_CONFIG: LauncherConfig = {
       .ax-launcher__grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 1rem;
-      }
-
-      .ax-launcher__bento-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: minmax(140px, auto);
-        gap: 1rem;
-      }
-
-      /* Limit spans on mobile */
-      .col-span-3,
-      .col-span-4 {
-        grid-column: span 2;
-      }
-
-      .row-span-3,
-      .row-span-4 {
-        grid-row: span 2;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .ax-launcher__bento-grid {
-        grid-template-columns: 1fr;
-        grid-auto-rows: minmax(120px, auto);
-      }
-
-      /* Single column on small mobile */
-      .col-span-2,
-      .col-span-3,
-      .col-span-4 {
-        grid-column: span 1;
-      }
-
-      .row-span-2,
-      .row-span-3,
-      .row-span-4 {
-        grid-row: span 1;
       }
     }
 
@@ -947,29 +844,22 @@ export class AxLauncherComponent {
     ];
   });
 
-  /** Featured apps (apps with featured=true or size defined, or top used) */
+  /** Featured apps (apps with featured=true) */
   featuredApps = computed(() => {
     const allApps = this.apps();
     const user = this.userContext();
     const recent = this.recentApps();
     const pinned = this.pinnedApps();
 
-    // Get apps that are featured, pinned, or have a size defined
+    // Get apps that are featured or pinned
     const featured = allApps.filter((app) => {
       if (!this.canViewApp(app, user)) return false;
       // Include pinned apps in featured view
       if (pinned.includes(app.id)) return true;
-      return app.featured || app.size || app.usageCount;
+      return app.featured;
     });
 
-    // Sort by: pinned first, then usageCount (desc), recent usage, then by size priority
-    const sizePriority: Record<LauncherCardSize, number> = {
-      xl: 4,
-      lg: 3,
-      md: 2,
-      sm: 1,
-    };
-
+    // Sort by: pinned first, then recent usage, then by order
     return featured.sort((a, b) => {
       // Pinned apps always come first
       const pinnedA = pinned.includes(a.id);
@@ -982,11 +872,6 @@ export class AxLauncherComponent {
         return pinned.indexOf(a.id) - pinned.indexOf(b.id);
       }
 
-      // Then by usage count
-      const usageA = a.usageCount || 0;
-      const usageB = b.usageCount || 0;
-      if (usageB !== usageA) return usageB - usageA;
-
       // Then by recent usage
       const recentA = recent.indexOf(a.id);
       const recentB = recent.indexOf(b.id);
@@ -994,10 +879,8 @@ export class AxLauncherComponent {
       if (recentA !== -1) return -1;
       if (recentB !== -1) return 1;
 
-      // Then by size priority
-      const sizeA = sizePriority[a.size || 'md'];
-      const sizeB = sizePriority[b.size || 'md'];
-      return sizeB - sizeA;
+      // Then by order
+      return (a.order || 0) - (b.order || 0);
     });
   });
 
@@ -1385,53 +1268,6 @@ export class AxLauncherComponent {
     }
     return this.filteredApps().filter((app) => app.categoryId === categoryId)
       .length;
-  }
-
-  /** Get card size for bento grid - uses app.size or calculates based on usage */
-  getCardSize(app: LauncherApp): LauncherCardSize {
-    // Use explicit size if defined
-    if (app.size) return app.size;
-
-    // Auto-calculate based on usage count
-    const usageCount = app.usageCount || 0;
-    if (usageCount >= 100) return 'xl';
-    if (usageCount >= 50) return 'lg';
-    if (usageCount >= 20) return 'md';
-    return 'sm';
-  }
-
-  /** Get grid span for bento layout - uses app.gridSpan or calculates from size/usage */
-  getGridSpan(app: LauncherApp): LauncherGridSpan {
-    // Use explicit gridSpan if defined
-    if (app.gridSpan) return app.gridSpan;
-
-    // Calculate based on size
-    const size = this.getCardSize(app);
-    switch (size) {
-      case 'xl':
-        return { cols: 2, rows: 2 };
-      case 'lg':
-        return { cols: 2, rows: 1 };
-      case 'md':
-        return { cols: 1, rows: 1 };
-      case 'sm':
-      default:
-        return { cols: 1, rows: 1 };
-    }
-  }
-
-  /** Get card size based on grid span for consistent styling */
-  getCardSizeFromSpan(app: LauncherApp): LauncherCardSize {
-    // Use explicit size if defined
-    if (app.size) return app.size;
-
-    const span = this.getGridSpan(app);
-    const area = span.cols * span.rows;
-
-    // Determine size based on total area covered
-    if (area >= 4) return 'xl'; // 2x2 or larger
-    if (area >= 2) return 'lg'; // 2x1 or 1x2
-    return 'md'; // 1x1
   }
 
   onAppClick(event: LauncherAppClickEvent): void {
