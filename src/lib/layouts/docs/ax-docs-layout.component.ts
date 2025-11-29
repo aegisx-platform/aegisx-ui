@@ -14,10 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  AxDocsSidebarComponent,
-  DocsNavItem,
-} from './components/ax-docs-sidebar.component';
+import { AxDocsSidebarComponent } from './components/ax-docs-sidebar.component';
+import { DocsNavItem } from '../../types/ax-navigation.types';
 import {
   AxDocsTocComponent,
   TocItem,
