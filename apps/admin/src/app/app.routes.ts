@@ -140,6 +140,13 @@ export const appRoutes: Route[] = [
         './pages/docs/components/aegisx/data-display/list/list-doc.component'
       ).then((m) => m.ListDocComponent),
   },
+  {
+    path: 'docs/components/aegisx/data-display/calendar',
+    loadComponent: () =>
+      import(
+        './pages/docs/components/aegisx/data-display/calendar/calendar-doc.component'
+      ).then((m) => m.CalendarDocComponent),
+  },
 
   // --- Components > AegisX > Charts ---
   {

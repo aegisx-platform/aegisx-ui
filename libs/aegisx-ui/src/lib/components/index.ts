@@ -47,3 +47,6 @@ export * from './file-upload';
 
 // App Launcher Component
 export * from './launcher';
+
+// Calendar Component (FullCalendar integration)
+export * from './calendar';

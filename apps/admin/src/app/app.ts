@@ -223,6 +223,13 @@ export class App {
               link: '/docs/components/aegisx/data-display/list',
             },
             {
+              id: 'calendar',
+              title: 'Calendar',
+              type: 'item',
+              icon: 'calendar_month',
+              link: '/docs/components/aegisx/data-display/calendar',
+            },
+            {
               id: 'sparkline',
               title: 'Sparkline',
               type: 'item',
@@ -658,6 +665,11 @@ export class App {
               id: 'list',
               title: 'List',
               link: '/docs/components/aegisx/data-display/list',
+            },
+            {
+              id: 'calendar',
+              title: 'Calendar',
+              link: '/docs/components/aegisx/data-display/calendar',
             },
             {
               id: 'sparkline',
