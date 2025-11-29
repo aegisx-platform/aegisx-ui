@@ -155,33 +155,62 @@ import {
       top: 8px;
       right: 8px;
       z-index: 10;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
       color: #6b7280;
-      opacity: 0;
-      transition: opacity 0.15s ease;
       cursor: grab;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition:
+        opacity 0.15s ease,
+        background-color 0.15s ease,
+        transform 0.15s ease;
 
       &:active {
         cursor: grabbing;
+        transform: scale(0.95);
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 1);
+        color: #374151;
       }
     }
 
-    .launcher-grid__item:hover .launcher-grid__drag-handle {
-      opacity: 1;
+    /* Desktop: Show on hover only */
+    @media (hover: hover) and (pointer: fine) {
+      .launcher-grid__drag-handle {
+        opacity: 0;
+      }
+
+      .launcher-grid__item:hover .launcher-grid__drag-handle {
+        opacity: 1;
+      }
+    }
+
+    /* Touch devices (tablet/mobile): Always visible */
+    @media (hover: none), (pointer: coarse) {
+      .launcher-grid__drag-handle {
+        opacity: 1;
+      }
     }
 
     /* Dark mode drag handle */
     :host-context(.dark),
     .dark {
       .launcher-grid__drag-handle {
-        background: rgba(31, 41, 55, 0.9);
+        background: rgba(31, 41, 55, 0.95);
         color: #9ca3af;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &:hover {
+          background: rgba(55, 65, 81, 1);
+          color: #d1d5db;
+        }
       }
     }
 
