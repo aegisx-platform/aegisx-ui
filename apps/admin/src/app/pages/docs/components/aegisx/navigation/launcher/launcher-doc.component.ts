@@ -55,6 +55,29 @@ import { CodeTab } from '../../../../../../types/docs.types';
         [showQuickLinks]="false"
       ></ax-doc-header>
 
+      <!-- Demo Link Banner -->
+      <mat-card appearance="outlined" class="demo-banner mb-6">
+        <mat-card-content class="flex items-center justify-between py-3 px-4">
+          <div class="flex items-center gap-3">
+            <mat-icon class="text-primary">play_circle</mat-icon>
+            <div>
+              <span class="font-semibold">Live Demo Available</span>
+              <span class="text-on-surface-variant ml-2"
+                >See the full launcher in action</span
+              >
+            </div>
+          </div>
+          <a
+            mat-flat-button
+            routerLink="/app-launcher-demo"
+            class="demo-button"
+          >
+            <mat-icon>open_in_new</mat-icon>
+            View Demo
+          </a>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Tabs -->
       <mat-tab-group class="docs-tabs" animationDuration="200ms">
         <!-- Overview Tab -->
@@ -363,6 +386,17 @@ import { CodeTab } from '../../../../../../types/docs.types';
 
       .row-span-2 {
         grid-row: span 2;
+      }
+
+      .demo-banner {
+        background: var(--ax-brand-faint);
+        border: 1px solid var(--ax-brand-200);
+      }
+
+      .demo-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
     `,
   ],
