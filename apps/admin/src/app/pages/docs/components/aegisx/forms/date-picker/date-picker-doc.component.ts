@@ -30,14 +30,10 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     <div class="date-picker-doc">
       <ax-doc-header
         title="Date Picker"
+        icon="event"
         description="Full-featured date selection component with Thai/English localization, Buddhist calendar support, and keyboard navigation."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          {
-            label: 'Components',
-            link: '/docs/components/data-display/overview',
-          },
-          { label: 'Forms', link: '/docs/components/forms/date-picker' },
+          { label: 'Forms', link: '/docs/components/aegisx/forms/date-picker' },
           { label: 'Date Picker' },
         ]"
         status="stable"
@@ -249,6 +245,57 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 </ax-date-picker>
               </ax-live-preview>
             </section>
+
+            <section class="date-picker-doc__section">
+              <h2>Inline Display Mode</h2>
+              <p>
+                Display the calendar inline without dropdown. Useful for
+                scheduler components and booking interfaces.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                align="start"
+                gap="var(--ax-spacing-xl)"
+              >
+                <div class="date-picker-doc__inline-example">
+                  <h4>Basic Inline</h4>
+                  <ax-date-picker displayMode="inline" [(ngModel)]="inlineDate">
+                  </ax-date-picker>
+                  <span class="date-picker-doc__value">
+                    Selected:
+                    {{ inlineDate ? inlineDate.toLocaleDateString() : 'None' }}
+                  </span>
+                </div>
+
+                <div class="date-picker-doc__inline-example">
+                  <h4>Thai Inline</h4>
+                  <ax-date-picker
+                    displayMode="inline"
+                    locale="th"
+                    calendar="buddhist"
+                    [firstDayOfWeek]="1"
+                    [(ngModel)]="inlineThaiDate"
+                  >
+                  </ax-date-picker>
+                  <span class="date-picker-doc__value">
+                    เลือก:
+                    {{
+                      inlineThaiDate
+                        ? inlineThaiDate.toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        : 'ยังไม่ได้เลือก'
+                    }}
+                  </span>
+                </div>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="inlineModeCode"></ax-code-tabs>
+            </section>
           </div>
         </mat-tab>
 
@@ -440,6 +487,12 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                       <td><code>boolean</code></td>
                       <td><code>false</code></td>
                       <td>Show Today/Clear buttons</td>
+                    </tr>
+                    <tr>
+                      <td><code>displayMode</code></td>
+                      <td><code>'input' | 'inline'</code></td>
+                      <td><code>'input'</code></td>
+                      <td>Display mode: dropdown or inline calendar</td>
                     </tr>
                   </tbody>
                 </table>
@@ -649,6 +702,19 @@ import { ComponentToken } from '../../../../../../types/docs.types';
         max-width: 320px;
       }
 
+      .date-picker-doc__inline-example {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-sm, 0.5rem);
+
+        h4 {
+          font-size: var(--ax-text-sm, 0.875rem);
+          font-weight: 600;
+          color: var(--ax-text-primary);
+          margin: 0;
+        }
+      }
+
       /* API Table */
       .date-picker-doc__api-table,
       .date-picker-doc__keyboard-table {
@@ -771,6 +837,8 @@ export class DatePickerDocComponent {
   checkInDate: Date | null = null;
   checkOutDate: Date | null = null;
   birthday: Date | null = null;
+  inlineDate: Date | null = null;
+  inlineThaiDate: Date | null = null;
 
   // Date references
   today = new Date();
@@ -805,6 +873,50 @@ import { AxDatePickerComponent } from '@aegisx/ui';
   \`,
 })
 export class MyComponent {
+  selectedDate: Date | null = null;
+}`,
+    },
+  ];
+
+  inlineModeCode = [
+    {
+      label: 'HTML',
+      language: 'html' as const,
+      code: `<!-- Basic Inline Calendar -->
+<ax-date-picker
+  displayMode="inline"
+  [(ngModel)]="selectedDate">
+</ax-date-picker>
+
+<!-- Thai Inline Calendar -->
+<ax-date-picker
+  displayMode="inline"
+  locale="th"
+  calendar="buddhist"
+  [firstDayOfWeek]="1"
+  [(ngModel)]="selectedDate">
+</ax-date-picker>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript' as const,
+      code: `import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { AxDatePickerComponent } from '@aegisx/ui';
+
+@Component({
+  selector: 'app-inline-calendar',
+  standalone: true,
+  imports: [FormsModule, AxDatePickerComponent],
+  template: \`
+    <ax-date-picker
+      displayMode="inline"
+      [(ngModel)]="selectedDate">
+    </ax-date-picker>
+    <p>Selected: {{ selectedDate?.toLocaleDateString() }}</p>
+  \`,
+})
+export class InlineCalendarComponent {
   selectedDate: Date | null = null;
 }`,
     },

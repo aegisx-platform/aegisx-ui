@@ -1,11 +1,14 @@
 import {
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   Input,
+  Output,
   forwardRef,
   inject,
   OnChanges,
+  OnInit,
   SimpleChanges,
   ChangeDetectorRef,
 } from '@angular/core';
@@ -23,6 +26,7 @@ export type DatePickerSize = 'sm' | 'md';
 export type DatePickerLocale = 'en' | 'th';
 export type DatePickerCalendar = 'gregorian' | 'buddhist';
 export type DatePickerMonthFormat = 'full' | 'short';
+export type DatePickerDisplayMode = 'input' | 'inline';
 
 interface CalendarDay {
   date: Date;
@@ -116,7 +120,7 @@ const ENGLISH_MONTHS_SHORT = [
   ],
 })
 export class AxDatePickerComponent
-  implements ControlValueAccessor, Validator, OnChanges
+  implements ControlValueAccessor, Validator, OnChanges, OnInit
 {
   @Input() label = '';
   @Input() placeholder = 'Select date';
@@ -134,6 +138,10 @@ export class AxDatePickerComponent
   @Input() firstDayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6 = 0; // 0 = Sunday, 1 = Monday, etc.
   @Input() dateFormat?: string; // Custom date format (e.g., 'DD/MM/YYYY', 'MM-DD-YYYY', 'DD MMM YYYY')
   @Input() showActionButtons = false; // Show Today and Clear buttons in calendar footer
+  @Input() displayMode: DatePickerDisplayMode = 'input'; // 'input' = dropdown, 'inline' = always visible calendar
+
+  /** Emits when date value changes */
+  @Output() dateChange = new EventEmitter<Date | null>();
 
   value: Date | null = null;
   isOpen = false;
@@ -207,6 +215,14 @@ export class AxDatePickerComponent
   constructor() {
     this.generateCalendar();
     this.generateYears();
+  }
+
+  ngOnInit(): void {
+    // For inline mode, initialize the calendar focused date
+    if (this.displayMode === 'inline') {
+      this.focusedDate = this.value || new Date();
+      this.generateCalendar();
+    }
   }
 
   toggleViewMode(): void {
@@ -331,8 +347,13 @@ export class AxDatePickerComponent
     this.value = day.date;
     this.onChange(this.value);
     this.onTouched();
-    this.isOpen = false;
-    this.focused = false;
+    this.dateChange.emit(this.value);
+
+    // In inline mode, don't close the calendar
+    if (this.displayMode !== 'inline') {
+      this.isOpen = false;
+      this.focused = false;
+    }
 
     this.generateCalendar();
     this.cdr.detectChanges(); // Force change detection
@@ -360,6 +381,7 @@ export class AxDatePickerComponent
     this.value = null;
     this.onChange(null);
     this.onTouched();
+    this.dateChange.emit(null);
     this.generateCalendar();
   }
 
@@ -375,8 +397,13 @@ export class AxDatePickerComponent
     this.value = today;
     this.onChange(this.value);
     this.onTouched();
-    this.isOpen = false;
-    this.focused = false;
+    this.dateChange.emit(this.value);
+
+    // In inline mode, don't close the calendar
+    if (this.displayMode !== 'inline') {
+      this.isOpen = false;
+      this.focused = false;
+    }
 
     this.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     this.viewMode = 'day';
@@ -400,12 +427,13 @@ export class AxDatePickerComponent
   }
 
   onCalendarKeydown(event: KeyboardEvent): void {
-    if (!this.isOpen) return;
+    // Allow keyboard navigation in inline mode (no isOpen check needed)
+    if (!this.isOpen && this.displayMode !== 'inline') return;
 
     const key = event.key;
 
-    // Close calendar
-    if (key === 'Escape') {
+    // Close calendar (only in dropdown mode)
+    if (key === 'Escape' && this.displayMode !== 'inline') {
       event.preventDefault();
       this.isOpen = false;
       this.focused = false;
@@ -814,6 +842,9 @@ export class AxDatePickerComponent
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event): void {
+    // In inline mode, don't close on outside click
+    if (this.displayMode === 'inline') return;
+
     if (!this.elementRef.nativeElement.contains(event.target)) {
       const wasOpen = this.isOpen;
       this.isOpen = false;
