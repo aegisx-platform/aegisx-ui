@@ -64,60 +64,58 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
       ]),
       transition(':leave', [animate('200ms ease-in', style({ opacity: 0 }))]),
     ]),
-    trigger('slideLeft', [
-      transition(':enter', [
+    trigger('slidePanel', [
+      // Left: slide in from left
+      transition('void => left', [
         style({ transform: 'translateX(-100%)' }),
         animate(
           '300ms cubic-bezier(0.4, 0, 0.2, 1)',
           style({ transform: 'translateX(0)' }),
         ),
       ]),
-      transition(':leave', [
+      transition('left => void', [
         animate(
           '200ms cubic-bezier(0.4, 0, 0.6, 1)',
           style({ transform: 'translateX(-100%)' }),
         ),
       ]),
-    ]),
-    trigger('slideRight', [
-      transition(':enter', [
+      // Right: slide in from right
+      transition('void => right', [
         style({ transform: 'translateX(100%)' }),
         animate(
           '300ms cubic-bezier(0.4, 0, 0.2, 1)',
           style({ transform: 'translateX(0)' }),
         ),
       ]),
-      transition(':leave', [
+      transition('right => void', [
         animate(
           '200ms cubic-bezier(0.4, 0, 0.6, 1)',
           style({ transform: 'translateX(100%)' }),
         ),
       ]),
-    ]),
-    trigger('slideTop', [
-      transition(':enter', [
+      // Top: slide in from top
+      transition('void => top', [
         style({ transform: 'translateY(-100%)' }),
         animate(
           '300ms cubic-bezier(0.4, 0, 0.2, 1)',
           style({ transform: 'translateY(0)' }),
         ),
       ]),
-      transition(':leave', [
+      transition('top => void', [
         animate(
           '200ms cubic-bezier(0.4, 0, 0.6, 1)',
           style({ transform: 'translateY(-100%)' }),
         ),
       ]),
-    ]),
-    trigger('slideBottom', [
-      transition(':enter', [
+      // Bottom: slide in from bottom
+      transition('void => bottom', [
         style({ transform: 'translateY(100%)' }),
         animate(
           '300ms cubic-bezier(0.4, 0, 0.2, 1)',
           style({ transform: 'translateY(0)' }),
         ),
       ]),
-      transition(':leave', [
+      transition('bottom => void', [
         animate(
           '200ms cubic-bezier(0.4, 0, 0.6, 1)',
           style({ transform: 'translateY(100%)' }),
@@ -152,10 +150,7 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
         [class.ax-drawer-lg]="size === 'lg'"
         [class.ax-drawer-xl]="size === 'xl'"
         [class.ax-drawer-full]="size === 'full'"
-        [@slideLeft]="position === 'left' ? 'open' : null"
-        [@slideRight]="position === 'right' ? 'open' : null"
-        [@slideTop]="position === 'top' ? 'open' : null"
-        [@slideBottom]="position === 'bottom' ? 'open' : null"
+        [@slidePanel]="position"
       >
         <!-- Header -->
         @if (showHeader) {
