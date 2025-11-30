@@ -9,6 +9,7 @@ import {
   ComponentTokensComponent,
 } from '../../../../../../components/docs';
 import { ComponentToken } from '../../../../../../types/docs.types';
+import { WidgetShowcaseComponent } from './widget-showcase.component';
 
 @Component({
   selector: 'ax-widget-framework-doc',
@@ -21,6 +22,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     CodeTabsComponent,
     LivePreviewComponent,
     ComponentTokensComponent,
+    WidgetShowcaseComponent,
   ],
   template: `
     <div class="widget-framework-doc">
@@ -173,108 +175,19 @@ import { ComponentToken } from '../../../../../../types/docs.types';
         </mat-tab>
 
         <!-- ============================================================== -->
-        <!-- WIDGETS TAB -->
+        <!-- WIDGETS TAB - Interactive Showcase -->
         <!-- ============================================================== -->
         <mat-tab label="Widgets">
           <div class="widget-framework-doc__tab-content">
-            <!-- KPI Widget -->
             <section class="widget-framework-doc__section">
-              <h2>KPI Widget</h2>
+              <h2>Interactive Widget Showcase</h2>
               <p>
-                Display key performance indicators with value, trend indicator,
-                and optional sparkline. Perfect for metric cards at the top of
-                dashboards.
+                Configure any widget in real-time and copy the generated code to
+                use in your application. Select a widget type, customize its
+                properties, and see the live preview instantly.
               </p>
 
-              <div class="widget-framework-doc__widget-preview">
-                <div class="widget-preview-card">
-                  <div class="widget-preview-header">
-                    <mat-icon>attach_money</mat-icon>
-                    <span>Total Revenue</span>
-                  </div>
-                  <div class="widget-preview-value">$689,372</div>
-                  <div class="widget-preview-trend positive">
-                    <mat-icon>trending_up</mat-icon>
-                    +5.2% vs last month
-                  </div>
-                </div>
-              </div>
-
-              <ax-code-tabs [tabs]="kpiWidgetCode"></ax-code-tabs>
-            </section>
-
-            <!-- Chart Widget -->
-            <section class="widget-framework-doc__section">
-              <h2>Chart Widget</h2>
-              <p>
-                SVG-based charts supporting line, bar, and donut chart types.
-                Lightweight and dependency-free visualization.
-              </p>
-
-              <div class="widget-framework-doc__chart-types">
-                <div class="chart-type">
-                  <mat-icon>show_chart</mat-icon>
-                  <span>Line Chart</span>
-                </div>
-                <div class="chart-type">
-                  <mat-icon>bar_chart</mat-icon>
-                  <span>Bar Chart</span>
-                </div>
-                <div class="chart-type">
-                  <mat-icon>donut_large</mat-icon>
-                  <span>Donut Chart</span>
-                </div>
-              </div>
-
-              <ax-code-tabs [tabs]="chartWidgetCode"></ax-code-tabs>
-            </section>
-
-            <!-- Table Widget -->
-            <section class="widget-framework-doc__section">
-              <h2>Table Widget</h2>
-              <p>
-                Data table with configurable columns, sorting, and pagination.
-                Ideal for displaying transaction lists or recent activity.
-              </p>
-
-              <ax-code-tabs [tabs]="tableWidgetCode"></ax-code-tabs>
-            </section>
-
-            <!-- List Widget -->
-            <section class="widget-framework-doc__section">
-              <h2>List Widget</h2>
-              <p>
-                Activity feed showing items with icons, titles, and status
-                indicators. Perfect for notifications and recent events.
-              </p>
-
-              <ax-code-tabs [tabs]="listWidgetCode"></ax-code-tabs>
-            </section>
-
-            <!-- Progress Widget -->
-            <section class="widget-framework-doc__section">
-              <h2>Progress Widget</h2>
-              <p>
-                Progress indicators in circular, gauge, or linear format. Great
-                for showing completion rates and quotas.
-              </p>
-
-              <div class="widget-framework-doc__progress-types">
-                <div class="progress-type">
-                  <mat-icon>donut_large</mat-icon>
-                  <span>Circular</span>
-                </div>
-                <div class="progress-type">
-                  <mat-icon>speed</mat-icon>
-                  <span>Gauge</span>
-                </div>
-                <div class="progress-type">
-                  <mat-icon>linear_scale</mat-icon>
-                  <span>Linear</span>
-                </div>
-              </div>
-
-              <ax-code-tabs [tabs]="progressWidgetCode"></ax-code-tabs>
+              <ax-widget-showcase></ax-widget-showcase>
             </section>
           </div>
         </mat-tab>
