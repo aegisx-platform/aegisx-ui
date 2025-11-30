@@ -359,21 +359,26 @@ export class ProgressWidgetComponent extends BaseWidgetComponent<
 
   gaugePath = computed(() => {
     const pct = this.percent() / 100;
-    const angle = 180 * pct;
-    const rad = (angle * Math.PI) / 180;
+    if (pct <= 0) return '';
 
+    // Arc goes from left (10, 50) to right (90, 50) following the top half
+    // Center at (50, 50), radius 40
     const cx = 50,
       cy = 50,
       r = 40;
-    const startX = cx - r;
-    const startY = cy;
+    const startX = cx - r; // 10
+    const startY = cy; // 50
 
-    const endX = cx + r * Math.cos(Math.PI - rad);
-    const endY = cy - r * Math.sin(Math.PI - rad);
+    // Calculate end point based on percentage (0% = left, 100% = right)
+    // Angle goes from 180° (left) to 0° (right) as percentage increases
+    const angleRad = Math.PI * (1 - pct); // 180° to 0° in radians
+    const endX = cx + r * Math.cos(angleRad);
+    const endY = cy - r * Math.sin(angleRad);
 
-    const largeArc = angle > 90 ? 1 : 0;
+    // Use large arc flag when angle > 90° (pct > 50%)
+    const largeArc = pct > 0.5 ? 1 : 0;
 
-    return `M ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${endX} ${endY}`;
+    return `M ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
   });
 
   getDefaultConfig(): ProgressWidgetConfig {
