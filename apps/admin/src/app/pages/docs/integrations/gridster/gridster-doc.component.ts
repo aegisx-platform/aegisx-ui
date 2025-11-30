@@ -59,6 +59,31 @@ interface DemoItem extends AxGridsterItemBase {
         <!-- Overview Tab -->
         <mat-tab label="Overview">
           <div class="gridster-doc__tab-content">
+            <!-- Live Demo Links at top -->
+            <section class="gridster-doc__section">
+              <h2>Live Demos</h2>
+              <p>Try out the interactive demos to see Gridster in action.</p>
+
+              <div class="demo-links">
+                <a routerLink="/gridster-demo" class="demo-link-card">
+                  <mat-icon>dashboard</mat-icon>
+                  <div class="demo-link-content">
+                    <h4>Gridster Demo</h4>
+                    <p>Dashboard with draggable widgets</p>
+                  </div>
+                  <mat-icon class="arrow">arrow_forward</mat-icon>
+                </a>
+                <a routerLink="/gridster-poc" class="demo-link-card">
+                  <mat-icon>dashboard_customize</mat-icon>
+                  <div class="demo-link-content">
+                    <h4>Dashboard Builder</h4>
+                    <p>Advanced dashboard with app launcher cards</p>
+                  </div>
+                  <mat-icon class="arrow">arrow_forward</mat-icon>
+                </a>
+              </div>
+            </section>
+
             <section class="gridster-doc__section">
               <h2>Basic Usage</h2>
               <p>
