@@ -13,7 +13,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatDividerModule } from '@angular/material/divider';
-import { CodeBlockComponent } from '../../components/code-block/code-block.component';
+import { CodeTabsComponent } from '../../components/docs/code-tabs/code-tabs.component';
+import { CodeTab } from '../../types/docs.types';
 import {
   AxEnterpriseLayoutComponent,
   AxNavigationItem,
@@ -71,8 +72,8 @@ type ConfigurableWidgetType = 'kpi' | 'progress';
     TableWidgetComponent,
     ListWidgetComponent,
     ProgressWidgetComponent,
-    // Code block
-    CodeBlockComponent,
+    // Code tabs
+    CodeTabsComponent,
   ],
   template: `
     <ax-enterprise-layout
@@ -256,12 +257,8 @@ type ConfigurableWidgetType = 'kpi' | 'progress';
                       }
                     </div>
 
-                    <!-- Code Preview using CodeBlockComponent -->
-                    <ax-code-block
-                      [code]="configCode()"
-                      language="typescript"
-                      label="Configuration Code"
-                    ></ax-code-block>
+                    <!-- Code Preview using CodeTabsComponent -->
+                    <ax-code-tabs [tabs]="configCodeTabs()"></ax-code-tabs>
                   </div>
 
                   <!-- Config Panel (Right) -->
@@ -1050,32 +1047,48 @@ export class WidgetDemoComponent {
     label: '68 GB of 100 GB',
   });
 
-  // Config code output
-  configCode = computed(() => {
+  // Config code tabs output
+  configCodeTabs = computed<CodeTab[]>(() => {
     if (this.selectedWidgetType() === 'kpi') {
-      return `// KPI Widget Configuration
+      return [
+        {
+          label: 'TypeScript',
+          language: 'typescript',
+          code: `// KPI Widget Configuration
 const config: KpiWidgetConfig = ${JSON.stringify(this.kpiConfig(), null, 2)};
 
-const data: KpiWidgetData = ${JSON.stringify(this.kpiData(), null, 2)};
-
-// Usage in template:
-<ax-kpi-widget
+const data: KpiWidgetData = ${JSON.stringify(this.kpiData(), null, 2)};`,
+        },
+        {
+          label: 'HTML',
+          language: 'html',
+          code: `<ax-kpi-widget
   [instanceId]="'my-kpi'"
   [config]="config"
   [initialData]="data"
-></ax-kpi-widget>`;
+></ax-kpi-widget>`,
+        },
+      ];
     } else {
-      return `// Progress Widget Configuration
+      return [
+        {
+          label: 'TypeScript',
+          language: 'typescript',
+          code: `// Progress Widget Configuration
 const config: ProgressWidgetConfig = ${JSON.stringify(this.progressConfig(), null, 2)};
 
-const data: ProgressWidgetData = ${JSON.stringify(this.progressData(), null, 2)};
-
-// Usage in template:
-<ax-progress-widget
+const data: ProgressWidgetData = ${JSON.stringify(this.progressData(), null, 2)};`,
+        },
+        {
+          label: 'HTML',
+          language: 'html',
+          code: `<ax-progress-widget
   [instanceId]="'my-progress'"
   [config]="config"
   [initialData]="data"
-></ax-progress-widget>`;
+></ax-progress-widget>`,
+        },
+      ];
     }
   });
 
