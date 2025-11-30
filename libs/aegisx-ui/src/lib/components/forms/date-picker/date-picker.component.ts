@@ -27,6 +27,13 @@ export type DatePickerLocale = 'en' | 'th';
 export type DatePickerCalendar = 'gregorian' | 'buddhist';
 export type DatePickerMonthFormat = 'full' | 'short';
 export type DatePickerDisplayMode = 'input' | 'inline';
+export type DatePickerMode = 'single' | 'range';
+
+/** Date range value for range mode */
+export interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
 
 interface CalendarDay {
   date: Date;
@@ -36,6 +43,10 @@ interface CalendarDay {
   isSelected: boolean;
   isDisabled: boolean;
   isFocused: boolean;
+  // Range mode properties
+  isRangeStart: boolean;
+  isRangeEnd: boolean;
+  isInRange: boolean;
 }
 
 const THAI_MONTHS = [
@@ -139,11 +150,20 @@ export class AxDatePickerComponent
   @Input() dateFormat?: string; // Custom date format (e.g., 'DD/MM/YYYY', 'MM-DD-YYYY', 'DD MMM YYYY')
   @Input() showActionButtons = false; // Show Today and Clear buttons in calendar footer
   @Input() displayMode: DatePickerDisplayMode = 'input'; // 'input' = dropdown, 'inline' = always visible calendar
+  @Input() mode: DatePickerMode = 'single'; // 'single' = single date, 'range' = date range
 
-  /** Emits when date value changes */
+  /** Emits when date value changes (single mode) */
   @Output() dateChange = new EventEmitter<Date | null>();
 
+  /** Emits when date range changes (range mode) */
+  @Output() rangeChange = new EventEmitter<DateRange>();
+
   value: Date | null = null;
+
+  // Range mode state
+  rangeValue: DateRange = { start: null, end: null };
+  rangeSelectionPhase: 'start' | 'end' = 'start'; // Track which date we're selecting
+  hoverDate: Date | null = null; // For preview highlighting
   isOpen = false;
   focused = false;
   viewMode: 'day' | 'month' | 'year' = 'day';
@@ -220,7 +240,11 @@ export class AxDatePickerComponent
   ngOnInit(): void {
     // For inline mode, initialize the calendar focused date
     if (this.displayMode === 'inline') {
-      this.focusedDate = this.value || new Date();
+      if (this.mode === 'range') {
+        this.focusedDate = this.rangeValue.start || new Date();
+      } else {
+        this.focusedDate = this.value || new Date();
+      }
       this.generateCalendar();
     }
   }
@@ -296,8 +320,22 @@ export class AxDatePickerComponent
   }
 
   get displayValue(): string {
+    // Range mode display
+    if (this.mode === 'range') {
+      return this.displayRangeValue;
+    }
+    // Single mode display
     if (!this.value) return '';
     return this.formatDate(this.value);
+  }
+
+  get displayRangeValue(): string {
+    const { start, end } = this.rangeValue;
+    if (!start && !end) return '';
+    if (start && !end) return `${this.formatDate(start)} - ...`;
+    if (start && end)
+      return `${this.formatDate(start)} - ${this.formatDate(end)}`;
+    return '';
   }
 
   get currentMonthYear(): string {
@@ -344,6 +382,13 @@ export class AxDatePickerComponent
   selectDate(day: CalendarDay): void {
     if (day.isDisabled) return;
 
+    // Range mode selection logic
+    if (this.mode === 'range') {
+      this.selectRangeDate(day);
+      return;
+    }
+
+    // Single mode selection
     this.value = day.date;
     this.onChange(this.value);
     this.onTouched();
@@ -357,6 +402,58 @@ export class AxDatePickerComponent
 
     this.generateCalendar();
     this.cdr.detectChanges(); // Force change detection
+  }
+
+  private selectRangeDate(day: CalendarDay): void {
+    const selectedDate = day.date;
+
+    if (this.rangeSelectionPhase === 'start') {
+      // First click: Set start date
+      this.rangeValue = { start: selectedDate, end: null };
+      this.rangeSelectionPhase = 'end';
+    } else {
+      // Second click: Set end date
+      if (this.rangeValue.start) {
+        // If selected date is before start, swap them
+        if (selectedDate < this.rangeValue.start) {
+          this.rangeValue = { start: selectedDate, end: this.rangeValue.start };
+        } else {
+          this.rangeValue = { ...this.rangeValue, end: selectedDate };
+        }
+      }
+      this.rangeSelectionPhase = 'start';
+
+      // In input mode, close after complete selection
+      if (this.displayMode !== 'inline') {
+        this.isOpen = false;
+        this.focused = false;
+      }
+    }
+
+    // Emit change event
+    this.rangeChange.emit(this.rangeValue);
+    this.onChange(this.rangeValue);
+    this.onTouched();
+
+    this.generateCalendar();
+    this.cdr.detectChanges();
+  }
+
+  /** Called when hovering over a day in range mode for preview */
+  onDayHover(day: CalendarDay): void {
+    if (this.mode !== 'range') return;
+    if (this.rangeSelectionPhase !== 'end') return;
+    if (day.isDisabled) return;
+
+    this.hoverDate = day.date;
+    this.generateCalendar();
+  }
+
+  /** Called when mouse leaves the calendar grid */
+  onCalendarMouseLeave(): void {
+    if (this.mode !== 'range') return;
+    this.hoverDate = null;
+    this.generateCalendar();
   }
 
   previousMonth(): void {
@@ -378,10 +475,17 @@ export class AxDatePickerComponent
   }
 
   clearValue(): void {
-    this.value = null;
-    this.onChange(null);
+    if (this.mode === 'range') {
+      this.rangeValue = { start: null, end: null };
+      this.rangeSelectionPhase = 'start';
+      this.rangeChange.emit(this.rangeValue);
+      this.onChange(this.rangeValue);
+    } else {
+      this.value = null;
+      this.onChange(null);
+      this.dateChange.emit(null);
+    }
     this.onTouched();
-    this.dateChange.emit(null);
     this.generateCalendar();
   }
 
@@ -730,24 +834,67 @@ export class AxDatePickerComponent
 
     const dateOnly = new Date(date);
     dateOnly.setHours(0, 0, 0, 0);
+    const dateTime = dateOnly.getTime();
 
-    const baseDay: CalendarDay = {
+    // Calculate range properties
+    let isRangeStart = false;
+    let isRangeEnd = false;
+    let isInRange = false;
+    let isSelected = false;
+
+    if (this.mode === 'range') {
+      const { start, end } = this.rangeValue;
+      const startTime = start ? new Date(start).setHours(0, 0, 0, 0) : null;
+      const endTime = end ? new Date(end).setHours(0, 0, 0, 0) : null;
+      const hoverTime = this.hoverDate
+        ? new Date(this.hoverDate).setHours(0, 0, 0, 0)
+        : null;
+
+      if (startTime !== null) {
+        isRangeStart = dateTime === startTime;
+
+        if (endTime !== null) {
+          // Full range selected
+          isRangeEnd = dateTime === endTime;
+          isInRange = dateTime > startTime && dateTime < endTime;
+          isSelected = isRangeStart || isRangeEnd;
+        } else if (hoverTime !== null && this.rangeSelectionPhase === 'end') {
+          // Preview mode: hovering while selecting end date
+          if (hoverTime >= startTime) {
+            isRangeEnd = dateTime === hoverTime;
+            isInRange = dateTime > startTime && dateTime < hoverTime;
+          } else {
+            // Hovering before start - swap preview
+            isRangeStart = dateTime === hoverTime;
+            isRangeEnd = dateTime === startTime;
+            isInRange = dateTime > hoverTime && dateTime < startTime;
+          }
+          isSelected = dateTime === startTime;
+        } else {
+          isSelected = isRangeStart;
+        }
+      }
+    } else {
+      // Single mode
+      isSelected = this.value
+        ? dateTime === new Date(this.value).setHours(0, 0, 0, 0)
+        : false;
+    }
+
+    return {
       date: dateOnly,
       day: date.getDate(),
       isCurrentMonth,
-      isToday: dateOnly.getTime() === today.getTime(),
-      isSelected: false,
+      isToday: dateTime === today.getTime(),
+      isSelected,
       isDisabled: this.isDateDisabled(dateOnly),
       isFocused: this.focusedDate
-        ? dateOnly.getTime() === new Date(this.focusedDate).setHours(0, 0, 0, 0)
+        ? dateTime === new Date(this.focusedDate).setHours(0, 0, 0, 0)
         : false,
+      isRangeStart,
+      isRangeEnd,
+      isInRange,
     };
-
-    baseDay.isSelected = this.value
-      ? dateOnly.getTime() === new Date(this.value).setHours(0, 0, 0, 0)
-      : false;
-
-    return baseDay;
   }
 
   private isDateDisabled(date: Date): boolean {
@@ -858,15 +1005,35 @@ export class AxDatePickerComponent
   }
 
   // ControlValueAccessor implementation
-  writeValue(value: Date | null): void {
-    this.value = value;
-
-    if (value) {
-      this.currentMonth = new Date(value.getFullYear(), value.getMonth(), 1);
+  writeValue(value: Date | DateRange | null): void {
+    if (this.mode === 'range') {
+      // Range mode
+      if (value && typeof value === 'object' && 'start' in value) {
+        this.rangeValue = value as DateRange;
+        if (this.rangeValue.start) {
+          this.currentMonth = new Date(
+            this.rangeValue.start.getFullYear(),
+            this.rangeValue.start.getMonth(),
+            1,
+          );
+        }
+      } else {
+        this.rangeValue = { start: null, end: null };
+      }
+    } else {
+      // Single mode
+      this.value = value as Date | null;
+      if (this.value) {
+        this.currentMonth = new Date(
+          this.value.getFullYear(),
+          this.value.getMonth(),
+          1,
+        );
+      }
     }
 
-    // Only regenerate calendar if dropdown is open
-    if (this.isOpen) {
+    // Only regenerate calendar if dropdown is open or inline mode
+    if (this.isOpen || this.displayMode === 'inline') {
       this.generateCalendar();
     }
   }

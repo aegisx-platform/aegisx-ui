@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
-import { AxDatePickerComponent } from '@aegisx/ui';
+import { AxDatePickerComponent, DateRange } from '@aegisx/ui';
 import {
   DocHeaderComponent,
   CodeTabsComponent,
@@ -296,6 +296,65 @@ import { ComponentToken } from '../../../../../../types/docs.types';
 
               <ax-code-tabs [tabs]="inlineModeCode"></ax-code-tabs>
             </section>
+
+            <section class="date-picker-doc__section">
+              <h2>Range Selection Mode</h2>
+              <p>
+                Enable date range selection for booking interfaces and date
+                range filters. Users select a start and end date with visual
+                highlight preview.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                align="start"
+                gap="var(--ax-spacing-xl)"
+              >
+                <div class="date-picker-doc__inline-example">
+                  <h4>Range Selection (Inline)</h4>
+                  <ax-date-picker
+                    displayMode="inline"
+                    mode="range"
+                    (rangeChange)="onRangeChange($event)"
+                  >
+                  </ax-date-picker>
+                  <span class="date-picker-doc__value">
+                    @if (selectedRange.start && selectedRange.end) {
+                      {{ selectedRange.start.toLocaleDateString() }} -
+                      {{ selectedRange.end.toLocaleDateString() }}
+                    } @else if (selectedRange.start) {
+                      {{ selectedRange.start.toLocaleDateString() }} - ...
+                    } @else {
+                      No range selected
+                    }
+                  </span>
+                </div>
+
+                <div class="date-picker-doc__inline-example">
+                  <h4>Range Selection (Input)</h4>
+                  <ax-date-picker
+                    label="Select Date Range"
+                    placeholder="Choose start and end dates"
+                    mode="range"
+                    (rangeChange)="onInputRangeChange($event)"
+                  >
+                  </ax-date-picker>
+                  <span class="date-picker-doc__value">
+                    @if (inputSelectedRange.start && inputSelectedRange.end) {
+                      {{ inputSelectedRange.start.toLocaleDateString() }} -
+                      {{ inputSelectedRange.end.toLocaleDateString() }}
+                    } @else if (inputSelectedRange.start) {
+                      {{ inputSelectedRange.start.toLocaleDateString() }} - ...
+                    } @else {
+                      No range selected
+                    }
+                  </span>
+                </div>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="rangeModeCode"></ax-code-tabs>
+            </section>
           </div>
         </mat-tab>
 
@@ -370,6 +429,149 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     [(ngModel)]="birthday"
                   >
                   </ax-date-picker>
+                </div>
+              </ax-live-preview>
+            </section>
+
+            <section class="date-picker-doc__section">
+              <h2>Hotel Booking (Range Mode)</h2>
+              <p>
+                Use range mode for hotel check-in/check-out date selection with
+                a single picker.
+              </p>
+              <ax-live-preview variant="bordered">
+                <div class="date-picker-doc__form-example">
+                  <ax-date-picker
+                    label="Stay Duration"
+                    placeholder="Select check-in and check-out dates"
+                    mode="range"
+                    [minDate]="today"
+                    [showActionButtons]="true"
+                    (rangeChange)="onHotelBookingChange($event)"
+                  >
+                  </ax-date-picker>
+                  <div class="date-picker-doc__range-info">
+                    @if (hotelBookingRange.start && hotelBookingRange.end) {
+                      <span
+                        >Check-in:
+                        {{ hotelBookingRange.start.toLocaleDateString() }}</span
+                      >
+                      <span
+                        >Check-out:
+                        {{ hotelBookingRange.end.toLocaleDateString() }}</span
+                      >
+                      <span class="date-picker-doc__nights"
+                        >{{ calculateNights(hotelBookingRange) }} nights</span
+                      >
+                    }
+                  </div>
+                </div>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="hotelBookingCode"></ax-code-tabs>
+            </section>
+
+            <section class="date-picker-doc__section">
+              <h2>Leave Request (Range Mode)</h2>
+              <p>
+                Employee leave request with inline calendar for easy viewing.
+              </p>
+              <ax-live-preview variant="bordered">
+                <div class="date-picker-doc__leave-example">
+                  <div class="date-picker-doc__leave-calendar">
+                    <ax-date-picker
+                      displayMode="inline"
+                      mode="range"
+                      [minDate]="today"
+                      (rangeChange)="onLeaveRequestChange($event)"
+                    >
+                    </ax-date-picker>
+                  </div>
+                  <div class="date-picker-doc__leave-summary">
+                    <h4>Leave Request Summary</h4>
+                    @if (leaveRequestRange.start && leaveRequestRange.end) {
+                      <p>
+                        <strong>From:</strong>
+                        {{
+                          leaveRequestRange.start.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        }}
+                      </p>
+                      <p>
+                        <strong>To:</strong>
+                        {{
+                          leaveRequestRange.end.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        }}
+                      </p>
+                      <p class="date-picker-doc__days-count">
+                        <strong>Total Days:</strong>
+                        {{ calculateDays(leaveRequestRange) }} days
+                      </p>
+                    } @else {
+                      <p class="date-picker-doc__placeholder-text">
+                        Select start and end dates for your leave request
+                      </p>
+                    }
+                  </div>
+                </div>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="leaveRequestCode"></ax-code-tabs>
+            </section>
+
+            <section class="date-picker-doc__section">
+              <h2>Travel Dates (Thai Range Mode)</h2>
+              <p>
+                Thai locale range picker for travel booking with Buddhist
+                calendar.
+              </p>
+              <ax-live-preview variant="bordered">
+                <div class="date-picker-doc__form-example">
+                  <ax-date-picker
+                    label="วันที่เดินทาง"
+                    placeholder="เลือกวันไป - วันกลับ"
+                    mode="range"
+                    locale="th"
+                    calendar="buddhist"
+                    [minDate]="today"
+                    [firstDayOfWeek]="1"
+                    (rangeChange)="onTravelDatesChange($event)"
+                  >
+                  </ax-date-picker>
+                  @if (travelDatesRange.start && travelDatesRange.end) {
+                    <div class="date-picker-doc__range-info">
+                      <span
+                        >วันไป:
+                        {{
+                          travelDatesRange.start.toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        }}</span
+                      >
+                      <span
+                        >วันกลับ:
+                        {{
+                          travelDatesRange.end.toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        }}</span
+                      >
+                      <span class="date-picker-doc__nights"
+                        >{{ calculateDays(travelDatesRange) }} วัน</span
+                      >
+                    </div>
+                  }
                 </div>
               </ax-live-preview>
             </section>
@@ -493,6 +695,24 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                       <td><code>'input' | 'inline'</code></td>
                       <td><code>'input'</code></td>
                       <td>Display mode: dropdown or inline calendar</td>
+                    </tr>
+                    <tr>
+                      <td><code>mode</code></td>
+                      <td><code>'single' | 'range'</code></td>
+                      <td><code>'single'</code></td>
+                      <td>Selection mode: single date or date range</td>
+                    </tr>
+                    <tr>
+                      <td><code>rangeChange</code></td>
+                      <td><code>EventEmitter&lt;DateRange&gt;</code></td>
+                      <td>-</td>
+                      <td>Emits when date range changes (range mode only)</td>
+                    </tr>
+                    <tr>
+                      <td><code>dateChange</code></td>
+                      <td><code>EventEmitter&lt;Date | null&gt;</code></td>
+                      <td>-</td>
+                      <td>Emits when single date changes</td>
                     </tr>
                   </tbody>
                 </table>
@@ -818,6 +1038,81 @@ import { ComponentToken } from '../../../../../../types/docs.types';
           color: var(--ax-error-emphasis);
         }
       }
+
+      /* Range Examples */
+      .date-picker-doc__range-info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-xs, 0.25rem);
+        padding: var(--ax-spacing-md, 0.75rem);
+        background: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-md, 0.5rem);
+        font-size: var(--ax-text-sm, 0.875rem);
+
+        span {
+          color: var(--ax-text-primary);
+        }
+      }
+
+      .date-picker-doc__nights {
+        font-weight: 600;
+        color: var(--ax-brand-default) !important;
+        font-size: var(--ax-text-base, 1rem);
+      }
+
+      .date-picker-doc__leave-example {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--ax-spacing-xl, 1.5rem);
+        align-items: flex-start;
+      }
+
+      .date-picker-doc__leave-calendar {
+        flex: 0 0 auto;
+      }
+
+      .date-picker-doc__leave-summary {
+        flex: 1;
+        min-width: 280px;
+        padding: var(--ax-spacing-lg, 1rem);
+        background: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-lg, 0.75rem);
+        border: 1px solid var(--ax-border-default);
+
+        h4 {
+          font-size: var(--ax-text-base, 1rem);
+          font-weight: 600;
+          color: var(--ax-text-heading);
+          margin: 0 0 var(--ax-spacing-md, 0.75rem) 0;
+          padding-bottom: var(--ax-spacing-sm, 0.5rem);
+          border-bottom: 1px solid var(--ax-border-default);
+        }
+
+        p {
+          font-size: var(--ax-text-sm, 0.875rem);
+          color: var(--ax-text-primary);
+          margin: 0 0 var(--ax-spacing-sm, 0.5rem) 0;
+          line-height: 1.5;
+
+          strong {
+            color: var(--ax-text-heading);
+          }
+        }
+      }
+
+      .date-picker-doc__days-count {
+        padding-top: var(--ax-spacing-sm, 0.5rem);
+        margin-top: var(--ax-spacing-sm, 0.5rem);
+        border-top: 1px solid var(--ax-border-default);
+        font-size: var(--ax-text-base, 1rem) !important;
+        font-weight: 500;
+        color: var(--ax-brand-default) !important;
+      }
+
+      .date-picker-doc__placeholder-text {
+        color: var(--ax-text-secondary) !important;
+        font-style: italic;
+      }
     `,
   ],
 })
@@ -839,6 +1134,15 @@ export class DatePickerDocComponent {
   birthday: Date | null = null;
   inlineDate: Date | null = null;
   inlineThaiDate: Date | null = null;
+
+  // Range mode
+  selectedRange: DateRange = { start: null, end: null };
+  inputSelectedRange: DateRange = { start: null, end: null };
+
+  // Range mode examples
+  hotelBookingRange: DateRange = { start: null, end: null };
+  leaveRequestRange: DateRange = { start: null, end: null };
+  travelDatesRange: DateRange = { start: null, end: null };
 
   // Date references
   today = new Date();
@@ -921,6 +1225,203 @@ export class InlineCalendarComponent {
 }`,
     },
   ];
+
+  rangeModeCode = [
+    {
+      label: 'HTML',
+      language: 'html' as const,
+      code: `<!-- Inline Range Picker -->
+<ax-date-picker
+  displayMode="inline"
+  mode="range"
+  (rangeChange)="onRangeChange($event)">
+</ax-date-picker>
+
+<!-- Input Range Picker -->
+<ax-date-picker
+  label="Select Date Range"
+  placeholder="Choose start and end dates"
+  mode="range"
+  (rangeChange)="onRangeChange($event)">
+</ax-date-picker>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript' as const,
+      code: `import { Component } from '@angular/core';
+import { AxDatePickerComponent, DateRange } from '@aegisx/ui';
+
+@Component({
+  selector: 'app-range-calendar',
+  standalone: true,
+  imports: [AxDatePickerComponent],
+  template: \`
+    <ax-date-picker
+      displayMode="inline"
+      mode="range"
+      (rangeChange)="onRangeChange($event)">
+    </ax-date-picker>
+  \`,
+})
+export class RangeCalendarComponent {
+  selectedRange: DateRange = { start: null, end: null };
+
+  onRangeChange(range: DateRange): void {
+    this.selectedRange = range;
+    console.log('Range changed:', range);
+  }
+}`,
+    },
+  ];
+
+  hotelBookingCode = [
+    {
+      label: 'HTML',
+      language: 'html' as const,
+      code: `<ax-date-picker
+  label="Stay Duration"
+  placeholder="Select check-in and check-out dates"
+  mode="range"
+  [minDate]="today"
+  [showActionButtons]="true"
+  (rangeChange)="onHotelBookingChange($event)">
+</ax-date-picker>
+
+@if (hotelBookingRange.start && hotelBookingRange.end) {
+  <div class="booking-summary">
+    <span>Check-in: {{ hotelBookingRange.start.toLocaleDateString() }}</span>
+    <span>Check-out: {{ hotelBookingRange.end.toLocaleDateString() }}</span>
+    <span>{{ calculateNights(hotelBookingRange) }} nights</span>
+  </div>
+}`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript' as const,
+      code: `import { Component } from '@angular/core';
+import { AxDatePickerComponent, DateRange } from '@aegisx/ui';
+
+@Component({
+  selector: 'app-hotel-booking',
+  standalone: true,
+  imports: [AxDatePickerComponent],
+})
+export class HotelBookingComponent {
+  today = new Date();
+  hotelBookingRange: DateRange = { start: null, end: null };
+
+  onHotelBookingChange(range: DateRange): void {
+    this.hotelBookingRange = range;
+  }
+
+  calculateNights(range: DateRange): number {
+    if (!range.start || !range.end) return 0;
+    const diffTime = range.end.getTime() - range.start.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+}`,
+    },
+  ];
+
+  leaveRequestCode = [
+    {
+      label: 'HTML',
+      language: 'html' as const,
+      code: `<div class="leave-request-form">
+  <div class="calendar-section">
+    <ax-date-picker
+      displayMode="inline"
+      mode="range"
+      [minDate]="today"
+      (rangeChange)="onLeaveRequestChange($event)">
+    </ax-date-picker>
+  </div>
+
+  <div class="summary-section">
+    <h4>Leave Request Summary</h4>
+    @if (leaveRequestRange.start && leaveRequestRange.end) {
+      <p>
+        <strong>From:</strong>
+        {{ leaveRequestRange.start.toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        }) }}
+      </p>
+      <p>
+        <strong>To:</strong>
+        {{ leaveRequestRange.end.toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        }) }}
+      </p>
+      <p><strong>Total Days:</strong> {{ calculateDays(leaveRequestRange) }}</p>
+    } @else {
+      <p>Select start and end dates for your leave request</p>
+    }
+  </div>
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      language: 'typescript' as const,
+      code: `import { Component } from '@angular/core';
+import { AxDatePickerComponent, DateRange } from '@aegisx/ui';
+
+@Component({
+  selector: 'app-leave-request',
+  standalone: true,
+  imports: [AxDatePickerComponent],
+})
+export class LeaveRequestComponent {
+  today = new Date();
+  leaveRequestRange: DateRange = { start: null, end: null };
+
+  onLeaveRequestChange(range: DateRange): void {
+    this.leaveRequestRange = range;
+  }
+
+  // Calculate total days (inclusive)
+  calculateDays(range: DateRange): number {
+    if (!range.start || !range.end) return 0;
+    const diffTime = range.end.getTime() - range.start.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  }
+}`,
+    },
+  ];
+
+  // Event handlers
+  onRangeChange(range: DateRange): void {
+    this.selectedRange = range;
+  }
+
+  onInputRangeChange(range: DateRange): void {
+    this.inputSelectedRange = range;
+  }
+
+  // Range example event handlers
+  onHotelBookingChange(range: DateRange): void {
+    this.hotelBookingRange = range;
+  }
+
+  onLeaveRequestChange(range: DateRange): void {
+    this.leaveRequestRange = range;
+  }
+
+  onTravelDatesChange(range: DateRange): void {
+    this.travelDatesRange = range;
+  }
+
+  // Helper methods
+  calculateNights(range: DateRange): number {
+    if (!range.start || !range.end) return 0;
+    const diffTime = range.end.getTime() - range.start.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  calculateDays(range: DateRange): number {
+    if (!range.start || !range.end) return 0;
+    const diffTime = range.end.getTime() - range.start.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  }
 
   datePickerTokens: ComponentToken[] = [
     {

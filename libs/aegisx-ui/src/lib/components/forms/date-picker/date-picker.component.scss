@@ -371,6 +371,93 @@
   }
 }
 
+// Range Mode Styles - Continuous highlight without gaps
+.ax-date-picker-day-range-start,
+.ax-date-picker-day-range-end,
+.ax-date-picker-day-in-range {
+  position: relative;
+  z-index: 1;
+
+  // Background layer that extends to cover grid gap
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+}
+
+.ax-date-picker-day-range-start {
+  background-color: var(--ax-brand-default) !important;
+  color: white !important;
+  font-weight: 600;
+  border-radius: 50%;
+
+  &::before {
+    left: 50%;
+    right: -2px; // Extend to cover half gap
+    background-color: var(--ax-brand-subtle, rgba(59, 130, 246, 0.15));
+  }
+
+  &.ax-date-picker-day-today::after {
+    background-color: white;
+  }
+}
+
+.ax-date-picker-day-range-end {
+  background-color: var(--ax-brand-default) !important;
+  color: white !important;
+  font-weight: 600;
+  border-radius: 50%;
+
+  &::before {
+    left: -2px; // Extend to cover half gap
+    right: 50%;
+    background-color: var(--ax-brand-subtle, rgba(59, 130, 246, 0.15));
+  }
+
+  &.ax-date-picker-day-today::after {
+    background-color: white;
+  }
+}
+
+// When start and end are the same date - no connector background
+.ax-date-picker-day-range-start.ax-date-picker-day-range-end {
+  border-radius: 50%;
+
+  &::before {
+    display: none;
+  }
+}
+
+.ax-date-picker-day-in-range {
+  background-color: var(--ax-brand-subtle, rgba(59, 130, 246, 0.15)) !important;
+  border-radius: 0;
+  color: var(--ax-text-primary);
+
+  &::before {
+    left: -2px;
+    right: -2px;
+    background-color: var(--ax-brand-subtle, rgba(59, 130, 246, 0.15));
+  }
+
+  &:hover {
+    background-color: var(
+      --ax-brand-muted,
+      rgba(59, 130, 246, 0.25)
+    ) !important;
+
+    &::before {
+      background-color: var(--ax-brand-muted, rgba(59, 130, 246, 0.25));
+    }
+  }
+
+  &.ax-date-picker-day-today {
+    color: var(--ax-brand-default);
+  }
+}
+
 // Message
 .ax-date-picker-message {
   font-size: var(--ax-font-size-sm);
