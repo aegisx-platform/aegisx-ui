@@ -14,6 +14,9 @@ export * from './feedback';
 // Navigation Module
 export * from './navigation';
 
+// Layout Module
+export * from './layout';
+
 // =============================================================================
 // EXISTING COMPONENTS (Legacy - kept for backward compatibility)
 // =============================================================================
@@ -50,3 +53,6 @@ export * from './launcher';
 
 // Calendar Component (FullCalendar integration)
 export * from './calendar';
+
+// Gridster Component (Draggable Grid Layout)
+export * from './gridster';
