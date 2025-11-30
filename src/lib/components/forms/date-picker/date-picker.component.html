@@ -1,4 +1,7 @@
-<div class="ax-date-picker-container">
+<div
+  class="ax-date-picker-container"
+  [class.ax-date-picker-container-inline]="displayMode === 'inline'"
+>
   <!-- Label -->
   @if (label) {
     <label class="ax-date-picker-label">
@@ -9,81 +12,84 @@
     </label>
   }
 
-  <!-- Input Wrapper -->
-  <div
-    [class]="wrapperClasses"
-    (click)="toggleDropdown()"
-    (keydown)="onInputKeydown($event)"
-    tabindex="0"
-    role="combobox"
-    [attr.aria-expanded]="isOpen"
-    aria-haspopup="dialog"
-    aria-controls="datepicker-dropdown"
-  >
-    <!-- Display Value -->
-    <div class="ax-date-picker-display">
-      @if (displayValue) {
-        <span class="ax-date-picker-value">{{ displayValue }}</span>
-      } @else {
-        <span class="ax-date-picker-placeholder">{{ placeholder }}</span>
-      }
-    </div>
+  <!-- Input Wrapper (only shown in 'input' mode) -->
+  @if (displayMode === 'input') {
+    <div
+      [class]="wrapperClasses"
+      (click)="toggleDropdown()"
+      (keydown)="onInputKeydown($event)"
+      tabindex="0"
+      role="combobox"
+      [attr.aria-expanded]="isOpen"
+      aria-haspopup="dialog"
+      aria-controls="datepicker-dropdown"
+    >
+      <!-- Display Value -->
+      <div class="ax-date-picker-display">
+        @if (displayValue) {
+          <span class="ax-date-picker-value">{{ displayValue }}</span>
+        } @else {
+          <span class="ax-date-picker-placeholder">{{ placeholder }}</span>
+        }
+      </div>
 
-    <!-- Icons -->
-    @if (!readonly) {
-      <div class="ax-date-picker-icons">
-        <!-- Clear Button -->
-        @if (displayValue && !disabled) {
-          <button
-            type="button"
-            class="ax-date-picker-clear"
-            (click)="clearValue(); $event.stopPropagation()"
-            tabindex="-1"
-            aria-label="Clear date"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
+      <!-- Icons -->
+      @if (!readonly) {
+        <div class="ax-date-picker-icons">
+          <!-- Clear Button -->
+          @if (displayValue && !disabled) {
+            <button
+              type="button"
+              class="ax-date-picker-clear"
+              (click)="clearValue(); $event.stopPropagation()"
+              tabindex="-1"
+              aria-label="Clear date"
             >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 4L4 12M4 4L12 12"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          }
+
+          <!-- Calendar Icon -->
+          <div class="ax-date-picker-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path
-                d="M12 4L4 12M4 4L12 12"
+                d="M6 2V4M14 2V4M3 8H17M5 4H15C16.1046 4 17 4.89543 17 6V16C17 17.1046 16.1046 18 15 18H5C3.89543 18 3 17.1046 3 16V6C3 4.89543 3.89543 4 5 4Z"
                 stroke="currentColor"
-                stroke-width="2"
+                stroke-width="1.5"
                 stroke-linecap="round"
+                stroke-linejoin="round"
               />
             </svg>
-          </button>
-        }
-
-        <!-- Calendar Icon -->
-        <div class="ax-date-picker-icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path
-              d="M6 2V4M14 2V4M3 8H17M5 4H15C16.1046 4 17 4.89543 17 6V16C17 17.1046 16.1046 18 15 18H5C3.89543 18 3 17.1046 3 16V6C3 4.89543 3.89543 4 5 4Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          </div>
         </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 
-  <!-- Calendar Dropdown -->
-  @if (isOpen) {
+  <!-- Calendar (Dropdown in 'input' mode, Always visible in 'inline' mode) -->
+  @if (isOpen || displayMode === 'inline') {
     <div
       id="datepicker-dropdown"
       class="ax-date-picker-dropdown"
+      [class.ax-date-picker-dropdown-inline]="displayMode === 'inline'"
       (keydown)="onCalendarKeydown($event)"
-      role="dialog"
-      aria-modal="true"
+      [attr.role]="displayMode === 'inline' ? 'region' : 'dialog'"
+      [attr.aria-modal]="displayMode === 'inline' ? null : true"
       [attr.aria-label]="'Choose date' + (label ? ' for ' + label : '')"
-      tabindex="-1"
+      [attr.tabindex]="displayMode === 'inline' ? 0 : -1"
     >
       <!-- Header -->
       <div

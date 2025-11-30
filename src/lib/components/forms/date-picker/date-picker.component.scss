@@ -8,6 +8,11 @@
   min-width: 0; // Allow flex shrinking
 }
 
+// Inline mode container - no positioning for dropdown
+.ax-date-picker-container-inline {
+  width: fit-content;
+}
+
 // Label
 .ax-date-picker-label {
   display: block;
@@ -18,7 +23,7 @@
 }
 
 .ax-date-picker-required {
-  color: var(--ax-error);
+  color: var(--ax-error-default);
   margin-left: var(--ax-spacing-3xs);
 }
 
@@ -38,21 +43,21 @@
   transition: all 0.2s ease;
 
   &:hover:not(.ax-date-picker-wrapper-disabled) {
-    border-color: var(--ax-primary-light);
+    border-color: var(--ax-brand-100);
   }
 }
 
 .ax-date-picker-wrapper-focused {
-  border-color: var(--ax-primary);
-  outline: 2px solid var(--ax-primary);
+  border-color: var(--ax-brand-default);
+  outline: 2px solid var(--ax-brand-default);
   outline-offset: -1px;
 }
 
 .ax-date-picker-wrapper-error {
-  border-color: var(--ax-error);
+  border-color: var(--ax-error-default);
 
   &.ax-date-picker-wrapper-focused {
-    outline-color: var(--ax-error);
+    outline-color: var(--ax-error-default);
   }
 }
 
@@ -155,7 +160,7 @@
   }
 
   &:hover {
-    color: var(--ax-error);
+    color: var(--ax-error-default);
   }
 }
 
@@ -180,6 +185,15 @@
   border-radius: var(--ax-radius-md);
   box-shadow: var(--ax-shadow-lg);
   animation: slideDown 0.2s ease-out;
+}
+
+// Inline mode dropdown - static positioning
+.ax-date-picker-dropdown-inline {
+  position: static;
+  z-index: auto;
+  animation: none;
+  box-shadow: none;
+  border: 1px solid var(--ax-border-default);
 }
 
 @keyframes slideDown {
@@ -226,13 +240,13 @@
   }
 
   &:hover {
-    background-color: var(--ax-gray-100);
-    color: var(--ax-primary);
+    background-color: var(--ax-background-muted);
+    color: var(--ax-brand-default);
     border-color: var(--ax-border-color);
   }
 
   &:active {
-    background-color: var(--ax-gray-200);
+    background-color: var(--ax-border-default);
   }
 }
 
@@ -250,7 +264,7 @@
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--ax-primary);
+    color: var(--ax-brand-default);
   }
 }
 
@@ -310,7 +324,7 @@
 
 .ax-date-picker-day-today {
   font-weight: 700;
-  color: var(--ax-primary);
+  color: var(--ax-brand-default);
   position: relative;
 
   &::after {
@@ -322,26 +336,26 @@
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: var(--ax-primary);
+    background-color: var(--ax-brand-default);
   }
 }
 
 .ax-date-picker-day-selected {
-  background-color: var(--ax-primary) !important;
-  color: var(--ax-white) !important;
+  background-color: var(--ax-brand-default) !important;
+  color: white !important;
   font-weight: 600;
 
   &:hover {
-    background-color: var(--ax-primary-dark) !important;
+    background-color: var(--ax-brand-emphasis) !important;
   }
 
   &.ax-date-picker-day-today::after {
-    background-color: var(--ax-white);
+    background-color: white;
   }
 }
 
 .ax-date-picker-day-focused {
-  outline: 2px solid var(--ax-primary);
+  outline: 2px solid var(--ax-brand-default);
   outline-offset: -2px;
   z-index: 1;
   position: relative;
@@ -364,7 +378,7 @@
   line-height: var(--ax-line-height-normal);
 
   .ax-date-picker-wrapper-error ~ & {
-    color: var(--ax-error);
+    color: var(--ax-error-default);
   }
 }
 
@@ -397,12 +411,12 @@
 }
 
 .ax-date-picker-month-selected {
-  background-color: var(--ax-primary) !important;
-  color: var(--ax-white) !important;
+  background-color: var(--ax-brand-default) !important;
+  color: white !important;
   font-weight: 600;
 
   &:hover {
-    background-color: var(--ax-primary-dark) !important;
+    background-color: var(--ax-brand-emphasis) !important;
   }
 }
 
@@ -435,12 +449,12 @@
 }
 
 .ax-date-picker-year-selected {
-  background-color: var(--ax-primary) !important;
-  color: var(--ax-white) !important;
+  background-color: var(--ax-brand-default) !important;
+  color: white !important;
   font-weight: 600;
 
   &:hover {
-    background-color: var(--ax-primary-dark) !important;
+    background-color: var(--ax-brand-emphasis) !important;
   }
 }
 
@@ -464,21 +478,21 @@
   transition: all 0.2s ease;
 
   &:focus {
-    outline: 2px solid var(--ax-primary);
+    outline: 2px solid var(--ax-brand-default);
     outline-offset: 2px;
   }
 }
 
 .ax-date-picker-action-btn-primary {
-  background-color: var(--ax-primary);
-  color: var(--ax-white);
+  background-color: var(--ax-brand-default);
+  color: white;
 
   &:hover {
-    background-color: var(--ax-primary-dark);
+    background-color: var(--ax-brand-emphasis);
   }
 
   &:active {
-    background-color: var(--ax-primary-dark);
+    background-color: var(--ax-brand-emphasis);
   }
 }
 
