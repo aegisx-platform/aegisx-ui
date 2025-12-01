@@ -300,6 +300,13 @@ export const appRoutes: Route[] = [
         './pages/docs/components/aegisx/feedback/error-state/error-state-doc.component'
       ).then((m) => m.ErrorStateDocComponent),
   },
+  {
+    path: 'docs/components/aegisx/feedback/splash-screen',
+    loadComponent: () =>
+      import(
+        './pages/docs/components/aegisx/feedback/splash-screen/splash-screen-doc.component'
+      ).then((m) => m.SplashScreenDocComponent),
+  },
 
   // --- Components > AegisX > Navigation ---
   {

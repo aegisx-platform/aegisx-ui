@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,9 @@ import {
   AxLayoutSwitcherComponent,
   LayoutType,
   AxDocsLayoutComponent,
+  AxSplashScreenComponent,
+  SplashScreenService,
+  SplashScreenStage,
 } from '@aegisx/ui';
 import { TremorThemeSwitcherComponent } from './components/tremor-theme-switcher.component';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -24,13 +27,15 @@ import { filter, map, startWith } from 'rxjs/operators';
     AxDocsLayoutComponent,
     TremorThemeSwitcherComponent,
     AxLayoutSwitcherComponent,
+    AxSplashScreenComponent,
   ],
   selector: 'ax-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   private readonly router = inject(Router);
+  private readonly splashService = inject(SplashScreenService);
 
   protected title = 'AegisX Design System';
   protected appName = 'AegisX Admin';
@@ -376,6 +381,13 @@ export class App {
               icon: 'error_outline',
               link: '/docs/components/aegisx/feedback/error-state',
             },
+            {
+              id: 'splash-screen',
+              title: 'Splash Screen',
+              type: 'item',
+              icon: 'rocket_launch',
+              link: '/docs/components/aegisx/feedback/splash-screen',
+            },
           ],
         },
         // Navigation
@@ -718,6 +730,56 @@ export class App {
     // This will be implemented when we create Enterprise and Empty layout components
   }
 
+  ngOnInit(): void {
+    this.initializeSplashScreen();
+  }
+
+  private async initializeSplashScreen(): Promise<void> {
+    // Configure and show splash screen
+    this.splashService.show({
+      appName: this.title,
+      tagline: 'Enterprise Angular UI Framework',
+      version: this.appVersion,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      minDisplayTime: 1500,
+    });
+
+    // Define loading stages
+    const stages: SplashScreenStage[] = [
+      {
+        id: 'config',
+        label: 'โหลดการตั้งค่า',
+        icon: 'settings',
+        status: 'pending',
+      },
+      { id: 'theme', label: 'เตรียมธีม', icon: 'palette', status: 'pending' },
+      {
+        id: 'components',
+        label: 'โหลด Components',
+        icon: 'widgets',
+        status: 'pending',
+      },
+      { id: 'ui', label: 'เตรียม UI', icon: 'dashboard', status: 'pending' },
+    ];
+
+    this.splashService.setStages(stages);
+
+    // Run initialization stages
+    await this.splashService.runStages([
+      { id: 'config', handler: () => this.delay(400) },
+      { id: 'theme', handler: () => this.delay(300) },
+      { id: 'components', handler: () => this.delay(500) },
+      { id: 'ui', handler: () => this.delay(300) },
+    ]);
+
+    // Hide splash screen
+    await this.splashService.hide();
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   // Documentation navigation for Shadcn/ui-style sidebar
   docsNavigation: AxNavigationItem[] = [
     {
@@ -952,6 +1014,11 @@ export class App {
               id: 'error-state',
               title: 'Error State',
               link: '/docs/components/aegisx/feedback/error-state',
+            },
+            {
+              id: 'splash-screen',
+              title: 'Splash Screen',
+              link: '/docs/components/aegisx/feedback/splash-screen',
             },
           ],
         },
