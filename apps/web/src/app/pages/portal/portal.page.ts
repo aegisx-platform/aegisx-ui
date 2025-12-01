@@ -18,6 +18,7 @@ import {
   EnterprisePresetTheme,
 } from '@aegisx/ui';
 import { AuthService } from '../../core/auth';
+import { MultiAppService } from '../../shared/multi-app';
 import {
   PORTAL_APPS,
   PORTAL_CATEGORIES,
@@ -151,6 +152,7 @@ import {
 export class PortalPage implements OnInit {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly multiAppService = inject(MultiAppService);
 
   // Configuration
   readonly appTheme: EnterprisePresetTheme = 'default';
@@ -159,9 +161,15 @@ export class PortalPage implements OnInit {
   readonly currentDate = new Date();
 
   // Apps with layout positions applied
+  // Combines static PORTAL_APPS with dynamic registered apps from MultiAppService
   private readonly _apps = signal<LauncherApp[]>(
     this.applyFeaturedLayout(PORTAL_APPS),
   );
+
+  // Apps registered with MultiAppService (converted to LauncherApp format)
+  readonly registeredApps = computed(() => {
+    return this.multiAppService.getAppsAsLauncherFormat();
+  });
 
   // User context for RBAC
   readonly userContext = computed<LauncherUserContext>(() => {

@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { AxNavigationItem } from '@aegisx/ui';
+import { AxNavigationItem, LauncherApp, LauncherColor } from '@aegisx/ui';
 import {
   AppConfig,
   SubAppConfig,
@@ -271,5 +271,77 @@ export class MultiAppService {
 
       return true;
     });
+  }
+
+  /**
+   * Convert AppConfig to LauncherApp format for Portal
+   *
+   * Maps internal app configuration to the LauncherApp interface
+   * required by ax-launcher component.
+   */
+  convertToLauncherApp(app: AppConfig, order: number = 0): LauncherApp {
+    // Map theme to LauncherColor
+    const themeColorMap: Record<string, LauncherColor> = {
+      default: 'neutral',
+      inventory: 'blue',
+      system: 'rose',
+      cyan: 'cyan',
+      green: 'mint',
+    };
+
+    const defaultSubApp =
+      app.subApps.find((s) => s.isDefault) || app.subApps[0];
+    const color: LauncherColor =
+      themeColorMap[app.theme as string] || 'neutral';
+
+    return {
+      id: app.id,
+      name: app.name,
+      description: app.description || '',
+      icon: defaultSubApp?.icon || 'apps',
+      route: app.defaultRoute,
+      color,
+      status: 'active',
+      enabled: true,
+      order,
+      permission: app.roles?.length
+        ? {
+            viewRoles: app.roles,
+            viewPermissions: app.permissions || [],
+          }
+        : undefined,
+    };
+  }
+
+  /**
+   * Get all registered apps as LauncherApp format
+   *
+   * Use this method in Portal to get apps from MultiAppService
+   * in a format compatible with ax-launcher component.
+   *
+   * @example
+   * ```typescript
+   * const launcherApps = multiAppService.getAppsAsLauncherFormat();
+   * ```
+   */
+  getAppsAsLauncherFormat(): LauncherApp[] {
+    const registry = this._registry();
+    return Array.from(registry.values())
+      .filter((entry) => entry.enabled)
+      .sort((a, b) => a.order - b.order)
+      .map((entry) => this.convertToLauncherApp(entry.config, entry.order));
+  }
+
+  /**
+   * Get apps as LauncherApp format filtered by roles/permissions
+   */
+  getAppsAsLauncherFormatFiltered(
+    userRoles: string[] = [],
+    userPermissions: string[] = [],
+  ): LauncherApp[] {
+    const filteredApps = this.getAppsForLauncher(userRoles, userPermissions);
+    return filteredApps.map((app, index) =>
+      this.convertToLauncherApp(app, index),
+    );
   }
 }
