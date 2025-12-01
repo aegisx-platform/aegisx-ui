@@ -77,11 +77,11 @@
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--ax-primary);
+    color: var(--ax-brand-default);
   }
 
   &:focus {
-    outline: 2px solid var(--ax-primary);
+    outline: 2px solid var(--ax-brand-default);
     outline-offset: 2px;
     border-radius: var(--ax-radius-sm);
   }

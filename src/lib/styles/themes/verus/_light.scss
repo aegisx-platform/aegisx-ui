@@ -27,6 +27,7 @@
   --ax-background-subtle: #{$verus-gray-100};
   --ax-background-muted: #{$verus-gray-200};
   --ax-background-emphasis: #{$verus-gray-300};
+  --ax-background-page: #{$verus-gray-100}; // Page/app background
   --ax-white: #ffffff;
 
   // ===========================================
@@ -37,6 +38,7 @@
   --ax-text-secondary: #{$verus-gray-600};
   --ax-text-subtle: #{$verus-gray-500};
   --ax-text-disabled: #{$verus-gray-400};
+  --ax-text-strong: #{$verus-black};
   --ax-text-inverse: #ffffff;
 
   // ===========================================

@@ -403,6 +403,11 @@ export class AxFileUploadComponent implements ControlValueAccessor {
   @Input() hint?: string;
 
   /**
+   * Accessible label for the file upload area
+   */
+  @Input() label?: string;
+
+  /**
    * Disabled state
    */
   @Input() disabled = false;

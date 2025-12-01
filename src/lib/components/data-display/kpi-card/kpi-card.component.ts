@@ -6,7 +6,9 @@ export type KpiCardVariant =
   | 'badge'
   | 'compact'
   | 'accent'
-  | 'visual-indicator';
+  | 'visual-indicator'
+  | 'progress'
+  | 'segmented';
 export type KpiCardSize = 'sm' | 'md' | 'lg';
 export type KpiCardTrend = 'up' | 'down' | 'neutral';
 export type KpiCardBadgeType =
@@ -128,6 +130,30 @@ export class AxKpiCardComponent {
 
   /** Supplementary text (for visual-indicator variant, e.g., "450/752") */
   @Input() supplementary = '';
+
+  // Progress variant properties
+  /** Progress percentage (0-100) for progress variant */
+  @Input() progress = 0;
+
+  /** Progress color */
+  @Input() progressColor: KpiCardAccentColor = 'info';
+
+  /** Progress label (e.g., "996 of 10,000") */
+  @Input() progressLabel = '';
+
+  // Segmented progress variant properties
+  /** Segments for segmented progress variant */
+  @Input() segments: { value: number; color: string; label?: string }[] = [];
+
+  // Action link properties
+  /** Action link text */
+  @Input() actionText = '';
+
+  /** Action link href */
+  @Input() actionHref = '';
+
+  /** Show divider above footer */
+  @Input() showDivider = false;
 
   get cardClasses(): string {
     const classes = ['ax-kpi-card'];

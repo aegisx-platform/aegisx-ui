@@ -87,7 +87,12 @@ export interface AegisxUIConfig {
   };
 }
 
-export type AegisxLayoutType = 'empty' | 'classic' | 'compact' | 'enterprise';
+export type AegisxLayoutType =
+  | 'empty'
+  | 'classic'
+  | 'compact'
+  | 'enterprise'
+  | 'docs';
 
 /**
  * Default AegisX configuration

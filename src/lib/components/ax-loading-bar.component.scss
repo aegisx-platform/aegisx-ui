@@ -45,23 +45,23 @@
   border-radius: 0 2px 2px 0;
 
   &.ax-loading-bar-color-primary {
-    background-color: var(--ax-primary);
+    background-color: var(--ax-brand-default);
   }
 
   &.ax-loading-bar-color-success {
-    background-color: var(--ax-success);
+    background-color: var(--ax-success-default);
   }
 
   &.ax-loading-bar-color-warning {
-    background-color: var(--ax-warning);
+    background-color: var(--ax-warning-default);
   }
 
   &.ax-loading-bar-color-error {
-    background-color: var(--ax-error);
+    background-color: var(--ax-error-default);
   }
 
   &.ax-loading-bar-color-neutral {
-    background-color: var(--ax-gray-500);
+    background-color: var(--ax-text-subtle);
   }
 }
 
@@ -79,7 +79,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        var(--ax-primary) 50%,
+        var(--ax-brand-default) 50%,
         transparent
       );
     }
@@ -90,7 +90,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        var(--ax-success) 50%,
+        var(--ax-success-default) 50%,
         transparent
       );
     }
@@ -101,7 +101,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        var(--ax-warning) 50%,
+        var(--ax-warning-default) 50%,
         transparent
       );
     }
@@ -112,7 +112,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        var(--ax-error) 50%,
+        var(--ax-error-default) 50%,
         transparent
       );
     }
@@ -123,7 +123,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        var(--ax-gray-500) 50%,
+        var(--ax-text-subtle) 50%,
         transparent
       );
     }

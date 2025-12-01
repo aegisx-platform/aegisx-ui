@@ -5,7 +5,6 @@ import {
   EventEmitter,
   ViewChild,
   OnInit,
-  OnDestroy,
   signal,
   computed,
   inject,
@@ -186,7 +185,7 @@ export type AxCalendarView =
     `,
   ],
 })
-export class AxCalendarComponent implements OnInit, OnDestroy {
+export class AxCalendarComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   /** Calendar reference for programmatic access */

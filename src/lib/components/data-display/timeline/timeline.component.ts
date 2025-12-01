@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface TimelineItem {
   title: string;
@@ -12,7 +13,7 @@ export interface TimelineItem {
 @Component({
   selector: 'ax-timeline',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
 })

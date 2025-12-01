@@ -29,6 +29,7 @@
   --ax-background-subtle: #{$aegisx-zinc-100};
   --ax-background-muted: #{$aegisx-zinc-50};
   --ax-background-emphasis: #{$aegisx-zinc-700};
+  --ax-background-page: #{$aegisx-zinc-50}; // Page/app background
   --ax-white: #ffffff;
 
   // ===========================================
@@ -40,6 +41,7 @@
   --ax-text-subtle: #{$aegisx-zinc-400};
   --ax-text-disabled: #{$aegisx-zinc-400};
   --ax-text-heading: #{$aegisx-zinc-950};
+  --ax-text-strong: #{$aegisx-zinc-900};
   --ax-text-inverse: #ffffff;
 
   // ===========================================

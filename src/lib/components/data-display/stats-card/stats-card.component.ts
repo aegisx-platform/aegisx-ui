@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 export type StatsCardTrend = 'up' | 'down' | 'neutral';
 
 @Component({
   selector: 'ax-stats-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './stats-card.component.html',
   styleUrls: ['./stats-card.component.scss'],
 })

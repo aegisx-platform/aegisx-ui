@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-export type LayoutType = 'compact' | 'enterprise' | 'empty';
+export type LayoutType = 'compact' | 'enterprise' | 'empty' | 'docs';
 
 export interface LayoutOption {
   value: LayoutType;
@@ -137,6 +137,6 @@ export class AxLayoutSwitcherComponent implements OnInit {
   }
 
   private isValidLayout(value: string): value is LayoutType {
-    return ['compact', 'enterprise', 'empty'].includes(value);
+    return ['compact', 'enterprise', 'empty', 'docs'].includes(value);
   }
 }

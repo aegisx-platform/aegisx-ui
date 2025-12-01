@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 9999;
-  background-color: var(--ax-gray-200);
+  background-color: var(--ax-background-subtle);
   overflow: hidden;
 }
 
@@ -27,21 +27,21 @@
 }
 
 .ax-loading-bar-primary .ax-loading-bar-progress {
-  background-color: var(--ax-primary);
+  background-color: var(--ax-brand-default);
 }
 
 .ax-loading-bar-success .ax-loading-bar-progress {
-  background-color: var(--ax-success);
+  background-color: var(--ax-success-default);
 }
 
 .ax-loading-bar-error .ax-loading-bar-progress {
-  background-color: var(--ax-error);
+  background-color: var(--ax-error-default);
 }
 
 .ax-loading-bar-warning .ax-loading-bar-progress {
-  background-color: var(--ax-warning);
+  background-color: var(--ax-warning-default);
 }
 
 .ax-loading-bar-info .ax-loading-bar-progress {
-  background-color: var(--ax-info);
+  background-color: var(--ax-info-default);
 }

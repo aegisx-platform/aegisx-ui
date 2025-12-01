@@ -104,7 +104,18 @@ export class AxCalendarService {
   readonly error = computed(() => this._state().error);
   readonly currentDateRange = computed(() => this._state().currentDateRange);
 
-  private readonly http = inject(HttpClient);
+  private readonly http: HttpClient;
+
+  /**
+   * Constructor supports both DI injection and factory pattern.
+   * When used via DI, inject() will be called.
+   * When used via factory, HttpClient is passed directly.
+   */
+  constructor(http?: HttpClient) {
+    // Use provided http or fall back to injection
+     
+    this.http = http || inject(HttpClient);
+  }
 
   /**
    * Configure the API endpoint

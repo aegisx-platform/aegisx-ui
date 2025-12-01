@@ -1,6 +1,6 @@
 .ax-stats-card {
   padding: var(--ax-spacing-lg);
-  background-color: var(--ax-white);
+  background-color: var(--ax-background-default);
   border: 1px solid var(--ax-border-color);
   border-radius: var(--ax-radius-lg);
 }
@@ -22,7 +22,7 @@
 
 .ax-stats-card-icon {
   font-size: var(--ax-font-size-xl);
-  color: var(--ax-primary);
+  color: var(--ax-brand-default);
 }
 
 .ax-stats-card-value {
@@ -42,10 +42,10 @@
 }
 
 .ax-stats-card-trend-up {
-  color: var(--ax-success);
+  color: var(--ax-success-default);
 }
 .ax-stats-card-trend-down {
-  color: var(--ax-error);
+  color: var(--ax-error-default);
 }
 .ax-stats-card-trend-neutral {
   color: var(--ax-text-secondary);
