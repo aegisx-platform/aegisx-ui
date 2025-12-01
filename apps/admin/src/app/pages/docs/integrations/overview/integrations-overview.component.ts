@@ -24,7 +24,8 @@ interface Integration {
     | 'notifications'
     | 'code'
     | 'media'
-    | 'editor';
+    | 'editor'
+    | 'demo';
   package: string;
   version: string;
   wrapper?: string;
@@ -71,6 +72,60 @@ interface Integration {
       <!-- Categories -->
       <section class="section">
         <h2>Integration Categories</h2>
+
+        <!-- Live Demos Category -->
+        <div class="category category--featured">
+          <div class="category-header">
+            <mat-icon>rocket_launch</mat-icon>
+            <h3>Live Demos</h3>
+          </div>
+          <p class="category-desc">
+            Real-world examples and interactive demos showcasing AegisX UI
+            components in action
+          </p>
+
+          <div class="integrations-grid">
+            @for (integration of getByCategory('demo'); track integration.id) {
+              <mat-card
+                class="integration-card integration-card--demo"
+                [routerLink]="integration.docsUrl"
+              >
+                <mat-card-header>
+                  <div class="card-icon card-icon--demo">
+                    <mat-icon>{{ integration.icon }}</mat-icon>
+                  </div>
+                  <mat-card-title>{{ integration.name }}</mat-card-title>
+                  <mat-card-subtitle>
+                    {{ integration.package }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>{{ integration.description }}</p>
+                  <div class="card-meta">
+                    <mat-chip-set>
+                      <mat-chip [highlighted]="integration.status === 'stable'">
+                        {{ integration.status }}
+                      </mat-chip>
+                      <mat-chip>v{{ integration.version }}</mat-chip>
+                    </mat-chip-set>
+                    @if (integration.wrapper) {
+                      <div class="wrapper-badge">
+                        <mat-icon>widgets</mat-icon>
+                        <span>{{ integration.wrapper }}</span>
+                      </div>
+                    }
+                  </div>
+                </mat-card-content>
+                <mat-card-actions>
+                  <button mat-flat-button color="primary">
+                    <mat-icon>play_arrow</mat-icon>
+                    Try Demo
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        </div>
 
         <!-- Layout Category -->
         <div class="category">
@@ -678,6 +733,15 @@ interface Integration {
         background: var(--ax-background-subtle);
         border-radius: var(--ax-radius-xl);
 
+        &--featured {
+          background: linear-gradient(
+            135deg,
+            var(--ax-primary-faint) 0%,
+            var(--ax-background-subtle) 100%
+          );
+          border: 1px solid var(--ax-primary-muted);
+        }
+
         .category-header {
           display: flex;
           align-items: center;
@@ -738,6 +802,14 @@ interface Integration {
               width: 28px;
               height: 28px;
               color: var(--ax-primary-default);
+            }
+
+            &--demo {
+              background: var(--ax-success-faint);
+
+              mat-icon {
+                color: var(--ax-success-default);
+              }
             }
           }
         }
@@ -1052,6 +1124,48 @@ export class IntegrationsOverviewComponent {
       version: '2.x',
       docsUrl: '/docs/integrations/monaco-editor',
       npmUrl: 'https://www.npmjs.com/package/ngx-monaco-editor-v2',
+      status: 'stable',
+    },
+    // Live Demos
+    {
+      id: 'appointment-calendar',
+      name: 'Appointment Calendar',
+      description:
+        'ระบบนัดหมายคนไข้ - Full-featured appointment scheduling with calendar view, time slots, and patient management.',
+      icon: 'event_available',
+      category: 'demo',
+      package: 'AegisX UI',
+      version: '1.0.0',
+      wrapper: 'AppointmentCalendarComponent',
+      docsUrl: '/his-demo/appointment-calendar',
+      npmUrl: '#',
+      status: 'stable',
+    },
+    {
+      id: 'followup-booking',
+      name: 'Follow-up Booking',
+      description:
+        'Demo การนัด Follow-up คนไข้ - Interactive follow-up appointment booking workflow with doctor selection.',
+      icon: 'event_repeat',
+      category: 'demo',
+      package: 'AegisX UI',
+      version: '1.0.0',
+      wrapper: 'FollowupDemoComponent',
+      docsUrl: '/his-demo/followup-demo',
+      npmUrl: '#',
+      status: 'stable',
+    },
+    {
+      id: 'his-dashboard',
+      name: 'HIS Dashboard',
+      description:
+        'Hospital Information System dashboard with patient overview, appointments, lab results, and pharmacy modules.',
+      icon: 'local_hospital',
+      category: 'demo',
+      package: 'AegisX UI',
+      version: '1.0.0',
+      docsUrl: '/his-demo',
+      npmUrl: '#',
       status: 'stable',
     },
   ];
