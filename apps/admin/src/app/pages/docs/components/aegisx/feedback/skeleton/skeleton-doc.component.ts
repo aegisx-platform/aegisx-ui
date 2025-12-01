@@ -40,11 +40,10 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
     <div class="skeleton-doc">
       <ax-doc-header
         title="Skeleton Loader"
+        icon="view_stream"
         description="Placeholder components that show a loading animation while content is being fetched. Improve perceived performance with skeleton screens."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          { label: 'Components', link: '/docs/components' },
-          { label: 'Feedback', link: '/docs/components/feedback/alert' },
+          { label: 'Feedback', link: '/docs/components/aegisx/feedback/alert' },
           { label: 'Skeleton' },
         ]"
         status="stable"

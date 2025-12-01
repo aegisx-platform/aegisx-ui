@@ -39,12 +39,14 @@ interface ColorScale {
     <div class="colors-page">
       <ax-doc-header
         title="Colors"
+        icon="palette"
         description="Semantic color system with 5 color scales and 6 variants each. Each variant is designed for specific use cases to ensure consistency and accessibility."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
           { label: 'Foundations', link: '/docs/foundations/overview' },
           { label: 'Colors' },
         ]"
+        [showImport]="false"
+        [showQuickLinks]="false"
       ></ax-doc-header>
 
       <!-- Color Scales -->

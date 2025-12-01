@@ -156,43 +156,6 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// ===== ENHANCED TYPES =====
-
-export interface DropdownOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
-}
-
-export interface DropdownResponse {
-  options: DropdownOption[];
-  total: number;
-}
-
-export interface BulkOperationSummary {
-  total: number;
-  successful: number;
-  failed: number;
-  errors: Array<{
-    index: number;
-    error: string;
-    data?: any;
-  }>;
-}
-
-export interface BulkResponse {
-  success: boolean;
-  data: TestProduct[];
-  summary: BulkOperationSummary;
-  message: string;
-  meta?: {
-    timestamp: string;
-    version: string;
-    requestId: string;
-    environment: string;
-  };
-}
-
 // ===== IMPORT TYPES =====
 
 export interface ImportOptions {
@@ -279,4 +242,15 @@ export interface TestProductListOptions {
   sort?: string;
   fields?: TestProductField[];
   search?: string;
+}
+
+// ===== BASIC BULK OPERATIONS =====
+
+export interface BulkResponse {
+  success: boolean;
+  created?: number;
+  updated?: number;
+  deleted?: number;
+  errors?: any[];
+  message?: string;
 }

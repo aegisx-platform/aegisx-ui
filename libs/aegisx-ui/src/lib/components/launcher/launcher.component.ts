@@ -21,6 +21,15 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatBadgeModule } from '@angular/material/badge';
+import {
+  GridsterComponent,
+  GridsterItemComponent,
+  GridsterConfig,
+  GridsterItem,
+  GridType,
+  CompactType,
+  DisplayGrid,
+} from 'angular-gridster2';
 import { AxLauncherCardComponent } from './launcher-card.component';
 import {
   LauncherApp,
@@ -34,6 +43,8 @@ import {
   LauncherMenuActionEvent,
   LauncherStatusChangeEvent,
   LauncherEnabledChangeEvent,
+  LauncherLayoutChangeEvent,
+  LauncherLayoutItem,
 } from './launcher.types';
 
 /** Default configuration */
@@ -71,6 +82,8 @@ const DEFAULT_CONFIG: LauncherConfig = {
     MatTooltipModule,
     MatButtonToggleModule,
     MatBadgeModule,
+    GridsterComponent,
+    GridsterItemComponent,
     AxLauncherCardComponent,
   ],
   template: `
@@ -142,6 +155,19 @@ const DEFAULT_CONFIG: LauncherConfig = {
                 <mat-icon>view_list</mat-icon>
               </mat-button-toggle>
             </mat-button-toggle-group>
+          }
+
+          <!-- Edit Layout Button (Draggable Mode) -->
+          @if (mergedConfig().enableDraggable) {
+            <button
+              mat-stroked-button
+              class="ax-launcher__edit-btn"
+              [class.ax-launcher__edit-btn--active]="isEditMode()"
+              (click)="toggleEditMode()"
+            >
+              <mat-icon>{{ isEditMode() ? 'done' : 'edit' }}</mat-icon>
+              {{ isEditMode() ? 'Done' : 'Edit Layout' }}
+            </button>
           }
         </div>
       </div>
@@ -231,24 +257,50 @@ const DEFAULT_CONFIG: LauncherConfig = {
                 >Your pinned apps for quick access</span
               >
             </div>
-            <div
-              class="ax-launcher__grid"
-              [style.--card-min-width.px]="mergedConfig().cardMinWidth"
-              [style.--card-gap.px]="mergedConfig().cardGap"
-            >
-              @for (app of pinnedAppsData(); track app.id) {
-                <ax-launcher-card
-                  [app]="app"
-                  [isAdmin]="userContext().isAdmin || false"
-                  [isFavorite]="isFavorite(app.id)"
-                  [isPinned]="true"
-                  (cardClick)="onAppClick($event)"
-                  (menuAction)="onMenuAction($event)"
-                  (favoriteToggle)="toggleFavorite($event)"
-                  (pinToggle)="togglePin($event)"
-                />
-              }
-            </div>
+
+            <!-- Draggable Grid (Gridster2) for Pinned -->
+            @if (mergedConfig().enableDraggable) {
+              <gridster
+                [options]="gridsterOptions()"
+                class="ax-launcher__gridster"
+                [class.ax-launcher__gridster--editing]="isEditMode()"
+              >
+                @for (app of pinnedGridsterItems(); track app.id) {
+                  <gridster-item [item]="app">
+                    <ax-launcher-card
+                      [app]="app"
+                      [isAdmin]="userContext().isAdmin || false"
+                      [isFavorite]="isFavorite(app.id)"
+                      [isPinned]="true"
+                      [isEditMode]="isEditMode()"
+                      (cardClick)="onAppClick($event)"
+                      (menuAction)="onMenuAction($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  </gridster-item>
+                }
+              </gridster>
+            } @else {
+              <div
+                class="ax-launcher__grid"
+                [style.--card-min-width.px]="mergedConfig().cardMinWidth"
+                [style.--card-gap.px]="mergedConfig().cardGap"
+              >
+                @for (app of pinnedAppsData(); track app.id) {
+                  <ax-launcher-card
+                    [app]="app"
+                    [isAdmin]="userContext().isAdmin || false"
+                    [isFavorite]="isFavorite(app.id)"
+                    [isPinned]="true"
+                    (cardClick)="onAppClick($event)"
+                    (menuAction)="onMenuAction($event)"
+                    (favoriteToggle)="toggleFavorite($event)"
+                    (pinToggle)="togglePin($event)"
+                  />
+                }
+              </div>
+            }
           </div>
         } @else if (showRecentView()) {
           <!-- Recently Used Apps Grid -->
@@ -258,24 +310,50 @@ const DEFAULT_CONFIG: LauncherConfig = {
               <h3>Recently Used</h3>
               <span class="section-hint">Apps you've used recently</span>
             </div>
-            <div
-              class="ax-launcher__grid"
-              [style.--card-min-width.px]="mergedConfig().cardMinWidth"
-              [style.--card-gap.px]="mergedConfig().cardGap"
-            >
-              @for (app of recentAppsData(); track app.id) {
-                <ax-launcher-card
-                  [app]="app"
-                  [isAdmin]="userContext().isAdmin || false"
-                  [isFavorite]="isFavorite(app.id)"
-                  [isPinned]="isPinned(app.id)"
-                  (cardClick)="onAppClick($event)"
-                  (menuAction)="onMenuAction($event)"
-                  (favoriteToggle)="toggleFavorite($event)"
-                  (pinToggle)="togglePin($event)"
-                />
-              }
-            </div>
+
+            <!-- Draggable Grid (Gridster2) for Recent -->
+            @if (mergedConfig().enableDraggable) {
+              <gridster
+                [options]="gridsterOptions()"
+                class="ax-launcher__gridster"
+                [class.ax-launcher__gridster--editing]="isEditMode()"
+              >
+                @for (app of recentGridsterItems(); track app.id) {
+                  <gridster-item [item]="app">
+                    <ax-launcher-card
+                      [app]="app"
+                      [isAdmin]="userContext().isAdmin || false"
+                      [isFavorite]="isFavorite(app.id)"
+                      [isPinned]="isPinned(app.id)"
+                      [isEditMode]="isEditMode()"
+                      (cardClick)="onAppClick($event)"
+                      (menuAction)="onMenuAction($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  </gridster-item>
+                }
+              </gridster>
+            } @else {
+              <div
+                class="ax-launcher__grid"
+                [style.--card-min-width.px]="mergedConfig().cardMinWidth"
+                [style.--card-gap.px]="mergedConfig().cardGap"
+              >
+                @for (app of recentAppsData(); track app.id) {
+                  <ax-launcher-card
+                    [app]="app"
+                    [isAdmin]="userContext().isAdmin || false"
+                    [isFavorite]="isFavorite(app.id)"
+                    [isPinned]="isPinned(app.id)"
+                    (cardClick)="onAppClick($event)"
+                    (menuAction)="onMenuAction($event)"
+                    (favoriteToggle)="toggleFavorite($event)"
+                    (pinToggle)="togglePin($event)"
+                  />
+                }
+              </div>
+            }
           </div>
         } @else if (showFeaturedView()) {
           <!-- Featured Apps Grid View -->
@@ -289,20 +367,47 @@ const DEFAULT_CONFIG: LauncherConfig = {
                 >Popular and recommended applications</span
               >
             </div>
-            <div class="ax-launcher__grid">
-              @for (app of featuredApps(); track app.id) {
-                <ax-launcher-card
-                  [app]="app"
-                  [isAdmin]="userContext().isAdmin || false"
-                  [isFavorite]="isFavorite(app.id)"
-                  [isPinned]="isPinned(app.id)"
-                  (cardClick)="onAppClick($event)"
-                  (menuAction)="onMenuAction($event)"
-                  (favoriteToggle)="toggleFavorite($event)"
-                  (pinToggle)="togglePin($event)"
-                />
-              }
-            </div>
+
+            <!-- Draggable Grid (Gridster2) -->
+            @if (mergedConfig().enableDraggable) {
+              <gridster
+                [options]="gridsterOptions()"
+                class="ax-launcher__gridster"
+                [class.ax-launcher__gridster--editing]="isEditMode()"
+              >
+                @for (app of gridsterItems(); track app.id) {
+                  <gridster-item [item]="app">
+                    <ax-launcher-card
+                      [app]="app"
+                      [isAdmin]="userContext().isAdmin || false"
+                      [isFavorite]="isFavorite(app.id)"
+                      [isPinned]="isPinned(app.id)"
+                      [isEditMode]="isEditMode()"
+                      (cardClick)="onAppClick($event)"
+                      (menuAction)="onMenuAction($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  </gridster-item>
+                }
+              </gridster>
+            } @else {
+              <!-- Normal Grid -->
+              <div class="ax-launcher__grid">
+                @for (app of featuredApps(); track app.id) {
+                  <ax-launcher-card
+                    [app]="app"
+                    [isAdmin]="userContext().isAdmin || false"
+                    [isFavorite]="isFavorite(app.id)"
+                    [isPinned]="isPinned(app.id)"
+                    (cardClick)="onAppClick($event)"
+                    (menuAction)="onMenuAction($event)"
+                    (favoriteToggle)="toggleFavorite($event)"
+                    (pinToggle)="togglePin($event)"
+                  />
+                }
+              </div>
+            }
           </div>
         } @else if (groupedApps().length === 0) {
           <!-- Empty State -->
@@ -635,6 +740,116 @@ const DEFAULT_CONFIG: LauncherConfig = {
       color: var(--ax-warning-default, #f59e0b);
     }
 
+    /* Edit Layout Button */
+    .ax-launcher__edit-btn {
+      transition: all 0.2s ease;
+
+      &--active {
+        background: var(--ax-brand-default, #6366f1);
+        color: white;
+
+        &:hover {
+          background: var(--ax-brand-hover, #4f46e5);
+        }
+      }
+    }
+
+    /* Gridster Container */
+    .ax-launcher__gridster {
+      min-height: 600px;
+      background: var(--ax-background-subtle, #f9fafb);
+      border-radius: var(--ax-radius-lg, 12px);
+
+      ::ng-deep {
+        gridster {
+          background: transparent !important;
+        }
+
+        .gridster-item {
+          border-radius: var(--ax-radius-lg, 12px);
+          overflow: hidden;
+          background: transparent;
+        }
+
+        .gridster-item-content {
+          height: 100% !important;
+          width: 100% !important;
+          display: flex;
+
+          /* Make launcher-card fill the gridster item */
+          ax-launcher-card {
+            width: 100%;
+            height: 100%;
+            display: block;
+
+            .launcher-card {
+              width: 100%;
+              height: 100%;
+              min-height: unset;
+            }
+          }
+        }
+
+        .gridster-item-resizable-handler {
+          display: none;
+        }
+
+        /* Grid preview */
+        .gridster-preview {
+          background: rgba(99, 102, 241, 0.15) !important;
+          border: 2px dashed var(--ax-brand-default, #6366f1) !important;
+          border-radius: var(--ax-radius-lg, 12px);
+        }
+
+        /* Grid lines */
+        .gridster-column,
+        .gridster-row {
+          border-color: rgba(99, 102, 241, 0.1);
+        }
+      }
+    }
+
+    .ax-launcher__gridster--editing {
+      background: repeating-linear-gradient(
+        45deg,
+        var(--ax-background-subtle, #f9fafb),
+        var(--ax-background-subtle, #f9fafb) 10px,
+        rgba(99, 102, 241, 0.03) 10px,
+        rgba(99, 102, 241, 0.03) 20px
+      );
+      border: 2px dashed var(--ax-brand-default, #6366f1);
+
+      ::ng-deep {
+        .gridster-item-resizable-handler {
+          display: block;
+          background: var(--ax-brand-default, #6366f1);
+          border-radius: 2px;
+
+          &.handle-se {
+            width: 12px;
+            height: 12px;
+            right: 4px;
+            bottom: 4px;
+          }
+        }
+
+        .gridster-item {
+          cursor: grab;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+
+          &:hover {
+            box-shadow: 0 0 0 2px var(--ax-brand-default, #6366f1);
+          }
+
+          &.gridster-item-moving {
+            cursor: grabbing;
+            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          }
+        }
+      }
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .ax-launcher__header {
@@ -744,6 +959,25 @@ const DEFAULT_CONFIG: LauncherConfig = {
           color: #9ca3af;
         }
       }
+
+      .ax-launcher__gridster {
+        background: #1f2937;
+      }
+
+      .ax-launcher__gridster--editing {
+        background: repeating-linear-gradient(
+          45deg,
+          #1f2937,
+          #1f2937 10px,
+          rgba(99, 102, 241, 0.1) 10px,
+          rgba(99, 102, 241, 0.1) 20px
+        );
+      }
+
+      .ax-launcher__edit-btn--active {
+        background: var(--ax-brand-default, #6366f1);
+        color: white;
+      }
     }
   `,
 })
@@ -778,6 +1012,8 @@ export class AxLauncherComponent {
   menuAction = output<LauncherMenuActionEvent>();
   statusChange = output<LauncherStatusChangeEvent>();
   enabledChange = output<LauncherEnabledChangeEvent>();
+  /** Layout change event (emitted when draggable layout changes) */
+  layoutChange = output<LauncherLayoutChangeEvent>();
 
   // ============================================
   // STATE
@@ -798,6 +1034,10 @@ export class AxLauncherComponent {
   activeView = signal<'pinned' | 'recent' | 'featured' | 'category'>(
     'featured',
   );
+  /** Whether draggable edit mode is active */
+  isEditMode = signal<boolean>(false);
+  /** Saved layout positions from localStorage */
+  savedLayout = signal<LauncherLayoutItem[]>([]);
 
   /** Search input element reference */
   private searchInputRef =
@@ -948,6 +1188,144 @@ export class AxLauncherComponent {
       this.hasFeaturedApps() &&
       !this.searchQuery()
     );
+  });
+
+  /** Gridster2 options computed from config */
+  gridsterOptions = computed<GridsterConfig>(() => {
+    const config = this.mergedConfig();
+    const gridConfig = config.gridsterConfig || {};
+    const isEditing = this.isEditMode();
+
+    return {
+      gridType: GridType.ScrollVertical,
+      compactType: CompactType.CompactUp,
+      displayGrid: isEditing ? DisplayGrid.Always : DisplayGrid.None,
+      pushItems: true,
+      swap: true,
+      margin: gridConfig.margin ?? 12,
+      outerMargin: true,
+      outerMarginTop: 12,
+      outerMarginRight: 12,
+      outerMarginBottom: 12,
+      outerMarginLeft: 12,
+      minCols: gridConfig.columns ?? 4,
+      maxCols: gridConfig.columns ?? 4,
+      minRows: 4,
+      maxRows: 100,
+      defaultItemCols: 1,
+      defaultItemRows: 1,
+      minItemCols: 1,
+      maxItemCols: 2,
+      minItemRows: 1,
+      maxItemRows: 2,
+      fixedColWidth: 280,
+      fixedRowHeight: gridConfig.rowHeight ?? 160,
+      draggable: {
+        enabled: isEditing,
+      },
+      resizable: {
+        enabled: isEditing && (gridConfig.enableResize ?? true),
+        handles: {
+          s: true,
+          e: true,
+          n: false,
+          w: false,
+          se: true,
+          ne: false,
+          sw: false,
+          nw: false,
+        },
+      },
+      itemChangeCallback: (item: GridsterItem) =>
+        this.onGridsterItemChange(item),
+      itemResizeCallback: (item: GridsterItem) =>
+        this.onGridsterItemChange(item),
+    };
+  });
+
+  /** Featured apps with GridsterItem properties for draggable mode */
+  gridsterItems = computed<(LauncherApp & GridsterItem)[]>(() => {
+    const apps = this.featuredApps();
+    const saved = this.savedLayout();
+
+    return apps.map((app, index) => {
+      // Check if there's a saved position for this app
+      const savedPosition = saved.find((s) => s.id === app.id);
+
+      if (savedPosition) {
+        return {
+          ...app,
+          x: savedPosition.x,
+          y: savedPosition.y,
+          cols: savedPosition.cols,
+          rows: savedPosition.rows,
+        };
+      }
+
+      // Default grid position (auto-arrange)
+      const columns = this.mergedConfig().gridsterConfig?.columns ?? 4;
+      return {
+        ...app,
+        x: app.x ?? index % columns,
+        y: app.y ?? Math.floor(index / columns),
+        cols: app.cols ?? 1,
+        rows: app.rows ?? 1,
+      };
+    });
+  });
+
+  /** Pinned apps with GridsterItem properties for draggable mode */
+  pinnedGridsterItems = computed<(LauncherApp & GridsterItem)[]>(() => {
+    const apps = this.pinnedAppsData();
+    const saved = this.savedLayout();
+    const columns = this.mergedConfig().gridsterConfig?.columns ?? 4;
+
+    return apps.map((app, index) => {
+      const savedPosition = saved.find((s) => s.id === app.id);
+      if (savedPosition) {
+        return {
+          ...app,
+          x: savedPosition.x,
+          y: savedPosition.y,
+          cols: savedPosition.cols,
+          rows: savedPosition.rows,
+        };
+      }
+      return {
+        ...app,
+        x: app.x ?? index % columns,
+        y: app.y ?? Math.floor(index / columns),
+        cols: app.cols ?? 1,
+        rows: app.rows ?? 1,
+      };
+    });
+  });
+
+  /** Recent apps with GridsterItem properties for draggable mode */
+  recentGridsterItems = computed<(LauncherApp & GridsterItem)[]>(() => {
+    const apps = this.recentAppsData();
+    const saved = this.savedLayout();
+    const columns = this.mergedConfig().gridsterConfig?.columns ?? 4;
+
+    return apps.map((app, index) => {
+      const savedPosition = saved.find((s) => s.id === app.id);
+      if (savedPosition) {
+        return {
+          ...app,
+          x: savedPosition.x,
+          y: savedPosition.y,
+          cols: savedPosition.cols,
+          rows: savedPosition.rows,
+        };
+      }
+      return {
+        ...app,
+        x: app.x ?? index % columns,
+        y: app.y ?? Math.floor(index / columns),
+        cols: app.cols ?? 1,
+        rows: app.rows ?? 1,
+      };
+    });
   });
 
   /** Selected category index for tabs (adjusted for special tabs: Pinned, Recent, Featured) */
@@ -1147,6 +1525,16 @@ export class AxLauncherComponent {
         const defaultGroup = this.mergedConfig().defaultGroupBy;
         if (defaultGroup) {
           this.groupBy.set(defaultGroup);
+        }
+      },
+      { allowSignalWrites: true },
+    );
+
+    // Load layout from localStorage (for draggable mode)
+    effect(
+      () => {
+        if (this.mergedConfig().enableDraggable) {
+          this.loadLayout();
         }
       },
       { allowSignalWrites: true },
@@ -1359,6 +1747,88 @@ export class AxLauncherComponent {
   private savePinnedApps(pinned: string[]): void {
     const prefix = this.mergedConfig().storageKeyPrefix;
     localStorage.setItem(`${prefix}-pinned`, JSON.stringify(pinned));
+  }
+
+  // ============================================
+  // DRAGGABLE LAYOUT (Gridster2)
+  // ============================================
+
+  /** Toggle edit mode for draggable layout */
+  toggleEditMode(): void {
+    const wasEditMode = this.isEditMode();
+    this.isEditMode.update((v) => !v);
+
+    // Save layout when exiting edit mode
+    if (wasEditMode) {
+      this.saveLayout();
+    }
+  }
+
+  /** Called when a gridster item changes position/size */
+  onGridsterItemChange(item: GridsterItem): void {
+    // Item position/size changed - will be saved when edit mode is toggled off
+    // Update the savedLayout signal with current positions
+    const currentItems = this.gridsterItems();
+    const layout: LauncherLayoutItem[] = currentItems.map((app) => ({
+      id: app.id,
+      x: app.x ?? 0,
+      y: app.y ?? 0,
+      cols: app.cols ?? 1,
+      rows: app.rows ?? 1,
+    }));
+
+    // Find and update the changed item
+    const index = layout.findIndex((l) => {
+      const appItem = currentItems.find((a) => a.id === l.id);
+      return appItem && appItem.x === item['x'] && appItem.y === item['y'];
+    });
+
+    if (index >= 0) {
+      layout[index] = {
+        ...layout[index],
+        x: item['x'] ?? 0,
+        y: item['y'] ?? 0,
+        cols: item['cols'] ?? 1,
+        rows: item['rows'] ?? 1,
+      };
+    }
+
+    this.savedLayout.set(layout);
+  }
+
+  /** Save current layout to localStorage */
+  saveLayout(): void {
+    const items = this.gridsterItems();
+    const layout: LauncherLayoutItem[] = items.map((app) => ({
+      id: app.id,
+      x: app.x ?? 0,
+      y: app.y ?? 0,
+      cols: app.cols ?? 1,
+      rows: app.rows ?? 1,
+    }));
+
+    const prefix = this.mergedConfig().storageKeyPrefix;
+    localStorage.setItem(`${prefix}-layout`, JSON.stringify(layout));
+
+    // Emit layout change event
+    this.layoutChange.emit({
+      apps: items,
+      layout,
+    });
+  }
+
+  /** Load layout from localStorage */
+  private loadLayout(): void {
+    const prefix = this.mergedConfig().storageKeyPrefix;
+    const stored = localStorage.getItem(`${prefix}-layout`);
+    if (stored) {
+      try {
+        const layout = JSON.parse(stored) as LauncherLayoutItem[];
+        this.savedLayout.set(layout);
+      } catch {
+        this.savedLayout.set([]);
+      }
+    }
   }
 
   // ============================================

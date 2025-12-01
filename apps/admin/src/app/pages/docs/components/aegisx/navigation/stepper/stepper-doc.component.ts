@@ -42,11 +42,13 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
     <div class="stepper-doc">
       <ax-doc-header
         title="Stepper"
+        icon="format_list_numbered"
         description="Custom styled Material Stepper with AegisX design tokens. Provides multiple variants for different use cases including forms, wizards, and progress indicators."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          { label: 'Components', link: '/docs/components' },
-          { label: 'Navigation', link: '/docs/components/navigation/stepper' },
+          {
+            label: 'Navigation',
+            link: '/docs/components/aegisx/navigation/stepper',
+          },
           { label: 'Stepper' },
         ]"
         status="stable"

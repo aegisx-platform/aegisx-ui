@@ -247,13 +247,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   `,
   styles: [
     `
-      /* Filter Panel */
+      /* Filter Panel - no border/padding since parent wrapper provides it */
       .filter-panel {
-        background: var(--ax-background-default);
-        border: 1px solid var(--ax-border-default);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+        background: transparent;
       }
 
       /* Row 1: Quick Filters + Actions */
@@ -294,9 +290,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
       /* Quick Filter Toggle Group */
       .quick-filter-toggle {
-        border: 1px solid var(--ax-border-default);
+        border: 1px solid var(--ax-border-emphasis);
         border-radius: 6px;
         overflow: hidden;
+        box-shadow: var(--ax-shadow-xs);
       }
 
       .quick-filter-toggle .mat-button-toggle {

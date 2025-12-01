@@ -8,6 +8,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { AxDialogService, AxConfirmDialogComponent } from '@aegisx/ui';
+import {
+  DocHeaderComponent,
+  CodeTabsComponent,
+  LivePreviewComponent,
+} from '../../../../../../components/docs';
 
 @Component({
   selector: 'app-dialogs-doc',
@@ -21,21 +26,23 @@ import { AxDialogService, AxConfirmDialogComponent } from '@aegisx/ui';
     MatButtonModule,
     MatTableModule,
     MatDialogModule,
+    DocHeaderComponent,
+    CodeTabsComponent,
+    LivePreviewComponent,
   ],
   template: `
-    <div class="docs-page p-6 max-w-6xl mx-auto">
-      <!-- Header -->
-      <header class="mb-8">
-        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
-          <a routerLink="/docs/components/feedback/alert" class="hover:text-primary">Feedback</a>
-          <mat-icon class="text-base">chevron_right</mat-icon>
-          <span>Dialogs</span>
-        </div>
-        <h1 class="text-4xl font-bold text-on-surface mb-2">Dialogs</h1>
-        <p class="text-lg text-on-surface-variant">
-          Modal dialogs for confirmations, forms, and user interactions with Material Design 3 styling.
-        </p>
-      </header>
+    <div class="dialogs-doc">
+      <ax-doc-header
+        title="Dialogs"
+        icon="picture_in_picture"
+        description="Modal dialogs for confirmations, forms, and user interactions with Material Design 3 styling."
+        [breadcrumbs]="[
+          { label: 'Feedback', link: '/docs/components/aegisx/feedback/alert' },
+          { label: 'Dialogs' },
+        ]"
+        [showImport]="false"
+        [showQuickLinks]="false"
+      ></ax-doc-header>
 
       <!-- Tabs -->
       <mat-tab-group class="docs-tabs" animationDuration="200ms">
@@ -164,92 +171,49 @@ import { AxDialogService, AxConfirmDialogComponent } from '@aegisx/ui';
             <!-- Basic Confirm -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Basic Confirmation</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <button mat-flat-button color="primary" (click)="openBasicConfirm()">
-                    <mat-icon>check_circle</mat-icon>
-                    Open Basic Confirm
-                  </button>
-                </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>this.axDialog.confirm({{'{'}}{{'}'}}
-  title: 'Confirm Action',
-  message: 'Are you sure you want to proceed?',
-  confirmText: 'Proceed',
-  cancelText: 'Cancel',
-{{'}'}}).subscribe(confirmed => {{'{'}}
-  if (confirmed) {{'{'}}
-    // Handle confirmation
-  {{'}'}}
-{{'}'}});</code></pre>
-                </div>
-              </mat-card>
+              <ax-live-preview title="Basic Confirm Dialog">
+                <button mat-flat-button color="primary" (click)="openBasicConfirm()">
+                  <mat-icon>check_circle</mat-icon>
+                  Open Basic Confirm
+                </button>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="basicConfirmCode" />
             </section>
 
             <!-- Dangerous Action -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Dangerous Action (Delete)</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <button mat-flat-button color="warn" (click)="openDangerConfirm()">
-                    <mat-icon>warning</mat-icon>
-                    Open Danger Confirm
-                  </button>
-                </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>this.axDialog.confirm({{'{'}}{{'}'}}
-  title: 'Delete Confirmation',
-  message: 'This action cannot be undone. Delete this item?',
-  confirmText: 'Delete',
-  cancelText: 'Cancel',
-  isDangerous: true, // Red warning button
-{{'}'}}).subscribe(confirmed => {{'{'}}
-  // Handle deletion
-{{'}'}});</code></pre>
-                </div>
-              </mat-card>
+              <ax-live-preview title="Dangerous Confirm Dialog">
+                <button mat-flat-button color="warn" (click)="openDangerConfirm()">
+                  <mat-icon>warning</mat-icon>
+                  Open Danger Confirm
+                </button>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="dangerConfirmCode" />
             </section>
 
             <!-- Delete Helper -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Delete Helper Method</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <button mat-flat-button color="warn" (click)="openDeleteConfirm()">
-                    <mat-icon>delete</mat-icon>
-                    Confirm Delete "User Account"
-                  </button>
-                </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>// Shorthand for single item deletion
-this.axDialog.confirmDelete('User Account').subscribe(confirmed => {{'{'}}
-  if (confirmed) {{'{'}}
-    this.deleteUser(userId);
-  {{'}'}}
-{{'}'}});</code></pre>
-                </div>
-              </mat-card>
+              <ax-live-preview title="Delete Helper">
+                <button mat-flat-button color="warn" (click)="openDeleteConfirm()">
+                  <mat-icon>delete</mat-icon>
+                  Confirm Delete "User Account"
+                </button>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="deleteHelperCode" />
             </section>
 
             <!-- Bulk Delete -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Bulk Delete</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <button mat-flat-button color="warn" (click)="openBulkDelete()">
-                    <mat-icon>delete_sweep</mat-icon>
-                    Delete 5 Items
-                  </button>
-                </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>// Shorthand for bulk deletion
-this.axDialog.confirmBulkDelete(5, 'items').subscribe(confirmed => {{'{'}}
-  if (confirmed) {{'{'}}
-    this.deleteItems(selectedIds);
-  {{'}'}}
-{{'}'}});</code></pre>
-                </div>
-              </mat-card>
+              <ax-live-preview title="Bulk Delete">
+                <button mat-flat-button color="warn" (click)="openBulkDelete()">
+                  <mat-icon>delete_sweep</mat-icon>
+                  Delete 5 Items
+                </button>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="bulkDeleteCode" />
             </section>
 
             <!-- Size Variants -->
@@ -830,6 +794,104 @@ export class DialogsDocComponent {
       width: '100vw',
       description: 'Full viewport coverage for immersive experiences.',
       uses: ['Mobile workflows', '3+ step wizards', 'Focused data entry'],
+    },
+  ];
+
+  // Code examples for tabs
+  basicConfirmCode = [
+    {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { AxDialogService } from '@aegisx/ui';
+
+@Component({ ... })
+export class MyComponent {
+  private axDialog = inject(AxDialogService);
+
+  openBasicConfirm(): void {
+    this.axDialog.confirm({
+      title: 'Confirm Action',
+      message: 'Are you sure you want to proceed with this action?',
+      confirmText: 'Proceed',
+      cancelText: 'Cancel',
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        console.log('User confirmed!');
+      }
+    });
+  }
+}`,
+    },
+  ];
+
+  dangerConfirmCode = [
+    {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { AxDialogService } from '@aegisx/ui';
+
+@Component({ ... })
+export class MyComponent {
+  private axDialog = inject(AxDialogService);
+
+  openDangerConfirm(): void {
+    this.axDialog.confirm({
+      title: 'Delete Confirmation',
+      message: 'This action cannot be undone. Are you sure you want to delete this item?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      isDangerous: true,  // Shows red warning button
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        console.log('Item deleted!');
+      }
+    });
+  }
+}`,
+    },
+  ];
+
+  deleteHelperCode = [
+    {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { AxDialogService } from '@aegisx/ui';
+
+@Component({ ... })
+export class MyComponent {
+  private axDialog = inject(AxDialogService);
+
+  openDeleteConfirm(): void {
+    // Shorthand method for single item delete
+    this.axDialog.confirmDelete('User Account').subscribe((confirmed) => {
+      if (confirmed) {
+        console.log('User deleted!');
+      }
+    });
+  }
+}`,
+    },
+  ];
+
+  bulkDeleteCode = [
+    {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { AxDialogService } from '@aegisx/ui';
+
+@Component({ ... })
+export class MyComponent {
+  private axDialog = inject(AxDialogService);
+
+  openBulkDelete(): void {
+    // Shorthand method for bulk delete with count and item type
+    this.axDialog.confirmBulkDelete(5, 'items').subscribe((confirmed) => {
+      if (confirmed) {
+        console.log('5 items deleted!');
+      }
+    });
+  }
+}`,
     },
   ];
 

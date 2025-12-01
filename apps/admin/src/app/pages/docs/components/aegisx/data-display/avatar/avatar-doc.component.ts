@@ -28,16 +28,12 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     <div class="avatar-doc">
       <ax-doc-header
         title="Avatar"
+        icon="account_circle"
         description="Visual representation of a user or entity with support for images, initials, and fallback states."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          {
-            label: 'Components',
-            link: '/docs/components/data-display/overview',
-          },
           {
             label: 'Data Display',
-            link: '/docs/components/data-display/overview',
+            link: '/docs/components/aegisx/data-display/card',
           },
           { label: 'Avatar' },
         ]"

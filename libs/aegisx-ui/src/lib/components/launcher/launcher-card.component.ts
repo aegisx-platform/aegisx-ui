@@ -194,10 +194,10 @@ import {
       }
     }
 
-    /* Pastel Color Variants with subtle border and shadow */
+    /* Pastel Color Variants with balanced border (25% opacity) */
     .launcher-card--pink {
       background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-      border: 1px solid rgba(236, 72, 153, 0.15);
+      border: 1px solid rgba(236, 72, 153, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(236, 72, 153, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -209,7 +209,7 @@ import {
 
     .launcher-card--peach {
       background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-      border: 1px solid rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(249, 115, 22, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -221,7 +221,7 @@ import {
 
     .launcher-card--mint {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-      border: 1px solid rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(34, 197, 94, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -233,7 +233,7 @@ import {
 
     .launcher-card--blue {
       background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-      border: 1px solid rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(59, 130, 246, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -245,7 +245,7 @@ import {
 
     .launcher-card--yellow {
       background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
-      border: 1px solid rgba(234, 179, 8, 0.15);
+      border: 1px solid rgba(234, 179, 8, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(234, 179, 8, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -257,7 +257,7 @@ import {
 
     .launcher-card--lavender {
       background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-      border: 1px solid rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(168, 85, 247, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -269,7 +269,7 @@ import {
 
     .launcher-card--cyan {
       background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
-      border: 1px solid rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(6, 182, 212, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -281,7 +281,7 @@ import {
 
     .launcher-card--rose {
       background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
-      border: 1px solid rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(244, 63, 94, 0.08),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -293,7 +293,7 @@ import {
 
     .launcher-card--neutral {
       background: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%);
-      border: 1px solid rgba(113, 113, 122, 0.15);
+      border: 1px solid rgba(113, 113, 122, 0.25);
       box-shadow:
         0 1px 3px 0 rgba(0, 0, 0, 0.06),
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
@@ -308,8 +308,8 @@ import {
       background: var(--ax-bg, #ffffff);
       border: 1px solid var(--ax-border, #e5e7eb);
       box-shadow:
-        0 1px 3px 0 rgba(0, 0, 0, 0.1),
-        0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        0 1px 3px 0 rgba(0, 0, 0, 0.06),
+        0 1px 2px -1px rgba(0, 0, 0, 0.04);
       .launcher-card__icon {
         background: var(--ax-background-subtle, #f3f4f6);
         color: var(--ax-text-heading, #111827);
@@ -812,6 +812,17 @@ import {
 
     :host {
       display: block;
+      height: 100%;
+    }
+
+    /* Edit Mode */
+    .launcher-card--edit-mode {
+      cursor: move;
+
+      &:hover {
+        transform: none;
+        box-shadow: 0 0 0 2px var(--ax-brand-default, #6366f1);
+      }
     }
   `,
 })
@@ -822,6 +833,8 @@ export class AxLauncherCardComponent {
   isFavorite = input<boolean>(false);
   /** Whether app is pinned */
   isPinned = input<boolean>(false);
+  /** Whether edit mode is active (for draggable grid) */
+  isEditMode = input<boolean>(false);
 
   // Outputs
   cardClick = output<LauncherAppClickEvent>();
@@ -831,8 +844,11 @@ export class AxLauncherCardComponent {
 
   // Computed properties
   cardClasses = computed(() => {
-    const colorClass = `launcher-card--${this.app().color}`;
-    return colorClass;
+    const classes = [`launcher-card--${this.app().color}`];
+    if (this.isEditMode()) {
+      classes.push('launcher-card--edit-mode');
+    }
+    return classes.join(' ');
   });
 
   displayBadgeCount = computed(() => {
@@ -846,6 +862,10 @@ export class AxLauncherCardComponent {
   });
 
   isClickable = computed(() => {
+    // In edit mode, cards should not be clickable (allow dragging)
+    if (this.isEditMode()) {
+      return false;
+    }
     const status = this.app().status;
     return (
       this.app().enabled &&

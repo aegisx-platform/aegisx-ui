@@ -321,7 +321,7 @@
     to bottom,
     var(--ax-background-default) 0%,
     var(--ax-background-muted) 30%,
-    var(--ax-gray-100) 100%
+    var(--ax-background-muted) 100%
   );
   border-bottom: 1px solid var(--ax-border-subtle);
 }
@@ -429,8 +429,8 @@
 .ax-icon-neutral {
   background: linear-gradient(
     135deg,
-    var(--ax-gray-400) 0%,
-    var(--ax-gray-600) 100%
+    var(--ax-text-subtle) 0%,
+    var(--ax-text-secondary) 100%
   );
   color: #ffffff;
   box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.3);
@@ -499,4 +499,99 @@
       background-color: var(--ax-background-default);
     }
   }
+}
+
+/* ============================================================
+   9. Dialog Field Display Styles (for View Dialogs)
+   Usage: Display read-only key-value pairs in view dialogs
+   ============================================================ */
+
+/* Field row container */
+.ax-dialog-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--ax-spacing-sm) 0;
+  border-bottom: 1px solid var(--ax-border-subtle);
+  gap: var(--ax-spacing-md);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Field label */
+.ax-dialog-field-label {
+  font-size: var(--ax-text-sm);
+  font-weight: var(--ax-font-medium);
+  color: var(--ax-text-secondary);
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+/* Field value */
+.ax-dialog-field-value {
+  font-size: var(--ax-text-sm);
+  color: var(--ax-text-default);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Status indicator - success (Active, Enabled, Yes) */
+.ax-dialog-status-success {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  color: var(--ax-success-default);
+  font-weight: var(--ax-font-medium);
+}
+
+/* Status indicator - neutral (Inactive, Disabled, No) */
+.ax-dialog-status-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  color: var(--ax-text-disabled);
+  font-weight: var(--ax-font-medium);
+}
+
+/* Status indicator - warning */
+.ax-dialog-status-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  color: var(--ax-warning-default);
+  font-weight: var(--ax-font-medium);
+}
+
+/* Status indicator - error */
+.ax-dialog-status-error {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  color: var(--ax-error-default);
+  font-weight: var(--ax-font-medium);
+}
+
+/* Status dot indicator */
+.ax-dialog-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   10. Dialog Actions Styles
+   Usage: Standard action button container for form dialogs
+   ============================================================ */
+
+.ax-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ax-spacing-md);
+  padding-top: var(--ax-spacing-md);
+  border-top: 1px solid var(--ax-border-subtle);
+  margin-top: var(--ax-spacing-lg);
 }

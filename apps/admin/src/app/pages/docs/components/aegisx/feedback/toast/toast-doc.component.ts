@@ -29,11 +29,10 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
     <div class="toast-doc">
       <ax-doc-header
         title="Toast Service"
+        icon="notifications"
         description="Unified notification service supporting both ngx-toastr and MatSnackBar. Show success, error, warning, and info messages with a simple API."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          { label: 'Components', link: '/docs/components' },
-          { label: 'Feedback', link: '/docs/components/feedback/alert' },
+          { label: 'Feedback', link: '/docs/components/aegisx/feedback/alert' },
           { label: 'Toast' },
         ]"
         status="stable"

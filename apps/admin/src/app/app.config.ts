@@ -16,7 +16,9 @@ import {
   AxThemeService,
   provideAx,
 } from '@aegisx/ui';
+import { provideWidgetFramework } from '@aegisx/ui/widgets';
 import { appRoutes } from './app.routes';
+import { DemoDataProvider } from './pages/widget-demo/demo-data.provider';
 
 // Factory function to initialize icons
 function initializeIcons() {
@@ -97,5 +99,10 @@ export const appConfig: ApplicationConfig = {
     AxNavigationService,
     IconService,
     AxThemeService,
+
+    // Widget Framework
+    provideWidgetFramework({
+      dataProvider: DemoDataProvider,
+    }),
   ],
 };

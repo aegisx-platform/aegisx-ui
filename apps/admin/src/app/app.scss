@@ -39,3 +39,22 @@
   color: var(--ax-content-strong);
   margin-left: 0.5rem;
 }
+
+/* Docs Layout Logo */
+.docs-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: var(--ax-spacing-sm, 0.5rem);
+
+  &__text {
+    font-size: var(--ax-text-lg, 1.125rem);
+    font-weight: 700;
+    color: var(--ax-text-primary);
+    white-space: nowrap;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}

@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-[var(--ax-background-default)] p-6">
-  <div class="max-w-7xl mx-auto space-y-6">
+<div class="min-h-screen bg-[var(--ax-background-subtle)] p-6">
+  <div class="max-w-7xl mx-auto space-y-4">
     <!-- Breadcrumb -->
     <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
 
@@ -15,6 +15,7 @@
 
     <!-- Filters Panel (hide when any error exists) -->
     @if (!testProductsService.error()) {
+      <ax-card variant="outlined" size="md" [flat]="true">
       <app-test-products-list-filters
         [activeFilterCount]="getActiveFilterCount()"
         [loading]="testProductsService.loading()"
@@ -38,16 +39,6 @@
         (dateFilterChange)="onDateFilterChange($event)"
       >
         <!-- Export Button Slot -->
-        <app-export
-          export
-          [exportService]="exportServiceAdapter"
-          [currentFilters]="getExportFilters()"
-          [selectedItems]="selectedItems()"
-          [availableFields]="availableExportFields"
-          [moduleName]="'test_products'"
-          (exportStarted)="onExportStarted($event)"
-          (exportCompleted)="onExportCompleted($event)"
-        ></app-export>
 
         <!-- Filter Chips Slot -->
         <div filter-chips>
@@ -139,6 +130,7 @@
           }
         </div>
       </app-test-products-list-filters>
+      </ax-card>
     }
 
     <!-- Content Area: Show based on state priority -->
@@ -201,7 +193,7 @@
 
     <!-- Priority 4: Table with Data -->
     @else {
-      <mat-card appearance="outlined" class="overflow-hidden tremor-table relative">
+      <mat-card appearance="outlined" class="overflow-hidden tremor-table relative shadow-sm !border-[var(--ax-border-emphasis)]">
         <!-- Loading Overlay (for refresh while data exists) - with delay -->
         @if (showLoadingIndicator() && dataSource.data.length > 0) {
           <div

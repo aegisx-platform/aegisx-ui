@@ -71,12 +71,14 @@ import { AxKpiCardComponent } from '@aegisx/ui';
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2 mb-4"
       >
         <ax-kpi-card
+          [flat]="true"
           label="Total TestProducts"
           [value]="stats.total"
           variant="simple"
         ></ax-kpi-card>
 
         <ax-kpi-card
+          [flat]="true"
           label="Available"
           [value]="stats.available"
           variant="badge"
@@ -85,6 +87,7 @@ import { AxKpiCardComponent } from '@aegisx/ui';
         ></ax-kpi-card>
 
         <ax-kpi-card
+          [flat]="true"
           label="Unavailable"
           [value]="stats.unavailable"
           variant="badge"
@@ -93,6 +96,7 @@ import { AxKpiCardComponent } from '@aegisx/ui';
         ></ax-kpi-card>
 
         <ax-kpi-card
+          [flat]="true"
           label="This Week"
           [value]="stats.recentWeek"
           variant="simple"

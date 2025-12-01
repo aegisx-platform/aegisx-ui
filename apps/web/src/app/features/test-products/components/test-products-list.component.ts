@@ -42,17 +42,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 
 import {
+  AxCardComponent,
   AxEmptyStateComponent,
   AxErrorStateComponent,
   AxDialogService,
   BreadcrumbComponent,
   BreadcrumbItem,
 } from '@aegisx/ui';
-import {
-  ExportOptions,
-  ExportService,
-  SharedExportComponent,
-} from '../../../shared/components/shared-export/shared-export.component';
+import { SharedExportComponent } from '../../../shared/components/shared-export/shared-export.component';
 import { TestProductService } from '../services/test-products.service';
 import {
   TestProduct,
@@ -95,6 +92,7 @@ import { TestProductsListHeaderComponent } from './test-products-list-header.com
     TestProductsListHeaderComponent,
     TestProductsListFiltersComponent,
     // AegisX UI components
+    AxCardComponent,
     AxEmptyStateComponent,
     AxErrorStateComponent,
   ],
@@ -374,24 +372,6 @@ export class TestProductsListComponent {
       recentWeek,
     };
   });
-
-  // Export configuration
-  exportServiceAdapter: ExportService = {
-    export: (options: ExportOptions) =>
-      this.testProductsService.exportTestProduct(options),
-  };
-
-  availableExportFields = [
-    { key: 'id', label: 'ID' },
-    { key: 'code', label: 'Code' },
-    { key: 'name', label: 'Name' },
-    { key: 'slug', label: 'Slug' },
-    { key: 'description', label: 'Description' },
-    { key: 'is_active', label: 'Is Active' },
-    { key: 'is_featured', label: 'Is Featured' },
-    { key: 'created_at', label: 'Created At' },
-    { key: 'updated_at', label: 'Updated At' },
-  ];
 
   ngAfterViewInit() {
     this.cdr.detectChanges();
@@ -750,37 +730,6 @@ export class TestProductsListComponent {
           }
         }
       });
-  }
-
-  // Export Event Handlers
-  onExportStarted(options: ExportOptions) {
-    this.snackBar.open(
-      `Preparing ${options.format.toUpperCase()} export...`,
-      '',
-      { duration: 2000 },
-    );
-  }
-
-  onExportCompleted(result: { success: boolean; format: string }) {
-    if (result.success) {
-      this.snackBar.open(
-        `${result.format.toUpperCase()} export completed successfully!`,
-        'Close',
-        {
-          duration: 3000,
-          panelClass: ['success-snackbar'],
-        },
-      );
-    } else {
-      this.snackBar.open(
-        `${result.format.toUpperCase()} export failed`,
-        'Close',
-        {
-          duration: 5000,
-          panelClass: ['error-snackbar'],
-        },
-      );
-    }
   }
 
   // Filter Helpers

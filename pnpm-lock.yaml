@@ -489,6 +489,12 @@ importers:
         specifier: ^8.18.3
         version: 8.18.3
 
+  libs/aegisx-ui:
+    dependencies:
+      signature_pad:
+        specifier: ^5.1.2
+        version: 5.1.2
+
 packages:
   '@aegisx/fastify-multipart@1.0.1':
     resolution:
@@ -19385,6 +19391,12 @@ packages:
       }
     engines: { node: '>=6' }
 
+  signature_pad@5.1.2:
+    resolution:
+      {
+        integrity: sha512-zYmjddQDolKgJnzYRoaMYaGezKaZbwjNBBwk1W7uVY0cyNWW30Izeu9BNVAGEgXvqB6APDJmf783oWTU7W67LQ==,
+      }
+
   sigstore@3.1.0:
     resolution:
       {
@@ -36526,6 +36538,8 @@ snapshots:
       chalk: 2.4.2
       figures: 2.0.0
       pkg-conf: 2.1.0
+
+  signature_pad@5.1.2: {}
 
   sigstore@3.1.0:
     dependencies:

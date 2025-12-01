@@ -31,12 +31,14 @@ interface ShadowToken {
     <div class="shadows-page">
       <ax-doc-header
         title="Shadows"
+        icon="gradient"
         description="Elevation and depth effects that create visual hierarchy. Use shadows to indicate interactive elements, overlays, and spatial relationships."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
           { label: 'Foundations', link: '/docs/foundations/overview' },
           { label: 'Shadows' },
         ]"
+        [showImport]="false"
+        [showQuickLinks]="false"
       ></ax-doc-header>
 
       <!-- Elevation Principle -->

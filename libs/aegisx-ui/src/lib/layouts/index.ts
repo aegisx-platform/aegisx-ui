@@ -11,6 +11,19 @@ export * from './ax-compact/ax-compact-layout.component';
 export * from './empty/empty-layout.component';
 export { EnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
 
+// Enterprise Layout Theme Types
+export type {
+  EnterpriseAppTheme,
+  EnterpriseAppThemeInput,
+  EnterpriseAppThemeOverride,
+  EnterprisePresetTheme,
+} from './enterprise/enterprise-theme.types';
+export {
+  ENTERPRISE_PRESET_THEMES,
+  resolveEnterpriseTheme,
+  generateThemeCSSVariables,
+} from './enterprise/enterprise-theme.types';
+
 // Re-export navigation types from central location
 export type {
   AxNavigationItem,

@@ -1,26 +1,17 @@
 <div class="docs-page">
   <!-- Page Header -->
-  <div class="docs-header">
-    <div class="docs-breadcrumb">
-      <mat-icon>architecture</mat-icon>
-      <span>Foundation</span>
-    </div>
-    <h1 class="docs-title">Design Tokens</h1>
-    <p class="docs-subtitle">
-      Complete design token library for colors, spacing, typography, and more.
-      Use these tokens to maintain consistency across your application.
-    </p>
-
-    <!-- Theme Toggle -->
-    <div class="docs-actions">
-      <button mat-raised-button color="primary" (click)="toggleTheme()">
-        <mat-icon>{{
-          themeService.themeId() === 'aegisx-dark' ? 'light_mode' : 'dark_mode'
-        }}</mat-icon>
-        Toggle Theme
-      </button>
-    </div>
-  </div>
+  <ax-doc-header
+    variant="page"
+    icon="architecture"
+    title="Design Tokens"
+    description="Complete design token library for colors, spacing, typography, and more. Use these tokens to maintain consistency across your application."
+    [breadcrumbs]="[
+      { label: 'Foundations', link: '/docs/foundations/overview' },
+      { label: 'Design Tokens' },
+    ]"
+    [showImport]="false"
+    [showQuickLinks]="false"
+  ></ax-doc-header>
 
   <!-- Main Content -->
   <article class="ax-prose-docs">

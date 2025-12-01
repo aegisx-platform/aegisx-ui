@@ -4,6 +4,7 @@ export interface ThemeOption {
   id: string;
   name: string;
   path: string;
+  dataTheme?: string; // data-theme attribute value
 }
 
 /**
@@ -22,42 +23,33 @@ export class TremorThemeService {
   private readonly STORAGE_KEY = 'selected-theme';
   private readonly THEME_LINK_ID = 'aegisx-theme-link';
 
-  // Available themes (AegisX themes generated from SCSS)
+  // Available themes (AegisX and Verus themes - bundled via all-themes.scss)
   readonly themes: ThemeOption[] = [
-    // AegisX Themes
-    { id: 'aegisx-light', name: 'AegisX Light', path: 'aegisx-light.css' },
-    { id: 'aegisx-dark', name: 'AegisX Dark', path: 'aegisx-dark.css' },
-
-    // Material 3 Prebuilt Themes
+    // AegisX Themes (Indigo/Zinc - Tailwind inspired)
     {
-      id: 'material-indigo-pink',
-      name: 'Material 3 Indigo-Pink',
-      path: 'themes/indigo-pink.css',
+      id: 'aegisx-light',
+      name: 'AegisX Light',
+      path: 'aegisx-light.css',
+      dataTheme: 'aegisx',
     },
     {
-      id: 'material-deeppurple-amber',
-      name: 'Material 3 Deep Purple-Amber',
-      path: 'themes/deeppurple-amber.css',
+      id: 'aegisx-dark',
+      name: 'AegisX Dark',
+      path: 'aegisx-dark.css',
+      dataTheme: 'aegisx-dark',
+    },
+    // Verus Themes (NFT Marketplace inspired)
+    {
+      id: 'verus-light',
+      name: 'Verus Light',
+      path: 'verus-light.css',
+      dataTheme: 'verus',
     },
     {
-      id: 'material-azure-blue',
-      name: 'Material 3 Azure-Blue',
-      path: 'themes/azure-blue.css',
-    },
-    {
-      id: 'material-cyan-orange',
-      name: 'Material 3 Cyan-Orange',
-      path: 'themes/cyan-orange.css',
-    },
-    {
-      id: 'material-pink-bluegrey',
-      name: 'Material 3 Pink-Blue Grey',
-      path: 'themes/pink-bluegrey.css',
-    },
-    {
-      id: 'material-purple-green',
-      name: 'Material 3 Purple-Green',
-      path: 'themes/purple-green.css',
+      id: 'verus-dark',
+      name: 'Verus Dark',
+      path: 'verus-dark.css',
+      dataTheme: 'verus-dark',
     },
   ];
 
@@ -114,26 +106,26 @@ export class TremorThemeService {
   }
 
   /**
-   * Apply theme by dynamically loading CSS file
+   * Apply theme via data-theme attribute
+   * Themes are bundled via all-themes.scss, no dynamic CSS loading needed.
    */
   private applyTheme(theme: ThemeOption): void {
-    // Remove existing theme link if any
-    const existingLink = document.getElementById(this.THEME_LINK_ID);
-    if (existingLink) {
-      existingLink.remove();
-    }
+    const root = document.documentElement;
 
-    // Create and append new theme link
-    const linkElement = document.createElement('link');
-    linkElement.id = this.THEME_LINK_ID;
-    linkElement.rel = 'stylesheet';
-    linkElement.href = theme.path;
+    // Set data-theme attribute (used by CSS selectors [data-theme="..."])
+    const dataTheme = theme.dataTheme || theme.id.replace('-light', '');
+    root.setAttribute('data-theme', dataTheme);
 
-    // Add to document head
-    document.head.appendChild(linkElement);
+    // Remove all theme classes and add current theme class
+    root.classList.remove(
+      'theme-aegisx',
+      'theme-aegisx-dark',
+      'theme-verus',
+      'theme-verus-dark',
+    );
+    root.classList.add(`theme-${dataTheme}`);
 
     // Apply dark/light class to HTML root for TailwindCSS dark mode
-    const root = document.documentElement;
     if (theme.id.includes('dark')) {
       root.classList.remove('light');
       root.classList.add('dark');
@@ -141,6 +133,10 @@ export class TremorThemeService {
       root.classList.remove('dark');
       root.classList.add('light');
     }
+
+    console.log(
+      `[TremorThemeService] Applied theme: ${theme.id}, data-theme="${dataTheme}"`,
+    );
   }
 
   /**

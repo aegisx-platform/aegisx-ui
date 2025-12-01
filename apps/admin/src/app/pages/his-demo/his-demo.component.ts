@@ -59,7 +59,7 @@ interface Appointment {
       [appName]="'Hospital Information System'"
       [navigation]="navigation"
       [showFooter]="true"
-      [headerTheme]="'dark'"
+      [appTheme]="'medical'"
       [contentBackground]="'gray'"
       (logoutClicked)="onLogout()"
     >

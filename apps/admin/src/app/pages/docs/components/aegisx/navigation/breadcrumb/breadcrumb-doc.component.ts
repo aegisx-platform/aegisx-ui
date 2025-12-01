@@ -10,6 +10,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
+import {
+  DocHeaderComponent,
+  CodeTabsComponent,
+  LivePreviewComponent,
+} from '../../../../../../components/docs';
 
 @Component({
   selector: 'app-breadcrumb-doc',
@@ -26,21 +31,23 @@ import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
     MatSelectModule,
     MatFormFieldModule,
     AxBreadcrumbComponent,
+    DocHeaderComponent,
+    CodeTabsComponent,
+    LivePreviewComponent,
   ],
   template: `
-    <div class="docs-page p-6 max-w-6xl mx-auto">
-      <!-- Header -->
-      <header class="mb-8">
-        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
-          <a routerLink="/docs/components/feedback/dialogs" class="hover:text-primary">Navigation</a>
-          <mat-icon class="text-base">chevron_right</mat-icon>
-          <span>Breadcrumb</span>
-        </div>
-        <h1 class="text-4xl font-bold text-on-surface mb-2">Breadcrumb</h1>
-        <p class="text-lg text-on-surface-variant">
-          Navigation breadcrumbs showing the user's current location within a hierarchical site structure.
-        </p>
-      </header>
+    <div class="breadcrumb-doc">
+      <ax-doc-header
+        title="Breadcrumb"
+        icon="turn_right"
+        description="Navigation breadcrumbs showing the user's current location within a hierarchical site structure."
+        [breadcrumbs]="[
+          { label: 'Navigation', link: '/docs/components/aegisx/navigation/stepper' },
+          { label: 'Breadcrumb' },
+        ]"
+        [showImport]="false"
+        [showQuickLinks]="false"
+      ></ax-doc-header>
 
       <!-- Tabs -->
       <mat-tab-group class="docs-tabs" animationDuration="200ms">
@@ -119,8 +126,8 @@ breadcrumbs: BreadcrumbItem[] = [
             <!-- Size Variants -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Size Variants</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 space-y-6 border-b border-outline-variant">
+              <ax-live-preview title="Breadcrumb Sizes">
+                <div class="space-y-6">
                   @for (size of sizes; track size.value) {
                     <div>
                       <p class="text-sm text-on-surface-variant mb-2">{{ size.label }}</p>
@@ -132,41 +139,28 @@ breadcrumbs: BreadcrumbItem[] = [
                     </div>
                   }
                 </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>&lt;ax-breadcrumb [items]="items" size="sm" /&gt;
-&lt;ax-breadcrumb [items]="items" size="md" /&gt; &lt;!-- default --&gt;
-&lt;ax-breadcrumb [items]="items" size="lg" /&gt;</code></pre>
-                </div>
-              </mat-card>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="sizeVariantsCode" />
             </section>
 
             <!-- With Icons -->
             <section>
               <h3 class="text-xl font-semibold mb-4">With Icons</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 border-b border-outline-variant">
-                  <ax-breadcrumb
-                    [items]="iconBreadcrumbs"
-                    separatorIcon="chevron_right"
-                    (itemClick)="onBreadcrumbClick($event)"
-                  />
-                </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>breadcrumbs: BreadcrumbItem[] = [
-  {{'{'}} label: 'Home', url: '/', icon: 'home' {{'}'}},
-  {{'{'}} label: 'Products', url: '/products', icon: 'inventory_2' {{'}'}},
-  {{'{'}} label: 'Electronics', url: '/electronics', icon: 'devices' {{'}'}},
-  {{'{'}} label: 'Smartphones' {{'}'}}
-];</code></pre>
-                </div>
-              </mat-card>
+              <ax-live-preview title="Breadcrumb with Icons">
+                <ax-breadcrumb
+                  [items]="iconBreadcrumbs"
+                  separatorIcon="chevron_right"
+                  (itemClick)="onBreadcrumbClick($event)"
+                />
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="withIconsCode" />
             </section>
 
             <!-- Separator Variants -->
             <section>
               <h3 class="text-xl font-semibold mb-4">Separator Variants</h3>
-              <mat-card appearance="outlined">
-                <div class="p-6 space-y-4 border-b border-outline-variant">
+              <ax-live-preview title="Separator Options">
+                <div class="space-y-4">
                   <div>
                     <p class="text-sm text-on-surface-variant mb-2">Text separator: "/"</p>
                     <ax-breadcrumb [items]="basicBreadcrumbs" separator="/" />
@@ -184,16 +178,8 @@ breadcrumbs: BreadcrumbItem[] = [
                     <ax-breadcrumb [items]="basicBreadcrumbs" separatorIcon="navigate_next" />
                   </div>
                 </div>
-                <div class="p-4 bg-surface-container-lowest">
-                  <pre class="text-sm overflow-x-auto"><code>&lt;!-- Text separator --&gt;
-&lt;ax-breadcrumb [items]="items" separator="/" /&gt;
-&lt;ax-breadcrumb [items]="items" separator="›" /&gt;
-
-&lt;!-- Icon separator --&gt;
-&lt;ax-breadcrumb [items]="items" separatorIcon="chevron_right" /&gt;
-&lt;ax-breadcrumb [items]="items" separatorIcon="navigate_next" /&gt;</code></pre>
-                </div>
-              </mat-card>
+              </ax-live-preview>
+              <ax-code-tabs [tabs]="separatorVariantsCode" />
             </section>
 
             <!-- Real World Examples -->
@@ -782,6 +768,55 @@ export class BreadcrumbDocComponent {
       value: 'lg',
       fontSize: '1.125rem (18px)',
       useCase: 'Prominent navigation, landing pages',
+    },
+  ];
+
+  // Code Examples
+  sizeVariantsCode = [
+    {
+      language: 'html' as const,
+      label: 'HTML',
+      code: `<ax-breadcrumb [items]="items" size="sm" />
+<ax-breadcrumb [items]="items" size="md" /> <!-- default -->
+<ax-breadcrumb [items]="items" size="lg" />`,
+    },
+  ];
+
+  withIconsCode = [
+    {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { BreadcrumbItem } from '@aegisx/ui';
+
+breadcrumbs: BreadcrumbItem[] = [
+  { label: 'Home', url: '/', icon: 'home' },
+  { label: 'Products', url: '/products', icon: 'inventory_2' },
+  { label: 'Electronics', url: '/electronics', icon: 'devices' },
+  { label: 'Smartphones' } // Last item has no URL
+];`,
+    },
+    {
+      language: 'html' as const,
+      label: 'HTML',
+      code: `<ax-breadcrumb
+  [items]="breadcrumbs"
+  separatorIcon="chevron_right"
+  (itemClick)="onBreadcrumbClick($event)"
+/>`,
+    },
+  ];
+
+  separatorVariantsCode = [
+    {
+      language: 'html' as const,
+      label: 'HTML',
+      code: `<!-- Text separator -->
+<ax-breadcrumb [items]="items" separator="/" />
+<ax-breadcrumb [items]="items" separator="›" />
+
+<!-- Icon separator -->
+<ax-breadcrumb [items]="items" separatorIcon="chevron_right" />
+<ax-breadcrumb [items]="items" separatorIcon="navigate_next" />`,
     },
   ];
 

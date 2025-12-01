@@ -102,6 +102,12 @@ export class HisShellComponent {
       link: '/his-demo/reports',
       icon: 'assessment',
     },
+    {
+      id: 'appointment-calendar',
+      title: 'ระบบนัดหมาย',
+      link: '/his-demo/appointment-calendar',
+      icon: 'calendar_month',
+    },
   ];
 
   onLogout(): void {

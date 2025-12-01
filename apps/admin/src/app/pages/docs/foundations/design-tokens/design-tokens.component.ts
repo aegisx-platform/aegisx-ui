@@ -15,7 +15,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { TremorThemeService } from '../../../../services/tremor-theme.service';
+import { AxThemeService } from '@aegisx/ui';
+import { DocHeaderComponent } from '../../../../components/docs/doc-header/doc-header.component';
 
 interface DesignToken {
   name: string;
@@ -68,13 +69,14 @@ interface ColorLevel {
     MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
+    DocHeaderComponent,
   ],
   templateUrl: './design-tokens.component.html',
   styleUrls: ['./design-tokens.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class DesignTokensComponent implements OnInit {
-  themeService = inject(TremorThemeService);
+  themeService = inject(AxThemeService);
 
   searchQuery = '';
   copiedToken = '';

@@ -62,96 +62,96 @@ button.ax-alert-close {
 
 // Variants
 .ax-alert-default {
-  background-color: var(--ax-gray-50);
-  border-color: var(--ax-gray-200);
-  color: var(--ax-gray-800);
+  background-color: var(--ax-background-subtle);
+  border-color: var(--ax-border-default);
+  color: var(--ax-text-primary);
 
   .ax-alert-icon {
-    color: var(--ax-gray-600);
+    color: var(--ax-text-secondary);
   }
 
   button.ax-alert-close {
-    color: var(--ax-gray-600);
+    color: var(--ax-text-secondary);
 
     &:hover {
-      background-color: var(--ax-gray-100);
-      color: var(--ax-gray-900);
+      background-color: var(--ax-background-muted);
+      color: var(--ax-text-heading);
     }
   }
 }
 
 .ax-alert-success {
   background-color: var(--ax-success-faint);
-  border-color: var(--ax-success);
-  color: var(--ax-success-dark);
+  border-color: var(--ax-success-default);
+  color: var(--ax-success-emphasis);
 
   .ax-alert-icon {
-    color: var(--ax-success);
+    color: var(--ax-success-default);
   }
 
   button.ax-alert-close {
-    color: var(--ax-success);
+    color: var(--ax-success-default);
 
     &:hover {
       background-color: var(--ax-success-faint);
-      color: var(--ax-success-dark);
+      color: var(--ax-success-emphasis);
     }
   }
 }
 
 .ax-alert-error {
   background-color: var(--ax-error-faint);
-  border-color: var(--ax-error);
-  color: var(--ax-error-dark);
+  border-color: var(--ax-error-default);
+  color: var(--ax-error-emphasis);
 
   .ax-alert-icon {
-    color: var(--ax-error);
+    color: var(--ax-error-default);
   }
 
   button.ax-alert-close {
-    color: var(--ax-error);
+    color: var(--ax-error-default);
 
     &:hover {
       background-color: var(--ax-error-faint);
-      color: var(--ax-error-dark);
+      color: var(--ax-error-emphasis);
     }
   }
 }
 
 .ax-alert-warning {
   background-color: var(--ax-warning-faint);
-  border-color: var(--ax-warning);
-  color: var(--ax-warning-dark);
+  border-color: var(--ax-warning-default);
+  color: var(--ax-warning-emphasis);
 
   .ax-alert-icon {
-    color: var(--ax-warning);
+    color: var(--ax-warning-default);
   }
 
   button.ax-alert-close {
-    color: var(--ax-warning);
+    color: var(--ax-warning-default);
 
     &:hover {
       background-color: var(--ax-warning-faint);
-      color: var(--ax-warning-dark);
+      color: var(--ax-warning-emphasis);
     }
   }
 }
 
 .ax-alert-info {
   background-color: var(--ax-info-faint);
-  border-color: var(--ax-info);
-  color: var(--ax-info-dark);
+  border-color: var(--ax-info-default);
+  color: var(--ax-info-emphasis);
 
   .ax-alert-icon {
-    color: var(--ax-info);
+    color: var(--ax-info-default);
   }
 
   button.ax-alert-close {
-    color: var(--ax-info);
+    color: var(--ax-info-default);
 
     &:hover {
       background-color: var(--ax-info-faint);
-      color: var(--ax-info-dark);
+      color: var(--ax-info-emphasis);
     }
   }
 }

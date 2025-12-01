@@ -186,6 +186,22 @@ export interface LauncherApp {
 
   /** Whether this is a featured/frequently used app */
   featured?: boolean;
+
+  // ============================================
+  // GRIDSTER2 PROPERTIES (for draggable mode)
+  // ============================================
+
+  /** Grid X position (column) - only used when enableDraggable is true */
+  x?: number;
+
+  /** Grid Y position (row) - only used when enableDraggable is true */
+  y?: number;
+
+  /** Width in grid units (default: 1) - only used when enableDraggable is true */
+  cols?: number;
+
+  /** Height in grid units (default: 1) - only used when enableDraggable is true */
+  rows?: number;
 }
 
 // ============================================
@@ -250,6 +266,43 @@ export interface LauncherConfig {
 
   /** Gap between cards */
   cardGap?: number;
+
+  // ============================================
+  // DRAGGABLE MODE (Gridster2)
+  // ============================================
+
+  /** Enable draggable grid mode using Gridster2 */
+  enableDraggable?: boolean;
+
+  /** Gridster2 configuration (only used when enableDraggable is true) */
+  gridsterConfig?: LauncherGridsterConfig;
+}
+
+/** Gridster2 specific configuration */
+export interface LauncherGridsterConfig {
+  /** Number of columns (default: 4) */
+  columns?: number;
+
+  /** Row height in pixels (default: 200) */
+  rowHeight?: number;
+
+  /** Gap between items in pixels (default: 10) */
+  margin?: number;
+
+  /** Allow resize (default: true) */
+  enableResize?: boolean;
+
+  /** Minimum card width in columns (default: 1) */
+  minItemCols?: number;
+
+  /** Maximum card width in columns (default: 4) */
+  maxItemCols?: number;
+
+  /** Minimum card height in rows (default: 1) */
+  minItemRows?: number;
+
+  /** Maximum card height in rows (default: 4) */
+  maxItemRows?: number;
 }
 
 // ============================================
@@ -296,6 +349,23 @@ export interface LauncherStatusChangeEvent {
 export interface LauncherEnabledChangeEvent {
   app: LauncherApp;
   enabled: boolean;
+}
+
+/** Layout change event (for draggable mode) */
+export interface LauncherLayoutChangeEvent {
+  /** All apps with updated positions */
+  apps: LauncherApp[];
+  /** Layout data for persistence */
+  layout: LauncherLayoutItem[];
+}
+
+/** Single item layout data */
+export interface LauncherLayoutItem {
+  id: string;
+  x: number;
+  y: number;
+  cols: number;
+  rows: number;
 }
 
 // ============================================

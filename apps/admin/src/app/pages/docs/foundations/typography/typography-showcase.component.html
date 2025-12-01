@@ -1,16 +1,17 @@
 <div class="docs-page">
   <!-- Page Header -->
-  <div class="docs-header">
-    <div class="docs-breadcrumb">
-      <mat-icon>text_fields</mat-icon>
-      <span>Foundation</span>
-    </div>
-    <h1 class="docs-title">Typography Systems</h1>
-    <p class="docs-subtitle">
-      Complete guide to AegisX typography systems with usage examples and best
-      practices for documentation and UI components.
-    </p>
-  </div>
+  <ax-doc-header
+    variant="page"
+    icon="text_fields"
+    title="Typography Systems"
+    description="Complete guide to AegisX typography systems with usage examples and best practices for documentation and UI components."
+    [breadcrumbs]="[
+      { label: 'Foundations', link: '/docs/foundations/overview' },
+      { label: 'Typography' },
+    ]"
+    [showImport]="false"
+    [showQuickLinks]="false"
+  ></ax-doc-header>
 
   <!-- Main Content -->
   <article class="ax-prose-docs">
@@ -132,8 +133,9 @@
 
     <div class="ax-prose-note success">
       <strong>ตัวอย่างการใช้งาน:</strong> ดู
-      <a routerLink="/dashboard">Dashboard Example</a> เพื่อดูการใช้ AegisX
-      Typography ในการสร้าง KPI cards, charts, และ data tables
+      <a routerLink="/docs/examples/dashboard">Dashboard Example</a>
+      เพื่อดูการใช้ AegisX Typography ในการสร้าง KPI cards, charts, และ data
+      tables
     </div>
 
     <hr />
@@ -227,29 +229,14 @@
     </div>
 
     <h3>Usage Example</h3>
-    <pre><code>&lt;!-- สำหรับ documentation ทั่วไป --&gt;
-&lt;article class="ax-prose"&gt;
-  &lt;h1&gt;Page Title&lt;/h1&gt;
-  &lt;p&gt;Your long-form content here...&lt;/p&gt;
-&lt;/article&gt;
-
-&lt;!-- สำหรับ documentation ที่มี Material components --&gt;
-&lt;article class="ax-prose-docs"&gt;
-  &lt;h2&gt;Component Documentation&lt;/h2&gt;
-  &lt;p&gt;Description...&lt;/p&gt;
-
-  &lt;mat-card&gt;
-    &lt;mat-card-content&gt;
-      Example component here
-    &lt;/mat-card-content&gt;
-  &lt;/mat-card&gt;
-&lt;/article&gt;</code></pre>
+    <ax-code-tabs [tabs]="usageExampleCode" />
 
     <div class="ax-prose-note info">
       <strong>Live Examples:</strong> ดู
-      <a routerLink="/prose-demo">Complete Prose Demo</a> เพื่อดูตัวอย่าง prose
-      elements ทั้งหมด หรือดู
-      <a routerLink="/introduction">Introduction Page</a> เพื่อดูการใช้งานจริง
+      <a routerLink="/docs/examples/components">Component Examples</a>
+      เพื่อดูตัวอย่าง prose elements ทั้งหมด หรือดู
+      <a routerLink="/docs/getting-started/introduction">Introduction Page</a>
+      เพื่อดูการใช้งานจริง
     </div>
 
     <hr />
@@ -287,13 +274,7 @@
     </div>
 
     <h3>Code Example</h3>
-    <pre><code>&lt;div class="ax-prose-note info"&gt;
-  &lt;strong&gt;Info:&lt;/strong&gt; Your informational message here
-&lt;/div&gt;
-
-&lt;div class="ax-prose-note warning"&gt;
-  &lt;strong&gt;Warning:&lt;/strong&gt; Your warning message here
-&lt;/div&gt;</code></pre>
+    <ax-code-tabs [tabs]="noteExampleCode" />
 
     <hr />
 
@@ -398,20 +379,20 @@
     <ol>
       <li>
         <strong>Prose Demo</strong> - ดูตัวอย่าง prose elements ทั้งหมด →
-        <a routerLink="/prose-demo">Complete Prose Demo</a>
+        <a routerLink="/docs/examples/components">Component Examples</a>
       </li>
       <li>
         <strong>Design Tokens</strong> - เรียนรู้เกี่ยวกับ color tokens →
-        <a routerLink="/design-tokens">Design Tokens Guide</a>
+        <a routerLink="/docs/foundations/design-tokens">Design Tokens Guide</a>
       </li>
       <li>
         <strong>Component Examples</strong> - ดู UI components ที่ใช้ AegisX
         Typography →
-        <a routerLink="/components">Component Library</a>
+        <a routerLink="/docs/examples/components">Component Library</a>
       </li>
       <li>
         <strong>Dashboard Example</strong> - ดูการใช้งานจริงใน dashboard →
-        <a routerLink="/dashboard">Dashboard Example</a>
+        <a routerLink="/docs/examples/dashboard">Dashboard Example</a>
       </li>
     </ol>
   </article>

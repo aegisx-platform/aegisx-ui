@@ -30,16 +30,12 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     <div class="card-doc">
       <ax-doc-header
         title="Card"
+        icon="dashboard"
         description="Container component for grouping related content with consistent styling and semantic color variants."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          {
-            label: 'Components',
-            link: '/docs/components/data-display/overview',
-          },
           {
             label: 'Data Display',
-            link: '/docs/components/data-display/overview',
+            link: '/docs/components/aegisx/data-display/card',
           },
           { label: 'Card' },
         ]"
@@ -110,6 +106,46 @@ import { ComponentToken } from '../../../../../../types/docs.types';
               </ax-live-preview>
 
               <ax-code-tabs [tabs]="variantsCode"></ax-code-tabs>
+            </section>
+
+            <section class="card-doc__section">
+              <h2>Header Actions</h2>
+              <p>
+                Add action buttons to the card header using the header-actions
+                slot. Perfect for menu buttons, settings, or other card-level
+                actions.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                [wrap]="true"
+                gap="var(--ax-spacing-lg)"
+              >
+                <ax-card
+                  title="Enrolled students"
+                  subtitle="Course overview"
+                  class="card-doc__demo-card-wide"
+                >
+                  <button header-actions mat-icon-button>
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <p class="card-doc__demo-content">1,234 students</p>
+                </ax-card>
+
+                <ax-card
+                  title="Course performance"
+                  subtitle="Last 30 days"
+                  class="card-doc__demo-card-wide"
+                >
+                  <button header-actions mat-icon-button>
+                    <mat-icon>settings</mat-icon>
+                  </button>
+                  <p class="card-doc__demo-content">85% completion rate</p>
+                </ax-card>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="headerActionsCode"></ax-code-tabs>
             </section>
 
             <section class="card-doc__section">
@@ -216,6 +252,100 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   class="card-doc__demo-card"
                 >
                   <p>Click to interact</p>
+                </ax-card>
+              </ax-live-preview>
+            </section>
+
+            <section class="card-doc__section">
+              <h2>Footer & Actions</h2>
+              <p>
+                Use footer and actions slots for additional content areas like
+                metadata or action buttons.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                [wrap]="true"
+                gap="var(--ax-spacing-lg)"
+              >
+                <ax-card
+                  title="Card with Footer"
+                  class="card-doc__demo-card-wide"
+                >
+                  <p>Main content area</p>
+                  <div footer class="card-doc__footer-example">
+                    <mat-icon>schedule</mat-icon>
+                    <span>Updated 2 hours ago</span>
+                  </div>
+                </ax-card>
+
+                <ax-card
+                  title="Card with Actions"
+                  class="card-doc__demo-card-wide"
+                >
+                  <p>Main content area</p>
+                  <div actions class="card-doc__actions-example">
+                    <button mat-button>Cancel</button>
+                    <button mat-flat-button color="primary">Save</button>
+                  </div>
+                </ax-card>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="footerActionsCode"></ax-code-tabs>
+            </section>
+
+            <section class="card-doc__section">
+              <h2>Loading State</h2>
+              <p>
+                Show a loading overlay with spinner while content is being
+                fetched.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                gap="var(--ax-spacing-lg)"
+              >
+                <ax-card
+                  title="Loading Card"
+                  [loading]="true"
+                  class="card-doc__demo-card-wide"
+                >
+                  <p>This content is loading...</p>
+                </ax-card>
+
+                <ax-card
+                  title="Normal Card"
+                  [loading]="false"
+                  class="card-doc__demo-card-wide"
+                >
+                  <p>Content is ready</p>
+                </ax-card>
+              </ax-live-preview>
+            </section>
+
+            <section class="card-doc__section">
+              <h2>Flat Style</h2>
+              <p>
+                Remove shadow for a flat appearance using the flat property.
+              </p>
+
+              <ax-live-preview
+                variant="bordered"
+                direction="row"
+                gap="var(--ax-spacing-lg)"
+              >
+                <ax-card title="Normal Card" class="card-doc__demo-card">
+                  <p>With shadow</p>
+                </ax-card>
+
+                <ax-card
+                  title="Flat Card"
+                  [flat]="true"
+                  class="card-doc__demo-card"
+                >
+                  <p>No shadow</p>
                 </ax-card>
               </ax-live-preview>
             </section>
@@ -423,18 +553,56 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                       <td><code>'1'</code></td>
                       <td>Border width (supports custom values)</td>
                     </tr>
+                    <tr>
+                      <td><code>flat</code></td>
+                      <td><code>boolean</code></td>
+                      <td><code>false</code></td>
+                      <td>Removes shadow from card</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </section>
 
             <section class="card-doc__section">
-              <h2>Content Projection</h2>
+              <h2>Content Projection Slots</h2>
               <p>
-                Card content is projected via <code>ng-content</code>. Use the
-                title and subtitle inputs for standard headers, or project
-                custom content for complex layouts.
+                Use named slots to project content into specific areas of the
+                card.
               </p>
+              <div class="card-doc__api-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Slot</th>
+                      <th>Selector</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>default</code></td>
+                      <td><code>ng-content</code></td>
+                      <td>Main body content of the card</td>
+                    </tr>
+                    <tr>
+                      <td><code>header-actions</code></td>
+                      <td><code>[header-actions]</code></td>
+                      <td>Action buttons in header (right side)</td>
+                    </tr>
+                    <tr>
+                      <td><code>footer</code></td>
+                      <td><code>[footer]</code></td>
+                      <td>Footer content area</td>
+                    </tr>
+                    <tr>
+                      <td><code>actions</code></td>
+                      <td><code>[actions]</code></td>
+                      <td>Action buttons area</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </section>
           </div>
         </mat-tab>
@@ -538,6 +706,39 @@ import { ComponentToken } from '../../../../../../types/docs.types';
       .card-doc__demo-card {
         width: 180px;
         min-height: 80px;
+      }
+
+      .card-doc__demo-card-wide {
+        width: 240px;
+        min-height: 100px;
+      }
+
+      .card-doc__demo-content {
+        margin: 0;
+        font-size: var(--ax-text-2xl, 1.5rem);
+        font-weight: 600;
+        color: var(--ax-text-heading);
+      }
+
+      /* Footer & Actions Demo */
+      .card-doc__footer-example {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-xs, 0.25rem);
+        font-size: var(--ax-text-sm, 0.875rem);
+        color: var(--ax-text-secondary);
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .card-doc__actions-example {
+        display: flex;
+        gap: var(--ax-spacing-sm, 0.5rem);
+        justify-content: flex-end;
       }
 
       /* Profile Card Example */
@@ -845,6 +1046,55 @@ export class MyComponent {}`,
 <!-- Elevated -->
 <ax-card variant="elevated" title="Elevated">
   Content
+</ax-card>`,
+    },
+  ];
+
+  headerActionsCode = [
+    {
+      label: 'HTML',
+      language: 'html' as const,
+      code: `<!-- Card with header action button -->
+<ax-card title="Card Title" subtitle="Subtitle">
+  <button header-actions mat-icon-button>
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <p>Card content here</p>
+</ax-card>
+
+<!-- Multiple header actions -->
+<ax-card title="Settings" subtitle="Configure options">
+  <button header-actions mat-icon-button>
+    <mat-icon>edit</mat-icon>
+  </button>
+  <button header-actions mat-icon-button>
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <p>Card content here</p>
+</ax-card>`,
+    },
+  ];
+
+  footerActionsCode = [
+    {
+      label: 'HTML',
+      language: 'html' as const,
+      code: `<!-- Card with footer -->
+<ax-card title="Card with Footer">
+  <p>Main content area</p>
+  <div footer>
+    <mat-icon>schedule</mat-icon>
+    <span>Updated 2 hours ago</span>
+  </div>
+</ax-card>
+
+<!-- Card with action buttons -->
+<ax-card title="Card with Actions">
+  <p>Main content area</p>
+  <div actions>
+    <button mat-button>Cancel</button>
+    <button mat-flat-button color="primary">Save</button>
+  </div>
 </ax-card>`,
     },
   ];

@@ -30,14 +30,10 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     <div class="alert-doc">
       <ax-doc-header
         title="Alert"
+        icon="announcement"
         description="Contextual feedback messages for user actions or system status. Alerts communicate important information with semantic colors."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          {
-            label: 'Components',
-            link: '/docs/components/data-display/overview',
-          },
-          { label: 'Feedback', link: '/docs/components/feedback/alert' },
+          { label: 'Feedback', link: '/docs/components/aegisx/feedback/alert' },
           { label: 'Alert' },
         ]"
         status="stable"

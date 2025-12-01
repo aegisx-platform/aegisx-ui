@@ -28,16 +28,12 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     <div class="list-doc">
       <ax-doc-header
         title="List"
+        icon="list"
         description="Vertical collection of items with optional icons, descriptions, and metadata for displaying structured information."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          {
-            label: 'Components',
-            link: '/docs/components/data-display/overview',
-          },
           {
             label: 'Data Display',
-            link: '/docs/components/data-display/overview',
+            link: '/docs/components/aegisx/data-display/card',
           },
           { label: 'List' },
         ]"

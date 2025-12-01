@@ -30,11 +30,10 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
     <div class="file-upload-doc">
       <ax-doc-header
         title="File Upload"
+        icon="cloud_upload"
         description="A drag-and-drop file upload component with preview and progress indication. Supports single and multiple file uploads with validation."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
-          { label: 'Components', link: '/docs/components' },
-          { label: 'Forms', link: '/docs/components/forms/date-picker' },
+          { label: 'Forms', link: '/docs/components/aegisx/forms/date-picker' },
           { label: 'File Upload' },
         ]"
         status="stable"

@@ -33,12 +33,14 @@ interface MotionToken {
     <div class="motion-page">
       <ax-doc-header
         title="Motion"
+        icon="animation"
         description="Animation durations and easing functions for smooth, natural interactions. Motion should be purposeful and enhance the user experience."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
           { label: 'Foundations', link: '/docs/foundations/overview' },
           { label: 'Motion' },
         ]"
+        [showImport]="false"
+        [showQuickLinks]="false"
       ></ax-doc-header>
 
       <!-- Duration Tokens -->

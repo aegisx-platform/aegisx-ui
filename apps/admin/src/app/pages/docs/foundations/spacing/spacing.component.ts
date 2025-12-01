@@ -31,12 +31,14 @@ interface SpacingToken {
     <div class="spacing-page">
       <ax-doc-header
         title="Spacing"
+        icon="space_bar"
         description="Consistent spacing scale based on an 8px grid system. Use these tokens for margins, paddings, and gaps to maintain visual rhythm."
         [breadcrumbs]="[
-          { label: 'Docs', link: '/docs' },
           { label: 'Foundations', link: '/docs/foundations/overview' },
           { label: 'Spacing' },
         ]"
+        [showImport]="false"
+        [showQuickLinks]="false"
       ></ax-doc-header>
 
       <!-- Grid Principle -->

@@ -90,6 +90,83 @@
       </div>
     }
 
+    <!-- Progress Variant: Value + Progress Bar + Label -->
+    @if (variant === 'progress') {
+      <div class="ax-kpi-card__header">
+        <div class="ax-kpi-card__label">{{ label }}</div>
+      </div>
+      <div class="ax-kpi-card__body">
+        <div class="ax-kpi-card__value">{{ value }}</div>
+      </div>
+      <div class="ax-kpi-card__progress-container">
+        <div class="ax-kpi-card__progress-bar">
+          <div
+            class="ax-kpi-card__progress-fill"
+            [style.width.%]="progress"
+            [style.background-color]="'var(--ax-' + progressColor + '-default)'"
+          ></div>
+        </div>
+        @if (progressLabel || progress !== undefined) {
+          <div class="ax-kpi-card__progress-info">
+            <span
+              class="ax-kpi-card__progress-percent"
+              [style.color]="'var(--ax-' + progressColor + '-default)'"
+            >
+              {{ progress }}%
+            </span>
+            @if (progressLabel) {
+              <span class="ax-kpi-card__progress-label">{{
+                progressLabel
+              }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Segmented Variant: Value + Segmented Progress + Legend -->
+    @if (variant === 'segmented') {
+      <div class="ax-kpi-card__header">
+        <div class="ax-kpi-card__label">{{ label }}</div>
+      </div>
+      <div class="ax-kpi-card__body">
+        <div class="ax-kpi-card__value">{{ value }}</div>
+      </div>
+      <div class="ax-kpi-card__segmented-container">
+        <div class="ax-kpi-card__segmented-bar">
+          @for (segment of segments; track $index) {
+            <div
+              class="ax-kpi-card__segment"
+              [style.width.%]="segment.value"
+              [style.background-color]="segment.color"
+            ></div>
+          }
+        </div>
+        @if (segments.length > 0) {
+          <div class="ax-kpi-card__segmented-legend">
+            @for (segment of segments; track $index) {
+              <div class="ax-kpi-card__legend-item">
+                <span class="ax-kpi-card__legend-value"
+                  >{{ segment.value }}%</span
+                >
+                <div class="ax-kpi-card__legend-color-label">
+                  <span
+                    class="ax-kpi-card__legend-dot"
+                    [style.background-color]="segment.color"
+                  ></span>
+                  @if (segment.label) {
+                    <span class="ax-kpi-card__legend-label">{{
+                      segment.label
+                    }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
     <!-- Optional subtitle -->
     @if (subtitle) {
       <div class="ax-kpi-card__subtitle">{{ subtitle }}</div>

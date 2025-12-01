@@ -1,20 +1,20 @@
 <div class="docs-page">
-  <!-- Page Header with back button -->
-  <div class="docs-header">
-    <div class="docs-breadcrumb">
-      <a routerLink="/aegisx-ui" mat-button>
-        <mat-icon>arrow_back</mat-icon>
-        AegisX UI
-      </a>
-      <mat-icon>chevron_right</mat-icon>
-      <span>Data Display</span>
-    </div>
-
-    <h1 class="docs-title">Data Display Components</h1>
-    <p class="docs-subtitle">
-      Display field values and structured data in read-only formats
-    </p>
-  </div>
+  <!-- Page Header -->
+  <ax-doc-header
+    variant="page"
+    icon="view_list"
+    title="Data Display Components"
+    description="Display field values and structured data in read-only formats"
+    [breadcrumbs]="[
+      {
+        label: 'Components',
+        link: '/docs/components/aegisx/data-display/card',
+      },
+      { label: 'Data Display' },
+    ]"
+    [showImport]="false"
+    [showQuickLinks]="false"
+  ></ax-doc-header>
 
   <!-- Field Display Component -->
   <div class="demo-section">
@@ -25,84 +25,112 @@
     </p>
 
     <h4 class="h6">Basic Text Display</h4>
-    <div class="demo-container" style="max-width: 600px">
-      <ax-field-display
-        label="Full Name"
-        [value]="userProfile.fullName"
-      ></ax-field-display>
-      <ax-field-display
-        label="Role"
-        [value]="userProfile.role"
-      ></ax-field-display>
-      <ax-field-display
-        label="Department"
-        [value]="userProfile.department"
-      ></ax-field-display>
-    </div>
+    <ax-live-preview title="Basic Text Display">
+      <div style="max-width: 600px">
+        <ax-field-display
+          label="Full Name"
+          [value]="userProfile.fullName"
+        ></ax-field-display>
+        <ax-field-display
+          label="Role"
+          [value]="userProfile.role"
+        ></ax-field-display>
+        <ax-field-display
+          label="Department"
+          [value]="userProfile.department"
+        ></ax-field-display>
+      </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="basicTextCode" />
 
     <h4 class="h6">Type-Based Formatting</h4>
-    <div class="demo-container" style="max-width: 600px">
-      <ax-field-display
-        label="Join Date"
-        [value]="userProfile.joinDate"
-        type="date"
-      >
-      </ax-field-display>
+    <ax-live-preview title="Type-Based Formatting">
+      <div style="max-width: 600px">
+        <ax-field-display
+          label="Join Date"
+          [value]="userProfile.joinDate"
+          type="date"
+        >
+        </ax-field-display>
 
-      <ax-field-display
-        label="Salary"
-        [value]="userProfile.salary"
-        type="currency"
-        [formatOptions]="{ currency: 'THB', decimals: 2 }"
-      >
-      </ax-field-display>
+        <ax-field-display
+          label="Salary"
+          [value]="userProfile.salary"
+          type="currency"
+          [formatOptions]="{ currency: 'THB', decimals: 2 }"
+        >
+        </ax-field-display>
 
-      <ax-field-display
-        label="Performance Score"
-        [value]="userProfile.performanceScore"
-        type="percentage"
-      >
-      </ax-field-display>
+        <ax-field-display
+          label="Performance Score"
+          [value]="userProfile.performanceScore"
+          type="percentage"
+        >
+        </ax-field-display>
 
-      <ax-field-display
-        label="Active Status"
-        [value]="userProfile.isActive"
-        type="boolean"
-      >
-      </ax-field-display>
-    </div>
+        <ax-field-display
+          label="Active Status"
+          [value]="userProfile.isActive"
+          type="boolean"
+        >
+        </ax-field-display>
+      </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="typeFormattingCode" />
 
     <h4 class="h6">Clickable Links</h4>
-    <div class="demo-container" style="max-width: 600px">
-      <ax-field-display label="Email" [value]="userProfile.email" type="email">
-      </ax-field-display>
+    <ax-live-preview title="Clickable Links">
+      <div style="max-width: 600px">
+        <ax-field-display
+          label="Email"
+          [value]="userProfile.email"
+          type="email"
+        >
+        </ax-field-display>
 
-      <ax-field-display label="Phone" [value]="userProfile.phone" type="phone">
-      </ax-field-display>
+        <ax-field-display
+          label="Phone"
+          [value]="userProfile.phone"
+          type="phone"
+        >
+        </ax-field-display>
 
-      <ax-field-display
-        label="Website"
-        [value]="userProfile.website"
-        type="url"
-      >
-      </ax-field-display>
-    </div>
+        <ax-field-display
+          label="Website"
+          [value]="userProfile.website"
+          type="url"
+        >
+        </ax-field-display>
+      </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="clickableLinksCode" />
 
     <h4 class="h6">Sizes</h4>
-    <div class="demo-container" style="max-width: 600px">
-      <ax-field-display label="Small" [value]="userProfile.fullName" size="sm">
-      </ax-field-display>
+    <ax-live-preview title="Size Variants">
+      <div style="max-width: 600px">
+        <ax-field-display
+          label="Small"
+          [value]="userProfile.fullName"
+          size="sm"
+        >
+        </ax-field-display>
 
-      <ax-field-display
-        label="Medium (Default)"
-        [value]="userProfile.fullName"
-        size="md"
-      >
-      </ax-field-display>
+        <ax-field-display
+          label="Medium (Default)"
+          [value]="userProfile.fullName"
+          size="md"
+        >
+        </ax-field-display>
 
-      <ax-field-display label="Large" [value]="userProfile.fullName" size="lg">
-      </ax-field-display>
-    </div>
+        <ax-field-display
+          label="Large"
+          [value]="userProfile.fullName"
+          size="lg"
+        >
+        </ax-field-display>
+      </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="sizesCode" />
 
     <h4 class="h6">Vertical Orientation</h4>
     <div class="demo-container" style="max-width: 600px">
@@ -141,7 +169,7 @@
     </p>
 
     <h4 class="h6">Horizontal Layout (Default)</h4>
-    <div class="demo-container">
+    <ax-live-preview title="Horizontal Layout">
       <ax-description-list style="max-width: 600px">
         <ax-field-display
           label="Full Name"
@@ -162,10 +190,11 @@
           type="date"
         ></ax-field-display>
       </ax-description-list>
-    </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="horizontalLayoutCode" />
 
     <h4 class="h6">Grid Layout (2 Columns)</h4>
-    <div class="demo-container">
+    <ax-live-preview title="Grid Layout (2 Columns)">
       <ax-description-list layout="grid" [columns]="2">
         <ax-field-display
           label="Full Name"
@@ -195,7 +224,8 @@
           type="date"
         ></ax-field-display>
       </ax-description-list>
-    </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="gridLayoutCode" />
 
     <h4 class="h6">Grid Layout (3 Columns)</h4>
     <div class="demo-container">
@@ -230,8 +260,8 @@
       </ax-description-list>
     </div>
 
-    <h4 class="h6">With Dividers (Default: Small Spacing)</h4>
-    <div class="demo-container">
+    <h4 class="h6">With Dividers</h4>
+    <ax-live-preview title="With Dividers">
       <ax-description-list [divider]="true" style="max-width: 600px">
         <ax-field-display
           label="Order ID"
@@ -252,7 +282,8 @@
           [formatOptions]="{ currency: 'THB' }"
         ></ax-field-display>
       </ax-description-list>
-    </div>
+    </ax-live-preview>
+    <ax-code-tabs [tabs]="withDividersCode" />
 
     <h4 class="h6">Divider Size Variants</h4>
     <div class="demo-container">

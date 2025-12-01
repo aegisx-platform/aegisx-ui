@@ -1,9 +1,9 @@
 /**
  * Tremor Theme Switcher Component
  *
- * Provides theme switching UI for Tremor custom themes.
+ * Provides theme switching UI for AegisX applications.
  * Integrates with TremorThemeService to switch between light/dark modes
- * and different color themes.
+ * and different color themes (AegisX, Verus).
  */
 
 import { Component, inject } from '@angular/core';
@@ -13,7 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { TremorThemeService } from '../services/tremor-theme.service';
+import { AxThemeService } from '@aegisx/ui';
 
 @Component({
   selector: 'ax-tremor-theme-switcher',
@@ -207,7 +207,7 @@ import { TremorThemeService } from '../services/tremor-theme.service';
   ],
 })
 export class TremorThemeSwitcherComponent {
-  private readonly themeService = inject(TremorThemeService);
+  private readonly themeService = inject(AxThemeService);
 
   // Expose theme service properties
   themes = this.themeService.themes;
@@ -217,7 +217,7 @@ export class TremorThemeSwitcherComponent {
    * Check if current theme is dark mode
    */
   isDarkMode() {
-    return this.currentTheme()?.id.includes('dark') ?? false;
+    return this.themeService.mode() === 'dark';
   }
 
   /**
@@ -231,16 +231,6 @@ export class TremorThemeSwitcherComponent {
    * Toggle between light and dark mode
    */
   toggleDarkMode(): void {
-    const currentId = this.currentTheme()?.id;
-
-    if (currentId?.includes('dark')) {
-      // Switch to light version
-      const lightId = currentId.replace('-dark', '-light');
-      this.selectTheme(lightId);
-    } else {
-      // Switch to dark version
-      const darkId = currentId?.replace('-light', '-dark') || 'tremor-dark';
-      this.selectTheme(darkId);
-    }
+    this.themeService.toggleMode();
   }
 }
