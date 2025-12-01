@@ -53,8 +53,15 @@ import { SplashScreenStage } from './splash-screen.types';
         [class.ax-splash-screen--slide]="animationStyle() === 'slide'"
         [class.ax-splash-screen--scale]="animationStyle() === 'scale'"
         [class.ax-splash-screen--error]="hasError()"
-        [style.background]="displayBackground()"
       >
+        <!-- Animated Background (theme-aware, no inline style override) -->
+        <div class="ax-splash-screen__bg">
+          <div class="gradient-orb orb-1"></div>
+          <div class="gradient-orb orb-2"></div>
+          <div class="gradient-orb orb-3"></div>
+          <div class="grid-pattern"></div>
+        </div>
+
         <div class="ax-splash-screen__content">
           <!-- Logo -->
           @if (displayLogo()) {
@@ -170,6 +177,47 @@ import { SplashScreenStage } from './splash-screen.types';
   `,
   styles: [
     `
+      /* Theme-aware CSS Variables */
+      :host {
+        /* Dark theme (default) */
+        --splash-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        --splash-bg-error: linear-gradient(135deg, #1e1e2e 0%, #2d1b3d 100%);
+        --splash-text: #ffffff;
+        --splash-text-muted: rgba(255, 255, 255, 0.7);
+        --splash-text-subtle: rgba(255, 255, 255, 0.5);
+        --splash-orb-opacity: 0.6;
+        --splash-orb-1: linear-gradient(135deg, #6366f1, #8b5cf6);
+        --splash-orb-2: linear-gradient(135deg, #06b6d4, #3b82f6);
+        --splash-orb-3: linear-gradient(135deg, #f472b6, #ec4899);
+        --splash-grid-color: rgba(255, 255, 255, 0.03);
+        --splash-progress-bg: rgba(255, 255, 255, 0.15);
+        --splash-progress-bar: #ffffff;
+        --splash-success: #34d399;
+        --splash-error: #f87171;
+        --splash-logo-shadow: rgba(99, 102, 241, 0.4);
+      }
+
+      /* Light theme - detect via .light class or data-theme without -dark */
+      :host-context(.light),
+      :host-context([data-theme='aegisx']),
+      :host-context([data-theme='verus']) {
+        --splash-bg: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        --splash-bg-error: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        --splash-text: #1e293b;
+        --splash-text-muted: rgba(30, 41, 59, 0.7);
+        --splash-text-subtle: rgba(30, 41, 59, 0.5);
+        --splash-orb-opacity: 0.4;
+        --splash-orb-1: linear-gradient(135deg, #818cf8, #a78bfa);
+        --splash-orb-2: linear-gradient(135deg, #22d3ee, #60a5fa);
+        --splash-orb-3: linear-gradient(135deg, #f9a8d4, #f472b6);
+        --splash-grid-color: rgba(0, 0, 0, 0.03);
+        --splash-progress-bg: rgba(99, 102, 241, 0.15);
+        --splash-progress-bar: #6366f1;
+        --splash-success: #10b981;
+        --splash-error: #ef4444;
+        --splash-logo-shadow: rgba(99, 102, 241, 0.3);
+      }
+
       .ax-splash-screen {
         position: fixed;
         top: 0;
@@ -180,7 +228,6 @@ import { SplashScreenStage } from './splash-screen.types';
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         animation: fadeIn 0.3s ease-out;
 
         &--fade {
@@ -196,67 +243,185 @@ import { SplashScreenStage } from './splash-screen.types';
         }
 
         &--error {
-          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+          .ax-splash-screen__bg {
+            background: var(--splash-bg-error);
+          }
+          .orb-1 {
+            background: linear-gradient(135deg, #f5576c, #f093fb);
+          }
+          .orb-2 {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+          }
+        }
+      }
+
+      /* Animated Background */
+      .ax-splash-screen__bg {
+        position: absolute;
+        inset: 0;
+        background: var(--splash-bg);
+        overflow: hidden;
+      }
+
+      .gradient-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: var(--splash-orb-opacity);
+      }
+
+      .orb-1 {
+        width: 500px;
+        height: 500px;
+        background: var(--splash-orb-1);
+        top: -150px;
+        right: -100px;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      .orb-2 {
+        width: 350px;
+        height: 350px;
+        background: var(--splash-orb-2);
+        bottom: -100px;
+        left: -80px;
+        animation: float 10s ease-in-out infinite reverse;
+      }
+
+      .orb-3 {
+        width: 250px;
+        height: 250px;
+        background: var(--splash-orb-3);
+        top: 40%;
+        left: 25%;
+        transform: translate(-50%, -50%);
+        animation: float 12s ease-in-out infinite;
+      }
+
+      .grid-pattern {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--splash-grid-color) 1px, transparent 1px),
+          linear-gradient(90deg, var(--splash-grid-color) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-30px) scale(1.05);
         }
       }
 
       .ax-splash-screen__content {
+        position: relative;
+        z-index: 1;
         text-align: center;
-        color: white;
+        color: var(--splash-text);
         max-width: 400px;
         padding: 2rem;
+        animation: contentFadeIn 0.6s ease-out 0.1s both;
+      }
+
+      @keyframes contentFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .ax-splash-screen__logo {
         margin-bottom: 1.5rem;
 
         img {
-          max-width: 120px;
-          max-height: 120px;
+          max-width: 100px;
+          max-height: 100px;
           object-fit: contain;
-          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+          filter: drop-shadow(0 8px 20px var(--splash-logo-shadow));
         }
       }
 
       .ax-splash-screen__logo-placeholder {
         margin-bottom: 1.5rem;
+        width: 88px;
+        height: 88px;
+        margin-left: auto;
+        margin-right: auto;
+        background: var(--splash-orb-1);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 32px var(--splash-logo-shadow);
+        animation: logoFloat 3s ease-in-out infinite;
 
         mat-icon {
-          font-size: 80px;
-          width: 80px;
-          height: 80px;
-          opacity: 0.9;
+          font-size: 44px;
+          width: 44px;
+          height: 44px;
+          color: white;
+        }
+      }
+
+      @keyframes logoFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
         }
       }
 
       .ax-splash-screen__title {
-        font-size: 2rem;
-        font-weight: 600;
+        font-size: 1.75rem;
+        font-weight: 700;
         margin: 0 0 0.5rem;
         letter-spacing: -0.5px;
+        color: var(--splash-text);
       }
 
       .ax-splash-screen__tagline {
-        font-size: 1rem;
-        opacity: 0.85;
-        margin: 0 0 2rem;
+        font-size: 0.9375rem;
+        color: var(--splash-text-muted);
+        margin: 0 0 1.5rem;
+        line-height: 1.5;
       }
 
       .ax-splash-screen__progress-section {
-        margin: 2rem 0;
+        margin: 2rem 0 1rem;
       }
 
       .ax-splash-screen__progress-bar {
-        border-radius: 4px;
+        height: 4px;
+        border-radius: 2px;
         overflow: hidden;
+        background: var(--splash-progress-bg);
 
         ::ng-deep {
+          .mdc-linear-progress {
+            height: 4px;
+          }
+
           .mdc-linear-progress__buffer-bar {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: var(--splash-progress-bg);
           }
 
           .mdc-linear-progress__bar-inner {
-            border-color: white;
+            border-color: var(--splash-progress-bar);
+          }
+
+          .mdc-linear-progress__primary-bar,
+          .mdc-linear-progress__secondary-bar {
+            background: var(--splash-progress-bar);
           }
         }
       }
@@ -265,33 +430,34 @@ import { SplashScreenStage } from './splash-screen.types';
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.75rem;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        opacity: 0.9;
+        gap: 0.625rem;
+        margin-top: 0.875rem;
+        font-size: 0.875rem;
+        color: var(--splash-text-muted);
 
         mat-spinner {
           ::ng-deep circle {
-            stroke: white;
+            stroke: var(--splash-progress-bar);
           }
         }
 
         .error-icon {
-          color: #ffcdd2;
+          color: var(--splash-error);
         }
       }
 
       .ax-splash-screen__percentage {
-        font-size: 0.85rem;
-        opacity: 0.7;
-        margin-top: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--splash-text-subtle);
+        margin-top: 0.375rem;
+        font-variant-numeric: tabular-nums;
       }
 
       .ax-splash-screen__stages {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        margin-top: 2rem;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
         text-align: left;
       }
 
@@ -299,32 +465,28 @@ import { SplashScreenStage } from './splash-screen.types';
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 0;
         transition: all 0.2s ease;
 
         &--pending {
-          opacity: 0.5;
+          opacity: 0.4;
         }
 
         &--loading {
-          background: rgba(255, 255, 255, 0.2);
+          opacity: 1;
         }
 
         &--completed {
-          opacity: 0.7;
+          opacity: 0.6;
 
           .ax-splash-screen__stage-icon mat-icon {
-            color: #a5d6a7;
+            color: var(--splash-success);
           }
         }
 
         &--error {
-          background: rgba(255, 0, 0, 0.2);
-
           .ax-splash-screen__stage-icon mat-icon {
-            color: #ffcdd2;
+            color: var(--splash-error);
           }
         }
       }
@@ -333,8 +495,8 @@ import { SplashScreenStage } from './splash-screen.types';
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
 
         mat-icon {
           font-size: 18px;
@@ -344,36 +506,43 @@ import { SplashScreenStage } from './splash-screen.types';
 
         mat-spinner {
           ::ng-deep circle {
-            stroke: white;
+            stroke: var(--splash-progress-bar);
           }
         }
       }
 
       .ax-splash-screen__stage-label {
-        font-size: 0.85rem;
+        font-size: 0.875rem;
+        color: var(--splash-text);
+        font-weight: 400;
       }
 
       .ax-splash-screen__error {
         margin-top: 1.5rem;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
+        text-align: center;
 
         p {
           margin: 0 0 1rem;
-          font-size: 0.9rem;
+          font-size: 0.875rem;
+          color: var(--splash-text-muted);
         }
 
         button {
-          color: white;
-          border-color: rgba(255, 255, 255, 0.5);
+          color: var(--splash-text);
+          border-color: var(--splash-text-subtle);
+
+          &:hover {
+            background: var(--splash-progress-bg);
+            border-color: var(--splash-text-muted);
+          }
         }
       }
 
       .ax-splash-screen__version {
-        margin-top: 2rem;
+        margin-top: 1.5rem;
         font-size: 0.75rem;
-        opacity: 0.5;
+        color: var(--splash-text-subtle);
+        font-variant-numeric: tabular-nums;
       }
 
       @keyframes fadeIn {
@@ -404,6 +573,48 @@ import { SplashScreenStage } from './splash-screen.types';
         to {
           opacity: 1;
           transform: scale(1);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .ax-splash-screen__content {
+          padding: 1.5rem;
+        }
+
+        .ax-splash-screen__logo-placeholder {
+          width: 72px;
+          height: 72px;
+          border-radius: 16px;
+
+          mat-icon {
+            font-size: 36px;
+            width: 36px;
+            height: 36px;
+          }
+        }
+
+        .ax-splash-screen__title {
+          font-size: 1.375rem;
+        }
+
+        .ax-splash-screen__tagline {
+          font-size: 0.875rem;
+        }
+
+        .orb-1 {
+          width: 300px;
+          height: 300px;
+        }
+
+        .orb-2 {
+          width: 200px;
+          height: 200px;
+        }
+
+        .orb-3 {
+          width: 150px;
+          height: 150px;
         }
       }
     `,
