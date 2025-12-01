@@ -238,6 +238,13 @@ export class App implements OnInit {
               link: '/docs/components/aegisx/data-display/calendar',
             },
             {
+              id: 'kbd',
+              title: 'Kbd',
+              type: 'item',
+              icon: 'keyboard',
+              link: '/docs/components/aegisx/data-display/kbd',
+            },
+            {
               id: 'field-display',
               title: 'Field Display',
               type: 'item',
@@ -322,6 +329,13 @@ export class App implements OnInit {
               type: 'item',
               icon: 'event',
               link: '/docs/components/aegisx/forms/scheduler',
+            },
+            {
+              id: 'input-otp',
+              title: 'Input OTP',
+              type: 'item',
+              icon: 'pin',
+              link: '/docs/components/aegisx/forms/input-otp',
             },
           ],
         },
@@ -532,6 +546,41 @@ export class App implements OnInit {
           icon: 'draw',
           link: '/docs/integrations/signature-pad',
         },
+        {
+          id: 'integrations-ngx-charts',
+          title: 'NGX Charts',
+          type: 'item',
+          icon: 'bar_chart',
+          link: '/docs/integrations/ngx-charts',
+        },
+        {
+          id: 'integrations-chartjs',
+          title: 'Chart.js',
+          type: 'item',
+          icon: 'ssid_chart',
+          link: '/docs/integrations/chartjs',
+        },
+        {
+          id: 'integrations-pdf-viewer',
+          title: 'PDF Viewer',
+          type: 'item',
+          icon: 'picture_as_pdf',
+          link: '/docs/integrations/pdf-viewer',
+        },
+        {
+          id: 'integrations-image-cropper',
+          title: 'Image Cropper',
+          type: 'item',
+          icon: 'crop',
+          link: '/docs/integrations/image-cropper',
+        },
+        {
+          id: 'integrations-monaco-editor',
+          title: 'Monaco Editor',
+          type: 'item',
+          icon: 'code',
+          link: '/docs/integrations/monaco-editor',
+        },
       ],
     },
 
@@ -635,6 +684,23 @@ export class App implements OnInit {
           type: 'item',
           icon: 'view_module',
           link: '/docs/patterns/form-layouts',
+        },
+      ],
+    },
+
+    // Architecture Section
+    {
+      id: 'architecture',
+      title: 'Architecture',
+      type: 'collapsible',
+      icon: 'account_tree',
+      children: [
+        {
+          id: 'multi-app',
+          title: 'Multi-App Architecture',
+          type: 'item',
+          icon: 'apps',
+          link: '/docs/architecture/multi-app',
         },
       ],
     },
@@ -889,6 +955,11 @@ export class App implements OnInit {
               link: '/docs/components/aegisx/data-display/calendar',
             },
             {
+              id: 'kbd',
+              title: 'Kbd',
+              link: '/docs/components/aegisx/data-display/kbd',
+            },
+            {
               id: 'field-display',
               title: 'Field Display',
               link: '/docs/components/aegisx/data-display/field-display',
@@ -958,6 +1029,11 @@ export class App implements OnInit {
               id: 'knob',
               title: 'Knob',
               link: '/docs/components/aegisx/forms/knob',
+            },
+            {
+              id: 'input-otp',
+              title: 'Input OTP',
+              link: '/docs/components/aegisx/forms/input-otp',
             },
             {
               id: 'form-sizes',
@@ -1257,6 +1333,42 @@ export class App implements OnInit {
           id: 'integrations-signature-pad',
           title: 'Signature Pad',
           link: '/docs/integrations/signature-pad',
+        },
+        {
+          id: 'integrations-ngx-charts',
+          title: 'NGX Charts',
+          link: '/docs/integrations/ngx-charts',
+        },
+        {
+          id: 'integrations-chartjs',
+          title: 'Chart.js',
+          link: '/docs/integrations/chartjs',
+        },
+        {
+          id: 'integrations-pdf-viewer',
+          title: 'PDF Viewer',
+          link: '/docs/integrations/pdf-viewer',
+        },
+        {
+          id: 'integrations-image-cropper',
+          title: 'Image Cropper',
+          link: '/docs/integrations/image-cropper',
+        },
+        {
+          id: 'integrations-monaco-editor',
+          title: 'Monaco Editor',
+          link: '/docs/integrations/monaco-editor',
+        },
+      ],
+    },
+    {
+      id: 'architecture',
+      title: 'Architecture',
+      children: [
+        {
+          id: 'multi-app',
+          title: 'Multi-App Architecture',
+          link: '/docs/architecture/multi-app',
         },
       ],
     },

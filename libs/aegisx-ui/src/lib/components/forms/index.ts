@@ -6,6 +6,7 @@
 
 // Components
 export * from './date-picker';
+export * from './input-otp';
 export * from './knob';
 export * from './popup-edit';
 export * from './time-slots';

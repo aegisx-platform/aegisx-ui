@@ -148,6 +148,13 @@ export const appRoutes: Route[] = [
       ).then((m) => m.CalendarDocComponent),
   },
   {
+    path: 'docs/components/aegisx/data-display/kbd',
+    loadComponent: () =>
+      import(
+        './pages/docs/components/aegisx/data-display/kbd/kbd-doc.component'
+      ).then((m) => m.KbdDocComponent),
+  },
+  {
     path: 'docs/components/aegisx/data-display/field-display',
     loadComponent: () =>
       import(
@@ -241,6 +248,13 @@ export const appRoutes: Route[] = [
       import(
         './pages/docs/components/aegisx/forms/scheduler/scheduler-doc.component'
       ).then((m) => m.SchedulerDocComponent),
+  },
+  {
+    path: 'docs/components/aegisx/forms/input-otp',
+    loadComponent: () =>
+      import(
+        './pages/docs/components/aegisx/forms/input-otp/input-otp-doc.component'
+      ).then((m) => m.InputOtpDocComponent),
   },
 
   // --- Components > AegisX > Feedback ---
@@ -429,6 +443,41 @@ export const appRoutes: Route[] = [
         './pages/docs/integrations/signature-pad/signature-pad-doc.component'
       ).then((m) => m.SignaturePadDocComponent),
   },
+  {
+    path: 'docs/integrations/ngx-charts',
+    loadComponent: () =>
+      import(
+        './pages/docs/integrations/ngx-charts/ngx-charts-doc.component'
+      ).then((m) => m.NgxChartsDocComponent),
+  },
+  {
+    path: 'docs/integrations/chartjs',
+    loadComponent: () =>
+      import('./pages/docs/integrations/chartjs/chartjs-doc.component').then(
+        (m) => m.ChartjsDocComponent,
+      ),
+  },
+  {
+    path: 'docs/integrations/pdf-viewer',
+    loadComponent: () =>
+      import(
+        './pages/docs/integrations/pdf-viewer/pdf-viewer-doc.component'
+      ).then((m) => m.PdfViewerDocComponent),
+  },
+  {
+    path: 'docs/integrations/image-cropper',
+    loadComponent: () =>
+      import(
+        './pages/docs/integrations/image-cropper/image-cropper-doc.component'
+      ).then((m) => m.ImageCropperDocComponent),
+  },
+  {
+    path: 'docs/integrations/monaco-editor',
+    loadComponent: () =>
+      import(
+        './pages/docs/integrations/monaco-editor/monaco-editor-doc.component'
+      ).then((m) => m.MonacoEditorDocComponent),
+  },
 
   // --- Components > Material ---
   {
@@ -608,6 +657,15 @@ export const appRoutes: Route[] = [
       import(
         './pages/docs/patterns/form-layouts/form-layouts-doc.component'
       ).then((m) => m.FormLayoutsDocComponent),
+  },
+
+  // --- Architecture ---
+  {
+    path: 'docs/architecture/multi-app',
+    loadComponent: () =>
+      import(
+        './pages/docs/architecture/multi-app/multi-app-doc.component'
+      ).then((m) => m.MultiAppDocComponent),
   },
 
   // ============================================
