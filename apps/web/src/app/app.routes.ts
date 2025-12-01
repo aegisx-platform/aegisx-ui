@@ -1,9 +1,24 @@
 import { Route } from '@angular/router';
 import { AuthGuard, GuestGuard } from './core/auth';
-import { environment } from '../environments/environment';
 
+/**
+ * Application Routes
+ *
+ * Route Architecture:
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │ Route Pattern        │ Layout Type      │ Description           │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │ /login, /register    │ No Layout        │ Auth pages (guest)    │
+ * │ /portal              │ Standalone       │ App launcher portal   │
+ * │ /inventory/*         │ Enterprise Shell │ Inventory feature app │
+ * │ /system/*            │ Enterprise Shell │ System admin app      │
+ * │ /4xx, /5xx           │ No Layout        │ Error pages           │
+ * └─────────────────────────────────────────────────────────────────┘
+ */
 export const appRoutes: Route[] = [
-  // Authentication routes (guest only)
+  // ============================================
+  // Authentication Routes (No Layout - Guest Only)
+  // ============================================
   {
     path: 'login',
     loadComponent: () =>
@@ -39,168 +54,64 @@ export const appRoutes: Route[] = [
     canActivate: [GuestGuard],
   },
 
-  // Protected routes (require authentication)
+  // ============================================
+  // Portal (Standalone Layout)
+  // ============================================
   {
-    path: 'home',
+    path: 'portal',
     loadComponent: () =>
-      import('./pages/welcome/home.page').then((m) => m.HomePage),
+      import('./pages/portal/portal.page').then((m) => m.PortalPage),
     canActivate: [AuthGuard],
+    data: {
+      title: 'Enterprise Portal',
+      description: 'Access your enterprise applications',
+    },
   },
 
-  // Redirect root to home
+  // ============================================
+  // System Administration (Enterprise Shell)
+  // All admin routes are under /system prefix
+  // ============================================
+  {
+    path: 'system',
+    loadChildren: () =>
+      import('./features/system/system.routes').then((m) => m.SYSTEM_ROUTES),
+    data: {
+      title: 'System Administration',
+      description: 'System administration and management',
+    },
+  },
+
+  // ============================================
+  // Feature Apps (Enterprise Shell)
+  // Each feature app has its own shell component
+  // ============================================
+  {
+    path: 'inventory',
+    loadChildren: () =>
+      import('./features/inventory/inventory.routes').then(
+        (m) => m.INVENTORY_ROUTES,
+      ),
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Inventory Management',
+      description: 'Warehouse and Inventory Management System',
+      requiredPermissions: ['inventory.read', 'admin.*'],
+    },
+  },
+
+  // ============================================
+  // Default Redirects
+  // ============================================
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'portal',
     pathMatch: 'full',
   },
-  {
-    path: 'dashboards/project',
-    loadComponent: () =>
-      import('./pages/dashboard/project-dashboard.page').then(
-        (m) => m.ProjectDashboardPage,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'users',
-    loadChildren: () =>
-      import('./core/users/users.routes').then((m) => m.usersRoutes),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'profile',
-    loadChildren: () =>
-      import('./core/user-profile/user-profile.routes').then(
-        (m) => m.userProfileRoutes,
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'settings',
-    loadChildren: () =>
-      import('./core/settings/settings.routes').then((m) => m.settingsRoutes),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'rbac',
-    loadChildren: () =>
-      import('./core/rbac/rbac.routes').then((m) => m.rbacRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'RBAC Management',
-      description: 'Role-Based Access Control Management System',
-    },
-  },
-  {
-    path: 'monitoring',
-    loadChildren: () =>
-      import('./core/monitoring/monitoring.routes').then(
-        (m) => m.monitoringRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Monitoring',
-      description: 'System Monitoring and Error Logs',
-    },
-  },
-  {
-    path: 'audit',
-    loadChildren: () =>
-      import('./core/audit/audit.routes').then((m) => m.auditRoutes),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Audit',
-      description: 'Login Attempts and File Activity',
-    },
-  },
-  {
-    path: 'pdf-templates',
-    loadChildren: () =>
-      import('./core/pdf-templates/pdf-templates.routes').then(
-        (m) => m.pdf_templatesRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'PDF Templates',
-      description: 'PDF Template Management System',
-    },
-  },
-  {
-    path: 'file-upload',
-    loadComponent: () =>
-      import('./pages/file-upload/file-upload.page').then(
-        (m) => m.FileUploadPage,
-      ),
-    canActivate: [AuthGuard],
-  },
 
-  // Theme Showcase - Material Components & Theme Testing
-  {
-    path: 'theme-showcase',
-    loadComponent: () =>
-      import('./pages/theme-showcase/theme-showcase.page').then(
-        (m) => m.ThemeShowcasePage,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Theme Showcase',
-      description: 'Material Components & Theme Testing',
-    },
-  },
-  {
-    path: 'components',
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: 'buttons',
-        loadComponent: () =>
-          import('./pages/components/buttons/buttons.page').then(
-            (m) => m.ButtonsPage,
-          ),
-      },
-      {
-        path: 'cards',
-        loadComponent: () =>
-          import('./pages/components/cards/cards.page').then(
-            (m) => m.CardsPage,
-          ),
-      },
-      {
-        path: 'forms',
-        loadComponent: () =>
-          import('./pages/components/forms/forms.page').then(
-            (m) => m.FormsPage,
-          ),
-      },
-      {
-        path: 'tables',
-        loadComponent: () =>
-          import('./pages/components/tables/tables.page').then(
-            (m) => m.TablesPage,
-          ),
-      },
-    ],
-  },
-
-  // Dev/Test routes (only in development environment)
-  ...(environment.production
-    ? []
-    : [
-        {
-          path: 'dev',
-          loadChildren: () =>
-            import('./dev-tools/dev-tools.routes').then(
-              (m) => m.DEV_TOOLS_ROUTES,
-            ),
-          canActivate: [AuthGuard],
-          data: {
-            title: 'Dev Tools',
-            description: 'Development & Testing Tools',
-          },
-        },
-      ]),
-
-  // Error pages (no authentication required)
+  // ============================================
+  // Error Pages (No Layout)
+  // ============================================
   {
     path: '401',
     loadComponent: () =>
@@ -229,20 +140,9 @@ export const appRoutes: Route[] = [
       import('./pages/errors/server-error.page').then((m) => m.ServerErrorPage),
   },
 
-  // Fallback - redirect unknown routes to 404
-  {
-    path: 'test-products',
-    loadChildren: () =>
-      import('./features/test-products/test-products.routes').then(
-        (m) => m.testProductsRoutes,
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Test Products',
-      description: 'Test Products Management System',
-      requiredPermissions: ['test-products.read', 'admin.*'],
-    },
-  },
+  // ============================================
+  // Catch-all (404)
+  // ============================================
   {
     path: '**',
     redirectTo: '404',

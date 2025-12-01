@@ -1,492 +1,56 @@
-import { AxCompactLayoutComponent, AxThemeSwitcherComponent } from '@aegisx/ui';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth';
-import { NavigationService } from './core/navigation';
 import { WebSocketService } from './shared/business/services/websocket.service';
 
-interface Notification {
-  id: number;
-  title: string;
-  time: string;
-  icon: string;
-  type: 'info' | 'warning' | 'error' | 'success';
-}
-
+/**
+ * Root Application Component
+ *
+ * This is the root component that simply renders the router-outlet.
+ * All layout management is handled by individual route shells:
+ *
+ * Route Architecture:
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │ Route Pattern        │ Layout Shell          │ Description      │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │ /login, /register    │ No Shell              │ Auth pages       │
+ * │ /portal              │ PortalPage (own)      │ App launcher     │
+ * │ /inventory/*         │ InventoryShell        │ Inventory app    │
+ * │ /system/*            │ SystemShell           │ System admin     │
+ * │ /4xx, /5xx           │ No Shell              │ Error pages      │
+ * └─────────────────────────────────────────────────────────────────┘
+ *
+ * Each shell component manages its own:
+ * - Layout (AxEnterpriseLayoutComponent or custom)
+ * - Navigation
+ * - Theme
+ * - User context
+ */
 @Component({
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatBadgeModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatTooltipModule,
-    AxCompactLayoutComponent,
-    AxThemeSwitcherComponent,
-  ],
+  imports: [CommonModule, RouterOutlet],
   selector: 'ax-root',
-  template: `
-    @if (shouldShowLayout()) {
-      <ax-compact-layout
-        [navigation]="navigation()"
-        [appName]="'AegisX Platform'"
-        [appVersion]="'v2.0'"
-      >
-        <!-- Navigation Header -->
-        <ng-template #navigationHeader>
-          <div class="flex   items-center   pb-0">
-            <span
-              style="letter-spacing: 3px;"
-              class="text-2xl font-bold text-gray-900 dark:text-white"
-              >AEGIS<span class="text-green-500">X</span></span
-            >
-            <span
-              class="ml-2 text-xs px-2 py-1 bg-primary-600 text-white rounded"
-            >
-              v2.0
-            </span>
-          </div>
-        </ng-template>
-
-        <!-- Navigation Footer -->
-        <ng-template #navigationFooter>
-          <div class="ax-nav-footer-wrapper">
-            <a
-              routerLink="/profile"
-              class="nav-footer-profile flex items-center gap-2 py-1 w-full hover:bg-white/10 transition-all rounded-lg cursor-pointer no-underline overflow-hidden"
-            >
-              <!-- Avatar (always visible) -->
-              <img
-                [src]="
-                  currentUser()?.avatar || '/assets/images/avatars/default.png'
-                "
-                [alt]="currentUser()?.name || 'User'"
-                class="nav-footer-avatar w-9 h-9 rounded-full object-cover flex-shrink-0"
-              />
-
-              <!-- User Info (hidden when collapsed) -->
-              <div class="nav-footer-info flex-1 min-w-0 overflow-hidden">
-                <p
-                  class="text-sm font-medium text-gray-900 dark:text-white truncate m-0"
-                >
-                  {{ currentUser()?.name || 'Guest User' }}
-                </p>
-                <p class="text-xs text-gray-400 truncate m-0">
-                  {{ currentUser()?.email || 'guest@example.com' }}
-                </p>
-              </div>
-
-              <!-- Arrows (hidden when collapsed) -->
-              <div
-                class="nav-footer-arrows flex flex-col text-gray-400 text-xs leading-none flex-shrink-0"
-              >
-                <span>▲</span>
-                <span>▼</span>
-              </div>
-            </a>
-          </div>
-        </ng-template>
-
-        <!-- Toolbar Title -->
-        <ng-template #toolbarTitle>
-          <span class="text-xl font-bold">AegisX Platform</span>
-        </ng-template>
-
-        <!-- Toolbar Actions -->
-        <ng-template #toolbarActions>
-          <!-- Theme Switcher (from @aegisx/ui) -->
-          <ax-theme-switcher mode="dropdown"></ax-theme-switcher>
-
-          <!-- Notifications -->
-          <button
-            mat-icon-button
-            [matBadge]="notifications().length"
-            matBadgeColor="warn"
-            matBadgeSize="small"
-            [matMenuTriggerFor]="notificationMenu"
-            class="mr-1"
-          >
-            <mat-icon>notifications</mat-icon>
-          </button>
-
-          <mat-menu #notificationMenu="matMenu" class="w-80">
-            <div class="p-4 border-b">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold">Notifications</h3>
-                <button mat-button color="primary" class="min-w-0">
-                  Mark all as read
-                </button>
-              </div>
-            </div>
-
-            @for (notification of notifications(); track notification.id) {
-              <button
-                mat-menu-item
-                class="h-auto py-3 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                <div class="flex items-start w-full">
-                  <mat-icon [class]="getNotificationClass(notification.type)">
-                    {{ notification.icon }}
-                  </mat-icon>
-                  <div class="ml-3 flex-1">
-                    <p
-                      class="text-sm font-medium text-gray-900 dark:text-gray-100"
-                    >
-                      {{ notification.title }}
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {{ notification.time }}
-                    </p>
-                  </div>
-                </div>
-              </button>
-            } @empty {
-              <div class="p-4 text-center text-gray-500 dark:text-gray-400">
-                No notifications
-              </div>
-            }
-
-            <div class="p-2 border-t">
-              <button mat-button color="primary" class="w-full">
-                View all notifications
-              </button>
-            </div>
-          </mat-menu>
-
-          <!-- User Menu -->
-          <button mat-icon-button [matMenuTriggerFor]="userMenu" class="ml-2">
-            <img
-              [src]="
-                currentUser()?.avatar || '/assets/images/avatars/default.png'
-              "
-              [alt]="currentUser()?.name || 'User'"
-              class="border-2 border-white shadow-sm"
-            />
-          </button>
-
-          <mat-menu #userMenu="matMenu" class="w-64">
-            <div class="p-4 border-b">
-              <div class="flex items-center">
-                <img
-                  [src]="
-                    currentUser()?.avatar ||
-                    '/assets/images/avatars/default.png'
-                  "
-                  [alt]="currentUser()?.name || 'User'"
-                  class="w-12 h-12 rounded-full object-cover"
-                />
-                <div class="ml-3">
-                  <p
-                    class="text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    {{ currentUser()?.name || 'Guest User' }}
-                  </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ currentUser()?.email || 'guest@example.com' }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <button mat-menu-item routerLink="/profile">
-              <mat-icon>person</mat-icon>
-              <span>Profile</span>
-            </button>
-            <button mat-menu-item routerLink="/settings">
-              <mat-icon>settings</mat-icon>
-              <span>Settings</span>
-            </button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>Sign out</span>
-            </button>
-          </mat-menu>
-        </ng-template>
-
-        <!-- Footer Content -->
-        <ng-template #footerContent>
-          <span class="text-secondary font-medium">
-            AegisX Platform &copy; {{ currentYear }} - Enterprise Ready Solution
-          </span>
-        </ng-template>
-      </ax-compact-layout>
-    } @else {
-      <router-outlet></router-outlet>
-    }
-  `,
+  template: `<router-outlet></router-outlet>`,
   styles: [
     `
-      /* Force navigation bar avatar image to be perfectly round */
-      button[mat-icon-button] img {
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-        max-width: 32px !important;
-        max-height: 32px !important;
-        border-radius: 50% !important;
-        clip-path: circle(50%) !important;
-        object-fit: cover !important;
-        display: block !important;
-        flex-shrink: 0 !important;
-        overflow: hidden !important;
-      }
-
-      /* Additional fallback */
-      .mat-mdc-icon-button img {
-        border-radius: 50% !important;
-        clip-path: circle(50%) !important;
-      }
-
-      /* Navigation User Profile Styles */
-      .nav-user-profile {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        border-radius: 0 !important;
-        background-color: transparent !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: block !important;
-        box-sizing: border-box !important;
-        overflow: hidden !important;
-        contain: layout size !important;
-        position: relative !important;
-      }
-
-      .nav-user-profile:hover {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-      }
-
-      /* Constrain Material Button internal overlays */
-      .nav-user-profile ::ng-deep .mat-mdc-button-persistent-ripple,
-      .nav-user-profile ::ng-deep .mat-mdc-button-touch-target,
-      .nav-user-profile ::ng-deep .mdc-button__ripple {
-        max-width: 100% !important;
-        overflow: hidden !important;
-      }
-
-      .nav-user-profile > div {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 0.75rem 1rem !important;
-        box-sizing: border-box !important;
-        overflow: hidden !important;
-      }
-
-      /* When navigation is collapsed (w-16 = 4rem) */
-      .w-16 .nav-user-info,
-      .w-16 .nav-user-icon {
-        display: none;
-      }
-
-      .w-16 .nav-user-profile > div {
-        justify-content: center;
-        padding: 0.75rem !important;
-      }
-
-      /* When navigation is expanded (w-64 = 16rem) */
-      .w-64 .nav-user-info,
-      .w-64 .nav-user-icon {
+      :host {
         display: block;
-      }
-
-      /* Navigation Footer Profile Styles */
-      .nav-footer-profile {
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        transition: background-color 0.2s ease;
-      }
-
-      /* Hide info and arrows when navigation is collapsed */
-      :host ::ng-deep .ax-navigation--collapsed .nav-footer-info,
-      :host ::ng-deep .ax-navigation--collapsed .nav-footer-arrows {
-        display: none !important;
-      }
-
-      /* Center avatar when collapsed */
-      :host ::ng-deep .ax-navigation--collapsed .nav-footer-profile {
-        justify-content: center;
-        padding: 0.75rem !important;
+        min-height: 100vh;
       }
     `,
   ],
 })
 export class AppComponent implements OnInit {
   private authService = inject(AuthService);
-  private router = inject(Router);
-  private navigationService = inject(NavigationService);
   private websocketService = inject(WebSocketService);
 
-  shouldShowLayout = signal(true);
-  currentUser = computed(() => {
-    const user = this.authService.currentUser();
-    console.log('🔍 [Nav Footer] Current User:', user);
-    if (user) {
-      const userData = {
-        name: this.authService.userDisplayName(), // firstName + lastName
-        email: user.email, // Real email
-        avatar: user.avatar || null, // Real avatar from user profile
-      };
-      console.log('🖼️ [Nav Footer] Avatar URL:', userData.avatar);
-      return userData;
-    }
-    return null;
-  });
-
-  // User initials for avatar fallback
-  userInitials = computed(() => {
-    const user = this.authService.currentUser();
-    if (!user) return 'U';
-
-    const displayName = this.authService.userDisplayName();
-    const names = displayName.split(' ');
-
-    if (names.length >= 2) {
-      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
-    }
-    return displayName.substring(0, 2).toUpperCase();
-  });
-
-  // User role/status for display
-  userRole = computed(() => {
-    const user = this.authService.currentUser();
-    if (!user) return 'Guest';
-
-    const role = (user as any).role || 'user';
-    // Capitalize first letter
-    return role.charAt(0).toUpperCase() + role.slice(1);
-  });
-
-  notifications = signal<Notification[]>([]);
-  currentYear = new Date().getFullYear();
-
-  // Navigation Items (loaded only when layout is shown)
-  navigation = computed(() => {
-    if (this.shouldShowLayout()) {
-      // Load navigation only when layout should be shown
-      return this.navigationService.navigationItems();
-    }
-    return [];
-  });
-
   ngOnInit() {
-    // Theme is now managed by AxThemeService from @aegisx/ui
-    // No manual theme loading needed - the service handles it automatically
-
-    // Check routes to determine if layout should be shown
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        // Hide layout for auth routes
-        const authRoutes = [
-          '/login',
-          '/register',
-          '/forgot-password',
-          '/reset-password',
-          '/verify-email',
-        ];
-        const shouldHideLayout = authRoutes.some((route) =>
-          event.url.startsWith(route),
-        );
-        this.shouldShowLayout.set(!shouldHideLayout);
-
-        // Load navigation only when entering protected routes
-        if (!shouldHideLayout && this.authService.isAuthenticated()) {
-          this.navigationService.loadUserNavigation().subscribe();
-        }
-      });
-
-    // Check initial route
-    const currentUrl = this.router.url;
-    const authRoutes = [
-      '/login',
-      '/register',
-      '/forgot-password',
-      '/reset-password',
-      '/verify-email',
-    ];
-    const shouldHideLayout = authRoutes.some((route) =>
-      currentUrl.startsWith(route),
-    );
-    this.shouldShowLayout.set(!shouldHideLayout);
-
-    // Load navigation for initial protected route
-    if (!shouldHideLayout && this.authService.isAuthenticated()) {
-      this.navigationService.loadUserNavigation().subscribe();
-    }
-
     // Initialize WebSocket connection for authenticated users
     if (this.authService.isAuthenticated() && this.authService.accessToken()) {
       console.log('🔌 Initializing WebSocket connection on app startup');
       this.initializeWebSocket();
     }
-
-    // Current user is now loaded from AuthService via computed signal
-
-    // Load sample notifications
-    this.notifications.set([
-      {
-        id: 1,
-        title: 'New order received',
-        time: '5 minutes ago',
-        icon: 'shopping_cart',
-        type: 'success',
-      },
-      {
-        id: 2,
-        title: 'Server maintenance scheduled',
-        time: '2 hours ago',
-        icon: 'warning',
-        type: 'warning',
-      },
-      {
-        id: 3,
-        title: 'New user registration',
-        time: '3 hours ago',
-        icon: 'person_add',
-        type: 'info',
-      },
-    ]);
-  }
-
-  getNotificationClass(type: string): string {
-    const classes = {
-      info: 'text-blue-500',
-      warning: 'text-amber-500',
-      error: 'text-red-500',
-      success: 'text-green-500',
-    };
-    return classes[type as keyof typeof classes] || 'text-gray-500';
-  }
-
-  logout() {
-    // Disconnect WebSocket before logout
-    this.websocketService.disconnect();
-
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log('Logged out successfully');
-      },
-      error: (error) => {
-        console.error('Logout error:', error);
-        // AuthService will still clear data and navigate
-      },
-    });
   }
 
   private initializeWebSocket(): void {
