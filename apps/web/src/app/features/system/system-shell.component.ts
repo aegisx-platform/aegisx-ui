@@ -119,7 +119,7 @@ export class SystemShellComponent implements OnInit, OnDestroy {
   // App configuration
   readonly config = SYSTEM_APP_CONFIG;
   readonly appName = this.config.name;
-  readonly appTheme: EnterprisePresetTheme = 'default';
+  readonly appTheme = this.config.theme as EnterprisePresetTheme;
 
   // Get navigation from MultiAppService (centralized)
   readonly currentNavigation = computed<AxNavigationItem[]>(() => {

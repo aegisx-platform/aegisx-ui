@@ -101,7 +101,7 @@ export class InventoryShellComponent implements OnInit, OnDestroy {
   // App configuration
   readonly config = INVENTORY_APP_CONFIG;
   readonly appName = this.config.name;
-  readonly appTheme: EnterprisePresetTheme = 'inventory';
+  readonly appTheme = this.config.theme as EnterprisePresetTheme;
 
   // Get navigation from MultiAppService (centralized)
   readonly currentNavigation = computed<AxNavigationItem[]>(() => {
