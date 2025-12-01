@@ -667,6 +667,13 @@ export const appRoutes: Route[] = [
         './pages/docs/architecture/multi-app/multi-app-doc.component'
       ).then((m) => m.MultiAppDocComponent),
   },
+  {
+    path: 'docs/architecture/shell-pattern',
+    loadComponent: () =>
+      import(
+        './pages/docs/architecture/shell-pattern/shell-pattern-doc.component'
+      ).then((m) => m.ShellPatternDocComponent),
+  },
 
   // ============================================
   // PLAYGROUND ROUTES - /playground/*

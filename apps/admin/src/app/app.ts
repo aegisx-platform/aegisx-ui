@@ -702,6 +702,13 @@ export class App implements OnInit {
           icon: 'apps',
           link: '/docs/architecture/multi-app',
         },
+        {
+          id: 'shell-pattern',
+          title: 'Shell Pattern & Routing',
+          type: 'item',
+          icon: 'route',
+          link: '/docs/architecture/shell-pattern',
+        },
       ],
     },
 
@@ -1369,6 +1376,11 @@ export class App implements OnInit {
           id: 'multi-app',
           title: 'Multi-App Architecture',
           link: '/docs/architecture/multi-app',
+        },
+        {
+          id: 'shell-pattern',
+          title: 'Shell Pattern & Routing',
+          link: '/docs/architecture/shell-pattern',
         },
       ],
     },
