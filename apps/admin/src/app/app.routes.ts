@@ -87,6 +87,13 @@ export const appRoutes: Route[] = [
         (m) => m.MotionComponent,
       ),
   },
+  {
+    path: 'docs/foundations/accessibility',
+    loadComponent: () =>
+      import(
+        './pages/docs/foundations/accessibility/accessibility.component'
+      ).then((m) => m.AccessibilityComponent),
+  },
 
   // --- Components > AegisX > Overview ---
   {
@@ -403,6 +410,13 @@ export const appRoutes: Route[] = [
       import(
         './pages/docs/components/aegisx/utilities/layout-switcher/layout-switcher-doc.component'
       ).then((m) => m.LayoutSwitcherDocComponent),
+  },
+  {
+    path: 'docs/components/aegisx/utilities/theme-builder',
+    loadComponent: () =>
+      import(
+        './pages/docs/components/aegisx/utilities/theme-builder/theme-builder-doc.component'
+      ).then((m) => m.ThemeBuilderDocComponent),
   },
 
   // --- Components > AegisX > Dashboard ---

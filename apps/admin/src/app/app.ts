@@ -163,6 +163,13 @@ export class App implements OnInit {
           icon: 'animation',
           link: '/docs/foundations/motion',
         },
+        {
+          id: 'accessibility',
+          title: 'Accessibility',
+          type: 'item',
+          icon: 'accessibility_new',
+          link: '/docs/foundations/accessibility',
+        },
       ],
     },
 
@@ -498,6 +505,14 @@ export class App implements OnInit {
               type: 'item',
               icon: 'view_quilt',
               link: '/docs/components/aegisx/utilities/layout-switcher',
+            },
+            {
+              id: 'theme-builder',
+              title: 'Theme Builder',
+              type: 'item',
+              icon: 'brush',
+              link: '/docs/components/aegisx/utilities/theme-builder',
+              badge: { content: 'New', type: 'info' },
             },
           ],
         },
@@ -916,6 +931,11 @@ export class App implements OnInit {
           title: 'Motion',
           link: '/docs/foundations/motion',
         },
+        {
+          id: 'accessibility',
+          title: 'Accessibility',
+          link: '/docs/foundations/accessibility',
+        },
       ],
     },
     {
@@ -1175,6 +1195,11 @@ export class App implements OnInit {
               id: 'layout-switcher',
               title: 'Layout Switcher',
               link: '/docs/components/aegisx/utilities/layout-switcher',
+            },
+            {
+              id: 'theme-builder',
+              title: 'Theme Builder',
+              link: '/docs/components/aegisx/utilities/theme-builder',
             },
           ],
         },
