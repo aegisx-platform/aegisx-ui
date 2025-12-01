@@ -774,11 +774,45 @@ export class BreadcrumbDocComponent {
   // Code Examples
   sizeVariantsCode = [
     {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { Component } from '@angular/core';
+import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
+
+@Component({
+  selector: 'app-breadcrumb-sizes',
+  standalone: true,
+  imports: [AxBreadcrumbComponent],
+  template: \`
+    <!-- Small -->
+    <ax-breadcrumb [items]="items" size="sm" separatorIcon="chevron_right" />
+
+    <!-- Medium (default) -->
+    <ax-breadcrumb [items]="items" size="md" separatorIcon="chevron_right" />
+
+    <!-- Large -->
+    <ax-breadcrumb [items]="items" size="lg" separatorIcon="chevron_right" />
+  \`
+})
+export class BreadcrumbSizesComponent {
+  items: BreadcrumbItem[] = [
+    { label: 'Home', url: '/' },
+    { label: 'Category', url: '/category' },
+    { label: 'Current Page' }
+  ];
+}`,
+    },
+    {
       language: 'html' as const,
-      label: 'HTML',
-      code: `<ax-breadcrumb [items]="items" size="sm" />
-<ax-breadcrumb [items]="items" size="md" /> <!-- default -->
-<ax-breadcrumb [items]="items" size="lg" />`,
+      label: 'Template',
+      code: `<!-- Small -->
+<ax-breadcrumb [items]="items" size="sm" separatorIcon="chevron_right" />
+
+<!-- Medium (default) -->
+<ax-breadcrumb [items]="items" size="md" separatorIcon="chevron_right" />
+
+<!-- Large -->
+<ax-breadcrumb [items]="items" size="lg" separatorIcon="chevron_right" />`,
     },
   ];
 
@@ -786,18 +820,41 @@ export class BreadcrumbDocComponent {
     {
       language: 'typescript' as const,
       label: 'TypeScript',
-      code: `import { BreadcrumbItem } from '@aegisx/ui';
+      code: `import { Component, signal } from '@angular/core';
+import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 
-breadcrumbs: BreadcrumbItem[] = [
-  { label: 'Home', url: '/', icon: 'home' },
-  { label: 'Products', url: '/products', icon: 'inventory_2' },
-  { label: 'Electronics', url: '/electronics', icon: 'devices' },
-  { label: 'Smartphones' } // Last item has no URL
-];`,
+@Component({
+  selector: 'app-breadcrumb-with-icons',
+  standalone: true,
+  imports: [AxBreadcrumbComponent],
+  template: \`
+    <ax-breadcrumb
+      [items]="breadcrumbs"
+      separatorIcon="chevron_right"
+      (itemClick)="onBreadcrumbClick($event)"
+    />
+    <p>Clicked: {{ clickedItem() }}</p>
+  \`
+})
+export class BreadcrumbWithIconsComponent {
+  clickedItem = signal<string>('None');
+
+  breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Home', url: '/', icon: 'home' },
+    { label: 'Products', url: '/products', icon: 'inventory_2' },
+    { label: 'Electronics', url: '/products/electronics', icon: 'devices' },
+    { label: 'Smartphones' } // Last item has no URL (current page)
+  ];
+
+  onBreadcrumbClick(item: BreadcrumbItem): void {
+    this.clickedItem.set(\`\${item.label} (\${item.url})\`);
+    // Navigate to item.url or handle click
+  }
+}`,
     },
     {
       language: 'html' as const,
-      label: 'HTML',
+      label: 'Template',
       code: `<ax-breadcrumb
   [items]="breadcrumbs"
   separatorIcon="chevron_right"
@@ -808,14 +865,50 @@ breadcrumbs: BreadcrumbItem[] = [
 
   separatorVariantsCode = [
     {
+      language: 'typescript' as const,
+      label: 'TypeScript',
+      code: `import { Component } from '@angular/core';
+import { AxBreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
+
+@Component({
+  selector: 'app-breadcrumb-separators',
+  standalone: true,
+  imports: [AxBreadcrumbComponent],
+  template: \`
+    <!-- Text separator "/" -->
+    <ax-breadcrumb [items]="items" separator="/" />
+
+    <!-- Text separator "›" -->
+    <ax-breadcrumb [items]="items" separator="›" />
+
+    <!-- Icon separator: chevron_right -->
+    <ax-breadcrumb [items]="items" separatorIcon="chevron_right" />
+
+    <!-- Icon separator: navigate_next -->
+    <ax-breadcrumb [items]="items" separatorIcon="navigate_next" />
+  \`
+})
+export class BreadcrumbSeparatorsComponent {
+  items: BreadcrumbItem[] = [
+    { label: 'Home', url: '/' },
+    { label: 'Components', url: '/components' },
+    { label: 'Breadcrumb' }
+  ];
+}`,
+    },
+    {
       language: 'html' as const,
-      label: 'HTML',
-      code: `<!-- Text separator -->
+      label: 'Template',
+      code: `<!-- Text separator "/" -->
 <ax-breadcrumb [items]="items" separator="/" />
+
+<!-- Text separator "›" -->
 <ax-breadcrumb [items]="items" separator="›" />
 
-<!-- Icon separator -->
+<!-- Icon separator: chevron_right -->
 <ax-breadcrumb [items]="items" separatorIcon="chevron_right" />
+
+<!-- Icon separator: navigate_next -->
 <ax-breadcrumb [items]="items" separatorIcon="navigate_next" />`,
     },
   ];
