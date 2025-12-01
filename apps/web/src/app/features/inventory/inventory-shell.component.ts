@@ -1,7 +1,6 @@
-import { Component, OnInit, inject, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { RouterOutlet, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -9,14 +8,20 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { AxEnterpriseLayoutComponent, AxNavigationItem } from '@aegisx/ui';
 import { EnterprisePresetTheme } from '@aegisx/ui';
 import { INVENTORY_APP_CONFIG } from './inventory.config';
-import { SubAppConfig, HeaderAction } from '../../shared/multi-app';
+import { MultiAppService, HeaderAction } from '../../shared/multi-app';
 
 /**
  * Inventory Shell Component
  *
  * Main shell component for the Inventory app.
  * Uses AxEnterpriseLayoutComponent with dynamic navigation
- * based on the current sub-app.
+ * based on the current sub-app tracked by MultiAppService.
+ *
+ * Features:
+ * - Registers app with MultiAppService on init
+ * - Uses centralized context from MultiAppService
+ * - Dynamic navigation based on active sub-app
+ * - App-specific header actions
  *
  * Sub-apps:
  * - Dashboard: /inventory/dashboard
@@ -48,7 +53,7 @@ import { SubAppConfig, HeaderAction } from '../../shared/multi-app';
     >
       <!-- Header Actions -->
       <ng-template #headerActions>
-        @for (action of appHeaderActions; track action.id) {
+        @for (action of appHeaderActions(); track action.id) {
           <button
             mat-icon-button
             [matTooltip]="action.tooltip"
@@ -89,21 +94,25 @@ import { SubAppConfig, HeaderAction } from '../../shared/multi-app';
     `,
   ],
 })
-export class InventoryShellComponent implements OnInit {
+export class InventoryShellComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
+  private readonly multiAppService = inject(MultiAppService);
 
   // App configuration
   readonly config = INVENTORY_APP_CONFIG;
   readonly appName = this.config.name;
   readonly appTheme: EnterprisePresetTheme = 'inventory';
-  readonly appHeaderActions: HeaderAction[] = this.config.headerActions || [];
 
-  // Current active sub-app
-  private _activeSubAppId = 'dashboard';
+  // Get navigation from MultiAppService (centralized)
+  readonly currentNavigation = computed<AxNavigationItem[]>(() => {
+    return this.multiAppService.currentNavigation();
+  });
 
-  // Computed: Sub-app navigation tabs
+  // Sub-app tabs navigation
   readonly subAppNavigation = computed<AxNavigationItem[]>(() => {
-    return this.config.subApps.map((subApp: SubAppConfig) => ({
+    const app = this.multiAppService.activeApp();
+    if (!app) return [];
+    return app.subApps.map((subApp) => ({
       id: subApp.id,
       title: subApp.name,
       icon: subApp.icon,
@@ -111,43 +120,19 @@ export class InventoryShellComponent implements OnInit {
     }));
   });
 
-  // Computed: Current navigation based on active sub-app
-  readonly currentNavigation = computed<AxNavigationItem[]>(() => {
-    const activeSubApp = this.getActiveSubApp();
-    return activeSubApp?.navigation || [];
+  // Header actions from MultiAppService
+  readonly appHeaderActions = computed<HeaderAction[]>(() => {
+    return this.multiAppService.currentHeaderActions();
   });
 
   ngOnInit(): void {
-    // Listen to route changes to update active sub-app
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event) => {
-        this.updateActiveSubApp((event as NavigationEnd).url);
-      });
-
-    // Set initial sub-app from current URL
-    this.updateActiveSubApp(this.router.url);
+    // Register this app with MultiAppService
+    this.multiAppService.registerApp(this.config, 1, true);
   }
 
-  /**
-   * Update active sub-app based on URL
-   */
-  private updateActiveSubApp(url: string): void {
-    const subApp = this.config.subApps.find((s: SubAppConfig) =>
-      url.startsWith(s.route),
-    );
-    if (subApp) {
-      this._activeSubAppId = subApp.id;
-    }
-  }
-
-  /**
-   * Get active sub-app config
-   */
-  private getActiveSubApp(): SubAppConfig | undefined {
-    return this.config.subApps.find(
-      (s: SubAppConfig) => s.id === this._activeSubAppId,
-    );
+  ngOnDestroy(): void {
+    // Optionally unregister when shell is destroyed
+    // this.multiAppService.unregisterApp(this.config.id);
   }
 
   /**

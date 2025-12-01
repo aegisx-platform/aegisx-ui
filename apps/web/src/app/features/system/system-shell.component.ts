@@ -1,7 +1,6 @@
-import { Component, OnInit, inject, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { RouterOutlet, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -12,14 +11,21 @@ import {
   AxThemeSwitcherComponent,
   EnterprisePresetTheme,
 } from '@aegisx/ui';
-import { SYSTEM_APP_CONFIG, SYSTEM_NAVIGATION } from './system.config';
+import { SYSTEM_APP_CONFIG } from './system.config';
 import { AuthService } from '../../core/auth';
+import { MultiAppService, HeaderAction } from '../../shared/multi-app';
 
 /**
  * System Shell Component
  *
  * Main shell component for the System Administration app.
- * Uses AxEnterpriseLayoutComponent with navigation for admin pages.
+ * Uses AxEnterpriseLayoutComponent with navigation managed by MultiAppService.
+ *
+ * Features:
+ * - Registers app with MultiAppService on init
+ * - Uses centralized context from MultiAppService
+ * - Dynamic navigation based on active context
+ * - App-specific header actions
  *
  * Routes:
  * - /system          → Dashboard
@@ -48,7 +54,7 @@ import { AuthService } from '../../core/auth';
     <ax-enterprise-layout
       [appName]="appName"
       [appTheme]="appTheme"
-      [navigation]="navigation"
+      [navigation]="currentNavigation()"
       [showFooter]="config.showFooter ?? true"
       [contentBackground]="'gray'"
       (logoutClicked)="onLogout()"
@@ -58,17 +64,26 @@ import { AuthService } from '../../core/auth';
         <!-- Theme Switcher -->
         <ax-theme-switcher mode="dropdown"></ax-theme-switcher>
 
-        <!-- Notifications -->
-        <button mat-icon-button matTooltip="Notifications">
-          <mat-icon [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">
-            notifications
-          </mat-icon>
-        </button>
-
-        <!-- Settings -->
-        <button mat-icon-button matTooltip="Settings" (click)="onSettings()">
-          <mat-icon>settings</mat-icon>
-        </button>
+        <!-- Dynamic Header Actions from MultiAppService -->
+        @for (action of appHeaderActions(); track action.id) {
+          <button
+            mat-icon-button
+            [matTooltip]="action.tooltip"
+            (click)="handleAction(action)"
+          >
+            @if (action.badge) {
+              <mat-icon
+                [matBadge]="action.badge"
+                matBadgeColor="warn"
+                matBadgeSize="small"
+              >
+                {{ action.icon }}
+              </mat-icon>
+            } @else {
+              <mat-icon>{{ action.icon }}</mat-icon>
+            }
+          </button>
+        }
       </ng-template>
 
       <!-- Router Outlet for Pages -->
@@ -96,15 +111,25 @@ import { AuthService } from '../../core/auth';
     `,
   ],
 })
-export class SystemShellComponent implements OnInit {
+export class SystemShellComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly multiAppService = inject(MultiAppService);
 
   // App configuration
   readonly config = SYSTEM_APP_CONFIG;
   readonly appName = this.config.name;
   readonly appTheme: EnterprisePresetTheme = 'default';
-  readonly navigation: AxNavigationItem[] = SYSTEM_NAVIGATION;
+
+  // Get navigation from MultiAppService (centralized)
+  readonly currentNavigation = computed<AxNavigationItem[]>(() => {
+    return this.multiAppService.currentNavigation();
+  });
+
+  // Header actions from MultiAppService
+  readonly appHeaderActions = computed<HeaderAction[]>(() => {
+    return this.multiAppService.currentHeaderActions();
+  });
 
   // User info
   readonly currentUser = computed(() => {
@@ -120,13 +145,35 @@ export class SystemShellComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Listen to route changes if needed
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event) => {
-        // Can track navigation for analytics or breadcrumbs
-        console.log('System navigation:', (event as NavigationEnd).url);
-      });
+    // Register this app with MultiAppService
+    this.multiAppService.registerApp(this.config, 0, true);
+  }
+
+  ngOnDestroy(): void {
+    // Optionally unregister when shell is destroyed
+    // this.multiAppService.unregisterApp(this.config.id);
+  }
+
+  /**
+   * Handle header action click
+   */
+  handleAction(action: HeaderAction): void {
+    switch (action.action) {
+      case 'onNotifications':
+        this.onNotifications();
+        break;
+      case 'onSettings':
+        this.onSettings();
+        break;
+    }
+  }
+
+  /**
+   * Notifications action
+   */
+  onNotifications(): void {
+    console.log('Notifications clicked');
+    // TODO: Open notifications panel
   }
 
   /**

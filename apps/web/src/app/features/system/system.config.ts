@@ -1,35 +1,12 @@
 import { AxNavigationItem } from '@aegisx/ui';
-
-/**
- * System App Configuration
- */
-export interface SystemAppConfig {
-  name: string;
-  showFooter?: boolean;
-  footerContent?: string;
-}
-
-export const SYSTEM_APP_CONFIG: SystemAppConfig = {
-  name: 'System Administration',
-  showFooter: true,
-  footerContent: 'AegisX Platform',
-};
+import { AppConfig } from '../../shared/multi-app';
 
 /**
  * System Navigation Configuration
  *
  * Navigation items for the System Administration app.
- * Uses AxNavigationItem format from @aegisx/ui
- *
- * Properties:
- * - id: unique identifier
- * - title: display text
- * - icon: material icon name
- * - link: route path
- * - children: nested items
- * - type: 'collapsible' for expandable groups
  */
-export const SYSTEM_NAVIGATION: AxNavigationItem[] = [
+const systemNavigation: AxNavigationItem[] = [
   // Dashboard
   {
     id: 'dashboard',
@@ -166,3 +143,60 @@ export const SYSTEM_NAVIGATION: AxNavigationItem[] = [
     ],
   },
 ];
+
+/**
+ * System App Configuration
+ *
+ * Configuration following AppConfig interface for MultiAppService integration.
+ * System app uses a single "main" sub-app since it doesn't have
+ * multiple sub-applications like Inventory.
+ */
+export const SYSTEM_APP_CONFIG: AppConfig = {
+  id: 'system',
+  name: 'System Administration',
+  description: 'System administration and management',
+  theme: 'default',
+  baseRoute: '/system',
+  defaultRoute: '/system',
+  showFooter: true,
+  footerContent: 'AegisX Platform',
+
+  // Header actions
+  headerActions: [
+    {
+      id: 'notifications',
+      icon: 'notifications',
+      tooltip: 'Notifications',
+      badge: 3,
+      action: 'onNotifications',
+    },
+    {
+      id: 'settings',
+      icon: 'settings',
+      tooltip: 'Settings',
+      action: 'onSettings',
+    },
+  ],
+
+  // Single sub-app containing all system navigation
+  // This allows System app to work with MultiAppService while
+  // maintaining its flat navigation structure
+  subApps: [
+    {
+      id: 'main',
+      name: 'Administration',
+      icon: 'admin_panel_settings',
+      route: '/system',
+      navigation: systemNavigation,
+      isDefault: true,
+      description: 'System administration',
+      roles: ['admin'],
+    },
+  ],
+};
+
+/**
+ * @deprecated Use SYSTEM_APP_CONFIG instead
+ * Kept for backward compatibility
+ */
+export const SYSTEM_NAVIGATION = systemNavigation;
