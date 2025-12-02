@@ -769,7 +769,13 @@ import {
       /* Editor Area */
       .theme-builder-editor {
         padding: 1.5rem;
+        padding-bottom: 3rem;
         overflow-y: auto;
+        min-height: 0; /* Required for overflow to work in grid/flex layouts */
+      }
+
+      .section-content {
+        padding-bottom: 4rem; /* Ensure full scroll visibility */
       }
 
       .section-header {
@@ -798,6 +804,8 @@ import {
       }
 
       .semantic-colors {
+        padding-bottom: 4rem; /* Extra padding for Border Colors to be fully visible */
+
         h3 {
           margin: 1.5rem 0 0.75rem;
           font-size: 1rem;
@@ -1097,6 +1105,7 @@ import {
         overflow-y: auto;
         padding: 1rem;
         background: var(--ax-background-muted, #fafafa);
+        min-height: 0; /* Required for overflow to work in grid/flex layouts */
       }
 
       /* Responsive */
