@@ -821,12 +821,12 @@ export class AxSplashScreenComponent {
   readonly showPercentage = input(true);
 
   // Background style inputs (override service config)
-  readonly bgStyleInput = input<BackgroundStyle | undefined>(undefined, {
-    alias: 'bgStyle',
-  });
-  readonly waveThemeInput = input<WaveColorTheme | undefined>(undefined, {
-    alias: 'waveTheme',
-  });
+  readonly backgroundStyleOverride = input<BackgroundStyle | undefined>(
+    undefined,
+  );
+  readonly waveColorThemeOverride = input<WaveColorTheme | undefined>(
+    undefined,
+  );
 
   // Retry callback
   onRetry?: () => void;
@@ -834,7 +834,7 @@ export class AxSplashScreenComponent {
   // Computed bgStyle - merge input with service config
   protected bgStyle = computed(() => {
     return (
-      this.bgStyleInput() ||
+      this.backgroundStyleOverride() ||
       this.splashService.config().backgroundStyle ||
       'orbs'
     );
@@ -843,7 +843,9 @@ export class AxSplashScreenComponent {
   // Computed waveTheme - merge input with service config
   protected waveTheme = computed(() => {
     return (
-      this.waveThemeInput() || this.splashService.config().waveColor || 'ocean'
+      this.waveColorThemeOverride() ||
+      this.splashService.config().waveColor ||
+      'ocean'
     );
   });
 
