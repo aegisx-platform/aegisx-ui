@@ -6,6 +6,8 @@ import {
   signal,
   ViewChild,
   ElementRef,
+  Inject,
+  Input,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +18,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import {
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExtractedPalette, generateColorShades } from './color-extraction.util';
@@ -54,11 +62,12 @@ import type { M3ColorScheme } from './m3-color.util';
     MatMenuModule,
     MatSnackBarModule,
     MatSliderModule,
+    MatDialogModule,
+    AxCodeTabsComponent,
     AxColorPaletteEditorComponent,
     AxThemePreviewPanelComponent,
     AxImageColorExtractorComponent,
     AxM3ColorPreviewComponent,
-    AxCodeTabsComponent,
   ],
   template: `
     <div class="theme-builder">
@@ -90,11 +99,25 @@ import type { M3ColorScheme } from './m3-color.util';
             </mat-select>
           </mat-form-field>
 
-          <!-- Import Button -->
-          <button mat-stroked-button (click)="triggerImport()">
+          <!-- Import Menu -->
+          <button mat-stroked-button [matMenuTriggerFor]="importMenu">
             <mat-icon>upload</mat-icon>
             Import
           </button>
+          <mat-menu #importMenu="matMenu">
+            <button mat-menu-item (click)="triggerImport()">
+              <mat-icon>file_upload</mat-icon>
+              <span>Import from File</span>
+            </button>
+            <button mat-menu-item (click)="showSampleJson()">
+              <mat-icon>code</mat-icon>
+              <span>View Sample JSON</span>
+            </button>
+            <button mat-menu-item (click)="copyCurrentThemeJson()">
+              <mat-icon>content_copy</mat-icon>
+              <span>Copy Current as JSON</span>
+            </button>
+          </mat-menu>
           <input
             #fileInput
             type="file"
@@ -1918,6 +1941,7 @@ import type { M3ColorScheme } from './m3-color.util';
 export class AxThemeBuilderComponent {
   readonly themeService = inject(ThemeBuilderService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   // File input reference for Import functionality
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -2603,5 +2627,165 @@ export class AxThemeBuilderComponent {
 
     // Reset file input for future imports
     input.value = '';
+  }
+
+  /**
+   * Show sample JSON format in a dialog
+   */
+  showSampleJson(): void {
+    const sampleJson = this.themeService.exportTheme('json');
+    this.dialog.open(SampleJsonDialogComponent, {
+      width: '800px',
+      maxHeight: '80vh',
+      data: { json: sampleJson, title: 'Sample Theme JSON Format' },
+    });
+  }
+
+  /**
+   * Copy current theme as JSON to clipboard
+   */
+  copyCurrentThemeJson(): void {
+    const json = this.themeService.exportTheme('json');
+    navigator.clipboard.writeText(json).then(() => {
+      this.showNotification('Current theme copied as JSON to clipboard');
+    });
+  }
+}
+
+/**
+ * Dialog component for showing sample JSON
+ */
+@Component({
+  selector: 'ax-sample-json-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    AxCodeTabsComponent,
+  ],
+  template: `
+    <div class="json-dialog">
+      <div class="dialog-header">
+        <h2>{{ data.title }}</h2>
+        <button mat-icon-button (click)="close()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="dialog-content">
+        <p class="description">
+          Use this JSON format to import a theme. You can export your current
+          theme using "Export as JSON" and modify it, or create a new one from
+          scratch.
+        </p>
+
+        <ax-code-tabs [tabs]="codeTabs"></ax-code-tabs>
+      </div>
+
+      <div class="dialog-actions">
+        <button mat-stroked-button (click)="copyToClipboard()">
+          <mat-icon>content_copy</mat-icon>
+          Copy to Clipboard
+        </button>
+        <button mat-stroked-button (click)="downloadJson()">
+          <mat-icon>download</mat-icon>
+          Download JSON
+        </button>
+        <button mat-flat-button color="primary" (click)="close()">Close</button>
+      </div>
+    </div>
+  `,
+  styles: [
+    `
+      .json-dialog {
+        display: flex;
+        flex-direction: column;
+        max-height: 80vh;
+      }
+
+      .dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--ax-border-default, #e4e4e7);
+
+        h2 {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--ax-text-heading, #0a0a0a);
+        }
+      }
+
+      .dialog-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+
+        .description {
+          margin: 0 0 1rem;
+          font-size: 0.875rem;
+          color: var(--ax-text-secondary, #71717a);
+        }
+      }
+
+      .dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--ax-border-default, #e4e4e7);
+      }
+    `,
+  ],
+})
+export class SampleJsonDialogComponent {
+  dialogRef = inject(MatDialogRef<SampleJsonDialogComponent>);
+  snackBar = inject(MatSnackBar);
+
+  @Input() data!: { json: string; title: string };
+
+  get codeTabs(): CodeTab[] {
+    return [
+      {
+        label: 'theme.json',
+        code: this.data?.json || '{}',
+        language: 'json' as CodeLanguage,
+      },
+    ];
+  }
+
+  // Use constructor injection for MAT_DIALOG_DATA
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public dialogData: { json: string; title: string },
+  ) {
+    this.data = dialogData;
+  }
+
+  close(): void {
+    this.dialogRef.close();
+  }
+
+  copyToClipboard(): void {
+    navigator.clipboard.writeText(this.data.json).then(() => {
+      this.snackBar.open('Copied to clipboard!', 'Close', {
+        duration: 2000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    });
+  }
+
+  downloadJson(): void {
+    const blob = new Blob([this.data.json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'aegisx-theme.json';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
