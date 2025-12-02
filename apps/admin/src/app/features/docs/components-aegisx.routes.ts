@@ -409,6 +409,17 @@ export const COMPONENTS_AEGISX_ROUTES: Route[] = [
     },
   },
   {
+    path: 'navigation/navbar',
+    loadComponent: () =>
+      import(
+        '../../pages/docs/components/aegisx/navigation/navbar/navbar-doc.component'
+      ).then((m) => m.NavbarDocComponent),
+    data: {
+      title: 'Navbar',
+      description: 'Enterprise navigation bar component',
+    },
+  },
+  {
     path: 'layout/drawer',
     loadComponent: () =>
       import(

@@ -186,4 +186,15 @@ export const STANDALONE_ROUTES: Route[] = [
       description: 'Widget framework demonstration',
     },
   },
+  {
+    path: 'navbar-demo',
+    loadComponent: () =>
+      import('../../pages/navbar-demo/navbar-demo.component').then(
+        (m) => m.NavbarDemoComponent,
+      ),
+    data: {
+      title: 'Navbar Demo',
+      description: 'Interactive navbar color variants demonstration',
+    },
+  },
 ];

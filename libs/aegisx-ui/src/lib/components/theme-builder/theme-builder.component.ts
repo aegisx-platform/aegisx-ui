@@ -6,8 +6,6 @@ import {
   signal,
   ViewChild,
   ElementRef,
-  Inject,
-  Input,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -2743,10 +2741,9 @@ export class AxThemeBuilderComponent {
   ],
 })
 export class SampleJsonDialogComponent {
-  dialogRef = inject(MatDialogRef<SampleJsonDialogComponent>);
-  snackBar = inject(MatSnackBar);
-
-  @Input() data!: { json: string; title: string };
+  private readonly dialogRef = inject(MatDialogRef<SampleJsonDialogComponent>);
+  private readonly snackBar = inject(MatSnackBar);
+  readonly data = inject<{ json: string; title: string }>(MAT_DIALOG_DATA);
 
   get codeTabs(): CodeTab[] {
     return [
@@ -2756,13 +2753,6 @@ export class SampleJsonDialogComponent {
         language: 'json' as CodeLanguage,
       },
     ];
-  }
-
-  // Use constructor injection for MAT_DIALOG_DATA
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public dialogData: { json: string; title: string },
-  ) {
-    this.data = dialogData;
   }
 
   close(): void {
