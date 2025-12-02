@@ -62,3 +62,6 @@ export * from './integrations';
 
 // Theme Builder (Visual Theme Editor)
 export * from './theme-builder';
+
+// Code Tabs (Syntax Highlighting with Prism.js)
+export * from './code-tabs/code-tabs.component';

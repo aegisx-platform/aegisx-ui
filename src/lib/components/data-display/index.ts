@@ -15,6 +15,7 @@ export * from './avatar';
 export * from './list';
 export * from './stats-card';
 export * from './timeline';
+export * from './divider';
 
 // Display Components (new)
 export * from './field-display';
