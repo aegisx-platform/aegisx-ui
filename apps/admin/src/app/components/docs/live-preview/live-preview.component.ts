@@ -48,7 +48,7 @@ import { Component, Input } from '@angular/core';
       }
 
       .live-preview--bordered {
-        border: 1px solid var(--ax-border-default);
+        border: 1px solid var(--ax-border);
       }
 
       .live-preview__content {

@@ -145,6 +145,17 @@ export const COMPONENTS_AEGISX_ROUTES: Route[] = [
     },
   },
   {
+    path: 'data-display/divider',
+    loadComponent: () =>
+      import(
+        '../../pages/docs/components/aegisx/data-display/divider/divider-doc.component'
+      ).then((m) => m.DividerDocComponent),
+    data: {
+      title: 'Divider Component',
+      description: 'Divider component documentation',
+    },
+  },
+  {
     path: 'charts/sparkline',
     loadComponent: () =>
       import(
