@@ -18,6 +18,11 @@ import { AxM3ColorPreviewComponent } from './m3-color-preview.component';
 import { AxThemePreviewPanelComponent } from './preview-panel.component';
 import { ThemeBuilderService } from './theme-builder.service';
 import {
+  AxCodeTabsComponent,
+  CodeTab,
+  CodeLanguage,
+} from '../code-tabs/code-tabs.component';
+import {
   ColorShade,
   ExportFormat,
   SemanticColorName,
@@ -46,6 +51,7 @@ import type { M3ColorScheme } from './m3-color.util';
     AxThemePreviewPanelComponent,
     AxImageColorExtractorComponent,
     AxM3ColorPreviewComponent,
+    AxCodeTabsComponent,
   ],
   template: `
     <div class="theme-builder">
@@ -177,6 +183,15 @@ import type { M3ColorScheme } from './m3-color.util';
           >
             <mat-icon>blur_on</mat-icon>
             <span>Shadows</span>
+          </button>
+          <div class="nav-divider"></div>
+          <button
+            class="nav-item"
+            [class.active]="activeSection() === 'code-export'"
+            (click)="setActiveSection('code-export')"
+          >
+            <mat-icon>code</mat-icon>
+            <span>Code Export</span>
           </button>
         </nav>
 
@@ -682,6 +697,91 @@ import type { M3ColorScheme } from './m3-color.util';
               </div>
             </div>
           }
+
+          <!-- Code Export Section -->
+          @if (activeSection() === 'code-export') {
+            <div class="section-content">
+              <div class="section-header">
+                <h2>Code Export</h2>
+                <p class="section-description">
+                  Preview and export your theme as CSS or SCSS. Toggle between
+                  light and dark modes, or export both together.
+                </p>
+              </div>
+
+              <div class="code-export-container">
+                <!-- Export Controls -->
+                <div class="export-controls">
+                  <div class="control-group">
+                    <label>Format</label>
+                    <mat-form-field appearance="outline" class="format-select">
+                      <mat-select
+                        [(value)]="exportFormat"
+                        (selectionChange)="updateCodePreview()"
+                      >
+                        <mat-option value="css">CSS</mat-option>
+                        <mat-option value="scss">SCSS</mat-option>
+                        <mat-option value="json">JSON</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="control-group">
+                    <label>Mode</label>
+                    <div class="mode-toggle">
+                      <button
+                        mat-stroked-button
+                        [class.active]="codeExportMode() === 'light'"
+                        (click)="setCodeExportMode('light')"
+                      >
+                        <mat-icon>light_mode</mat-icon>
+                        Light
+                      </button>
+                      <button
+                        mat-stroked-button
+                        [class.active]="codeExportMode() === 'dark'"
+                        (click)="setCodeExportMode('dark')"
+                      >
+                        <mat-icon>dark_mode</mat-icon>
+                        Dark
+                      </button>
+                      <button
+                        mat-stroked-button
+                        [class.active]="codeExportMode() === 'both'"
+                        (click)="setCodeExportMode('both')"
+                      >
+                        <mat-icon>contrast</mat-icon>
+                        Both
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="export-actions">
+                    <button
+                      mat-stroked-button
+                      (click)="copyCodeToClipboard()"
+                      matTooltip="Copy to clipboard"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                      Copy
+                    </button>
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="downloadCode()"
+                      matTooltip="Download file"
+                    >
+                      <mat-icon>download</mat-icon>
+                      Download
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Code Preview with macOS Terminal Style -->
+                <ax-code-tabs [tabs]="getCodeExportTabs()"></ax-code-tabs>
+              </div>
+            </div>
+          }
         </main>
 
         <!-- Preview Panel -->
@@ -795,6 +895,12 @@ import type { M3ColorScheme } from './m3-color.util';
             color: var(--ax-brand-500, #6366f1);
           }
         }
+      }
+
+      .nav-divider {
+        height: 1px;
+        background: var(--ax-border-default, #e4e4e7);
+        margin: 0.5rem 1rem;
       }
 
       /* Editor Area */
@@ -1139,6 +1245,77 @@ import type { M3ColorScheme } from './m3-color.util';
         min-height: 0; /* Required for overflow to work in grid/flex layouts */
       }
 
+      /* Code Export Section */
+      .code-export-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .export-controls {
+        display: flex;
+        align-items: flex-end;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        padding: 1rem;
+        background: var(--ax-background-default, #ffffff);
+        border-radius: var(--ax-radius-lg, 0.75rem);
+        border: 1px solid var(--ax-border-muted, #f4f4f5);
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: var(--ax-text-secondary, #71717a);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+      }
+
+      .format-select {
+        width: 120px;
+
+        ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+      }
+
+      .mode-toggle {
+        display: flex;
+        gap: 0.25rem;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.75rem;
+          padding: 0.375rem 0.75rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+
+          &.active {
+            background: var(--ax-brand-500, #6366f1);
+            color: white;
+            border-color: var(--ax-brand-500, #6366f1);
+          }
+        }
+      }
+
+      .export-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+      }
+
       /* Responsive */
       @media (max-width: 1200px) {
         .theme-builder-content {
@@ -1254,6 +1431,10 @@ export class AxThemeBuilderComponent {
 
   // Shadow keys
   readonly shadowKeys = ['sm', 'md', 'lg'] as const;
+
+  // Code Export state
+  exportFormat: ExportFormat = 'css';
+  readonly codeExportMode = signal<'light' | 'dark' | 'both'>('light');
 
   setActiveSection(section: ThemeSection): void {
     this.activeSection.set(section);
@@ -1669,5 +1850,107 @@ export class AxThemeBuilderComponent {
     }
 
     this.themeService.updateShadow(shadow as 'sm' | 'md' | 'lg', shadowStr);
+  }
+
+  // ========== Code Export Methods ==========
+
+  /**
+   * Set code export mode (light, dark, both)
+   */
+  setCodeExportMode(mode: 'light' | 'dark' | 'both'): void {
+    this.codeExportMode.set(mode);
+  }
+
+  /**
+   * Get export code based on current format and mode
+   */
+  getExportCode(): string {
+    return this.themeService.exportTheme(
+      this.exportFormat,
+      this.codeExportMode(),
+    );
+  }
+
+  /**
+   * Get filename for export
+   */
+  getExportFilename(): string {
+    const extensions: Record<ExportFormat, string> = {
+      scss: '_theme.scss',
+      css: 'theme.css',
+      json: 'theme.json',
+      tailwind: 'tailwind.config.js',
+    };
+    const mode = this.codeExportMode();
+    const modePrefix =
+      mode === 'both' ? 'full-' : mode === 'dark' ? 'dark-' : '';
+    return `aegisx-${modePrefix}${extensions[this.exportFormat]}`;
+  }
+
+  /**
+   * Get line count of export code
+   */
+  getCodeLineCount(): number {
+    return this.getExportCode().split('\n').length;
+  }
+
+  /**
+   * Copy code to clipboard
+   */
+  copyCodeToClipboard(): void {
+    const code = this.getExportCode();
+    navigator.clipboard.writeText(code).then(() => {
+      this.showNotification(
+        `${this.exportFormat.toUpperCase()} code copied to clipboard`,
+      );
+    });
+  }
+
+  /**
+   * Download code as file
+   */
+  downloadCode(): void {
+    const code = this.getExportCode();
+    const filename = this.getExportFilename();
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showNotification(`Downloaded ${filename}`);
+  }
+
+  /**
+   * Update code preview (called when format or mode changes)
+   */
+  updateCodePreview(): void {
+    // This triggers re-rendering of the code preview
+    // The template already calls getExportCode() which handles the update
+  }
+
+  /**
+   * Get code tabs for ax-code-tabs component (macOS terminal style)
+   */
+  getCodeExportTabs(): CodeTab[] {
+    const code = this.getExportCode();
+    const filename = this.getExportFilename();
+
+    // Map export format to CodeLanguage
+    const languageMap: Record<ExportFormat, CodeLanguage> = {
+      scss: 'scss',
+      css: 'css',
+      json: 'json',
+      tailwind: 'typescript',
+    };
+
+    return [
+      {
+        label: filename,
+        code: code,
+        language: languageMap[this.exportFormat],
+      },
+    ];
   }
 }

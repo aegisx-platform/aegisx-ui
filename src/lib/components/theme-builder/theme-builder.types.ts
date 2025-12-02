@@ -147,7 +147,8 @@ export type ThemeSection =
   | 'spacing'
   | 'radius'
   | 'shadows'
-  | 'preview';
+  | 'preview'
+  | 'code-export';
 
 // Export format options
 export type ExportFormat = 'scss' | 'css' | 'json' | 'tailwind';
