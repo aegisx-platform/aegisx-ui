@@ -25,7 +25,7 @@ import { CodeTab } from '../../../../types/docs.types';
       <!-- Header -->
       <ax-doc-header
         title="Multi-App Architecture"
-        description="A flexible configuration-driven architecture for building enterprise applications with multiple sub-apps, dynamic navigation, and app-specific theming."
+        description="A flexible configuration-driven architecture for building enterprise applications with multiple sub-apps, dynamic navigation, and app-specific theming. Powered by MultiAppService for centralized state management."
         category="Architecture"
       />
 
@@ -36,19 +36,24 @@ import { CodeTab } from '../../../../types/docs.types';
           Multi-App Architecture เป็นรูปแบบการออกแบบที่ช่วยให้สามารถสร้าง
           enterprise applications ขนาดใหญ่ที่มีหลาย modules/sub-apps
           ในโปรเจกต์เดียว โดยแต่ละ sub-app มี navigation, theme และ
-          configuration เป็นของตัวเอง
+          configuration เป็นของตัวเอง โดยใช้
+          <strong>MultiAppService</strong> เป็นศูนย์กลางในการจัดการ state
+          ทั้งหมด
         </p>
 
         <div class="feature-grid">
           <div class="feature-item">
+            <mat-icon class="feature-icon">hub</mat-icon>
+            <h4>Centralized State</h4>
+            <p>
+              MultiAppService จัดการ app registry, active context, navigation
+              ทั้งหมด
+            </p>
+          </div>
+          <div class="feature-item">
             <mat-icon class="feature-icon">settings</mat-icon>
             <h4>Configuration-Driven</h4>
             <p>กำหนดโครงสร้าง app ผ่าน config file ง่ายต่อการจัดการ</p>
-          </div>
-          <div class="feature-item">
-            <mat-icon class="feature-icon">apps</mat-icon>
-            <h4>Multiple Sub-Apps</h4>
-            <p>รองรับหลาย sub-apps เช่น Dashboard, Warehouse, Receiving</p>
           </div>
           <div class="feature-item">
             <mat-icon class="feature-icon">palette</mat-icon>
@@ -58,7 +63,60 @@ import { CodeTab } from '../../../../types/docs.types';
           <div class="feature-item">
             <mat-icon class="feature-icon">menu</mat-icon>
             <h4>Dynamic Navigation</h4>
-            <p>Navigation เปลี่ยนตาม sub-app ที่ active อยู่</p>
+            <p>Navigation เปลี่ยนตาม route อัตโนมัติผ่าน computed signals</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MultiAppService Overview -->
+      <section class="doc-section">
+        <h2 class="section-title">MultiAppService</h2>
+        <p class="prose">
+          <code>MultiAppService</code> เป็น Angular service ที่ providedIn:
+          'root' ทำหน้าที่เป็นศูนย์กลางในการจัดการ multi-app architecture
+          โดยมีความสามารถหลักดังนี้:
+        </p>
+
+        <div class="principle-grid">
+          <div class="principle-item">
+            <div class="principle-number">1</div>
+            <div class="principle-content">
+              <h4>App Registration</h4>
+              <p>
+                Shell components register apps กับ service ตอน ngOnInit ทำให้
+                service รู้จัก apps ทั้งหมดในระบบ
+              </p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-number">2</div>
+            <div class="principle-content">
+              <h4>Route-Based Context</h4>
+              <p>
+                Service subscribe กับ Router events และอัปเดต active app/sub-app
+                โดยอัตโนมัติตาม URL ปัจจุบัน
+              </p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-number">3</div>
+            <div class="principle-content">
+              <h4>Computed Signals</h4>
+              <p>
+                ใช้ Angular Signals สำหรับ reactive state management เช่น
+                currentNavigation(), activeApp(), activeContext()
+              </p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-number">4</div>
+            <div class="principle-content">
+              <h4>Launcher Integration</h4>
+              <p>
+                Convert AppConfig เป็น LauncherApp format สำหรับใช้กับ Portal
+                และ ax-launcher component
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -67,110 +125,161 @@ import { CodeTab } from '../../../../types/docs.types';
       <section class="doc-section">
         <h2 class="section-title">Architecture Diagram</h2>
         <div class="architecture-diagram">
+          <!-- Top Level -->
           <div class="diagram-row">
-            <div class="diagram-box main-app">
-              <span class="box-label">Main Application</span>
-              <span class="box-detail">apps/web/</span>
+            <div class="diagram-box service">
+              <span class="box-label">MultiAppService</span>
+              <span class="box-detail">Central State Management</span>
             </div>
           </div>
-          <div class="diagram-arrow">
-            <mat-icon>arrow_downward</mat-icon>
-          </div>
-          <div class="diagram-row">
-            <div class="diagram-box feature">
-              <span class="box-label">Feature Module</span>
-              <span class="box-detail">features/inventory/</span>
+          <div class="diagram-arrow-row">
+            <div class="arrow-group">
+              <mat-icon>south_west</mat-icon>
+              <span>registerApp()</span>
+            </div>
+            <div class="arrow-group center">
+              <mat-icon>arrow_downward</mat-icon>
+              <span>currentNavigation()</span>
+            </div>
+            <div class="arrow-group">
+              <mat-icon>south_east</mat-icon>
+              <span>getAppsAsLauncherFormat()</span>
             </div>
           </div>
-          <div class="diagram-arrow">
-            <mat-icon>arrow_downward</mat-icon>
-          </div>
+          <!-- Middle Level -->
           <div class="diagram-row multi">
             <div class="diagram-box shell">
-              <span class="box-label">Shell Component</span>
-              <span class="box-detail">inventory-shell.component.ts</span>
+              <span class="box-label">System Shell</span>
+              <span class="box-detail">registerApp(config, 0)</span>
             </div>
-            <div class="diagram-box config">
-              <span class="box-label">App Config</span>
-              <span class="box-detail">inventory.config.ts</span>
+            <div class="diagram-box shell">
+              <span class="box-label">Inventory Shell</span>
+              <span class="box-detail">registerApp(config, 1)</span>
+            </div>
+            <div class="diagram-box portal">
+              <span class="box-label">Portal Page</span>
+              <span class="box-detail">getAppsAsLauncherFormat()</span>
             </div>
           </div>
           <div class="diagram-arrow">
             <mat-icon>arrow_downward</mat-icon>
           </div>
+          <!-- Bottom Level -->
           <div class="diagram-row multi">
-            <div class="diagram-box sub-app">
-              <span class="box-label">Dashboard</span>
-              <span class="box-detail">Sub-App</span>
+            <div class="diagram-box layout">
+              <span class="box-label">Enterprise Layout</span>
+              <span class="box-detail">[navigation]="currentNavigation()"</span>
             </div>
-            <div class="diagram-box sub-app">
-              <span class="box-label">Warehouse</span>
-              <span class="box-detail">Sub-App</span>
-            </div>
-            <div class="diagram-box sub-app">
-              <span class="box-label">Receiving</span>
-              <span class="box-detail">Sub-App</span>
-            </div>
-            <div class="diagram-box sub-app">
-              <span class="box-label">Shipping</span>
-              <span class="box-detail">Sub-App</span>
+            <div class="diagram-box launcher">
+              <span class="box-label">ax-launcher</span>
+              <span class="box-detail">[apps]="registeredApps()"</span>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- How It Works -->
+      <section class="doc-section">
+        <h2 class="section-title">How It Works</h2>
+
+        <h3 class="subsection-title">1. App Registration Flow</h3>
+        <p class="prose">
+          เมื่อ user navigate ไปยัง route ของ app (เช่น /system หรือ /inventory)
+          Angular Router จะ load Shell component ซึ่งจะ register app กับ
+          MultiAppService
+        </p>
+        <ax-code-tabs [tabs]="registrationFlowCode" />
+
+        <h3 class="subsection-title">2. Route-Based Context Update</h3>
+        <p class="prose">
+          MultiAppService subscribe กับ Router events และเมื่อ URL เปลี่ยน
+          service จะ match URL กับ registered apps เพื่ออัปเดต active context
+        </p>
+        <ax-code-tabs [tabs]="contextUpdateCode" />
+
+        <h3 class="subsection-title">3. Reactive Navigation Updates</h3>
+        <p class="prose">
+          Shell components ใช้ computed signals จาก MultiAppService เพื่อแสดง
+          navigation ที่ถูกต้องตาม active sub-app
+        </p>
+        <ax-code-tabs [tabs]="reactiveNavigationCode" />
+      </section>
+
       <!-- Core Concepts -->
       <section class="doc-section">
-        <h2 class="section-title">Core Concepts</h2>
+        <h2 class="section-title">Core Interfaces</h2>
 
-        <h3 class="subsection-title">1. AppConfig Interface</h3>
+        <h3 class="subsection-title">AppConfig Interface</h3>
         <p class="prose">
-          กำหนดโครงสร้างหลักของแต่ละ Feature App รวมถึง sub-apps และ global
-          settings
+          กำหนดโครงสร้างหลักของแต่ละ Feature App รวมถึง sub-apps, theme, และ
+          global settings
         </p>
         <ax-code-tabs [tabs]="appConfigCode" />
 
-        <h3 class="subsection-title">2. SubAppConfig Interface</h3>
+        <h3 class="subsection-title">SubAppConfig Interface</h3>
         <p class="prose">กำหนดโครงสร้างของแต่ละ sub-app ภายใน Feature App</p>
         <ax-code-tabs [tabs]="subAppConfigCode" />
 
-        <h3 class="subsection-title">3. HeaderAction Interface</h3>
+        <h3 class="subsection-title">HeaderAction Interface</h3>
         <p class="prose">กำหนด action buttons ที่ header ของ app</p>
         <ax-code-tabs [tabs]="headerActionCode" />
+      </section>
+
+      <!-- MultiAppService API -->
+      <section class="doc-section">
+        <h2 class="section-title">MultiAppService API</h2>
+
+        <h3 class="subsection-title">Signals (Reactive State)</h3>
+        <ax-props-table [properties]="serviceSignalsProps" />
+
+        <h3 class="subsection-title">Methods</h3>
+        <ax-props-table [properties]="serviceMethodsProps" />
       </section>
 
       <!-- Implementation Guide -->
       <section class="doc-section">
         <h2 class="section-title">Implementation Guide</h2>
 
-        <h3 class="subsection-title">Step 1: Create Feature Directory</h3>
-        <ax-code-tabs [tabs]="directoryStructureCode" />
-
-        <h3 class="subsection-title">Step 2: Create App Configuration</h3>
+        <h3 class="subsection-title">Step 1: Create App Configuration</h3>
         <ax-code-tabs [tabs]="configImplementationCode" />
 
-        <h3 class="subsection-title">Step 3: Create Shell Component</h3>
+        <h3 class="subsection-title">Step 2: Create Shell Component</h3>
         <ax-code-tabs [tabs]="shellComponentCode" />
 
-        <h3 class="subsection-title">Step 4: Create Sub-App Routes</h3>
-        <ax-code-tabs [tabs]="routesCode" />
-
-        <h3 class="subsection-title">Step 5: Register in Main App Routes</h3>
-        <ax-code-tabs [tabs]="mainRoutesCode" />
+        <h3 class="subsection-title">
+          Step 3: Integrate Portal with MultiAppService
+        </h3>
+        <ax-code-tabs [tabs]="portalIntegrationCode" />
       </section>
 
-      <!-- API Reference -->
+      <!-- Theme Integration -->
       <section class="doc-section">
-        <h2 class="section-title">API Reference</h2>
+        <h2 class="section-title">Theme Integration</h2>
+        <p class="prose">
+          แต่ละ app สามารถกำหนด theme ได้ใน AppConfig โดย Shell component จะใช้
+          theme นี้กับ Enterprise Layout ทำให้แต่ละ app มี look & feel
+          ที่แตกต่างกัน
+        </p>
+        <ax-code-tabs [tabs]="themeIntegrationCode" />
 
-        <h3 class="subsection-title">AppConfig Properties</h3>
-        <ax-props-table [properties]="appConfigProps" />
-
-        <h3 class="subsection-title">SubAppConfig Properties</h3>
-        <ax-props-table [properties]="subAppConfigProps" />
-
-        <h3 class="subsection-title">HeaderAction Properties</h3>
-        <ax-props-table [properties]="headerActionProps" />
+        <div class="theme-showcase">
+          <div class="theme-item">
+            <div class="theme-preview default"></div>
+            <span>default</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-preview inventory"></div>
+            <span>inventory</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-preview medical"></div>
+            <span>medical</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-preview finance"></div>
+            <span>finance</span>
+          </div>
+        </div>
       </section>
 
       <!-- Use Cases -->
@@ -184,8 +293,14 @@ import { CodeTab } from '../../../../types/docs.types';
             <span class="theme-badge inventory">inventory theme</span>
           </div>
           <div class="use-case-item">
+            <mat-icon class="use-case-icon">admin_panel_settings</mat-icon>
+            <h4>System Administration</h4>
+            <p>Users, RBAC, Settings, Monitoring, Tools sub-apps</p>
+            <span class="theme-badge default">default theme</span>
+          </div>
+          <div class="use-case-item">
             <mat-icon class="use-case-icon">local_hospital</mat-icon>
-            <h4>Hospital Information System (HIS)</h4>
+            <h4>Hospital Information System</h4>
             <p>Patients, Appointments, Pharmacy, Lab sub-apps</p>
             <span class="theme-badge medical">medical theme</span>
           </div>
@@ -194,12 +309,6 @@ import { CodeTab } from '../../../../types/docs.types';
             <h4>ERP / Finance</h4>
             <p>Accounting, Invoicing, Reports, Settings sub-apps</p>
             <span class="theme-badge finance">finance theme</span>
-          </div>
-          <div class="use-case-item">
-            <mat-icon class="use-case-icon">people</mat-icon>
-            <h4>HR Management</h4>
-            <p>Employees, Payroll, Leave, Performance sub-apps</p>
-            <span class="theme-badge hr">hr theme</span>
           </div>
         </div>
       </section>
@@ -211,23 +320,23 @@ import { CodeTab } from '../../../../types/docs.types';
           <div class="usage-column do">
             <h4><mat-icon>check_circle</mat-icon> Do:</h4>
             <ul>
-              <li>Use configuration files for app structure</li>
-              <li>Keep sub-apps modular and lazy-loaded</li>
-              <li>Use Enterprise Layout presets for theming</li>
-              <li>Define permissions per sub-app</li>
-              <li>Use computed signals for dynamic navigation</li>
+              <li>Register app in Shell's ngOnInit()</li>
+              <li>Use computed signals for navigation</li>
+              <li>Use theme from AppConfig, not hardcoded</li>
               <li>Keep shell component simple - only layout logic</li>
+              <li>Use MultiAppService's currentNavigation()</li>
+              <li>Define permissions per sub-app for RBAC</li>
             </ul>
           </div>
           <div class="usage-column dont">
             <h4><mat-icon>cancel</mat-icon> Don't:</h4>
             <ul>
-              <li>Don't hardcode navigation in shell component</li>
+              <li>Don't duplicate route tracking logic in shells</li>
+              <li>Don't hardcode navigation in shell templates</li>
               <li>Don't create separate Nx apps for each sub-app</li>
               <li>Don't mix business logic in shell component</li>
-              <li>Don't skip lazy loading for sub-app modules</li>
-              <li>Don't use different layout components per sub-app</li>
-              <li>Don't ignore TypeScript types in configs</li>
+              <li>Don't hardcode theme - use config.theme</li>
+              <li>Don't ignore Angular Signals for reactivity</li>
             </ul>
           </div>
         </div>
@@ -334,6 +443,51 @@ import { CodeTab } from '../../../../types/docs.types';
         color: var(--ax-brand-default);
       }
 
+      /* Principle Grid */
+      .principle-grid {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .principle-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-lg);
+        border: 1px solid var(--ax-border-default);
+      }
+
+      .principle-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--ax-brand-default);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .principle-content {
+        h4 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--ax-text-heading);
+          margin: 0 0 0.25rem 0;
+        }
+
+        p {
+          font-size: 0.875rem;
+          color: var(--ax-text-secondary);
+          margin: 0;
+          line-height: 1.5;
+        }
+      }
+
       /* Architecture Diagram */
       .architecture-diagram {
         padding: 2rem;
@@ -342,7 +496,7 @@ import { CodeTab } from '../../../../types/docs.types';
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.75rem;
       }
 
       .diagram-row {
@@ -353,6 +507,30 @@ import { CodeTab } from '../../../../types/docs.types';
 
         &.multi {
           flex-wrap: wrap;
+        }
+      }
+
+      .diagram-arrow-row {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        padding: 0.5rem 0;
+      }
+
+      .arrow-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--ax-text-subtle);
+
+        span {
+          font-size: 0.7rem;
+          font-family: monospace;
+        }
+
+        &.center {
+          color: var(--ax-brand-default);
         }
       }
 
@@ -370,20 +548,17 @@ import { CodeTab } from '../../../../types/docs.types';
 
         .box-detail {
           display: block;
-          font-size: 0.75rem;
-          opacity: 0.7;
+          font-size: 0.7rem;
+          opacity: 0.8;
           margin-top: 0.25rem;
+          font-family: monospace;
         }
       }
 
-      .diagram-box.main-app {
+      .diagram-box.service {
         background: var(--ax-brand-default);
         color: white;
-      }
-
-      .diagram-box.feature {
-        background: var(--ax-success-default);
-        color: white;
+        min-width: 200px;
       }
 
       .diagram-box.shell {
@@ -391,19 +566,63 @@ import { CodeTab } from '../../../../types/docs.types';
         color: var(--ax-text-heading);
       }
 
-      .diagram-box.config {
+      .diagram-box.portal {
         background: var(--ax-info-default);
         color: white;
       }
 
-      .diagram-box.sub-app {
-        background: var(--ax-background-surface);
-        border: 2px solid var(--ax-brand-default);
-        color: var(--ax-text-heading);
+      .diagram-box.layout {
+        background: var(--ax-success-default);
+        color: white;
+      }
+
+      .diagram-box.launcher {
+        background: #8b5cf6;
+        color: white;
       }
 
       .diagram-arrow {
         color: var(--ax-text-subtle);
+      }
+
+      /* Theme Showcase */
+      .theme-showcase {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .theme-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+
+        span {
+          font-size: 0.875rem;
+          color: var(--ax-text-secondary);
+        }
+      }
+
+      .theme-preview {
+        width: 80px;
+        height: 48px;
+        border-radius: var(--ax-radius-md);
+        border: 1px solid var(--ax-border-default);
+
+        &.default {
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        &.inventory {
+          background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        }
+        &.medical {
+          background: linear-gradient(135deg, #0891b2, #06b6d4);
+        }
+        &.finance {
+          background: linear-gradient(135deg, #059669, #10b981);
+        }
       }
 
       /* Use Case Grid */
@@ -449,8 +668,13 @@ import { CodeTab } from '../../../../types/docs.types';
         font-weight: 500;
 
         &.inventory {
-          background: #f3e8ff;
-          color: #7c3aed;
+          background: #dbeafe;
+          color: #1d4ed8;
+        }
+
+        &.default {
+          background: #e0e7ff;
+          color: #4338ca;
         }
 
         &.medical {
@@ -459,13 +683,8 @@ import { CodeTab } from '../../../../types/docs.types';
         }
 
         &.finance {
-          background: #f0fdfa;
-          color: #0d9488;
-        }
-
-        &.hr {
-          background: #fdf2f8;
-          color: #ec4899;
+          background: #d1fae5;
+          color: #059669;
         }
       }
 
@@ -563,26 +782,132 @@ import { CodeTab } from '../../../../types/docs.types';
   ],
 })
 export class MultiAppDocComponent {
+  // Registration flow code
+  registrationFlowCode: CodeTab[] = [
+    {
+      language: 'typescript' as const,
+      label: 'Shell Registration',
+      code: `// inventory-shell.component.ts
+@Component({ ... })
+export class InventoryShellComponent implements OnInit {
+  private readonly multiAppService = inject(MultiAppService);
+  readonly config = INVENTORY_APP_CONFIG;
+
+  ngOnInit(): void {
+    // Register this app with order=1 (second app)
+    this.multiAppService.registerApp(this.config, 1, true);
+  }
+}
+
+// system-shell.component.ts
+@Component({ ... })
+export class SystemShellComponent implements OnInit {
+  private readonly multiAppService = inject(MultiAppService);
+  readonly config = SYSTEM_APP_CONFIG;
+
+  ngOnInit(): void {
+    // Register this app with order=0 (first app)
+    this.multiAppService.registerApp(this.config, 0, true);
+  }
+}`,
+    },
+  ];
+
+  // Context update code
+  contextUpdateCode: CodeTab[] = [
+    {
+      language: 'typescript' as const,
+      label: 'MultiAppService (internal)',
+      code: `// multi-app.service.ts - Route Tracking
+@Injectable({ providedIn: 'root' })
+export class MultiAppService {
+  private readonly router = inject(Router);
+
+  constructor() {
+    // Subscribe to route changes
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.updateActiveContext((event as NavigationEnd).url);
+      });
+  }
+
+  private updateActiveContext(url: string): void {
+    const registry = this._registry();
+
+    // Find matching app by baseRoute
+    for (const [appId, entry] of registry) {
+      if (!entry.enabled) continue;
+
+      const app = entry.config;
+      if (url.startsWith(app.baseRoute)) {
+        this._activeAppId.set(appId);
+
+        // Find matching sub-app by route
+        const matchedSubApp = app.subApps.find(
+          (subApp) => url.startsWith(subApp.route)
+        );
+        this._activeSubAppId.set(matchedSubApp?.id || null);
+        return;
+      }
+    }
+
+    // No match found
+    this._activeAppId.set(null);
+    this._activeSubAppId.set(null);
+  }
+}`,
+    },
+  ];
+
+  // Reactive navigation code
+  reactiveNavigationCode: CodeTab[] = [
+    {
+      language: 'typescript' as const,
+      label: 'Shell Using Signals',
+      code: `// inventory-shell.component.ts
+@Component({
+  template: \`
+    <ax-enterprise-layout
+      [navigation]="currentNavigation()"
+      [appTheme]="appTheme"
+    >
+      <router-outlet></router-outlet>
+    </ax-enterprise-layout>
+  \`,
+})
+export class InventoryShellComponent {
+  private readonly multiAppService = inject(MultiAppService);
+
+  // Get navigation from MultiAppService (centralized)
+  readonly currentNavigation = computed<AxNavigationItem[]>(() => {
+    return this.multiAppService.currentNavigation();
+  });
+
+  // Theme from config
+  readonly appTheme = this.config.theme as EnterprisePresetTheme;
+}`,
+    },
+  ];
+
   // AppConfig interface code
   appConfigCode: CodeTab[] = [
     {
       language: 'typescript' as const,
       label: 'AppConfig Interface',
-      code: `import { EnterprisePresetTheme, EnterpriseAppTheme, AxNavigationItem } from '@aegisx/ui';
-
-export interface AppConfig {
-  id: string;                                    // Unique app identifier
-  name: string;                                  // Display name
-  description?: string;                          // App description
-  theme: EnterprisePresetTheme | EnterpriseAppTheme;  // Theme preset or custom
-  baseRoute: string;                             // Base route path
-  defaultRoute: string;                          // Default redirect route
-  subApps: SubAppConfig[];                       // List of sub-apps
-  headerActions?: HeaderAction[];                // Global header actions
-  showFooter?: boolean;                          // Show footer
-  footerContent?: string;                        // Footer text
-  roles?: string[];                              // Required roles
-  permissions?: string[];                        // Required permissions
+      code: `export interface AppConfig {
+  id: string;                    // Unique identifier: 'system', 'inventory'
+  name: string;                  // Display name: 'System Administration'
+  description?: string;          // App description
+  theme: string;                 // Theme preset: 'default', 'inventory'
+  baseRoute: string;             // Base route: '/system', '/inventory'
+  defaultRoute: string;          // Default redirect: '/system/dashboard'
+  subApps: SubAppConfig[];       // List of sub-apps
+  headerActions?: HeaderAction[]; // Global header actions
+  showFooter?: boolean;          // Show footer
+  footerContent?: string;        // Footer text
+  roles?: string[];              // Required roles for access
+  permissions?: string[];        // Required permissions
 }`,
     },
   ];
@@ -593,12 +918,12 @@ export interface AppConfig {
       language: 'typescript' as const,
       label: 'SubAppConfig Interface',
       code: `export interface SubAppConfig {
-  id: string;                        // Unique sub-app identifier
-  name: string;                      // Display name (shown in tabs)
+  id: string;                        // Unique ID: 'dashboard', 'warehouse'
+  name: string;                      // Display name (tab label)
   icon: string;                      // Material icon name
-  route: string;                     // Route path
+  route: string;                     // Route path: '/inventory/warehouse'
   navigation: AxNavigationItem[];    // Sidebar navigation items
-  subNavigation?: AxNavigationItem[];  // Secondary navigation
+  subNavigation?: AxNavigationItem[]; // Secondary navigation
   headerActions?: HeaderAction[];    // Sub-app specific actions
   roles?: string[];                  // Required roles
   permissions?: string[];            // Required permissions
@@ -614,39 +939,13 @@ export interface AppConfig {
       language: 'typescript' as const,
       label: 'HeaderAction Interface',
       code: `export interface HeaderAction {
-  id: string;           // Unique action identifier
+  id: string;           // Unique identifier
   icon: string;         // Material icon name
   tooltip: string;      // Tooltip text
-  action: string;       // Method name to call
+  action: string;       // Method name: 'onNotifications', 'onSettings'
   badge?: number;       // Badge count (optional)
   badgeColor?: string;  // Badge color (optional)
 }`,
-    },
-  ];
-
-  // Directory structure code
-  directoryStructureCode: CodeTab[] = [
-    {
-      language: 'bash' as const,
-      label: 'Directory Structure',
-      code: `apps/web/src/app/features/inventory/
-├── inventory.config.ts          # App configuration
-├── inventory-shell.component.ts # Shell component
-├── inventory.routes.ts          # Main routes
-├── index.ts                     # Barrel export
-└── modules/
-    ├── dashboard/
-    │   ├── dashboard.routes.ts
-    │   └── dashboard.page.ts
-    ├── warehouse/
-    │   ├── warehouse.routes.ts
-    │   └── warehouse.page.ts
-    ├── receiving/
-    │   ├── receiving.routes.ts
-    │   └── receiving.page.ts
-    └── shipping/
-        ├── shipping.routes.ts
-        └── shipping.page.ts`,
     },
   ];
 
@@ -654,60 +953,51 @@ export interface AppConfig {
   configImplementationCode: CodeTab[] = [
     {
       language: 'typescript' as const,
-      label: 'inventory.config.ts',
+      label: 'system.config.ts',
       code: `import { AxNavigationItem } from '@aegisx/ui';
 import { AppConfig } from '../../shared/multi-app';
 
-// Dashboard Navigation
-const dashboardNavigation: AxNavigationItem[] = [
-  { id: 'overview', title: 'Overview', icon: 'dashboard', link: '/inventory/dashboard', exactMatch: true },
-  { id: 'kpis', title: 'KPI Metrics', icon: 'analytics', link: '/inventory/dashboard/kpis' },
-  { id: 'alerts', title: 'Stock Alerts', icon: 'notifications_active', link: '/inventory/dashboard/alerts' },
+const systemNavigation: AxNavigationItem[] = [
+  { id: 'dashboard', title: 'Dashboard', icon: 'dashboard', link: '/system' },
+  {
+    id: 'user-management',
+    title: 'User Management',
+    icon: 'people',
+    type: 'collapsible',
+    children: [
+      { id: 'users', title: 'Users', icon: 'manage_accounts', link: '/system/users' },
+      { id: 'profile', title: 'My Profile', icon: 'person', link: '/system/profile' },
+    ],
+  },
+  // ... more navigation items
 ];
 
-// Warehouse Navigation
-const warehouseNavigation: AxNavigationItem[] = [
-  { id: 'stock-overview', title: 'Stock Overview', icon: 'inventory_2', link: '/inventory/warehouse', exactMatch: true },
-  { id: 'locations', title: 'Locations', icon: 'location_on', link: '/inventory/warehouse/locations' },
-  { id: 'transfers', title: 'Transfers', icon: 'swap_horiz', link: '/inventory/warehouse/transfers' },
-];
-
-export const INVENTORY_APP_CONFIG: AppConfig = {
-  id: 'inventory',
-  name: 'Inventory Management',
-  description: 'Warehouse and inventory management system',
-  theme: 'inventory',  // Uses inventory preset theme
-  baseRoute: '/inventory',
-  defaultRoute: '/inventory/dashboard',
+export const SYSTEM_APP_CONFIG: AppConfig = {
+  id: 'system',
+  name: 'System Administration',
+  description: 'System administration and management',
+  theme: 'default',  // Uses 'default' theme preset
+  baseRoute: '/system',
+  defaultRoute: '/system',
   showFooter: true,
-  footerContent: 'Inventory Management System - AegisX Platform',
+  footerContent: 'AegisX Platform',
 
   headerActions: [
-    { id: 'scan', icon: 'qr_code_scanner', tooltip: 'Scan Barcode', action: 'onScanBarcode' },
-    { id: 'notifications', icon: 'notifications', tooltip: 'Notifications', badge: 5, action: 'onNotifications' },
+    { id: 'notifications', icon: 'notifications', tooltip: 'Notifications', badge: 3, action: 'onNotifications' },
     { id: 'settings', icon: 'settings', tooltip: 'Settings', action: 'onSettings' },
   ],
 
+  // Single sub-app for flat navigation structure
   subApps: [
     {
-      id: 'dashboard',
-      name: 'Dashboard',
-      icon: 'dashboard',
-      route: '/inventory/dashboard',
-      navigation: dashboardNavigation,
+      id: 'main',
+      name: 'Administration',
+      icon: 'admin_panel_settings',
+      route: '/system',
+      navigation: systemNavigation,
       isDefault: true,
-      description: 'Overview and KPIs',
+      roles: ['admin'],
     },
-    {
-      id: 'warehouse',
-      name: 'Warehouse',
-      icon: 'warehouse',
-      route: '/inventory/warehouse',
-      navigation: warehouseNavigation,
-      description: 'Stock management',
-      permissions: ['inventory.warehouse.read'],
-    },
-    // ... more sub-apps
   ],
 };`,
     },
@@ -717,16 +1007,19 @@ export const INVENTORY_APP_CONFIG: AppConfig = {
   shellComponentCode: CodeTab[] = [
     {
       language: 'typescript' as const,
-      label: 'inventory-shell.component.ts',
+      label: 'system-shell.component.ts',
       code: `import { Component, OnInit, inject, computed } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { AxEnterpriseLayoutComponent, AxNavigationItem, EnterprisePresetTheme } from '@aegisx/ui';
-import { INVENTORY_APP_CONFIG } from './inventory.config';
-import { SubAppConfig, HeaderAction } from '../../shared/multi-app';
+import { Router, RouterOutlet } from '@angular/router';
+import {
+  AxEnterpriseLayoutComponent,
+  AxNavigationItem,
+  EnterprisePresetTheme,
+} from '@aegisx/ui';
+import { SYSTEM_APP_CONFIG } from './system.config';
+import { MultiAppService, HeaderAction } from '../../shared/multi-app';
 
 @Component({
-  selector: 'app-inventory-shell',
+  selector: 'app-system-shell',
   standalone: true,
   imports: [RouterOutlet, AxEnterpriseLayoutComponent, /* ... */],
   template: \`
@@ -734,284 +1027,228 @@ import { SubAppConfig, HeaderAction } from '../../shared/multi-app';
       [appName]="appName"
       [appTheme]="appTheme"
       [navigation]="currentNavigation()"
-      [subNavigation]="subAppNavigation()"
       [showFooter]="config.showFooter ?? true"
-      [contentBackground]="'gray'"
       (logoutClicked)="onLogout()"
     >
-      <!-- Header Actions -->
       <ng-template #headerActions>
-        @for (action of appHeaderActions; track action.id) {
+        @for (action of appHeaderActions(); track action.id) {
           <button mat-icon-button [matTooltip]="action.tooltip" (click)="handleAction(action)">
-            @if (action.badge) {
-              <mat-icon [matBadge]="action.badge" matBadgeColor="warn">{{ action.icon }}</mat-icon>
-            } @else {
-              <mat-icon>{{ action.icon }}</mat-icon>
-            }
+            <mat-icon>{{ action.icon }}</mat-icon>
           </button>
         }
       </ng-template>
 
-      <!-- Router Outlet for Sub-App Pages -->
       <router-outlet></router-outlet>
     </ax-enterprise-layout>
   \`,
 })
-export class InventoryShellComponent implements OnInit {
-  private readonly router = inject(Router);
+export class SystemShellComponent implements OnInit {
+  private readonly multiAppService = inject(MultiAppService);
 
-  readonly config = INVENTORY_APP_CONFIG;
+  readonly config = SYSTEM_APP_CONFIG;
   readonly appName = this.config.name;
-  readonly appTheme: EnterprisePresetTheme = 'inventory';
-  readonly appHeaderActions: HeaderAction[] = this.config.headerActions || [];
+  readonly appTheme = this.config.theme as EnterprisePresetTheme;
 
-  private _activeSubAppId = 'dashboard';
-
-  // Computed: Sub-app navigation tabs
-  readonly subAppNavigation = computed<AxNavigationItem[]>(() => {
-    return this.config.subApps.map((subApp: SubAppConfig) => ({
-      id: subApp.id,
-      title: subApp.name,
-      icon: subApp.icon,
-      link: subApp.route,
-    }));
+  // Get navigation from MultiAppService (centralized)
+  readonly currentNavigation = computed<AxNavigationItem[]>(() => {
+    return this.multiAppService.currentNavigation();
   });
 
-  // Computed: Current navigation based on active sub-app
-  readonly currentNavigation = computed<AxNavigationItem[]>(() => {
-    const activeSubApp = this.getActiveSubApp();
-    return activeSubApp?.navigation || [];
+  // Header actions from MultiAppService
+  readonly appHeaderActions = computed<HeaderAction[]>(() => {
+    return this.multiAppService.currentHeaderActions();
   });
 
   ngOnInit(): void {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event) => {
-        this.updateActiveSubApp((event as NavigationEnd).url);
-      });
-    this.updateActiveSubApp(this.router.url);
-  }
-
-  private updateActiveSubApp(url: string): void {
-    const subApp = this.config.subApps.find((s: SubAppConfig) => url.startsWith(s.route));
-    if (subApp) this._activeSubAppId = subApp.id;
-  }
-
-  private getActiveSubApp(): SubAppConfig | undefined {
-    return this.config.subApps.find((s: SubAppConfig) => s.id === this._activeSubAppId);
+    // Register this app with MultiAppService
+    this.multiAppService.registerApp(this.config, 0, true);
   }
 
   handleAction(action: HeaderAction): void {
-    // Handle header actions...
+    // Handle action...
   }
 }`,
     },
   ];
 
-  // Routes code
-  routesCode: CodeTab[] = [
+  // Portal integration code
+  portalIntegrationCode: CodeTab[] = [
     {
       language: 'typescript' as const,
-      label: 'inventory.routes.ts',
-      code: `import { Routes } from '@angular/router';
-import { InventoryShellComponent } from './inventory-shell.component';
+      label: 'portal.page.ts',
+      code: `import { Component, inject, computed } from '@angular/core';
+import { AxLauncherComponent, LauncherApp } from '@aegisx/ui';
+import { MultiAppService } from '../../shared/multi-app';
 
-export const INVENTORY_ROUTES: Routes = [
-  {
-    path: '',
-    component: InventoryShellComponent,
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        loadChildren: () => import('./modules/dashboard/dashboard.routes')
-          .then((m) => m.DASHBOARD_ROUTES),
-      },
-      {
-        path: 'warehouse',
-        loadChildren: () => import('./modules/warehouse/warehouse.routes')
-          .then((m) => m.WAREHOUSE_ROUTES),
-      },
-      {
-        path: 'receiving',
-        loadChildren: () => import('./modules/receiving/receiving.routes')
-          .then((m) => m.RECEIVING_ROUTES),
-      },
-      {
-        path: 'shipping',
-        loadChildren: () => import('./modules/shipping/shipping.routes')
-          .then((m) => m.SHIPPING_ROUTES),
-      },
-    ],
-  },
-];`,
+@Component({
+  selector: 'app-portal',
+  standalone: true,
+  imports: [AxLauncherComponent],
+  template: \`
+    <ax-launcher
+      [apps]="registeredApps()"
+      [title]="'Applications'"
+      [subtitle]="'Access your enterprise applications'"
+      (appClick)="onAppClick($event)"
+    />
+  \`,
+})
+export class PortalPage {
+  private readonly multiAppService = inject(MultiAppService);
+
+  // Get registered apps in LauncherApp format
+  readonly registeredApps = computed<LauncherApp[]>(() => {
+    return this.multiAppService.getAppsAsLauncherFormat();
+  });
+
+  // Or with RBAC filtering:
+  readonly filteredApps = computed<LauncherApp[]>(() => {
+    const userRoles = ['admin'];
+    const userPermissions = ['system.read'];
+    return this.multiAppService.getAppsAsLauncherFormatFiltered(
+      userRoles,
+      userPermissions
+    );
+  });
+}`,
     },
   ];
 
-  // Main routes code
-  mainRoutesCode: CodeTab[] = [
+  // Theme integration code
+  themeIntegrationCode: CodeTab[] = [
     {
       language: 'typescript' as const,
-      label: 'app.routes.ts',
-      code: `import { Routes } from '@angular/router';
-import { AuthGuard } from './core/auth';
+      label: 'Theme from Config',
+      code: `// inventory.config.ts
+export const INVENTORY_APP_CONFIG: AppConfig = {
+  id: 'inventory',
+  theme: 'inventory',  // Use 'inventory' preset
+  // ...
+};
 
-export const appRoutes: Routes = [
-  // ... other routes
+// inventory-shell.component.ts
+@Component({
+  template: \`
+    <ax-enterprise-layout
+      [appTheme]="appTheme"  <!-- Uses theme from config -->
+    >
+  \`,
+})
+export class InventoryShellComponent {
+  readonly config = INVENTORY_APP_CONFIG;
 
-  // Feature Apps with Multi-App Architecture
-  {
-    path: 'inventory',
-    loadChildren: () =>
-      import('./features/inventory/inventory.routes')
-        .then((m) => m.INVENTORY_ROUTES),
-    canActivate: [AuthGuard],
-    data: {
-      title: 'Inventory Management',
-      description: 'Warehouse and Inventory Management System',
-      requiredPermissions: ['inventory.read', 'admin.*'],
-    },
-  },
-
-  // ... more feature apps
-];`,
+  // Theme is taken from config, not hardcoded!
+  readonly appTheme = this.config.theme as EnterprisePresetTheme;
+}`,
     },
   ];
 
   // API Reference Tables
-  appConfigProps = [
+  serviceSignalsProps = [
     {
-      name: 'id',
-      type: 'string',
-      default: '-',
-      description: 'Unique app identifier',
-    },
-    {
-      name: 'name',
-      type: 'string',
-      default: '-',
-      description: 'Display name shown in header',
-    },
-    {
-      name: 'description',
-      type: 'string',
-      default: 'undefined',
-      description: 'App description',
-    },
-    {
-      name: 'theme',
-      type: 'EnterprisePresetTheme | EnterpriseAppTheme',
-      default: "'default'",
-      description: 'Theme preset or custom theme object',
-    },
-    {
-      name: 'baseRoute',
-      type: 'string',
-      default: '-',
-      description: 'Base route path (e.g., /inventory)',
-    },
-    {
-      name: 'defaultRoute',
-      type: 'string',
-      default: '-',
-      description: 'Default redirect route',
-    },
-    {
-      name: 'subApps',
-      type: 'SubAppConfig[]',
+      name: 'apps',
+      type: 'Signal<AppConfig[]>',
       default: '[]',
-      description: 'List of sub-app configurations',
+      description: 'All enabled registered apps sorted by order',
     },
     {
-      name: 'headerActions',
-      type: 'HeaderAction[]',
+      name: 'activeApp',
+      type: 'Signal<AppConfig | null>',
+      default: 'null',
+      description: 'Currently active app based on URL',
+    },
+    {
+      name: 'activeSubApp',
+      type: 'Signal<SubAppConfig | null>',
+      default: 'null',
+      description: 'Currently active sub-app based on URL',
+    },
+    {
+      name: 'currentNavigation',
+      type: 'Signal<AxNavigationItem[]>',
       default: '[]',
-      description: 'Global header action buttons',
+      description: 'Navigation items for active sub-app',
     },
     {
-      name: 'showFooter',
-      type: 'boolean',
-      default: 'true',
-      description: 'Show footer section',
+      name: 'currentSubNavigation',
+      type: 'Signal<AxNavigationItem[]>',
+      default: '[]',
+      description: 'Secondary navigation for active sub-app',
     },
     {
-      name: 'footerContent',
-      type: 'string',
-      default: 'undefined',
-      description: 'Footer text content',
+      name: 'currentHeaderActions',
+      type: 'Signal<HeaderAction[]>',
+      default: '[]',
+      description: 'Combined header actions (global + sub-app)',
+    },
+    {
+      name: 'activeContext',
+      type: 'Signal<ActiveAppContext | null>',
+      default: 'null',
+      description: 'Full context including app, navigation, theme',
     },
   ];
 
-  subAppConfigProps = [
+  serviceMethodsProps = [
     {
-      name: 'id',
-      type: 'string',
+      name: 'registerApp(config, order, enabled)',
+      type: 'void',
       default: '-',
-      description: 'Unique sub-app identifier',
+      description: 'Register an app configuration with service',
     },
     {
-      name: 'name',
-      type: 'string',
+      name: 'unregisterApp(appId)',
+      type: 'void',
       default: '-',
-      description: 'Display name shown in tabs',
+      description: 'Unregister an app by ID',
     },
     {
-      name: 'icon',
-      type: 'string',
+      name: 'setAppEnabled(appId, enabled)',
+      type: 'void',
       default: '-',
-      description: 'Material icon name',
-    },
-    { name: 'route', type: 'string', default: '-', description: 'Route path' },
-    {
-      name: 'navigation',
-      type: 'AxNavigationItem[]',
-      default: '[]',
-      description: 'Sidebar navigation items',
+      description: 'Enable or disable an app',
     },
     {
-      name: 'isDefault',
-      type: 'boolean',
-      default: 'false',
-      description: 'Is default sub-app',
-    },
-    {
-      name: 'permissions',
-      type: 'string[]',
-      default: '[]',
-      description: 'Required permissions',
-    },
-  ];
-
-  headerActionProps = [
-    {
-      name: 'id',
-      type: 'string',
+      name: 'getApp(appId)',
+      type: 'AppConfig | null',
       default: '-',
-      description: 'Unique action identifier',
+      description: 'Get app config by ID',
     },
     {
-      name: 'icon',
-      type: 'string',
+      name: 'getSubApp(appId, subAppId)',
+      type: 'SubAppConfig | null',
       default: '-',
-      description: 'Material icon name',
+      description: 'Get sub-app config',
     },
     {
-      name: 'tooltip',
-      type: 'string',
+      name: 'navigateToApp(appId)',
+      type: 'void',
       default: '-',
-      description: 'Tooltip text',
+      description: 'Navigate to app default route',
     },
     {
-      name: 'action',
-      type: 'string',
+      name: 'getAppsForLauncher(roles, permissions)',
+      type: 'AppConfig[]',
       default: '-',
-      description: 'Method name to call on click',
+      description: 'Get apps filtered by RBAC',
     },
     {
-      name: 'badge',
-      type: 'number',
-      default: 'undefined',
-      description: 'Badge count',
+      name: 'getAppsAsLauncherFormat()',
+      type: 'LauncherApp[]',
+      default: '-',
+      description: 'Get all apps in LauncherApp format',
+    },
+    {
+      name: 'getAppsAsLauncherFormatFiltered(roles, perms)',
+      type: 'LauncherApp[]',
+      default: '-',
+      description: 'Get filtered apps in LauncherApp format',
+    },
+    {
+      name: 'convertToLauncherApp(app, order)',
+      type: 'LauncherApp',
+      default: '-',
+      description: 'Convert AppConfig to LauncherApp format',
     },
   ];
 }
