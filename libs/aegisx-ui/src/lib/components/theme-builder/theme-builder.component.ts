@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -75,7 +75,7 @@ import type { M3ColorScheme } from './m3-color.util';
               [value]="selectedPresetId()"
               (selectionChange)="onPresetChange($event.value)"
             >
-              @for (preset of presets; track preset.id) {
+              @for (preset of presets(); track preset.id) {
                 <mat-option [value]="preset.id">
                   {{ preset.name }}
                 </mat-option>
@@ -185,6 +185,25 @@ import type { M3ColorScheme } from './m3-color.util';
             <span>Shadows</span>
           </button>
           <div class="nav-divider"></div>
+          <button
+            class="nav-item"
+            [class.active]="activeSection() === 'contrast-checker'"
+            (click)="setActiveSection('contrast-checker')"
+          >
+            <mat-icon>contrast</mat-icon>
+            <span>Contrast</span>
+          </button>
+          <button
+            class="nav-item"
+            [class.active]="activeSection() === 'saved-themes'"
+            (click)="setActiveSection('saved-themes')"
+          >
+            <mat-icon>folder</mat-icon>
+            <span>Saved Themes</span>
+            @if (themeService.savedThemes().length > 0) {
+              <span class="badge">{{ themeService.savedThemes().length }}</span>
+            }
+          </button>
           <button
             class="nav-item"
             [class.active]="activeSection() === 'code-export'"
@@ -693,6 +712,199 @@ import type { M3ColorScheme } from './m3-color.util';
                       "
                     ></div>
                   </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Contrast Checker Section -->
+          @if (activeSection() === 'contrast-checker') {
+            <div class="section-content">
+              <div class="section-header">
+                <h2>Contrast Checker</h2>
+                <p class="section-description">
+                  Check your color combinations against WCAG 2.1 accessibility
+                  guidelines. Aim for AA (4.5:1) for normal text or AAA (7:1)
+                  for enhanced accessibility.
+                </p>
+              </div>
+
+              <div class="contrast-checks">
+                @for (check of contrastChecks(); track check.name) {
+                  <div
+                    class="contrast-check-item"
+                    [class.pass]="check.result.wcagAA"
+                    [class.warning]="
+                      check.result.wcagAALarge && !check.result.wcagAA
+                    "
+                    [class.fail]="!check.result.wcagAALarge"
+                  >
+                    <div class="contrast-preview">
+                      <div
+                        class="contrast-sample"
+                        [style.background-color]="check.background"
+                        [style.color]="check.foreground"
+                      >
+                        Aa
+                      </div>
+                    </div>
+                    <div class="contrast-info">
+                      <div class="contrast-name">{{ check.name }}</div>
+                      <div class="contrast-colors">
+                        <span
+                          class="color-swatch"
+                          [style.background-color]="check.foreground"
+                        ></span>
+                        {{ check.foreground }}
+                        <span class="on-text">on</span>
+                        <span
+                          class="color-swatch"
+                          [style.background-color]="check.background"
+                        ></span>
+                        {{ check.background }}
+                      </div>
+                    </div>
+                    <div class="contrast-result">
+                      <div class="ratio">{{ check.result.ratio }}:1</div>
+                      <div
+                        class="level-badge"
+                        [class.aaa]="check.result.level === 'AAA'"
+                        [class.aa]="check.result.level === 'AA'"
+                        [class.aa-large]="check.result.level === 'AA-large'"
+                        [class.fail]="check.result.level === 'fail'"
+                      >
+                        @if (check.result.level === 'AAA') {
+                          <mat-icon>check_circle</mat-icon> AAA
+                        } @else if (check.result.level === 'AA') {
+                          <mat-icon>check_circle</mat-icon> AA
+                        } @else if (check.result.level === 'AA-large') {
+                          <mat-icon>info</mat-icon> AA (large)
+                        } @else {
+                          <mat-icon>error</mat-icon> Fail
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="contrast-legend">
+                <h4>WCAG 2.1 Requirements</h4>
+                <div class="legend-items">
+                  <div class="legend-item">
+                    <span class="legend-badge aaa">AAA</span>
+                    <span>7:1 - Enhanced contrast for normal text</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-badge aa">AA</span>
+                    <span>4.5:1 - Minimum contrast for normal text</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-badge aa-large">AA (large)</span>
+                    <span>3:1 - Minimum contrast for large text (18pt+)</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-badge fail">Fail</span>
+                    <span
+                      >Below 3:1 - Does not meet accessibility standards</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Saved Themes Section -->
+          @if (activeSection() === 'saved-themes') {
+            <div class="section-content">
+              <div class="section-header">
+                <h2>Saved Themes</h2>
+                <p class="section-description">
+                  Save your custom themes locally and switch between them. All
+                  themes are stored in your browser's local storage.
+                </p>
+              </div>
+
+              <!-- Save Current Theme -->
+              <div class="save-theme-form">
+                <mat-form-field appearance="outline" class="theme-name-input">
+                  <mat-label>Theme Name</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="newThemeName"
+                    placeholder="My Custom Theme"
+                  />
+                </mat-form-field>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="saveCurrentTheme()"
+                  [disabled]="!newThemeName"
+                >
+                  <mat-icon>save</mat-icon>
+                  Save Theme
+                </button>
+              </div>
+
+              <!-- Saved Themes List -->
+              <div class="saved-themes-list">
+                @if (themeService.savedThemes().length === 0) {
+                  <div class="empty-state">
+                    <mat-icon>folder_open</mat-icon>
+                    <p>No saved themes yet</p>
+                    <span>Save your current theme to see it here</span>
+                  </div>
+                } @else {
+                  @for (theme of themeService.savedThemes(); track theme.id) {
+                    <div class="saved-theme-card">
+                      <div
+                        class="theme-preview-colors"
+                        [style.--brand-500]="theme.config.colors.brand[500]"
+                        [style.--brand-600]="theme.config.colors.brand[600]"
+                      >
+                        <span class="color-dot c1"></span>
+                        <span class="color-dot c2"></span>
+                      </div>
+                      <div class="theme-info">
+                        <div class="theme-name">{{ theme.name }}</div>
+                        <div class="theme-date">
+                          Updated:
+                          {{ theme.updatedAt | date: 'short' }}
+                        </div>
+                      </div>
+                      <div class="theme-actions">
+                        <button
+                          mat-icon-button
+                          matTooltip="Load theme"
+                          (click)="loadSavedTheme(theme.id)"
+                        >
+                          <mat-icon>upload</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
+                          matTooltip="Update with current changes"
+                          (click)="updateSavedTheme(theme.id)"
+                        >
+                          <mat-icon>sync</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
+                          matTooltip="Duplicate theme"
+                          (click)="duplicateSavedTheme(theme.id)"
+                        >
+                          <mat-icon>content_copy</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
+                          matTooltip="Delete theme"
+                          color="warn"
+                          (click)="deleteSavedTheme(theme.id)"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  }
                 }
               </div>
             </div>
@@ -1316,6 +1528,343 @@ import type { M3ColorScheme } from './m3-color.util';
         margin-left: auto;
       }
 
+      /* Nav Badge */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: white;
+        background: var(--ax-brand-500, #6366f1);
+        border-radius: 9px;
+        margin-left: auto;
+      }
+
+      /* Contrast Checker Section */
+      .contrast-checks {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .contrast-check-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--ax-background-default, #ffffff);
+        border-radius: var(--ax-radius-lg, 0.75rem);
+        border: 1px solid var(--ax-border-muted, #f4f4f5);
+        transition: border-color 0.15s ease;
+
+        &.pass {
+          border-left: 3px solid var(--ax-success-500, #22c55e);
+        }
+
+        &.warning {
+          border-left: 3px solid var(--ax-warning-500, #f59e0b);
+        }
+
+        &.fail {
+          border-left: 3px solid var(--ax-error-500, #ef4444);
+        }
+      }
+
+      .contrast-preview {
+        flex-shrink: 0;
+      }
+
+      .contrast-sample {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--ax-radius-md, 0.375rem);
+        font-size: 1.25rem;
+        font-weight: 600;
+        border: 1px solid var(--ax-border-default, #e4e4e7);
+      }
+
+      .contrast-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .contrast-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ax-text-heading, #0a0a0a);
+        margin-bottom: 0.25rem;
+      }
+
+      .contrast-colors {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-family: monospace;
+        color: var(--ax-text-secondary, #71717a);
+      }
+
+      .color-swatch {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        border: 1px solid var(--ax-border-default, #e4e4e7);
+      }
+
+      .on-text {
+        color: var(--ax-text-subtle, #a1a1aa);
+        font-style: italic;
+      }
+
+      .contrast-result {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+      }
+
+      .ratio {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ax-text-heading, #0a0a0a);
+      }
+
+      .level-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--ax-radius-sm, 0.25rem);
+        font-size: 0.7rem;
+        font-weight: 600;
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+
+        &.aaa {
+          background: var(--ax-success-100, #dcfce7);
+          color: var(--ax-success-700, #15803d);
+        }
+
+        &.aa {
+          background: var(--ax-info-100, #dbeafe);
+          color: var(--ax-info-700, #1d4ed8);
+        }
+
+        &.aa-large {
+          background: var(--ax-warning-100, #fef3c7);
+          color: var(--ax-warning-700, #b45309);
+        }
+
+        &.fail {
+          background: var(--ax-error-100, #fee2e2);
+          color: var(--ax-error-700, #b91c1c);
+        }
+      }
+
+      .contrast-legend {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--ax-background-subtle, #f4f4f5);
+        border-radius: var(--ax-radius-lg, 0.75rem);
+
+        h4 {
+          margin: 0 0 0.75rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--ax-text-heading, #0a0a0a);
+        }
+      }
+
+      .legend-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.8rem;
+        color: var(--ax-text-secondary, #71717a);
+      }
+
+      .legend-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--ax-radius-sm, 0.25rem);
+        font-size: 0.7rem;
+        font-weight: 600;
+
+        &.aaa {
+          background: var(--ax-success-100, #dcfce7);
+          color: var(--ax-success-700, #15803d);
+        }
+
+        &.aa {
+          background: var(--ax-info-100, #dbeafe);
+          color: var(--ax-info-700, #1d4ed8);
+        }
+
+        &.aa-large {
+          background: var(--ax-warning-100, #fef3c7);
+          color: var(--ax-warning-700, #b45309);
+        }
+
+        &.fail {
+          background: var(--ax-error-100, #fee2e2);
+          color: var(--ax-error-700, #b91c1c);
+        }
+      }
+
+      /* Saved Themes Section */
+      .save-theme-form {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .theme-name-input {
+        flex: 1;
+        max-width: 300px;
+
+        ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+      }
+
+      .saved-themes-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 2rem;
+        text-align: center;
+        background: var(--ax-background-subtle, #f4f4f5);
+        border-radius: var(--ax-radius-lg, 0.75rem);
+        border: 2px dashed var(--ax-border-default, #e4e4e7);
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: var(--ax-text-subtle, #a1a1aa);
+          margin-bottom: 1rem;
+        }
+
+        p {
+          margin: 0 0 0.25rem;
+          font-size: 1rem;
+          font-weight: 500;
+          color: var(--ax-text-secondary, #71717a);
+        }
+
+        span {
+          font-size: 0.875rem;
+          color: var(--ax-text-subtle, #a1a1aa);
+        }
+      }
+
+      .saved-theme-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--ax-background-default, #ffffff);
+        border-radius: var(--ax-radius-lg, 0.75rem);
+        border: 1px solid var(--ax-border-muted, #f4f4f5);
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+
+        &:hover {
+          border-color: var(--ax-border-default, #e4e4e7);
+          box-shadow: var(--ax-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+        }
+      }
+
+      .theme-preview-colors {
+        display: flex;
+        gap: 0.25rem;
+        flex-shrink: 0;
+      }
+
+      .color-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 0 1px var(--ax-border-default, #e4e4e7);
+
+        &.c1 {
+          background: var(--brand-500, #6366f1);
+        }
+
+        &.c2 {
+          background: var(--brand-600, #4f46e5);
+          margin-left: -8px;
+        }
+      }
+
+      .theme-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .theme-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ax-text-heading, #0a0a0a);
+        margin-bottom: 0.125rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .theme-date {
+        font-size: 0.75rem;
+        color: var(--ax-text-subtle, #a1a1aa);
+      }
+
+      .theme-actions {
+        display: flex;
+        gap: 0.25rem;
+        flex-shrink: 0;
+
+        button {
+          width: 32px;
+          height: 32px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+
       /* Responsive */
       @media (max-width: 1200px) {
         .theme-builder-content {
@@ -1353,28 +1902,8 @@ export class AxThemeBuilderComponent {
   // Section navigation
   readonly activeSection = signal<ThemeSection>('colors');
 
-  // Presets
-  readonly presets: ThemePreset[] = [
-    {
-      id: 'aegisx',
-      name: 'AegisX Default',
-      description: 'Default indigo theme',
-      config: {},
-    },
-    {
-      id: 'verus',
-      name: 'Verus Blue',
-      description: 'Professional blue theme',
-      config: {},
-    },
-    { id: 'rose', name: 'Rose', description: 'Warm rose theme', config: {} },
-    {
-      id: 'emerald',
-      name: 'Emerald',
-      description: 'Fresh green theme',
-      config: {},
-    },
-  ];
+  // Presets - use from service (11 presets including Material, Tailwind, Bootstrap)
+  readonly presets = this.themeService.presets;
 
   readonly selectedPresetId = signal<string>('aegisx');
 
@@ -1435,6 +1964,16 @@ export class AxThemeBuilderComponent {
   // Code Export state
   exportFormat: ExportFormat = 'css';
   readonly codeExportMode = signal<'light' | 'dark' | 'both'>('light');
+
+  // Saved Themes state
+  newThemeName = '';
+
+  // Contrast Checker computed signal
+  readonly contrastChecks = computed(() => {
+    // Trigger recomputation when theme changes
+    this.themeService.currentTheme();
+    return this.themeService.getContrastChecks();
+  });
 
   setActiveSection(section: ThemeSection): void {
     this.activeSection.set(section);
@@ -1952,5 +2491,52 @@ export class AxThemeBuilderComponent {
         language: languageMap[this.exportFormat],
       },
     ];
+  }
+
+  // ========== Saved Themes Methods ==========
+
+  /**
+   * Save current theme as a new saved theme
+   */
+  saveCurrentTheme(): void {
+    if (!this.newThemeName.trim()) return;
+
+    this.themeService.saveThemeAs(this.newThemeName.trim());
+    this.showNotification(`Theme "${this.newThemeName}" saved successfully!`);
+    this.newThemeName = '';
+  }
+
+  /**
+   * Load a saved theme
+   */
+  loadSavedTheme(themeId: string): void {
+    this.themeService.loadSavedTheme(themeId);
+    this.showNotification('Theme loaded successfully!');
+  }
+
+  /**
+   * Update an existing saved theme with current changes
+   */
+  updateSavedTheme(themeId: string): void {
+    this.themeService.updateSavedTheme(themeId);
+    this.showNotification('Theme updated successfully!');
+  }
+
+  /**
+   * Duplicate a saved theme
+   */
+  duplicateSavedTheme(themeId: string): void {
+    const newTheme = this.themeService.duplicateSavedTheme(themeId);
+    if (newTheme) {
+      this.showNotification(`Theme duplicated as "${newTheme.name}"`);
+    }
+  }
+
+  /**
+   * Delete a saved theme
+   */
+  deleteSavedTheme(themeId: string): void {
+    this.themeService.deleteSavedTheme(themeId);
+    this.showNotification('Theme deleted');
   }
 }

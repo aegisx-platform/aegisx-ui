@@ -188,7 +188,18 @@ const DEFAULT_LIGHT_THEME: ThemeBuilderConfig = {
 };
 
 /**
- * Theme presets
+ * Saved theme structure
+ */
+export interface SavedTheme {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  config: ThemeBuilderConfig;
+}
+
+/**
+ * Theme presets - includes popular design system colors
  */
 const THEME_PRESETS: ThemePreset[] = [
   {
@@ -198,8 +209,113 @@ const THEME_PRESETS: ThemePreset[] = [
     config: {},
   },
   {
+    id: 'material-indigo',
+    name: 'Material Indigo',
+    description: 'Google Material Design 3 Indigo',
+    config: {
+      colors: {
+        brand: {
+          50: '#e8eaf6',
+          100: '#c5cae9',
+          200: '#9fa8da',
+          300: '#7986cb',
+          400: '#5c6bc0',
+          500: '#3f51b5',
+          600: '#3949ab',
+          700: '#303f9f',
+          800: '#283593',
+          900: '#1a237e',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
+  {
+    id: 'material-purple',
+    name: 'Material Purple',
+    description: 'Google Material Design 3 Deep Purple',
+    config: {
+      colors: {
+        brand: {
+          50: '#ede7f6',
+          100: '#d1c4e9',
+          200: '#b39ddb',
+          300: '#9575cd',
+          400: '#7e57c2',
+          500: '#673ab7',
+          600: '#5e35b1',
+          700: '#512da8',
+          800: '#4527a0',
+          900: '#311b92',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
+  {
+    id: 'tailwind-blue',
+    name: 'Tailwind Blue',
+    description: 'TailwindCSS default blue palette',
+    config: {
+      colors: {
+        brand: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
+  {
+    id: 'tailwind-violet',
+    name: 'Tailwind Violet',
+    description: 'TailwindCSS violet palette',
+    config: {
+      colors: {
+        brand: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
+  {
+    id: 'bootstrap-primary',
+    name: 'Bootstrap Primary',
+    description: 'Bootstrap 5 default blue',
+    config: {
+      colors: {
+        brand: {
+          50: '#e7f1ff',
+          100: '#cfe2ff',
+          200: '#9ec5fe',
+          300: '#6ea8fe',
+          400: '#3d8bfd',
+          500: '#0d6efd',
+          600: '#0a58ca',
+          700: '#084298',
+          800: '#052c65',
+          900: '#031633',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
+  {
     id: 'verus',
-    name: 'Verus',
+    name: 'Verus Teal',
     description: 'Teal/cyan color scheme',
     config: {
       colors: {
@@ -220,7 +336,7 @@ const THEME_PRESETS: ThemePreset[] = [
   },
   {
     id: 'rose',
-    name: 'Rose',
+    name: 'Rose Pink',
     description: 'Pink/rose color scheme',
     config: {
       colors: {
@@ -241,7 +357,7 @@ const THEME_PRESETS: ThemePreset[] = [
   },
   {
     id: 'emerald',
-    name: 'Emerald',
+    name: 'Emerald Green',
     description: 'Green/emerald color scheme',
     config: {
       colors: {
@@ -260,13 +376,68 @@ const THEME_PRESETS: ThemePreset[] = [
       } as ThemeBuilderConfig['colors'],
     },
   },
+  {
+    id: 'amber',
+    name: 'Amber Orange',
+    description: 'Warm amber/orange color scheme',
+    config: {
+      colors: {
+        brand: {
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
+  {
+    id: 'slate',
+    name: 'Slate Gray',
+    description: 'Neutral slate gray scheme',
+    config: {
+      colors: {
+        brand: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
+      } as ThemeBuilderConfig['colors'],
+    },
+  },
 ];
+
+/**
+ * Contrast ratio result
+ */
+export interface ContrastResult {
+  ratio: number;
+  wcagAA: boolean; // 4.5:1 for normal text
+  wcagAAA: boolean; // 7:1 for normal text
+  wcagAALarge: boolean; // 3:1 for large text
+  wcagAAALarge: boolean; // 4.5:1 for large text
+  level: 'fail' | 'AA-large' | 'AA' | 'AAA';
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeBuilderService {
   private readonly STORAGE_KEY = 'ax-theme-builder-config';
+  private readonly SAVED_THEMES_KEY = 'ax-theme-builder-saved-themes';
 
   // State signals
   private _currentTheme = signal<ThemeBuilderConfig>(
@@ -275,12 +446,14 @@ export class ThemeBuilderService {
   private _previewMode = signal<'light' | 'dark'>('light');
   private _activeSection = signal<ThemeSection>('colors');
   private _hasChanges = signal(false);
+  private _savedThemes = signal<SavedTheme[]>([]);
 
   // Public readonly signals
   readonly currentTheme = this._currentTheme.asReadonly();
   readonly previewMode = this._previewMode.asReadonly();
   readonly activeSection = this._activeSection.asReadonly();
   readonly hasChanges = this._hasChanges.asReadonly();
+  readonly savedThemes = this._savedThemes.asReadonly();
 
   // Computed values
   readonly presets = signal<ThemePreset[]>(THEME_PRESETS);
@@ -294,6 +467,309 @@ export class ThemeBuilderService {
 
   constructor() {
     this.loadFromStorage();
+    this.loadSavedThemes();
+  }
+
+  // ============================================================================
+  // SAVED THEMES MANAGEMENT
+  // ============================================================================
+
+  /**
+   * Load saved themes from localStorage
+   */
+  private loadSavedThemes(): void {
+    try {
+      const saved = localStorage.getItem(this.SAVED_THEMES_KEY);
+      if (saved) {
+        this._savedThemes.set(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error('Failed to load saved themes:', e);
+    }
+  }
+
+  /**
+   * Save current theme as a new saved theme
+   */
+  saveThemeAs(name: string): SavedTheme {
+    const newTheme: SavedTheme = {
+      id: `theme-${Date.now()}`,
+      name,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      config: structuredClone(this._currentTheme()),
+    };
+
+    this._savedThemes.update((themes) => [...themes, newTheme]);
+    this.persistSavedThemes();
+    this._hasChanges.set(false);
+
+    return newTheme;
+  }
+
+  /**
+   * Update an existing saved theme
+   */
+  updateSavedTheme(themeId: string): void {
+    this._savedThemes.update((themes) =>
+      themes.map((t) =>
+        t.id === themeId
+          ? {
+              ...t,
+              updatedAt: new Date().toISOString(),
+              config: structuredClone(this._currentTheme()),
+            }
+          : t,
+      ),
+    );
+    this.persistSavedThemes();
+    this._hasChanges.set(false);
+  }
+
+  /**
+   * Load a saved theme
+   */
+  loadSavedTheme(themeId: string): void {
+    const theme = this._savedThemes().find((t) => t.id === themeId);
+    if (theme) {
+      this._currentTheme.set(structuredClone(theme.config));
+      this._hasChanges.set(false);
+    }
+  }
+
+  /**
+   * Delete a saved theme
+   */
+  deleteSavedTheme(themeId: string): void {
+    this._savedThemes.update((themes) =>
+      themes.filter((t) => t.id !== themeId),
+    );
+    this.persistSavedThemes();
+  }
+
+  /**
+   * Rename a saved theme
+   */
+  renameSavedTheme(themeId: string, newName: string): void {
+    this._savedThemes.update((themes) =>
+      themes.map((t) =>
+        t.id === themeId
+          ? { ...t, name: newName, updatedAt: new Date().toISOString() }
+          : t,
+      ),
+    );
+    this.persistSavedThemes();
+  }
+
+  /**
+   * Duplicate a saved theme
+   */
+  duplicateSavedTheme(themeId: string): SavedTheme | null {
+    const theme = this._savedThemes().find((t) => t.id === themeId);
+    if (!theme) return null;
+
+    const newTheme: SavedTheme = {
+      id: `theme-${Date.now()}`,
+      name: `${theme.name} (Copy)`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      config: structuredClone(theme.config),
+    };
+
+    this._savedThemes.update((themes) => [...themes, newTheme]);
+    this.persistSavedThemes();
+
+    return newTheme;
+  }
+
+  /**
+   * Persist saved themes to localStorage
+   */
+  private persistSavedThemes(): void {
+    try {
+      localStorage.setItem(
+        this.SAVED_THEMES_KEY,
+        JSON.stringify(this._savedThemes()),
+      );
+    } catch (e) {
+      console.error('Failed to persist saved themes:', e);
+    }
+  }
+
+  // ============================================================================
+  // CONTRAST RATIO CHECKER (WCAG)
+  // ============================================================================
+
+  /**
+   * Calculate contrast ratio between two colors
+   * Based on WCAG 2.1 formula: https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio
+   */
+  calculateContrastRatio(
+    foreground: string,
+    background: string,
+  ): ContrastResult {
+    const fgLuminance = this.getRelativeLuminance(foreground);
+    const bgLuminance = this.getRelativeLuminance(background);
+
+    const lighter = Math.max(fgLuminance, bgLuminance);
+    const darker = Math.min(fgLuminance, bgLuminance);
+
+    const ratio = (lighter + 0.05) / (darker + 0.05);
+
+    // WCAG 2.1 requirements
+    const wcagAA = ratio >= 4.5; // Normal text
+    const wcagAAA = ratio >= 7; // Normal text enhanced
+    const wcagAALarge = ratio >= 3; // Large text (18pt+ or 14pt bold)
+    const wcagAAALarge = ratio >= 4.5; // Large text enhanced
+
+    let level: ContrastResult['level'] = 'fail';
+    if (wcagAAA) level = 'AAA';
+    else if (wcagAA) level = 'AA';
+    else if (wcagAALarge) level = 'AA-large';
+
+    return {
+      ratio: Math.round(ratio * 100) / 100,
+      wcagAA,
+      wcagAAA,
+      wcagAALarge,
+      wcagAAALarge,
+      level,
+    };
+  }
+
+  /**
+   * Calculate relative luminance of a color
+   * Formula: https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
+   */
+  private getRelativeLuminance(hex: string): number {
+    const rgb = this.hexToRGB(hex);
+    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((v) => {
+      v = v / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+
+  /**
+   * Convert hex to RGB
+   */
+  private hexToRGB(hex: string): { r: number; g: number; b: number } {
+    const cleaned = hex.replace('#', '');
+    return {
+      r: parseInt(cleaned.slice(0, 2), 16),
+      g: parseInt(cleaned.slice(2, 4), 16),
+      b: parseInt(cleaned.slice(4, 6), 16),
+    };
+  }
+
+  /**
+   * Get all contrast checks for current theme
+   */
+  getContrastChecks(): {
+    name: string;
+    foreground: string;
+    background: string;
+    result: ContrastResult;
+  }[] {
+    const theme = this._currentTheme();
+    const checks = [];
+
+    // Text on backgrounds
+    checks.push({
+      name: 'Primary text on default background',
+      foreground: theme.text.primary,
+      background: theme.background.default,
+      result: this.calculateContrastRatio(
+        theme.text.primary,
+        theme.background.default,
+      ),
+    });
+
+    checks.push({
+      name: 'Secondary text on default background',
+      foreground: theme.text.secondary,
+      background: theme.background.default,
+      result: this.calculateContrastRatio(
+        theme.text.secondary,
+        theme.background.default,
+      ),
+    });
+
+    checks.push({
+      name: 'Primary text on subtle background',
+      foreground: theme.text.primary,
+      background: theme.background.subtle,
+      result: this.calculateContrastRatio(
+        theme.text.primary,
+        theme.background.subtle,
+      ),
+    });
+
+    checks.push({
+      name: 'Heading on default background',
+      foreground: theme.text.heading,
+      background: theme.background.default,
+      result: this.calculateContrastRatio(
+        theme.text.heading,
+        theme.background.default,
+      ),
+    });
+
+    checks.push({
+      name: 'Disabled text on default background',
+      foreground: theme.text.disabled,
+      background: theme.background.default,
+      result: this.calculateContrastRatio(
+        theme.text.disabled,
+        theme.background.default,
+      ),
+    });
+
+    // Brand colors
+    checks.push({
+      name: 'Brand 500 on white',
+      foreground: theme.colors.brand[500],
+      background: '#ffffff',
+      result: this.calculateContrastRatio(theme.colors.brand[500], '#ffffff'),
+    });
+
+    checks.push({
+      name: 'White on Brand 500',
+      foreground: '#ffffff',
+      background: theme.colors.brand[500],
+      result: this.calculateContrastRatio('#ffffff', theme.colors.brand[500]),
+    });
+
+    checks.push({
+      name: 'Brand 600 on white',
+      foreground: theme.colors.brand[600],
+      background: '#ffffff',
+      result: this.calculateContrastRatio(theme.colors.brand[600], '#ffffff'),
+    });
+
+    // Semantic colors
+    checks.push({
+      name: 'Error 500 on white',
+      foreground: theme.colors.error[500],
+      background: '#ffffff',
+      result: this.calculateContrastRatio(theme.colors.error[500], '#ffffff'),
+    });
+
+    checks.push({
+      name: 'Success 700 on white',
+      foreground: theme.colors.success[700],
+      background: '#ffffff',
+      result: this.calculateContrastRatio(theme.colors.success[700], '#ffffff'),
+    });
+
+    checks.push({
+      name: 'Warning 700 on white',
+      foreground: theme.colors.warning[700],
+      background: '#ffffff',
+      result: this.calculateContrastRatio(theme.colors.warning[700], '#ffffff'),
+    });
+
+    return checks;
   }
 
   /**
