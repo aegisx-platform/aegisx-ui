@@ -232,6 +232,146 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
           </div>
         </mat-tab>
 
+        <!-- Libraries Tab -->
+        <mat-tab label="Libraries">
+          <div class="toast-doc__tab-content">
+            <section class="toast-doc__section">
+              <h2>External Libraries</h2>
+              <p>
+                The Toast Service is a unified wrapper around two powerful
+                notification libraries. Choose the right provider for your use
+                case.
+              </p>
+
+              <div class="library-cards">
+                <div class="library-card">
+                  <div class="library-header">
+                    <div class="library-icon ngx-toastr">
+                      <mat-icon>layers</mat-icon>
+                    </div>
+                    <div class="library-info">
+                      <h3>ngx-toastr</h3>
+                      <span class="library-version">v19.1.0</span>
+                    </div>
+                  </div>
+                  <p class="library-description">
+                    A popular Angular toast notifications library with rich
+                    features including stacking, positioning, progress bars, and
+                    animations.
+                  </p>
+                  <div class="library-features">
+                    <span class="feature-tag">Stacking</span>
+                    <span class="feature-tag">Positions</span>
+                    <span class="feature-tag">Progress Bar</span>
+                    <span class="feature-tag">Close Button</span>
+                    <span class="feature-tag">Animations</span>
+                  </div>
+                  <div class="library-links">
+                    <a
+                      href="https://www.npmjs.com/package/ngx-toastr"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                      npm
+                    </a>
+                    <a
+                      href="https://github.com/scttcper/ngx-toastr"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <mat-icon>code</mat-icon>
+                      GitHub
+                    </a>
+                  </div>
+                </div>
+
+                <div class="library-card">
+                  <div class="library-header">
+                    <div class="library-icon mat-snackbar">
+                      <mat-icon>crop_landscape</mat-icon>
+                    </div>
+                    <div class="library-info">
+                      <h3>MatSnackBar</h3>
+                      <span class="library-version">Angular Material</span>
+                    </div>
+                  </div>
+                  <p class="library-description">
+                    Angular Material's built-in snackbar component following
+                    Material Design 3 guidelines. Simple and consistent with
+                    other Material components.
+                  </p>
+                  <div class="library-features">
+                    <span class="feature-tag">Material Design</span>
+                    <span class="feature-tag">Action Button</span>
+                    <span class="feature-tag">Callbacks</span>
+                    <span class="feature-tag">Simple API</span>
+                  </div>
+                  <div class="library-links">
+                    <a
+                      href="https://material.angular.io/components/snack-bar"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                      Documentation
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="toast-doc__section">
+              <h2>When to Use Each Provider</h2>
+              <div class="comparison-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Use Case</th>
+                      <th>Recommended Provider</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Multiple notifications at once</td>
+                      <td><code>ngx-toastr</code> - Supports stacking</td>
+                    </tr>
+                    <tr>
+                      <td>Custom positions (corners, center)</td>
+                      <td><code>ngx-toastr</code> - 6 position options</td>
+                    </tr>
+                    <tr>
+                      <td>Progress indicator</td>
+                      <td><code>ngx-toastr</code> - Built-in progress bar</td>
+                    </tr>
+                    <tr>
+                      <td>Undo/Action button</td>
+                      <td><code>MatSnackBar</code> - Native action support</td>
+                    </tr>
+                    <tr>
+                      <td>Material Design consistency</td>
+                      <td><code>MatSnackBar</code> - Official MD3</td>
+                    </tr>
+                    <tr>
+                      <td>Simple notifications</td>
+                      <td><code>auto</code> - Let service decide</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="toast-doc__section">
+              <h2>Installation</h2>
+              <p>
+                Both libraries are pre-installed in the AegisX monorepo. If you
+                need to add ngx-toastr to a new project:
+              </p>
+              <ax-code-tabs [tabs]="installationCode"></ax-code-tabs>
+            </section>
+          </div>
+        </mat-tab>
+
         <!-- API Tab -->
         <mat-tab label="API">
           <div class="toast-doc__tab-content">
@@ -387,7 +527,8 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
         }
       }
 
-      .api-table {
+      .api-table,
+      .comparison-table {
         overflow-x: auto;
 
         table {
@@ -413,6 +554,127 @@ import { ComponentToken, CodeTab } from '../../../../../../types/docs.types';
             padding: 0.125rem 0.375rem;
             border-radius: var(--ax-radius-sm);
             font-size: 0.8125rem;
+          }
+        }
+      }
+
+      /* Library Cards */
+      .library-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .library-card {
+        background: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-lg);
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: var(--ax-brand-default);
+          box-shadow: var(--ax-shadow-md);
+        }
+      }
+
+      .library-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .library-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--ax-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          color: white;
+        }
+
+        &.ngx-toastr {
+          background: linear-gradient(135deg, #f97316, #ea580c);
+        }
+
+        &.mat-snackbar {
+          background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+      }
+
+      .library-info {
+        h3 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--ax-text-heading);
+          margin: 0 0 0.25rem 0;
+        }
+      }
+
+      .library-version {
+        font-size: 0.75rem;
+        color: var(--ax-text-tertiary);
+        background: var(--ax-background-subtle);
+        padding: 0.125rem 0.5rem;
+        border-radius: var(--ax-radius-full);
+      }
+
+      .library-description {
+        font-size: 0.875rem;
+        color: var(--ax-text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .library-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-tag {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.625rem;
+        background: var(--ax-background-muted);
+        color: var(--ax-text-secondary);
+        border-radius: var(--ax-radius-full);
+        font-weight: 500;
+      }
+
+      .library-links {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--ax-border-muted);
+
+        a {
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+          font-size: 0.8125rem;
+          color: var(--ax-brand-default);
+          text-decoration: none;
+          transition: color 0.2s ease;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+
+          &:hover {
+            color: var(--ax-brand-emphasis);
+            text-decoration: underline;
           }
         }
       }
@@ -633,6 +895,45 @@ this.toast.info('Message', {
     this.toast.success('Item restored!');
   }
 });`,
+    },
+  ];
+
+  readonly installationCode: CodeTab[] = [
+    {
+      label: 'Install',
+      language: 'bash',
+      code: `# Install ngx-toastr
+pnpm add ngx-toastr
+
+# Angular Material snackbar is included with @angular/material`,
+    },
+    {
+      label: 'app.config.ts',
+      language: 'typescript',
+      code: `import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAnimations(),
+    provideToastr({
+      timeOut: 5000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      progressBar: true,
+      closeButton: true,
+    }),
+  ],
+};`,
+    },
+    {
+      label: 'styles.scss',
+      language: 'scss',
+      code: `// Import ngx-toastr styles
+@import 'ngx-toastr/toastr';
+
+// Or use the AegisX themed version
+@import '@aegisx/ui/styles/vendors/toastr';`,
     },
   ];
 
