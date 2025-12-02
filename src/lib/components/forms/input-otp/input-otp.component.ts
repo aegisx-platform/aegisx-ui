@@ -10,7 +10,6 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
-  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -103,7 +102,7 @@ export interface OtpSeparatorConfig {
   styleUrls: ['./input-otp.component.scss'],
 })
 export class AxInputOtpComponent
-  implements ControlValueAccessor, AfterViewInit, OnDestroy
+  implements ControlValueAccessor, AfterViewInit
 {
   @ViewChildren('slotInput') slotInputs!: QueryList<
     ElementRef<HTMLInputElement>
@@ -201,10 +200,6 @@ export class AxInputOtpComponent
     if (this.autoFocus && !this.disabled) {
       setTimeout(() => this.focusSlot(0), 0);
     }
-  }
-
-  ngOnDestroy(): void {
-    // Cleanup if needed
   }
 
   // ControlValueAccessor implementation
