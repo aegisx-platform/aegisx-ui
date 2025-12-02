@@ -148,6 +148,8 @@ export type ThemeSection =
   | 'radius'
   | 'shadows'
   | 'preview'
+  | 'contrast-checker'
+  | 'saved-themes'
   | 'code-export';
 
 // Export format options
