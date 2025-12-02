@@ -4,5 +4,8 @@
  * Components for app navigation and routing.
  */
 
-// Components
+// Breadcrumb
 export * from './breadcrumb';
+
+// Navbar
+export * from './navbar';
