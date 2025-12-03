@@ -31,6 +31,8 @@ export type NavbarColor =
   | 'forest'
   | 'amber';
 
+export type NavbarNavAlign = 'start' | 'center' | 'end';
+
 /**
  * AX Navbar Component
  *
@@ -106,7 +108,11 @@ export type NavbarColor =
         </div>
 
         <!-- Center Zone (Desktop) -->
-        <div class="ax-navbar__center">
+        <div
+          class="ax-navbar__center"
+          [class.ax-navbar__center--start]="navAlign === 'start'"
+          [class.ax-navbar__center--end]="navAlign === 'end'"
+        >
           <ng-content select="[axNavbarCenter]"></ng-content>
         </div>
 
@@ -199,6 +205,9 @@ export class AxNavbarComponent implements OnInit, OnDestroy {
 
   /** Color preset (like Clarity Design) */
   @Input() color: NavbarColor = 'default';
+
+  /** Navigation alignment in center zone */
+  @Input() navAlign: NavbarNavAlign = 'center';
 
   /** Emit when mobile menu state changes */
   @Output() mobileMenuChange = new EventEmitter<boolean>();

@@ -17,6 +17,7 @@ import {
   NavbarUser,
   NavbarUserMenuItem,
   NavbarColor,
+  NavbarNavAlign,
 } from '@aegisx/ui';
 
 @Component({
@@ -41,7 +42,12 @@ import {
   template: `
     <div class="navbar-demo-page">
       <!-- Fixed Navbar at top -->
-      <ax-navbar [color]="selectedColor()" position="fixed" shadow="md">
+      <ax-navbar
+        [color]="selectedColor()"
+        [navAlign]="selectedAlign()"
+        position="fixed"
+        shadow="md"
+      >
         <ng-container axNavbarStart>
           <ax-navbar-brand
             name="Rocket Platform"
@@ -119,10 +125,10 @@ import {
               professional applications
             </p>
 
-            <!-- Color Selector -->
-            <div class="color-selector">
+            <!-- Selectors -->
+            <div class="selector-row">
               <mat-form-field appearance="outline" class="color-select">
-                <mat-label>Select Navbar Color</mat-label>
+                <mat-label>Navbar Color</mat-label>
                 <mat-select
                   [value]="selectedColor()"
                   (selectionChange)="setColor($event.value)"
@@ -135,6 +141,23 @@ import {
                           [style.background]="color.hex"
                         ></span>
                         {{ color.label }}
+                      </span>
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="align-select">
+                <mat-label>Menu Alignment</mat-label>
+                <mat-select
+                  [value]="selectedAlign()"
+                  (selectionChange)="setAlign($event.value)"
+                >
+                  @for (align of alignments; track align.value) {
+                    <mat-option [value]="align.value">
+                      <span class="align-option">
+                        <mat-icon>{{ align.icon }}</mat-icon>
+                        {{ align.label }}
                       </span>
                     </mat-option>
                   }
@@ -300,19 +323,30 @@ import {
         margin-bottom: 2rem;
       }
 
-      .color-selector {
+      .selector-row {
         display: flex;
         justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
 
-      .color-select {
-        width: 300px;
+      .color-select,
+      .align-select {
+        width: 240px;
       }
 
-      .color-option {
+      .color-option,
+      .align-option {
         display: flex;
         align-items: center;
         gap: 12px;
+      }
+
+      .align-option mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: var(--ax-on-surface-variant);
       }
 
       .color-swatch {
@@ -487,6 +521,7 @@ import {
 })
 export class NavbarDemoComponent {
   selectedColor = signal<NavbarColor>('ocean');
+  selectedAlign = signal<NavbarNavAlign>('center');
   activeTab = signal<string>('dashboard');
   notificationCount = signal<number>(5);
 
@@ -501,6 +536,12 @@ export class NavbarDemoComponent {
     { value: 'royal-dark', label: 'Royal Dark', hex: '#5b21b6' },
     { value: 'forest', label: 'Forest (Growth)', hex: '#15803d' },
     { value: 'amber', label: 'Amber (Energy)', hex: '#b45309' },
+  ];
+
+  alignments: { value: NavbarNavAlign; label: string; icon: string }[] = [
+    { value: 'start', label: 'Left', icon: 'format_align_left' },
+    { value: 'center', label: 'Center', icon: 'format_align_center' },
+    { value: 'end', label: 'Right', icon: 'format_align_right' },
   ];
 
   currentUser: NavbarUser = {
@@ -535,6 +576,10 @@ export class NavbarDemoComponent {
 
   setColor(color: NavbarColor): void {
     this.selectedColor.set(color);
+  }
+
+  setAlign(align: NavbarNavAlign): void {
+    this.selectedAlign.set(align);
   }
 
   setActiveTab(tab: string): void {
