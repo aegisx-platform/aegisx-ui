@@ -1,19 +1,19 @@
 import { Route } from '@angular/router';
 
-// Feature Routes
-import { COMPONENTS_AEGISX_ROUTES } from './features/docs/components-aegisx.routes';
-import { FOUNDATIONS_ROUTES } from './features/docs/foundations.routes';
-import { GETTING_STARTED_ROUTES } from './features/docs/getting-started.routes';
-import { INTEGRATIONS_ROUTES } from './features/docs/integrations.routes';
-import { MATERIAL_ROUTES } from './features/docs/material.routes';
+// Route Definitions
+import { COMPONENTS_AEGISX_ROUTES } from './routes/docs/components-aegisx.routes';
+import { FOUNDATIONS_ROUTES } from './routes/docs/foundations.routes';
+import { GETTING_STARTED_ROUTES } from './routes/docs/getting-started.routes';
+import { INTEGRATIONS_ROUTES } from './routes/docs/integrations.routes';
+import { MATERIAL_ROUTES } from './routes/docs/material.routes';
 import {
   ARCHITECTURE_ROUTES,
   PATTERNS_ROUTES,
-} from './features/docs/patterns-architecture.routes';
-import { PLAYGROUND_ROUTES } from './features/playground/playground.routes';
-import { LEGACY_REDIRECTS } from './features/redirects/legacy-redirects.routes';
-import { STANDALONE_ROUTES } from './features/standalone/standalone.routes';
-import { TOOLS_ROUTES } from './features/tools/tools.routes';
+} from './routes/docs/patterns-architecture.routes';
+import { PLAYGROUND_ROUTES } from './routes/playground/playground.routes';
+import { LEGACY_REDIRECTS } from './routes/redirects/legacy-redirects.routes';
+import { STANDALONE_ROUTES } from './routes/standalone/standalone.routes';
+import { TOOLS_ROUTES } from './routes/tools/tools.routes';
 
 /**
  * Admin Application Routes
