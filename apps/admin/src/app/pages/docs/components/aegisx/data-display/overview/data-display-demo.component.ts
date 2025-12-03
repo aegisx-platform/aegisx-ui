@@ -28,7 +28,6 @@ import {
     LivePreviewComponent,
   ],
   templateUrl: './data-display-demo.component.html',
-  styleUrls: ['./data-display-demo.component.scss'],
 })
 export class DataDisplayDemoComponent {
   userProfile = {

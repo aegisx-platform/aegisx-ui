@@ -116,7 +116,6 @@ export interface Agent {
     MatAutocompleteModule,
   ],
   templateUrl: './components-demo.component.html',
-  styleUrls: ['./components-demo.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class ComponentsDemoComponent implements OnInit {
