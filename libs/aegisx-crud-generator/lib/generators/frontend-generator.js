@@ -2957,6 +2957,147 @@ class FrontendGenerator {
       return false;
     }
   }
+
+  /**
+   * Auto-register frontend route in shell routes file (e.g., system.routes.ts)
+   * This enables shell-based registration for proper integration with shell apps
+   *
+   * @param {string} moduleName - The module name to register
+   * @param {string} shellName - The shell name (e.g., 'system', 'inventory')
+   */
+  async autoRegisterShellRoute(moduleName, shellName) {
+    const targetApp = this.targetApp || 'web';
+    const shellKebab = this.toKebabCase(shellName);
+
+    // Shell routes file path pattern: apps/{app}/src/app/features/{shell}/{shell}.routes.ts
+    const shellRoutesPath = path.join(
+      this.projectRoot,
+      `apps/${targetApp}/src/app/features/${shellKebab}/${shellKebab}.routes.ts`,
+    );
+
+    try {
+      // Check if shell routes file exists
+      if (!fs.existsSync(shellRoutesPath)) {
+        console.warn(`⚠️ Shell routes file not found: ${shellRoutesPath}`);
+        console.warn(`   Falling back to app.routes.ts registration`);
+        return this.autoRegisterRoute(moduleName);
+      }
+
+      const kebabName = this.toKebabCase(moduleName);
+      const camelName = this.toCamelCase(moduleName);
+      const title = this.fieldNameToLabel(moduleName);
+
+      let content = fs.readFileSync(shellRoutesPath, 'utf8');
+
+      // Check if already registered
+      if (content.includes(`path: '${kebabName}'`)) {
+        console.log(
+          `⚠️ ${moduleName} route already registered in ${shellName}.routes.ts`,
+        );
+        return false;
+      }
+
+      // Find the children array closing bracket to insert before it
+      // Pattern: look for the last ], before the final ];
+      // We need to find the children array's closing bracket
+
+      // Strategy: Find 'children: [' and then find its matching closing '],'
+      const childrenIndex = content.indexOf('children: [');
+      if (childrenIndex === -1) {
+        console.error(`❌ Cannot find 'children: [' in ${shellName}.routes.ts`);
+        console.warn(`   Falling back to app.routes.ts registration`);
+        return this.autoRegisterRoute(moduleName);
+      }
+
+      // Find the position to insert (before the last child route's closing bracket)
+      // We'll look for the closing of children array - typically '],' or '    ],' with indentation
+      let bracketCount = 0;
+      let insertPosition = -1;
+      let foundChildrenArray = false;
+
+      for (let i = childrenIndex; i < content.length; i++) {
+        const char = content[i];
+
+        if (char === '[') {
+          if (!foundChildrenArray) {
+            foundChildrenArray = true;
+          }
+          bracketCount++;
+        } else if (char === ']') {
+          bracketCount--;
+          if (foundChildrenArray && bracketCount === 0) {
+            // Found the closing bracket of children array
+            // Go back to find the proper insertion point (after last route object)
+            insertPosition = i;
+            break;
+          }
+        }
+      }
+
+      if (insertPosition === -1) {
+        console.error(
+          `❌ Cannot find children array closing bracket in ${shellName}.routes.ts`,
+        );
+        console.warn(`   Falling back to app.routes.ts registration`);
+        return this.autoRegisterRoute(moduleName);
+      }
+
+      // Calculate relative import path from shell routes file to features
+      // From: apps/web/src/app/features/system/system.routes.ts
+      // To:   apps/web/src/app/features/test-products/test-products.routes
+      // Relative: ../../features/test-products/test-products.routes  -> actually: ../${kebabName}/${kebabName}.routes
+      // Since we're in features/{shell}/ and target is features/{module}/
+      // The relative path is: ../${kebabName}/${kebabName}.routes
+      const relativePath = `../${kebabName}/${kebabName}.routes`;
+
+      // Create route entry for shell (child route format)
+      const routeEntry = `
+
+      // ${title} (Generated CRUD)
+      {
+        path: '${kebabName}',
+        loadChildren: () =>
+          import('${relativePath}').then(
+            (m) => m.${camelName}Routes,
+          ),
+        data: {
+          title: '${title}',
+          description: '${title} Management System',
+          requiredPermissions: ['${kebabName}.read', 'admin.*'],
+        },
+      },`;
+
+      // Insert before the closing bracket
+      content =
+        content.slice(0, insertPosition) +
+        routeEntry +
+        content.slice(insertPosition);
+
+      // Write back
+      fs.writeFileSync(shellRoutesPath, content);
+
+      console.log(
+        `✅ Auto-registered ${moduleName} route in ${shellName} shell:`,
+      );
+      console.log(`   - App: ${targetApp}`);
+      console.log(`   - Shell: ${shellName}`);
+      console.log(`   - Path: /${shellKebab}/${kebabName}`);
+      console.log(`   - Route: ${camelName}Routes`);
+      console.log(`   - Title: ${title}`);
+      console.log(`   - Routes file: ${shellRoutesPath}`);
+
+      return true;
+    } catch (error) {
+      console.error(
+        `❌ Failed to auto-register route in ${shellName} shell:`,
+        error.message,
+      );
+      console.log(
+        `💡 Please register manually in apps/${targetApp}/src/app/features/${shellKebab}/${shellKebab}.routes.ts`,
+      );
+      return false;
+    }
+  }
 }
 
 // Main execution

@@ -101,6 +101,10 @@ program
     'Include audit fields (created_at, updated_at, deleted_at, created_by, updated_by) in forms',
     false,
   )
+  .option(
+    '-s, --shell <shell>',
+    'Target shell for route registration (e.g., system, inventory). If specified, routes will be registered in the shell routes file instead of app.routes.ts',
+  )
   .action(async (tableName, options) => {
     try {
       // Interactive mode if no table name provided
@@ -178,6 +182,9 @@ program
         `📊 Smart stats: ${options.smartStats ? 'Enabled' : 'Disabled'}`,
       );
       console.log(`📁 Output directory: ${outputDir}`);
+      if (options.shell) {
+        console.log(`🐚 Target shell: ${options.shell}`);
+      }
 
       if (options.dryRun) {
         console.log('🔍 Dry run mode - no files will be created');
@@ -336,7 +343,15 @@ program
               PROJECT_ROOT,
               { templateVersion: 'v2', app: options.app || 'web' },
             );
-            await frontendGenerator.autoRegisterRoute(tableName);
+            // Use shell-based registration if --shell is specified
+            if (options.shell) {
+              await frontendGenerator.autoRegisterShellRoute(
+                tableName,
+                options.shell,
+              );
+            } else {
+              await frontendGenerator.autoRegisterRoute(tableName);
+            }
           }
         }
       }
