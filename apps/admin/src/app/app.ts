@@ -461,6 +461,13 @@ export class App implements OnInit {
               icon: 'menu',
               link: '/docs/components/aegisx/navigation/navigation-menu',
             },
+            {
+              id: 'navbar',
+              title: 'Navbar',
+              type: 'item',
+              icon: 'web',
+              link: '/docs/components/aegisx/navigation/navbar',
+            },
           ],
         },
         // Layout
@@ -1174,6 +1181,11 @@ export class App implements OnInit {
               title: 'Navigation Menu',
               link: '/docs/components/aegisx/navigation/navigation-menu',
             },
+            {
+              id: 'navbar',
+              title: 'Navbar',
+              link: '/docs/components/aegisx/navigation/navbar',
+            },
           ],
         },
         {
@@ -1225,6 +1237,7 @@ export class App implements OnInit {
               id: 'theme-builder',
               title: 'Theme Builder',
               link: '/docs/components/aegisx/utilities/theme-builder',
+              badge: { content: 'New', type: 'info' },
             },
           ],
         },
@@ -1499,6 +1512,7 @@ export class App implements OnInit {
           id: 'theme-builder-tool',
           title: 'Theme Builder',
           link: '/tools/theme-builder',
+          badge: { content: 'New', type: 'info' },
         },
       ],
     },

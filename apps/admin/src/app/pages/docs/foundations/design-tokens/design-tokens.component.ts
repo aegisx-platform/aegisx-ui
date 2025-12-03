@@ -92,15 +92,15 @@ export class DesignTokensComponent implements OnInit {
   // Color Palette Categories (with levels 50-900)
   colorPaletteCategories: ColorPaletteCategory[] = [
     {
-      id: 'brand-colors',
-      title: 'Brand Colors',
-      description: 'Primary brand color palette with full scale',
+      id: 'primary-colors',
+      title: 'Primary Colors',
+      description: 'Primary brand color palette with semantic variants',
       colors: [
         {
-          name: 'Brand',
-          colorName: 'brand',
+          name: 'Primary',
+          colorName: 'primary',
           levels: this.generateColorLevels(
-            'brand',
+            'primary',
             'Primary brand color (Indigo)',
           ),
         },
@@ -197,45 +197,51 @@ export class DesignTokensComponent implements OnInit {
       description:
         'Semantic color tokens for consistent theming across light and dark modes',
       tokens: [
-        // Brand Colors
+        // Primary Colors
         {
-          name: 'Brand Faint',
-          cssVar: '--ax-brand-faint',
-          description: 'Lightest brand color for subtle backgrounds',
-          category: 'brand',
-        },
-        {
-          name: 'Brand Muted',
-          cssVar: '--ax-brand-muted',
-          description: 'Muted brand color for hover states',
-          category: 'brand',
-        },
-        {
-          name: 'Brand Subtle',
-          cssVar: '--ax-brand-subtle',
-          description: 'Subtle brand color for active states',
-          category: 'brand',
-        },
-        {
-          name: 'Brand Default',
-          cssVar: '--ax-brand-default',
+          name: 'Primary',
+          cssVar: '--ax-primary',
           description: 'Primary brand color',
-          category: 'brand',
+          category: 'primary',
         },
         {
-          name: 'Brand Emphasis',
-          cssVar: '--ax-brand-emphasis',
-          description: 'Emphasized brand color for focus',
-          category: 'brand',
+          name: 'Primary Faint',
+          cssVar: '--ax-primary-faint',
+          description: 'Lightest primary color for subtle backgrounds',
+          category: 'primary',
         },
         {
-          name: 'Brand Inverted',
-          cssVar: '--ax-brand-inverted',
-          description: 'Inverted brand color for dark backgrounds',
-          category: 'brand',
+          name: 'Primary Muted',
+          cssVar: '--ax-primary-muted',
+          description: 'Muted primary color for hover states',
+          category: 'primary',
+        },
+        {
+          name: 'Primary Subtle',
+          cssVar: '--ax-primary-subtle',
+          description: 'Subtle primary color for active states',
+          category: 'primary',
+        },
+        {
+          name: 'Primary Emphasis',
+          cssVar: '--ax-primary-emphasis',
+          description: 'Emphasized primary color for focus',
+          category: 'primary',
+        },
+        {
+          name: 'Primary Inverted',
+          cssVar: '--ax-primary-inverted',
+          description: 'Inverted primary color for dark backgrounds',
+          category: 'primary',
         },
 
         // Success Colors
+        {
+          name: 'Success',
+          cssVar: '--ax-success',
+          description: 'Primary success color',
+          category: 'success',
+        },
         {
           name: 'Success Faint',
           cssVar: '--ax-success-faint',
@@ -255,12 +261,6 @@ export class DesignTokensComponent implements OnInit {
           category: 'success',
         },
         {
-          name: 'Success Default',
-          cssVar: '--ax-success-default',
-          description: 'Primary success color',
-          category: 'success',
-        },
-        {
           name: 'Success Emphasis',
           cssVar: '--ax-success-emphasis',
           description: 'Emphasized success color',
@@ -274,6 +274,12 @@ export class DesignTokensComponent implements OnInit {
         },
 
         // Warning Colors
+        {
+          name: 'Warning',
+          cssVar: '--ax-warning',
+          description: 'Primary warning color',
+          category: 'warning',
+        },
         {
           name: 'Warning Faint',
           cssVar: '--ax-warning-faint',
@@ -293,12 +299,6 @@ export class DesignTokensComponent implements OnInit {
           category: 'warning',
         },
         {
-          name: 'Warning Default',
-          cssVar: '--ax-warning-default',
-          description: 'Primary warning color',
-          category: 'warning',
-        },
-        {
           name: 'Warning Emphasis',
           cssVar: '--ax-warning-emphasis',
           description: 'Emphasized warning color',
@@ -311,7 +311,51 @@ export class DesignTokensComponent implements OnInit {
           category: 'warning',
         },
 
+        // Error Colors
+        {
+          name: 'Error',
+          cssVar: '--ax-error',
+          description: 'Primary error color',
+          category: 'error',
+        },
+        {
+          name: 'Error Faint',
+          cssVar: '--ax-error-faint',
+          description: 'Lightest error color',
+          category: 'error',
+        },
+        {
+          name: 'Error Muted',
+          cssVar: '--ax-error-muted',
+          description: 'Muted error color',
+          category: 'error',
+        },
+        {
+          name: 'Error Subtle',
+          cssVar: '--ax-error-subtle',
+          description: 'Subtle error color',
+          category: 'error',
+        },
+        {
+          name: 'Error Emphasis',
+          cssVar: '--ax-error-emphasis',
+          description: 'Emphasized error color',
+          category: 'error',
+        },
+        {
+          name: 'Error Inverted',
+          cssVar: '--ax-error-inverted',
+          description: 'Inverted error color',
+          category: 'error',
+        },
+
         // Info Colors
+        {
+          name: 'Info',
+          cssVar: '--ax-info',
+          description: 'Primary info color',
+          category: 'info',
+        },
         {
           name: 'Info Faint',
           cssVar: '--ax-info-faint',
@@ -331,12 +375,6 @@ export class DesignTokensComponent implements OnInit {
           category: 'info',
         },
         {
-          name: 'Info Default',
-          cssVar: '--ax-info-default',
-          description: 'Primary info color',
-          category: 'info',
-        },
-        {
           name: 'Info Emphasis',
           cssVar: '--ax-info-emphasis',
           description: 'Emphasized info color',
@@ -351,6 +389,12 @@ export class DesignTokensComponent implements OnInit {
 
         // Background Colors
         {
+          name: 'Background',
+          cssVar: '--ax-bg',
+          description: 'Default background',
+          category: 'background',
+        },
+        {
           name: 'Background Muted',
           cssVar: '--ax-background-muted',
           description: 'Muted background',
@@ -363,12 +407,6 @@ export class DesignTokensComponent implements OnInit {
           category: 'background',
         },
         {
-          name: 'Background Default',
-          cssVar: '--ax-background-default',
-          description: 'Default background',
-          category: 'background',
-        },
-        {
           name: 'Background Emphasis',
           cssVar: '--ax-background-emphasis',
           description: 'Emphasized background',
@@ -377,27 +415,33 @@ export class DesignTokensComponent implements OnInit {
 
         // Text Colors
         {
+          name: 'Text',
+          cssVar: '--ax-text',
+          description: 'Default text color',
+          category: 'text',
+        },
+        {
+          name: 'Text Primary',
+          cssVar: '--ax-text-primary',
+          description: 'Primary text color',
+          category: 'text',
+        },
+        {
+          name: 'Text Secondary',
+          cssVar: '--ax-text-secondary',
+          description: 'Secondary text color',
+          category: 'text',
+        },
+        {
           name: 'Text Subtle',
           cssVar: '--ax-text-subtle',
           description: 'Subtle text for secondary information',
           category: 'text',
         },
         {
-          name: 'Text Body',
-          cssVar: '--ax-text-body',
-          description: 'Body text color',
-          category: 'text',
-        },
-        {
-          name: 'Text Emphasis',
-          cssVar: '--ax-text-emphasis',
-          description: 'Emphasized text',
-          category: 'text',
-        },
-        {
-          name: 'Text Strong',
-          cssVar: '--ax-text-strong',
-          description: 'Strong text for headings',
+          name: 'Text Heading',
+          cssVar: '--ax-text-heading',
+          description: 'Heading text color',
           category: 'text',
         },
         {
@@ -409,15 +453,15 @@ export class DesignTokensComponent implements OnInit {
 
         // Border Colors
         {
-          name: 'Border Muted',
-          cssVar: '--ax-border-muted',
-          description: 'Muted border color',
+          name: 'Border',
+          cssVar: '--ax-border',
+          description: 'Default border color',
           category: 'border',
         },
         {
-          name: 'Border Default',
-          cssVar: '--ax-border-default',
-          description: 'Default border color',
+          name: 'Border Muted',
+          cssVar: '--ax-border-muted',
+          description: 'Muted border color',
           category: 'border',
         },
         {

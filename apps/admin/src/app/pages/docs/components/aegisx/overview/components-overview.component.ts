@@ -1062,8 +1062,8 @@ export class ComponentsOverviewComponent {
       description: 'Components for guiding users through your application.',
       gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
       link: '/docs/components/aegisx/navigation/breadcrumb',
-      count: '2 components',
-      components: ['Breadcrumb', 'Stepper'],
+      count: '5 components',
+      components: ['Breadcrumb', 'Stepper', 'Launcher', 'Nav Menu', 'Navbar'],
     },
     {
       title: 'Layout',

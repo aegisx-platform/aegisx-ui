@@ -188,20 +188,20 @@ interface ColorScale {
         margin-top: 2px;
       }
 
-      .colors-page__scale-icon--brand {
-        color: var(--ax-brand-default);
+      .colors-page__scale-icon--primary {
+        color: var(--ax-primary);
       }
       .colors-page__scale-icon--success {
-        color: var(--ax-success-default);
+        color: var(--ax-success);
       }
       .colors-page__scale-icon--warning {
-        color: var(--ax-warning-default);
+        color: var(--ax-warning);
       }
       .colors-page__scale-icon--error {
-        color: var(--ax-error-default);
+        color: var(--ax-error);
       }
       .colors-page__scale-icon--info {
-        color: var(--ax-info-default);
+        color: var(--ax-info);
       }
 
       .colors-page__scale-title {
@@ -227,13 +227,13 @@ interface ColorScale {
         display: flex;
         flex-direction: column;
         cursor: pointer;
-        border: 1px solid var(--ax-border-default);
+        border: 1px solid var(--ax-border);
         border-radius: var(--ax-radius-lg, 0.75rem);
         overflow: hidden;
         transition: all var(--ax-duration-fast, 150ms);
 
         &:hover {
-          border-color: var(--ax-brand-default);
+          border-color: var(--ax-primary);
           box-shadow: var(--ax-shadow-sm);
         }
       }
@@ -245,7 +245,7 @@ interface ColorScale {
 
       .colors-page__variant-info {
         padding: var(--ax-spacing-sm, 0.5rem);
-        background: var(--ax-background-default);
+        background: var(--ax-bg);
       }
 
       .colors-page__variant-name {
@@ -316,35 +316,35 @@ interface ColorScale {
       }
 
       .colors-page__example--faint {
-        background: var(--ax-brand-faint);
-        color: var(--ax-brand-emphasis);
+        background: var(--ax-primary-faint);
+        color: var(--ax-primary-emphasis);
       }
 
       .colors-page__example--muted {
         background: transparent;
-        border: 2px solid var(--ax-brand-muted);
+        border: 2px solid var(--ax-primary-muted);
         color: var(--ax-text-primary);
       }
 
       .colors-page__example--subtle {
-        background: var(--ax-brand-subtle);
-        color: var(--ax-brand-emphasis);
+        background: var(--ax-primary-subtle);
+        color: var(--ax-primary-emphasis);
       }
 
       .colors-page__example--default {
-        background: var(--ax-brand-default);
-        color: var(--ax-brand-inverted);
+        background: var(--ax-primary);
+        color: var(--ax-primary-inverted);
       }
 
       .colors-page__example--emphasis {
-        background: var(--ax-background-default);
-        color: var(--ax-brand-emphasis);
-        border: 1px solid var(--ax-border-default);
+        background: var(--ax-bg);
+        color: var(--ax-primary-emphasis);
+        border: 1px solid var(--ax-border);
       }
 
       .colors-page__example--inverted {
-        background: var(--ax-brand-emphasis);
-        color: var(--ax-brand-inverted);
+        background: var(--ax-primary-emphasis);
+        color: var(--ax-primary-inverted);
       }
 
       .colors-page__code {
@@ -359,40 +359,40 @@ export class ColorsComponent {
 
   colorScales: ColorScale[] = [
     {
-      name: 'brand',
+      name: 'primary',
       description:
         'Primary brand color for key actions, links, and focus states.',
       icon: 'star',
       variants: [
         {
           name: 'faint',
-          cssVar: '--ax-brand-faint',
+          cssVar: '--ax-primary-faint',
           description: 'Subtle backgrounds',
         },
         {
           name: 'muted',
-          cssVar: '--ax-brand-muted',
+          cssVar: '--ax-primary-muted',
           description: 'Borders, dividers',
         },
         {
           name: 'subtle',
-          cssVar: '--ax-brand-subtle',
+          cssVar: '--ax-primary-subtle',
           description: 'Hover states',
         },
         {
           name: 'default',
-          cssVar: '--ax-brand-default',
+          cssVar: '--ax-primary',
           description: 'Primary actions',
         },
         {
           name: 'emphasis',
-          cssVar: '--ax-brand-emphasis',
+          cssVar: '--ax-primary-emphasis',
           description: 'Text, icons',
         },
         {
           name: 'inverted',
-          cssVar: '--ax-brand-inverted',
-          description: 'Text on brand',
+          cssVar: '--ax-primary-inverted',
+          description: 'Text on primary',
         },
       ],
     },
@@ -419,7 +419,7 @@ export class ColorsComponent {
         },
         {
           name: 'default',
-          cssVar: '--ax-success-default',
+          cssVar: '--ax-success',
           description: 'Success actions',
         },
         {
@@ -457,7 +457,7 @@ export class ColorsComponent {
         },
         {
           name: 'default',
-          cssVar: '--ax-warning-default',
+          cssVar: '--ax-warning',
           description: 'Warning actions',
         },
         {
@@ -494,7 +494,7 @@ export class ColorsComponent {
         },
         {
           name: 'default',
-          cssVar: '--ax-error-default',
+          cssVar: '--ax-error',
           description: 'Error actions',
         },
         {
@@ -531,7 +531,7 @@ export class ColorsComponent {
         },
         {
           name: 'default',
-          cssVar: '--ax-info-default',
+          cssVar: '--ax-info',
           description: 'Info actions',
         },
         {
