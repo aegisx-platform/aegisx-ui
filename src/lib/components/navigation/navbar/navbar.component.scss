@@ -146,6 +146,15 @@
   flex: 1;
   gap: var(--ax-spacing-sm, 0.5rem);
 
+  // Alignment variants
+  &--start {
+    justify-content: flex-start;
+  }
+
+  &--end {
+    justify-content: flex-end;
+  }
+
   // Hide on mobile
   @media (max-width: 1023px) {
     display: none;
