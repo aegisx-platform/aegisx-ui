@@ -422,7 +422,7 @@ export class PricingComponent {
         'Community Support',
       ],
       cta: 'Get Started Free',
-      ctaLink: 'https://github.com/AegisX/aegisx-ui',
+      ctaLink: 'https://github.com/aegisx-platform/aegisx-ui',
     },
     {
       name: 'Professional',
@@ -438,7 +438,7 @@ export class PricingComponent {
         'Lifetime Updates',
       ],
       cta: 'Buy Now',
-      ctaLink: '#',
+      ctaLink: 'https://aegisx.gumroad.com/l/cli-pro',
       highlighted: true,
       badge: 'Most Popular',
     },

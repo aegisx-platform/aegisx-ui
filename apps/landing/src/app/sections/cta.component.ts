@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
 
           <div class="cta__actions">
             <a
-              href="https://github.com/AegisX/aegisx-ui"
+              href="https://github.com/aegisx-platform/aegisx-ui"
               target="_blank"
               class="cta__btn cta__btn--primary"
             >
@@ -70,11 +70,13 @@ import { CommonModule } from '@angular/common';
           </div>
           <div class="footer__column">
             <h4 class="footer__column-title">Resources</h4>
-            <a href="https://github.com/AegisX/aegisx-ui" class="footer__link"
+            <a
+              href="https://github.com/aegisx-platform/aegisx-ui"
+              class="footer__link"
               >GitHub</a
             >
             <a
-              href="https://www.npmjs.com/package/aegisx-ui"
+              href="https://www.npmjs.com/package/@aegisx/ui"
               class="footer__link"
               >NPM</a
             >
@@ -94,7 +96,7 @@ import { CommonModule } from '@angular/common';
           </p>
           <div class="footer__social">
             <a
-              href="https://github.com/AegisX"
+              href="https://github.com/aegisx-platform"
               class="footer__social-link"
               aria-label="GitHub"
             >
