@@ -640,6 +640,12 @@ import { CodeTab, ComponentToken } from '../../../../../../types/docs.types';
                       <td><code>768</code></td>
                       <td>Breakpoint for mobile menu</td>
                     </tr>
+                    <tr>
+                      <td><code>navAlign</code></td>
+                      <td><code>'start' | 'center' | 'end'</code></td>
+                      <td><code>'center'</code></td>
+                      <td>Alignment of center zone navigation</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1197,7 +1203,7 @@ export class NavbarDocComponent {
     { value: 'royal', label: 'Royal (Creative) - #7c3aed' },
     { value: 'royal-dark', label: 'Royal Dark - #5b21b6' },
     { value: 'forest', label: 'Forest (Growth) - #15803d' },
-    { value: 'amber', label: 'Amber (Energy) - #b45309' },
+    { value: 'amber', label: 'Amber (Energy) - #92400e' },
   ];
 
   demoUser: NavbarUser = {
