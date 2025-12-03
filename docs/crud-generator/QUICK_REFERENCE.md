@@ -1,6 +1,6 @@
 # CRUD Generator - Quick Reference
 
-Complete command reference for AegisX CRUD Generator (v2.2.0)
+Complete command reference for AegisX CRUD Generator (v2.3.0)
 
 ---
 
@@ -20,6 +20,9 @@ pnpm run crud:events -- TABLE_NAME --force
 
 # Full package (all features)
 pnpm run crud:full -- TABLE_NAME --force
+
+# Generate App Shell (NEW)
+./bin/cli.js shell SHELL_NAME --force
 ```
 
 **CRITICAL**: Always use `--` separator with pnpm scripts!
@@ -406,6 +409,8 @@ pnpm run crud -- products --force
 ```bash
 # GENERATE commands
 generate [TABLE]             # Generate CRUD module
+shell <SHELL_NAME>           # Generate App Shell (NEW)
+shell-types                  # Show available shell types
 domain <NAME>                # Generate domain module
 route <DOMAIN/ROUTE>         # Add route to domain
 
@@ -423,6 +428,110 @@ templates remove             # Remove custom template
 # CONFIG commands
 config init                  # Initialize .crudgen.json
 config show                  # Show current config
+```
+
+---
+
+## 🐚 Shell Generator (NEW)
+
+Generate complete App Shell components for the multi-app architecture.
+
+### Shell Types
+
+| Type         | Layout Component              | Description                          |
+| ------------ | ----------------------------- | ------------------------------------ |
+| `simple`     | `AxEmptyLayoutComponent`      | Minimal layout (auth, landing pages) |
+| `enterprise` | `AxEnterpriseLayoutComponent` | Full layout with navigation sidebar  |
+| `multi-app`  | `AxEnterpriseLayoutComponent` | With sub-app tabs for complex apps   |
+
+### Basic Usage
+
+```bash
+# Enterprise shell (default)
+./bin/cli.js shell reports --force
+
+# Simple shell (auth, landing)
+./bin/cli.js shell auth --type simple --force
+
+# Multi-app shell
+./bin/cli.js shell inventory --type multi-app --force
+
+# Preview without generating
+./bin/cli.js shell reports --dry-run
+
+# Show all shell types
+./bin/cli.js shell-types
+```
+
+### Shell Flags
+
+| Flag                    | Options                             | Default      | Description            |
+| ----------------------- | ----------------------------------- | ------------ | ---------------------- |
+| `-t, --type`            | `simple`, `enterprise`, `multi-app` | `enterprise` | Shell type             |
+| `-a, --app`             | `web`, `admin`                      | `web`        | Target Angular app     |
+| `-n, --name`            | `<string>`                          | (auto)       | Display name           |
+| `--theme`               | `default`, etc.                     | `default`    | Theme preset           |
+| `--order`               | `<number>`                          | `0`          | App order in launcher  |
+| `--with-dashboard`      | (flag)                              | `true`       | Include dashboard page |
+| `--with-settings`       | (flag)                              | `false`      | Include settings page  |
+| `--with-auth`           | (flag)                              | `true`       | Use AuthService        |
+| `--with-theme-switcher` | (flag)                              | `false`      | Include theme switcher |
+| `-f, --force`           | (flag)                              | `false`      | Overwrite existing     |
+| `-d, --dry-run`         | (flag)                              | `false`      | Preview only           |
+
+### Generated Files
+
+**Enterprise Shell** generates:
+
+```
+apps/web/src/app/features/{shell-name}/
+├── {shell-name}-shell.component.ts
+├── {shell-name}.config.ts
+├── {shell-name}.routes.ts
+├── index.ts
+└── pages/
+    ├── dashboard/dashboard.page.ts
+    └── settings/settings.page.ts (if --with-settings)
+```
+
+**Simple Shell** generates:
+
+```
+apps/web/src/app/features/{shell-name}/
+├── {shell-name}-shell.component.ts
+├── {shell-name}.routes.ts
+├── index.ts
+└── pages/
+    └── main/main.page.ts
+```
+
+### Examples
+
+```bash
+# Create Reports shell for web app
+./bin/cli.js shell reports --force
+
+# Create Auth shell (simple layout)
+./bin/cli.js shell auth --type simple --app web --force
+
+# Create Inventory shell with multi-app tabs
+./bin/cli.js shell inventory --type multi-app --with-settings --force
+
+# Create Admin shell for admin app
+./bin/cli.js shell admin-panel --app admin --theme enterprise --force
+```
+
+### After Generating
+
+Add route to `app.routes.ts`:
+
+```typescript
+// {Shell Name}
+{
+  path: '{shell-name}',
+  loadChildren: () =>
+    import('./features/{shell-name}/{shell-name}.routes').then((m) => m.{SHELL_NAME}_ROUTES),
+},
 ```
 
 ---
@@ -457,6 +566,6 @@ config show                  # Show current config
 
 ---
 
-**Generator Version**: 2.2.3
+**Generator Version**: 2.3.0
 **Last Updated**: December 3, 2025
 **Status**: ✅ Production Ready

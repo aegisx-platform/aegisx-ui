@@ -14,6 +14,7 @@ const {
   addRouteToDomain,
 } = require('../lib/generators/backend-generator');
 const FrontendGenerator = require('../lib/generators/frontend-generator');
+const { ShellGenerator } = require('../lib/generators/shell-generator');
 const { version } = require('../package.json');
 const TemplateManager = require('../lib/core/template-manager');
 const { promptGenerate } = require('../lib/prompts/generate-prompts');
@@ -769,6 +770,174 @@ program
     console.log('   • Use STANDARD for simple data models');
     console.log('   • Use ENTERPRISE for admin interfaces and dashboards');
     console.log('   • Use FULL for complex business domains with validation');
+  });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SHELL GENERATION COMMANDS
+// ═══════════════════════════════════════════════════════════════════════════
+
+program
+  .command('shell <shell-name>')
+  .alias('sh')
+  .description('Generate App Shell (simple, enterprise, or multi-app)')
+  .option(
+    '-t, --type <type>',
+    'Shell type (simple, enterprise, multi-app)',
+    'enterprise',
+  )
+  .option('-a, --app <app>', 'Target app (web, admin)', 'web')
+  .option('-n, --name <name>', 'Display name for the shell')
+  .option(
+    '--theme <theme>',
+    'Theme preset (default, indigo, teal, rose)',
+    'default',
+  )
+  .option('--order <number>', 'App order in launcher', '0')
+  .option('--with-dashboard', 'Include dashboard page', true)
+  .option('--with-settings', 'Include settings page')
+  .option('--with-auth', 'Include AuthGuard and AuthService', true)
+  .option('--with-theme-switcher', 'Include theme switcher component')
+  .option('-f, --force', 'Force overwrite existing files without confirmation')
+  .option('-d, --dry-run', 'Preview files without creating them')
+  .option('--no-format', 'Skip auto-formatting generated files')
+  .action(async (shellName, options) => {
+    try {
+      // Validate shell type
+      const validTypes = ['simple', 'enterprise', 'multi-app'];
+      if (!validTypes.includes(options.type)) {
+        console.error(chalk.red(`❌ Invalid shell type: ${options.type}`));
+        console.error(`   Valid options: ${validTypes.join(', ')}`);
+        process.exit(1);
+      }
+
+      // Validate app
+      const validApps = ['web', 'admin'];
+      if (!validApps.includes(options.app)) {
+        console.error(chalk.red(`❌ Invalid app: ${options.app}`));
+        console.error(`   Valid options: ${validApps.join(', ')}`);
+        process.exit(1);
+      }
+
+      console.log(chalk.bold.cyan(`\n🐚 Generating App Shell: ${shellName}\n`));
+
+      const generator = new ShellGenerator({
+        dryRun: options.dryRun,
+        force: options.force,
+        type: options.type,
+        app: options.app,
+        theme: options.theme || 'default',
+        order: parseInt(options.order, 10) || 0,
+        withDashboard: options.withDashboard !== false,
+        withSettings: options.withSettings || false,
+        withAuth: options.withAuth !== false,
+        withThemeSwitcher: options.withThemeSwitcher || false,
+      });
+
+      const result = await generator.generate(shellName, options.name);
+
+      if (!result.success) {
+        if (result.reason === 'exists') {
+          console.log(
+            chalk.yellow('\n⚠️  Use --force to overwrite existing shell\n'),
+          );
+        }
+        process.exit(1);
+      }
+
+      if (!options.dryRun) {
+        // Auto-format generated TypeScript files
+        if (result.files.length > 0 && options.format !== false) {
+          console.log('\n🎨 Formatting generated TypeScript files...');
+          try {
+            const { execSync } = require('child_process');
+
+            for (const file of result.files) {
+              try {
+                execSync(`npx prettier --write "${file}"`, {
+                  cwd: PROJECT_ROOT,
+                  stdio: 'pipe',
+                  timeout: 10000,
+                });
+              } catch (error) {
+                console.log(chalk.yellow(`⚠️  Could not format ${file}`));
+              }
+            }
+            console.log(chalk.green('✅ Code formatting completed!'));
+          } catch (error) {
+            console.log(
+              chalk.yellow('⚠️  Formatting skipped - prettier not available'),
+            );
+          }
+        }
+
+        console.log(chalk.green('\n✅ Shell generated successfully!\n'));
+        console.log(chalk.bold.yellow('📋 Next Steps:\n'));
+        console.log('1. Add to app.routes.ts:');
+        console.log(chalk.gray(result.routeSnippet));
+        console.log('\n2. Customize navigation in:');
+        console.log(
+          chalk.gray(`   ${result.outputDir}/${shellName}.config.ts\n`),
+        );
+      }
+    } catch (error) {
+      console.error(chalk.red('\n❌ Error generating shell:'));
+      console.error(error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('shell-types')
+  .description('Show available shell types and their features')
+  .action(() => {
+    console.log(chalk.bold.cyan('\n🐚 Available Shell Types\n'));
+
+    console.log(chalk.bold.green('SIMPLE'));
+    console.log('   Uses AxEmptyLayoutComponent');
+    console.log('   • Minimal layout without navigation');
+    console.log('   • Suitable for: Auth pages, landing pages, error pages');
+    console.log('   • Example: Login shell, 404 shell');
+    console.log('');
+
+    console.log(chalk.bold.yellow('ENTERPRISE (default)'));
+    console.log('   Uses AxEnterpriseLayoutComponent');
+    console.log('   • Full navigation sidebar');
+    console.log('   • Header with actions');
+    console.log('   • Footer with version');
+    console.log('   • Single sub-app navigation');
+    console.log('   • Suitable for: Admin panels, management systems');
+    console.log('   • Example: System shell, Reports shell');
+    console.log('');
+
+    console.log(chalk.bold.red('MULTI-APP'));
+    console.log('   Uses AxEnterpriseLayoutComponent with sub-app tabs');
+    console.log('   • All enterprise features, plus:');
+    console.log('   • Sub-app tabs in header');
+    console.log('   • Dynamic navigation per sub-app');
+    console.log('   • Suitable for: Complex modules with multiple sections');
+    console.log(
+      '   • Example: Inventory shell (warehouse, receiving, shipping)',
+    );
+    console.log('');
+
+    console.log(chalk.bold.cyan('Usage Examples:\n'));
+    console.log('  # Enterprise shell (default)');
+    console.log('  ./bin/cli.js shell reports --force');
+    console.log('');
+    console.log('  # Simple shell for auth');
+    console.log('  ./bin/cli.js shell auth --type simple --force');
+    console.log('');
+    console.log('  # Multi-app shell');
+    console.log('  ./bin/cli.js shell warehouse --type multi-app --force');
+    console.log('');
+    console.log('  # With settings page and theme switcher');
+    console.log(
+      '  ./bin/cli.js shell admin --with-settings --with-theme-switcher --force',
+    );
+    console.log('');
+    console.log('  # To admin app instead of web');
+    console.log('  ./bin/cli.js shell system --app admin --force');
+    console.log('');
   });
 
 // ═══════════════════════════════════════════════════════════════════════════
