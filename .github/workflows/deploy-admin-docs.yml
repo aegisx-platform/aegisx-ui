@@ -38,7 +38,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Add 404.html for SPA routing
-        run: cp dist/apps/admin/browser/index.html dist/apps/admin/browser/404.html
+        run: cp dist/apps/admin/index.html dist/apps/admin/404.html
 
       - name: Deploy to aegisx-ui repo
         uses: peaceiris/actions-gh-pages@v4
@@ -46,5 +46,5 @@ jobs:
           deploy_key: ${{ secrets.AEGISX_UI_DEPLOY_KEY }}
           external_repository: aegisx-platform/aegisx-ui
           publish_branch: gh-pages
-          publish_dir: ./dist/apps/admin/browser
+          publish_dir: ./dist/apps/admin
           cname: '' # Remove if not using custom domain
