@@ -58,3 +58,56 @@
     opacity: 0.8;
   }
 }
+
+/* ============================================
+   Mobile Optimization
+   ============================================ */
+
+/* Touch-friendly tap targets (min 44x44px per Apple/Google guidelines) */
+@media (max-width: 768px) {
+  /* Ensure clickable elements have adequate size */
+  button:not(.mat-mdc-mini-fab),
+  a.mat-mdc-button,
+  .mat-mdc-icon-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Add padding to small buttons */
+  .mat-mdc-button-base {
+    padding: 8px 16px;
+  }
+
+  /* Improve spacing on mobile */
+  .main-content {
+    padding: 1rem;
+  }
+
+  /* Better readability on mobile */
+  .docs-content {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+/* Touch action utilities */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Safe area for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
