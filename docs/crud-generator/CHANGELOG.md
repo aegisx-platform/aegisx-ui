@@ -1,5 +1,42 @@
 # CRUD Generator Changelog
 
+## [2.2.2] - 2025-12-03
+
+### Added
+
+#### Multi-App Frontend Generation (`--app`)
+
+**New CLI flag** to generate frontend modules to different Angular apps in the monorepo.
+
+**Problem Solved**: Previously, frontend generation was hardcoded to only generate files to `apps/web/`. This update enables generating to any app (web, admin, or custom apps).
+
+**Usage**:
+
+```bash
+# Generate to web app (default behavior)
+./bin/cli.js generate products --target frontend --force
+
+# Generate to admin app
+./bin/cli.js generate products --target frontend --app admin --force
+```
+
+**Output Directories by App**:
+
+- `--app web` → `apps/web/src/app/features/`
+- `--app admin` → `apps/admin/src/app/features/`
+
+**Auto-Registration**:
+
+- Routes are automatically registered in the target app's `app.routes.ts`
+- If `app.routes.ts` doesn't exist for the target app, a warning is shown
+
+**Files Modified**:
+
+- `bin/cli.js` - Pass `app` option to FrontendGenerator
+- `lib/generators/frontend-generator.js` - Dynamic `outputDir` and `autoRegisterRoute()` based on target app
+
+---
+
 ## [2.2.1] - 2025-11-28
 
 ### Added

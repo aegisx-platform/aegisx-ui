@@ -77,13 +77,34 @@ Use direct CLI for advanced features or multiple flags:
 
 ### Target Selection
 
-| Flag           | Options               | Default   | Description      |
-| -------------- | --------------------- | --------- | ---------------- |
-| `-t, --target` | `backend`, `frontend` | `backend` | What to generate |
-| `-a, --app`    | `api`, `web`, `admin` | `api`     | Target app       |
-| `-o, --output` | `<dir>`               | Auto      | Custom output    |
+| Flag           | Options               | Default     | Description                   |
+| -------------- | --------------------- | ----------- | ----------------------------- |
+| `-t, --target` | `backend`, `frontend` | `backend`   | What to generate              |
+| `-a, --app`    | `api`, `web`, `admin` | `api`/`web` | Target app (backend/frontend) |
+| `-o, --output` | `<dir>`               | Auto        | Custom output                 |
 
-**Important**: Generate backend FIRST, then frontend
+**Important**:
+
+- Generate backend FIRST, then frontend
+- Default app for `--target backend` is `api`
+- Default app for `--target frontend` is `web`
+
+### Multi-App Frontend Generation
+
+Generate frontend modules to different Angular apps:
+
+```bash
+# Generate to web app (default)
+./bin/cli.js generate products --target frontend --force
+
+# Generate to admin app
+./bin/cli.js generate products --target frontend --app admin --force
+```
+
+Output directories by app:
+
+- `--app web` → `apps/web/src/app/features/`
+- `--app admin` → `apps/admin/src/app/features/`
 
 ### Feature Package
 
@@ -164,7 +185,22 @@ pnpm run crud:events -- notifications --force
 ./bin/cli.js generate orders --target frontend --package full --with-import --with-events --force
 ```
 
-### 5. Regenerate After Changes
+### 5. Multi-App Frontend Generation
+
+```bash
+# Generate backend first
+pnpm run crud -- products --force
+
+# Generate to web app (default)
+./bin/cli.js generate products --target frontend --force
+
+# Generate to admin app
+./bin/cli.js generate products --target frontend --app admin --force
+```
+
+**Note**: The `--app` flag only affects frontend generation. Backend always generates to `apps/api/`.
+
+### 6. Regenerate After Changes
 
 ```bash
 # Preview
@@ -376,6 +412,6 @@ config show                  # Show current config
 
 ---
 
-**Generator Version**: 2.2.0
-**Last Updated**: November 6, 2025
+**Generator Version**: 2.2.2
+**Last Updated**: December 3, 2025
 **Status**: ✅ Production Ready

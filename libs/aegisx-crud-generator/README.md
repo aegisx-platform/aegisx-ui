@@ -36,6 +36,7 @@ See [CHANGELOG](../../docs/crud-generator/CHANGELOG.md) for complete details.
 - ⚡ **WebSocket Events** - Real-time CRUD operations support (`--with-events`)
 - 📥 **Bulk Import** - Excel/CSV import with 5-step wizard (`--with-import`)
 - 🔐 **Permission System** - Auto-generate roles and permissions
+- 🏢 **Multi-App Support** - Generate to web, admin, or custom apps (`--app`)
 - 100% **Backward Compatible** - All existing commands still work
 
 ## 🚀 Quick Start
@@ -135,6 +136,9 @@ npx aegisx-crud generate users --output ./custom/path
 
 # Force regeneration (removes duplicates)
 npx aegisx-crud generate products --force
+
+# Multi-app: Generate frontend to admin app
+npx aegisx-crud generate products --target frontend --app admin --force
 ```
 
 ## 🛠️ Programmatic Usage
@@ -173,5 +177,5 @@ MIT © AegisX Team
 
 ---
 
-**Version:** 2.0.1
-**Last Updated:** 2025-10-26
+**Version:** 2.2.2
+**Last Updated:** 2025-12-03

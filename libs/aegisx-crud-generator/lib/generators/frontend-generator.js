@@ -172,8 +172,15 @@ class FrontendGenerator {
     this.toolsDir = toolsDir || path.resolve(__dirname, '..');
     this.projectRoot = projectRoot || path.resolve(this.toolsDir, '..', '..');
 
+    // Store options for later use
+    this.options = options;
+
     // Template version selection: v1, v2, or default to v2
     const templateVersion = options.templateVersion || 'v2';
+
+    // Target app selection: web, admin - defaults to 'web'
+    const targetApp = options.app || 'web';
+    this.targetApp = targetApp;
 
     // Templates are now at templates/frontend/v1 or templates/frontend/v2
     this.templatesDir = path.join(
@@ -183,10 +190,12 @@ class FrontendGenerator {
       templateVersion,
     );
     this.templateVersion = templateVersion;
+
+    // Dynamic output directory based on target app
     this.outputDir = path.resolve(
       this.projectRoot,
       'apps',
-      'web',
+      targetApp,
       'src',
       'app',
       'features',
@@ -194,6 +203,9 @@ class FrontendGenerator {
 
     console.log(
       `📋 Using ${templateVersion.toUpperCase()} templates from: templates/frontend/${templateVersion}`,
+    );
+    console.log(
+      `🎯 Target app: ${targetApp} → apps/${targetApp}/src/app/features/`,
     );
   }
 
@@ -2841,17 +2853,22 @@ class FrontendGenerator {
 
   /**
    * Auto-register frontend route in app.routes.ts
+   * Uses targetApp from constructor options (defaults to 'web')
    */
   async autoRegisterRoute(moduleName) {
+    const targetApp = this.targetApp || 'web';
     const appRoutesPath = path.join(
       this.projectRoot,
-      'apps/web/src/app/app.routes.ts',
+      `apps/${targetApp}/src/app/app.routes.ts`,
     );
 
     try {
       // Check if file exists
       if (!fs.existsSync(appRoutesPath)) {
-        console.warn('⚠️ app.routes.ts not found - skipping auto-registration');
+        console.warn(
+          `⚠️ app.routes.ts not found for ${targetApp} app - skipping auto-registration`,
+        );
+        console.warn(`   Expected path: ${appRoutesPath}`);
         return false;
       }
 
@@ -2920,15 +2937,23 @@ class FrontendGenerator {
       // Write back
       fs.writeFileSync(appRoutesPath, content);
 
-      console.log(`✅ Auto-registered ${moduleName} route in app.routes.ts:`);
+      console.log(
+        `✅ Auto-registered ${moduleName} route in ${targetApp} app.routes.ts:`,
+      );
+      console.log(`   - App: ${targetApp}`);
       console.log(`   - Path: /${kebabName}`);
       console.log(`   - Route: ${camelName}Routes`);
       console.log(`   - Title: ${title}`);
 
       return true;
     } catch (error) {
-      console.error('❌ Failed to auto-register route:', error.message);
-      console.log('💡 Please register manually in app.routes.ts');
+      console.error(
+        `❌ Failed to auto-register route in ${targetApp} app:`,
+        error.message,
+      );
+      console.log(
+        `💡 Please register manually in apps/${targetApp}/src/app/app.routes.ts`,
+      );
       return false;
     }
   }

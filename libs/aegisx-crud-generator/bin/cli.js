@@ -204,7 +204,7 @@ program
         const frontendGenerator = new FrontendGenerator(
           toolsDir,
           PROJECT_ROOT,
-          { templateVersion: 'v2' },
+          { templateVersion: 'v2', app: options.app || 'web' },
         );
 
         const generatedFiles = await frontendGenerator.generateFrontendModule(
@@ -334,7 +334,7 @@ program
             const frontendGenerator = new FrontendGenerator(
               path.join(__dirname, '..'),
               PROJECT_ROOT,
-              { templateVersion: 'v2' },
+              { templateVersion: 'v2', app: options.app || 'web' },
             );
             await frontendGenerator.autoRegisterRoute(tableName);
           }
