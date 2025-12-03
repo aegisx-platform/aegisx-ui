@@ -468,6 +468,13 @@ export class App implements OnInit {
               icon: 'web',
               link: '/docs/components/aegisx/navigation/navbar',
             },
+            {
+              id: 'command-palette',
+              title: 'Command Palette',
+              type: 'item',
+              icon: 'keyboard_command_key',
+              link: '/docs/components/aegisx/navigation/command-palette',
+            },
           ],
         },
         // Layout
@@ -1186,6 +1193,11 @@ export class App implements OnInit {
               title: 'Navbar',
               link: '/docs/components/aegisx/navigation/navbar',
             },
+            {
+              id: 'command-palette',
+              title: 'Command Palette',
+              link: '/docs/components/aegisx/navigation/command-palette',
+            },
           ],
         },
         {
@@ -1313,6 +1325,36 @@ export class App implements OnInit {
               title: 'Icon',
               link: '/docs/material/icon',
             },
+            {
+              id: 'material-badge',
+              title: 'Badge',
+              link: '/docs/material/badge',
+            },
+            {
+              id: 'material-divider',
+              title: 'Divider',
+              link: '/docs/material/divider',
+            },
+            {
+              id: 'material-grid-list',
+              title: 'Grid List',
+              link: '/docs/material/grid-list',
+            },
+            {
+              id: 'material-tree',
+              title: 'Tree',
+              link: '/docs/material/tree',
+            },
+            {
+              id: 'material-paginator',
+              title: 'Paginator',
+              link: '/docs/material/paginator',
+            },
+            {
+              id: 'material-sort',
+              title: 'Sort',
+              link: '/docs/material/sort',
+            },
           ],
         },
         {
@@ -1325,14 +1367,44 @@ export class App implements OnInit {
               link: '/docs/material/form-field',
             },
             {
+              id: 'material-input',
+              title: 'Input',
+              link: '/docs/material/input',
+            },
+            {
               id: 'material-select',
               title: 'Select',
               link: '/docs/material/select',
             },
             {
+              id: 'material-autocomplete',
+              title: 'Autocomplete',
+              link: '/docs/material/autocomplete',
+            },
+            {
               id: 'material-datepicker',
               title: 'Datepicker',
               link: '/docs/material/datepicker',
+            },
+            {
+              id: 'material-checkbox',
+              title: 'Checkbox',
+              link: '/docs/material/checkbox',
+            },
+            {
+              id: 'material-radio',
+              title: 'Radio',
+              link: '/docs/material/radio',
+            },
+            {
+              id: 'material-slide-toggle',
+              title: 'Slide Toggle',
+              link: '/docs/material/slide-toggle',
+            },
+            {
+              id: 'material-slider',
+              title: 'Slider',
+              link: '/docs/material/slider',
             },
           ],
         },
@@ -1350,6 +1422,21 @@ export class App implements OnInit {
               title: 'Tabs',
               link: '/docs/material/tabs',
             },
+            {
+              id: 'material-sidenav',
+              title: 'Sidenav',
+              link: '/docs/material/sidenav',
+            },
+            {
+              id: 'material-toolbar',
+              title: 'Toolbar',
+              link: '/docs/material/toolbar',
+            },
+            {
+              id: 'material-stepper',
+              title: 'Stepper',
+              link: '/docs/material/stepper',
+            },
           ],
         },
         {
@@ -1362,14 +1449,29 @@ export class App implements OnInit {
               link: '/docs/material/dialog',
             },
             {
+              id: 'material-bottom-sheet',
+              title: 'Bottom Sheet',
+              link: '/docs/material/bottom-sheet',
+            },
+            {
               id: 'material-snackbar',
               title: 'Snackbar',
               link: '/docs/material/snackbar',
             },
             {
-              id: 'material-progress-bar',
-              title: 'Progress Bar',
-              link: '/docs/material/progress-bar',
+              id: 'material-tooltip',
+              title: 'Tooltip',
+              link: '/docs/material/tooltip',
+            },
+            {
+              id: 'material-progress',
+              title: 'Progress Indicators',
+              link: '/docs/material/progress',
+            },
+            {
+              id: 'material-expansion',
+              title: 'Expansion Panel',
+              link: '/docs/material/expansion',
             },
           ],
         },
