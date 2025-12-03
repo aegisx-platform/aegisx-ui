@@ -160,14 +160,20 @@ module.exports = {
           emphasis: 'var(--ax-background-emphasis)',
         },
 
-        // Text Colors
+        // Text Colors (for use with text-* utility)
         text: {
+          // Core semantic text colors
           disabled: 'var(--ax-text-disabled)',
+          muted: 'var(--ax-text-muted)',
           subtle: 'var(--ax-text-subtle)',
           secondary: 'var(--ax-text-secondary)',
+          body: 'var(--ax-text-body)',
           primary: 'var(--ax-text-primary)',
+          emphasis: 'var(--ax-text-emphasis)',
+          strong: 'var(--ax-text-strong)',
           heading: 'var(--ax-text-heading)',
           inverted: 'var(--ax-text-inverted)',
+          DEFAULT: 'var(--ax-text-primary)',
         },
 
         // Border Colors

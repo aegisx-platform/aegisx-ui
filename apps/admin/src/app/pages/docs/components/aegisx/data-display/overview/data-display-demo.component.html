@@ -26,7 +26,7 @@
 
     <h4 class="h6">Basic Text Display</h4>
     <ax-live-preview title="Basic Text Display">
-      <div style="max-width: 600px">
+      <div class="max-w-xl">
         <ax-field-display
           label="Full Name"
           [value]="userProfile.fullName"
@@ -45,7 +45,7 @@
 
     <h4 class="h6">Type-Based Formatting</h4>
     <ax-live-preview title="Type-Based Formatting">
-      <div style="max-width: 600px">
+      <div class="max-w-xl">
         <ax-field-display
           label="Join Date"
           [value]="userProfile.joinDate"
@@ -80,7 +80,7 @@
 
     <h4 class="h6">Clickable Links</h4>
     <ax-live-preview title="Clickable Links">
-      <div style="max-width: 600px">
+      <div class="max-w-xl">
         <ax-field-display
           label="Email"
           [value]="userProfile.email"
@@ -107,7 +107,7 @@
 
     <h4 class="h6">Sizes</h4>
     <ax-live-preview title="Size Variants">
-      <div style="max-width: 600px">
+      <div class="max-w-xl">
         <ax-field-display
           label="Small"
           [value]="userProfile.fullName"
@@ -133,7 +133,7 @@
     <ax-code-tabs [tabs]="sizesCode" />
 
     <h4 class="h6">Vertical Orientation</h4>
-    <div class="demo-container" style="max-width: 600px">
+    <div class="demo-container" class="max-w-xl">
       <ax-field-display
         label="Description"
         value="This is a longer text that looks better in vertical orientation. The label appears above the value instead of beside it."
@@ -143,7 +143,7 @@
     </div>
 
     <h4 class="h6">Empty State</h4>
-    <div class="demo-container" style="max-width: 600px">
+    <div class="demo-container" class="max-w-xl">
       <ax-field-display
         label="Middle Name"
         [value]="null"
@@ -170,7 +170,7 @@
 
     <h4 class="h6">Horizontal Layout (Default)</h4>
     <ax-live-preview title="Horizontal Layout">
-      <ax-description-list style="max-width: 600px">
+      <ax-description-list class="max-w-xl">
         <ax-field-display
           label="Full Name"
           [value]="userProfile.fullName"
@@ -262,7 +262,7 @@
 
     <h4 class="h6">With Dividers</h4>
     <ax-live-preview title="With Dividers">
-      <ax-description-list [divider]="true" style="max-width: 600px">
+      <ax-description-list [divider]="true" class="max-w-xl">
         <ax-field-display
           label="Order ID"
           [value]="orderData.id"
