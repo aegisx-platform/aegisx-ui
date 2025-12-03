@@ -31,7 +31,7 @@ import { MatIconModule } from '@angular/material/icon';
           </h1>
 
           <p class="hero-description">
-            A comprehensive collection of 19+ beautifully crafted components
+            A comprehensive collection of 45+ beautifully crafted components
             built with Angular 18+, Material Design 3, and modern best
             practices. Every component is accessible, customizable, and ready
             for enterprise use.
@@ -1021,8 +1021,8 @@ export class ComponentsOverviewComponent {
   ];
 
   stats = [
-    { value: '19+', label: 'Components' },
-    { value: '5', label: 'Categories' },
+    { value: '45+', label: 'Components' },
+    { value: '7', label: 'Categories' },
     { value: '100%', label: 'TypeScript' },
     { value: 'WCAG', label: 'Accessible' },
   ];
@@ -1035,8 +1035,17 @@ export class ComponentsOverviewComponent {
         'Components for presenting data, metrics, and content beautifully.',
       gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
       link: '/docs/components/aegisx/data-display/overview',
-      count: '9 components',
-      components: ['Card', 'KPI Card', 'Badge', 'Avatar', 'List', 'Sparkline'],
+      count: '16 components',
+      components: [
+        'Card',
+        'KPI Card',
+        'Badge',
+        'Avatar',
+        'Calendar',
+        'Timeline',
+        'Divider',
+        'Sparkline',
+      ],
     },
     {
       title: 'Forms',
@@ -1044,8 +1053,15 @@ export class ComponentsOverviewComponent {
       description: 'Input components for collecting user data with validation.',
       gradient: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
       link: '/docs/components/aegisx/forms/date-picker',
-      count: '2 components',
-      components: ['Date Picker', 'File Upload'],
+      count: '7 components',
+      components: [
+        'Date Picker',
+        'File Upload',
+        'Time Slots',
+        'Scheduler',
+        'Input OTP',
+        'Knob',
+      ],
     },
     {
       title: 'Feedback',
@@ -1053,8 +1069,15 @@ export class ComponentsOverviewComponent {
       description: 'Components for user notifications and system feedback.',
       gradient: 'linear-gradient(135deg, #10b981, #34d399)',
       link: '/docs/components/aegisx/feedback/alert',
-      count: '5 components',
-      components: ['Alert', 'Toast', 'Dialogs', 'Loading Bar', 'Skeleton'],
+      count: '9 components',
+      components: [
+        'Alert',
+        'Toast',
+        'Dialogs',
+        'Loading Bar',
+        'Skeleton',
+        'Splash Screen',
+      ],
     },
     {
       title: 'Navigation',
@@ -1062,8 +1085,15 @@ export class ComponentsOverviewComponent {
       description: 'Components for guiding users through your application.',
       gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
       link: '/docs/components/aegisx/navigation/breadcrumb',
-      count: '5 components',
-      components: ['Breadcrumb', 'Stepper', 'Launcher', 'Nav Menu', 'Navbar'],
+      count: '6 components',
+      components: [
+        'Breadcrumb',
+        'Stepper',
+        'Launcher',
+        'Nav Menu',
+        'Navbar',
+        'Command Palette',
+      ],
     },
     {
       title: 'Layout',
@@ -1071,8 +1101,23 @@ export class ComponentsOverviewComponent {
       description: 'Structural components for organizing page content.',
       gradient: 'linear-gradient(135deg, #ec4899, #f472b6)',
       link: '/docs/components/aegisx/layout/drawer',
-      count: '1 component',
-      components: ['Drawer / Sheet'],
+      count: '5 components',
+      components: [
+        'Drawer',
+        'Compact Layout',
+        'Enterprise Layout',
+        'Splitter',
+        'Empty Layout',
+      ],
+    },
+    {
+      title: 'Utilities',
+      icon: 'build',
+      description: 'Helper components for theming and layout customization.',
+      gradient: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+      link: '/docs/components/aegisx/utilities/theme-switcher',
+      count: '3 components',
+      components: ['Theme Switcher', 'Layout Switcher', 'Theme Builder'],
     },
   ];
 
