@@ -1,181 +1,219 @@
-# @aegisx/crud-generator
+# @aegisx/cli
 
-Professional CRUD Generator for AegisX Platform with interactive CLI and flexible template system.
+> Professional CRUD Generator for Angular + Fastify
 
-## 🎉 v2.1.0 Release Highlights
+Generate full-stack modules with a single command. No more boilerplate, just business logic.
 
-**HIS Mode (Hospital Information System Mode)** - New default behavior for critical enterprise systems:
-
-- ⚕️ **Data Accuracy First**: UI always shows actual database state (no optimistic updates)
-- 📊 **Backend Always Emits Events**: Audit trail and event-driven architecture ready
-- 🔧 **Optional Real-Time Mode**: Easy to enable by uncommenting 4 code blocks
-- 🛡️ **No User Confusion**: Never show outdated or server-rejected data
-- 🏗️ **Event-Driven Ready**: WebSocket events available for microservices
-
-**Why HIS Mode?** In critical systems (hospitals, financial, enterprise), showing users data that might not match the database is dangerous. HIS Mode ensures UI always reflects actual server state.
-
-**Migration**: Regenerate modules to get HIS Mode behavior:
-
-```bash
-# With events for audit trail
-npx aegisx-crud generate budgets --with-events --force
-
-# With import + events
-npx aegisx-crud generate budgets --with-import --with-events --force
-```
-
-See [CHANGELOG](../../docs/crud-generator/CHANGELOG.md) for complete details.
-
-## ✨ Features
-
-- 🎯 **Interactive Mode** - Step-by-step wizard for easy code generation
-- 🎨 **Template System** - Multiple templates with easy switching (domain/standard, v2/v1)
-- 🛠️ **Template Management** - CLI commands to manage and customize templates
-- ⚙️ **Configuration** - Project-level preferences with `.crudgen.json`
-- 📦 **Multi-Package** - Standard, Enterprise, and Full feature packages
-- ⚡ **WebSocket Events** - Real-time CRUD operations support (`--with-events`)
-- 📥 **Bulk Import** - Excel/CSV import with 5-step wizard (`--with-import`)
-- 🔐 **Permission System** - Auto-generate roles and permissions
-- 🏢 **Multi-App Support** - Generate to web, admin, or custom apps (`--app`)
-- 100% **Backward Compatible** - All existing commands still work
-
-## 🚀 Quick Start
-
-### Interactive Mode (Recommended)
-
-```bash
-npx aegisx-crud generate
-```
-
-The interactive wizard will guide you through:
-
-1. Table selection (from your database)
-2. Generation type (fullstack, backend, frontend, permissions)
-3. Template selection (backend: domain/standard, frontend: v2/v1)
-4. Feature selection (events, bulk operations, export, import)
-5. Advanced options and confirmation
-
-### Quick Mode
-
-```bash
-# Generate full CRUD with events
-npx aegisx-crud generate users --events --package full
-
-# Generate backend only
-npx aegisx-crud generate products --package enterprise
-
-# Preview without creating files
-npx aegisx-crud generate orders --dry-run
-```
-
-## 📦 Template Management
-
-```bash
-# List available templates
-npx aegisx-crud templates list
-
-# Set default template
-npx aegisx-crud templates set-default
-
-# View configuration
-npx aegisx-crud config show
-
-# Initialize config file
-npx aegisx-crud config init
-```
-
-## 📚 Documentation
-
-For complete documentation, see:
-
-- **[Complete Documentation](../../docs/crud-generator/README.md)** - Main documentation hub
-- **[Quick Commands](../../docs/crud-generator/QUICK_COMMANDS.md)** - CLI reference
-- **[Events Guide](../../docs/crud-generator/EVENTS_GUIDE.md)** - WebSocket events (`--with-events`)
-- **[Import Guide](../../docs/crud-generator/IMPORT_GUIDE.md)** - Bulk import (`--with-import`)
-- **[CHANGELOG](../../docs/crud-generator/CHANGELOG.md)** - Version history
-- **[Local Docs](./docs/README.md)** - Library-specific documentation
-- **[Migration Guide](./docs/MIGRATION_GUIDE.md)** - Upgrading from v1.x
-- **[Template Development](./docs/TEMPLATE_DEVELOPMENT_GUIDE.md)** - Creating custom templates
-
-## 🔧 Configuration
-
-Create `.crudgen.json` in your project root:
-
-```json
-{
-  "defaultTemplates": {
-    "backend": "domain",
-    "frontend": "v2"
-  },
-  "defaultFeatures": {
-    "events": true,
-    "bulkOperations": true,
-    "export": false,
-    "import": false
-  }
-}
-```
-
-## 📦 Available Packages
-
-- **Standard** - Basic CRUD operations
-- **Enterprise** - Advanced features (bulk ops, dropdowns, stats)
-- **Full** - All features (validation, export, import)
-
-## 🎯 Examples
-
-```bash
-# Interactive mode - easiest way
-npx aegisx-crud generate
-
-# Quick generation with all features
-npx aegisx-crud generate notifications --package full --events
-
-# Custom output directory
-npx aegisx-crud generate users --output ./custom/path
-
-# Force regeneration (removes duplicates)
-npx aegisx-crud generate products --force
-
-# Multi-app: Generate frontend to admin app
-npx aegisx-crud generate products --target frontend --app admin --force
-```
-
-## 🛠️ Programmatic Usage
-
-```javascript
-const { generateCrudModule, TemplateManager } = require('@aegisx/crud-generator');
-
-// Generate CRUD module
-await generateCrudModule('users', {
-  withEvents: true,
-  package: 'full',
-});
-
-// Use Template Manager
-const templateManager = new TemplateManager({
-  templatesBasePath: './templates',
-});
-await templateManager.initialize();
-```
-
-## 📄 License
-
-MIT © AegisX Team
+[![npm version](https://img.shields.io/npm/v/@aegisx/cli.svg)](https://www.npmjs.com/package/@aegisx/cli)
+[![License](https://img.shields.io/badge/license-Commercial-blue.svg)](./LICENSE.md)
 
 ---
 
-## 🔗 Quick Links
+## Why AegisX CLI?
 
-- **[Main Documentation Hub](../../docs/crud-generator/README.md)** - Start here for all guides
-- **[Quick Commands Reference](../../docs/crud-generator/QUICK_COMMANDS.md)** - Fast CLI lookup
-- **[Events Guide](../../docs/crud-generator/EVENTS_GUIDE.md)** - Real-time WebSocket events
-- **[Import Guide](../../docs/crud-generator/IMPORT_GUIDE.md)** - Bulk Excel/CSV import
-- **[CHANGELOG](../../docs/crud-generator/CHANGELOG.md)** - What's new in v2.0.1
-
-**Need help?** Check the [complete documentation](../../docs/crud-generator/README.md) or [template development guide](./docs/TEMPLATE_DEVELOPMENT_GUIDE.md).
+- **One Command, Full Stack** - Generate backend + frontend in seconds
+- **60+ Templates** - Professional TypeScript code, not scaffolds
+- **Type-Safe** - TypeBox schemas with full TypeScript integration
+- **Enterprise Ready** - Import/Export, WebSocket events, audit trails
+- **Works Offline** - No internet required after installation
 
 ---
 
-**Version:** 2.2.2
+## Installation
+
+```bash
+npm install -g @aegisx/cli
+```
+
+---
+
+## Quick Start
+
+```bash
+# 1. Start a free 14-day trial
+aegisx trial
+
+# 2. List available tables
+aegisx list
+
+# 3. Generate your first module
+aegisx generate products --force
+
+# 4. Generate frontend
+aegisx generate products --target frontend --force
+```
+
+---
+
+## What You Get
+
+From a single `aegisx generate products` command:
+
+### Backend (Fastify + TypeBox)
+
+```
+modules/products/
+├── products.routes.ts      # REST API endpoints
+├── products.controller.ts  # Business logic
+├── products.service.ts     # Database operations
+├── products.repository.ts  # Query builder
+├── products.schemas.ts     # TypeBox validation
+├── products.types.ts       # TypeScript types
+└── index.ts               # Module exports
+```
+
+### Frontend (Angular 17+ Standalone)
+
+```
+products/
+├── products.component.ts      # Smart component
+├── products.component.html    # Material Design template
+├── products.component.scss    # Tailwind CSS styles
+├── products.service.ts        # API service
+├── products-dialog.component.ts  # Create/Edit dialog
+├── products.routes.ts         # Lazy-loaded routes
+└── index.ts                   # Public API
+```
+
+---
+
+## Features
+
+### Core Features (All Tiers)
+
+- ✅ CRUD API generation (Create, Read, Update, Delete)
+- ✅ TypeBox schemas with validation
+- ✅ Pagination, filtering, sorting
+- ✅ Soft delete support
+- ✅ Search functionality
+- ✅ Angular Material components
+- ✅ Responsive design with Tailwind
+
+### Enterprise Features
+
+- 📊 **Bulk Import** - Excel/CSV file import with validation
+- 🔔 **WebSocket Events** - Real-time updates with event emission
+- 📝 **Audit Fields** - Automatic created_at, updated_at tracking
+- 🎯 **Custom Templates** - Team/Enterprise only
+
+---
+
+## Commands
+
+### Generate Module
+
+```bash
+# Backend (default)
+aegisx generate <table_name> [options]
+
+# Frontend
+aegisx generate <table_name> --target frontend
+
+# Options
+-t, --target <target>    backend (default) or frontend
+-f, --force              Overwrite existing files
+-d, --dry-run            Preview without creating
+-e, --with-events        Include WebSocket events
+--with-import            Include bulk import
+-a, --app <app>          Target app: api, web, admin
+```
+
+### Database Commands
+
+```bash
+# List tables
+aegisx list
+
+# Interactive shell
+aegisx shell
+```
+
+### License Commands
+
+```bash
+# Start free trial
+aegisx trial
+
+# Activate license
+aegisx activate <key>
+
+# Check status
+aegisx license
+
+# Remove license
+aegisx deactivate
+```
+
+---
+
+## License Tiers
+
+| Tier         | Price        | Developers | What's Included              |
+| ------------ | ------------ | ---------- | ---------------------------- |
+| Professional | $49 one-time | 1          | All features, 1 year updates |
+| Team         | $199/year    | Up to 10   | Priority support, templates  |
+| Enterprise   | Contact us   | Unlimited  | On-premise, SLA, dedicated   |
+
+**Start Free:** `aegisx trial` (14 days)
+
+**Purchase:** https://aegisx.dev
+
+---
+
+## Requirements
+
+- Node.js 18+
+- PostgreSQL database
+- Angular 17+ (for frontend generation)
+- Fastify 4+ (for backend generation)
+
+---
+
+## HIS Mode (Hospital Information System)
+
+**v2.1.0+** includes HIS Mode for critical enterprise systems:
+
+- ⚕️ **Data Accuracy First**: UI always shows actual database state
+- 📊 **Backend Always Emits Events**: Audit trail and event-driven ready
+- 🔧 **Optional Real-Time Mode**: Easy to enable when needed
+- 🛡️ **No User Confusion**: Never show outdated data
+
+---
+
+## Documentation
+
+- **[Installation Guide](./docs/INSTALLATION.md)** - License activation & setup
+- **[Quick Reference](./docs/QUICK_REFERENCE.md)** - CLI commands
+- **[Events Guide](./docs/EVENTS_GUIDE.md)** - WebSocket events
+- **[Import Guide](./docs/IMPORT_GUIDE.md)** - Bulk Excel/CSV import
+
+---
+
+## Support
+
+- **Community:** [GitHub Issues](https://github.com/aegisx-platform/cli/issues)
+- **Email:** support@aegisx.dev (Team/Enterprise)
+- **Discord:** Private channel (Team/Enterprise)
+
+---
+
+## Links
+
+- **Website:** https://aegisx.dev
+- **Documentation:** https://docs.aegisx.dev
+- **Purchase:** https://aegisx.gumroad.com
+
+---
+
+## License
+
+Commercial license. See [LICENSE.md](./LICENSE.md) for details.
+
+**Generated code is 100% yours** - use it anywhere, including open source projects.
+
+---
+
+**Version:** 3.0.0
 **Last Updated:** 2025-12-03
+
+**Made with ❤️ by the AegisX Team**

@@ -1,11 +1,10 @@
 {
-  "name": "@aegisx/crud-generator",
-  "version": "2.2.0",
-  "description": "CRUD Generator for AegisX Platform - Professional code generation with interactive CLI and template management",
+  "name": "@aegisx/cli",
+  "version": "3.0.0",
+  "description": "AegisX CLI - Professional CRUD Generator for Angular + Fastify. Generate full-stack modules with a single command.",
   "main": "lib/index.js",
   "bin": {
-    "aegisx-crud": "./bin/cli.js",
-    "crud-generator": "./bin/cli.js"
+    "aegisx": "./bin/cli.js"
   },
   "files": [
     "bin/",
@@ -31,15 +30,20 @@
     "template",
     "interactive"
   ],
-  "author": "AegisX Team",
-  "license": "MIT",
+  "author": "AegisX Team <support@aegisx.dev>",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/aegisx-platform/crud-generator"
+    "url": "https://github.com/aegisx-platform/cli"
   },
-  "homepage": "https://github.com/aegisx-platform/crud-generator#readme",
+  "homepage": "https://aegisx.dev",
   "bugs": {
-    "url": "https://github.com/aegisx-platform/crud-generator/issues"
+    "url": "https://github.com/aegisx-platform/cli/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://aegisx.gumroad.com"
   },
   "dependencies": {
     "commander": "^12.0.0",

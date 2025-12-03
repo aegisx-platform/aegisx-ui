@@ -25,6 +25,16 @@ const {
   promptSetDefault,
   promptRemoveTemplate,
 } = require('../lib/prompts/template-prompts');
+const {
+  validateLicense,
+  storeLicense,
+  removeLicense,
+  displayLicenseStatus,
+  validateKeyFormat,
+  getLicenseInfo,
+  generateTrialKey,
+  checkFeature,
+} = require('../lib/license/validator');
 
 // Helper function to find project root (where package.json with nx exists)
 function findProjectRoot(startDir = __dirname) {
@@ -49,9 +59,9 @@ const PROJECT_ROOT = findProjectRoot();
 const program = new Command();
 
 program
-  .name('crud-generator')
-  .description('Generate complete CRUD modules for AegisX platform')
-  .version(version || '1.0.0');
+  .name('aegisx')
+  .description('AegisX CLI - Professional CRUD Generator for Angular + Fastify')
+  .version(version || '3.0.0');
 
 program
   .command('generate [table-name]')
@@ -108,6 +118,28 @@ program
   )
   .action(async (tableName, options) => {
     try {
+      // 🔐 License validation - required for code generation
+      const license = await validateLicense();
+      if (!license.valid) {
+        console.log(chalk.red('\n🔐 License Required\n'));
+        console.log(chalk.yellow(`   ${license.error}`));
+        console.log(chalk.gray(`   ${license.message || ''}`));
+        console.log(chalk.cyan('\n   Start a free trial: aegisx trial'));
+        console.log(chalk.cyan('   Activate license:   aegisx activate <key>'));
+        console.log(chalk.gray('\n   Purchase at: https://aegisx.dev\n'));
+        process.exit(1);
+      }
+
+      // Check if 'generate' feature is available for this license tier
+      const featureCheck = await checkFeature('generate');
+      if (!featureCheck.allowed) {
+        console.log(chalk.red('\n🔐 Feature Not Available\n'));
+        console.log(chalk.yellow(`   ${featureCheck.error}`));
+        console.log(chalk.gray(`   ${featureCheck.message || ''}`));
+        console.log(chalk.gray('\n   Upgrade at: https://aegisx.dev\n'));
+        process.exit(1);
+      }
+
       // Interactive mode if no table name provided
       if (!tableName) {
         const templateManager = new TemplateManager({
@@ -1312,6 +1344,102 @@ config
       console.error(error.message);
       process.exit(1);
     }
+  });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LICENSE MANAGEMENT COMMANDS
+// ═══════════════════════════════════════════════════════════════════════════
+
+program
+  .command('activate <license-key>')
+  .description('Activate your AegisX CLI license')
+  .action(async (licenseKey) => {
+    console.log(chalk.bold.cyan('\n🔐 AegisX License Activation\n'));
+
+    const validation = validateKeyFormat(licenseKey);
+
+    if (!validation.valid) {
+      console.log(chalk.red(`❌ ${validation.error}`));
+      console.log(
+        chalk.gray('\nLicense key format: AEGISX-[TIER]-[SERIAL]-[CHECKSUM]'),
+      );
+      console.log(chalk.gray('Example: AEGISX-PRO-A7X9K2M4-5C\n'));
+      process.exit(1);
+    }
+
+    const stored = storeLicense(licenseKey);
+
+    if (!stored) {
+      console.log(chalk.red('❌ Failed to save license key'));
+      process.exit(1);
+    }
+
+    const info = getLicenseInfo(licenseKey);
+
+    console.log(chalk.green('✅ License activated successfully!\n'));
+    console.log(chalk.bold.yellow('License Details:'));
+    console.log(chalk.gray(`  Tier: ${info.tierName}`));
+    console.log(
+      chalk.gray(
+        `  Developers: ${info.developers === -1 ? 'Unlimited' : info.developers}`,
+      ),
+    );
+    console.log(chalk.gray(`  Features: ${info.features.join(', ')}`));
+
+    if (info.expiresAt) {
+      console.log(chalk.gray(`  Expires: ${info.expiresAt}`));
+    }
+
+    console.log(
+      chalk.bold.green('\n🚀 You can now use all AegisX CLI features!\n'),
+    );
+  });
+
+program
+  .command('deactivate')
+  .description('Remove license from this machine')
+  .action(async () => {
+    console.log(chalk.bold.cyan('\n🔐 Deactivating License\n'));
+
+    const removed = removeLicense();
+
+    if (removed) {
+      console.log(chalk.green('✅ License removed successfully\n'));
+    } else {
+      console.log(chalk.yellow('⚠️  No license to remove\n'));
+    }
+  });
+
+program
+  .command('license')
+  .alias('status')
+  .description('Show current license status')
+  .action(async () => {
+    await displayLicenseStatus();
+  });
+
+program
+  .command('trial')
+  .description('Start a 14-day free trial')
+  .action(async () => {
+    console.log(chalk.bold.cyan('\n🎉 AegisX CLI Free Trial\n'));
+
+    const trialKey = generateTrialKey();
+    const stored = storeLicense(trialKey);
+
+    if (!stored) {
+      console.log(chalk.red('❌ Failed to start trial'));
+      process.exit(1);
+    }
+
+    console.log(chalk.green('✅ Trial activated successfully!\n'));
+    console.log(chalk.bold.yellow('Trial Details:'));
+    console.log(chalk.gray('  Duration: 14 days'));
+    console.log(chalk.gray('  Features: generate, shell'));
+    console.log(chalk.gray(`  Trial Key: ${trialKey}`));
+    console.log(chalk.bold.cyan('\n📦 Ready to generate your first module!'));
+    console.log(chalk.gray('   Try: aegisx generate products --dry-run\n'));
+    console.log(chalk.gray('Purchase full version at: https://aegisx.dev\n'));
   });
 
 program.parse();
