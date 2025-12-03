@@ -455,6 +455,9 @@ importers:
       semantic-release:
         specifier: ^24.2.8
         version: 24.2.8(typescript@5.8.3)
+      signature_pad:
+        specifier: ^5.1.2
+        version: 5.1.2
       supertest:
         specifier: ^7.1.4
         version: 7.1.4
@@ -488,12 +491,6 @@ importers:
       ws:
         specifier: ^8.18.3
         version: 8.18.3
-
-  libs/aegisx-ui:
-    dependencies:
-      signature_pad:
-        specifier: ^5.1.2
-        version: 5.1.2
 
 packages:
   '@aegisx/fastify-multipart@1.0.1':
