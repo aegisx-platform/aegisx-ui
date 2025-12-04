@@ -30,6 +30,8 @@ export const STANDALONE_ROUTES = [
   '/playground/pages/dashboard',
   '/tools',
   '/examples/error',
+  '/examples/account',
+  '/examples/dashboard',
 ] as const;
 
 /**

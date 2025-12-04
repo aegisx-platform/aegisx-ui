@@ -991,6 +991,40 @@ const PAGE_EXAMPLES_ERROR_ITEMS: AxNavigationItem[] = [
   },
 ];
 
+const PAGE_EXAMPLES_ACCOUNT_ITEMS: AxNavigationItem[] = [
+  {
+    id: 'profile',
+    title: 'Profile',
+    type: 'item',
+    icon: 'person',
+    link: '/examples/account/profile',
+  },
+  {
+    id: 'settings',
+    title: 'Settings',
+    type: 'item',
+    icon: 'settings',
+    link: '/examples/account/settings',
+  },
+];
+
+const PAGE_EXAMPLES_DASHBOARD_ITEMS: AxNavigationItem[] = [
+  {
+    id: 'analytics',
+    title: 'Analytics',
+    type: 'item',
+    icon: 'insights',
+    link: '/examples/dashboard/analytics',
+  },
+  {
+    id: 'ecommerce',
+    title: 'E-commerce',
+    type: 'item',
+    icon: 'store',
+    link: '/examples/dashboard/ecommerce',
+  },
+];
+
 // ============================================================
 // COMPACT NAVIGATION (with icons, for AxCompactLayoutComponent)
 // ============================================================
@@ -1135,6 +1169,20 @@ export const COMPACT_NAVIGATION: AxNavigationItem[] = [
         type: 'collapsible',
         icon: 'error_outline',
         children: PAGE_EXAMPLES_ERROR_ITEMS,
+      },
+      {
+        id: 'account-pages',
+        title: 'Account Pages',
+        type: 'collapsible',
+        icon: 'manage_accounts',
+        children: PAGE_EXAMPLES_ACCOUNT_ITEMS,
+      },
+      {
+        id: 'dashboard-pages',
+        title: 'Dashboard',
+        type: 'collapsible',
+        icon: 'dashboard',
+        children: PAGE_EXAMPLES_DASHBOARD_ITEMS,
       },
     ],
   },
@@ -1362,6 +1410,24 @@ export const DOCS_NAVIGATION: AxNavigationItem[] = [
         id: 'error-pages',
         title: 'Error Pages',
         children: PAGE_EXAMPLES_ERROR_ITEMS.map((item) => ({
+          id: item.id,
+          title: item.title,
+          link: item.link,
+        })),
+      },
+      {
+        id: 'account-pages',
+        title: 'Account Pages',
+        children: PAGE_EXAMPLES_ACCOUNT_ITEMS.map((item) => ({
+          id: item.id,
+          title: item.title,
+          link: item.link,
+        })),
+      },
+      {
+        id: 'dashboard-pages',
+        title: 'Dashboard',
+        children: PAGE_EXAMPLES_DASHBOARD_ITEMS.map((item) => ({
           id: item.id,
           title: item.title,
           link: item.link,
