@@ -72,14 +72,14 @@ export default fp(
     // Otherwise /:id will match everything including /export
     await fastify.register({{currentRoute.camelName}}ImportRoutes, {
       controller: {{moduleName}}Controller,
-      prefix: options.prefix || '/{{toKebabCase tableName}}'
+      prefix: options.prefix || '{{#if domain}}{{fullRoutePath}}{{else}}/{{toKebabCase tableName}}{{/if}}'
     });
     {{/if}}
 
     // Register main CRUD routes (includes dynamic /:id route)
     await fastify.register({{currentRoute.camelName}}Routes, {
       controller: {{moduleName}}Controller,
-      prefix: options.prefix || '/{{toKebabCase tableName}}'
+      prefix: options.prefix || '{{#if domain}}{{fullRoutePath}}{{else}}/{{toKebabCase tableName}}{{/if}}'
     });
 
     // Lifecycle hooks for monitoring

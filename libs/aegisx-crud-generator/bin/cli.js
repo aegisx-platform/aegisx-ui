@@ -9,7 +9,6 @@ const { Command } = require('commander');
 const path = require('path');
 const chalk = require('chalk');
 const {
-  generateCrudModule,
   generateDomainModule,
   addRouteToDomain,
 } = require('../lib/generators/backend-generator');
@@ -70,7 +69,6 @@ program
   .option('-e, --with-events', 'Include real-time events integration')
   .option('-d, --dry-run', 'Preview files without creating them')
   .option('-f, --force', 'Force overwrite existing files without confirmation')
-  .option('--flat', 'Use flat structure instead of domain structure')
   .option('-a, --app <app>', 'Target app (api, web, admin)', 'api')
   .option('-o, --output <dir>', 'Custom output directory (overrides --app)')
   .option(
@@ -120,6 +118,10 @@ program
     '-s, --schema <schema>',
     'PostgreSQL schema to read table from (default: public)',
     'public',
+  )
+  .option(
+    '--domain <path>',
+    'Domain path for module organization (e.g., inventory/master-data, queue/tickets)',
   )
   .action(async (tableName, options) => {
     try {
@@ -209,14 +211,10 @@ program
           path.resolve(PROJECT_ROOT, 'apps/api/src/modules');
       }
 
-      const useFlat = options.flat === true;
-      const structureType = useFlat ? 'flat' : 'domain';
-
       console.log(`🚀 Generating CRUD module for table: ${tableName}`);
       console.log(`🗄️  Database schema: ${options.schema}`);
       console.log(`📱 Target app: ${options.app}`);
       console.log(`🎯 Target type: ${options.target}`);
-      console.log(`🏗️  Structure: ${structureType}`);
       console.log(`📦 With events: ${options.withEvents ? 'Yes' : 'No'}`);
       console.log(
         `🔐 Role generation: ${options.noRoles ? 'Disabled' : options.directDb ? 'Direct DB' : 'Migration file'}`,
@@ -229,6 +227,9 @@ program
         `📊 Smart stats: ${options.smartStats ? 'Enabled' : 'Disabled'}`,
       );
       console.log(`📁 Output directory: ${outputDir}`);
+      if (options.domain) {
+        console.log(`📂 Domain path: ${options.domain}`);
+      }
       if (options.shell) {
         console.log(`🐚 Target shell: ${options.shell}`);
       }
@@ -296,41 +297,25 @@ program
           warnings: [],
         };
       } else {
-        // Backend generation using backend-generator
-        result = useFlat
-          ? await generateCrudModule(tableName, {
-              withEvents: options.withEvents,
-              dryRun: options.dryRun,
-              force: options.force,
-              outputDir: outputDir,
-              configFile: options.config,
-              app: options.app,
-              target: options.target,
-              directDb: options.directDb,
-              noRoles: options.noRoles,
-              migrationOnly: options.migrationOnly,
-              multipleRoles: options.multipleRoles,
-              package: options.package,
-              smartStats: options.smartStats,
-              schema: options.schema,
-            })
-          : await generateDomainModule(tableName, {
-              withEvents: options.withEvents,
-              dryRun: options.dryRun,
-              force: options.force,
-              outputDir: outputDir,
-              configFile: options.config,
-              app: options.app,
-              target: options.target,
-              directDb: options.directDb,
-              noRoles: options.noRoles,
-              migrationOnly: options.migrationOnly,
-              multipleRoles: options.multipleRoles,
-              package: options.package,
-              smartStats: options.smartStats,
-              withImport: options.withImport,
-              schema: options.schema,
-            });
+        // Backend generation using domain structure
+        result = await generateDomainModule(tableName, {
+          withEvents: options.withEvents,
+          dryRun: options.dryRun,
+          force: options.force,
+          outputDir: outputDir,
+          configFile: options.config,
+          app: options.app,
+          target: options.target,
+          directDb: options.directDb,
+          noRoles: options.noRoles,
+          migrationOnly: options.migrationOnly,
+          multipleRoles: options.multipleRoles,
+          package: options.package,
+          smartStats: options.smartStats,
+          withImport: options.withImport,
+          schema: options.schema,
+          domain: options.domain,
+        });
       }
 
       if (options.dryRun) {
@@ -384,7 +369,9 @@ program
             const {
               autoRegisterBackendPlugin,
             } = require('../lib/generators/backend-generator');
-            await autoRegisterBackendPlugin(tableName, PROJECT_ROOT);
+            await autoRegisterBackendPlugin(tableName, PROJECT_ROOT, {
+              domain: options.domain,
+            });
           } else if (options.target === 'frontend') {
             // Frontend auto-registration
             const frontendGenerator = new FrontendGenerator(
@@ -437,7 +424,6 @@ program
   .option('-e, --with-events', 'Include real-time events integration')
   .option('-d, --dry-run', 'Preview files without creating them')
   .option('-f, --force', 'Force overwrite existing files without confirmation')
-  .option('--flat', 'Use flat structure instead of domain structure')
   .option('-a, --app <app>', 'Target app (api, web, admin)', 'api')
   .option('-o, --output <dir>', 'Custom output directory (overrides --app)')
   .option(
@@ -471,8 +457,6 @@ program
           path.resolve(PROJECT_ROOT, 'apps/api/src/modules');
       }
 
-      const useFlat = options.flat === true;
-      const structureType = useFlat ? 'flat' : 'domain';
       const routes = options.routes
         ? options.routes.split(',').map((r) => r.trim())
         : ['core'];
@@ -480,7 +464,6 @@ program
       console.log(`🚀 Generating domain: ${domainName}`);
       console.log(`📱 Target app: ${options.app}`);
       console.log(`🎯 Target type: ${options.target}`);
-      console.log(`🏗️  Structure: ${structureType}`);
       console.log(`🛣️  Routes: ${routes.join(', ')}`);
       console.log(`📦 With events: ${options.withEvents ? 'Yes' : 'No'}`);
       console.log(`📁 Output directory: ${outputDir}`);
@@ -489,27 +472,17 @@ program
         console.log('🔍 Dry run mode - no files will be created');
       }
 
-      // Choose generator based on structure type
-      const result = useFlat
-        ? await generateCrudModule(domainName, {
-            withEvents: options.withEvents,
-            dryRun: options.dryRun,
-            force: options.force,
-            outputDir: outputDir,
-            configFile: options.config,
-            app: options.app,
-            target: options.target,
-          })
-        : await generateDomainModule(domainName, {
-            routes: routes,
-            withEvents: options.withEvents,
-            dryRun: options.dryRun,
-            force: options.force,
-            outputDir: outputDir,
-            configFile: options.config,
-            app: options.app,
-            target: options.target,
-          });
+      // Generate using domain structure
+      const result = await generateDomainModule(domainName, {
+        routes: routes,
+        withEvents: options.withEvents,
+        dryRun: options.dryRun,
+        force: options.force,
+        outputDir: outputDir,
+        configFile: options.config,
+        app: options.app,
+        target: options.target,
+      });
 
       if (options.dryRun) {
         console.log('\n📋 Files that would be generated:');

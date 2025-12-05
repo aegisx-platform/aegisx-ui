@@ -1338,7 +1338,12 @@ async function generateDomainModule(domainName, options = {}) {
     migrationOnly = false,
     multipleRoles = false,
     schema: dbSchema = 'public',
+    domain = null, // Domain path for nested structure (e.g., 'inventory/master-data')
   } = options;
+
+  // Calculate the full output path including domain
+  const domainPath = domain ? domain : '';
+  const fullOutputDir = domain ? path.join(outputDir, domain) : outputDir;
 
   // Initialize template system
   await initializeTemplateSystem();
@@ -1449,6 +1454,15 @@ async function generateDomainModule(domainName, options = {}) {
     ],
     // Domain-specific template version
     templateVersion: 'domain',
+    // Domain path configuration for nested module structure
+    domain: domain || null,
+    domainPath: domainPath || '',
+    // Route prefix based on domain (e.g., /api/inventory/master-data/drugs)
+    routePrefix: domain ? `/${domain.replace(/\//g, '/')}` : '',
+    // Full route path including domain
+    fullRoutePath: domain
+      ? `/${domain}/${toKebabCase(domainName)}`
+      : `/${toKebabCase(domainName)}`,
   };
 
   console.log(`📦 Domain Package context: ${context.package}`);
@@ -1547,10 +1561,16 @@ async function generateDomainModule(domainName, options = {}) {
     );
   }
 
+  // Log domain path if specified
+  if (domain) {
+    console.log(`📂 Domain path: ${domain}`);
+    console.log(`📂 Full output directory: ${fullOutputDir}`);
+  }
+
   // Check for existing files before generation
   const existingFiles = [];
   for (const templateConfig of templates) {
-    const outputPath = path.join(outputDir, templateConfig.output);
+    const outputPath = path.join(fullOutputDir, templateConfig.output);
     try {
       await fs.access(outputPath);
       existingFiles.push(outputPath);
@@ -1601,7 +1621,7 @@ async function generateDomainModule(domainName, options = {}) {
   if (context.package === 'enterprise' || context.package === 'full') {
     try {
       console.log('📦 Generating shared export templates...');
-      const srcDir = path.resolve(outputDir, '..');
+      const srcDir = path.resolve(fullOutputDir, '..');
       console.log(`🎯 Target directory for shared templates: ${srcDir}`);
       const sharedFiles = await generateSharedTemplates(
         srcDir,
@@ -1646,7 +1666,7 @@ async function generateDomainModule(domainName, options = {}) {
         templateConfig.template,
         renderContext,
       );
-      const outputPath = path.join(outputDir, templateConfig.output);
+      const outputPath = path.join(fullOutputDir, templateConfig.output);
 
       if (!dryRun) {
         await ensureDirectoryExists(path.dirname(outputPath));
@@ -1659,8 +1679,6 @@ async function generateDomainModule(domainName, options = {}) {
           // New file
         }
 
-        console.log(`📝 Writing file: ${outputPath}`);
-        console.log(`📄 Content length: ${content.length} chars`);
         await fs.writeFile(outputPath, content, 'utf8');
         console.log(`${status} ${outputPath}`);
       }
@@ -1871,8 +1889,17 @@ async function addRouteToDomain(domainName, routeName, options = {}) {
 
 /**
  * Auto-register backend plugin in plugin.loader.ts
+ * @param {string} moduleName - Module name (table name)
+ * @param {string} projectRoot - Project root directory
+ * @param {Object} options - Optional settings
+ * @param {string} options.domain - Domain path (e.g., 'inventory/master-data')
  */
-async function autoRegisterBackendPlugin(moduleName, projectRoot) {
+async function autoRegisterBackendPlugin(
+  moduleName,
+  projectRoot,
+  options = {},
+) {
+  const { domain = null } = options;
   const pluginLoaderPath = path.join(
     projectRoot,
     'apps/api/src/bootstrap/plugin.loader.ts',
@@ -1913,9 +1940,14 @@ async function autoRegisterBackendPlugin(moduleName, projectRoot) {
       return false;
     }
 
+    // Build import path based on domain
+    // If domain is 'inventory/master-data', import path is '../modules/inventory/master-data/{moduleName}'
+    const importPath = domain
+      ? `../modules/${domain}/${camelName}`
+      : `../modules/${camelName}`;
+
     // Add import after last business feature import
-    // Use camelName for import path to match actual module directory names
-    const importStatement = `import ${camelName}Plugin from '../modules/${camelName}';\n`;
+    const importStatement = `import ${camelName}Plugin from '${importPath}';\n`;
     // Find the next line after the marker
     let insertPos = content.indexOf('\n', markerIndex);
     // Skip to the line after all existing imports in this section
@@ -1957,9 +1989,7 @@ async function autoRegisterBackendPlugin(moduleName, projectRoot) {
     await fs.writeFile(pluginLoaderPath, content);
 
     console.log(`✅ Auto-registered ${moduleName} plugin in plugin.loader.ts:`);
-    console.log(
-      `   - Import: import ${camelName}Plugin from '../modules/${camelName}'`,
-    );
+    console.log(`   - Import: import ${camelName}Plugin from '${importPath}'`);
     console.log(
       `   - Plugin: { name: '${camelName}', plugin: ${camelName}Plugin }`,
     );
