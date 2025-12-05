@@ -2,7 +2,6 @@ import fp from 'fastify-plugin';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import drugsPlugin from './drugs';
-import drugGenericsPlugin from './drugGenerics';
 
 /**
  * Master-data Domain Plugin
@@ -22,13 +21,9 @@ export default fp(
       ...options,
       prefix: `${prefix}/drugs`,
     });
-    await fastify.register(drugGenericsPlugin, {
-      ...options,
-      prefix: `${prefix}/drug-generics`,
-    });
 
     fastify.addHook('onReady', async () => {
-      fastify.log.info(`Master-data domain loaded with 2 modules at ${prefix}`);
+      fastify.log.info(`Master-data domain loaded with 1 modules at ${prefix}`);
     });
   },
   {
