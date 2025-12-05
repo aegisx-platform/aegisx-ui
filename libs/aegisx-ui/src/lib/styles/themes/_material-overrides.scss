@@ -95,17 +95,31 @@
   )
 );
 
-// ===== Form Fields - Tremor Style (clean borders) =====
+// ===== Form Fields - Tailwind Zinc Style (visible borders) =====
 .mat-mdc-form-field {
-  // Outlined style
+  // Outlined style - Use input-specific border for better visibility
   .mat-mdc-text-field-wrapper {
     .mat-mdc-form-field-flex {
       .mdc-notched-outline {
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-          border-color: var(--ax-border-default) !important;
+          border-color: var(
+            --ax-border-input,
+            var(--ax-border-default)
+          ) !important;
         }
+      }
+    }
+  }
+
+  // Hover state - Enhanced visibility
+  &:hover:not(.mat-focused):not(.mat-form-field-disabled) {
+    .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--ax-border-emphasis) !important;
       }
     }
   }
@@ -128,7 +142,21 @@
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: var(--md-sys-color-error) !important;
+        border-color: var(
+          --ax-error-default,
+          var(--md-sys-color-error)
+        ) !important;
+      }
+    }
+  }
+
+  // Disabled state
+  &.mat-form-field-disabled {
+    .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--ax-border-subtle) !important;
       }
     }
   }

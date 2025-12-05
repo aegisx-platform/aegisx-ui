@@ -47,12 +47,13 @@
   --ax-text-inverse: #0a0a0a;
 
   // ===========================================
-  // BORDERS (Ultra subtle - barely visible like Linear/Vercel)
+  // BORDERS (Tailwind Zinc - Solid colors for better visibility)
   // ===========================================
-  --ax-border-default: rgba(255, 255, 255, 0.08); // Main border - ultra subtle
-  --ax-border-emphasis: rgba(255, 255, 255, 0.12); // Emphasized border
-  --ax-border-subtle: rgba(255, 255, 255, 0.04); // Very subtle border
-  --ax-border-color: rgba(255, 255, 255, 0.08);
+  --ax-border-default: #3f3f46; // zinc-700 - Form fields, cards, dividers
+  --ax-border-emphasis: #52525b; // zinc-600 - Hover states, focus rings
+  --ax-border-subtle: #27272a; // zinc-800 - Subtle dividers, separators
+  --ax-border-color: #3f3f46; // zinc-700 - Alias for compatibility
+  --ax-border-input: #52525b; // zinc-600 - Input field borders (more visible)
 
   // ===========================================
   // SUCCESS (Softer green)
