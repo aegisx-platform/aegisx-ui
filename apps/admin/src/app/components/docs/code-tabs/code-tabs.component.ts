@@ -33,7 +33,20 @@ import 'prismjs/components/prism-json';
  *
  * Displays code examples with syntax highlighting in tabbed format.
  * Uses Prism.js for syntax highlighting.
- * Supports HTML, TypeScript, SCSS, Bash, and JSON.
+ * Supports HTML, TypeScript, SCSS, Bash, JSON, and Preview mode.
+ *
+ * Preview mode: Use language='preview' to render ng-content as live preview.
+ *
+ * @example
+ * ```html
+ * <ax-code-tabs [tabs]="[
+ *   { label: 'Preview', code: '', language: 'preview' },
+ *   { label: 'HTML', code: htmlCode, language: 'html' },
+ *   { label: 'TypeScript', code: tsCode, language: 'typescript' }
+ * ]">
+ *   <div preview>Live component here</div>
+ * </ax-code-tabs>
+ * ```
  */
 @Component({
   selector: 'ax-code-tabs',
@@ -58,19 +71,27 @@ import 'prismjs/components/prism-json';
               <span class="dot dot--green"></span>
             </div>
             <span class="code-tabs__filename">{{ tabs[0].label }}</span>
-            <button
-              mat-icon-button
-              class="code-tabs__copy-btn"
-              matTooltip="Copy code"
-              (click)="copyCode(tabs[0].code)"
-            >
-              <mat-icon>content_copy</mat-icon>
-            </button>
+            @if (tabs[0].language !== 'preview') {
+              <button
+                mat-icon-button
+                class="code-tabs__copy-btn"
+                matTooltip="Copy code"
+                (click)="copyCode(tabs[0].code)"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            }
           </div>
-          <pre class="code-tabs__code"><code
-            #codeBlock
-            class="language-{{ getPrismLanguage(tabs[0].language) }}"
-          >{{ tabs[0].code.trim() }}</code></pre>
+          @if (tabs[0].language === 'preview') {
+            <div class="code-tabs__preview">
+              <ng-content></ng-content>
+            </div>
+          } @else {
+            <pre class="code-tabs__code"><code
+              #codeBlock
+              class="language-{{ getPrismLanguage(tabs[0].language) }}"
+            >{{ tabs[0].code.trim() }}</code></pre>
+          }
         </div>
       } @else {
         <!-- Tabbed code blocks -->
@@ -92,21 +113,29 @@ import 'prismjs/components/prism-json';
                 </button>
               }
             </div>
-            <button
-              mat-icon-button
-              class="code-tabs__copy-btn"
-              matTooltip="Copy code"
-              (click)="copyCode(tabs[activeTabIndex].code)"
-            >
-              <mat-icon>content_copy</mat-icon>
-            </button>
+            @if (tabs[activeTabIndex].language !== 'preview') {
+              <button
+                mat-icon-button
+                class="code-tabs__copy-btn"
+                matTooltip="Copy code"
+                (click)="copyCode(tabs[activeTabIndex].code)"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            }
           </div>
           @for (tab of tabs; track getTabTrackId(tab, i); let i = $index) {
             @if (activeTabIndex === i) {
-              <pre class="code-tabs__code"><code
-                #codeBlock
-                class="language-{{ getPrismLanguage(tab.language) }}"
-              >{{ tab.code.trim() }}</code></pre>
+              @if (tab.language === 'preview') {
+                <div class="code-tabs__preview">
+                  <ng-content></ng-content>
+                </div>
+              } @else {
+                <pre class="code-tabs__code"><code
+                  #codeBlock
+                  class="language-{{ getPrismLanguage(tab.language) }}"
+                >{{ tab.code.trim() }}</code></pre>
+              }
             }
           }
         </div>
@@ -216,6 +245,14 @@ import 'prismjs/components/prism-json';
         font-family: inherit;
         background: transparent;
         padding: 0;
+      }
+      .code-tabs__preview {
+        padding: 24px;
+        background: var(--ax-background-default, #ffffff);
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* Catppuccin Mocha Syntax Theme */
@@ -404,8 +441,13 @@ export class CodeTabsComponent implements AfterViewInit, OnChanges {
       scss: 'scss',
       bash: 'bash',
       json: 'json',
+      preview: 'plaintext', // Preview doesn't use Prism
     };
     return languageMap[language] || 'plaintext';
+  }
+
+  isPreviewTab(tab: CodeTab): boolean {
+    return tab.language === 'preview';
   }
 
   getTabTrackId(tab: CodeTab, index: number): string {

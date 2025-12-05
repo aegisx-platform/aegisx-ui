@@ -238,8 +238,15 @@ export interface DocNavItem {
 
 /**
  * Supported programming languages for code blocks
+ * 'preview' is a special type that renders ng-content instead of code
  */
-export type CodeLanguage = 'typescript' | 'html' | 'scss' | 'bash' | 'json';
+export type CodeLanguage =
+  | 'typescript'
+  | 'html'
+  | 'scss'
+  | 'bash'
+  | 'json'
+  | 'preview';
 
 /**
  * Code tab configuration

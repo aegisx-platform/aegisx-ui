@@ -7,7 +7,6 @@ import { AxLoadingButtonComponent } from '@aegisx/ui';
 import {
   DocHeaderComponent,
   CodeTabsComponent,
-  LivePreviewComponent,
   ComponentTokensComponent,
 } from '../../../../../../components/docs';
 import { ComponentToken } from '../../../../../../types/docs.types';
@@ -23,7 +22,6 @@ import { ComponentToken } from '../../../../../../types/docs.types';
     AxLoadingButtonComponent,
     DocHeaderComponent,
     CodeTabsComponent,
-    LivePreviewComponent,
     ComponentTokensComponent,
   ],
   template: `
@@ -53,7 +51,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 CSS-only spinner. Click the buttons to toggle loading state.
               </p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="basicUsageTabs">
                 <div class="loading-button-doc__demo-row">
                   <ax-loading-button
                     [loading]="isBasicLoading"
@@ -73,9 +71,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Submit
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="basicUsageCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- Variants -->
@@ -86,7 +82,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 to match your design needs.
               </p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="variantsTabs">
                 <div class="loading-button-doc__demo-row">
                   <ax-loading-button
                     variant="raised"
@@ -124,9 +120,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Basic
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="variantsCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- Icons -->
@@ -137,7 +131,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 automatically animate on hover.
               </p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="iconsTabs">
                 <div class="loading-button-doc__demo-row">
                   <ax-loading-button
                     [loading]="false"
@@ -173,9 +167,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Refresh
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="iconsCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- Full Width -->
@@ -186,7 +178,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 for forms and mobile layouts.
               </p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="fullWidthTabs">
                 <div class="loading-button-doc__demo-column">
                   <ax-loading-button
                     [loading]="isFullWidthLoading"
@@ -209,9 +201,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Create Account
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="fullWidthCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- Loading State Features -->
@@ -222,7 +212,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 and pulse animation during loading.
               </p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="loadingFeaturesTabs">
                 <div class="loading-button-doc__demo-row">
                   <ax-loading-button
                     [loading]="true"
@@ -241,9 +231,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Resend Email
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="loadingFeaturesCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
           </div>
         </mat-tab>
@@ -256,7 +244,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
               <h2>Form Submission</h2>
               <p>Common pattern for form submit buttons with loading state.</p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="formSubmissionTabs">
                 <div class="loading-button-doc__form">
                   <div class="loading-button-doc__form-field">
                     <label>Email</label>
@@ -278,9 +266,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Sign In
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="formSubmissionCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- Auth Actions -->
@@ -291,7 +277,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                 password reset.
               </p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="authActionsTabs">
                 <div class="loading-button-doc__demo-column">
                   <ax-loading-button
                     [loading]="isAuthLoading1"
@@ -327,9 +313,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Send Reset Link
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="authActionsCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- CRUD Actions -->
@@ -337,7 +321,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
               <h2>CRUD Actions</h2>
               <p>Buttons for create, update, delete operations.</p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="crudActionsTabs">
                 <div class="loading-button-doc__demo-row">
                   <ax-loading-button
                     [loading]="isCrudLoading1"
@@ -371,9 +355,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Delete
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="crudActionsCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
 
             <!-- Disabled State -->
@@ -381,7 +363,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
               <h2>Disabled State</h2>
               <p>Buttons can be disabled independently of loading state.</p>
 
-              <ax-live-preview variant="bordered">
+              <ax-code-tabs [tabs]="disabledTabs">
                 <div class="loading-button-doc__demo-row">
                   <ax-loading-button [disabled]="true" [loading]="false">
                     Disabled
@@ -403,9 +385,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     Disabled Loading
                   </ax-loading-button>
                 </div>
-              </ax-live-preview>
-
-              <ax-code-tabs [tabs]="disabledCode"></ax-code-tabs>
+              </ax-code-tabs>
             </section>
           </div>
         </mat-tab>
@@ -961,7 +941,12 @@ export class LoadingButtonDocComponent {
     }
   }
 
-  basicUsageCode = [
+  basicUsageTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1007,7 +992,12 @@ export class MyComponent {
     },
   ];
 
-  variantsCode = [
+  variantsTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1033,7 +1023,12 @@ export class MyComponent {
     },
   ];
 
-  iconsCode = [
+  iconsTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1058,7 +1053,12 @@ export class MyComponent {
     },
   ];
 
-  fullWidthCode = [
+  fullWidthTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1085,7 +1085,12 @@ export class MyComponent {
     },
   ];
 
-  loadingFeaturesCode = [
+  loadingFeaturesTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1108,7 +1113,12 @@ export class MyComponent {
     },
   ];
 
-  formSubmissionCode = [
+  formSubmissionTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1164,7 +1174,12 @@ export class LoginComponent {
     },
   ];
 
-  authActionsCode = [
+  authActionsTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1207,7 +1222,12 @@ export class LoginComponent {
     },
   ];
 
-  crudActionsCode = [
+  crudActionsTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
@@ -1247,7 +1267,12 @@ export class LoginComponent {
     },
   ];
 
-  disabledCode = [
+  disabledTabs = [
+    {
+      label: 'Preview',
+      language: 'preview' as const,
+      code: '',
+    },
     {
       label: 'HTML',
       language: 'html' as const,
