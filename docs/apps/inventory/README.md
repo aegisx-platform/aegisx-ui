@@ -62,7 +62,15 @@ pnpm run db:migrate:inventory:status
 
 **Key Deliverables:**
 
-- 69 database objects (tables, views, functions)
+| Category          | Count           |
+| ----------------- | --------------- |
+| Migrations        | 37 files        |
+| Tables            | 57 tables       |
+| Views             | 12 views        |
+| Functions         | 9 functions     |
+| Enums             | 31 enum types   |
+| **Total Objects** | **109 objects** |
+
 - Enterprise seed system for multi-site deployments
 - Ministry-compliant data export views
 
