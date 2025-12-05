@@ -33,7 +33,7 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
       />
 
       <!-- Live Examples Section -->
-      <mat-card appearance="outlined" class="card-section examples-card">
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>
             <h2 class="section-title">
@@ -54,42 +54,14 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
               routerLink="/docs/components/aegisx/auth/examples/login"
               class="example-card"
             >
-              <div class="example-card-header">
-                <div class="example-icon-wrapper login-gradient">
-                  <mat-icon>login</mat-icon>
-                </div>
-                <mat-chip-set>
-                  <mat-chip>Example</mat-chip>
-                </mat-chip-set>
+              <div class="example-icon login-bg">
+                <mat-icon>login</mat-icon>
               </div>
-              <div class="example-card-content">
+              <div class="example-content">
                 <h3>Login Page</h3>
                 <p>หน้า Login พร้อม Remember Me และ Social Login</p>
-                <ul class="feature-list">
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Email/Password validation
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Remember me checkbox
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Social login integration
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Auth layout with branding
-                  </li>
-                </ul>
               </div>
-              <div class="example-card-footer">
-                <span class="view-link">
-                  View Example
-                  <mat-icon>arrow_forward</mat-icon>
-                </span>
-              </div>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
             </a>
 
             <!-- Register Page -->
@@ -97,42 +69,14 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
               routerLink="/docs/components/aegisx/auth/examples/register"
               class="example-card"
             >
-              <div class="example-card-header">
-                <div class="example-icon-wrapper register-gradient">
-                  <mat-icon>person_add</mat-icon>
-                </div>
-                <mat-chip-set>
-                  <mat-chip>Example</mat-chip>
-                </mat-chip-set>
+              <div class="example-icon register-bg">
+                <mat-icon>person_add</mat-icon>
               </div>
-              <div class="example-card-content">
+              <div class="example-content">
                 <h3>Register Page</h3>
                 <p>หน้าลงทะเบียนพร้อม Password Strength Indicator</p>
-                <ul class="feature-list">
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Full registration form
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Password strength meter
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Terms & conditions
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Social login options
-                  </li>
-                </ul>
               </div>
-              <div class="example-card-footer">
-                <span class="view-link">
-                  View Example
-                  <mat-icon>arrow_forward</mat-icon>
-                </span>
-              </div>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
             </a>
 
             <!-- Forgot Password Page -->
@@ -140,42 +84,14 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
               routerLink="/docs/components/aegisx/auth/examples/forgot-password"
               class="example-card"
             >
-              <div class="example-card-header">
-                <div class="example-icon-wrapper forgot-gradient">
-                  <mat-icon>lock_reset</mat-icon>
-                </div>
-                <mat-chip-set>
-                  <mat-chip>Example</mat-chip>
-                </mat-chip-set>
+              <div class="example-icon forgot-bg">
+                <mat-icon>lock_reset</mat-icon>
               </div>
-              <div class="example-card-content">
+              <div class="example-content">
                 <h3>Forgot Password</h3>
                 <p>หน้า Reset Password ผ่าน Email</p>
-                <ul class="feature-list">
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Email input validation
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Success message
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Back to login link
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Clear instructions
-                  </li>
-                </ul>
               </div>
-              <div class="example-card-footer">
-                <span class="view-link">
-                  View Example
-                  <mat-icon>arrow_forward</mat-icon>
-                </span>
-              </div>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
             </a>
 
             <!-- Reset Password Page -->
@@ -183,42 +99,14 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
               routerLink="/docs/components/aegisx/auth/examples/reset-password"
               class="example-card"
             >
-              <div class="example-card-header">
-                <div class="example-icon-wrapper reset-gradient">
-                  <mat-icon>password</mat-icon>
-                </div>
-                <mat-chip-set>
-                  <mat-chip>Example</mat-chip>
-                </mat-chip-set>
+              <div class="example-icon reset-bg">
+                <mat-icon>password</mat-icon>
               </div>
-              <div class="example-card-content">
+              <div class="example-content">
                 <h3>Reset Password</h3>
                 <p>หน้าตั้ง Password ใหม่หลังกด reset link</p>
-                <ul class="feature-list">
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Password confirmation
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Minimum 8 characters
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Success state display
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Toggle visibility
-                  </li>
-                </ul>
               </div>
-              <div class="example-card-footer">
-                <span class="view-link">
-                  View Example
-                  <mat-icon>arrow_forward</mat-icon>
-                </span>
-              </div>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
             </a>
 
             <!-- Confirm Email Page -->
@@ -226,59 +114,21 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
               routerLink="/docs/components/aegisx/auth/examples/confirm-email"
               class="example-card"
             >
-              <div class="example-card-header">
-                <div class="example-icon-wrapper verify-gradient">
-                  <mat-icon>mark_email_read</mat-icon>
-                </div>
-                <mat-chip-set>
-                  <mat-chip>Example</mat-chip>
-                </mat-chip-set>
+              <div class="example-icon verify-bg">
+                <mat-icon>mark_email_read</mat-icon>
               </div>
-              <div class="example-card-content">
+              <div class="example-content">
                 <h3>Confirm Email</h3>
                 <p>หน้ายืนยัน Email พร้อม 5 สถานะ</p>
-                <ul class="feature-list">
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Pending, Verifying states
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Success, Error states
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Expired link handling
-                  </li>
-                  <li>
-                    <mat-icon>check</mat-icon>
-                    Resend email option
-                  </li>
-                </ul>
               </div>
-              <div class="example-card-footer">
-                <span class="view-link">
-                  View Example
-                  <mat-icon>arrow_forward</mat-icon>
-                </span>
-              </div>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
             </a>
-          </div>
-
-          <!-- Note -->
-          <div class="info-box">
-            <mat-icon>info</mat-icon>
-            <div>
-              <strong>Note:</strong>
-              ตัวอย่างเหล่านี้เป็นหน้าจำลอง (Demo Mode) สำหรับดูรูปแบบการใช้งาน
-              Components ข้อมูลจะไม่ถูกส่งไป server จริง
-            </div>
           </div>
         </mat-card-content>
       </mat-card>
 
       <!-- Components Overview -->
-      <mat-card appearance="outlined" class="card-section">
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>
             <h2 class="section-title">
@@ -288,91 +138,60 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div class="component-grid">
+          <div class="component-list">
             <div class="component-item">
-              <mat-icon class="component-icon">view_quilt</mat-icon>
-              <div class="component-info">
+              <mat-icon>view_quilt</mat-icon>
+              <div>
                 <strong>AxAuthLayoutComponent</strong>
-                <p>Layout wrapper สำหรับหน้า authentication พร้อม branding</p>
-                <code
-                  >import {{ '{' }} AxAuthLayoutComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>Layout wrapper สำหรับหน้า authentication</span>
               </div>
             </div>
 
             <div class="component-item">
-              <mat-icon class="component-icon">login</mat-icon>
-              <div class="component-info">
+              <mat-icon>login</mat-icon>
+              <div>
                 <strong>AxLoginFormComponent</strong>
-                <p>Form สำหรับ login พร้อม validation และ remember me</p>
-                <code
-                  >import {{ '{' }} AxLoginFormComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>Form สำหรับ login พร้อม validation</span>
               </div>
             </div>
 
             <div class="component-item">
-              <mat-icon class="component-icon">person_add</mat-icon>
-              <div class="component-info">
+              <mat-icon>person_add</mat-icon>
+              <div>
                 <strong>AxRegisterFormComponent</strong>
-                <p>Form สำหรับ registration พร้อม password strength</p>
-                <code
-                  >import {{ '{' }} AxRegisterFormComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>Form สำหรับ registration</span>
               </div>
             </div>
 
             <div class="component-item">
-              <mat-icon class="component-icon">lock_reset</mat-icon>
-              <div class="component-info">
+              <mat-icon>lock_reset</mat-icon>
+              <div>
                 <strong>AxForgotPasswordFormComponent</strong>
-                <p>Form สำหรับ request password reset</p>
-                <code
-                  >import {{ '{' }} AxForgotPasswordFormComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>Form สำหรับ request password reset</span>
               </div>
             </div>
 
             <div class="component-item">
-              <mat-icon class="component-icon">password</mat-icon>
-              <div class="component-info">
+              <mat-icon>password</mat-icon>
+              <div>
                 <strong>AxResetPasswordFormComponent</strong>
-                <p>Form สำหรับ set new password</p>
-                <code
-                  >import {{ '{' }} AxResetPasswordFormComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>Form สำหรับ set new password</span>
               </div>
             </div>
 
             <div class="component-item">
-              <mat-icon class="component-icon">share</mat-icon>
-              <div class="component-info">
+              <mat-icon>share</mat-icon>
+              <div>
                 <strong>AxSocialLoginComponent</strong>
-                <p>ปุ่ม Social login (Google, Facebook, GitHub, etc.)</p>
-                <code
-                  >import {{ '{' }} AxSocialLoginComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>ปุ่ม Social login (Google, Facebook, GitHub)</span>
               </div>
             </div>
 
             <div class="component-item">
-              <mat-icon class="component-icon">mark_email_read</mat-icon>
-              <div class="component-info">
+              <mat-icon>mark_email_read</mat-icon>
+              <div>
                 <strong>AxConfirmEmailComponent</strong>
-                <p>
-                  หน้ายืนยัน email พร้อม 5 สถานะ (pending, verifying, success,
-                  error, expired)
-                </p>
-                <code
-                  >import {{ '{' }} AxConfirmEmailComponent {{ '}' }} from
-                  '&#64;aegisx/ui';</code
-                >
+                <span>หน้ายืนยัน email พร้อม 5 สถานะ</span>
               </div>
             </div>
           </div>
@@ -380,7 +199,7 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
       </mat-card>
 
       <!-- Usage Examples -->
-      <mat-card appearance="outlined" class="card-section">
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>
             <h2 class="section-title">
@@ -393,16 +212,16 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
           <h3 class="subsection-title">Basic Login Page</h3>
           <ax-code-tabs [tabs]="loginUsageCode" />
 
-          <h3 class="subsection-title mt-6">With Auth Layout</h3>
+          <h3 class="subsection-title">With Auth Layout</h3>
           <ax-code-tabs [tabs]="authLayoutUsageCode" />
 
-          <h3 class="subsection-title mt-6">Social Login Integration</h3>
+          <h3 class="subsection-title">Social Login Integration</h3>
           <ax-code-tabs [tabs]="socialLoginUsageCode" />
         </mat-card-content>
       </mat-card>
 
       <!-- API Reference -->
-      <mat-card appearance="outlined" class="card-section">
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>
             <h2 class="section-title">
@@ -415,10 +234,10 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
           <h3 class="subsection-title">AxLoginFormComponent</h3>
           <ax-props-table [properties]="loginFormProps" />
 
-          <h3 class="subsection-title mt-6">AxRegisterFormComponent</h3>
+          <h3 class="subsection-title">AxRegisterFormComponent</h3>
           <ax-props-table [properties]="registerFormProps" />
 
-          <h3 class="subsection-title mt-6">AxAuthLayoutComponent</h3>
+          <h3 class="subsection-title">AxAuthLayoutComponent</h3>
           <ax-props-table [properties]="authLayoutProps" />
         </mat-card-content>
       </mat-card>
@@ -435,18 +254,13 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
         gap: 1.5rem;
       }
 
-      .card-section {
-        margin-bottom: 1rem;
-      }
-
       .section-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 600;
-        color: var(--ax-text-heading);
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.5rem;
       }
 
       .title-icon {
@@ -454,10 +268,13 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
       }
 
       .subsection-title {
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 600;
-        color: var(--ax-text-heading);
         margin: 1.5rem 0 0.75rem 0;
+      }
+
+      .subsection-title:first-of-type {
+        margin-top: 0;
       }
 
       .text-secondary {
@@ -468,229 +285,114 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
         margin-bottom: 1rem;
       }
 
-      .mt-6 {
-        margin-top: 1.5rem;
-      }
-
-      /* Example Grid */
+      /* Example Grid - Simple */
       .example-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
       }
 
       .example-card {
         display: flex;
-        flex-direction: column;
-        background: var(--ax-background-default);
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
         border: 1px solid var(--ax-border-default);
-        border-radius: var(--ax-radius-xl);
-        overflow: hidden;
+        border-radius: var(--ax-radius-md);
         text-decoration: none;
         color: inherit;
-        transition: all 0.2s ease;
-        cursor: pointer;
+        transition: border-color 0.2s;
       }
 
       .example-card:hover {
         border-color: var(--ax-brand-default);
-        box-shadow: var(--ax-shadow-lg);
-        transform: translateY(-2px);
       }
 
-      .example-card-header {
-        padding: 1.25rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        background: var(--ax-background-subtle);
-      }
-
-      .example-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: var(--ax-radius-lg);
+      .example-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--ax-radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
 
         mat-icon {
           color: white;
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
         }
       }
 
-      .login-gradient {
+      .login-bg {
         background: var(--ax-brand-default);
       }
-
-      .register-gradient {
+      .register-bg {
         background: var(--ax-success-default);
       }
-
-      .forgot-gradient {
+      .forgot-bg {
         background: var(--ax-warning-default);
       }
-
-      .reset-gradient {
+      .reset-bg {
         background: var(--ax-info-default);
       }
-
-      .verify-gradient {
-        background: #22d3d3; /* cyan-400 */
+      .verify-bg {
+        background: #22d3d3;
       }
 
-      .example-card-content {
-        padding: 1.25rem;
+      .example-content {
         flex: 1;
+        min-width: 0;
 
         h3 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.125rem;
+          margin: 0;
+          font-size: 0.9375rem;
           font-weight: 600;
-          color: var(--ax-text-heading);
         }
 
         p {
-          margin: 0 0 1rem 0;
-          font-size: 0.875rem;
-          color: var(--ax-text-secondary);
-        }
-      }
-
-      .feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-        li {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          margin: 0.25rem 0 0 0;
           font-size: 0.8125rem;
           color: var(--ax-text-secondary);
-          margin-bottom: 0.375rem;
-
-          mat-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-            color: var(--ax-success-default);
-          }
         }
       }
 
-      .example-card-footer {
-        padding: 1rem 1.25rem;
-        border-top: 1px solid var(--ax-border-default);
-        background: var(--ax-background-subtle);
+      .arrow-icon {
+        color: var(--ax-text-subtle);
+        transition: transform 0.2s;
       }
 
-      .view-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
+      .example-card:hover .arrow-icon {
+        transform: translateX(4px);
         color: var(--ax-brand-default);
-        transition: gap 0.2s ease;
-
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-          transition: transform 0.2s ease;
-        }
       }
 
-      .example-card:hover .view-link {
-        gap: 0.75rem;
-
-        mat-icon {
-          transform: translateX(4px);
-        }
-      }
-
-      /* Info Box */
-      .info-box {
+      /* Component List - Simple */
+      .component-list {
         display: flex;
-        gap: 1rem;
-        padding: 1rem 1.25rem;
-        margin-top: 1.5rem;
-        background: var(--ax-info-surface);
-        border: 1px solid var(--ax-info-border);
-        border-radius: var(--ax-radius-lg);
-        font-size: 0.875rem;
-        color: var(--ax-info-emphasis);
-
-        mat-icon {
-          flex-shrink: 0;
-          color: var(--ax-info-default);
-        }
-
-        code {
-          background: var(--ax-background-default);
-          padding: 0.125rem 0.5rem;
-          border-radius: var(--ax-radius-sm);
-          font-family: monospace;
-        }
-      }
-
-      /* Component Grid */
-      .component-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 1rem;
+        flex-direction: column;
+        gap: 0.75rem;
       }
 
       .component-item {
         display: flex;
-        gap: 1rem;
-        padding: 1.25rem;
-        background: var(--ax-background-subtle);
-        border: 1px solid var(--ax-border-default);
-        border-radius: var(--ax-radius-lg);
-      }
+        align-items: center;
+        gap: 0.75rem;
 
-      .component-icon {
-        flex-shrink: 0;
-        font-size: 32px;
-        width: 32px;
-        height: 32px;
-        color: var(--ax-brand-default);
-      }
-
-      .component-info {
-        flex: 1;
-        min-width: 0;
-
-        strong {
-          display: block;
-          font-size: 0.9375rem;
-          color: var(--ax-text-heading);
-          margin-bottom: 0.25rem;
+        > mat-icon {
+          color: var(--ax-brand-default);
         }
 
-        p {
-          font-size: 0.8125rem;
-          color: var(--ax-text-secondary);
-          margin: 0 0 0.5rem 0;
-        }
+        > div {
+          display: flex;
+          flex-direction: column;
 
-        code {
-          display: block;
-          font-size: 0.75rem;
-          font-family: monospace;
-          color: var(--ax-text-subtle);
-          background: var(--ax-background-default);
-          padding: 0.375rem 0.625rem;
-          border-radius: var(--ax-radius-sm);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          strong {
+            font-size: 0.875rem;
+          }
+
+          span {
+            font-size: 0.8125rem;
+            color: var(--ax-text-secondary);
+          }
         }
       }
     `,
