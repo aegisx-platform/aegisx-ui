@@ -81,19 +81,13 @@ export interface RegisterFormConfig {
     AxLoadingButtonComponent,
   ],
   template: `
-    <mat-card appearance="outlined" class="register-card">
-      <!-- Header -->
-      <mat-card-header class="register-header">
-        <mat-card-title class="register-title">{{
-          config.title
-        }}</mat-card-title>
-        <mat-card-subtitle class="register-subtitle">
-          {{ config.subtitle }}
-        </mat-card-subtitle>
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ config.title }}</mat-card-title>
+        <mat-card-subtitle>{{ config.subtitle }}</mat-card-subtitle>
       </mat-card-header>
 
-      <!-- Form -->
-      <mat-card-content class="register-content">
+      <mat-card-content>
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           <!-- Name Fields -->
           <div class="name-row">
@@ -233,28 +227,23 @@ export interface RegisterFormConfig {
           <!-- Terms Checkbox -->
           @if (config.showTermsCheckbox) {
             <div class="terms-container">
-              <mat-checkbox
-                formControlName="acceptTerms"
-                class="terms-checkbox"
-              >
-                <span class="terms-text">
-                  {{ config.termsText }}
-                  <a
-                    href="javascript:void(0)"
-                    class="terms-link"
-                    (click)="onTermsClick($event)"
-                  >
-                    {{ config.termsLinkText }}
-                  </a>
-                  and
-                  <a
-                    href="javascript:void(0)"
-                    class="terms-link"
-                    (click)="onPrivacyClick($event)"
-                  >
-                    {{ config.privacyLinkText }}
-                  </a>
-                </span>
+              <mat-checkbox formControlName="acceptTerms">
+                {{ config.termsText }}
+                <a
+                  href="javascript:void(0)"
+                  class="link"
+                  (click)="onTermsClick($event)"
+                >
+                  {{ config.termsLinkText }}
+                </a>
+                and
+                <a
+                  href="javascript:void(0)"
+                  class="link"
+                  (click)="onPrivacyClick($event)"
+                >
+                  {{ config.privacyLinkText }}
+                </a>
               </mat-checkbox>
               @if (
                 registerForm.get('acceptTerms')?.hasError('requiredTrue') &&
@@ -289,10 +278,9 @@ export interface RegisterFormConfig {
             <mat-divider></mat-divider>
           </div>
 
-          <div class="social-login">
+          <div class="social-buttons">
             <button
               mat-stroked-button
-              class="social-button"
               type="button"
               (click)="onSocialLoginClick('google')"
             >
@@ -301,7 +289,6 @@ export interface RegisterFormConfig {
             </button>
             <button
               mat-stroked-button
-              class="social-button"
               type="button"
               (click)="onSocialLoginClick('github')"
             >
@@ -314,14 +301,10 @@ export interface RegisterFormConfig {
 
       <!-- Footer -->
       @if (config.showLoginLink) {
-        <mat-card-footer class="register-footer">
-          <p>
+        <mat-card-footer>
+          <p class="footer-text">
             {{ config.loginText }}
-            <a
-              href="javascript:void(0)"
-              class="login-link"
-              (click)="onLoginClick()"
-            >
+            <a href="javascript:void(0)" class="link" (click)="onLoginClick()">
               {{ config.loginLinkText }}
             </a>
           </p>
@@ -331,59 +314,6 @@ export interface RegisterFormConfig {
   `,
   styles: [
     `
-      .register-card {
-        width: 100%;
-        max-width: 480px;
-        box-shadow: var(--ax-shadow-sm) !important;
-        animation: fadeIn 0.4s ease-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .register-header {
-        padding: 2rem 2rem 0 !important;
-        margin-bottom: 0 !important;
-        border-bottom: none !important;
-
-        @media (max-width: 960px) {
-          padding: 1.5rem 1.5rem 0 !important;
-        }
-      }
-
-      ::ng-deep .mat-mdc-card-header {
-        border-bottom: none !important;
-      }
-
-      .register-title {
-        font-size: 1.75rem !important;
-        font-weight: 600 !important;
-        color: var(--ax-text-strong) !important;
-        margin-bottom: 0.5rem !important;
-      }
-
-      .register-subtitle {
-        font-size: 0.875rem !important;
-        color: var(--ax-text-subtle) !important;
-        margin-bottom: 0 !important;
-      }
-
-      .register-content {
-        padding: 2rem !important;
-
-        @media (max-width: 960px) {
-          padding: 1.5rem !important;
-        }
-      }
-
       form {
         display: flex;
         flex-direction: column;
@@ -393,11 +323,6 @@ export interface RegisterFormConfig {
       .name-row {
         display: flex;
         gap: 1rem;
-
-        @media (max-width: 480px) {
-          flex-direction: column;
-          gap: 1rem;
-        }
       }
 
       .full-width {
@@ -406,43 +331,10 @@ export interface RegisterFormConfig {
 
       .half-width {
         flex: 1;
-
-        @media (max-width: 480px) {
-          width: 100%;
-        }
-      }
-
-      mat-form-field {
-        mat-icon[matPrefix] {
-          margin-right: 0.75rem;
-          color: var(--ax-text-subtle);
-        }
       }
 
       .terms-container {
         margin: 0.5rem 0;
-      }
-
-      .terms-checkbox {
-        ::ng-deep .mdc-form-field {
-          align-items: flex-start;
-        }
-      }
-
-      .terms-text {
-        font-size: 0.875rem;
-        color: var(--ax-text-body);
-        line-height: 1.5;
-      }
-
-      .terms-link {
-        color: var(--ax-brand-default);
-        text-decoration: none;
-        font-weight: 500;
-
-        &:hover {
-          text-decoration: underline;
-        }
       }
 
       .terms-error {
@@ -451,33 +343,12 @@ export interface RegisterFormConfig {
         display: block;
       }
 
-      .register-button {
-        height: 48px !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-        margin-top: 0.5rem;
+      .link {
+        color: var(--ax-brand-default);
+        text-decoration: none;
 
-        .mdc-button__label {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-          line-height: 1;
-          vertical-align: middle;
-        }
-      }
-
-      .button-spinner {
-        margin-right: 0.5rem;
-
-        ::ng-deep circle {
-          stroke: currentColor !important;
+        &:hover {
+          text-decoration: underline;
         }
       }
 
@@ -485,7 +356,7 @@ export interface RegisterFormConfig {
         display: flex;
         align-items: center;
         gap: 1rem;
-        margin: 2rem 0;
+        margin: 1.5rem 0;
 
         mat-divider {
           flex: 1;
@@ -495,66 +366,18 @@ export interface RegisterFormConfig {
       .divider-text {
         font-size: 0.75rem;
         color: var(--ax-text-subtle);
-        white-space: nowrap;
       }
 
-      .social-login {
+      .social-buttons {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
       }
 
-      .social-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        height: 44px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background-color: var(--ax-background-muted) !important;
-          border-color: var(--ax-brand-default) !important;
-        }
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-
-        span {
-          font-size: 0.875rem;
-        }
-      }
-
-      .register-footer {
-        padding: 1.5rem 2rem !important;
+      .footer-text {
         text-align: center;
-
-        p {
-          margin: 0;
-          font-size: 0.875rem;
-          color: var(--ax-text-body);
-        }
-
-        @media (max-width: 960px) {
-          padding: 1.5rem !important;
-        }
-      }
-
-      .login-link {
-        color: var(--ax-brand-default);
-        text-decoration: none;
-        font-weight: 500;
-        margin-left: 0.25rem;
-        transition: color 0.2s ease;
-
-        &:hover {
-          color: var(--ax-brand-emphasis);
-          text-decoration: underline;
-        }
+        margin: 0;
+        padding: 1rem;
       }
     `,
   ],

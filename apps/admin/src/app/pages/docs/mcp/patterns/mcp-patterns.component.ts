@@ -76,8 +76,8 @@ interface PatternCategory {
             examples
           </p>
 
-          <div class="integrations-grid">
-            <mat-card appearance="outlined" class="integration-card">
+          <div class="tools-grid">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_patterns_list</span>
@@ -103,7 +103,7 @@ interface PatternCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_patterns_get</span>
@@ -129,7 +129,7 @@ interface PatternCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_patterns_search</span>
@@ -155,7 +155,7 @@ interface PatternCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_patterns_suggest</span>
@@ -189,11 +189,11 @@ interface PatternCategory {
         <h2>Pattern Categories</h2>
         <p>AegisX มี 11 development patterns แบ่งออกเป็น 4 categories</p>
 
-        <div class="integrations-grid">
+        <div class="tools-grid">
           @for (category of categories; track category.id) {
             <mat-card
               appearance="outlined"
-              class="integration-card"
+              class="tool-card"
               [class.selected]="selectedCategory() === category.id"
               (click)="selectCategory(category.id)"
             >
@@ -239,7 +239,7 @@ interface PatternCategory {
                   pattern of getPatternsByCategory('backend');
                   track pattern.name
                 ) {
-                  <mat-card appearance="outlined" class="integration-card">
+                  <mat-card appearance="outlined" class="tool-card">
                     <div class="card-header-row">
                       <div class="card-header-text">
                         <span class="card-title">{{ pattern.name }}</span>
@@ -281,7 +281,7 @@ interface PatternCategory {
                   pattern of getPatternsByCategory('frontend');
                   track pattern.name
                 ) {
-                  <mat-card appearance="outlined" class="integration-card">
+                  <mat-card appearance="outlined" class="tool-card">
                     <div class="card-header-row">
                       <div class="card-header-text">
                         <span class="card-title">{{ pattern.name }}</span>
@@ -323,7 +323,7 @@ interface PatternCategory {
                   pattern of getPatternsByCategory('database');
                   track pattern.name
                 ) {
-                  <mat-card appearance="outlined" class="integration-card">
+                  <mat-card appearance="outlined" class="tool-card">
                     <div class="card-header-row">
                       <div class="card-header-text">
                         <span class="card-title">{{ pattern.name }}</span>
@@ -365,7 +365,7 @@ interface PatternCategory {
                   pattern of getPatternsByCategory('testing');
                   track pattern.name
                 ) {
-                  <mat-card appearance="outlined" class="integration-card">
+                  <mat-card appearance="outlined" class="tool-card">
                     <div class="card-header-row">
                       <div class="card-header-text">
                         <span class="card-title">{{ pattern.name }}</span>
@@ -520,8 +520,8 @@ interface PatternCategory {
             Patterns ที่แนะนำสำหรับ use cases ที่พบบ่อย
           </p>
 
-          <div class="integrations-grid">
-            <mat-card appearance="outlined" class="integration-card">
+          <div class="tools-grid">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">REST API Endpoint</span>
@@ -547,7 +547,7 @@ interface PatternCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">Angular Component</span>
@@ -573,7 +573,7 @@ interface PatternCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">Database Table</span>
@@ -599,7 +599,7 @@ interface PatternCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">Auth Protection</span>
@@ -662,8 +662,8 @@ interface PatternCategory {
         margin-bottom: 3rem;
 
         h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
+          font-size: var(--ax-text-2xl);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
           margin-bottom: 0.75rem;
         }
@@ -671,7 +671,7 @@ interface PatternCategory {
         > p {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          line-height: 1.6;
+          line-height: var(--ax-leading-normal);
           max-width: 800px;
         }
       }
@@ -697,8 +697,8 @@ interface PatternCategory {
 
           h3 {
             margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: var(--ax-text-xl);
+            font-weight: var(--ax-font-weight-semibold);
             color: var(--ax-text-heading);
           }
         }
@@ -706,17 +706,17 @@ interface PatternCategory {
         .category-desc {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
         }
       }
 
-      .integrations-grid {
+      .tools-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 1.5rem;
       }
 
-      .integration-card {
+      .tool-card {
         cursor: pointer;
         transition: all 0.2s ease;
         background: var(--ax-background-default);
@@ -746,13 +746,13 @@ interface PatternCategory {
         }
 
         .card-title {
-          font-size: 1.125rem;
-          font-weight: 500;
+          font-size: var(--ax-text-lg);
+          font-weight: var(--ax-font-weight-medium);
           color: var(--ax-text-heading);
         }
 
         .card-subtitle {
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
           color: var(--ax-text-secondary);
         }
 
@@ -860,8 +860,8 @@ interface PatternCategory {
 
           p {
             color: var(--ax-text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.5;
+            font-size: var(--ax-text-sm);
+            line-height: var(--ax-leading-normal);
             margin-bottom: 1rem;
           }
 
@@ -871,12 +871,12 @@ interface PatternCategory {
 
             li {
               margin-bottom: 0.5rem;
-              font-size: 0.8125rem;
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-secondary);
 
               code {
-                font-family: 'SF Mono', 'Fira Code', monospace;
-                font-size: 0.75rem;
+                font-family: var(--ax-font-mono);
+                font-size: var(--ax-text-xs);
                 color: var(--ax-primary-default);
                 background: var(--ax-primary-faint);
                 padding: 0.125rem 0.375rem;
@@ -892,8 +892,8 @@ interface PatternCategory {
             border-radius: var(--ax-radius-md);
 
             code {
-              font-family: 'SF Mono', 'Fira Code', monospace;
-              font-size: 0.8125rem;
+              font-family: var(--ax-font-mono);
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-heading);
             }
           }
@@ -934,7 +934,7 @@ interface PatternCategory {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          font-weight: 500;
+          font-weight: var(--ax-font-weight-medium);
 
           mat-icon {
             color: var(--ax-primary-default);
@@ -952,8 +952,8 @@ interface PatternCategory {
 
         .code-header,
         .result-header {
-          font-size: 0.75rem;
-          font-weight: 600;
+          font-size: var(--ax-text-xs);
+          font-weight: var(--ax-font-weight-semibold);
           text-transform: uppercase;
           letter-spacing: 0.05em;
           color: var(--ax-text-muted);
@@ -969,8 +969,8 @@ interface PatternCategory {
           overflow-x: auto;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-text-heading);
             white-space: pre-wrap;
           }
@@ -1001,20 +1001,20 @@ interface PatternCategory {
 
         h4 {
           margin: 0;
-          font-size: 1rem;
-          font-weight: 600;
+          font-size: var(--ax-text-base);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
         }
 
         p {
           margin: 0;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
           color: var(--ax-text-secondary);
           line-height: 1.5;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.75rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-success-default);
             background: var(--ax-success-faint);
             padding: 0.125rem 0.375rem;
@@ -1039,7 +1039,7 @@ interface PatternCategory {
         border-radius: var(--ax-radius-lg);
         text-decoration: none;
         color: var(--ax-text-heading);
-        font-weight: 500;
+        font-weight: var(--ax-font-weight-medium);
         transition: all 0.2s ease;
 
         &:hover {

@@ -380,8 +380,8 @@ interface McpTool {
         margin-bottom: 3rem;
 
         h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
+          font-size: var(--ax-text-2xl);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
           margin-bottom: 0.75rem;
         }
@@ -389,7 +389,7 @@ interface McpTool {
         > p {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          line-height: 1.6;
+          line-height: var(--ax-leading-normal);
           max-width: 800px;
         }
       }
@@ -416,8 +416,8 @@ interface McpTool {
 
         h3 {
           margin: 0 0 0.5rem;
-          font-size: 1.125rem;
-          font-weight: 600;
+          font-size: var(--ax-text-lg);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
         }
       }
@@ -425,20 +425,20 @@ interface McpTool {
       .config-desc {
         color: var(--ax-text-secondary);
         margin-bottom: 1rem;
-        font-size: 0.875rem;
+        font-size: var(--ax-text-sm);
 
         code {
           background: var(--ax-background-subtle);
           padding: 0.125rem 0.375rem;
           border-radius: 4px;
-          font-family: 'SF Mono', 'Fira Code', monospace;
-          font-size: 0.8125rem;
+          font-family: var(--ax-font-mono);
+          font-size: var(--ax-text-xs);
           color: var(--ax-primary-default);
         }
       }
 
       .config-subtitle {
-        font-size: 0.875rem;
+        font-size: var(--ax-text-sm);
         font-weight: 600;
         color: var(--ax-text-heading);
         margin: 1.5rem 0 0.75rem;
@@ -469,8 +469,8 @@ interface McpTool {
 
           h3 {
             margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: var(--ax-text-xl);
+            font-weight: var(--ax-font-weight-semibold);
             color: var(--ax-text-heading);
           }
         }
@@ -478,7 +478,7 @@ interface McpTool {
         .category-desc {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
         }
       }
 
@@ -507,8 +507,8 @@ interface McpTool {
         }
 
         .card-title {
-          font-size: 1.125rem;
-          font-weight: 500;
+          font-size: var(--ax-text-lg);
+          font-weight: var(--ax-font-weight-medium);
           color: var(--ax-text-heading);
         }
 
@@ -535,8 +535,8 @@ interface McpTool {
 
           p {
             color: var(--ax-text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.5;
+            font-size: var(--ax-text-sm);
+            line-height: var(--ax-leading-normal);
             margin-bottom: 1rem;
           }
         }
@@ -545,8 +545,8 @@ interface McpTool {
           padding: 0.5rem 0.75rem;
           background: var(--ax-background-subtle);
           border-radius: var(--ax-radius-md);
-          font-family: 'SF Mono', 'Fira Code', monospace;
-          font-size: 0.75rem;
+          font-family: var(--ax-font-mono);
+          font-size: var(--ax-text-xs);
           color: var(--ax-success-default);
           overflow-x: auto;
         }
@@ -573,8 +573,8 @@ interface McpTool {
 
         h4 {
           margin: 0 0 0.75rem;
-          font-size: 0.9375rem;
-          font-weight: 600;
+          font-size: var(--ax-text-sm);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
         }
 
@@ -586,15 +586,15 @@ interface McpTool {
           margin-bottom: 0.75rem;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-text-heading);
           }
         }
 
         p {
           margin: 0;
-          font-size: 0.8125rem;
+          font-size: var(--ax-text-xs);
           color: var(--ax-text-secondary);
         }
       }
@@ -628,14 +628,14 @@ interface McpTool {
 
         h4 {
           margin: 0;
-          font-size: 1rem;
-          font-weight: 600;
+          font-size: var(--ax-text-base);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
         }
 
         p {
           margin: 0;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
           color: var(--ax-text-secondary);
           line-height: 1.5;
         }
@@ -657,7 +657,7 @@ interface McpTool {
         border-radius: var(--ax-radius-lg);
         text-decoration: none;
         color: var(--ax-text-heading);
-        font-weight: 500;
+        font-weight: var(--ax-font-weight-medium);
         transition: all 0.2s ease;
 
         &:hover {

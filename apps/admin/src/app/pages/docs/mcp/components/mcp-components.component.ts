@@ -75,15 +75,17 @@ interface ComponentCategory {
             ใช้ tools เหล่านี้เพื่อค้นหาและดูรายละเอียด AegisX UI Components
           </p>
 
-          <div class="integrations-grid">
-            <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+          <div class="tools-grid">
+            <mat-card appearance="outlined" class="tool-card">
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_components_list</span>
+                  <span class="card-subtitle">List all components</span>
+                </div>
                 <div class="card-icon card-icon--list">
                   <mat-icon>view_list</mat-icon>
                 </div>
-                <mat-card-title>aegisx_components_list</mat-card-title>
-                <mat-card-subtitle>List all components</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>แสดงรายการ components ทั้งหมดหรือ filter ตาม category</p>
                 <div class="card-meta">
@@ -100,14 +102,16 @@ interface ComponentCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+            <mat-card appearance="outlined" class="tool-card">
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_components_get</span>
+                  <span class="card-subtitle">Get component details</span>
+                </div>
                 <div class="card-icon card-icon--get">
                   <mat-icon>info</mat-icon>
                 </div>
-                <mat-card-title>aegisx_components_get</mat-card-title>
-                <mat-card-subtitle>Get component details</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>
                   ดูรายละเอียด component รวมถึง inputs, outputs, usage examples
@@ -126,14 +130,16 @@ interface ComponentCategory {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+            <mat-card appearance="outlined" class="tool-card">
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_components_search</span>
+                  <span class="card-subtitle">Search components</span>
+                </div>
                 <div class="card-icon card-icon--search">
                   <mat-icon>search</mat-icon>
                 </div>
-                <mat-card-title>aegisx_components_search</mat-card-title>
-                <mat-card-subtitle>Search components</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>ค้นหา components ด้วย keyword หรือ functionality</p>
                 <div class="card-meta">
@@ -251,21 +257,24 @@ interface ComponentCategory {
         <h2>Component Categories</h2>
         <p>AegisX UI มี 42 components แบ่งออกเป็น 8 categories ตามการใช้งาน</p>
 
-        <div class="integrations-grid">
+        <div class="tools-grid">
           @for (category of categories; track category.id) {
             <mat-card
-              class="integration-card"
+              appearance="outlined"
+              class="tool-card"
               (click)="selectCategory(category.id)"
             >
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">{{ category.name }}</span>
+                  <span class="card-subtitle"
+                    >{{ category.count }} components</span
+                  >
+                </div>
                 <div class="card-icon" [class]="'card-icon--' + category.id">
                   <mat-icon>{{ category.icon }}</mat-icon>
                 </div>
-                <mat-card-title>{{ category.name }}</mat-card-title>
-                <mat-card-subtitle
-                  >{{ category.count }} components</mat-card-subtitle
-                >
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>{{ category.description }}</p>
               </mat-card-content>
@@ -405,8 +414,8 @@ interface ComponentCategory {
         margin-bottom: 3rem;
 
         h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
+          font-size: var(--ax-text-2xl);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
           margin-bottom: 0.75rem;
         }
@@ -414,7 +423,7 @@ interface ComponentCategory {
         > p {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          line-height: 1.6;
+          line-height: var(--ax-leading-normal);
           max-width: 800px;
         }
       }
@@ -440,8 +449,8 @@ interface ComponentCategory {
 
           h3 {
             margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: var(--ax-text-xl);
+            font-weight: var(--ax-font-weight-semibold);
             color: var(--ax-text-heading);
           }
         }
@@ -449,17 +458,17 @@ interface ComponentCategory {
         .category-desc {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
         }
       }
 
-      .integrations-grid {
+      .tools-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 1.5rem;
       }
 
-      .integration-card {
+      .tool-card {
         cursor: pointer;
         transition: all 0.2s ease;
         background: var(--ax-background-default);
@@ -469,133 +478,156 @@ interface ComponentCategory {
           box-shadow: var(--ax-shadow-lg);
         }
 
-        mat-card-header {
-          .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--ax-radius-lg);
-            background: var(--ax-primary-faint);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
+        .card-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          gap: 16px;
+        }
 
+        .card-header-text {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .card-title {
+          font-size: var(--ax-text-lg);
+          font-weight: var(--ax-font-weight-medium);
+          color: var(--ax-text-heading);
+        }
+
+        .card-subtitle {
+          font-size: var(--ax-text-sm);
+          color: var(--ax-text-secondary);
+        }
+
+        .card-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: var(--ax-radius-lg);
+          background: var(--ax-primary-faint);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            color: var(--ax-primary-default);
+          }
+
+          &--list {
+            background: linear-gradient(
+              135deg,
+              rgba(99, 102, 241, 0.15),
+              rgba(139, 92, 246, 0.15)
+            );
             mat-icon {
-              font-size: 28px;
-              width: 28px;
-              height: 28px;
-              color: var(--ax-primary-default);
+              color: #6366f1;
             }
-
-            &--list {
-              background: linear-gradient(
-                135deg,
-                rgba(99, 102, 241, 0.15),
-                rgba(139, 92, 246, 0.15)
-              );
-              mat-icon {
-                color: #6366f1;
-              }
+          }
+          &--get {
+            background: linear-gradient(
+              135deg,
+              rgba(16, 185, 129, 0.15),
+              rgba(5, 150, 105, 0.15)
+            );
+            mat-icon {
+              color: #10b981;
             }
-            &--get {
-              background: linear-gradient(
-                135deg,
-                rgba(16, 185, 129, 0.15),
-                rgba(5, 150, 105, 0.15)
-              );
-              mat-icon {
-                color: #10b981;
-              }
+          }
+          &--search {
+            background: linear-gradient(
+              135deg,
+              rgba(245, 158, 11, 0.15),
+              rgba(217, 119, 6, 0.15)
+            );
+            mat-icon {
+              color: #f59e0b;
             }
-            &--search {
-              background: linear-gradient(
-                135deg,
-                rgba(245, 158, 11, 0.15),
-                rgba(217, 119, 6, 0.15)
-              );
-              mat-icon {
-                color: #f59e0b;
-              }
+          }
+          &--data-display {
+            background: linear-gradient(
+              135deg,
+              rgba(99, 102, 241, 0.15),
+              rgba(139, 92, 246, 0.15)
+            );
+            mat-icon {
+              color: #6366f1;
             }
-            &--data-display {
-              background: linear-gradient(
-                135deg,
-                rgba(99, 102, 241, 0.15),
-                rgba(139, 92, 246, 0.15)
-              );
-              mat-icon {
-                color: #6366f1;
-              }
+          }
+          &--forms {
+            background: linear-gradient(
+              135deg,
+              rgba(16, 185, 129, 0.15),
+              rgba(5, 150, 105, 0.15)
+            );
+            mat-icon {
+              color: #10b981;
             }
-            &--forms {
-              background: linear-gradient(
-                135deg,
-                rgba(16, 185, 129, 0.15),
-                rgba(5, 150, 105, 0.15)
-              );
-              mat-icon {
-                color: #10b981;
-              }
+          }
+          &--feedback {
+            background: linear-gradient(
+              135deg,
+              rgba(245, 158, 11, 0.15),
+              rgba(217, 119, 6, 0.15)
+            );
+            mat-icon {
+              color: #f59e0b;
             }
-            &--feedback {
-              background: linear-gradient(
-                135deg,
-                rgba(245, 158, 11, 0.15),
-                rgba(217, 119, 6, 0.15)
-              );
-              mat-icon {
-                color: #f59e0b;
-              }
+          }
+          &--navigation {
+            background: linear-gradient(
+              135deg,
+              rgba(6, 182, 212, 0.15),
+              rgba(8, 145, 178, 0.15)
+            );
+            mat-icon {
+              color: #06b6d4;
             }
-            &--navigation {
-              background: linear-gradient(
-                135deg,
-                rgba(6, 182, 212, 0.15),
-                rgba(8, 145, 178, 0.15)
-              );
-              mat-icon {
-                color: #06b6d4;
-              }
+          }
+          &--layout {
+            background: linear-gradient(
+              135deg,
+              rgba(236, 72, 153, 0.15),
+              rgba(219, 39, 119, 0.15)
+            );
+            mat-icon {
+              color: #ec4899;
             }
-            &--layout {
-              background: linear-gradient(
-                135deg,
-                rgba(236, 72, 153, 0.15),
-                rgba(219, 39, 119, 0.15)
-              );
-              mat-icon {
-                color: #ec4899;
-              }
+          }
+          &--auth {
+            background: linear-gradient(
+              135deg,
+              rgba(239, 68, 68, 0.15),
+              rgba(220, 38, 38, 0.15)
+            );
+            mat-icon {
+              color: #ef4444;
             }
-            &--auth {
-              background: linear-gradient(
-                135deg,
-                rgba(239, 68, 68, 0.15),
-                rgba(220, 38, 38, 0.15)
-              );
-              mat-icon {
-                color: #ef4444;
-              }
+          }
+          &--advanced {
+            background: linear-gradient(
+              135deg,
+              rgba(139, 92, 246, 0.15),
+              rgba(124, 58, 237, 0.15)
+            );
+            mat-icon {
+              color: #8b5cf6;
             }
-            &--advanced {
-              background: linear-gradient(
-                135deg,
-                rgba(139, 92, 246, 0.15),
-                rgba(124, 58, 237, 0.15)
-              );
-              mat-icon {
-                color: #8b5cf6;
-              }
-            }
-            &--overlays {
-              background: linear-gradient(
-                135deg,
-                rgba(100, 116, 139, 0.15),
-                rgba(71, 85, 105, 0.15)
-              );
-              mat-icon {
-                color: #64748b;
-              }
+          }
+          &--overlays {
+            background: linear-gradient(
+              135deg,
+              rgba(100, 116, 139, 0.15),
+              rgba(71, 85, 105, 0.15)
+            );
+            mat-icon {
+              color: #64748b;
             }
           }
         }
@@ -605,8 +637,8 @@ interface ComponentCategory {
 
           p {
             color: var(--ax-text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.5;
+            font-size: var(--ax-text-sm);
+            line-height: var(--ax-leading-normal);
             margin-bottom: 1rem;
           }
         }
@@ -623,7 +655,6 @@ interface ComponentCategory {
           justify-content: flex-end;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          border-top: 1px solid var(--ax-border-muted);
         }
       }
 
@@ -637,7 +668,7 @@ interface ComponentCategory {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          font-weight: 500;
+          font-weight: var(--ax-font-weight-medium);
 
           mat-icon {
             color: var(--ax-primary-default);
@@ -655,8 +686,8 @@ interface ComponentCategory {
 
         .code-header,
         .result-header {
-          font-size: 0.75rem;
-          font-weight: 600;
+          font-size: var(--ax-text-xs);
+          font-weight: var(--ax-font-weight-semibold);
           text-transform: uppercase;
           letter-spacing: 0.05em;
           color: var(--ax-text-muted);
@@ -671,8 +702,8 @@ interface ComponentCategory {
           overflow-x: auto;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: #a6e3a1;
           }
         }
@@ -697,7 +728,7 @@ interface ComponentCategory {
         table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
 
           th,
           td {
@@ -707,7 +738,7 @@ interface ComponentCategory {
           }
 
           th {
-            font-weight: 600;
+            font-weight: var(--ax-font-weight-semibold);
             color: var(--ax-text-heading);
             background: var(--ax-background-subtle);
           }
@@ -722,7 +753,7 @@ interface ComponentCategory {
             }
 
             .desc {
-              font-size: 0.8125rem;
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-secondary);
             }
           }
@@ -731,7 +762,7 @@ interface ComponentCategory {
             background: var(--ax-background-subtle);
             padding: 0.125rem 0.375rem;
             border-radius: var(--ax-radius-sm);
-            font-size: 0.8125rem;
+            font-size: var(--ax-text-xs);
           }
 
           .command {
@@ -769,20 +800,20 @@ interface ComponentCategory {
 
         h4 {
           margin: 0;
-          font-size: 1rem;
-          font-weight: 600;
+          font-size: var(--ax-text-base);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
         }
 
         p {
           margin: 0;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
           color: var(--ax-text-secondary);
           line-height: 1.5;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.75rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-success-default);
             background: var(--ax-success-faint);
             padding: 0.125rem 0.375rem;
@@ -807,7 +838,7 @@ interface ComponentCategory {
         border-radius: var(--ax-radius-lg);
         text-decoration: none;
         color: var(--ax-text-heading);
-        font-weight: 500;
+        font-weight: var(--ax-font-weight-medium);
         transition: all 0.2s ease;
 
         &:hover {

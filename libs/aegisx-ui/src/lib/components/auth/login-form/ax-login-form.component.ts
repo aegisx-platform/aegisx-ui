@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -6,20 +7,19 @@ import {
   Output,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { AxLoadingButtonComponent } from '../../loading-button/ax-loading-button.component';
 
 export interface LoginFormData {
@@ -75,17 +75,13 @@ export interface LoginFormConfig {
     AxLoadingButtonComponent,
   ],
   template: `
-    <mat-card appearance="outlined" class="login-card">
-      <!-- Header -->
-      <mat-card-header class="login-header">
-        <mat-card-title class="login-title">{{ config.title }}</mat-card-title>
-        <mat-card-subtitle class="login-subtitle">
-          {{ config.subtitle }}
-        </mat-card-subtitle>
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ config.title }}</mat-card-title>
+        <mat-card-subtitle>{{ config.subtitle }}</mat-card-subtitle>
       </mat-card-header>
 
-      <!-- Form -->
-      <mat-card-content class="login-content">
+      <mat-card-content>
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <!-- Email Field -->
           <mat-form-field appearance="outline" class="full-width">
@@ -153,14 +149,14 @@ export interface LoginFormConfig {
           @if (config.showRememberMe || config.showForgotPassword) {
             <div class="form-options">
               @if (config.showRememberMe) {
-                <mat-checkbox formControlName="rememberMe" class="remember-me">
+                <mat-checkbox formControlName="rememberMe">
                   Remember me
                 </mat-checkbox>
               }
               @if (config.showForgotPassword) {
                 <a
                   href="javascript:void(0)"
-                  class="forgot-password"
+                  class="link"
                   (click)="onForgotPasswordClick()"
                 >
                   {{ config.forgotPasswordText }}
@@ -191,10 +187,9 @@ export interface LoginFormConfig {
             <mat-divider></mat-divider>
           </div>
 
-          <div class="social-login">
+          <div class="social-buttons">
             <button
               mat-stroked-button
-              class="social-button"
               type="button"
               (click)="onSocialLoginClick('google')"
             >
@@ -203,7 +198,6 @@ export interface LoginFormConfig {
             </button>
             <button
               mat-stroked-button
-              class="social-button"
               type="button"
               (click)="onSocialLoginClick('github')"
             >
@@ -216,14 +210,10 @@ export interface LoginFormConfig {
 
       <!-- Footer -->
       @if (config.showSignupLink) {
-        <mat-card-footer class="login-footer">
-          <p>
+        <mat-card-footer>
+          <p class="footer-text">
             {{ config.signupText }}
-            <a
-              href="javascript:void(0)"
-              class="signup-link"
-              (click)="onSignupClick()"
-            >
+            <a href="javascript:void(0)" class="link" (click)="onSignupClick()">
               {{ config.signupLinkText }}
             </a>
           </p>
@@ -233,59 +223,6 @@ export interface LoginFormConfig {
   `,
   styles: [
     `
-      .login-card {
-        width: 100%;
-        max-width: 440px;
-        box-shadow: var(--ax-shadow-sm) !important;
-        animation: fadeIn 0.4s ease-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .login-header {
-        padding: 2rem 2rem 0 !important;
-        margin-bottom: 0 !important;
-        border-bottom: none !important;
-
-        @media (max-width: 960px) {
-          padding: 1.5rem 1.5rem 0 !important;
-        }
-      }
-
-      ::ng-deep .mat-mdc-card-header {
-        border-bottom: none !important;
-      }
-
-      .login-title {
-        font-size: 1.75rem !important;
-        font-weight: 600 !important;
-        color: var(--ax-text-strong) !important;
-        margin-bottom: 0.5rem !important;
-      }
-
-      .login-subtitle {
-        font-size: 0.875rem !important;
-        color: var(--ax-text-subtle) !important;
-        margin-bottom: 0 !important;
-      }
-
-      .login-content {
-        padding: 2rem !important;
-
-        @media (max-width: 960px) {
-          padding: 1.5rem !important;
-        }
-      }
-
       form {
         display: flex;
         flex-direction: column;
@@ -296,70 +233,18 @@ export interface LoginFormConfig {
         width: 100%;
       }
 
-      mat-form-field {
-        mat-icon[matPrefix] {
-          margin-right: 0.75rem;
-          color: var(--ax-text-subtle);
-        }
-      }
-
       .form-options {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin: -0.5rem 0 0.5rem;
-
-        @media (max-width: 480px) {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.5rem;
-        }
       }
 
-      .remember-me {
-        font-size: 0.875rem;
-      }
-
-      .forgot-password {
-        font-size: 0.875rem;
+      .link {
         color: var(--ax-brand-default);
         text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
 
         &:hover {
-          color: var(--ax-brand-emphasis);
           text-decoration: underline;
-        }
-      }
-
-      .login-button {
-        height: 48px !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-        margin-top: 0.5rem;
-
-        .mdc-button__label {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-          line-height: 1;
-          vertical-align: middle;
-        }
-      }
-
-      .button-spinner {
-        margin-right: 0.5rem;
-
-        ::ng-deep circle {
-          stroke: currentColor !important;
         }
       }
 
@@ -367,7 +252,7 @@ export interface LoginFormConfig {
         display: flex;
         align-items: center;
         gap: 1rem;
-        margin: 2rem 0;
+        margin: 1.5rem 0;
 
         mat-divider {
           flex: 1;
@@ -377,66 +262,18 @@ export interface LoginFormConfig {
       .divider-text {
         font-size: 0.75rem;
         color: var(--ax-text-subtle);
-        white-space: nowrap;
       }
 
-      .social-login {
+      .social-buttons {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
       }
 
-      .social-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        height: 44px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background-color: var(--ax-background-muted) !important;
-          border-color: var(--ax-brand-default) !important;
-        }
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-
-        span {
-          font-size: 0.875rem;
-        }
-      }
-
-      .login-footer {
-        padding: 1.5rem 2rem !important;
+      .footer-text {
         text-align: center;
-
-        p {
-          margin: 0;
-          font-size: 0.875rem;
-          color: var(--ax-text-body);
-        }
-
-        @media (max-width: 960px) {
-          padding: 1.5rem !important;
-        }
-      }
-
-      .signup-link {
-        color: var(--ax-brand-default);
-        text-decoration: none;
-        font-weight: 500;
-        margin-left: 0.25rem;
-        transition: color 0.2s ease;
-
-        &:hover {
-          color: var(--ax-brand-emphasis);
-          text-decoration: underline;
-        }
+        margin: 0;
+        padding: 1rem;
       }
     `,
   ],

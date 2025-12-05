@@ -66,8 +66,8 @@ interface CrudPackage {
             ใช้ tools เหล่านี้เพื่อสร้าง CRUD modules อัตโนมัติ
           </p>
 
-          <div class="integrations-grid">
-            <mat-card appearance="outlined" class="integration-card">
+          <div class="tools-grid">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_crud_packages</span>
@@ -93,7 +93,7 @@ interface CrudPackage {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_crud_build_command</span>
@@ -123,7 +123,7 @@ interface CrudPackage {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_crud_workflow</span>
@@ -153,7 +153,7 @@ interface CrudPackage {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_crud_files</span>
@@ -180,7 +180,7 @@ interface CrudPackage {
               </mat-card-actions>
             </mat-card>
 
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">aegisx_crud_troubleshoot</span>
@@ -214,9 +214,9 @@ interface CrudPackage {
         <h2>CRUD Packages</h2>
         <p>เลือก package ที่เหมาะกับ requirements ของ feature</p>
 
-        <div class="integrations-grid">
+        <div class="tools-grid">
           @for (pkg of packages; track pkg.id) {
-            <mat-card appearance="outlined" class="integration-card">
+            <mat-card appearance="outlined" class="tool-card">
               <div class="card-header-row">
                 <div class="card-header-text">
                   <span class="card-title">{{ pkg.name }}</span>
@@ -562,8 +562,8 @@ interface CrudPackage {
         margin-bottom: 3rem;
 
         h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
+          font-size: var(--ax-text-2xl);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
           margin-bottom: 0.75rem;
         }
@@ -571,7 +571,7 @@ interface CrudPackage {
         > p {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          line-height: 1.6;
+          line-height: var(--ax-leading-normal);
           max-width: 800px;
         }
       }
@@ -597,8 +597,8 @@ interface CrudPackage {
 
           h3 {
             margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: var(--ax-text-xl);
+            font-weight: var(--ax-font-weight-semibold);
             color: var(--ax-text-heading);
           }
         }
@@ -606,17 +606,17 @@ interface CrudPackage {
         .category-desc {
           color: var(--ax-text-secondary);
           margin-bottom: 1.5rem;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
         }
       }
 
-      .integrations-grid {
+      .tools-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 1.5rem;
       }
 
-      .integration-card {
+      .tool-card {
         cursor: pointer;
         transition: all 0.2s ease;
         background: var(--ax-background-default);
@@ -641,13 +641,13 @@ interface CrudPackage {
         }
 
         .card-title {
-          font-size: 1.125rem;
-          font-weight: 500;
+          font-size: var(--ax-text-lg);
+          font-weight: var(--ax-font-weight-medium);
           color: var(--ax-text-heading);
         }
 
         .card-subtitle {
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
           color: var(--ax-text-secondary);
         }
 
@@ -728,15 +728,15 @@ interface CrudPackage {
 
           > p {
             color: var(--ax-text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.5;
+            font-size: var(--ax-text-sm);
+            line-height: var(--ax-leading-normal);
             margin-bottom: 1rem;
           }
 
           h5 {
             margin: 1rem 0 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: var(--ax-text-xs);
+            font-weight: var(--ax-font-weight-semibold);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--ax-text-muted);
@@ -752,7 +752,7 @@ interface CrudPackage {
               align-items: center;
               gap: 0.5rem;
               padding: 0.25rem 0;
-              font-size: 0.8125rem;
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-secondary);
 
               mat-icon {
@@ -771,7 +771,7 @@ interface CrudPackage {
 
             li {
               padding: 0.25rem 0;
-              font-size: 0.8125rem;
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-secondary);
             }
           }
@@ -783,8 +783,8 @@ interface CrudPackage {
             border-radius: var(--ax-radius-md);
 
             code {
-              font-family: 'SF Mono', 'Fira Code', monospace;
-              font-size: 0.8125rem;
+              font-family: var(--ax-font-mono);
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-heading);
             }
           }
@@ -830,8 +830,8 @@ interface CrudPackage {
           margin: 0;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-text-heading);
             white-space: pre-wrap;
           }
@@ -848,7 +848,7 @@ interface CrudPackage {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          font-weight: 500;
+          font-weight: var(--ax-font-weight-medium);
 
           mat-icon {
             color: var(--ax-primary-default);
@@ -866,8 +866,8 @@ interface CrudPackage {
 
         .code-header,
         .result-header {
-          font-size: 0.75rem;
-          font-weight: 600;
+          font-size: var(--ax-text-xs);
+          font-weight: var(--ax-font-weight-semibold);
           text-transform: uppercase;
           letter-spacing: 0.05em;
           color: var(--ax-text-muted);
@@ -883,8 +883,8 @@ interface CrudPackage {
           overflow-x: auto;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-text-heading);
             white-space: pre-wrap;
           }
@@ -915,8 +915,8 @@ interface CrudPackage {
 
           &.header {
             background: var(--ax-background-subtle);
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: var(--ax-text-xs);
+            font-weight: var(--ax-font-weight-semibold);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--ax-text-muted);
@@ -939,14 +939,14 @@ interface CrudPackage {
             }
 
             code {
-              font-family: 'SF Mono', 'Fira Code', monospace;
-              font-size: 0.8125rem;
+              font-family: var(--ax-font-mono);
+              font-size: var(--ax-text-xs);
               color: var(--ax-text-heading);
             }
           }
 
           .col-desc {
-            font-size: 0.875rem;
+            font-size: var(--ax-text-sm);
             color: var(--ax-text-secondary);
           }
         }
@@ -976,20 +976,20 @@ interface CrudPackage {
 
         h4 {
           margin: 0;
-          font-size: 1rem;
-          font-weight: 600;
+          font-size: var(--ax-text-base);
+          font-weight: var(--ax-font-weight-semibold);
           color: var(--ax-text-heading);
         }
 
         p {
           margin: 0;
-          font-size: 0.875rem;
+          font-size: var(--ax-text-sm);
           color: var(--ax-text-secondary);
           line-height: 1.5;
 
           code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.75rem;
+            font-family: var(--ax-font-mono);
+            font-size: var(--ax-text-xs);
             color: var(--ax-success-default);
             background: var(--ax-success-faint);
             padding: 0.125rem 0.375rem;
@@ -1014,7 +1014,7 @@ interface CrudPackage {
         border-radius: var(--ax-radius-lg);
         text-decoration: none;
         color: var(--ax-text-heading);
-        font-weight: 500;
+        font-weight: var(--ax-font-weight-medium);
         transition: all 0.2s ease;
 
         &:hover {
