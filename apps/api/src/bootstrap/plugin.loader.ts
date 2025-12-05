@@ -54,6 +54,34 @@ import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 // Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 import testProductsPlugin from '../modules/testProducts';
+import locationsPlugin from '../modules/locations';
+import dosageFormsPlugin from '../modules/dosageForms';
+import drugUnitsPlugin from '../modules/drugUnits';
+import departmentsPlugin from '../modules/departments';
+import companiesPlugin from '../modules/companies';
+import drugsPlugin from '../modules/drugs';
+import drugGenericsPlugin from '../modules/drugGenerics';
+import drugLotsPlugin from '../modules/drugLots';
+import inventoryPlugin from '../modules/inventory';
+import adjustmentReasonsPlugin from '../modules/adjustmentReasons';
+import bankPlugin from '../modules/bank';
+import budgetTypesPlugin from '../modules/budgetTypes';
+import budgetCategoriesPlugin from '../modules/budgetCategories';
+import budgetsPlugin from '../modules/budgets';
+import budgetPlansPlugin from '../modules/budgetPlans';
+import budgetPlanItemsPlugin from '../modules/budgetPlanItems';
+import budgetAllocationsPlugin from '../modules/budgetAllocations';
+import budgetReservationsPlugin from '../modules/budgetReservations';
+import contractsPlugin from '../modules/contracts';
+import contractItemsPlugin from '../modules/contractItems';
+import distributionTypesPlugin from '../modules/distributionTypes';
+import drugDistributionsPlugin from '../modules/drugDistributions';
+import drugDistributionItemsPlugin from '../modules/drugDistributionItems';
+import drugReturnItemsPlugin from '../modules/drugReturnItems';
+import drugComponentsPlugin from '../modules/drugComponents';
+import drugFocusListsPlugin from '../modules/drugFocusLists';
+import drugPackRatiosPlugin from '../modules/drugPackRatios';
+import drugReturnsPlugin from '../modules/drugReturns';
 
 /**
  * Plugin registration group interface
@@ -359,6 +387,146 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
     name: 'business-features',
     description: 'Business feature modules (ready for HIS, Inventory, etc.)',
     plugins: [
+      {
+        name: 'drugReturns',
+        plugin: drugReturnsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugPackRatios',
+        plugin: drugPackRatiosPlugin,
+        required: true,
+      },
+      {
+        name: 'drugFocusLists',
+        plugin: drugFocusListsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugComponents',
+        plugin: drugComponentsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugReturnItems',
+        plugin: drugReturnItemsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugDistributionItems',
+        plugin: drugDistributionItemsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugDistributions',
+        plugin: drugDistributionsPlugin,
+        required: true,
+      },
+      {
+        name: 'distributionTypes',
+        plugin: distributionTypesPlugin,
+        required: true,
+      },
+      {
+        name: 'contractItems',
+        plugin: contractItemsPlugin,
+        required: true,
+      },
+      {
+        name: 'contracts',
+        plugin: contractsPlugin,
+        required: true,
+      },
+      {
+        name: 'budgetReservations',
+        plugin: budgetReservationsPlugin,
+        required: true,
+      },
+      {
+        name: 'budgetAllocations',
+        plugin: budgetAllocationsPlugin,
+        required: true,
+      },
+      {
+        name: 'budgetPlanItems',
+        plugin: budgetPlanItemsPlugin,
+        required: true,
+      },
+      {
+        name: 'budgetPlans',
+        plugin: budgetPlansPlugin,
+        required: true,
+      },
+      {
+        name: 'budgets',
+        plugin: budgetsPlugin,
+        required: true,
+      },
+      {
+        name: 'budgetCategories',
+        plugin: budgetCategoriesPlugin,
+        required: true,
+      },
+      {
+        name: 'budgetTypes',
+        plugin: budgetTypesPlugin,
+        required: true,
+      },
+      {
+        name: 'bank',
+        plugin: bankPlugin,
+        required: true,
+      },
+      {
+        name: 'adjustmentReasons',
+        plugin: adjustmentReasonsPlugin,
+        required: true,
+      },
+      {
+        name: 'inventory',
+        plugin: inventoryPlugin,
+        required: true,
+      },
+      {
+        name: 'drugLots',
+        plugin: drugLotsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugGenerics',
+        plugin: drugGenericsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugs',
+        plugin: drugsPlugin,
+        required: true,
+      },
+      {
+        name: 'companies',
+        plugin: companiesPlugin,
+        required: true,
+      },
+      {
+        name: 'departments',
+        plugin: departmentsPlugin,
+        required: true,
+      },
+      {
+        name: 'drugUnits',
+        plugin: drugUnitsPlugin,
+        required: true,
+      },
+      {
+        name: 'dosageForms',
+        plugin: dosageFormsPlugin,
+        required: true,
+      },
+      {
+        name: 'locations',
+        plugin: locationsPlugin,
+        required: true,
+      },
       {
         name: 'test-products',
         plugin: testProductsPlugin,
