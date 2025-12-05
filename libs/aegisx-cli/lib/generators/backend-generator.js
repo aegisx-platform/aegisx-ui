@@ -22,6 +22,37 @@ async function initializeTemplateSystem() {
   return { templateManager, templateRenderer };
 }
 
+/**
+ * Calculate correct output directory relative to monorepo root
+ * Handles cases when CLI is run from libs/ directory vs monorepo root
+ */
+function getMonorepoPath(relativePath) {
+  const cwd = process.cwd();
+
+  // Check if running from within CLI library folders
+  const isInLibsCli =
+    cwd.includes('/libs/aegisx-cli') || cwd.endsWith('libs/aegisx-cli');
+  const isInLibsCrudGenerator =
+    cwd.includes('/libs/aegisx-crud-generator') ||
+    cwd.endsWith('libs/aegisx-crud-generator');
+  const isInToolsCrudGenerator = cwd.endsWith('tools/crud-generator');
+
+  // Calculate correct base path
+  let basePath;
+  if (isInLibsCli || isInLibsCrudGenerator) {
+    // Running from libs/*, need to go up 2 levels to monorepo root
+    basePath = path.resolve(cwd, '../..');
+  } else if (isInToolsCrudGenerator) {
+    // Old tools location (legacy), go up 2 levels
+    basePath = path.resolve(cwd, '../..');
+  } else {
+    // Running from monorepo root
+    basePath = cwd;
+  }
+
+  return path.resolve(basePath, relativePath);
+}
+
 // Register Handlebars helpers
 Handlebars.registerHelper('titleCase', function (str) {
   if (!str || typeof str !== 'string') return '';
@@ -75,7 +106,7 @@ async function generateCrudModule(tableName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
+    outputDir = getMonorepoPath('apps/api/src/modules'),
     configFile = null,
     schema: dbSchema = 'public',
   } = options;
@@ -258,17 +289,17 @@ async function generateCrudModule(tableName, options = {}) {
     output: `${context.moduleName}/__tests__/${context.moduleName}.test.ts`,
   });
 
-  // Add import templates if requested
+  // Add import templates if requested - FLAT structure
   if (options.withImport) {
     console.log('📥 Adding import service and routes templates...');
     templates.push(
       {
         template: 'backend/import-service.hbs',
-        output: `${context.moduleName}/services/${context.moduleNameKebab}-import.service.ts`,
+        output: `${context.moduleName}/${context.moduleNameKebab}-import.service.ts`,
       },
       {
         template: 'backend/import-routes.hbs',
-        output: `${context.moduleName}/routes/${context.moduleNameKebab}-import.routes.ts`,
+        output: `${context.moduleName}/${context.moduleNameKebab}-import.route.ts`,
       },
     );
   }
@@ -1333,7 +1364,7 @@ async function generateDomainModule(domainName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
+    outputDir = getMonorepoPath('apps/api/src/modules'),
     configFile = null,
     directDb = false,
     noRoles = false,
@@ -1466,23 +1497,23 @@ async function generateDomainModule(domainName, options = {}) {
       ? `/${domain}/${toKebabCase(domainName)}`
       : `/${toKebabCase(domainName)}`,
     // Calculate relative path to shared folder based on domain depth
-    // modules/inventory/master-data/drugs/services -> needs ../../../../../shared
-    // Path: services -> drugs -> master-data -> inventory -> modules -> src
-    // domain depth (inventory/master-data) = 2, plus module folder + sub-folder + modules = 5 levels up
+    // With FLAT structure: modules/inventory/master-data/drugs/drugs.service.ts -> needs ../../../../shared
+    // Path: drugs.service.ts -> drugs -> master-data -> inventory -> modules -> src
+    // domain depth (inventory/master-data) = 2, plus module folder + modules folder = 4 levels up
     sharedPath: domain
-      ? '../'.repeat(domain.split('/').length + 3) + 'shared'
-      : '../../../../shared',
+      ? '../'.repeat(domain.split('/').length + 2) + 'shared'
+      : '../../../shared',
     // Calculate relative path to schemas folder (at same level as modules, not in shared)
-    // modules/inventory/master-data/drugs/schemas -> needs ../../../../../schemas
-    // domain depth (inventory/master-data) = 2, plus module folder + schemas subfolder = 5 levels up
+    // With FLAT structure: modules/inventory/master-data/drugs/drugs.schemas.ts -> needs ../../../../schemas
+    // domain depth (inventory/master-data) = 2, plus module folder + modules folder = 4 levels up
     schemasPath: domain
-      ? '../'.repeat(domain.split('/').length + 3) + 'schemas'
-      : '../../../../schemas',
+      ? '../'.repeat(domain.split('/').length + 2) + 'schemas'
+      : '../../../schemas',
     // Calculate relative path to modules root (for routes to reach schemas/)
-    // modules/inventory/master-data/drugs/routes -> needs ../../../../../
+    // With FLAT structure: modules/inventory/master-data/drugs/drugs.route.ts -> needs ../../../../
     modulesRootPath: domain
-      ? '../'.repeat(domain.split('/').length + 3)
-      : '../../../../',
+      ? '../'.repeat(domain.split('/').length + 2)
+      : '../../../',
   };
 
   console.log(`📦 Domain Package context: ${context.package}`);
@@ -1530,32 +1561,32 @@ async function generateDomainModule(domainName, options = {}) {
     { template: 'index.hbs', output: `${context.moduleName}/index.ts` },
   ];
 
-  // Add route files
+  // Add route files - FLAT structure (no subfolders)
   context.routes.forEach((route) => {
     templates.push(
       {
         template: 'route.hbs',
-        output: `${context.moduleName}/routes/${route.fileName}.ts`,
+        output: `${context.moduleName}/${toKebabCase(route.camelName)}.route.ts`,
       },
       {
         template: 'service.hbs',
-        output: `${context.moduleName}/services/${toKebabCase(route.camelName)}.service.ts`,
+        output: `${context.moduleName}/${toKebabCase(route.camelName)}.service.ts`,
       },
       {
         template: 'controller.hbs',
-        output: `${context.moduleName}/controllers/${toKebabCase(route.camelName)}.controller.ts`,
+        output: `${context.moduleName}/${toKebabCase(route.camelName)}.controller.ts`,
       },
       {
         template: 'repository.hbs',
-        output: `${context.moduleName}/repositories/${toKebabCase(route.camelName)}.repository.ts`,
+        output: `${context.moduleName}/${toKebabCase(route.camelName)}.repository.ts`,
       },
       {
         template: 'schemas.hbs',
-        output: `${context.moduleName}/schemas/${toKebabCase(route.camelName)}.schemas.ts`,
+        output: `${context.moduleName}/${toKebabCase(route.camelName)}.schemas.ts`,
       },
       {
         template: 'types.hbs',
-        output: `${context.moduleName}/types/${toKebabCase(route.camelName)}.types.ts`,
+        output: `${context.moduleName}/${toKebabCase(route.camelName)}.types.ts`,
       },
     );
   });
@@ -1566,17 +1597,17 @@ async function generateDomainModule(domainName, options = {}) {
     output: `${context.moduleName}/__tests__/${toKebabCase(context.moduleName)}.test.ts`,
   });
 
-  // Add import templates if requested
+  // Add import templates if requested - FLAT structure
   if (options.withImport) {
     console.log('📥 Adding import service and routes templates...');
     templates.push(
       {
         template: 'backend/import-service.hbs',
-        output: `${context.moduleName}/services/${context.moduleNameKebab}-import.service.ts`,
+        output: `${context.moduleName}/${context.moduleNameKebab}-import.service.ts`,
       },
       {
         template: 'backend/import-routes.hbs',
-        output: `${context.moduleName}/routes/${context.moduleNameKebab}-import.routes.ts`,
+        output: `${context.moduleName}/${context.moduleNameKebab}-import.route.ts`,
       },
     );
   }
@@ -1823,7 +1854,7 @@ async function addRouteToDomain(domainName, routeName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = path.resolve(process.cwd(), 'apps/api/src/modules'),
+    outputDir = getMonorepoPath('apps/api/src/modules'),
   } = options;
 
   console.log(`🔍 Adding route: ${routeName} to domain: ${domainName}`);

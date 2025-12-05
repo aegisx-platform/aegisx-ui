@@ -1,12 +1,12 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { {{ModuleName}}Controller } from './controllers/{{toKebabCase currentRoute.camelName}}.controller';
-import { {{ModuleName}}Service } from './services/{{toKebabCase currentRoute.camelName}}.service';
-import { {{ModuleName}}Repository } from './repositories/{{toKebabCase currentRoute.camelName}}.repository';
-import { {{currentRoute.camelName}}Routes } from './routes/index';
+import { {{ModuleName}}Controller } from './{{toKebabCase currentRoute.camelName}}.controller';
+import { {{ModuleName}}Service } from './{{toKebabCase currentRoute.camelName}}.service';
+import { {{ModuleName}}Repository } from './{{toKebabCase currentRoute.camelName}}.repository';
+import { {{currentRoute.camelName}}Routes } from './{{toKebabCase currentRoute.camelName}}.route';
 {{#if withImport}}
-import { {{currentRoute.camelName}}ImportRoutes } from './routes/{{toKebabCase currentRoute.camelName}}-import.routes';
-import { {{ModuleName}}ImportService } from './services/{{toKebabCase currentRoute.camelName}}-import.service';
+import { {{currentRoute.camelName}}ImportRoutes } from './{{toKebabCase currentRoute.camelName}}-import.route';
+import { {{ModuleName}}ImportService } from './{{toKebabCase currentRoute.camelName}}-import.service';
 {{/if}}
 {{#if (or (eq package 'enterprise') (eq package 'full'))}}
 import { ExportService } from '../../services/export.service';
@@ -16,7 +16,7 @@ import { ExportService } from '../../services/export.service';
 
 /**
  * {{ModuleName}} Domain Plugin
- * 
+ *
  * Following Fastify best practices:
  * - Service instantiation with proper dependency injection
  * - Encapsulation through plugin scoping
@@ -102,11 +102,11 @@ export default fp(
 );
 
 // Re-exports for external consumers
-export * from './schemas/{{toKebabCase currentRoute.camelName}}.schemas';
-export * from './types/{{toKebabCase currentRoute.camelName}}.types';
-export { {{ModuleName}}Repository } from './repositories/{{toKebabCase currentRoute.camelName}}.repository';
-export { {{ModuleName}}Service } from './services/{{toKebabCase currentRoute.camelName}}.service';
-export { {{ModuleName}}Controller } from './controllers/{{toKebabCase currentRoute.camelName}}.controller';
+export * from './{{toKebabCase currentRoute.camelName}}.schemas';
+export * from './{{toKebabCase currentRoute.camelName}}.types';
+export { {{ModuleName}}Repository } from './{{toKebabCase currentRoute.camelName}}.repository';
+export { {{ModuleName}}Service } from './{{toKebabCase currentRoute.camelName}}.service';
+export { {{ModuleName}}Controller } from './{{toKebabCase currentRoute.camelName}}.controller';
 
 // Re-export commonly used types for external use
 export type {
@@ -119,11 +119,11 @@ export type {
   {{ModuleName}}CreatedEvent,
   {{ModuleName}}UpdatedEvent,
   {{ModuleName}}DeletedEvent{{/if}}
-} from './schemas/{{toKebabCase currentRoute.camelName}}.schemas';
+} from './{{toKebabCase currentRoute.camelName}}.schemas';
 
 {{#if withEvents}}
 // Event type definitions for external consumers
-import { {{ModuleName}} } from './schemas/{{toKebabCase currentRoute.camelName}}.schemas';
+import { {{ModuleName}} } from './{{toKebabCase currentRoute.camelName}}.schemas';
 
 export interface {{ModuleName}}EventHandlers {
   onCreated?: (data: {{ModuleName}}) => void | Promise<void>;

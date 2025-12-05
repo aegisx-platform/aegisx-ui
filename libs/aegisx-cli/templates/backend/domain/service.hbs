@@ -1,5 +1,5 @@
 import { BaseService } from '{{sharedPath}}/services/base.service';
-import { {{ModuleName}}Repository } from '../repositories/{{toKebabCase currentRoute.camelName}}.repository';
+import { {{ModuleName}}Repository } from './{{toKebabCase currentRoute.camelName}}.repository';
 {{#if withEvents}}
 import { EventService } from '{{sharedPath}}/websocket/event.service';
 import { CrudEventHelper } from '{{sharedPath}}/websocket/crud-event-helper';
@@ -14,7 +14,7 @@ import {
   {{ModuleName}}ErrorCode,
   {{ModuleName}}ErrorMessages,
   {{/if}}
-} from '../types/{{toKebabCase currentRoute.camelName}}.types';
+} from './{{toKebabCase currentRoute.camelName}}.types';
 
 /**
  * {{ModuleName}} Service

@@ -12,6 +12,11 @@ const {
   generateDomainModule,
   addRouteToDomain,
 } = require('../lib/generators/backend-generator');
+const {
+  initializeDomain,
+  listDomains,
+  isDomainInitialized,
+} = require('../lib/generators/domain-generator');
 const FrontendGenerator = require('../lib/generators/frontend-generator');
 const { ShellGenerator } = require('../lib/generators/shell-generator');
 const { version } = require('../package.json');
@@ -229,6 +234,75 @@ program
       console.log(`📁 Output directory: ${outputDir}`);
       if (options.domain) {
         console.log(`📂 Domain path: ${options.domain}`);
+
+        // Auto-detect: Check if domain is initialized
+        const domainRoot = options.domain.split('/')[0];
+        const domainStatus = await isDomainInitialized(domainRoot);
+
+        if (!domainStatus.exists) {
+          console.log(
+            chalk.yellow(
+              `\n⚠️  Domain '${domainRoot}' is not initialized yet.`,
+            ),
+          );
+          console.log(
+            chalk.gray(`   The following domain infrastructure is required:`),
+          );
+          console.log(chalk.gray(`   • knexfile-${domainRoot}.ts`));
+          console.log(chalk.gray(`   • migrations-${domainRoot}/`));
+          console.log(chalk.gray(`   • modules/${domainRoot}/`));
+
+          // Prompt user to initialize
+          const readline = require('readline');
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          });
+
+          const answer = await new Promise((resolve) => {
+            rl.question(
+              chalk.cyan(
+                '\n🔧 Would you like to initialize the domain now? (y/n): ',
+              ),
+              (ans) => {
+                rl.close();
+                resolve(ans.toLowerCase().trim());
+              },
+            );
+          });
+
+          if (answer === 'y' || answer === 'yes') {
+            console.log(chalk.cyan(`\n🏗️  Initializing domain: ${domainRoot}`));
+            const initResult = await initializeDomain(domainRoot, {
+              dryRun: options.dryRun,
+              force: false,
+            });
+
+            if (!initResult.success) {
+              console.log(
+                chalk.red('\n❌ Failed to initialize domain. Aborting.'),
+              );
+              process.exit(1);
+            }
+            console.log(
+              chalk.green(
+                `\n✅ Domain '${domainRoot}' initialized successfully!`,
+              ),
+            );
+            console.log(chalk.gray('   Continuing with CRUD generation...\n'));
+          } else {
+            console.log(
+              chalk.yellow('\n⚠️  Domain not initialized. Aborting.'),
+            );
+            console.log(chalk.gray(`   Run: aegisx domain:init ${domainRoot}`));
+            console.log(chalk.gray(`   Then retry the generate command.\n`));
+            process.exit(0);
+          }
+        } else {
+          console.log(
+            chalk.green(`   ✓ Domain '${domainRoot}' is initialized`),
+          );
+        }
       }
       if (options.shell) {
         console.log(`🐚 Target shell: ${options.shell}`);
@@ -1392,6 +1466,54 @@ program
     console.log(
       chalk.bold.green('\n🚀 You can now use all AegisX CLI features!\n'),
     );
+  });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DOMAIN INITIALIZATION COMMANDS
+// ═══════════════════════════════════════════════════════════════════════════
+
+program
+  .command('domain:init <domain-name>')
+  .alias('di')
+  .description(
+    'Initialize a new domain with knexfile, migrations, and modules folder',
+  )
+  .option('-d, --dry-run', 'Preview files without creating them')
+  .option('-f, --force', 'Force reinitialize if domain already exists')
+  .action(async (domainName, options) => {
+    try {
+      console.log(chalk.bold.cyan('\n🏗️  Domain Initialization\n'));
+
+      const result = await initializeDomain(domainName, {
+        dryRun: options.dryRun,
+        force: options.force,
+      });
+
+      if (!result.success) {
+        if (result.reason === 'already_exists') {
+          process.exit(0); // Not an error, just already exists
+        }
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('\n❌ Error initializing domain:'));
+      console.error(error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('domain:list')
+  .alias('dl')
+  .description('List all initialized domains')
+  .action(async () => {
+    try {
+      await listDomains();
+    } catch (error) {
+      console.error(chalk.red('\n❌ Error listing domains:'));
+      console.error(error.message);
+      process.exit(1);
+    }
   });
 
 program

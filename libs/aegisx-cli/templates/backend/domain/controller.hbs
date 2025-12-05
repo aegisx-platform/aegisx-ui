@@ -1,26 +1,26 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Static } from '@sinclair/typebox';
-import { {{ModuleName}}Service } from '../services/{{toKebabCase currentRoute.camelName}}.service';
-import { Create{{ModuleName}}, Update{{ModuleName}} } from '../types/{{toKebabCase currentRoute.camelName}}.types';
+import { {{ModuleName}}Service } from './{{toKebabCase currentRoute.camelName}}.service';
+import { Create{{ModuleName}}, Update{{ModuleName}} } from './{{toKebabCase currentRoute.camelName}}.types';
 import {
   Create{{ModuleName}}Schema,
   Update{{ModuleName}}Schema,
   {{ModuleName}}IdParamSchema,
   Get{{ModuleName}}QuerySchema,
   List{{ModuleName}}QuerySchema
-} from '../schemas/{{toKebabCase currentRoute.camelName}}.schemas';
+} from './{{toKebabCase currentRoute.camelName}}.schemas';
 {{#if (or (eq package 'enterprise') (eq package 'full'))}}
 import { ExportQuerySchema } from '../../../schemas/export.schemas';
 import { ExportService, ExportField } from '../../../services/export.service';
 {{/if}}
 {{#if withImport}}
-import { {{ModuleName}}ImportService } from '../services/{{toKebabCase currentRoute.camelName}}-import.service';
+import { {{ModuleName}}ImportService } from './{{toKebabCase currentRoute.camelName}}-import.service';
 import {
   ValidateImportApiResponseSchema,
   ExecuteImportApiResponseSchema,
   ExecuteImportRequestSchema,
   ImportStatusApiResponseSchema,
-} from '../schemas/{{toKebabCase currentRoute.camelName}}.schemas';
+} from './{{toKebabCase currentRoute.camelName}}.schemas';
 {{/if}}
 {{#if (or (eq package 'enterprise') (eq package 'full'))}}
 import {

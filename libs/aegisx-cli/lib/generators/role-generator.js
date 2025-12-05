@@ -4,6 +4,37 @@ const path = require('path');
 const Handlebars = require('handlebars');
 
 /**
+ * Calculate correct output directory relative to monorepo root
+ * Handles cases when CLI is run from libs/ directory vs monorepo root
+ */
+function getMonorepoPath(relativePath) {
+  const cwd = process.cwd();
+
+  // Check if running from within CLI library folders
+  const isInLibsCli =
+    cwd.includes('/libs/aegisx-cli') || cwd.endsWith('libs/aegisx-cli');
+  const isInLibsCrudGenerator =
+    cwd.includes('/libs/aegisx-crud-generator') ||
+    cwd.endsWith('libs/aegisx-crud-generator');
+  const isInToolsCrudGenerator = cwd.endsWith('tools/crud-generator');
+
+  // Calculate correct base path
+  let basePath;
+  if (isInLibsCli || isInLibsCrudGenerator) {
+    // Running from libs/*, need to go up 2 levels to monorepo root
+    basePath = path.resolve(cwd, '../..');
+  } else if (isInToolsCrudGenerator) {
+    // Old tools location (legacy), go up 2 levels
+    basePath = path.resolve(cwd, '../..');
+  } else {
+    // Running from monorepo root
+    basePath = cwd;
+  }
+
+  return path.resolve(basePath, relativePath);
+}
+
+/**
  * Generate permission name based on domain and module
  * Format: domain:module:action (e.g., inventory:drugs:create)
  * Or without domain: module:action (e.g., drugs:create)
@@ -32,23 +63,36 @@ function generateResourceName(moduleName, domain = null) {
 }
 
 /**
+ * Determine the correct migrations folder based on domain
+ * - For domain modules: migrations-{domain}/ (e.g., migrations-inventory/)
+ * - For non-domain modules: migrations/ (main public schema)
+ */
+function getMigrationsFolder(domain = null) {
+  if (domain) {
+    // Extract domain root (first part of domain path)
+    // e.g., 'inventory/master-data' -> 'inventory'
+    const domainRoot = domain.split('/')[0];
+    const kebabDomain = domainRoot.toLowerCase().replace(/_/g, '-');
+    return getMonorepoPath(`apps/api/src/database/migrations-${kebabDomain}`);
+  }
+  // Default to main migrations folder (public schema)
+  return getMonorepoPath('apps/api/src/database/migrations');
+}
+
+/**
  * Generate migration file for roles and permissions
  */
 async function generateMigrationFile(moduleName, options = {}) {
-  // Determine correct path based on current working directory
-  const cwd = process.cwd();
-  const isInCrudGenerator = cwd.endsWith('tools/crud-generator');
-  const defaultPath = isInCrudGenerator
-    ? '../../apps/api/src/database/migrations'
-    : 'apps/api/src/database/migrations';
-
   const {
     dryRun = false,
     multipleRoles = false,
-    outputDir = path.resolve(cwd, defaultPath),
+    outputDir = null, // Allow override, otherwise auto-detect from domain
     force = false,
-    domain = null, // Domain path for permission naming
+    domain = null, // Domain path for permission naming and folder detection
   } = options;
+
+  // Determine output directory: explicit > domain-based > default
+  const resolvedOutputDir = outputDir || getMigrationsFolder(domain);
 
   // Generate resource name based on domain
   const resourceName = generateResourceName(moduleName, domain);
@@ -56,7 +100,7 @@ async function generateMigrationFile(moduleName, options = {}) {
   // ✅ Check for existing migrations with same pattern
   let shouldSkip = false;
   try {
-    const existingFiles = await fs.readdir(outputDir);
+    const existingFiles = await fs.readdir(resolvedOutputDir);
     const existingPermissionMigrations = existingFiles.filter(
       (file) =>
         file.includes(`add_${moduleName}_permissions`) && file.endsWith('.ts'),
@@ -177,7 +221,7 @@ async function generateMigrationFile(moduleName, options = {}) {
 
       // Compare with existing file (ignore timestamp differences)
       const existingFilePath = path.join(
-        outputDir,
+        resolvedOutputDir,
         existingPermissionMigrations[0],
       );
       const existingContent = await fs.readFile(existingFilePath, 'utf8');
@@ -215,7 +259,7 @@ async function generateMigrationFile(moduleName, options = {}) {
           `🔄 Migration content differs, updating ${existingPermissionMigrations.length} migration(s)...`,
         );
         for (const file of existingPermissionMigrations) {
-          const filePath = path.join(outputDir, file);
+          const filePath = path.join(resolvedOutputDir, file);
           await fs.unlink(filePath);
           console.log(`   🗑️  Removed: ${file}`);
         }
@@ -228,7 +272,7 @@ async function generateMigrationFile(moduleName, options = {}) {
   } catch (error) {
     // Directory might not exist yet, continue
     if (error.code === 'ENOENT') {
-      console.log(`📁 Creating migrations directory: ${outputDir}`);
+      console.log(`📁 Creating migrations directory: ${resolvedOutputDir}`);
     } else {
       console.error(`⚠️  Error checking existing migrations:`, error.message);
     }
@@ -349,7 +393,7 @@ async function generateMigrationFile(moduleName, options = {}) {
     .replace(/[-:T]/g, '')
     .split('.')[0];
   const migrationFileName = `${timestamp}_add_${moduleName}_permissions.ts`;
-  const migrationPath = path.join(outputDir, migrationFileName);
+  const migrationPath = path.join(resolvedOutputDir, migrationFileName);
 
   if (dryRun) {
     console.log(`📋 Would create migration file: ${migrationPath}`);
@@ -363,7 +407,7 @@ async function generateMigrationFile(moduleName, options = {}) {
 
   try {
     // Ensure directory exists
-    await fs.mkdir(outputDir, { recursive: true });
+    await fs.mkdir(resolvedOutputDir, { recursive: true });
 
     // Render template
     const content = await renderMigrationTemplate(context);
@@ -802,4 +846,6 @@ module.exports = {
   listModuleRoles,
   generateRolesSql,
   renderMigrationTemplate,
+  getMigrationsFolder,
+  getMonorepoPath,
 };
