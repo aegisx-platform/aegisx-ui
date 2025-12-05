@@ -204,6 +204,11 @@ async function generateMigrationFile(moduleName, options = {}) {
         };
       });
 
+      // Calculate permission helper path for this context too
+      const helperPath = domain
+        ? '../migrations/helpers/permission-helper.js'
+        : './helpers/permission-helper.js';
+
       const newContext = {
         moduleName,
         ModuleName: moduleName.charAt(0).toUpperCase() + moduleName.slice(1),
@@ -214,6 +219,7 @@ async function generateMigrationFile(moduleName, options = {}) {
         permissionGroup: resourceName, // Use resource name for permission group
         domain: domain || null,
         resourceName,
+        permissionHelperPath: helperPath, // Dynamic path to permission helper
         timestamp: new Date().toISOString(),
       };
 
@@ -374,6 +380,13 @@ async function generateMigrationFile(moduleName, options = {}) {
     };
   });
 
+  // Calculate permission helper path based on domain
+  // - For public schema (migrations/): ./helpers/permission-helper.js
+  // - For domain schema (migrations-{domain}/): ../migrations/helpers/permission-helper.js
+  const permissionHelperPath = domain
+    ? '../migrations/helpers/permission-helper.js'
+    : './helpers/permission-helper.js';
+
   const context = {
     moduleName,
     ModuleName: moduleName.charAt(0).toUpperCase() + moduleName.slice(1),
@@ -384,6 +397,7 @@ async function generateMigrationFile(moduleName, options = {}) {
     permissionGroup: resourceName, // Use resource name for permission group
     domain: domain || null,
     resourceName,
+    permissionHelperPath, // Dynamic path to permission helper
     timestamp: new Date().toISOString(),
   };
 

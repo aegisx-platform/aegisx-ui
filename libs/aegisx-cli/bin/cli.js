@@ -333,7 +333,12 @@ program
         const frontendGenerator = new FrontendGenerator(
           toolsDir,
           PROJECT_ROOT,
-          { templateVersion: 'v2', app: options.app || 'web' },
+          {
+            templateVersion: 'v2',
+            app: options.app || 'web',
+            schema: options.schema || 'public',
+            domain: options.domain,
+          },
         );
 
         const generatedFiles = await frontendGenerator.generateFrontendModule(
@@ -451,7 +456,12 @@ program
             const frontendGenerator = new FrontendGenerator(
               path.join(__dirname, '..'),
               PROJECT_ROOT,
-              { templateVersion: 'v2', app: options.app || 'web' },
+              {
+                templateVersion: 'v2',
+                app: options.app || 'web',
+                schema: options.schema || 'public',
+                domain: options.domain,
+              },
             );
             // Use shell-based registration if --shell is specified
             if (options.shell) {

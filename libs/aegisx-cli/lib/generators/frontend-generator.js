@@ -175,6 +175,12 @@ class FrontendGenerator {
     // Store options for later use
     this.options = options;
 
+    // Database schema for PostgreSQL (default: 'public')
+    this.dbSchema = options.schema || 'public';
+
+    // Backend domain path (e.g., 'inventory/master-data' for domain-based backend modules)
+    this.backendDomain = options.domain || null;
+
     // Template version selection: v1, v2, or default to v2
     const templateVersion = options.templateVersion || 'v2';
 
@@ -217,28 +223,73 @@ class FrontendGenerator {
     const camelCaseModuleName = this.toCamelCase(moduleName);
     // Convert to kebab-case for file paths since files are now kebab-case
     const kebabCaseModuleName = this.toKebabCase(moduleName);
-    const backendModulePath = path.resolve(
-      this.toolsDir,
-      '..',
-      '..',
-      'apps',
-      'api',
-      'src',
-      'modules',
-      camelCaseModuleName,
-    );
 
-    try {
-      // Read the schemas file - now use kebab-case file names
-      const schemasPath = path.join(
+    // Determine backend module path based on domain
+    let backendModulePath;
+    let schemasPath;
+    let typesPath;
+
+    if (this.backendDomain) {
+      // Domain-based structure: apps/api/src/modules/domain/path/module-name/
+      // Files are flat: module-name.schemas.ts (not schemas/module-name.schemas.ts)
+      backendModulePath = path.resolve(
+        this.toolsDir,
+        '..',
+        '..',
+        'apps',
+        'api',
+        'src',
+        'modules',
+        this.backendDomain,
+        kebabCaseModuleName,
+      );
+      // Domain modules use flat structure
+      schemasPath = path.join(
+        backendModulePath,
+        `${kebabCaseModuleName}.schemas.ts`,
+      );
+      typesPath = path.join(
+        backendModulePath,
+        `${kebabCaseModuleName}.types.ts`,
+      );
+    } else {
+      // Standard structure: apps/api/src/modules/moduleName/
+      backendModulePath = path.resolve(
+        this.toolsDir,
+        '..',
+        '..',
+        'apps',
+        'api',
+        'src',
+        'modules',
+        camelCaseModuleName,
+      );
+      // Standard modules may have schemas/ subfolder
+      schemasPath = path.join(
         backendModulePath,
         'schemas',
         `${kebabCaseModuleName}.schemas.ts`,
       );
-      // Use kebab-case for types file consistency with backend
-      const typeFileName = `${kebabCaseModuleName}.types.ts`;
-      const typesPath = path.join(backendModulePath, 'types', typeFileName);
+      typesPath = path.join(
+        backendModulePath,
+        'types',
+        `${kebabCaseModuleName}.types.ts`,
+      );
 
+      // Fallback to flat structure if schemas/ subfolder doesn't exist
+      if (!fs.existsSync(schemasPath)) {
+        schemasPath = path.join(
+          backendModulePath,
+          `${kebabCaseModuleName}.schemas.ts`,
+        );
+        typesPath = path.join(
+          backendModulePath,
+          `${kebabCaseModuleName}.types.ts`,
+        );
+      }
+    }
+
+    try {
       if (!fs.existsSync(schemasPath)) {
         throw new Error(`Backend schemas file not found: ${schemasPath}`);
       }
@@ -913,15 +964,22 @@ class FrontendGenerator {
         // Enum select
         else if (enhancedColumn.fieldType === 'enum-select') {
           field.type = 'select';
-          field.options = enhancedColumn.enumInfo
-            ? enhancedColumn.enumInfo.values.map((val) => ({
-                value: val,
-                label: this.formatEnumLabel(val),
-              }))
-            : enhancedColumn.constraintValues?.map((val) => ({
-                value: val,
-                label: this.formatEnumLabel(val),
-              })) || [];
+          // Safely handle enumInfo.values - check if it's an array
+          const enumValues = enhancedColumn.enumInfo?.values;
+          const constraintValues = enhancedColumn.constraintValues;
+          field.options = (Array.isArray(enumValues) ? enumValues : []).map(
+            (val) => ({
+              value: val,
+              label: this.formatEnumLabel(val),
+            }),
+          );
+          // Fallback to constraintValues if enumValues is empty
+          if (field.options.length === 0 && Array.isArray(constraintValues)) {
+            field.options = constraintValues.map((val) => ({
+              value: val,
+              label: this.formatEnumLabel(val),
+            }));
+          }
         }
         // Convention-based select fields (for fields like priority, status, type)
         else if (this.isSelectField(fieldName, baseType)) {
@@ -1734,8 +1792,10 @@ class FrontendGenerator {
       let enhancedSchema = null;
       try {
         const { getEnhancedSchema } = require('../utils/database.js');
-        enhancedSchema = await getEnhancedSchema(moduleName);
-        console.log(`✅ Enhanced schema loaded for ${moduleName} service`);
+        enhancedSchema = await getEnhancedSchema(moduleName, this.dbSchema);
+        console.log(
+          `✅ Enhanced schema loaded for ${moduleName} service (schema: ${this.dbSchema})`,
+        );
       } catch (error) {
         console.warn(
           `⚠️ Could not load enhanced schema for ${moduleName} service:`,
@@ -1850,9 +1910,9 @@ class FrontendGenerator {
       let enhancedSchema = null;
       try {
         const { getEnhancedSchema } = require('../utils/database.js');
-        enhancedSchema = await getEnhancedSchema(moduleName);
+        enhancedSchema = await getEnhancedSchema(moduleName, this.dbSchema);
         console.log(
-          `✅ Enhanced schema loaded for ${moduleName} list component`,
+          `✅ Enhanced schema loaded for ${moduleName} list component (schema: ${this.dbSchema})`,
         );
       } catch (error) {
         console.warn(
@@ -2069,8 +2129,10 @@ class FrontendGenerator {
       let enhancedSchema = null;
       try {
         const { getEnhancedSchema } = require('../utils/database.js');
-        enhancedSchema = await getEnhancedSchema(moduleName);
-        console.log(`✅ Enhanced schema loaded for ${moduleName}`);
+        enhancedSchema = await getEnhancedSchema(moduleName, this.dbSchema);
+        console.log(
+          `✅ Enhanced schema loaded for ${moduleName} (schema: ${this.dbSchema})`,
+        );
       } catch (error) {
         console.warn(
           `⚠️ Could not load enhanced schema for ${moduleName}:`,
@@ -2730,8 +2792,10 @@ class FrontendGenerator {
       let enhancedSchema = null;
       try {
         const { getEnhancedSchema } = require('../utils/database.js');
-        enhancedSchema = await getEnhancedSchema(moduleName);
-        console.log(`✅ Enhanced schema loaded for ${moduleName} types`);
+        enhancedSchema = await getEnhancedSchema(moduleName, this.dbSchema);
+        console.log(
+          `✅ Enhanced schema loaded for ${moduleName} types (schema: ${this.dbSchema})`,
+        );
       } catch (error) {
         console.warn(
           `⚠️ Could not load enhanced schema for ${moduleName} types:`,

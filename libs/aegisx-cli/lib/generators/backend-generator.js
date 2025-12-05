@@ -1509,11 +1509,27 @@ async function generateDomainModule(domainName, options = {}) {
     schemasPath: domain
       ? '../'.repeat(domain.split('/').length + 2) + 'schemas'
       : '../../../schemas',
+    // Calculate relative path to services folder (at same level as modules, not in shared)
+    // Same calculation as schemasPath
+    servicesPath: domain
+      ? '../'.repeat(domain.split('/').length + 2) + 'services'
+      : '../../../services',
     // Calculate relative path to modules root (for routes to reach schemas/)
     // With FLAT structure: modules/inventory/master-data/drugs/drugs.route.ts -> needs ../../../../
     modulesRootPath: domain
       ? '../'.repeat(domain.split('/').length + 2)
       : '../../../',
+    // Swagger/OpenAPI tag for better grouping in Swagger UI
+    // Format: "Inventory / Master Data / ModuleName" for domain modules
+    // Format: "ModuleName" for flat modules
+    swaggerTag: domain
+      ? domain
+          .split('/')
+          .map((part) => toPascalCase(part).replace(/([a-z])([A-Z])/g, '$1 $2'))
+          .join(' / ') +
+        ' / ' +
+        toPascalCase(domainName).replace(/([a-z])([A-Z])/g, '$1 $2')
+      : toPascalCase(domainName).replace(/([a-z])([A-Z])/g, '$1 $2'),
   };
 
   console.log(`📦 Domain Package context: ${context.package}`);
@@ -1668,25 +1684,14 @@ async function generateDomainModule(domainName, options = {}) {
   const files = [];
   const warnings = [];
 
-  // Generate shared templates for enhanced/full packages
+  // Enterprise/Full packages use shared export service from src/services/
+  // No need to generate duplicate templates - they already exist at shared location
+  // The templates now import from {{servicesPath}}/export.service which resolves correctly
   if (context.package === 'enterprise' || context.package === 'full') {
-    try {
-      console.log('📦 Generating shared export templates...');
-      const srcDir = path.resolve(fullOutputDir, '..');
-      console.log(`🎯 Target directory for shared templates: ${srcDir}`);
-      const sharedFiles = await generateSharedTemplates(
-        srcDir,
-        context,
-        dryRun,
-      );
-      files.push(...sharedFiles);
-    } catch (error) {
-      console.error(
-        '⚠️  Warning: Failed to generate shared templates:',
-        error.message,
-      );
-      warnings.push(`Failed to generate shared templates: ${error.message}`);
-    }
+    console.log(
+      '📦 Enterprise/Full package detected - using shared export service',
+    );
+    console.log(`   Import path: ${context.servicesPath}/export.service`);
   }
 
   // Generate each file
