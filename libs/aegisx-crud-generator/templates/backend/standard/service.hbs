@@ -9,7 +9,11 @@ import {
   type Create{{ModuleName}},
   type Update{{ModuleName}},
   type Get{{ModuleName}}Query,
-  type List{{ModuleName}}Query
+  type List{{ModuleName}}Query,
+  {{#if (or hasUniqueConstraints hasForeignKeyReferences hasBusinessRules)}}
+  {{ModuleName}}ErrorCode,
+  {{ModuleName}}ErrorMessages,
+  {{/if}}
 } from './{{moduleName}}.types';
 
 /**

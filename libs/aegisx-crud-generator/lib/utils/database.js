@@ -1268,7 +1268,7 @@ async function detectForeignKeyReferences(tableName, schemaName = 'public') {
       [schemaName, tableName],
     );
 
-    const fkReferences = references.rows.map((ref) => ({
+    const allReferences = references.rows.map((ref) => ({
       schema: ref.referencing_schema,
       table: ref.referencing_table,
       field: ref.referencing_column,
@@ -1276,13 +1276,29 @@ async function detectForeignKeyReferences(tableName, schemaName = 'public') {
       deleteRule: ref.on_delete_rule,
     }));
 
+    // Deduplicate by table name to avoid duplicate enum values
+    // When multiple columns reference the same table, we only need one error code
+    const seenTables = new Set();
+    const fkReferences = allReferences.filter((ref) => {
+      if (seenTables.has(ref.table)) {
+        return false;
+      }
+      seenTables.add(ref.table);
+      return true;
+    });
+
     console.log(`✅ Detected foreign key references to ${tableName}:`);
-    if (fkReferences.length > 0) {
-      fkReferences.forEach((ref) => {
+    if (allReferences.length > 0) {
+      allReferences.forEach((ref) => {
         console.log(
           `   - ${ref.table}.${ref.field} (ON DELETE ${ref.deleteRule})`,
         );
       });
+      if (allReferences.length !== fkReferences.length) {
+        console.log(
+          `   📝 Deduplicated to ${fkReferences.length} unique tables for error codes`,
+        );
+      }
     } else {
       console.log(`   - No foreign key references found`);
     }
