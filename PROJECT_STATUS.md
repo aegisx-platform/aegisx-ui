@@ -1,9 +1,9 @@
 # AegisX Project Status
 
-**Last Updated:** 2025-12-05 (Session 82 - Loading Button Documentation)
+**Last Updated:** 2025-12-05 (Session 83 - Domain-Based CRUD Module Fix)
 **Current Status:** ✅ **PLATFORM COMPLETE** - All core features implemented, tested, and production-ready with complete design system
 **Git Repository:** git@github.com:aegisx-platform/aegisx-starter.git
-**CRUD Generator Version:** v2.2.1 (Ready for npm publish)
+**CRUD Generator Version:** v2.2.2 (Domain path fix)
 **MCP Server Version:** v1.1.0 (Published to npm as @aegisx/mcp)
 
 ## 🏗️ Project Overview
@@ -199,6 +199,60 @@ aegisx-starter/
 >
 > - [Sessions 38-46 (2024 Q4)](./docs/sessions/ARCHIVE_2024_Q4.md)
 > - [Sessions 47-71 (2025 Q1)](./docs/sessions/ARCHIVE_2025_Q1.md)
+
+### Session 83 (2025-12-05) ✅ COMPLETED
+
+**Session Focus:** CRUD Generator - Fix Domain Template Import Paths
+
+**Main Achievements:**
+
+- ✅ **Fixed Domain Path Calculation** - Corrected import paths for nested domain modules
+- ✅ **Dynamic Path Variables** - Added `schemasPath` and `modulesRootPath` context variables
+- ✅ **Updated 6 Domain Templates** - All templates now use dynamic path variables
+- ✅ **Tested Domain Routes** - Verified `/api/inventory/master-data/drugs` works correctly
+
+**Problem Fixed:**
+
+Domain-based modules like `modules/inventory/master-data/drugs/` had incorrect import paths. The `sharedPath` calculation was off by one level, causing TypeScript errors like:
+
+```
+Cannot find module '../../../schemas/base.schemas'
+```
+
+**Technical Changes:**
+
+| File                         | Change                                                    |
+| ---------------------------- | --------------------------------------------------------- |
+| `backend-generator.js`       | Fixed `sharedPath`: +2 → +3, added `schemasPath` variable |
+| `schemas.hbs`                | Use `{{schemasPath}}/base.schemas`                        |
+| `route.hbs`                  | Use `{{schemasPath}}/base.schemas` and `/registry`        |
+| `service.hbs`                | Use `{{sharedPath}}/services/base.service`                |
+| `repository.hbs`             | Use `{{sharedPath}}/repositories/base.repository`         |
+| `controller.hbs`, `test.hbs` | Use `{{sharedPath}}` for websocket imports                |
+
+**Path Calculation Fix:**
+
+```
+For domain: inventory/master-data (depth 2)
+From: modules/inventory/master-data/drugs/services/
+To: src/shared/
+
+OLD: domain.split('/').length + 2 = 4 levels (wrong)
+NEW: domain.split('/').length + 3 = 5 levels (correct)
+```
+
+**Generated Routes Verified:**
+
+- `/api/inventory/master-data/drugs/`
+- `/api/inventory/master-data/drugs/{id}`
+- `/api/inventory/master-data/drug-generics/`
+- `/api/inventory/master-data/drug-generics/{id}`
+
+**Commits:**
+
+- `a2aa283a` - fix(crud-generator): fix domain template import paths for nested modules
+
+---
 
 ### Session 82 (2025-12-05) ✅ COMPLETED
 
