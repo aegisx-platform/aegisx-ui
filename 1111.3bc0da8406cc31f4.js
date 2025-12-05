@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkadmin=self.webpackChunkadmin||[]).push([[1111],{31111:(h,t,n)=>{n.r(t),n.d(t,{THEME_GENERATOR_ROUTES:()=>e});const e=[{path:"",loadComponent:()=>n.e(445).then(n.bind(n,50445)).then(E=>E.ThemeGeneratorPageComponent),title:"Theme Generator - AegisX"}]}}]);
