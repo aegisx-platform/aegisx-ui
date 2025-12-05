@@ -956,6 +956,41 @@ const DEMO_APPS_ITEMS: AxNavigationItem[] = [
 ];
 
 // ============================================================
+// MCP SERVER SECTION
+// ============================================================
+
+const MCP_ITEMS: AxNavigationItem[] = [
+  {
+    id: 'mcp-overview',
+    title: 'Overview',
+    type: 'item',
+    icon: 'smart_toy',
+    link: '/docs/mcp/overview',
+  },
+  {
+    id: 'mcp-components',
+    title: 'Component Tools',
+    type: 'item',
+    icon: 'widgets',
+    link: '/docs/mcp/components',
+  },
+  {
+    id: 'mcp-patterns',
+    title: 'Pattern Tools',
+    type: 'item',
+    icon: 'pattern',
+    link: '/docs/mcp/patterns',
+  },
+  {
+    id: 'mcp-crud-generator',
+    title: 'CRUD Generator',
+    type: 'item',
+    icon: 'code',
+    link: '/docs/mcp/crud-generator',
+  },
+];
+
+// ============================================================
 // TOOLS SECTION
 // ============================================================
 
@@ -1202,6 +1237,14 @@ export const COMPACT_NAVIGATION: AxNavigationItem[] = [
     children: ARCHITECTURE_ITEMS,
   },
   {
+    id: 'mcp',
+    title: 'MCP Server',
+    type: 'collapsible',
+    icon: 'smart_toy',
+    badge: { content: 'New', type: 'info' },
+    children: MCP_ITEMS,
+  },
+  {
     id: 'examples',
     title: 'Examples',
     type: 'collapsible',
@@ -1443,6 +1486,16 @@ export const DOCS_NAVIGATION: AxNavigationItem[] = [
     id: 'architecture',
     title: 'Architecture',
     children: ARCHITECTURE_ITEMS.map((item) => ({
+      id: item.id,
+      title: item.title,
+      link: item.link,
+    })),
+  },
+  {
+    id: 'mcp',
+    title: 'MCP Server',
+    badge: { content: 'New', type: 'info' },
+    children: MCP_ITEMS.map((item) => ({
       id: item.id,
       title: item.title,
       link: item.link,

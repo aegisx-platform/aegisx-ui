@@ -6,6 +6,7 @@ import { FOUNDATIONS_ROUTES } from './routes/docs/foundations.routes';
 import { GETTING_STARTED_ROUTES } from './routes/docs/getting-started.routes';
 import { INTEGRATIONS_ROUTES } from './routes/docs/integrations.routes';
 import { MATERIAL_ROUTES } from './routes/docs/material.routes';
+import { MCP_ROUTES } from './routes/docs/mcp.routes';
 import {
   ARCHITECTURE_ROUTES,
   PATTERNS_ROUTES,
@@ -101,6 +102,14 @@ export const appRoutes: Route[] = [
     data: {
       title: 'Architecture',
       description: 'Application architecture',
+    },
+  },
+  {
+    path: 'docs/mcp',
+    children: MCP_ROUTES,
+    data: {
+      title: 'MCP Server',
+      description: 'AegisX Model Context Protocol server',
     },
   },
 
