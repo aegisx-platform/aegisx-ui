@@ -78,13 +78,15 @@ interface PatternCategory {
 
           <div class="integrations-grid">
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_patterns_list</span>
+                  <span class="card-subtitle">List all patterns</span>
+                </div>
                 <div class="card-icon card-icon--list">
                   <mat-icon>view_list</mat-icon>
                 </div>
-                <mat-card-title>aegisx_patterns_list</mat-card-title>
-                <mat-card-subtitle>List all patterns</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>แสดงรายการ patterns ทั้งหมดหรือ filter ตาม category</p>
                 <div class="card-meta">
@@ -102,13 +104,15 @@ interface PatternCategory {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_patterns_get</span>
+                  <span class="card-subtitle">Get pattern with code</span>
+                </div>
                 <div class="card-icon card-icon--get">
                   <mat-icon>code</mat-icon>
                 </div>
-                <mat-card-title>aegisx_patterns_get</mat-card-title>
-                <mat-card-subtitle>Get pattern with code</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>ดู pattern พร้อม complete code example และ best practices</p>
                 <div class="card-meta">
@@ -126,13 +130,15 @@ interface PatternCategory {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_patterns_search</span>
+                  <span class="card-subtitle">Search patterns</span>
+                </div>
                 <div class="card-icon card-icon--search">
                   <mat-icon>search</mat-icon>
                 </div>
-                <mat-card-title>aegisx_patterns_search</mat-card-title>
-                <mat-card-subtitle>Search patterns</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>ค้นหา patterns ด้วย keyword</p>
                 <div class="card-meta">
@@ -150,13 +156,15 @@ interface PatternCategory {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_patterns_suggest</span>
+                  <span class="card-subtitle">Get suggestions</span>
+                </div>
                 <div class="card-icon card-icon--suggest">
                   <mat-icon>lightbulb</mat-icon>
                 </div>
-                <mat-card-title>aegisx_patterns_suggest</mat-card-title>
-                <mat-card-subtitle>Get suggestions</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>รับ pattern suggestions ตาม task ที่ต้องการทำ</p>
                 <div class="card-meta">
@@ -184,19 +192,22 @@ interface PatternCategory {
         <div class="integrations-grid">
           @for (category of categories; track category.id) {
             <mat-card
+              appearance="outlined"
               class="integration-card"
               [class.selected]="selectedCategory() === category.id"
               (click)="selectCategory(category.id)"
             >
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">{{ category.name }}</span>
+                  <span class="card-subtitle"
+                    >{{ category.count }} patterns</span
+                  >
+                </div>
                 <div class="card-icon" [class]="'card-icon--' + category.id">
                   <mat-icon>{{ category.icon }}</mat-icon>
                 </div>
-                <mat-card-title>{{ category.name }}</mat-card-title>
-                <mat-card-subtitle
-                  >{{ category.count }} patterns</mat-card-subtitle
-                >
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>Click to filter patterns by this category</p>
               </mat-card-content>
@@ -229,15 +240,17 @@ interface PatternCategory {
                   track pattern.name
                 ) {
                   <mat-card appearance="outlined" class="integration-card">
-                    <mat-card-header>
+                    <div class="card-header-row">
+                      <div class="card-header-text">
+                        <span class="card-title">{{ pattern.name }}</span>
+                        <span class="card-subtitle">{{
+                          pattern.category
+                        }}</span>
+                      </div>
                       <div class="card-icon card-icon--backend">
                         <mat-icon>code</mat-icon>
                       </div>
-                      <mat-card-title>{{ pattern.name }}</mat-card-title>
-                      <mat-card-subtitle>{{
-                        pattern.category
-                      }}</mat-card-subtitle>
-                    </mat-card-header>
+                    </div>
                     <mat-card-content>
                       <p>{{ pattern.description }}</p>
                       <div class="command-box">
@@ -269,15 +282,17 @@ interface PatternCategory {
                   track pattern.name
                 ) {
                   <mat-card appearance="outlined" class="integration-card">
-                    <mat-card-header>
+                    <div class="card-header-row">
+                      <div class="card-header-text">
+                        <span class="card-title">{{ pattern.name }}</span>
+                        <span class="card-subtitle">{{
+                          pattern.category
+                        }}</span>
+                      </div>
                       <div class="card-icon card-icon--frontend">
                         <mat-icon>code</mat-icon>
                       </div>
-                      <mat-card-title>{{ pattern.name }}</mat-card-title>
-                      <mat-card-subtitle>{{
-                        pattern.category
-                      }}</mat-card-subtitle>
-                    </mat-card-header>
+                    </div>
                     <mat-card-content>
                       <p>{{ pattern.description }}</p>
                       <div class="command-box">
@@ -309,15 +324,17 @@ interface PatternCategory {
                   track pattern.name
                 ) {
                   <mat-card appearance="outlined" class="integration-card">
-                    <mat-card-header>
+                    <div class="card-header-row">
+                      <div class="card-header-text">
+                        <span class="card-title">{{ pattern.name }}</span>
+                        <span class="card-subtitle">{{
+                          pattern.category
+                        }}</span>
+                      </div>
                       <div class="card-icon card-icon--database">
                         <mat-icon>code</mat-icon>
                       </div>
-                      <mat-card-title>{{ pattern.name }}</mat-card-title>
-                      <mat-card-subtitle>{{
-                        pattern.category
-                      }}</mat-card-subtitle>
-                    </mat-card-header>
+                    </div>
                     <mat-card-content>
                       <p>{{ pattern.description }}</p>
                       <div class="command-box">
@@ -349,15 +366,17 @@ interface PatternCategory {
                   track pattern.name
                 ) {
                   <mat-card appearance="outlined" class="integration-card">
-                    <mat-card-header>
+                    <div class="card-header-row">
+                      <div class="card-header-text">
+                        <span class="card-title">{{ pattern.name }}</span>
+                        <span class="card-subtitle">{{
+                          pattern.category
+                        }}</span>
+                      </div>
                       <div class="card-icon card-icon--testing">
                         <mat-icon>code</mat-icon>
                       </div>
-                      <mat-card-title>{{ pattern.name }}</mat-card-title>
-                      <mat-card-subtitle>{{
-                        pattern.category
-                      }}</mat-card-subtitle>
-                    </mat-card-header>
+                    </div>
                     <mat-card-content>
                       <p>{{ pattern.description }}</p>
                       <div class="command-box">
@@ -503,13 +522,15 @@ interface PatternCategory {
 
           <div class="integrations-grid">
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">REST API Endpoint</span>
+                  <span class="card-subtitle">Backend patterns</span>
+                </div>
                 <div class="card-icon card-icon--backend">
                   <mat-icon>api</mat-icon>
                 </div>
-                <mat-card-title>REST API Endpoint</mat-card-title>
-                <mat-card-subtitle>Backend patterns</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>Patterns ที่แนะนำ:</p>
                 <ol>
@@ -527,13 +548,15 @@ interface PatternCategory {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">Angular Component</span>
+                  <span class="card-subtitle">Frontend patterns</span>
+                </div>
                 <div class="card-icon card-icon--frontend">
                   <mat-icon>web</mat-icon>
                 </div>
-                <mat-card-title>Angular Component</mat-card-title>
-                <mat-card-subtitle>Frontend patterns</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>Patterns ที่แนะนำ:</p>
                 <ol>
@@ -551,13 +574,15 @@ interface PatternCategory {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">Database Table</span>
+                  <span class="card-subtitle">Database patterns</span>
+                </div>
                 <div class="card-icon card-icon--database">
                   <mat-icon>storage</mat-icon>
                 </div>
-                <mat-card-title>Database Table</mat-card-title>
-                <mat-card-subtitle>Database patterns</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>Patterns ที่แนะนำ:</p>
                 <ol>
@@ -575,13 +600,15 @@ interface PatternCategory {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">Auth Protection</span>
+                  <span class="card-subtitle">Security patterns</span>
+                </div>
                 <div class="card-icon card-icon--backend">
                   <mat-icon>lock</mat-icon>
                 </div>
-                <mat-card-title>Auth Protection</mat-card-title>
-                <mat-card-subtitle>Security patterns</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>Patterns ที่แนะนำ:</p>
                 <ol>
@@ -704,103 +731,126 @@ interface PatternCategory {
           box-shadow: var(--ax-shadow-md);
         }
 
-        mat-card-header {
-          .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--ax-radius-lg);
-            background: var(--ax-primary-faint);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
+        .card-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          gap: 16px;
+        }
 
+        .card-header-text {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .card-title {
+          font-size: 1.125rem;
+          font-weight: 500;
+          color: var(--ax-text-heading);
+        }
+
+        .card-subtitle {
+          font-size: 0.875rem;
+          color: var(--ax-text-secondary);
+        }
+
+        .card-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: var(--ax-radius-lg);
+          background: var(--ax-primary-faint);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            color: var(--ax-primary-default);
+          }
+
+          &--list {
+            background: linear-gradient(
+              135deg,
+              rgba(99, 102, 241, 0.15),
+              rgba(139, 92, 246, 0.15)
+            );
             mat-icon {
-              font-size: 28px;
-              width: 28px;
-              height: 28px;
-              color: var(--ax-primary-default);
+              color: #6366f1;
             }
-
-            &--list {
-              background: linear-gradient(
-                135deg,
-                rgba(99, 102, 241, 0.15),
-                rgba(139, 92, 246, 0.15)
-              );
-              mat-icon {
-                color: #6366f1;
-              }
+          }
+          &--get {
+            background: linear-gradient(
+              135deg,
+              rgba(16, 185, 129, 0.15),
+              rgba(5, 150, 105, 0.15)
+            );
+            mat-icon {
+              color: #10b981;
             }
-            &--get {
-              background: linear-gradient(
-                135deg,
-                rgba(16, 185, 129, 0.15),
-                rgba(5, 150, 105, 0.15)
-              );
-              mat-icon {
-                color: #10b981;
-              }
+          }
+          &--search {
+            background: linear-gradient(
+              135deg,
+              rgba(245, 158, 11, 0.15),
+              rgba(217, 119, 6, 0.15)
+            );
+            mat-icon {
+              color: #f59e0b;
             }
-            &--search {
-              background: linear-gradient(
-                135deg,
-                rgba(245, 158, 11, 0.15),
-                rgba(217, 119, 6, 0.15)
-              );
-              mat-icon {
-                color: #f59e0b;
-              }
+          }
+          &--suggest {
+            background: linear-gradient(
+              135deg,
+              rgba(236, 72, 153, 0.15),
+              rgba(219, 39, 119, 0.15)
+            );
+            mat-icon {
+              color: #ec4899;
             }
-            &--suggest {
-              background: linear-gradient(
-                135deg,
-                rgba(236, 72, 153, 0.15),
-                rgba(219, 39, 119, 0.15)
-              );
-              mat-icon {
-                color: #ec4899;
-              }
+          }
+          &--backend {
+            background: linear-gradient(
+              135deg,
+              rgba(99, 102, 241, 0.15),
+              rgba(139, 92, 246, 0.15)
+            );
+            mat-icon {
+              color: #6366f1;
             }
-            &--backend {
-              background: linear-gradient(
-                135deg,
-                rgba(99, 102, 241, 0.15),
-                rgba(139, 92, 246, 0.15)
-              );
-              mat-icon {
-                color: #6366f1;
-              }
+          }
+          &--frontend {
+            background: linear-gradient(
+              135deg,
+              rgba(16, 185, 129, 0.15),
+              rgba(5, 150, 105, 0.15)
+            );
+            mat-icon {
+              color: #10b981;
             }
-            &--frontend {
-              background: linear-gradient(
-                135deg,
-                rgba(16, 185, 129, 0.15),
-                rgba(5, 150, 105, 0.15)
-              );
-              mat-icon {
-                color: #10b981;
-              }
+          }
+          &--database {
+            background: linear-gradient(
+              135deg,
+              rgba(245, 158, 11, 0.15),
+              rgba(217, 119, 6, 0.15)
+            );
+            mat-icon {
+              color: #f59e0b;
             }
-            &--database {
-              background: linear-gradient(
-                135deg,
-                rgba(245, 158, 11, 0.15),
-                rgba(217, 119, 6, 0.15)
-              );
-              mat-icon {
-                color: #f59e0b;
-              }
-            }
-            &--testing {
-              background: linear-gradient(
-                135deg,
-                rgba(236, 72, 153, 0.15),
-                rgba(219, 39, 119, 0.15)
-              );
-              mat-icon {
-                color: #ec4899;
-              }
+          }
+          &--testing {
+            background: linear-gradient(
+              135deg,
+              rgba(236, 72, 153, 0.15),
+              rgba(219, 39, 119, 0.15)
+            );
+            mat-icon {
+              color: #ec4899;
             }
           }
         }
@@ -836,14 +886,15 @@ interface PatternCategory {
           }
 
           .command-box {
-            background: #1e1e2e;
+            background: var(--ax-background-subtle);
+            border: 1px solid var(--ax-border-muted);
             padding: 0.75rem 1rem;
             border-radius: var(--ax-radius-md);
 
             code {
               font-family: 'SF Mono', 'Fira Code', monospace;
               font-size: 0.8125rem;
-              color: #a6e3a1;
+              color: var(--ax-text-heading);
             }
           }
         }
@@ -860,7 +911,6 @@ interface PatternCategory {
           justify-content: flex-end;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          border-top: 1px solid var(--ax-border-muted);
         }
       }
 
@@ -911,7 +961,8 @@ interface PatternCategory {
         }
 
         pre {
-          background: #1e1e2e;
+          background: var(--ax-background-subtle);
+          border: 1px solid var(--ax-border-muted);
           border-radius: var(--ax-radius-md);
           padding: 1rem;
           margin: 0;
@@ -920,13 +971,9 @@ interface PatternCategory {
           code {
             font-family: 'SF Mono', 'Fira Code', monospace;
             font-size: 0.8125rem;
-            color: #a6e3a1;
+            color: var(--ax-text-heading);
             white-space: pre-wrap;
           }
-        }
-
-        &.result-section pre code {
-          color: #cdd6f4;
         }
       }
 

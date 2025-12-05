@@ -68,13 +68,15 @@ interface CrudPackage {
 
           <div class="integrations-grid">
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_crud_packages</span>
+                  <span class="card-subtitle">View available packages</span>
+                </div>
                 <div class="card-icon card-icon--packages">
                   <mat-icon>inventory_2</mat-icon>
                 </div>
-                <mat-card-title>aegisx_crud_packages</mat-card-title>
-                <mat-card-subtitle>View available packages</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>ดูข้อมูล packages ที่มี: standard, enterprise, full</p>
                 <div class="card-meta">
@@ -92,13 +94,15 @@ interface CrudPackage {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_crud_build_command</span>
+                  <span class="card-subtitle">Build generator command</span>
+                </div>
                 <div class="card-icon card-icon--build">
                   <mat-icon>terminal</mat-icon>
                 </div>
-                <mat-card-title>aegisx_crud_build_command</mat-card-title>
-                <mat-card-subtitle>Build generator command</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>สร้าง CRUD generator command พร้อม options</p>
                 <div class="card-meta">
@@ -120,13 +124,15 @@ interface CrudPackage {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_crud_workflow</span>
+                  <span class="card-subtitle">Get complete workflow</span>
+                </div>
                 <div class="card-icon card-icon--workflow">
                   <mat-icon>account_tree</mat-icon>
                 </div>
-                <mat-card-title>aegisx_crud_workflow</mat-card-title>
-                <mat-card-subtitle>Get complete workflow</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>ดู recommended workflow สำหรับ feature ครบวงจร</p>
                 <div class="card-meta">
@@ -148,13 +154,15 @@ interface CrudPackage {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_crud_files</span>
+                  <span class="card-subtitle">Preview generated files</span>
+                </div>
                 <div class="card-icon card-icon--files">
                   <mat-icon>folder</mat-icon>
                 </div>
-                <mat-card-title>aegisx_crud_files</mat-card-title>
-                <mat-card-subtitle>Preview generated files</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>ดู files ที่จะถูก generate สำหรับ CRUD module</p>
                 <div class="card-meta">
@@ -173,13 +181,15 @@ interface CrudPackage {
             </mat-card>
 
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">aegisx_crud_troubleshoot</span>
+                  <span class="card-subtitle">Get troubleshooting help</span>
+                </div>
                 <div class="card-icon card-icon--troubleshoot">
                   <mat-icon>help</mat-icon>
                 </div>
-                <mat-card-title>aegisx_crud_troubleshoot</mat-card-title>
-                <mat-card-subtitle>Get troubleshooting help</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>แก้ไขปัญหาที่พบบ่อยใน CRUD generator</p>
                 <div class="card-meta">
@@ -207,13 +217,15 @@ interface CrudPackage {
         <div class="integrations-grid">
           @for (pkg of packages; track pkg.id) {
             <mat-card appearance="outlined" class="integration-card">
-              <mat-card-header>
+              <div class="card-header-row">
+                <div class="card-header-text">
+                  <span class="card-title">{{ pkg.name }}</span>
+                  <span class="card-subtitle">{{ pkg.id }} package</span>
+                </div>
                 <div class="card-icon" [class]="'card-icon--' + pkg.id">
                   <mat-icon>{{ pkg.icon }}</mat-icon>
                 </div>
-                <mat-card-title>{{ pkg.name }}</mat-card-title>
-                <mat-card-subtitle>{{ pkg.id }} package</mat-card-subtitle>
-              </mat-card-header>
+              </div>
               <mat-card-content>
                 <p>{{ pkg.description }}</p>
 
@@ -614,76 +626,99 @@ interface CrudPackage {
           box-shadow: var(--ax-shadow-lg);
         }
 
-        mat-card-header {
-          .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--ax-radius-lg);
-            background: var(--ax-primary-faint);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
+        .card-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          gap: 16px;
+        }
 
+        .card-header-text {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .card-title {
+          font-size: 1.125rem;
+          font-weight: 500;
+          color: var(--ax-text-heading);
+        }
+
+        .card-subtitle {
+          font-size: 0.875rem;
+          color: var(--ax-text-secondary);
+        }
+
+        .card-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: var(--ax-radius-lg);
+          background: var(--ax-primary-faint);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            color: var(--ax-primary-default);
+          }
+
+          &--packages,
+          &--standard {
+            background: linear-gradient(
+              135deg,
+              rgba(99, 102, 241, 0.15),
+              rgba(139, 92, 246, 0.15)
+            );
             mat-icon {
-              font-size: 28px;
-              width: 28px;
-              height: 28px;
-              color: var(--ax-primary-default);
+              color: #6366f1;
             }
-
-            &--packages,
-            &--standard {
-              background: linear-gradient(
-                135deg,
-                rgba(99, 102, 241, 0.15),
-                rgba(139, 92, 246, 0.15)
-              );
-              mat-icon {
-                color: #6366f1;
-              }
+          }
+          &--build,
+          &--enterprise {
+            background: linear-gradient(
+              135deg,
+              rgba(16, 185, 129, 0.15),
+              rgba(5, 150, 105, 0.15)
+            );
+            mat-icon {
+              color: #10b981;
             }
-            &--build,
-            &--enterprise {
-              background: linear-gradient(
-                135deg,
-                rgba(16, 185, 129, 0.15),
-                rgba(5, 150, 105, 0.15)
-              );
-              mat-icon {
-                color: #10b981;
-              }
+          }
+          &--workflow,
+          &--full {
+            background: linear-gradient(
+              135deg,
+              rgba(245, 158, 11, 0.15),
+              rgba(217, 119, 6, 0.15)
+            );
+            mat-icon {
+              color: #f59e0b;
             }
-            &--workflow,
-            &--full {
-              background: linear-gradient(
-                135deg,
-                rgba(245, 158, 11, 0.15),
-                rgba(217, 119, 6, 0.15)
-              );
-              mat-icon {
-                color: #f59e0b;
-              }
+          }
+          &--files {
+            background: linear-gradient(
+              135deg,
+              rgba(6, 182, 212, 0.15),
+              rgba(8, 145, 178, 0.15)
+            );
+            mat-icon {
+              color: #06b6d4;
             }
-            &--files {
-              background: linear-gradient(
-                135deg,
-                rgba(6, 182, 212, 0.15),
-                rgba(8, 145, 178, 0.15)
-              );
-              mat-icon {
-                color: #06b6d4;
-              }
-            }
-            &--troubleshoot {
-              background: linear-gradient(
-                135deg,
-                rgba(236, 72, 153, 0.15),
-                rgba(219, 39, 119, 0.15)
-              );
-              mat-icon {
-                color: #ec4899;
-              }
+          }
+          &--troubleshoot {
+            background: linear-gradient(
+              135deg,
+              rgba(236, 72, 153, 0.15),
+              rgba(219, 39, 119, 0.15)
+            );
+            mat-icon {
+              color: #ec4899;
             }
           }
         }
@@ -742,14 +777,15 @@ interface CrudPackage {
           }
 
           .command-box {
-            background: #1e1e2e;
+            background: var(--ax-background-subtle);
+            border: 1px solid var(--ax-border-muted);
             padding: 0.75rem 1rem;
             border-radius: var(--ax-radius-md);
 
             code {
               font-family: 'SF Mono', 'Fira Code', monospace;
               font-size: 0.8125rem;
-              color: #a6e3a1;
+              color: var(--ax-text-heading);
             }
           }
         }
@@ -766,7 +802,6 @@ interface CrudPackage {
           justify-content: flex-end;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          border-top: 1px solid var(--ax-border-muted);
         }
       }
 
@@ -784,7 +819,8 @@ interface CrudPackage {
       }
 
       .code-block {
-        background: #1e1e2e;
+        background: var(--ax-background-subtle);
+        border: 1px solid var(--ax-border-muted);
         border-radius: var(--ax-radius-md);
         padding: 1rem;
         margin-bottom: 1rem;
@@ -796,7 +832,7 @@ interface CrudPackage {
           code {
             font-family: 'SF Mono', 'Fira Code', monospace;
             font-size: 0.8125rem;
-            color: #a6e3a1;
+            color: var(--ax-text-heading);
             white-space: pre-wrap;
           }
         }
@@ -839,7 +875,8 @@ interface CrudPackage {
         }
 
         pre {
-          background: #1e1e2e;
+          background: var(--ax-background-subtle);
+          border: 1px solid var(--ax-border-muted);
           border-radius: var(--ax-radius-md);
           padding: 1rem;
           margin: 0;
@@ -848,13 +885,9 @@ interface CrudPackage {
           code {
             font-family: 'SF Mono', 'Fira Code', monospace;
             font-size: 0.8125rem;
-            color: #a6e3a1;
+            color: var(--ax-text-heading);
             white-space: pre-wrap;
           }
-        }
-
-        &.result-section pre code {
-          color: #cdd6f4;
         }
       }
 
@@ -1151,10 +1184,10 @@ pnpm run crud:import -- products --force
 pnpm run crud:full -- products --force`;
 
   frontendCode = `# Generate frontend components
-./bin/cli.js generate products --target frontend --force
+npx @aegisx/crud-generator generate products --target frontend --force
 
 # With import dialog
-./bin/cli.js generate products --target frontend --with-import --force`;
+npx @aegisx/crud-generator generate products --target frontend --with-import --force`;
 
   testCode = `# Build project
 pnpm run build
@@ -1188,7 +1221,7 @@ pnpm run crud:import -- products --force
 
 ## After generating, remember to:
 1. Test the API endpoints
-2. Generate frontend: \`./bin/cli.js generate products --target frontend --force\``;
+2. Generate frontend: \`npx @aegisx/crud-generator generate products --target frontend --force\``;
 
   workflowExample = `aegisx_crud_workflow tableName="products" withImport=true`;
 
@@ -1211,7 +1244,7 @@ pnpm run crud:import -- products --force
 
 ## Step 4: Generate Frontend
 \`\`\`bash
-./bin/cli.js generate products --target frontend --with-import --force
+npx @aegisx/crud-generator generate products --target frontend --with-import --force
 \`\`\`
 
 ## Step 5: Verify

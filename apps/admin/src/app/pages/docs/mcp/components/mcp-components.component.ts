@@ -297,32 +297,38 @@ interface ComponentCategory {
           </mat-form-field>
         </div>
 
-        <div class="components-table">
-          <div class="table-header">
-            <div class="col-name">Component</div>
-            <div class="col-selector">Selector</div>
-            <div class="col-category">Category</div>
-            <div class="col-action">MCP Command</div>
-          </div>
-          @for (component of filteredComponents(); track component.name) {
-            <div class="table-row">
-              <div class="col-name">
-                <strong>{{ component.name }}</strong>
-                <span class="desc">{{ component.description }}</span>
-              </div>
-              <div class="col-selector">
-                <code>{{ component.selector }}</code>
-              </div>
-              <div class="col-category">
-                <mat-chip>{{ component.category }}</mat-chip>
-              </div>
-              <div class="col-action">
-                <code class="command"
-                  >aegisx_components_get "{{ component.name }}"</code
-                >
-              </div>
-            </div>
-          }
+        <div class="api-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Selector</th>
+                <th>Category</th>
+                <th>MCP Command</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (component of filteredComponents(); track component.name) {
+                <tr>
+                  <td>
+                    <strong>{{ component.name }}</strong>
+                    <div class="desc">{{ component.description }}</div>
+                  </td>
+                  <td>
+                    <code>{{ component.selector }}</code>
+                  </td>
+                  <td>
+                    <mat-chip>{{ component.category }}</mat-chip>
+                  </td>
+                  <td>
+                    <code class="command"
+                      >aegisx_components_get "{{ component.name }}"</code
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -685,42 +691,30 @@ interface ComponentCategory {
         }
       }
 
-      .components-table {
-        background: var(--ax-background-default);
-        border: 1px solid var(--ax-border-muted);
-        border-radius: var(--ax-radius-lg);
-        overflow: hidden;
+      .api-table {
+        overflow-x: auto;
 
-        .table-header {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr 2fr;
-          gap: 1rem;
-          padding: 1rem 1.5rem;
-          background: var(--ax-background-subtle);
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          color: var(--ax-text-muted);
-        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.875rem;
 
-        .table-row {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr 2fr;
-          gap: 1rem;
-          padding: 1rem 1.5rem;
-          border-bottom: 1px solid var(--ax-border-muted);
-          align-items: center;
-
-          &:last-child {
-            border-bottom: none;
+          th,
+          td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--ax-border-default);
           }
 
-          &:hover {
+          th {
+            font-weight: 600;
+            color: var(--ax-text-heading);
             background: var(--ax-background-subtle);
           }
 
-          .col-name {
+          td {
+            vertical-align: top;
+
             strong {
               display: block;
               color: var(--ax-text-heading);
@@ -730,29 +724,23 @@ interface ComponentCategory {
             .desc {
               font-size: 0.8125rem;
               color: var(--ax-text-secondary);
-              display: -webkit-box;
-              -webkit-line-clamp: 2;
-              -webkit-box-orient: vertical;
-              overflow: hidden;
             }
           }
 
-          .col-selector code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
+          code {
+            background: var(--ax-background-subtle);
+            padding: 0.125rem 0.375rem;
+            border-radius: var(--ax-radius-sm);
             font-size: 0.8125rem;
-            color: var(--ax-primary-default);
-            background: var(--ax-primary-faint);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
           }
 
-          .col-action .command {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.75rem;
+          .command {
             color: var(--ax-success-default);
             background: var(--ax-success-faint);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
+          }
+
+          tr:hover {
+            background: var(--ax-background-subtle);
           }
         }
       }

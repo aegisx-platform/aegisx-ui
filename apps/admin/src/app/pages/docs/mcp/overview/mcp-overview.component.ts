@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
+import { AxCodeTabsComponent, CodeTab } from '@aegisx/ui';
 import {
   DocHeaderComponent,
   LivePreviewComponent,
@@ -32,6 +33,7 @@ interface McpTool {
     MatButtonModule,
     MatChipsModule,
     MatTabsModule,
+    AxCodeTabsComponent,
     DocHeaderComponent,
     LivePreviewComponent,
   ],
@@ -50,18 +52,33 @@ interface McpTool {
       <section class="section">
         <h2>Overview</h2>
         <p>
-          AegisX MCP Server เป็น Model Context Protocol (MCP) server ที่ช่วยให้ AI assistants
-          เช่น Claude, Cursor, หรือ VS Code Copilot สามารถเข้าถึงข้อมูล components, patterns,
-          และ CRUD generator ของ AegisX ได้โดยตรง ทำให้การพัฒนา Angular applications
+          AegisX MCP Server เป็น Model Context Protocol (MCP) server ที่ช่วยให้
+          AI assistants เช่น Claude, Cursor, หรือ VS Code Copilot
+          สามารถเข้าถึงข้อมูล components, patterns, และ CRUD generator ของ
+          AegisX ได้โดยตรง ทำให้การพัฒนา Angular applications
           เป็นไปอย่างรวดเร็วและมีประสิทธิภาพ
         </p>
 
         <div class="npm-badge">
-          <a href="https://www.npmjs.com/package/@aegisx/mcp" target="_blank" rel="noopener">
-            <img src="https://img.shields.io/npm/v/@aegisx/mcp.svg" alt="npm version">
+          <a
+            href="https://www.npmjs.com/package/@aegisx/mcp"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.shields.io/npm/v/@aegisx/mcp.svg"
+              alt="npm version"
+            />
           </a>
-          <a href="https://github.com/aegisx-platform/aegisx-mcp" target="_blank" rel="noopener">
-            <img src="https://img.shields.io/badge/GitHub-aegisx--mcp-blue" alt="GitHub">
+          <a
+            href="https://github.com/aegisx-platform/aegisx-mcp"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.shields.io/badge/GitHub-aegisx--mcp-blue"
+              alt="GitHub"
+            />
           </a>
         </div>
       </section>
@@ -69,110 +86,41 @@ interface McpTool {
       <!-- Installation -->
       <section class="section">
         <h2>Installation</h2>
-
-        <mat-tab-group animationDuration="200ms">
-          <mat-tab label="npm">
-            <div class="tab-content">
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">Terminal</span>
-                  </div>
-                  <pre><code>npm install -g @aegisx/mcp</code></pre>
-                </div>
-              </ax-live-preview>
-            </div>
-          </mat-tab>
-          <mat-tab label="pnpm">
-            <div class="tab-content">
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">Terminal</span>
-                  </div>
-                  <pre><code>pnpm add -g @aegisx/mcp</code></pre>
-                </div>
-              </ax-live-preview>
-            </div>
-          </mat-tab>
-          <mat-tab label="npx (no install)">
-            <div class="tab-content">
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">Use directly with npx</span>
-                  </div>
-                  <pre><code>npx @aegisx/mcp</code></pre>
-                </div>
-              </ax-live-preview>
-            </div>
-          </mat-tab>
-        </mat-tab-group>
+        <ax-code-tabs [tabs]="installTabs"></ax-code-tabs>
       </section>
 
       <!-- Configuration -->
       <section class="section">
         <h2>Configuration</h2>
 
-        <mat-tab-group animationDuration="200ms">
-          <mat-tab label="Claude Desktop">
-            <div class="tab-content">
-              <p class="config-desc">
-                Add to <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:
-              </p>
+        <div class="config-section">
+          <h3>Claude Desktop</h3>
+          <p class="config-desc">
+            Add to
+            <code
+              >~/Library/Application
+              Support/Claude/claude_desktop_config.json</code
+            >:
+          </p>
+          <h4 class="config-subtitle">
+            Option 1: Using npx (no installation needed)
+          </h4>
+          <ax-code-tabs [tabs]="claudeNpxTabs"></ax-code-tabs>
+          <h4 class="config-subtitle">Option 2: Global installation</h4>
+          <ax-code-tabs [tabs]="claudeGlobalTabs"></ax-code-tabs>
+        </div>
 
-              <h4 class="config-subtitle">Option 1: Using npx (no installation needed)</h4>
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">claude_desktop_config.json</span>
-                  </div>
-                  <pre><code>{{ claudeConfigCode }}</code></pre>
-                </div>
-              </ax-live-preview>
+        <div class="config-section">
+          <h3>Cursor</h3>
+          <p class="config-desc">Add to your Cursor MCP settings:</p>
+          <ax-code-tabs [tabs]="cursorTabs"></ax-code-tabs>
+        </div>
 
-              <h4 class="config-subtitle">Option 2: Global installation</h4>
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">After: npm install -g &#64;aegisx/mcp</span>
-                  </div>
-                  <pre><code>{{ claudeGlobalCode }}</code></pre>
-                </div>
-              </ax-live-preview>
-            </div>
-          </mat-tab>
-          <mat-tab label="Cursor">
-            <div class="tab-content">
-              <p class="config-desc">
-                Add to your Cursor MCP settings:
-              </p>
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">Cursor MCP Config</span>
-                  </div>
-                  <pre><code>{{ cursorConfigCode }}</code></pre>
-                </div>
-              </ax-live-preview>
-            </div>
-          </mat-tab>
-          <mat-tab label="VS Code">
-            <div class="tab-content">
-              <p class="config-desc">
-                Add to your VS Code MCP extension settings:
-              </p>
-              <ax-live-preview variant="bordered" direction="column">
-                <div class="code-block">
-                  <div class="code-header">
-                    <span class="file-name">VS Code settings.json</span>
-                  </div>
-                  <pre><code>{{ vscodeConfigCode }}</code></pre>
-                </div>
-              </ax-live-preview>
-            </div>
-          </mat-tab>
-        </mat-tab-group>
+        <div class="config-section">
+          <h3>VS Code</h3>
+          <p class="config-desc">Add to your VS Code MCP extension settings:</p>
+          <ax-code-tabs [tabs]="vscodeTabs"></ax-code-tabs>
+        </div>
       </section>
 
       <!-- Tool Categories -->
@@ -191,13 +139,17 @@ interface McpTool {
 
           <div class="tools-grid">
             @for (tool of getByCategory('components'); track tool.id) {
-              <mat-card appearance="outlined" class="tool-card" [routerLink]="tool.docsUrl">
-                <mat-card-header>
+              <mat-card
+                appearance="outlined"
+                class="tool-card"
+                [routerLink]="tool.docsUrl"
+              >
+                <div class="card-header-row">
+                  <span class="card-title">{{ tool.name }}</span>
                   <div class="card-icon">
                     <mat-icon>{{ tool.icon }}</mat-icon>
                   </div>
-                  <mat-card-title>{{ tool.name }}</mat-card-title>
-                </mat-card-header>
+                </div>
                 <mat-card-content>
                   <p>{{ tool.description }}</p>
                   <div class="command-preview">
@@ -227,13 +179,17 @@ interface McpTool {
 
           <div class="tools-grid">
             @for (tool of getByCategory('patterns'); track tool.id) {
-              <mat-card appearance="outlined" class="tool-card" [routerLink]="tool.docsUrl">
-                <mat-card-header>
+              <mat-card
+                appearance="outlined"
+                class="tool-card"
+                [routerLink]="tool.docsUrl"
+              >
+                <div class="card-header-row">
+                  <span class="card-title">{{ tool.name }}</span>
                   <div class="card-icon">
                     <mat-icon>{{ tool.icon }}</mat-icon>
                   </div>
-                  <mat-card-title>{{ tool.name }}</mat-card-title>
-                </mat-card-header>
+                </div>
                 <mat-card-content>
                   <p>{{ tool.description }}</p>
                   <div class="command-preview">
@@ -263,13 +219,17 @@ interface McpTool {
 
           <div class="tools-grid">
             @for (tool of getByCategory('crud'); track tool.id) {
-              <mat-card appearance="outlined" class="tool-card" [routerLink]="tool.docsUrl">
-                <mat-card-header>
+              <mat-card
+                appearance="outlined"
+                class="tool-card"
+                [routerLink]="tool.docsUrl"
+              >
+                <div class="card-header-row">
+                  <span class="card-title">{{ tool.name }}</span>
                   <div class="card-icon">
                     <mat-icon>{{ tool.icon }}</mat-icon>
                   </div>
-                  <mat-card-title>{{ tool.name }}</mat-card-title>
-                </mat-card-header>
+                </div>
                 <mat-card-content>
                   <p>{{ tool.description }}</p>
                   <div class="command-preview">
@@ -312,7 +272,10 @@ interface McpTool {
             <div class="example-card">
               <h4>ดู Angular Signal Pattern</h4>
               <div class="command-block">
-                <code>aegisx_patterns_get name="Angular Signal-based Component"</code>
+                <code
+                  >aegisx_patterns_get name="Angular Signal-based
+                  Component"</code
+                >
               </div>
               <p>แสดง code example สำหรับ modern Angular patterns</p>
             </div>
@@ -336,32 +299,27 @@ interface McpTool {
             <mat-icon>widgets</mat-icon>
             <h4>42 UI Components</h4>
             <p>
-              Component documentation พร้อม inputs, outputs,
-              และ usage examples
+              Component documentation พร้อม inputs, outputs, และ usage examples
             </p>
           </mat-card>
           <mat-card appearance="outlined" class="benefit-card">
             <mat-icon>pattern</mat-icon>
             <h4>11 Development Patterns</h4>
             <p>
-              Backend, frontend, database, และ testing patterns
-              พร้อม code examples
+              Backend, frontend, database, และ testing patterns พร้อม code
+              examples
             </p>
           </mat-card>
           <mat-card appearance="outlined" class="benefit-card">
             <mat-icon>build</mat-icon>
             <h4>CRUD Generator</h4>
-            <p>
-              Generate backend และ frontend CRUD modules
-              ด้วย command เดียว
-            </p>
+            <p>Generate backend และ frontend CRUD modules ด้วย command เดียว</p>
           </mat-card>
           <mat-card appearance="outlined" class="benefit-card">
             <mat-icon>search</mat-icon>
             <h4>Smart Search</h4>
             <p>
-              ค้นหา components และ patterns ด้วย keywords
-              หรือ functionality
+              ค้นหา components และ patterns ด้วย keywords หรือ functionality
             </p>
           </mat-card>
         </div>
@@ -371,12 +329,22 @@ interface McpTool {
       <section class="section">
         <h2>Resources</h2>
         <div class="quick-links">
-          <a href="https://www.npmjs.com/package/@aegisx/mcp" target="_blank" rel="noopener" class="quick-link">
+          <a
+            href="https://www.npmjs.com/package/@aegisx/mcp"
+            target="_blank"
+            rel="noopener"
+            class="quick-link"
+          >
             <mat-icon>inventory_2</mat-icon>
             <span>NPM Package</span>
             <mat-icon class="arrow">open_in_new</mat-icon>
           </a>
-          <a href="https://github.com/aegisx-platform/aegisx-mcp" target="_blank" rel="noopener" class="quick-link">
+          <a
+            href="https://github.com/aegisx-platform/aegisx-mcp"
+            target="_blank"
+            rel="noopener"
+            class="quick-link"
+          >
             <mat-icon>code</mat-icon>
             <span>GitHub Repository</span>
             <mat-icon class="arrow">open_in_new</mat-icon>
@@ -440,8 +408,18 @@ interface McpTool {
         }
       }
 
-      .tab-content {
-        padding: 1.5rem 0;
+      .config-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-lg);
+
+        h3 {
+          margin: 0 0 0.5rem;
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--ax-text-heading);
+        }
       }
 
       .config-desc {
@@ -518,26 +496,37 @@ interface McpTool {
         &:hover {
           transform: translateY(-4px);
           box-shadow: var(--ax-shadow-lg);
-          border-color: var(--ax-primary-default);
         }
 
-        mat-card-header {
-          .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--ax-radius-lg);
-            background: var(--ax-primary-faint);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
+        .card-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          gap: 16px;
+        }
 
-            mat-icon {
-              font-size: 28px;
-              width: 28px;
-              height: 28px;
-              color: var(--ax-primary-default);
-            }
+        .card-title {
+          font-size: 1.125rem;
+          font-weight: 500;
+          color: var(--ax-text-heading);
+        }
+
+        .card-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: var(--ax-radius-lg);
+          background: var(--ax-primary-faint);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            color: var(--ax-primary-default);
           }
         }
 
@@ -567,40 +556,6 @@ interface McpTool {
           justify-content: flex-end;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          border-top: 1px solid var(--ax-border-muted);
-        }
-      }
-
-      .code-block {
-        background: #1e1e2e;
-        border-radius: 12px;
-        overflow: hidden;
-
-        .code-header {
-          display: flex;
-          align-items: center;
-          padding: 0.75rem 1rem;
-          background: #181825;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-          .file-name {
-            color: #6c7086;
-            font-size: 0.8125rem;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-          }
-        }
-
-        pre {
-          margin: 0;
-          padding: 1rem;
-          overflow-x: auto;
-
-          code {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8125rem;
-            line-height: 1.6;
-            color: #cdd6f4;
-          }
         }
       }
 
@@ -624,15 +579,16 @@ interface McpTool {
         }
 
         .command-block {
-          padding: 0.5rem 0.75rem;
-          background: #1e1e2e;
+          padding: 0.75rem 1rem;
+          background: var(--ax-background-subtle);
+          border: 1px solid var(--ax-border-muted);
           border-radius: var(--ax-radius-md);
           margin-bottom: 0.75rem;
 
           code {
             font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.75rem;
-            color: #a6e3a1;
+            font-size: 0.8125rem;
+            color: var(--ax-text-heading);
           }
         }
 
@@ -733,43 +689,72 @@ interface McpTool {
   ],
 })
 export class McpOverviewComponent {
-  // Real npm package configuration for @aegisx/mcp
-  // From: https://github.com/aegisx-platform/aegisx-mcp
+  // Installation tabs
+  installTabs: CodeTab[] = [
+    { label: 'npm', code: 'npm install -g @aegisx/mcp', language: 'bash' },
+    { label: 'pnpm', code: 'pnpm add -g @aegisx/mcp', language: 'bash' },
+    { label: 'npx (no install)', code: 'npx @aegisx/mcp', language: 'bash' },
+  ];
 
-  claudeConfigCode = `{
+  // Configuration tabs
+  claudeNpxTabs: CodeTab[] = [
+    {
+      label: 'claude_desktop_config.json',
+      code: `{
   "mcpServers": {
     "aegisx": {
       "command": "npx",
       "args": ["-y", "@aegisx/mcp"]
     }
   }
-}`;
+}`,
+      language: 'json',
+    },
+  ];
 
-  claudeGlobalCode = `{
+  claudeGlobalTabs: CodeTab[] = [
+    {
+      label: 'After: npm install -g @aegisx/mcp',
+      code: `{
   "mcpServers": {
     "aegisx": {
       "command": "aegisx-mcp"
     }
   }
-}`;
+}`,
+      language: 'json',
+    },
+  ];
 
-  cursorConfigCode = `{
+  cursorTabs: CodeTab[] = [
+    {
+      label: 'Cursor MCP Config',
+      code: `{
   "mcpServers": {
     "aegisx": {
       "command": "npx",
       "args": ["-y", "@aegisx/mcp"]
     }
   }
-}`;
+}`,
+      language: 'json',
+    },
+  ];
 
-  vscodeConfigCode = `{
+  vscodeTabs: CodeTab[] = [
+    {
+      label: 'settings.json',
+      code: `{
   "mcp.servers": {
     "aegisx": {
       "command": "npx",
       "args": ["-y", "@aegisx/mcp"]
     }
   }
-}`;
+}`,
+      language: 'json',
+    },
+  ];
 
   tools: McpTool[] = [
     // Components
