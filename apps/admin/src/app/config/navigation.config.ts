@@ -332,6 +332,13 @@ const FEEDBACK_ITEMS: AxNavigationItem[] = [
     link: '/docs/components/aegisx/feedback/inner-loading',
   },
   {
+    id: 'loading-button',
+    title: 'Loading Button',
+    type: 'item',
+    icon: 'smart_button',
+    link: '/docs/components/aegisx/feedback/loading-button',
+  },
+  {
     id: 'empty-state',
     title: 'Empty State',
     type: 'item',

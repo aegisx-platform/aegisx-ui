@@ -31,6 +31,17 @@ export const FEEDBACK_ROUTES: Route[] = [
     },
   },
   {
+    path: 'feedback/loading-button',
+    loadComponent: () =>
+      import(
+        '../../../pages/docs/components/aegisx/feedback/loading-button/loading-button-doc.component'
+      ).then((m) => m.LoadingButtonDocComponent),
+    data: {
+      title: 'Loading Button',
+      description: 'Loading button component with M3 design',
+    },
+  },
+  {
     path: 'feedback/loading-bar',
     loadComponent: () =>
       import(
