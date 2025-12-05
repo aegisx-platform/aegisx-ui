@@ -1,4 +1,10 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  inject,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +25,7 @@ import { ComponentToken } from '../../../types/docs.types';
 @Component({
   selector: 'ax-component-tokens',
   standalone: true,
+  encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
     MatIconModule,
@@ -80,133 +87,7 @@ import { ComponentToken } from '../../../types/docs.types';
       </div>
     </div>
   `,
-  styles: [
-    `
-      .component-tokens {
-        margin: var(--ax-spacing-xl, 1.5rem) 0;
-      }
-
-      .component-tokens__title {
-        display: flex;
-        align-items: center;
-        gap: var(--ax-spacing-sm, 0.5rem);
-        font-size: var(--ax-text-xl, 1.25rem);
-        font-weight: 600;
-        color: var(--ax-text-heading);
-        margin: 0 0 var(--ax-spacing-xs, 0.25rem) 0;
-
-        mat-icon {
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-          color: var(--ax-brand-default);
-        }
-      }
-
-      .component-tokens__description {
-        font-size: var(--ax-text-sm, 0.875rem);
-        color: var(--ax-text-secondary);
-        margin: 0 0 var(--ax-spacing-md, 0.75rem) 0;
-      }
-
-      .component-tokens__table-wrapper {
-        overflow-x: auto;
-        border: 1px solid var(--ax-border-default);
-        border-radius: var(--ax-radius-lg, 0.75rem);
-      }
-
-      .component-tokens__table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: var(--ax-text-sm, 0.875rem);
-      }
-
-      .component-tokens__table th {
-        text-align: left;
-        padding: var(--ax-spacing-sm, 0.5rem) var(--ax-spacing-md, 0.75rem);
-        background-color: var(--ax-background-subtle);
-        border-bottom: 1px solid var(--ax-border-default);
-        font-weight: 600;
-        color: var(--ax-text-secondary);
-        font-size: var(--ax-text-xs, 0.75rem);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .component-tokens__th--preview {
-        width: 50px;
-      }
-
-      .component-tokens__th--token {
-        width: 35%;
-      }
-
-      .component-tokens__th--usage {
-        width: 35%;
-      }
-
-      .component-tokens__th--value {
-        width: 20%;
-      }
-
-      .component-tokens__row {
-        cursor: pointer;
-        transition: background-color var(--ax-duration-fast, 150ms);
-
-        &:hover {
-          background-color: var(--ax-background-subtle);
-        }
-
-        &:not(:last-child) td {
-          border-bottom: 1px solid var(--ax-border-default);
-        }
-      }
-
-      .component-tokens__row td {
-        padding: var(--ax-spacing-sm, 0.5rem) var(--ax-spacing-md, 0.75rem);
-        vertical-align: middle;
-      }
-
-      .component-tokens__swatch {
-        display: block;
-        width: 24px;
-        height: 24px;
-        border-radius: var(--ax-radius-sm, 0.25rem);
-        border: 1px solid var(--ax-border-default);
-      }
-
-      .component-tokens__cell--token {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      .component-tokens__code {
-        font-family: var(--ax-font-mono);
-        font-size: var(--ax-text-sm, 0.875rem);
-        color: var(--ax-text-primary);
-        word-break: break-all;
-      }
-
-      .component-tokens__category {
-        font-size: var(--ax-text-xs, 0.75rem);
-        color: var(--ax-text-secondary);
-      }
-
-      .component-tokens__cell--usage {
-        color: var(--ax-text-secondary);
-      }
-
-      .component-tokens__value {
-        font-family: var(--ax-font-mono);
-        font-size: var(--ax-text-xs, 0.75rem);
-        color: var(--ax-text-secondary);
-        background-color: var(--ax-background-subtle);
-        padding: 2px 6px;
-        border-radius: var(--ax-radius-sm, 0.25rem);
-      }
-    `,
-  ],
+  // Styles are provided by @aegisx/ui theme styles (_docs.scss)
 })
 export class ComponentTokensComponent implements OnInit {
   private readonly clipboard = inject(Clipboard);

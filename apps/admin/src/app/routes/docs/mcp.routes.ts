@@ -41,13 +41,7 @@ export const MCP_ROUTES: Route[] = [
   },
   {
     path: 'crud-generator',
-    loadComponent: () =>
-      import(
-        '../../pages/docs/mcp/crud-generator/mcp-crud-generator.component'
-      ).then((m) => m.McpCrudGeneratorComponent),
-    data: {
-      title: 'MCP CRUD Generator',
-      description: 'MCP tools for CRUD module generation',
-    },
+    redirectTo: '/docs/cli/reference',
+    pathMatch: 'full',
   },
 ];

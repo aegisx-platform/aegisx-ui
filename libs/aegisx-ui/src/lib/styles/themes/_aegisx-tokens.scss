@@ -990,6 +990,8 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
       'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
     --ax-font-sans:
       'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+    /* Font Family (monospace stack for code) */
+    --ax-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Font Size Aliases (font-size-* → text-*) */
     --ax-font-size-xs: var(--ax-text-xs);
@@ -1390,6 +1392,8 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
       'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
     --ax-font-sans:
       'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+    /* Font Family (monospace stack for code) */
+    --ax-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Font Size Aliases (font-size-* → text-*) */
     --ax-font-size-xs: var(--ax-text-xs);

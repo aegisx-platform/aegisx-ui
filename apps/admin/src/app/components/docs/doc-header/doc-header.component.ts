@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,6 +30,7 @@ import { BreadcrumbItem, ComponentStatus } from '../../../types/docs.types';
 @Component({
   selector: 'ax-doc-header',
   standalone: true,
+  encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
     RouterModule,
@@ -113,178 +114,7 @@ import { BreadcrumbItem, ComponentStatus } from '../../../types/docs.types';
       }
     </header>
   `,
-  styles: [
-    `
-      .doc-header {
-        margin-bottom: var(--ax-spacing-xl, 1.5rem);
-      }
-
-      .doc-header__breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: var(--ax-spacing-xs, 0.25rem);
-        margin-bottom: var(--ax-spacing-md, 0.75rem);
-        font-size: var(--ax-text-sm, 0.875rem);
-      }
-
-      .doc-header__breadcrumb-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        color: var(--ax-brand-default);
-        margin-right: var(--ax-spacing-xs, 0.25rem);
-      }
-
-      .doc-header__breadcrumb-link {
-        color: var(--ax-text-secondary);
-        text-decoration: none;
-        transition: color var(--ax-duration-fast, 150ms);
-
-        &:hover {
-          color: var(--ax-text-primary);
-        }
-      }
-
-      .doc-header__breadcrumb-separator {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        color: var(--ax-text-disabled);
-      }
-
-      .doc-header__breadcrumb-current {
-        color: var(--ax-text-primary);
-        font-weight: 500;
-      }
-
-      .doc-header__title-row {
-        display: flex;
-        align-items: center;
-        gap: var(--ax-spacing-sm, 0.5rem);
-        margin-bottom: var(--ax-spacing-sm, 0.5rem);
-      }
-
-      .doc-header__title {
-        font-size: var(--ax-text-3xl, 1.875rem);
-        font-weight: 700;
-        color: var(--ax-text-heading);
-        margin: 0;
-        line-height: 1.2;
-      }
-
-      /* Page variant - larger title */
-      .doc-header--page .doc-header__title {
-        font-size: 2.25rem;
-      }
-
-      .doc-header__badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.125rem 0.5rem;
-        border-radius: var(--ax-radius-full, 9999px);
-        font-size: var(--ax-text-xs, 0.75rem);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
-      }
-
-      .doc-header__badge--stable {
-        background-color: var(--ax-success-faint);
-        color: var(--ax-success-emphasis);
-      }
-
-      .doc-header__badge--beta {
-        background-color: var(--ax-warning-faint);
-        color: var(--ax-warning-emphasis);
-      }
-
-      .doc-header__badge--experimental {
-        background-color: var(--ax-info-faint);
-        color: var(--ax-info-emphasis);
-      }
-
-      .doc-header__badge--deprecated {
-        background-color: var(--ax-error-faint);
-        color: var(--ax-error-emphasis);
-      }
-
-      .doc-header__version {
-        font-size: var(--ax-text-sm, 0.875rem);
-        color: var(--ax-text-secondary);
-        font-weight: 500;
-      }
-
-      .doc-header__description {
-        font-size: var(--ax-text-lg, 1.125rem);
-        color: var(--ax-text-secondary);
-        margin: 0 0 var(--ax-spacing-md, 0.75rem) 0;
-        line-height: 1.6;
-        max-width: 65ch;
-      }
-
-      .doc-header__import {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--ax-spacing-xs, 0.25rem);
-        background-color: var(--ax-background-subtle);
-        border: 1px solid var(--ax-border-default);
-        border-radius: var(--ax-radius-md, 0.5rem);
-        padding: var(--ax-spacing-xs, 0.25rem) var(--ax-spacing-sm, 0.5rem);
-        margin-bottom: var(--ax-spacing-md, 0.75rem);
-      }
-
-      .doc-header__import-code {
-        font-family: var(--ax-font-mono);
-        font-size: var(--ax-text-sm, 0.875rem);
-        color: var(--ax-text-primary);
-      }
-
-      .doc-header__copy-btn {
-        width: 28px;
-        height: 28px;
-        line-height: 28px;
-
-        mat-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-        }
-      }
-
-      .doc-header__quick-links {
-        display: flex;
-        align-items: center;
-        gap: var(--ax-spacing-sm, 0.5rem);
-        font-size: var(--ax-text-sm, 0.875rem);
-      }
-
-      .doc-header__quick-links-label {
-        color: var(--ax-text-secondary);
-      }
-
-      .doc-header__quick-link {
-        color: var(--ax-brand-default);
-        text-decoration: none;
-        font-weight: 500;
-        transition: color var(--ax-duration-fast, 150ms);
-
-        &:hover {
-          color: var(--ax-brand-emphasis);
-          text-decoration: underline;
-        }
-
-        &::after {
-          content: '|';
-          margin-left: var(--ax-spacing-sm, 0.5rem);
-          color: var(--ax-border-default);
-        }
-
-        &:last-child::after {
-          content: '';
-        }
-      }
-    `,
-  ],
+  // Styles are provided by @aegisx/ui theme styles (_docs.scss)
 })
 export class DocHeaderComponent {
   private readonly clipboard = inject(Clipboard);

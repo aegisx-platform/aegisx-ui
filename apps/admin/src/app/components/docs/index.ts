@@ -8,3 +8,4 @@ export * from './doc-header/doc-header.component';
 export * from './code-tabs/code-tabs.component';
 export * from './live-preview/live-preview.component';
 export * from './component-tokens/component-tokens.component';
+export * from './props-table/props-table.component';

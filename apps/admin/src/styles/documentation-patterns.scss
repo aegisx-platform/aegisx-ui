@@ -169,7 +169,7 @@
 
   pre {
     margin: 0;
-    font-family: 'Fira Code', 'Courier New', Consolas, Monaco, monospace;
+    font-family: var(--ax-font-mono, 'JetBrains Mono', monospace);
     font-size: 0.875rem;
     line-height: 1.6;
     color: #d4d4d4;
@@ -226,7 +226,7 @@
 
 // Inline code
 code:not(pre code) {
-  font-family: 'Fira Code', 'Courier New', Consolas, Monaco, monospace;
+  font-family: var(--ax-font-mono, 'JetBrains Mono', monospace);
   font-size: 0.875em;
   padding: 0.125rem 0.375rem;
   background-color: var(--ax-background-muted);
@@ -352,7 +352,7 @@ code:not(pre code) {
 
   // Type badge styling
   .type-badge {
-    font-family: 'Courier New', monospace;
+    font-family: var(--ax-font-mono, 'JetBrains Mono', monospace);
     font-size: 0.8125rem;
     padding: 0.125rem 0.5rem;
     background-color: var(--ax-info-50);
@@ -422,7 +422,7 @@ code:not(pre code) {
     .spec-value {
       color: var(--ax-text-primary);
       font-weight: 600;
-      font-family: 'Courier New', monospace;
+      font-family: var(--ax-font-mono, 'JetBrains Mono', monospace);
     }
   }
 }

@@ -100,4 +100,15 @@ export const FOUNDATIONS_ROUTES: Route[] = [
       description: 'Theme configuration and customization guide',
     },
   },
+  {
+    path: 'docs-system-guide',
+    loadComponent: () =>
+      import(
+        '../../pages/docs/foundations/docs-system-guide/docs-system-guide.component'
+      ).then((m) => m.DocsSystemGuideComponent),
+    data: {
+      title: 'Documentation System Guide',
+      description: 'Guide for creating documentation pages',
+    },
+  },
 ];

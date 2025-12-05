@@ -144,9 +144,9 @@
   }
 
   /* ===== CODE ===== */
-  code {
-    font-family:
-      'JetBrains Mono', 'Fira Code', 'Courier New', Consolas, Monaco, monospace;
+  /* Exclude code-tabs component - it has its own styling */
+  code:not(.code-tabs code):not(.code-tabs__code code) {
+    font-family: var(--ax-font-mono, 'JetBrains Mono', monospace);
     font-size: 0.875em;
     font-weight: 500;
     color: var(--ax-text-heading);
@@ -155,9 +155,9 @@
     border-radius: 0.25rem;
   }
 
-  pre {
-    font-family:
-      'JetBrains Mono', 'Fira Code', 'Courier New', Consolas, Monaco, monospace;
+  /* Exclude code-tabs component - it has its own styling */
+  pre:not(.code-tabs pre):not(.code-tabs__code) {
+    font-family: var(--ax-font-mono, 'JetBrains Mono', monospace);
     font-size: 0.9375rem; /* 15px - เพิ่มจาก 14px */
     line-height: 1.7;
     background-color: oklch(
@@ -171,7 +171,7 @@
     border: 1px solid var(--ax-border-default);
   }
 
-  pre code {
+  pre:not(.code-tabs pre):not(.code-tabs__code) code {
     background: transparent;
     padding: 0;
     color: inherit;

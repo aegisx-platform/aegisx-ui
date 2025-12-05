@@ -8,6 +8,7 @@ import {
   ElementRef,
   ViewChildren,
   QueryList,
+  ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -51,6 +52,7 @@ import 'prismjs/components/prism-json';
 @Component({
   selector: 'ax-code-tabs',
   standalone: true,
+  encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
     MatTabsModule,
@@ -142,209 +144,7 @@ import 'prismjs/components/prism-json';
       }
     </div>
   `,
-  styles: [
-    `
-      .code-tabs {
-        margin: 1rem 0;
-        border-radius: 16px;
-        overflow: hidden;
-        background: #1e1e2e;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      }
-      .code-tabs__single,
-      .code-tabs__tabbed {
-        position: relative;
-      }
-      .code-tabs__header,
-      .code-tabs__tab-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        background: #181825;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      .code-tabs__dots {
-        display: flex;
-        gap: 8px;
-      }
-      .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-      }
-      .dot--red {
-        background: #ff5f56;
-      }
-      .dot--yellow {
-        background: #ffbd2e;
-      }
-      .dot--green {
-        background: #27c93f;
-      }
-      .code-tabs__filename {
-        flex: 1;
-        color: #6c7086;
-        font-size: 13px;
-        font-family: 'SF Mono', 'Fira Code', monospace;
-      }
-      .code-tabs__tab-buttons {
-        display: flex;
-        gap: 4px;
-        flex: 1;
-      }
-      .code-tabs__tab-btn {
-        padding: 6px 16px;
-        border: none;
-        background: transparent;
-        color: #6c7086;
-        font-size: 13px;
-        font-family: 'SF Mono', 'Fira Code', monospace;
-        cursor: pointer;
-        border-radius: 6px;
-        transition: all 0.15s ease;
-      }
-      .code-tabs__tab-btn:hover {
-        color: #cdd6f4;
-        background: rgba(255, 255, 255, 0.05);
-      }
-      .code-tabs__tab-btn.active {
-        color: #cdd6f4;
-        background: rgba(255, 255, 255, 0.1);
-      }
-      .code-tabs__copy-btn {
-        width: 32px !important;
-        height: 32px !important;
-        line-height: 32px;
-        color: #6c7086 !important;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 8px;
-      }
-      .code-tabs__copy-btn mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-      }
-      .code-tabs__copy-btn:hover {
-        color: #cdd6f4 !important;
-        background: rgba(255, 255, 255, 0.1);
-      }
-      .code-tabs__code {
-        margin: 0;
-        padding: 20px;
-        background: #1e1e2e;
-        overflow-x: auto;
-        font-family:
-          'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
-        font-size: 14px;
-        line-height: 1.7;
-        color: #cdd6f4;
-        tab-size: 2;
-      }
-      .code-tabs__code code {
-        font-family: inherit;
-        background: transparent;
-        padding: 0;
-      }
-      .code-tabs__preview {
-        padding: 24px;
-        background: var(--ax-background-default, #ffffff);
-        min-height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      /* Catppuccin Mocha Syntax Theme */
-      :host ::ng-deep .code-tabs__code {
-        .token.comment,
-        .token.prolog,
-        .token.doctype,
-        .token.cdata {
-          color: #6c7086;
-          font-style: italic;
-        }
-        .token.punctuation {
-          color: #bac2de;
-        }
-        .token.namespace {
-          opacity: 0.8;
-        }
-        .token.property,
-        .token.tag,
-        .token.constant,
-        .token.symbol,
-        .token.deleted {
-          color: #89b4fa;
-        }
-        .token.boolean,
-        .token.number {
-          color: #fab387;
-        }
-        .token.selector,
-        .token.attr-name,
-        .token.string,
-        .token.char,
-        .token.builtin,
-        .token.inserted {
-          color: #a6e3a1;
-        }
-        .token.operator,
-        .token.entity,
-        .token.url {
-          color: #94e2d5;
-        }
-        .language-css .token.string,
-        .style .token.string {
-          color: #a6e3a1;
-        }
-        .token.atrule,
-        .token.attr-value,
-        .token.keyword {
-          color: #cba6f7;
-        }
-        .token.function {
-          color: #89b4fa;
-        }
-        .token.class-name {
-          color: #89dceb;
-        }
-        .token.regex,
-        .token.important,
-        .token.variable {
-          color: #f38ba8;
-        }
-        .token.important,
-        .token.bold {
-          font-weight: bold;
-        }
-        .token.italic {
-          font-style: italic;
-        }
-        .token.builtin {
-          color: #f9e2af;
-        }
-        .token.tag .token.tag {
-          color: #f38ba8;
-        }
-        .token.tag .token.attr-name {
-          color: #89b4fa;
-        }
-        .token.tag .token.attr-value {
-          color: #a6e3a1;
-        }
-        .token.selector {
-          color: #cba6f7;
-        }
-        .token.decorator {
-          color: #f9e2af;
-        }
-        .token.string {
-          color: #a6e3a1;
-        }
-      }
-    `,
-  ],
+  // Styles are provided by @aegisx/ui theme styles (_docs.scss)
 })
 export class CodeTabsComponent implements AfterViewInit, OnChanges {
   private readonly clipboard = inject(Clipboard);

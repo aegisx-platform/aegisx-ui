@@ -28,7 +28,6 @@ export const STANDALONE_ROUTES = [
   '/gridster-demo',
   '/gridster-poc',
   '/playground/pages/dashboard',
-  '/tools',
   '/examples/error',
   '/examples/account',
   '/examples/dashboard',
@@ -43,6 +42,11 @@ export const STANDALONE_ROUTES = [
 export const DOCS_ROUTES_PREFIX = '/docs';
 
 /**
+ * Additional routes that should use docs layout even though they're not under /docs
+ */
+export const DOCS_LAYOUT_ROUTES = ['/tools'] as const;
+
+/**
  * Check if a URL matches any standalone route
  */
 export function isStandaloneRoute(url: string): boolean {
@@ -53,7 +57,10 @@ export function isStandaloneRoute(url: string): boolean {
  * Check if a URL is a docs route
  */
 export function isDocsRoute(url: string): boolean {
-  return url.startsWith(DOCS_ROUTES_PREFIX);
+  return (
+    url.startsWith(DOCS_ROUTES_PREFIX) ||
+    DOCS_LAYOUT_ROUTES.some((route) => url.startsWith(route))
+  );
 }
 
 /**
