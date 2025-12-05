@@ -111,4 +111,119 @@
   --ax-input-bg: #ffffff;
   --ax-input-border: #d1d5db;
   --ax-button-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  // ============================================
+  // MATERIAL 3 SURFACE TOKENS
+  // ============================================
+  --ax-surface: #ffffff;
+  --ax-surface-dim: #ddd8d8;
+  --ax-surface-bright: #fdf8f8;
+  --ax-surface-container-lowest: #ffffff;
+  --ax-surface-container-low: #f7f2f2;
+  --ax-surface-container: #f1ecec;
+  --ax-surface-container-high: #ebe6e6;
+  --ax-surface-container-highest: #e5e1e1;
+
+  // ============================================
+  // M3 ON-SURFACE TOKENS
+  // ============================================
+  --ax-on-surface: #1c1b1f;
+  --ax-on-surface-variant: #49454f;
+  --ax-outline: #79747e;
+  --ax-outline-variant: #cac4d0;
+
+  // ============================================
+  // SEMANTIC ALIASES (for component use)
+  // ============================================
+
+  // Brand/Primary aliases
+  --ax-brand-default: var(--ax-primary);
+  --ax-brand-emphasis: var(--ax-primary-emphasis);
+  --ax-brand-subtle: var(--ax-primary-subtle);
+  --ax-brand-muted: var(--ax-primary-muted);
+  --ax-brand-faint: var(--ax-primary-faint);
+
+  // Background aliases
+  --ax-background-default: var(--ax-bg);
+
+  // Border aliases
+  --ax-border-default: var(--ax-border);
+
+  // Text aliases
+  --ax-text-default: var(--ax-text);
+
+  // Success surface
+  --ax-success-default: var(--ax-success);
+  --ax-success-surface: var(--ax-success-faint);
+  --ax-success-border: var(--ax-success-muted);
+
+  // Warning surface
+  --ax-warning-default: var(--ax-warning);
+  --ax-warning-surface: var(--ax-warning-faint);
+  --ax-warning-border: var(--ax-warning-muted);
+
+  // Error/Danger surface
+  --ax-error-default: var(--ax-error);
+  --ax-error-surface: var(--ax-error-faint);
+  --ax-error-border: var(--ax-error-muted);
+  --ax-danger-default: var(--ax-error);
+  --ax-danger-subtle: var(--ax-error-faint);
+
+  // Info surface
+  --ax-info-default: var(--ax-info);
+  --ax-info-surface: var(--ax-info-faint);
+  --ax-info-border: var(--ax-info-muted);
+
+  // ============================================
+  // M3 GRADIENT TOKENS
+  // ============================================
+  --ax-gradient-primary: linear-gradient(
+    135deg,
+    var(--ax-primary) 0%,
+    var(--ax-purple) 100%
+  );
+  --ax-gradient-success: linear-gradient(
+    135deg,
+    var(--ax-success) 0%,
+    var(--ax-success-emphasis) 100%
+  );
+  --ax-gradient-warning: linear-gradient(
+    135deg,
+    var(--ax-warning) 0%,
+    var(--ax-warning-emphasis) 100%
+  );
+  --ax-gradient-info: linear-gradient(
+    135deg,
+    var(--ax-info) 0%,
+    var(--ax-info-emphasis) 100%
+  );
+  --ax-gradient-cyan: linear-gradient(
+    135deg,
+    var(--ax-cyan) 0%,
+    var(--ax-cyan-emphasis) 100%
+  );
+
+  // ============================================
+  // RADIUS TOKENS (M3)
+  // ============================================
+  --ax-radius-none: 0;
+  --ax-radius-xs: 4px;
+  --ax-radius-sm: 8px;
+  --ax-radius-md: 12px;
+  --ax-radius-lg: 16px;
+  --ax-radius-xl: 20px;
+  --ax-radius-2xl: 28px;
+  --ax-radius-full: 9999px;
+
+  // ============================================
+  // SHADOW TOKENS (M3 Elevation)
+  // ============================================
+  --ax-shadow-none: none;
+  --ax-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ax-shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --ax-shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ax-shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }

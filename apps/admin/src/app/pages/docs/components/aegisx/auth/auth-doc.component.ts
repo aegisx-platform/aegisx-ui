@@ -524,23 +524,23 @@ import { PropsTableComponent } from '../../../../../components/props-table/props
       }
 
       .login-gradient {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: var(--ax-gradient-primary);
       }
 
       .register-gradient {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: var(--ax-gradient-success);
       }
 
       .forgot-gradient {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
+        background: var(--ax-gradient-warning);
       }
 
       .reset-gradient {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        background: var(--ax-gradient-info);
       }
 
       .verify-gradient {
-        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        background: var(--ax-gradient-cyan);
       }
 
       .example-card-content {

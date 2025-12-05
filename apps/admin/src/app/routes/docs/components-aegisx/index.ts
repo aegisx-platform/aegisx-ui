@@ -14,7 +14,7 @@ import { LAYOUT_ROUTES } from './layout.routes';
 import { UTILITIES_ROUTES, DASHBOARD_ROUTES } from './utilities.routes';
 import { AUTH_ROUTES } from './auth.routes';
 
-const BASE_PATH = '../../pages/docs/components/aegisx';
+const BASE_PATH = '../../../pages/docs/components/aegisx';
 
 /**
  * Overview route for components section

@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 
-const BASE_PATH = '../../pages/docs/components/aegisx';
+const BASE_PATH = '../../../pages/docs/components/aegisx';
 
 export const NAVIGATION_ROUTES: Route[] = [
   {
