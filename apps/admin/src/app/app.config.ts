@@ -19,6 +19,10 @@ import {
 import { provideWidgetFramework } from '@aegisx/ui/widgets';
 import { appRoutes } from './app.routes';
 import { DemoDataProvider } from './pages/widget-demo/demo-data.provider';
+import {
+  RuntimeConfigService,
+  initializeRuntimeConfig,
+} from './core/services/runtime-config.service';
 
 // Factory function to initialize icons
 function initializeIcons() {
@@ -59,6 +63,15 @@ export const appConfig: ApplicationConfig = {
       maxOpened: 5,
       autoDismiss: true,
     }),
+
+    // Initialize runtime config (loads from /assets/config.json)
+    // This must be first so other services can use the config
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeRuntimeConfig,
+      deps: [RuntimeConfigService],
+      multi: true,
+    },
 
     // Initialize icons
     {

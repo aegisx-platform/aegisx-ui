@@ -22,6 +22,11 @@
             "input": "apps/admin/public"
           },
           {
+            "glob": "**/*",
+            "input": "apps/admin/src/assets",
+            "output": "assets"
+          },
+          {
             "glob": "**/*.css",
             "input": "node_modules/@angular/material/prebuilt-themes",
             "output": "themes"
