@@ -21,6 +21,10 @@ import { provideGlobalErrorHandler } from './core/error-handling';
 import { httpErrorInterceptorProvider } from './core/http';
 import { authInterceptor } from './core/auth';
 import { baseUrlInterceptor } from './core/http';
+import {
+  RuntimeConfigService,
+  initializeRuntimeConfig,
+} from './core/services/runtime-config.service';
 // Factory function to initialize icons
 function initializeIcons() {
   return () => {
@@ -42,6 +46,15 @@ export const appConfig: ApplicationConfig = {
     // Error handling and monitoring
     provideGlobalErrorHandler(),
     httpErrorInterceptorProvider,
+
+    // Initialize runtime config (loads from /assets/config.json)
+    // This must be first so other services can use the config
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeRuntimeConfig,
+      deps: [RuntimeConfigService],
+      multi: true,
+    },
 
     // Initialize icons
     {
