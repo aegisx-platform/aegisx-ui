@@ -122,6 +122,10 @@ export class MultiAppService {
     const registry = new Map(this._registry());
     registry.set(config.id, { config, enabled, order });
     this._registry.set(registry);
+
+    // Update active context immediately after registration
+    // This ensures navigation is available when the component renders
+    this.updateActiveContext(this.router.url);
   }
 
   /**
