@@ -17,6 +17,7 @@ import { NAVIGATION_ROUTES } from './navigation.routes';
 import { LAYOUT_ROUTES } from './layout.routes';
 import { UTILITIES_ROUTES, DASHBOARD_ROUTES } from './utilities.routes';
 import { AUTH_ROUTES } from './auth.routes';
+import { UI_BLOCKS_ROUTES } from './ui-blocks.routes';
 
 /**
  * Overview route for components section
@@ -47,6 +48,7 @@ export const COMPONENTS_AEGISX_ROUTES: Route[] = [
   ...UTILITIES_ROUTES,
   ...DASHBOARD_ROUTES,
   ...AUTH_ROUTES,
+  ...UI_BLOCKS_ROUTES,
 ];
 
 // Re-export individual route arrays for granular imports
@@ -60,4 +62,5 @@ export {
   UTILITIES_ROUTES,
   DASHBOARD_ROUTES,
   AUTH_ROUTES,
+  UI_BLOCKS_ROUTES,
 };

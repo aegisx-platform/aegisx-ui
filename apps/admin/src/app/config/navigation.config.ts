@@ -503,6 +503,20 @@ const DASHBOARD_ITEMS: AxNavigationItem[] = [
 ];
 
 // ============================================================
+// COMPONENTS - UI BLOCKS
+// ============================================================
+
+const UI_BLOCKS_ITEMS: AxNavigationItem[] = [
+  {
+    id: 'table-header',
+    title: 'Table Header',
+    type: 'item',
+    icon: 'table_chart',
+    link: '/docs/components/aegisx/ui-blocks/table-header',
+  },
+];
+
+// ============================================================
 // COMPONENTS - AUTH
 // ============================================================
 
@@ -1229,6 +1243,14 @@ export const COMPACT_NAVIGATION: AxNavigationItem[] = [
         icon: 'lock',
         children: AUTH_ITEMS,
       },
+      {
+        id: 'ui-blocks',
+        title: 'UI Blocks',
+        type: 'collapsible',
+        icon: 'view_module',
+        badge: { content: 'New', type: 'info' },
+        children: UI_BLOCKS_ITEMS,
+      },
     ],
   },
   {
@@ -1461,6 +1483,16 @@ export const DOCS_NAVIGATION: AxNavigationItem[] = [
         id: 'auth',
         title: 'Authentication',
         children: AUTH_ITEMS.map((item) => ({
+          id: item.id,
+          title: item.title,
+          link: item.link,
+        })),
+      },
+      {
+        id: 'ui-blocks',
+        title: 'UI Blocks',
+        badge: { content: 'New', type: 'info' },
+        children: UI_BLOCKS_ITEMS.map((item) => ({
           id: item.id,
           title: item.title,
           link: item.link,
