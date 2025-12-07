@@ -32,6 +32,7 @@ These docs are for **maintainers only** and are NOT published to npm:
 
 | Document                                                               | Description                       |
 | ---------------------------------------------------------------------- | --------------------------------- |
+| [COMPLETE_WORKFLOW.md](./COMPLETE_WORKFLOW.md)                         | **Full workflow: DB → API → UI**  |
 | [GIT_WORKFLOW.md](./GIT_WORKFLOW.md)                                   | Git release & npm publishing      |
 | [TESTING_GUIDE.md](./TESTING_GUIDE.md)                                 | Testing strategies for monorepo   |
 | [TEST_PRODUCTS_REFERENCE.md](./TEST_PRODUCTS_REFERENCE.md)             | Test products schema reference    |
