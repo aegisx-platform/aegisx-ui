@@ -1622,40 +1622,66 @@ class ShellGenerator {
         return;
       }
 
-      // Generate route entry
+      // Generate section marker name (e.g., MASTER-DATA)
+      const sectionMarker = sectionKebab.toUpperCase();
+
+      // Generate route entry with children array and markers for CRUD modules
       const routeEntry = `
+      // ${toTitleCase(sectionKebab)} Section (with children for CRUD modules)
       {
         path: '${sectionKebab}',
-        loadComponent: () =>
-          import('./pages/${sectionKebab}/${sectionKebab}.page').then((m) => m.${sectionPascal}Page),
-        data: {
-          title: '${toTitleCase(sectionKebab)}',
-        },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/${sectionKebab}/${sectionKebab}.page').then(
+                (m) => m.${sectionPascal}Page,
+              ),
+            data: {
+              title: '${toTitleCase(sectionKebab)}',
+            },
+          },
+          // === ${sectionMarker} ROUTES START ===
+          // CRUD modules will be auto-registered here by the generator
+          // === ${sectionMarker} ROUTES END ===
+        ],
       },`;
 
-      // Find a good insertion point - after the first child route
-      // Look for first closing brace with comma after children: [
-      const insertionPoint =
-        content.indexOf(childrenMatch[0]) + childrenMatch[0].length;
+      // Find the AUTO-GENERATED ROUTES START marker to insert before it
+      const autoGenMarker = '// === AUTO-GENERATED ROUTES START ===';
+      const markerIndex = content.indexOf(autoGenMarker);
 
-      // Check if there's already content after children: [
-      const afterChildren = content.slice(insertionPoint);
-      const firstBraceIndex = afterChildren.indexOf('{');
-
-      if (firstBraceIndex !== -1) {
-        // Insert before first existing route
-        const actualInsertPoint = insertionPoint + firstBraceIndex;
+      if (markerIndex !== -1) {
+        // Insert before the AUTO-GENERATED marker
         content =
-          content.slice(0, actualInsertPoint) +
+          content.slice(0, markerIndex) +
           routeEntry +
-          '\n      ' +
-          content.slice(actualInsertPoint);
+          '\n\n      ' +
+          content.slice(markerIndex);
       } else {
-        // Empty children array, insert directly
-        content =
-          content.slice(0, insertionPoint) +
-          routeEntry +
-          content.slice(insertionPoint);
+        // Fallback: Find children array to insert route
+        const insertionPoint =
+          content.indexOf(childrenMatch[0]) + childrenMatch[0].length;
+
+        // Check if there's already content after children: [
+        const afterChildren = content.slice(insertionPoint);
+        const firstBraceIndex = afterChildren.indexOf('{');
+
+        if (firstBraceIndex !== -1) {
+          // Insert before first existing route
+          const actualInsertPoint = insertionPoint + firstBraceIndex;
+          content =
+            content.slice(0, actualInsertPoint) +
+            routeEntry +
+            '\n      ' +
+            content.slice(actualInsertPoint);
+        } else {
+          // Empty children array, insert directly
+          content =
+            content.slice(0, insertionPoint) +
+            routeEntry +
+            content.slice(insertionPoint);
+        }
       }
 
       await fs.writeFile(routesPath, content, 'utf8');
