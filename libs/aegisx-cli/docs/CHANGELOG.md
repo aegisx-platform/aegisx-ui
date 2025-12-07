@@ -279,7 +279,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `templates/frontend/v2/service.hbs` - Removed optimistic updates from create/update/delete
 - `templates/backend/domain/controller.hbs` - Added event emission after CRUD operations
 - `templates/frontend/v2/list-component-v2.hbs` - Added commented WebSocket subscription code
-- `docs/crud-generator/EVENTS_GUIDE.md` - Comprehensive HIS Mode documentation
+- `libs/aegisx-cli/docs/EVENTS_GUIDE.md` - Comprehensive HIS Mode documentation
 
 **Benefits**:
 
@@ -639,9 +639,9 @@ When making changes to templates:
 
 ## Links
 
-- **Main Documentation**: `/docs/crud-generator/README.md`
-- **User Guide**: `/docs/crud-generator/USER_GUIDE.md`
-- **API Reference**: `/docs/crud-generator/API_REFERENCE.md`
-- **Events Guide**: `/docs/crud-generator/EVENTS_GUIDE.md`
-- **Import Guide**: `/docs/crud-generator/IMPORT_GUIDE.md`
-- **Quick Commands**: `/docs/crud-generator/QUICK_COMMANDS.md`
+- **Main Documentation**: `/libs/aegisx-cli/docs/README.md`
+- **User Guide**: `/libs/aegisx-cli/docs/USER_GUIDE.md`
+- **API Reference**: `/libs/aegisx-cli/docs/API_REFERENCE.md`
+- **Events Guide**: `/libs/aegisx-cli/docs/EVENTS_GUIDE.md`
+- **Import Guide**: `/libs/aegisx-cli/docs/IMPORT_GUIDE.md`
+- **Quick Commands**: `/libs/aegisx-cli/docs/QUICK_COMMANDS.md`

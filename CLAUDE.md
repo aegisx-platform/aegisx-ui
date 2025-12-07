@@ -130,7 +130,7 @@ pnpm run domain:list                        # List initialized domains
 pnpm run crud -- TABLE --domain inventory/master-data --schema inventory --force
 ```
 
-See [docs/crud-generator/QUICK_REFERENCE.md](./docs/crud-generator/QUICK_REFERENCE.md)
+See [libs/aegisx-cli/docs/QUICK_REFERENCE.md](./libs/aegisx-cli/docs/QUICK_REFERENCE.md)
 
 ### Custom Commands
 
@@ -162,8 +162,8 @@ See [docs/crud-generator/QUICK_REFERENCE.md](./docs/crud-generator/QUICK_REFEREN
 
 ### CRUD Generator
 
-- [CRUD Generator Overview](./docs/crud-generator/) - Automatic API generation
-- [Quick Reference](./docs/crud-generator/QUICK_REFERENCE.md) - Commands & examples
+- [CRUD Generator Overview](./libs/aegisx-cli/docs/) - Automatic API generation
+- [Quick Reference](./libs/aegisx-cli/docs/QUICK_REFERENCE.md) - Commands & examples
 
 ---
 

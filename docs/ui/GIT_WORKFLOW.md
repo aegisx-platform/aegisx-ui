@@ -251,4 +251,4 @@ pnpm nx test aegisx-ui
 
 ---
 
-**For CRUD Generator workflow, see [docs/crud-generator/GIT_WORKFLOW.md](../crud-generator/GIT_WORKFLOW.md)**
+**For CRUD Generator workflow, see [docs/aegisx-cli/GIT_WORKFLOW.md](../aegisx-cli/GIT_WORKFLOW.md)**

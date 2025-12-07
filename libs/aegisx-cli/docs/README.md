@@ -48,23 +48,20 @@ aegisx generate products --target frontend --force
 | **[Error Handling](./ERROR_HANDLING_GUIDE.md)**       | Error codes & validation         | Error handling    |
 | **[Validation Reference](./VALIDATION_REFERENCE.md)** | Field validation rules           | Form validation   |
 
-### Testing & Development
+### Templates & Development
 
 | Guide                                                       | Description                       |
 | ----------------------------------------------------------- | --------------------------------- |
-| **[Testing Guide](./TESTING_GUIDE.md)**                     | Testing strategies & examples     |
 | **[Template Patterns](./TEMPLATE_PATTERNS.md)**             | Handlebars template documentation |
 | **[Template Development](./TEMPLATE_DEVELOPMENT_GUIDE.md)** | Custom template creation          |
 
 ### Reference
 
-| Document                                                 | Description                      |
-| -------------------------------------------------------- | -------------------------------- |
-| **[Quick Commands](./QUICK_COMMANDS.md)**                | Fast command lookup              |
-| **[Changelog](./CHANGELOG.md)**                          | Version history & migrations     |
-| **[Git Workflow](./GIT_WORKFLOW.md)**                    | Version release & NPM publishing |
-| **[Migration Guide](./MIGRATION_GUIDE.md)**              | Upgrade from previous versions   |
-| **[WebSocket Spec](./WEBSOCKET_IMPLEMENTATION_SPEC.md)** | WebSocket implementation details |
+| Document                                    | Description                    |
+| ------------------------------------------- | ------------------------------ |
+| **[Quick Commands](./QUICK_COMMANDS.md)**   | Fast command lookup            |
+| **[Changelog](./CHANGELOG.md)**             | Version history & migrations   |
+| **[Migration Guide](./MIGRATION_GUIDE.md)** | Upgrade from previous versions |
 
 ---
 

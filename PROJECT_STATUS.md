@@ -658,11 +658,11 @@ body {
 
 **Knowledge Documents Created:**
 
-| Document                     | Location               | Purpose                                                    |
-| ---------------------------- | ---------------------- | ---------------------------------------------------------- |
-| `TEMPLATE_PATTERNS.md`       | `docs/crud-generator/` | CRUD generator structure, template variables, CLI commands |
-| `TEST_PRODUCTS_REFERENCE.md` | `docs/crud-generator/` | Reference implementation patterns for frontend/backend     |
-| `CSS_TOKEN_PATTERNS.md`      | `docs/design-system/`  | Tailwind to CSS token mapping guide                        |
+| Document                     | Location                | Purpose                                                    |
+| ---------------------------- | ----------------------- | ---------------------------------------------------------- |
+| `TEMPLATE_PATTERNS.md`       | `libs/aegisx-cli/docs/` | CRUD generator structure, template variables, CLI commands |
+| `TEST_PRODUCTS_REFERENCE.md` | `docs/aegisx-cli/`      | Reference implementation patterns for frontend/backend     |
+| `CSS_TOKEN_PATTERNS.md`      | `docs/design-system/`   | Tailwind to CSS token mapping guide                        |
 
 **Git Commit:** `f6de5f4` - refactor(aegisx-ui): migrate components from Tailwind @apply to CSS tokens
 
@@ -753,7 +753,7 @@ apps/admin/src/app/pages/docs/
 - **[🏛️ Architecture](./docs/architecture/architecture-overview.md)** - Frontend/Backend patterns
 - **[🧪 Testing Strategy](./docs/testing/testing-strategy.md)** - E2E with Playwright MCP
 - **[🚀 Deployment](./docs/infrastructure/deployment.md)** - Docker + CI/CD
-- **[🤖 CRUD Generator](./docs/crud-generator/)** - Automatic CRUD generation
+- **[🤖 CRUD Generator](./libs/aegisx-cli/docs/)** - Automatic CRUD generation
 
 ---
 

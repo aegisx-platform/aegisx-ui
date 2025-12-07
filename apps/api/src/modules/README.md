@@ -55,5 +55,6 @@ modules/
 ## 📚 Documentation
 
 For more information, see:
-- [CRUD Generator Guide](../../../../docs/crud-generator/README.md)
+
+- [CRUD Generator Guide](../../../../libs/aegisx-cli/docs/README.md)
 - [Feature Development Standard](../../../../docs/development/feature-development-standard.md)
