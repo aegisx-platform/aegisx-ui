@@ -20,6 +20,17 @@ export const INVENTORY_ROUTES: Route[] = [
     canActivate: [AuthGuard],
     children: [
       // Main page - ax-launcher with all modules
+
+      {
+        path: 'master-data',
+        loadComponent: () =>
+          import('./pages/master-data/master-data.page').then(
+            (m) => m.MasterDataPage,
+          ),
+        data: {
+          title: 'Master Data',
+        },
+      },
       {
         path: '',
         loadComponent: () =>
@@ -46,6 +57,18 @@ export const INVENTORY_ROUTES: Route[] = [
       // === AUTO-GENERATED ROUTES START ===
       // CRUD modules will be auto-registered here by the generator
       // === AUTO-GENERATED ROUTES END ===
+
+      // Drugs (Generated CRUD)
+      {
+        path: 'drugs',
+        loadChildren: () =>
+          import('./modules/drugs/drugs.routes').then((m) => m.drugsRoutes),
+        data: {
+          title: 'Drugs',
+          description: 'Drugs Management System',
+          requiredPermissions: ['drugs.read', 'admin.*'],
+        },
+      },
     ],
   },
 ];

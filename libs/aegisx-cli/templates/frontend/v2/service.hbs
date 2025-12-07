@@ -18,16 +18,12 @@ import {
   ImportJob,
 } from '../types/{{typesFileName}}';
 
-// ===== SERVICE CONFIGURATION =====
-
-const API_BASE_URL = '';
-
 @Injectable({
   providedIn: 'root',
 })
 export class {{PascalCase}}Service {
   private http = inject(HttpClient);
-  private baseUrl = `${API_BASE_URL}/{{tableNameToKebab moduleName}}`;
+  private baseUrl = '{{#if domainPath}}/{{domainPath}}{{else}}{{/if}}/{{tableNameToKebab moduleName}}';
 
   // ===== SIGNALS FOR STATE MANAGEMENT =====
 

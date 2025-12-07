@@ -16,10 +16,20 @@ import { LauncherApp } from '@aegisx/ui';
  * Each item represents a CRUD module accessible from the launcher.
  * Generator will auto-add entries when using: --shell inventory
  *
- * Available colors: 'pink', 'peach', 'mint', 'blue', 'yellow', 'purple', 'teal', 'red', 'indigo', 'gray'
+ * Available colors: 'pink', 'peach', 'mint', 'blue', 'yellow', 'lavender', 'cyan', 'rose', 'neutral', 'white'
  */
 export const MODULE_ITEMS: LauncherApp[] = [
   // === AUTO-GENERATED ENTRIES START ===
+  {
+    id: 'master-data',
+    name: 'Master Data',
+    description: 'Master Data modules',
+    icon: 'folder',
+    route: '/inventory/master-data',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+  },
   // CRUD modules will be auto-registered here by the generator
   // === AUTO-GENERATED ENTRIES END ===
 ];

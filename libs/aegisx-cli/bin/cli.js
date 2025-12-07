@@ -120,6 +120,10 @@ program
     'Target shell for frontend generation (e.g., inventory, system). Output goes to features/{shell}/modules/ and routes are registered in shell routes file',
   )
   .option(
+    '--section <section>',
+    'Target section within a shell (e.g., master-data). Module will be registered in section config instead of main config',
+  )
+  .option(
     '-s, --schema <schema>',
     'PostgreSQL schema to read table from (default: public)',
     'public',
@@ -524,13 +528,26 @@ program
               await frontendGenerator.autoRegisterShellRoute(
                 tableName,
                 options.shell,
-                { isInsideShellModules: options.isInsideShellModules },
+                {
+                  isInsideShellModules: options.isInsideShellModules,
+                  section: options.section,
+                },
               );
-              // Also register in master-data.config.ts for ax-launcher display
-              await frontendGenerator.registerMasterDataConfig(
-                tableName,
-                options.shell,
-              );
+              // Register in section config or main config for ax-launcher display
+              if (options.section) {
+                // Register in section's SECTION_ITEMS config
+                await frontendGenerator.registerSectionConfig(
+                  tableName,
+                  options.shell,
+                  options.section,
+                );
+              } else {
+                // Register in main.config.ts MODULE_ITEMS
+                await frontendGenerator.registerMasterDataConfig(
+                  tableName,
+                  options.shell,
+                );
+              }
             } else {
               await frontendGenerator.autoRegisterRoute(tableName);
             }
@@ -1130,6 +1147,81 @@ program
     console.log('  # To admin app instead of web');
     console.log('  ./bin/cli.js shell system --app admin --force');
     console.log('');
+  });
+
+program
+  .command('section <shell-name> <section-name>')
+  .alias('sec')
+  .description('Generate a section within a shell (sub-page with ax-launcher)')
+  .option('-a, --app <app>', 'Target app (web, admin)', 'web')
+  .option('-n, --name <name>', 'Display name for the section')
+  .option('-f, --force', 'Force overwrite existing files without confirmation')
+  .option('-d, --dry-run', 'Preview files without creating them')
+  .option('--no-format', 'Skip auto-formatting generated files')
+  .action(async (shellName, sectionName, options) => {
+    try {
+      // Validate app
+      const validApps = ['web', 'admin'];
+      if (!validApps.includes(options.app)) {
+        console.error(chalk.red(`❌ Invalid app: ${options.app}`));
+        console.error(`   Valid options: ${validApps.join(', ')}`);
+        process.exit(1);
+      }
+
+      console.log(chalk.bold.cyan(`\n📂 Generating Section: ${sectionName}\n`));
+
+      const generator = new ShellGenerator({
+        dryRun: options.dryRun,
+        force: options.force,
+        app: options.app,
+      });
+
+      const result = await generator.generateSection(
+        shellName,
+        sectionName,
+        options.name,
+      );
+
+      if (!result.success) {
+        if (result.reason === 'exists') {
+          console.log(
+            chalk.yellow('\n⚠️  Use --force to overwrite existing section\n'),
+          );
+        }
+        process.exit(1);
+      }
+
+      if (!options.dryRun) {
+        // Auto-format generated TypeScript files
+        if (result.files.length > 0 && options.format !== false) {
+          console.log('\n🎨 Formatting generated TypeScript files...');
+          try {
+            const { execSync } = require('child_process');
+
+            for (const file of result.files) {
+              try {
+                execSync(`npx prettier --write "${file}"`, {
+                  cwd: PROJECT_ROOT,
+                  stdio: 'pipe',
+                  timeout: 10000,
+                });
+              } catch (error) {
+                console.log(chalk.yellow(`⚠️  Could not format ${file}`));
+              }
+            }
+            console.log(chalk.green('✅ Code formatting completed!'));
+          } catch (error) {
+            console.log(
+              chalk.yellow('⚠️  Formatting skipped - prettier not available'),
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error(chalk.red('\n❌ Error generating section:'));
+      console.error(error.message);
+      process.exit(1);
+    }
   });
 
 // ═══════════════════════════════════════════════════════════════════════════

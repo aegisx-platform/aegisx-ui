@@ -811,7 +811,7 @@ const MAIN_PAGE_CONFIG_TEMPLATE = `import { LauncherApp } from '@aegisx/ui';
  * Each item represents a CRUD module accessible from the launcher.
  * Generator will auto-add entries when using: --shell {{_kebabCase shellName}}
  *
- * Available colors: 'pink', 'peach', 'mint', 'blue', 'yellow', 'purple', 'teal', 'red', 'indigo', 'gray'
+ * Available colors: 'pink', 'peach', 'mint', 'blue', 'yellow', 'lavender', 'cyan', 'rose', 'neutral', 'white'
  */
 export const MODULE_ITEMS: LauncherApp[] = [
   // === AUTO-GENERATED ENTRIES START ===
@@ -912,7 +912,7 @@ const SECTION_CONFIG_TEMPLATE = `import { LauncherApp } from '@aegisx/ui';
  * Each item represents a CRUD module accessible from the launcher.
  * Generator will auto-add entries when using: --shell {{_kebabCase shellName}} --section {{sectionKebab}}
  *
- * Available colors: 'pink', 'peach', 'mint', 'blue', 'yellow', 'purple', 'teal', 'red', 'indigo', 'gray'
+ * Available colors: 'pink', 'peach', 'mint', 'blue', 'yellow', 'lavender', 'cyan', 'rose', 'neutral', 'white'
  */
 export const SECTION_ITEMS: LauncherApp[] = [
   // === AUTO-GENERATED ENTRIES START ===
@@ -1380,6 +1380,288 @@ class ShellGenerator {
     } catch (error) {
       console.log(`   ⚠️  Could not auto-register route: ${error.message}`);
       return { success: false, reason: error.message };
+    }
+  }
+
+  /**
+   * Generate a section within a shell
+   * Creates section page with ax-launcher and section config
+   *
+   * @param {string} shellName - Parent shell name (e.g., 'inventory')
+   * @param {string} sectionName - Section name (e.g., 'master-data')
+   * @param {string} displayName - Display name for the section (optional)
+   * @returns {Promise<Object>} Generation result
+   */
+  async generateSection(shellName, sectionName, displayName = null) {
+    const { dryRun, force, app } = this.options;
+
+    const shellKebab = toKebabCase(shellName);
+    const sectionKebab = toKebabCase(sectionName);
+    const sectionPascal = toPascalCase(sectionName);
+    const sectionTitle = displayName || toTitleCase(sectionName);
+
+    // Find project root
+    const cwd = process.cwd();
+    let projectRoot = cwd;
+    let searchDir = cwd;
+    while (searchDir !== path.dirname(searchDir)) {
+      const appsDir = path.join(searchDir, 'apps');
+      try {
+        require('fs').accessSync(appsDir);
+        projectRoot = searchDir;
+        break;
+      } catch {
+        searchDir = path.dirname(searchDir);
+      }
+    }
+
+    const shellPath = path.resolve(
+      projectRoot,
+      `apps/${app}/src/app/features/${shellKebab}`,
+    );
+    const sectionPath = path.join(shellPath, 'pages', sectionKebab);
+
+    console.log(`\n📂 Generating section: ${sectionName}`);
+    console.log(`   🐚 Shell: ${shellName}`);
+    console.log(`   📁 Output: ${sectionPath}`);
+
+    // Check if shell exists
+    try {
+      await fs.access(shellPath);
+    } catch {
+      console.log(`\n❌ Shell '${shellName}' not found at: ${shellPath}`);
+      console.log(
+        `   Create the shell first with: aegisx shell ${shellName} --app ${app}`,
+      );
+      return { success: false, reason: 'shell_not_found' };
+    }
+
+    // Check if section already exists
+    try {
+      await fs.access(sectionPath);
+      if (!force) {
+        console.log(`\n⚠️  Section directory already exists: ${sectionPath}`);
+        console.log(`   Use --force to overwrite`);
+        return { success: false, reason: 'exists' };
+      }
+      console.log(`   ⚠️  Overwriting existing section (--force)`);
+    } catch {
+      // Directory doesn't exist, will create
+    }
+
+    // Create context for templates
+    const context = {
+      shellName,
+      shellKebab,
+      sectionName,
+      sectionKebab,
+      sectionPascal,
+      sectionTitle,
+    };
+
+    // Files to generate
+    const files = [
+      {
+        path: `${sectionKebab}.page.ts`,
+        template: SECTION_PAGE_COMPONENT_TEMPLATE,
+      },
+      {
+        path: `${sectionKebab}.config.ts`,
+        template: SECTION_CONFIG_TEMPLATE,
+      },
+    ];
+
+    // Process and write files
+    const generatedFiles = [];
+
+    for (const file of files) {
+      const filePath = path.join(sectionPath, file.path);
+      const template = Handlebars.compile(file.template);
+      const content = template(context);
+
+      if (dryRun) {
+        console.log(`\n📄 Would generate: ${file.path}`);
+        console.log('─'.repeat(60));
+        console.log(
+          content.substring(0, 500) + (content.length > 500 ? '\n...' : ''),
+        );
+      } else {
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, content, 'utf8');
+        console.log(`   ✅ Generated: ${file.path}`);
+        generatedFiles.push(filePath);
+      }
+    }
+
+    // Auto-register section in main.config.ts (MODULE_ITEMS)
+    if (!dryRun) {
+      await this.registerSectionInMainConfig(
+        shellPath,
+        sectionKebab,
+        sectionPascal,
+        sectionTitle,
+        shellKebab,
+      );
+
+      // Auto-register section route in shell routes
+      await this.registerSectionRoute(
+        shellPath,
+        shellKebab,
+        sectionKebab,
+        sectionPascal,
+      );
+    }
+
+    console.log(`\n✅ Section '${sectionName}' generated successfully!`);
+    console.log(`\n📋 Next Steps:`);
+    console.log(`   1. Generate modules for this section:`);
+    console.log(
+      `      aegisx generate TABLE_NAME --target frontend --shell ${shellKebab} --section ${sectionKebab} --force`,
+    );
+
+    return {
+      success: true,
+      files: generatedFiles,
+      outputDir: sectionPath,
+    };
+  }
+
+  /**
+   * Register section in main.config.ts MODULE_ITEMS
+   */
+  async registerSectionInMainConfig(
+    shellPath,
+    sectionKebab,
+    sectionPascal,
+    sectionTitle,
+    shellKebab,
+  ) {
+    const mainConfigPath = path.join(shellPath, 'pages/main/main.config.ts');
+
+    try {
+      let content = await fs.readFile(mainConfigPath, 'utf8');
+
+      // Check if section already registered
+      if (content.includes(`route: '/${shellKebab}/${sectionKebab}'`)) {
+        console.log(`   ⚠️  Section already registered in main.config.ts`);
+        return;
+      }
+
+      // Find auto-generated section marker
+      const marker = '// === AUTO-GENERATED ENTRIES START ===';
+      const markerIndex = content.indexOf(marker);
+
+      if (markerIndex === -1) {
+        console.log(
+          `   ⚠️  Could not find auto-generated marker in main.config.ts`,
+        );
+        return;
+      }
+
+      // Generate entry for section
+      const sectionEntry = `
+  {
+    id: '${sectionKebab}',
+    name: '${sectionTitle}',
+    description: '${sectionTitle} modules',
+    icon: 'folder',
+    route: '/${shellKebab}/${sectionKebab}',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+  },`;
+
+      // Insert after marker
+      const insertPosition = markerIndex + marker.length;
+      content =
+        content.slice(0, insertPosition) +
+        sectionEntry +
+        content.slice(insertPosition);
+
+      await fs.writeFile(mainConfigPath, content, 'utf8');
+      console.log(`   ✅ Registered section in main.config.ts`);
+    } catch (error) {
+      console.log(
+        `   ⚠️  Could not register section in main.config.ts: ${error.message}`,
+      );
+    }
+  }
+
+  /**
+   * Register section route in shell routes file
+   */
+  async registerSectionRoute(
+    shellPath,
+    shellKebab,
+    sectionKebab,
+    sectionPascal,
+  ) {
+    const routesPath = path.join(shellPath, `${shellKebab}.routes.ts`);
+
+    try {
+      let content = await fs.readFile(routesPath, 'utf8');
+
+      // Check if section route already exists
+      if (
+        content.includes(`path: '${sectionKebab}'`) &&
+        content.includes(`${sectionPascal}Page`)
+      ) {
+        console.log(
+          `   ⚠️  Section route already exists in ${shellKebab}.routes.ts`,
+        );
+        return;
+      }
+
+      // Find children array to insert route
+      // Look for "children: [" pattern
+      const childrenMatch = content.match(/children:\s*\[/);
+      if (!childrenMatch) {
+        console.log(
+          `   ⚠️  Could not find children array in ${shellKebab}.routes.ts`,
+        );
+        return;
+      }
+
+      // Generate route entry
+      const routeEntry = `
+      {
+        path: '${sectionKebab}',
+        loadComponent: () =>
+          import('./pages/${sectionKebab}/${sectionKebab}.page').then((m) => m.${sectionPascal}Page),
+        data: {
+          title: '${toTitleCase(sectionKebab)}',
+        },
+      },`;
+
+      // Find a good insertion point - after the first child route
+      // Look for first closing brace with comma after children: [
+      const insertionPoint =
+        content.indexOf(childrenMatch[0]) + childrenMatch[0].length;
+
+      // Check if there's already content after children: [
+      const afterChildren = content.slice(insertionPoint);
+      const firstBraceIndex = afterChildren.indexOf('{');
+
+      if (firstBraceIndex !== -1) {
+        // Insert before first existing route
+        const actualInsertPoint = insertionPoint + firstBraceIndex;
+        content =
+          content.slice(0, actualInsertPoint) +
+          routeEntry +
+          '\n      ' +
+          content.slice(actualInsertPoint);
+      } else {
+        // Empty children array, insert directly
+        content =
+          content.slice(0, insertionPoint) +
+          routeEntry +
+          content.slice(insertionPoint);
+      }
+
+      await fs.writeFile(routesPath, content, 'utf8');
+      console.log(`   ✅ Registered section route in ${shellKebab}.routes.ts`);
+    } catch (error) {
+      console.log(`   ⚠️  Could not register section route: ${error.message}`);
     }
   }
 }

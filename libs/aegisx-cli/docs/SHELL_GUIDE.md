@@ -1,12 +1,14 @@
-# AegisX CLI - Shell Generation Guide
+# AegisX CLI - Shell & Section Generation Guide
 
-> Create complete Angular app shells with a single command
+> Create complete Angular app shells and sections with a single command
 
 ---
 
 ## Overview
 
 App shells provide the foundational layout structure for Angular applications. The `aegisx shell` command generates complete, ready-to-use shell modules with navigation, routing, and theming support.
+
+Sections allow you to create sub-pages within a shell, each with its own `ax-launcher` for organizing CRUD modules.
 
 ---
 
@@ -21,6 +23,9 @@ aegisx shell auth --type simple --force
 
 # Generate multi-app shell (for complex modules)
 aegisx shell inventory --type multi-app --force
+
+# Create a section within a shell
+aegisx section inventory master-data --force
 ```
 
 ---
@@ -72,10 +77,13 @@ aegisx shell system --type enterprise --force
 
 **Features:**
 
-- Full navigation sidebar
-- Header with user actions
+- Full navigation header with active route indicator
+- Header with user actions and theme support
 - Footer with version info
-- Breadcrumb navigation
+- **Portal link** (back to main `/` route)
+- **ax-launcher main page** for card-based navigation
+- **Dashboard page** for analytics and KPIs
+- Auto-registration of CRUD modules
 - Responsive design
 
 **Best for:**
@@ -89,13 +97,29 @@ aegisx shell system --type enterprise --force
 
 ```
 features/system/
-├── system.component.ts      # Shell component
-├── system.config.ts         # Navigation config
-├── system.routes.ts         # Lazy-loaded routes
+├── system-shell.component.ts   # Shell component with MultiAppService
+├── system.config.ts            # Navigation config with exactMatch
+├── system.routes.ts            # Lazy-loaded routes with auto-gen markers
 ├── pages/
-│   ├── dashboard/           # Default dashboard page
-│   └── settings/            # Settings page (optional)
+│   ├── main/                   # Main page (ax-launcher cards)
+│   │   ├── main.page.ts
+│   │   └── main.config.ts      # MODULE_ITEMS with auto-gen markers
+│   └── dashboard/              # Dashboard page (analytics/KPIs)
+│       └── dashboard.page.ts
+├── modules/                    # CRUD modules auto-registered here
+│   └── .gitkeep
 └── index.ts
+```
+
+**Navigation Structure:**
+
+```typescript
+// 3-item navigation automatically generated:
+const systemNavigation: AxNavigationItem[] = [
+  { id: 'portal', title: 'Portal', icon: 'home', link: '/', exactMatch: true },
+  { id: 'system', title: 'System', icon: 'apps', link: '/system', exactMatch: true },
+  { id: 'dashboard', title: 'Dashboard', icon: 'dashboard', link: '/system/dashboard', exactMatch: true },
+];
 ```
 
 ---
@@ -143,7 +167,88 @@ features/inventory/
 
 ---
 
-## Command Options
+## Section Generation
+
+Sections are sub-pages within a shell that have their own `ax-launcher` for organizing CRUD modules. They're perfect for categorizing modules (e.g., Master Data, Transactions, Reports).
+
+### Create a Section
+
+```bash
+aegisx section <shell-name> <section-name> [options]
+```
+
+### Section Options
+
+| Option          | Alias | Default | Description                          |
+| --------------- | ----- | ------- | ------------------------------------ |
+| `-a, --app`     | `-a`  | `web`   | Target app: `web`, `admin`           |
+| `-n, --name`    | `-n`  | -       | Display name for the section         |
+| `-f, --force`   | `-f`  | `false` | Overwrite existing files             |
+| `-d, --dry-run` | `-d`  | `false` | Preview without creating             |
+| `--no-format`   | -     | `false` | Skip auto-formatting generated files |
+
+### Section Examples
+
+```bash
+# Create master-data section in inventory shell
+aegisx section inventory master-data --force
+
+# With custom display name
+aegisx section inventory master-data --name "Master Data Management" --force
+
+# For admin app
+aegisx section system users --app admin --force
+
+# Preview first
+aegisx section inventory transactions --dry-run
+```
+
+### Section Generated Structure
+
+```
+features/<shell-name>/
+├── <shell-name>.routes.ts            # Updated with section route + markers
+└── pages/
+    └── <section-name>/               # New section page
+        ├── <section-name>.page.ts    # Page component with ax-launcher
+        └── <section-name>.config.ts  # Section config with MODULE_ITEMS markers
+```
+
+### How Section Routes Work
+
+The section generator adds a route with `children` array and markers:
+
+```typescript
+// In shell.routes.ts
+{
+  path: 'master-data',
+  children: [
+    {
+      path: '',
+      loadComponent: () => import('./pages/master-data/master-data.page').then(m => m.MasterDataPage),
+      data: { title: 'Master Data' },
+    },
+    // === MASTER-DATA ROUTES START ===
+    // CRUD modules auto-registered here
+    // === MASTER-DATA ROUTES END ===
+  ],
+},
+```
+
+### Section Config Structure
+
+```typescript
+// In pages/master-data/master-data.config.ts
+export const MASTER_DATA_MODULE_ITEMS: AxLauncherItem[] = [
+  // === MASTER-DATA MODULES START ===
+  // CRUD module cards auto-registered here
+  // === MASTER-DATA MODULES END ===
+];
+```
+
+---
+
+## Shell Command Options
 
 ```bash
 aegisx shell <name> [options]
@@ -157,11 +262,170 @@ aegisx shell <name> [options]
 | `--theme <theme>`       | `default`    | Theme preset: `default`, `indigo`, `teal`, `rose` |
 | `--order <number>`      | `0`          | Order in app launcher                             |
 | `--with-dashboard`      | `true`       | Include dashboard page                            |
+| `--with-master-data`    | `true`       | Include Master Data page with ax-launcher         |
 | `--with-settings`       | `false`      | Include settings page                             |
 | `--with-auth`           | `true`       | Include AuthGuard protection                      |
 | `--with-theme-switcher` | `false`      | Include theme switcher component                  |
 | `-f, --force`           | `false`      | Overwrite existing files                          |
 | `-d, --dry-run`         | `false`      | Preview without creating files                    |
+| `--no-format`           | `false`      | Skip auto-formatting generated files              |
+
+---
+
+## Complete Workflow: Shell + Section + CRUD Module
+
+This is the **recommended workflow** for creating full-stack features with organized structure:
+
+### Step 1: Create Shell
+
+```bash
+aegisx shell inventory --app web --force
+```
+
+Creates:
+
+- Shell component with enterprise layout
+- Main page with ax-launcher
+- Dashboard page
+- Routes with auto-registration markers
+
+### Step 2: Create Section
+
+```bash
+aegisx section inventory master-data --force
+```
+
+Creates:
+
+- Master Data page with ax-launcher
+- Section config with MODULE_ITEMS markers
+- Route added to shell.routes.ts with children array
+
+### Step 3: Generate Backend
+
+```bash
+aegisx generate drugs --domain inventory/master-data --schema inventory --force
+```
+
+Creates:
+
+- Backend module at `modules/inventory/master-data/drugs/`
+- API route: `/api/inventory/master-data/drugs`
+- Auto-registered in domain aggregator
+
+### Step 4: Generate Frontend into Section
+
+```bash
+aegisx generate drugs --target frontend --shell inventory --section master-data --force
+```
+
+Creates:
+
+- Frontend module at `features/inventory/modules/drugs/`
+- Route auto-registered in section markers
+- Card auto-added to section's ax-launcher
+
+### Result
+
+```
+Backend:
+modules/inventory/master-data/drugs/
+├── controllers/
+├── repositories/
+├── routes/
+├── schemas/
+├── services/
+└── types/
+
+Frontend:
+features/inventory/
+├── inventory-shell.component.ts
+├── inventory.routes.ts
+├── pages/
+│   ├── main/
+│   │   ├── main.page.ts
+│   │   └── main.config.ts
+│   ├── master-data/
+│   │   ├── master-data.page.ts     # Has ax-launcher with drugs card
+│   │   └── master-data.config.ts   # MODULE_ITEMS includes drugs
+│   └── dashboard/
+│       └── dashboard.page.ts
+└── modules/
+    └── drugs/
+        ├── drugs-list.component.ts
+        ├── drugs-form.component.ts
+        ├── drugs-view.dialog.ts
+        ├── drugs.routes.ts
+        ├── drugs.service.ts
+        └── types/
+
+Routes:
+/inventory                       → Main page (ax-launcher)
+/inventory/master-data           → Master Data page (ax-launcher with drugs card)
+/inventory/master-data/drugs     → Drugs list component
+/inventory/dashboard             → Dashboard page
+
+API:
+/api/inventory/master-data/drugs → Drugs CRUD endpoints
+```
+
+---
+
+## Auto-Registration (v3.1.0+)
+
+The shell and section generators include **automatic CRUD module registration**:
+
+### How It Works
+
+1. **Routes auto-registration** in `shell.routes.ts`:
+
+```typescript
+// === AUTO-GENERATED ROUTES START ===
+// CRUD modules will be auto-registered here by the generator
+// === AUTO-GENERATED ROUTES END ===
+```
+
+2. **Navigation cards auto-registration** in `pages/main/main.config.ts`:
+
+```typescript
+export const MODULE_ITEMS: AxLauncherItem[] = [
+  // === AUTO-GENERATED MODULES START ===
+  // CRUD modules will be auto-added here
+  // === AUTO-GENERATED MODULES END ===
+];
+```
+
+3. **Section-specific registration** in `pages/<section>/<section>.config.ts`:
+
+```typescript
+export const SECTION_MODULE_ITEMS: AxLauncherItem[] = [
+  // === SECTION-NAME MODULES START ===
+  // CRUD modules for this section auto-added here
+  // === SECTION-NAME MODULES END ===
+];
+```
+
+### Using Auto-Registration with Sections
+
+When you generate a frontend module with `--section`:
+
+```bash
+aegisx generate drugs --target frontend --shell inventory --section master-data --force
+```
+
+Result:
+
+- Route added to section's `children` array (between section markers)
+- Card added to section's `MODULE_ITEMS` config
+- Module folder created in `modules/drugs/`
+
+### Disabling Auto-Registration
+
+If you want to manually control registration:
+
+```bash
+aegisx generate drugs --target frontend --no-register --force
+```
 
 ---
 
@@ -203,85 +467,16 @@ aegisx shell analytics --dry-run
 aegisx shell hr --name "Human Resources" --force
 ```
 
----
-
-## Integration with Generate Command
-
-After creating a shell, you can generate CRUD modules directly into it:
+### Multiple Sections in One Shell
 
 ```bash
-# Step 1: Create shell
+# Create shell
 aegisx shell inventory --force
 
-# Step 2: Generate module into shell
-aegisx generate products --target frontend --shell inventory --force
-```
-
-The `--shell` option automatically:
-
-- Registers routes in the shell's routes file
-- Adds navigation item to shell config
-- Maintains proper lazy loading
-
----
-
-## Generated Files Explained
-
-### shell.component.ts
-
-```typescript
-@Component({
-  selector: 'app-reports-shell',
-  standalone: true,
-  imports: [AxEnterpriseLayoutComponent],
-  template: `
-    <ax-enterprise-layout [config]="config">
-      <router-outlet />
-    </ax-enterprise-layout>
-  `,
-})
-export class ReportsShellComponent {
-  config = REPORTS_CONFIG;
-}
-```
-
-### shell.config.ts
-
-```typescript
-export const REPORTS_CONFIG: ShellConfig = {
-  id: 'reports',
-  name: 'Reports',
-  icon: 'analytics',
-  navigation: [
-    {
-      id: 'dashboard',
-      title: 'Dashboard',
-      icon: 'dashboard',
-      link: '/reports/dashboard',
-    },
-    // Add more navigation items here
-  ],
-};
-```
-
-### shell.routes.ts
-
-```typescript
-export const REPORTS_ROUTES: Routes = [
-  {
-    path: '',
-    component: ReportsShellComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
-      },
-      // Generated modules are added here
-    ],
-  },
-];
+# Create multiple sections
+aegisx section inventory master-data --name "Master Data" --force
+aegisx section inventory transactions --name "Transactions" --force
+aegisx section inventory reports --name "Reports" --force
 ```
 
 ---
@@ -371,6 +566,39 @@ Valid types are: `simple`, `enterprise`, `multi-app`
 2. Verify lazy loading path is correct
 3. Ensure AuthGuard is configured
 
+### Section Not Creating Children Array
+
+The section generator creates a `children` array structure. If the shell routes don't have the expected format, run:
+
+```bash
+aegisx shell <shell-name> --force
+aegisx section <shell-name> <section-name> --force
+```
+
+### Frontend Module Not Registering in Section
+
+Ensure you use both `--shell` and `--section` options:
+
+```bash
+# CORRECT
+aegisx generate drugs --target frontend --shell inventory --section master-data --force
+
+# WRONG - will register in main shell instead of section
+aegisx generate drugs --target frontend --shell inventory --force
+```
+
 ---
 
-**Copyright (c) 2024 AegisX Team. All rights reserved.**
+## See Also
+
+- [CLI Reference](./CLI_REFERENCE.md) - Complete command documentation
+- [Quick Reference](./QUICK_REFERENCE.md) - All commands at a glance
+- [Domain Guide](./DOMAIN_GUIDE.md) - Backend domain organization
+- [Events Guide](./EVENTS_GUIDE.md) - WebSocket integration
+- [Import Guide](./IMPORT_GUIDE.md) - Bulk import feature
+
+---
+
+**Last Updated:** 2025-12-07
+
+**Copyright (c) 2025 AegisX Team. All rights reserved.**

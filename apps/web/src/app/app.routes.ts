@@ -145,6 +145,10 @@ export const appRoutes: Route[] = [
   // Use CLI: ./bin/cli.js shell <name> --force
   // ============================================
 
+  // === AUTO-GENERATED SHELL ROUTES START ===
+  // Shell routes will be auto-registered here by the generator
+  // === AUTO-GENERATED SHELL ROUTES END ===
+
   // Inventory
   {
     path: 'inventory',

@@ -1856,6 +1856,7 @@ class FrontendGenerator {
         types,
         columns: enhancedSchema ? enhancedSchema.columns : [],
         baseUrlPath: moduleName,
+        domainPath: this.backendDomain || '', // Backend API domain path (e.g., 'inventory/master-data')
         searchFields: apiInfo.searchFields.length > 0,
         searchFieldsDisplay: apiInfo.searchFields.join(', '),
         queryFilters: this.generateQueryFilters(types, pascalName),
@@ -1965,6 +1966,7 @@ class FrontendGenerator {
         title: this.fieldNameToLabel(moduleName),
         types,
         columns: enhancedSchema ? enhancedSchema.columns : [],
+        domainPath: this.backendDomain || '', // Backend API domain path (e.g., 'inventory/master-data')
         searchFields: apiInfo.searchFields.length > 0,
         searchFieldsDisplay: apiInfo.searchFields.join(', '),
         displayColumns: this.generateDisplayColumns(types, singularPascalName, {
@@ -3235,16 +3237,16 @@ class FrontendGenerator {
       // Determine icon based on module name (simple heuristic)
       const icon = this.getIconForModule(moduleName);
 
-      // Available colors for variety
+      // Available colors for variety (valid LauncherColor values)
       const colors = [
         'blue',
         'mint',
         'peach',
         'pink',
         'yellow',
-        'purple',
-        'teal',
-        'indigo',
+        'lavender',
+        'cyan',
+        'rose',
       ];
       // Simple hash to pick a color based on module name
       const colorIndex =
@@ -3288,6 +3290,125 @@ class FrontendGenerator {
     } catch (error) {
       console.error(
         `❌ Failed to register in master-data.config.ts:`,
+        error.message,
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Register module in a section's SECTION_ITEMS config
+   * Generic method that supports any section name
+   *
+   * @param {string} moduleName - The module name to register
+   * @param {string} shellName - The shell name (e.g., 'inventory')
+   * @param {string} sectionName - The section name (e.g., 'master-data', 'budget')
+   */
+  async registerSectionConfig(moduleName, shellName, sectionName) {
+    const targetApp = this.targetApp || 'web';
+    const shellKebab = this.toKebabCase(shellName);
+    const sectionKebab = this.toKebabCase(sectionName);
+    const kebabName = this.toKebabCase(moduleName);
+    const title = this.fieldNameToLabel(moduleName);
+
+    // Section config path
+    const sectionConfigPath = path.join(
+      this.projectRoot,
+      `apps/${targetApp}/src/app/features/${shellKebab}/pages/${sectionKebab}/${sectionKebab}.config.ts`,
+    );
+
+    try {
+      // Check if section config exists
+      if (!fs.existsSync(sectionConfigPath)) {
+        console.log(
+          `ℹ️ No ${sectionKebab}.config.ts found in ${shellName}/${sectionKebab} - skipping launcher registration`,
+        );
+        return false;
+      }
+
+      let content = fs.readFileSync(sectionConfigPath, 'utf8');
+
+      // Check if already registered
+      if (content.includes(`id: '${kebabName}'`)) {
+        console.log(
+          `⚠️ ${moduleName} already registered in ${sectionKebab}.config.ts`,
+        );
+        return false;
+      }
+
+      // Find the marker for auto-generated entries
+      const markerStart = '// === AUTO-GENERATED ENTRIES START ===';
+      const markerEnd = '// === AUTO-GENERATED ENTRIES END ===';
+
+      const startIndex = content.indexOf(markerStart);
+      const endIndex = content.indexOf(markerEnd);
+
+      if (startIndex === -1 || endIndex === -1) {
+        console.warn(
+          `⚠️ Cannot find auto-generated markers in ${sectionKebab}.config.ts`,
+        );
+        console.log(
+          `💡 Please add manually: { id: '${kebabName}', name: '${title}', ... }`,
+        );
+        return false;
+      }
+
+      // Determine icon based on module name
+      const icon = this.getIconForModule(moduleName);
+
+      // Available colors for variety (valid LauncherColor values)
+      const colors = [
+        'blue',
+        'mint',
+        'peach',
+        'pink',
+        'yellow',
+        'lavender',
+        'cyan',
+        'rose',
+      ];
+      // Simple hash to pick a color based on module name
+      const colorIndex =
+        moduleName
+          .split('')
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+      const color = colors[colorIndex];
+
+      // Create the new entry - route includes section path
+      const newEntry = `  {
+    id: '${kebabName}',
+    name: '${title}',
+    description: 'Manage ${title.toLowerCase()} data',
+    icon: '${icon}',
+    route: '/${shellKebab}/${sectionKebab}/${kebabName}',
+    color: '${color}',
+    status: 'active',
+    enabled: true,
+  },
+  `;
+
+      // Insert after the start marker
+      const insertPosition = startIndex + markerStart.length;
+      content =
+        content.slice(0, insertPosition) +
+        '\n' +
+        newEntry +
+        content.slice(insertPosition);
+
+      // Write back
+      fs.writeFileSync(sectionConfigPath, content);
+
+      console.log(`✅ Registered ${moduleName} in ${sectionKebab}.config.ts:`);
+      console.log(`   - ID: ${kebabName}`);
+      console.log(`   - Name: ${title}`);
+      console.log(`   - Icon: ${icon}`);
+      console.log(`   - Route: /${shellKebab}/${sectionKebab}/${kebabName}`);
+      console.log(`   - Color: ${color}`);
+
+      return true;
+    } catch (error) {
+      console.error(
+        `❌ Failed to register in ${sectionKebab}.config.ts:`,
         error.message,
       );
       return false;

@@ -46,7 +46,7 @@ aegisx deactivate
 # Basic CRUD module
 aegisx generate <table_name>
 
-# With domain organization (NEW!)
+# With domain organization
 aegisx generate <table_name> --domain inventory/master-data
 
 # From specific PostgreSQL schema
@@ -68,35 +68,17 @@ aegisx generate <table_name> --dry-run
 aegisx generate <table_name> --force
 ```
 
-### Domain-Based Generation (NEW!)
-
-```bash
-# Generate module in domain structure
-aegisx generate drugs --domain inventory/master-data --force
-
-# Result:
-# modules/
-# └── inventory/
-#     ├── index.ts                 # Domain aggregator
-#     └── master-data/
-#         ├── index.ts             # Subdomain aggregator
-#         └── drugs/               # CRUD module
-#             ├── controllers/
-#             ├── repositories/
-#             ├── routes/
-#             ├── schemas/
-#             ├── services/
-#             ├── types/
-#             └── index.ts
-
-# API Route: /api/inventory/master-data/drugs
-```
-
 ### Frontend Generation
 
 ```bash
 # Basic frontend component
 aegisx generate <table_name> --target frontend
+
+# Frontend into specific shell
+aegisx generate <table_name> --target frontend --shell <shell_name>
+
+# Frontend into shell + section (RECOMMENDED)
+aegisx generate <table_name> --target frontend --shell <shell_name> --section <section_name>
 
 # Frontend with import dialog
 aegisx generate <table_name> --target frontend --with-import
@@ -104,62 +86,32 @@ aegisx generate <table_name> --target frontend --with-import
 # Frontend with event handling
 aegisx generate <table_name> --target frontend --with-events
 
-# Generate into specific shell
-aegisx generate <table_name> --target frontend --shell <shell_name>
-
 # Target specific app (web, admin)
 aegisx generate <table_name> --target frontend --app admin
 ```
 
 ### Generate Options
 
-| Option                   | Default    | Description                                 |
-| ------------------------ | ---------- | ------------------------------------------- |
-| `-t, --target`           | `backend`  | Generation target (`backend` or `frontend`) |
-| `--domain <path>`        | -          | Domain path (e.g., `inventory/master-data`) |
-| `-s, --schema <schema>`  | `public`   | PostgreSQL schema to read table from        |
-| `-f, --force`            | `false`    | Overwrite existing files                    |
-| `-d, --dry-run`          | `false`    | Preview files without creating              |
-| `-e, --with-events`      | `false`    | Include WebSocket events                    |
-| `--with-import`          | `false`    | Include bulk import (Excel/CSV)             |
-| `-a, --app`              | `api`      | Target app: `api`, `web`, `admin`           |
-| `--shell`                | -          | Target shell for route registration         |
-| `--package`              | `standard` | Package: `standard`, `enterprise`, `full`   |
-| `--no-register`          | `false`    | Skip auto-registration                      |
-| `--include-audit-fields` | `false`    | Include audit fields in forms               |
-| `--direct-db`            | `false`    | Write roles directly to database (dev only) |
-| `--migration-only`       | `false`    | Generate migration file only                |
-| `--multiple-roles`       | `false`    | Generate admin, editor, viewer roles        |
-| `--smart-stats`          | `false`    | Enable smart statistics detection           |
-| `--no-format`            | `false`    | Skip auto-formatting generated files        |
-
----
-
-## Domain Commands
-
-### Generate Domain Module
-
-```bash
-# Generate domain with specific routes
-aegisx domain <domain_name> --routes core,profiles,preferences
-
-# Example: User domain
-aegisx domain users --routes core,profiles,preferences --force
-
-# With events
-aegisx domain notifications --routes alerts,inbox --with-events --force
-```
-
-### Domain Options
-
-| Option              | Default   | Description                          |
-| ------------------- | --------- | ------------------------------------ |
-| `-r, --routes`      | -         | Comma-separated list of routes       |
-| `-e, --with-events` | `false`   | Include real-time events integration |
-| `-t, --target`      | `backend` | Generation target                    |
-| `-a, --app`         | `api`     | Target app                           |
-| `-f, --force`       | `false`   | Force overwrite                      |
-| `-d, --dry-run`     | `false`   | Preview without creating             |
+| Option                   | Default    | Description                                             |
+| ------------------------ | ---------- | ------------------------------------------------------- |
+| `-t, --target`           | `backend`  | Generation target (`backend` or `frontend`)             |
+| `--domain <path>`        | -          | Domain path for backend (e.g., `inventory/master-data`) |
+| `--shell <name>`         | -          | Target shell for frontend route registration            |
+| `--section <name>`       | -          | Target section within a shell for module registration   |
+| `-s, --schema <schema>`  | `public`   | PostgreSQL schema to read table from                    |
+| `-f, --force`            | `false`    | Overwrite existing files                                |
+| `-d, --dry-run`          | `false`    | Preview files without creating                          |
+| `-e, --with-events`      | `false`    | Include WebSocket events                                |
+| `--with-import`          | `false`    | Include bulk import (Excel/CSV)                         |
+| `-a, --app`              | `api`      | Target app: `api`, `web`, `admin`                       |
+| `--package`              | `standard` | Package: `standard`, `enterprise`, `full`               |
+| `--no-register`          | `false`    | Skip auto-registration                                  |
+| `--include-audit-fields` | `false`    | Include audit fields in forms                           |
+| `--direct-db`            | `false`    | Write roles directly to database (dev only)             |
+| `--migration-only`       | `false`    | Generate migration file only                            |
+| `--multiple-roles`       | `false`    | Generate admin, editor, viewer roles                    |
+| `--smart-stats`          | `false`    | Enable smart statistics detection                       |
+| `--no-format`            | `false`    | Skip auto-formatting generated files                    |
 
 ---
 
@@ -194,6 +146,7 @@ aegisx shell <shell_name> --app admin
 | `--theme`               | `default`    | Theme preset: `default`, `indigo`, `teal`, `rose` |
 | `--order`               | `0`          | App order in launcher                             |
 | `--with-dashboard`      | `true`       | Include dashboard page                            |
+| `--with-master-data`    | `true`       | Include Master Data page with ax-launcher         |
 | `--with-settings`       | `false`      | Include settings page                             |
 | `--with-auth`           | `true`       | Include AuthGuard                                 |
 | `--with-theme-switcher` | `false`      | Include theme switcher                            |
@@ -213,6 +166,92 @@ aegisx shell-types
 | `simple`     | AxEmptyLayoutComponent             | Auth pages, landing pages        |
 | `enterprise` | AxEnterpriseLayoutComponent        | Admin panels, management systems |
 | `multi-app`  | AxEnterpriseLayoutComponent + tabs | Complex modules with sections    |
+
+---
+
+## Section Commands
+
+### Generate Section within Shell
+
+```bash
+# Create section in shell
+aegisx section <shell_name> <section_name>
+
+# With custom display name
+aegisx section <shell_name> <section_name> --name "Master Data Management"
+
+# For admin app
+aegisx section <shell_name> <section_name> --app admin
+
+# Preview first
+aegisx section <shell_name> <section_name> --dry-run
+```
+
+### Section Options
+
+| Option          | Default | Description                          |
+| --------------- | ------- | ------------------------------------ |
+| `-a, --app`     | `web`   | Target app: `web`, `admin`           |
+| `-n, --name`    | -       | Display name for the section         |
+| `-f, --force`   | `false` | Overwrite existing files             |
+| `-d, --dry-run` | `false` | Preview without creating             |
+| `--no-format`   | `false` | Skip auto-formatting generated files |
+
+### Section Structure
+
+```
+features/<shell>/
+├── <shell>.routes.ts              # Updated with section route
+└── pages/
+    └── <section>/                 # New section page
+        ├── <section>.page.ts      # Page with ax-launcher
+        └── <section>.config.ts    # MODULE_ITEMS config
+```
+
+---
+
+## Domain Commands
+
+### Generate Domain Module
+
+```bash
+# Generate domain with specific routes
+aegisx domain <domain_name> --routes core,profiles,preferences
+
+# Example: User domain
+aegisx domain users --routes core,profiles,preferences --force
+
+# With events
+aegisx domain notifications --routes alerts,inbox --with-events --force
+```
+
+### Domain Init (Database Schema)
+
+```bash
+# Initialize a new domain with migrations
+aegisx domain:init <domain_name> --force
+
+# Preview first
+aegisx domain:init <domain_name> --dry-run
+```
+
+### Domain List
+
+```bash
+# List all initialized domains
+aegisx domain:list
+```
+
+### Domain Options
+
+| Option              | Default   | Description                          |
+| ------------------- | --------- | ------------------------------------ |
+| `-r, --routes`      | -         | Comma-separated list of routes       |
+| `-e, --with-events` | `false`   | Include real-time events integration |
+| `-t, --target`      | `backend` | Generation target                    |
+| `-a, --app`         | `api`     | Target app                           |
+| `-f, --force`       | `false`   | Force overwrite                      |
+| `-d, --dry-run`     | `false`   | Preview without creating             |
 
 ---
 
@@ -301,7 +340,27 @@ aegisx generate
 
 ## Common Workflows
 
-### 1. Full-Stack CRUD Module
+### 1. Full-Stack with Shell + Section (RECOMMENDED)
+
+```bash
+# Step 1: Create shell
+aegisx shell inventory --app web --force
+
+# Step 2: Create section within shell
+aegisx section inventory master-data --force
+
+# Step 3: Generate backend with domain
+aegisx generate drugs --domain inventory/master-data --schema inventory --force
+
+# Step 4: Generate frontend into shell + section
+aegisx generate drugs --target frontend --shell inventory --section master-data --force
+
+# Result:
+# Backend:  /api/inventory/master-data/drugs
+# Frontend: /inventory/master-data/drugs (with card in section's ax-launcher)
+```
+
+### 2. Full-Stack CRUD Module (Simple)
 
 ```bash
 # Step 1: Generate backend
@@ -311,7 +370,7 @@ aegisx generate products --force
 aegisx generate products --target frontend --force
 ```
 
-### 2. Domain-Based Module (Recommended)
+### 3. Domain-Based Module
 
 ```bash
 # Generate backend with domain organization
@@ -333,7 +392,7 @@ aegisx generate suppliers --domain inventory/master-data --force
 # /api/inventory/master-data/suppliers
 ```
 
-### 3. Module with Import Feature
+### 4. Module with Import Feature
 
 ```bash
 # Backend with import service
@@ -343,7 +402,7 @@ aegisx generate budgets --with-import --force
 aegisx generate budgets --target frontend --with-import --force
 ```
 
-### 4. Real-Time Module
+### 5. Real-Time Module
 
 ```bash
 # Backend with WebSocket events
@@ -353,17 +412,23 @@ aegisx generate notifications --with-events --force
 aegisx generate notifications --target frontend --with-events --force
 ```
 
-### 5. New App Shell + Module
+### 6. New App Shell + Section + Module
 
 ```bash
 # Create shell
 aegisx shell inventory --type enterprise --force
 
-# Generate module into shell
-aegisx generate products --target frontend --shell inventory --force
+# Create section
+aegisx section inventory master-data --force
+
+# Generate backend
+aegisx generate products --domain inventory/master-data --force
+
+# Generate frontend into shell's section
+aegisx generate products --target frontend --shell inventory --section master-data --force
 ```
 
-### 6. Multi-Schema Support
+### 7. Multi-Schema Support
 
 ```bash
 # Read from inventory schema, output to modules
@@ -412,6 +477,7 @@ aegisx --help
 # Command-specific help
 aegisx generate --help
 aegisx shell --help
+aegisx section --help
 aegisx domain --help
 aegisx templates --help
 aegisx config --help
@@ -427,4 +493,6 @@ aegisx --version
 
 ---
 
-**Copyright (c) 2024 AegisX Team. All rights reserved.**
+**Last Updated:** 2025-12-07
+
+**Copyright (c) 2025 AegisX Team. All rights reserved.**

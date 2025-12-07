@@ -16,11 +16,11 @@ const inventoryNavigation: AxNavigationItem[] = [
     link: '/',
     exactMatch: true,
   },
-  // Inventory Home (main page with ax-launcher)
+  // App Home (main page with ax-launcher)
   {
     id: 'inventory',
     title: 'Inventory',
-    icon: 'inventory_2',
+    icon: 'apps',
     link: '/inventory',
     exactMatch: true,
   },
