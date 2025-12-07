@@ -1,88 +1,101 @@
 # AegisX CLI Documentation
 
-> Premium CRUD Generator for Angular + Fastify
-
----
-
-## Documentation Strategy
-
-This package has **two documentation locations**:
-
-| Location                       | Purpose                          | Audience            |
-| ------------------------------ | -------------------------------- | ------------------- |
-| `libs/aegisx-cli/docs/` (here) | Condensed guides for npm package | External npm users  |
-| `docs/crud-generator/`         | **Complete documentation**       | Monorepo developers |
-
-**For comprehensive guides, see: `docs/crud-generator/`**
-
-Key complete guides in monorepo:
-
-- **[Workflow Overview](../../../docs/crud-generator/WORKFLOW_OVERVIEW.md)** - Full CLI architecture & workflows
-- **[Command Reference](../../../docs/crud-generator/COMMAND_REFERENCE.md)** - All commands with examples
-- **[Events Guide](../../../docs/crud-generator/EVENTS_GUIDE.md)** - Complete WebSocket integration
-- **[Import Guide](../../../docs/crud-generator/IMPORT_GUIDE.md)** - Full Excel/CSV import workflow
-
----
-
-## Documentation Index (Quick Reference)
-
-### Getting Started
-
-- **[Installation Guide](./INSTALLATION.md)** - Install, activate license, first steps
-- **[Quick Reference](./QUICK_REFERENCE.md)** - All commands at a glance
-- **[CLI Reference](./CLI_REFERENCE.md)** - Complete command documentation
-
-### Feature Guides
-
-- **[Domain-Based Generation](./DOMAIN_GUIDE.md)** - Organize modules with domain structure (NEW!)
-- **[Shell Generation](./SHELL_GUIDE.md)** - Create Angular app shells
-- **[WebSocket Events](./EVENTS_GUIDE.md)** - Real-time CRUD with `--with-events`
-- **[Bulk Import](./IMPORT_GUIDE.md)** - Excel/CSV import with `--with-import`
-
-### Advanced
-
-- **[Template Development](./TEMPLATE_DEVELOPMENT_GUIDE.md)** - Create custom templates
-- **[Migration Guide](./MIGRATION_GUIDE.md)** - Upgrade from previous versions
+> **Automatic CRUD API generation with built-in error handling and validation**
 
 ---
 
 ## Quick Start
 
-### 1. Install
-
 ```bash
+# Install globally
 npm install -g @aegisx/cli
-```
 
-### 2. Activate License
-
-```bash
 # Start 14-day trial
 aegisx trial
 
-# Or activate with license key
-aegisx activate AEGISX-PRO-XXXXXXXX-XX
-```
+# List available tables
+aegisx list-tables
 
-### 3. Generate Your First Module
-
-```bash
-# Backend CRUD
+# Generate backend CRUD
 aegisx generate products --force
 
-# Frontend CRUD
+# Generate frontend CRUD
 aegisx generate products --target frontend --force
 ```
 
-### 4. Domain-Based Generation (Recommended)
+---
 
-```bash
-# Organize modules with domain structure
-aegisx generate drugs --domain inventory/master-data --force
+## Documentation Index
 
-# Result structure:
-# modules/inventory/master-data/drugs/
-# API Route: /api/inventory/master-data/drugs
+### Getting Started
+
+| Guide                                           | Description                           | Priority   |
+| ----------------------------------------------- | ------------------------------------- | ---------- |
+| **[Workflow Overview](./WORKFLOW_OVERVIEW.md)** | CLI architecture & complete workflows | Start Here |
+| **[Quick Reference](./QUICK_REFERENCE.md)**     | All commands at a glance              | Daily Use  |
+| **[Installation](./INSTALLATION.md)**           | Install, activate license, setup      | First Time |
+| **[CLI Reference](./CLI_REFERENCE.md)**         | Complete command documentation        | Reference  |
+| **[Command Reference](./COMMAND_REFERENCE.md)** | All flags and options                 | Reference  |
+
+### Feature Guides
+
+| Guide                                                 | Description                      | When to Use       |
+| ----------------------------------------------------- | -------------------------------- | ----------------- |
+| **[Domain Guide](./DOMAIN_GUIDE.md)**                 | Domain-based module organization | API organization  |
+| **[Shell Guide](./SHELL_GUIDE.md)**                   | Angular app shells               | Frontend setup    |
+| **[Events Guide](./EVENTS_GUIDE.md)**                 | WebSocket real-time events       | Real-time updates |
+| **[Import Guide](./IMPORT_GUIDE.md)**                 | Excel/CSV bulk import            | Data import       |
+| **[Error Handling](./ERROR_HANDLING_GUIDE.md)**       | Error codes & validation         | Error handling    |
+| **[Validation Reference](./VALIDATION_REFERENCE.md)** | Field validation rules           | Form validation   |
+
+### Testing & Development
+
+| Guide                                                       | Description                       |
+| ----------------------------------------------------------- | --------------------------------- |
+| **[Testing Guide](./TESTING_GUIDE.md)**                     | Testing strategies & examples     |
+| **[Template Patterns](./TEMPLATE_PATTERNS.md)**             | Handlebars template documentation |
+| **[Template Development](./TEMPLATE_DEVELOPMENT_GUIDE.md)** | Custom template creation          |
+
+### Reference
+
+| Document                                                 | Description                      |
+| -------------------------------------------------------- | -------------------------------- |
+| **[Quick Commands](./QUICK_COMMANDS.md)**                | Fast command lookup              |
+| **[Changelog](./CHANGELOG.md)**                          | Version history & migrations     |
+| **[Git Workflow](./GIT_WORKFLOW.md)**                    | Version release & NPM publishing |
+| **[Migration Guide](./MIGRATION_GUIDE.md)**              | Upgrade from previous versions   |
+| **[WebSocket Spec](./WEBSOCKET_IMPLEMENTATION_SPEC.md)** | WebSocket implementation details |
+
+---
+
+## What You Get
+
+When you generate a CRUD module, you automatically get:
+
+### Backend (Fastify + TypeBox)
+
+```
+modules/products/
+├── products.routes.ts      # REST API endpoints
+├── products.controller.ts  # Business logic
+├── products.service.ts     # Database operations
+├── products.repository.ts  # Query builder
+├── products.schemas.ts     # TypeBox validation
+├── products.types.ts       # TypeScript types
+└── index.ts               # Module exports
+```
+
+### Frontend (Angular 17+ Standalone)
+
+```
+products/
+├── products.component.ts      # Smart component
+├── products.component.html    # Material Design template
+├── products.component.scss    # Tailwind CSS styles
+├── products.service.ts        # API service
+├── products-dialog.component.ts  # Create/Edit dialog
+├── products.routes.ts         # Lazy-loaded routes
+└── index.ts                   # Public API
 ```
 
 ---
@@ -100,103 +113,6 @@ aegisx generate drugs --domain inventory/master-data --force
 | **TypeBox Schemas**     | Type-safe validation                      |
 | **Multi-Package**       | Standard, Enterprise, Full packages       |
 | **PostgreSQL Schema**   | Read from any PostgreSQL schema           |
-
----
-
-## Command Reference
-
-### Generate Commands
-
-```bash
-# Basic CRUD
-aegisx generate <table_name>
-
-# Domain-based (recommended)
-aegisx generate <table_name> --domain inventory/master-data
-
-# From specific PostgreSQL schema
-aegisx generate <table_name> --schema inventory
-
-# Frontend
-aegisx generate <table_name> --target frontend
-
-# With events
-aegisx generate <table_name> --with-events
-
-# With import
-aegisx generate <table_name> --with-import
-
-# Full package (all features)
-aegisx generate <table_name> --with-events --with-import
-```
-
-### Shell Commands
-
-```bash
-# Enterprise shell (default)
-aegisx shell <name>
-
-# Simple shell
-aegisx shell <name> --type simple
-
-# Multi-app shell
-aegisx shell <name> --type multi-app
-```
-
-### Database Commands
-
-```bash
-# List tables (public schema)
-aegisx list-tables
-
-# List tables from specific schema
-aegisx list-tables --schema inventory
-
-# Validate module
-aegisx validate <module_name>
-```
-
-### License Commands
-
-```bash
-# Start trial
-aegisx trial
-
-# Activate
-aegisx activate <key>
-
-# Check status
-aegisx license
-
-# Deactivate
-aegisx deactivate
-```
-
----
-
-## pnpm Scripts (Monorepo)
-
-For monorepo projects:
-
-```bash
-# Basic generation
-pnpm run crud -- <table_name> --force
-
-# With import
-pnpm run crud:import -- <table_name> --force
-
-# With events
-pnpm run crud:events -- <table_name> --force
-
-# Full package
-pnpm run crud:full -- <table_name> --force
-
-# List tables
-pnpm run crud:list
-
-# Validate module
-pnpm run crud:validate -- <module_name>
-```
 
 ---
 
@@ -218,6 +134,45 @@ aegisx generate invoices --package full --force
 
 ---
 
+## HIS Mode (Hospital Information System)
+
+**v2.1.0+** includes HIS Mode for critical enterprise systems:
+
+- Data Accuracy First: UI always shows actual database state
+- Backend Always Emits Events: Audit trail and event-driven ready
+- Optional Real-Time Mode: Easy to enable when needed
+- No User Confusion: Never show outdated data
+
+---
+
+## pnpm Scripts (Monorepo)
+
+For monorepo projects using this CLI, use these shortcuts:
+
+```bash
+# Basic generation
+pnpm run crud -- <table_name> --force
+
+# With import
+pnpm run crud:import -- <table_name> --force
+
+# With events
+pnpm run crud:events -- <table_name> --force
+
+# Full package
+pnpm run crud:full -- <table_name> --force
+
+# List tables
+pnpm run crud:list
+
+# Validate module
+pnpm run crud:validate -- <module_name>
+```
+
+**Important:** Always use `--` separator before table name when using pnpm scripts!
+
+---
+
 ## License Tiers
 
 | Tier         | Price     | Developers | Features                  |
@@ -229,23 +184,6 @@ aegisx generate invoices --package full --force
 
 ---
 
-## Documentation Files
-
-| File                            | Description                      |
-| ------------------------------- | -------------------------------- |
-| `README.md`                     | This overview document           |
-| `INSTALLATION.md`               | Installation and setup guide     |
-| `QUICK_REFERENCE.md`            | All commands at a glance         |
-| `CLI_REFERENCE.md`              | Complete command documentation   |
-| `DOMAIN_GUIDE.md`               | Domain-based module organization |
-| `SHELL_GUIDE.md`                | Angular shell generation         |
-| `EVENTS_GUIDE.md`               | WebSocket events integration     |
-| `IMPORT_GUIDE.md`               | Bulk import (Excel/CSV)          |
-| `TEMPLATE_DEVELOPMENT_GUIDE.md` | Custom template creation         |
-| `MIGRATION_GUIDE.md`            | Version upgrade guide            |
-
----
-
 ## Support
 
 - **Documentation**: This folder (`docs/`)
@@ -253,5 +191,8 @@ aegisx generate invoices --package full --force
 - **Email**: support@aegisx.dev (Team/Enterprise)
 
 ---
+
+**Version:** 3.0.0
+**Last Updated:** 2025-12-07
 
 **Copyright (c) 2024 AegisX Team. All rights reserved.**

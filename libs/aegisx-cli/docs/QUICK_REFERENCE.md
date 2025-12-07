@@ -1,498 +1,628 @@
-# AegisX CLI - Quick Reference
+# CRUD Generator - Quick Reference
 
-> All commands at a glance
-
----
-
-## Installation
-
-```bash
-npm install -g @aegisx/cli
-```
+Complete command reference for AegisX CRUD Generator (v2.3.0)
 
 ---
 
-## License Commands
+## 🚀 Quick Start
+
+### Most Common Commands
 
 ```bash
-# Start 14-day free trial
-aegisx trial
+# Basic CRUD
+pnpm run crud -- TABLE_NAME --force
 
-# Activate license
-aegisx activate AEGISX-PRO-XXXXXXXX-XX
+# With import
+pnpm run crud:import -- TABLE_NAME --force
 
-# Check license status
-aegisx license
-
-# Remove license
-aegisx deactivate
-```
-
-**License Key Format:** `AEGISX-[TIER]-[SERIAL]-[CHECKSUM]`
-
-| Tier         | Example                   |
-| ------------ | ------------------------- |
-| Professional | `AEGISX-PRO-A7X9K2M4-5C`  |
-| Team         | `AEGISX-TEAM-B8Y0L3N5-9D` |
-| Enterprise   | `AEGISX-ENT-C9Z1M4P6-3E`  |
-
----
-
-## Generate Commands
-
-### Backend Generation
-
-```bash
-# Basic CRUD module
-aegisx generate <table_name>
-
-# With domain organization
-aegisx generate <table_name> --domain inventory/master-data
-
-# From specific PostgreSQL schema
-aegisx generate <table_name> --schema inventory
-
-# With WebSocket events
-aegisx generate <table_name> --with-events
-
-# With bulk import (Excel/CSV)
-aegisx generate <table_name> --with-import
+# With events
+pnpm run crud:events -- TABLE_NAME --force
 
 # Full package (all features)
-aegisx generate <table_name> --with-events --with-import
+pnpm run crud:full -- TABLE_NAME --force
 
-# Preview without creating files
-aegisx generate <table_name> --dry-run
-
-# Force overwrite existing files
-aegisx generate <table_name> --force
+# Generate App Shell (NEW)
+./bin/cli.js shell SHELL_NAME --force
 ```
 
-### Frontend Generation
-
-```bash
-# Basic frontend component
-aegisx generate <table_name> --target frontend
-
-# Frontend into specific shell
-aegisx generate <table_name> --target frontend --shell <shell_name>
-
-# Frontend into shell + section (RECOMMENDED)
-aegisx generate <table_name> --target frontend --shell <shell_name> --section <section_name>
-
-# Frontend with import dialog
-aegisx generate <table_name> --target frontend --with-import
-
-# Frontend with event handling
-aegisx generate <table_name> --target frontend --with-events
-
-# Target specific app (web, admin)
-aegisx generate <table_name> --target frontend --app admin
-```
-
-### Generate Options
-
-| Option                   | Default    | Description                                             |
-| ------------------------ | ---------- | ------------------------------------------------------- |
-| `-t, --target`           | `backend`  | Generation target (`backend` or `frontend`)             |
-| `--domain <path>`        | -          | Domain path for backend (e.g., `inventory/master-data`) |
-| `--shell <name>`         | -          | Target shell for frontend route registration            |
-| `--section <name>`       | -          | Target section within a shell for module registration   |
-| `-s, --schema <schema>`  | `public`   | PostgreSQL schema to read table from                    |
-| `-f, --force`            | `false`    | Overwrite existing files                                |
-| `-d, --dry-run`          | `false`    | Preview files without creating                          |
-| `-e, --with-events`      | `false`    | Include WebSocket events                                |
-| `--with-import`          | `false`    | Include bulk import (Excel/CSV)                         |
-| `-a, --app`              | `api`      | Target app: `api`, `web`, `admin`                       |
-| `--package`              | `standard` | Package: `standard`, `enterprise`, `full`               |
-| `--no-register`          | `false`    | Skip auto-registration                                  |
-| `--include-audit-fields` | `false`    | Include audit fields in forms                           |
-| `--direct-db`            | `false`    | Write roles directly to database (dev only)             |
-| `--migration-only`       | `false`    | Generate migration file only                            |
-| `--multiple-roles`       | `false`    | Generate admin, editor, viewer roles                    |
-| `--smart-stats`          | `false`    | Enable smart statistics detection                       |
-| `--no-format`            | `false`    | Skip auto-formatting generated files                    |
+**CRITICAL**: Always use `--` separator with pnpm scripts!
 
 ---
 
-## Shell Commands
+## 📦 Package Scripts
 
-### Generate App Shell
+Available scripts in `package.json`:
+
+| Script                             | Command                 | Description                  |
+| ---------------------------------- | ----------------------- | ---------------------------- |
+| `pnpm run crud -- TABLE`           | `./bin/cli.js generate` | Basic CRUD generation        |
+| `pnpm run crud:import -- TABLE`    | + `--with-import`       | With bulk import (Excel/CSV) |
+| `pnpm run crud:events -- TABLE`    | + `--with-events`       | With WebSocket events        |
+| `pnpm run crud:full -- TABLE`      | + `--package full`      | Full feature package         |
+| `pnpm run crud:list`               | `list-tables`           | List database tables         |
+| `pnpm run crud:validate -- MODULE` | `validate`              | Validate module              |
+| `pnpm run domain:init -- DOMAIN`   | `domain:init`           | Initialize new domain        |
+| `pnpm run domain:list`             | `domain:list`           | List initialized domains     |
+
+---
+
+## 🏢 Domain Management (Enterprise Scale)
+
+For large-scale systems with multiple business domains (inventory, HR, finance, etc.), use domain isolation with PostgreSQL schemas.
+
+### Initialize a Domain
+
+```bash
+# Initialize new domain (creates schema, knexfile, migrations folder)
+pnpm run domain:init -- inventory
+./bin/cli.js domain:init inventory --dry-run  # Preview
+
+# After init, run the domain migration
+npx knex migrate:latest --knexfile knexfile-inventory.ts
+```
+
+### List Domains
+
+```bash
+pnpm run domain:list
+```
+
+### Generate CRUD for a Domain
+
+```bash
+# Generate backend with domain
+pnpm run crud -- drugs --domain inventory/master-data --schema inventory --force
+
+# Generate frontend with domain
+./bin/cli.js generate drugs --target frontend --domain inventory/master-data --force
+```
+
+### Domain Structure
+
+When using domains, files are organized:
+
+```
+apps/api/src/
+├─ modules/
+│  └─ inventory/           # Domain folder
+│     ├─ index.ts          # Domain plugin registration
+│     ├─ master-data/      # Subdomain
+│     │  └─ drugs/         # CRUD module
+│     │     ├─ drugs.routes.ts
+│     │     ├─ drugs.controller.ts
+│     │     └─ ...
+│     └─ transactions/
+│        └─ drug-returns/
+└─ database/
+   └─ migrations-inventory/ # Domain-specific migrations
+```
+
+---
+
+## 💻 Direct CLI Usage
+
+Use direct CLI for advanced features or multiple flags:
+
+```bash
+./bin/cli.js generate TABLE_NAME [OPTIONS]
+
+# Or full path
+./libs/aegisx-cli/bin/cli.js generate TABLE_NAME [OPTIONS]
+```
+
+### Examples
+
+```bash
+# Backend with multiple features
+./bin/cli.js generate products --with-import --with-events --force
+
+# Frontend (after backend)
+./bin/cli.js generate products --target frontend --force
+
+# Frontend with import dialog
+./bin/cli.js generate products --target frontend --with-import --force
+
+# Dry run to preview
+./bin/cli.js generate products --dry-run
+
+# Custom output directory
+./bin/cli.js generate products --output ./custom/path --force
+```
+
+---
+
+## 🎯 Available Flags
+
+### Target Selection
+
+| Flag           | Options               | Default     | Description                                 |
+| -------------- | --------------------- | ----------- | ------------------------------------------- |
+| `-t, --target` | `backend`, `frontend` | `backend`   | What to generate                            |
+| `-a, --app`    | `api`, `web`, `admin` | `api`/`web` | Target app (backend/frontend)               |
+| `-s, --shell`  | `system`, `inventory` | (none)      | Target shell for routes                     |
+| `-o, --output` | `<dir>`               | Auto        | Custom output                               |
+| `--domain`     | `<path>`              | (none)      | Domain path (e.g., `inventory/master-data`) |
+| `--schema`     | `<name>`              | `public`    | PostgreSQL schema for table                 |
+
+**Important**:
+
+- Generate backend FIRST, then frontend
+- Default app for `--target backend` is `api`
+- Default app for `--target frontend` is `web`
+
+### Multi-App Frontend Generation
+
+Generate frontend modules to different Angular apps:
+
+```bash
+# Generate to web app (default)
+./bin/cli.js generate products --target frontend --force
+
+# Generate to admin app
+./bin/cli.js generate products --target frontend --app admin --force
+```
+
+Output directories by app:
+
+- `--app web` → `apps/web/src/app/features/`
+- `--app admin` → `apps/admin/src/app/features/`
+
+### Shell-Based Route Registration (NEW)
+
+Register routes directly into shell routes files instead of `app.routes.ts`:
+
+```bash
+# Register in SystemShell routes
+./bin/cli.js generate products --target frontend --shell system --force
+
+# Register in InventoryShell routes
+./bin/cli.js generate products --target frontend --shell inventory --force
+```
+
+**How it works**:
+
+- Routes are registered as **children** of the shell component
+- Shell routes file: `apps/{app}/src/app/features/{shell}/{shell}.routes.ts`
+- Falls back to `app.routes.ts` if shell routes file not found
+- Automatically detects duplicate routes to prevent double registration
+
+**Example Result** (in `system.routes.ts`):
+
+```typescript
+export const SYSTEM_ROUTES: Routes = [
+  {
+    path: '',
+    component: SystemShellComponent,
+    children: [
+      // ... existing routes ...
+
+      // Products (Generated CRUD)
+      {
+        path: 'products',
+        loadChildren: () => import('../products/products.routes').then((m) => m.productsRoutes),
+        data: {
+          title: 'Products',
+          description: 'Products Management System',
+          requiredPermissions: ['products.read', 'admin.*'],
+        },
+      },
+    ],
+  },
+];
+```
+
+### Feature Package
+
+| Flag        | Options                          | Default    | Description   |
+| ----------- | -------------------------------- | ---------- | ------------- |
+| `--package` | `standard`, `enterprise`, `full` | `standard` | Feature level |
+
+**Packages**:
+
+- **standard**: Basic CRUD
+- **enterprise**: + bulk ops, dropdown API, export
+- **full**: + validation, uniqueness check, advanced search
+
+### Features
+
+| Flag                     | Default | Description                              |
+| ------------------------ | ------- | ---------------------------------------- |
+| `-e, --with-events`      | `false` | WebSocket real-time events               |
+| `--with-import`          | `false` | Excel/CSV import                         |
+| `--smart-stats`          | `false` | Auto-detect stats fields                 |
+| `--multiple-roles`       | `false` | Generate 3 roles (admin/editor/viewer)   |
+| `--include-audit-fields` | `false` | Include audit fields in forms (frontend) |
+
+**Audit Fields**: `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by` are excluded from forms by default. Use `--include-audit-fields` when you need manual control (admin interfaces, data migration).
+
+### Generation Control
+
+| Flag            | Default | Description                    |
+| --------------- | ------- | ------------------------------ |
+| `-f, --force`   | `false` | Overwrite files without prompt |
+| `-d, --dry-run` | `false` | Preview files only             |
+| `--flat`        | `false` | Use flat structure             |
+| `--no-register` | `false` | Skip auto-registration         |
+| `--no-format`   | `false` | Skip prettier                  |
+| `--no-roles`    | `false` | Skip role generation           |
+
+---
+
+## 📋 Common Workflows
+
+### 1. Basic Feature (Backend + Frontend)
+
+```bash
+# Step 1: Backend
+pnpm run crud -- products --force
+
+# Step 2: Frontend
+./bin/cli.js generate products --target frontend --force
+```
+
+### 2. With Import Functionality
+
+```bash
+# Step 1: Backend with import service
+pnpm run crud:import -- budgets --force
+
+# Step 2: Frontend with import dialog
+./bin/cli.js generate budgets --target frontend --with-import --force
+```
+
+### 3. Real-Time Feature
+
+```bash
+# Step 1: Backend with events
+pnpm run crud:events -- notifications --force
+
+# Step 2: Frontend with event handling
+./bin/cli.js generate notifications --target frontend --with-events --force
+```
+
+### 4. Full-Featured Module
+
+```bash
+# Backend - all features
+./bin/cli.js generate orders --package full --with-import --with-events --force
+
+# Frontend - all features
+./bin/cli.js generate orders --target frontend --package full --with-import --with-events --force
+```
+
+### 5. Multi-App Frontend Generation
+
+```bash
+# Generate backend first
+pnpm run crud -- products --force
+
+# Generate to web app (default)
+./bin/cli.js generate products --target frontend --force
+
+# Generate to admin app
+./bin/cli.js generate products --target frontend --app admin --force
+```
+
+**Note**: The `--app` flag only affects frontend generation. Backend always generates to `apps/api/`.
+
+### 6. Regenerate After Changes
+
+```bash
+# Preview
+pnpm run crud -- products --dry-run
+
+# Apply
+pnpm run crud -- products --force
+```
+
+---
+
+## 🏷️ Table Name Conventions
+
+Database table names are converted automatically:
+
+| Database Table  | Module Folder    | TypeScript Types | API Routes           |
+| --------------- | ---------------- | ---------------- | -------------------- |
+| `test_products` | `test-products/` | `TestProducts`   | `/api/test-products` |
+| `user_profiles` | `user-profiles/` | `UserProfiles`   | `/api/user-profiles` |
+| `blog_posts`    | `blog-posts/`    | `BlogPosts`      | `/api/blog-posts`    |
+
+```bash
+# Input: database table (snake_case)
+pnpm run crud -- test_products --force
+
+# Generates:
+# - Folder: apps/api/src/modules/test-products/
+# - Types: TestProducts, CreateTestProducts, UpdateTestProducts
+# - Routes: /api/test-products
+```
+
+---
+
+## ✅ Before Generating
+
+```bash
+# 1. List available tables
+pnpm run crud:list
+
+# 2. Run migrations if needed
+pnpm run db:migrate
+
+# 3. Preview with dry run
+pnpm run crud -- TABLE_NAME --dry-run
+
+# 4. Generate with force
+pnpm run crud -- TABLE_NAME --force
+```
+
+---
+
+## ❌ Common Mistakes
+
+### Missing `--` Separator
+
+```bash
+# ❌ WRONG - Arguments ignored
+pnpm run crud products --force
+
+# ✅ CORRECT - With double dash
+pnpm run crud -- products --force
+```
+
+### Non-existent Command
+
+```bash
+# ❌ WRONG - Command doesn't exist
+pnpm aegisx-crud products
+
+# ✅ CORRECT - Use pnpm run crud
+pnpm run crud -- products --force
+```
+
+### Double Command
+
+```bash
+# ❌ WRONG - Causes "generate generate"
+pnpm run crud generate products --force
+
+# ✅ CORRECT
+pnpm run crud -- products --force
+```
+
+### Both Targets at Once
+
+```bash
+# ❌ WRONG - Can't do both
+./bin/cli.js generate products --target backend --target frontend
+
+# ✅ CORRECT - Run twice
+pnpm run crud -- products --force
+./bin/cli.js generate products --target frontend --force
+```
+
+### Missing `--force`
+
+```bash
+# Without --force, you'll get prompted
+pnpm run crud -- products
+
+# Add --force to skip prompts
+pnpm run crud -- products --force
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Error: "Table not found"
+
+```bash
+# Check if table exists
+pnpm run crud:list
+
+# Ensure migrations ran
+pnpm run db:migrate
+```
+
+### Error: "Arguments not recognized"
+
+Check for missing `--` separator:
+
+```bash
+# ❌ WRONG
+pnpm run crud products --force
+
+# ✅ CORRECT
+pnpm run crud -- products --force
+```
+
+### Frontend files not generated
+
+Backend must exist first:
+
+```bash
+# 1. Backend
+pnpm run crud -- products --force
+
+# 2. Then frontend
+./bin/cli.js generate products --target frontend --force
+```
+
+### Files not auto-registered
+
+Check if auto-registration succeeded:
+
+```bash
+# Re-generate with force to trigger registration
+pnpm run crud -- products --force
+```
+
+---
+
+## 📚 Command Reference
+
+### All Available Commands
+
+```bash
+# GENERATE commands
+generate [TABLE]             # Generate CRUD module
+shell <SHELL_NAME>           # Generate App Shell (NEW)
+shell-types                  # Show available shell types
+domain <NAME>                # Generate domain module
+route <DOMAIN/ROUTE>         # Add route to domain
+
+# INFORMATION commands
+list-tables                  # List database tables
+packages                     # Show feature packages
+validate <MODULE>            # Validate module
+
+# TEMPLATE commands
+templates list [TYPE]        # List templates
+templates set-default        # Set default template
+templates add                # Add custom template
+templates remove             # Remove custom template
+
+# CONFIG commands
+config init                  # Initialize .crudgen.json
+config show                  # Show current config
+```
+
+---
+
+## 🐚 Shell Generator (NEW)
+
+Generate complete App Shell components for the multi-app architecture.
+
+### Shell Types
+
+| Type         | Layout Component              | Description                          |
+| ------------ | ----------------------------- | ------------------------------------ |
+| `simple`     | `AxEmptyLayoutComponent`      | Minimal layout (auth, landing pages) |
+| `enterprise` | `AxEnterpriseLayoutComponent` | Full layout with navigation sidebar  |
+| `multi-app`  | `AxEnterpriseLayoutComponent` | With sub-app tabs for complex apps   |
+
+### Basic Usage
 
 ```bash
 # Enterprise shell (default)
-aegisx shell <shell_name>
+./bin/cli.js shell reports --force
 
-# Simple shell (minimal, no navigation)
-aegisx shell <shell_name> --type simple
+# Simple shell (auth, landing)
+./bin/cli.js shell auth --type simple --force
 
-# Multi-app shell (with sub-app tabs)
-aegisx shell <shell_name> --type multi-app
+# Multi-app shell
+./bin/cli.js shell inventory --type multi-app --force
 
-# With additional options
-aegisx shell <shell_name> --with-settings --with-theme-switcher
+# Preview without generating
+./bin/cli.js shell reports --dry-run
 
-# Target admin app instead of web
-aegisx shell <shell_name> --app admin
+# Show all shell types
+./bin/cli.js shell-types
 ```
 
-### Shell Options
+### Shell Flags
 
-| Option                  | Default      | Description                                       |
-| ----------------------- | ------------ | ------------------------------------------------- |
-| `-t, --type`            | `enterprise` | Shell type: `simple`, `enterprise`, `multi-app`   |
-| `-a, --app`             | `web`        | Target app: `web`, `admin`                        |
-| `-n, --name`            | -            | Display name for the shell                        |
-| `--theme`               | `default`    | Theme preset: `default`, `indigo`, `teal`, `rose` |
-| `--order`               | `0`          | App order in launcher                             |
-| `--with-dashboard`      | `true`       | Include dashboard page                            |
-| `--with-master-data`    | `true`       | Include Master Data page with ax-launcher         |
-| `--with-settings`       | `false`      | Include settings page                             |
-| `--with-auth`           | `true`       | Include AuthGuard                                 |
-| `--with-theme-switcher` | `false`      | Include theme switcher                            |
-| `-f, --force`           | `false`      | Overwrite existing files                          |
-| `-d, --dry-run`         | `false`      | Preview without creating                          |
+| Flag                    | Options                             | Default      | Description            |
+| ----------------------- | ----------------------------------- | ------------ | ---------------------- |
+| `-t, --type`            | `simple`, `enterprise`, `multi-app` | `enterprise` | Shell type             |
+| `-a, --app`             | `web`, `admin`                      | `web`        | Target Angular app     |
+| `-n, --name`            | `<string>`                          | (auto)       | Display name           |
+| `--theme`               | `default`, etc.                     | `default`    | Theme preset           |
+| `--order`               | `<number>`                          | `0`          | App order in launcher  |
+| `--with-dashboard`      | (flag)                              | `true`       | Include dashboard page |
+| `--with-settings`       | (flag)                              | `false`      | Include settings page  |
+| `--with-auth`           | (flag)                              | `true`       | Use AuthService        |
+| `--with-theme-switcher` | (flag)                              | `false`      | Include theme switcher |
+| `-f, --force`           | (flag)                              | `false`      | Overwrite existing     |
+| `-d, --dry-run`         | (flag)                              | `false`      | Preview only           |
 
-### Show Shell Types
+### Generated Files
 
-```bash
-aegisx shell-types
-```
-
-**Available Shell Types:**
-
-| Type         | Layout Component                   | Use Case                         |
-| ------------ | ---------------------------------- | -------------------------------- |
-| `simple`     | AxEmptyLayoutComponent             | Auth pages, landing pages        |
-| `enterprise` | AxEnterpriseLayoutComponent        | Admin panels, management systems |
-| `multi-app`  | AxEnterpriseLayoutComponent + tabs | Complex modules with sections    |
-
----
-
-## Section Commands
-
-### Generate Section within Shell
-
-```bash
-# Create section in shell
-aegisx section <shell_name> <section_name>
-
-# With custom display name
-aegisx section <shell_name> <section_name> --name "Master Data Management"
-
-# For admin app
-aegisx section <shell_name> <section_name> --app admin
-
-# Preview first
-aegisx section <shell_name> <section_name> --dry-run
-```
-
-### Section Options
-
-| Option          | Default | Description                          |
-| --------------- | ------- | ------------------------------------ |
-| `-a, --app`     | `web`   | Target app: `web`, `admin`           |
-| `-n, --name`    | -       | Display name for the section         |
-| `-f, --force`   | `false` | Overwrite existing files             |
-| `-d, --dry-run` | `false` | Preview without creating             |
-| `--no-format`   | `false` | Skip auto-formatting generated files |
-
-### Section Structure
+**Enterprise Shell** generates:
 
 ```
-features/<shell>/
-├── <shell>.routes.ts              # Updated with section route
+apps/web/src/app/features/{shell-name}/
+├── {shell-name}-shell.component.ts
+├── {shell-name}.config.ts
+├── {shell-name}.routes.ts
+├── index.ts
 └── pages/
-    └── <section>/                 # New section page
-        ├── <section>.page.ts      # Page with ax-launcher
-        └── <section>.config.ts    # MODULE_ITEMS config
+    ├── dashboard/dashboard.page.ts
+    └── settings/settings.page.ts (if --with-settings)
+```
+
+**Simple Shell** generates:
+
+```
+apps/web/src/app/features/{shell-name}/
+├── {shell-name}-shell.component.ts
+├── {shell-name}.routes.ts
+├── index.ts
+└── pages/
+    └── main/main.page.ts
+```
+
+### Examples
+
+```bash
+# Create Reports shell for web app
+./bin/cli.js shell reports --force
+
+# Create Auth shell (simple layout)
+./bin/cli.js shell auth --type simple --app web --force
+
+# Create Inventory shell with multi-app tabs
+./bin/cli.js shell inventory --type multi-app --with-settings --force
+
+# Create Admin shell for admin app
+./bin/cli.js shell admin-panel --app admin --theme enterprise --force
+```
+
+### After Generating
+
+Add route to `app.routes.ts`:
+
+```typescript
+// {Shell Name}
+{
+  path: '{shell-name}',
+  loadChildren: () =>
+    import('./features/{shell-name}/{shell-name}.routes').then((m) => m.{SHELL_NAME}_ROUTES),
+},
 ```
 
 ---
 
-## Domain Commands
+## 🎓 Key Takeaways
 
-### Generate Domain Module
+✅ **DO:**
 
-```bash
-# Generate domain with specific routes
-aegisx domain <domain_name> --routes core,profiles,preferences
+- Use `pnpm run crud -- TABLE` for basic generation
+- Use `pnpm run crud:import --` for import features
+- Use `./bin/cli.js generate` for advanced options
+- Generate **backend FIRST**, then frontend
+- Use table names in `snake_case` (e.g., `test_products`)
+- Add `--force` to avoid prompts
+- Check `pnpm run crud:list` before generating
 
-# Example: User domain
-aegisx domain users --routes core,profiles,preferences --force
+❌ **DON'T:**
 
-# With events
-aegisx domain notifications --routes alerts,inbox --with-events --force
-```
-
-### Domain Init (Database Schema)
-
-```bash
-# Initialize a new domain with migrations
-aegisx domain:init <domain_name> --force
-
-# Preview first
-aegisx domain:init <domain_name> --dry-run
-```
-
-### Domain List
-
-```bash
-# List all initialized domains
-aegisx domain:list
-```
-
-### Domain Options
-
-| Option              | Default   | Description                          |
-| ------------------- | --------- | ------------------------------------ |
-| `-r, --routes`      | -         | Comma-separated list of routes       |
-| `-e, --with-events` | `false`   | Include real-time events integration |
-| `-t, --target`      | `backend` | Generation target                    |
-| `-a, --app`         | `api`     | Target app                           |
-| `-f, --force`       | `false`   | Force overwrite                      |
-| `-d, --dry-run`     | `false`   | Preview without creating             |
+- Use `pnpm aegisx-crud` (doesn't exist)
+- Forget the `--` separator with pnpm scripts
+- Use `--entity` flag (doesn't exist)
+- Generate frontend without backend
+- Use PascalCase or kebab-case for table names
+- Assume `--target frontend` is default (it's not)
 
 ---
 
-## Database Commands
+## 📖 Complete Guides
 
-```bash
-# List available tables (public schema)
-aegisx list-tables
-aegisx ls
-
-# List tables from specific schema
-aegisx list-tables --schema inventory
-
-# Validate generated module
-aegisx validate <module_name>
-```
+- [README.md](./README.md) - Full documentation
+- [GIT_WORKFLOW.md](./GIT_WORKFLOW.md) - Version release & NPM publishing
 
 ---
 
-## Template Commands
-
-```bash
-# List all templates
-aegisx templates list
-
-# List backend templates only
-aegisx templates list backend
-
-# List frontend templates only
-aegisx templates list frontend
-
-# Set default template
-aegisx templates set-default
-
-# Add custom template
-aegisx templates add
-
-# Remove custom template
-aegisx templates remove
-```
-
----
-
-## Configuration Commands
-
-```bash
-# Initialize config file (.crudgen.json)
-aegisx config init
-
-# Show current configuration
-aegisx config show
-```
-
----
-
-## Package Types
-
-```bash
-# Show package details
-aegisx packages
-```
-
-| Package        | Features                                                       |
-| -------------- | -------------------------------------------------------------- |
-| **standard**   | Basic CRUD, TypeBox schemas, pagination, filtering             |
-| **enterprise** | + Dropdown API, bulk operations, status management, statistics |
-| **full**       | + Data validation, uniqueness checking, export capabilities    |
-
----
-
-## Interactive Mode
-
-```bash
-# Launch interactive wizard (no arguments)
-aegisx generate
-
-# Guides you through:
-# 1. Table selection
-# 2. Generation type
-# 3. Template selection
-# 4. Feature selection
-# 5. Confirmation
-```
-
----
-
-## Common Workflows
-
-### 1. Full-Stack with Shell + Section (RECOMMENDED)
-
-```bash
-# Step 1: Create shell
-aegisx shell inventory --app web --force
-
-# Step 2: Create section within shell
-aegisx section inventory master-data --force
-
-# Step 3: Generate backend with domain
-aegisx generate drugs --domain inventory/master-data --schema inventory --force
-
-# Step 4: Generate frontend into shell + section
-aegisx generate drugs --target frontend --shell inventory --section master-data --force
-
-# Result:
-# Backend:  /api/inventory/master-data/drugs
-# Frontend: /inventory/master-data/drugs (with card in section's ax-launcher)
-```
-
-### 2. Full-Stack CRUD Module (Simple)
-
-```bash
-# Step 1: Generate backend
-aegisx generate products --force
-
-# Step 2: Generate frontend
-aegisx generate products --target frontend --force
-```
-
-### 3. Domain-Based Module
-
-```bash
-# Generate backend with domain organization
-aegisx generate drugs --domain inventory/master-data --force
-
-# Generate multiple modules in same domain
-aegisx generate generics --domain inventory/master-data --force
-aegisx generate suppliers --domain inventory/master-data --force
-
-# Result structure:
-# modules/inventory/master-data/
-# ├── drugs/
-# ├── generics/
-# └── suppliers/
-
-# API Routes:
-# /api/inventory/master-data/drugs
-# /api/inventory/master-data/generics
-# /api/inventory/master-data/suppliers
-```
-
-### 4. Module with Import Feature
-
-```bash
-# Backend with import service
-aegisx generate budgets --with-import --force
-
-# Frontend with import dialog
-aegisx generate budgets --target frontend --with-import --force
-```
-
-### 5. Real-Time Module
-
-```bash
-# Backend with WebSocket events
-aegisx generate notifications --with-events --force
-
-# Frontend with event handling
-aegisx generate notifications --target frontend --with-events --force
-```
-
-### 6. New App Shell + Section + Module
-
-```bash
-# Create shell
-aegisx shell inventory --type enterprise --force
-
-# Create section
-aegisx section inventory master-data --force
-
-# Generate backend
-aegisx generate products --domain inventory/master-data --force
-
-# Generate frontend into shell's section
-aegisx generate products --target frontend --shell inventory --section master-data --force
-```
-
-### 7. Multi-Schema Support
-
-```bash
-# Read from inventory schema, output to modules
-aegisx generate drug_lots --schema inventory --force
-
-# Combine with domain
-aegisx generate drug_lots --schema inventory --domain inventory/transactions --force
-```
-
----
-
-## pnpm Scripts (Monorepo)
-
-For monorepo projects, use pnpm scripts:
-
-```bash
-# Basic generation
-pnpm run crud -- <table_name> --force
-
-# With import
-pnpm run crud:import -- <table_name> --force
-
-# With events
-pnpm run crud:events -- <table_name> --force
-
-# Full package
-pnpm run crud:full -- <table_name> --force
-
-# List tables
-pnpm run crud:list
-
-# Validate module
-pnpm run crud:validate -- <module_name>
-```
-
-**Important:** Always use `--` separator before table name with pnpm!
-
----
-
-## Help
-
-```bash
-# General help
-aegisx --help
-
-# Command-specific help
-aegisx generate --help
-aegisx shell --help
-aegisx section --help
-aegisx domain --help
-aegisx templates --help
-aegisx config --help
-```
-
----
-
-## Version
-
-```bash
-aegisx --version
-```
-
----
-
-**Last Updated:** 2025-12-07
-
-**Copyright (c) 2025 AegisX Team. All rights reserved.**
+**Generator Version**: 2.3.0
+**Last Updated**: December 3, 2025
+**Status**: ✅ Production Ready
