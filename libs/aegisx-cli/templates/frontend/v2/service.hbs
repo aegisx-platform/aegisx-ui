@@ -269,8 +269,8 @@ export class {{PascalCase}}Service {
     }
   }
 
-{{#if includeEnhanced}}
-  // ===== ENHANCED OPERATIONS =====
+{{#if includeExport}}
+  // ===== EXPORT OPERATIONS =====
 
   /**
    * Export {{camelCaseHelper moduleName}} data
@@ -337,6 +337,10 @@ export class {{PascalCase}}Service {
       throw error;
     }
   }
+{{/if}}
+
+{{#if includeEnhanced}}
+  // ===== ENHANCED OPERATIONS (BULK & DROPDOWN) =====
 
   /**
    * Get dropdown options for {{camelCaseHelper moduleName}}

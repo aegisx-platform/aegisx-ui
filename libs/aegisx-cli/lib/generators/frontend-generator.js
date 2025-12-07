@@ -1862,9 +1862,10 @@ class FrontendGenerator {
         queryFilters: this.generateQueryFilters(types, pascalName),
         includeEnhanced:
           options.enhanced ||
-          options.withImport ||
-          apiInfo.hasEnhancedOps ||
+          options.full ||
+          (options.enterprise && apiInfo.hasEnhancedOps) ||
           dropdownDependencies.length > 0,
+        includeExport: options.full || options.withExport || false,
         includeFull: options.full || apiInfo.hasFullOps,
         dropdownDependencies: dropdownDependencies,
         title: this.fieldNameToLabel(moduleName),
@@ -1977,9 +1978,13 @@ class FrontendGenerator {
         hasPublishedField,
         hasPublishedAtField,
         includeEnhanced:
-          options.enhanced || options.withImport || apiInfo.hasEnhancedOps, // Enable enhanced ops when using import for export functionality
+          options.enhanced ||
+          options.full ||
+          (options.enterprise && apiInfo.hasEnhancedOps),
         includeFull: options.full || apiInfo.hasFullOps,
+        includeExport: options.full || options.withExport || false, // Export feature enabled by full package or --with-export flag
         withImport: options.withImport || false, // Pass withImport option to templates
+        withExport: options.withExport || false, // Pass withExport option to templates
         withEvents: options.withEvents || false, // WebSocket events only when explicitly requested
         // Field detection helpers
         hasStatusField: fieldNames.includes('status'),
@@ -2640,6 +2645,24 @@ class FrontendGenerator {
       console.log(`\n🚀 Starting frontend generation for: ${moduleName}`);
       console.log(`📊 Options:`, options);
 
+      // ===== VALIDATION: Feature flag combinations =====
+      if (options.withExport && !options.full && !options.enhanced) {
+        console.warn(
+          '\n⚠️  Warning: --with-export works best with --package enterprise or --full',
+        );
+        console.warn('   Export feature requires enhanced API endpoints.');
+      }
+
+      if (options.withImport && !options.full && !options.enhanced) {
+        console.warn(
+          '\n⚠️  Warning: --with-import requires backend import endpoints.',
+        );
+        console.warn(
+          '   Make sure your backend was generated with --with-import flag.',
+        );
+      }
+      // ===== END VALIDATION =====
+
       const generatedFiles = [];
 
       // Generate types file first (required by other components)
@@ -2658,11 +2681,11 @@ class FrontendGenerator {
       generatedFiles.push(...dialogFiles);
 
       // Generate list component (must be after dialogs for imports)
-      const listComponentFile = await this.generateListComponent(
+      const listComponentFiles = await this.generateListComponent(
         moduleName,
         options,
       );
-      generatedFiles.push(listComponentFile);
+      generatedFiles.push(...listComponentFiles);
 
       // Generate routes
       const routesFile = await this.generateRoutes(moduleName, options);
@@ -2996,8 +3019,12 @@ class FrontendGenerator {
         insertPosition = routesArrayEnd;
       }
 
-      // Create route entry with proper AuthGuard and permissions
-      const routeEntry = `  {\n    path: '${kebabName}',\n    loadChildren: () =>\n      import('./features/${kebabName}/${kebabName}.routes').then((m) => m.${camelName}Routes),\n    canActivate: [AuthGuard],\n    data: {\n      title: '${title}',\n      description: '${title} Management System',\n      requiredPermissions: ['${kebabName}.read', 'admin.*'],\n    },\n  },\n`;
+      // Create route entry - only add AuthGuard for apps that have it (web, not admin)
+      // Admin app is a documentation/demo site without authentication
+      const hasAuthGuard = targetApp === 'web';
+      const routeEntry = hasAuthGuard
+        ? `  {\n    path: '${kebabName}',\n    loadChildren: () =>\n      import('./features/${kebabName}/${kebabName}.routes').then((m) => m.${camelName}Routes),\n    canActivate: [AuthGuard],\n    data: {\n      title: '${title}',\n      description: '${title} Management System',\n      requiredPermissions: ['${kebabName}.read', 'admin.*'],\n    },\n  },\n`
+        : `  {\n    path: '${kebabName}',\n    loadChildren: () =>\n      import('./features/${kebabName}/${kebabName}.routes').then((m) => m.${camelName}Routes),\n    data: {\n      title: '${title}',\n      description: '${title} Management System',\n    },\n  },\n`;
 
       // Insert at determined position
       content =

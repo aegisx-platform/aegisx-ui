@@ -164,6 +164,11 @@ async function generateCrudModule(tableName, options = {}) {
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
     defaultLabelField: findDefaultLabelField(schema.columns),
+    // Swagger display tag (for non-domain modules, same as ModuleName with spaces)
+    swaggerDisplayTag: toPascalCase(tableName).replace(
+      /([a-z])([A-Z])/g,
+      '$1 $2',
+    ),
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,
@@ -1533,6 +1538,14 @@ async function generateDomainModule(domainName, options = {}) {
           .map((part) => toPascalCase(part).replace(/([a-z])([A-Z])/g, '$1 $2'))
           .join(' / ') +
         ' / ' +
+        toPascalCase(domainName).replace(/([a-z])([A-Z])/g, '$1 $2')
+      : toPascalCase(domainName).replace(/([a-z])([A-Z])/g, '$1 $2'),
+    // Swagger display tag for route files
+    // Format: "Inventory: Dosage Forms" for domain modules (uses root domain only)
+    // Format: "Dosage Forms" for flat modules
+    swaggerDisplayTag: domain
+      ? toPascalCase(domain.split('/')[0]).replace(/([a-z])([A-Z])/g, '$1 $2') +
+        ': ' +
         toPascalCase(domainName).replace(/([a-z])([A-Z])/g, '$1 $2')
       : toPascalCase(domainName).replace(/([a-z])([A-Z])/g, '$1 $2'),
   };

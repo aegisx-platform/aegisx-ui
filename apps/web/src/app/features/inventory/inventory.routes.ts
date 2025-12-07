@@ -60,6 +60,58 @@ export const INVENTORY_ROUTES: Route[] = [
             },
           },
           // === MASTER-DATA ROUTES START ===
+          // Hospitals (Generated CRUD)
+          {
+            path: 'hospitals',
+            loadChildren: () =>
+              import('./modules/hospitals/hospitals.routes').then(
+                (m) => m.hospitalsRoutes,
+              ),
+            data: {
+              title: 'Hospitals',
+              description: 'Hospitals Management System',
+              requiredPermissions: ['hospitals.read', 'admin.*'],
+            },
+          },
+          // Departments (Generated CRUD)
+          {
+            path: 'departments',
+            loadChildren: () =>
+              import('./modules/departments/departments.routes').then(
+                (m) => m.departmentsRoutes,
+              ),
+            data: {
+              title: 'Departments',
+              description: 'Departments Management System',
+              requiredPermissions: ['departments.read', 'admin.*'],
+            },
+          },
+          // Companies (Generated CRUD)
+          {
+            path: 'companies',
+            loadChildren: () =>
+              import('./modules/companies/companies.routes').then(
+                (m) => m.companiesRoutes,
+              ),
+            data: {
+              title: 'Companies',
+              description: 'Companies Management System',
+              requiredPermissions: ['companies.read', 'admin.*'],
+            },
+          },
+          // Locations (Generated CRUD)
+          {
+            path: 'locations',
+            loadChildren: () =>
+              import('./modules/locations/locations.routes').then(
+                (m) => m.locationsRoutes,
+              ),
+            data: {
+              title: 'Locations',
+              description: 'Locations Management System',
+              requiredPermissions: ['locations.read', 'admin.*'],
+            },
+          },
           // Drugs (Generated CRUD)
           {
             path: 'drugs',

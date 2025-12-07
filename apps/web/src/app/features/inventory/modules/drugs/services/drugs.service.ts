@@ -365,7 +365,7 @@ export class DrugService {
     }
   }
 
-  // ===== ENHANCED OPERATIONS =====
+  // ===== EXPORT OPERATIONS =====
 
   /**
    * Export drugs data
@@ -437,6 +437,8 @@ export class DrugService {
       throw error;
     }
   }
+
+  // ===== ENHANCED OPERATIONS (BULK & DROPDOWN) =====
 
   /**
    * Get dropdown options for drugs
@@ -650,6 +652,81 @@ export class DrugService {
       throw error;
     } finally {
       this.loadingSignal.set(false);
+    }
+  }
+
+  // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
+
+  /**
+   * Validate drugs data before save
+   */
+  async validateDrug(
+    data: CreateDrugRequest,
+  ): Promise<{ valid: boolean; errors?: any[] }> {
+    try {
+      const response = await this.http
+        .post<
+          ApiResponse<{ valid: boolean; errors?: any[] }>
+        >(`${this.baseUrl}/validate`, { data })
+        .toPromise();
+
+      if (response) {
+        return response.data;
+      }
+      return { valid: false, errors: ['Validation failed'] };
+    } catch (error: any) {
+      console.error('Failed to validate drugs:', error);
+      return { valid: false, errors: [error.message || 'Validation error'] };
+    }
+  }
+
+  /**
+   * Check field uniqueness
+   */
+  async checkUniqueness(
+    field: string,
+    value: string,
+    excludeId?: number,
+  ): Promise<{ unique: boolean }> {
+    try {
+      let params = new HttpParams().set('value', value);
+
+      if (excludeId) {
+        params = params.set('excludeId', excludeId);
+      }
+
+      const response = await this.http
+        .get<
+          ApiResponse<{ unique: boolean }>
+        >(`${this.baseUrl}/check/${field}`, { params })
+        .toPromise();
+
+      if (response) {
+        return response.data;
+      }
+      return { unique: false };
+    } catch (error: any) {
+      console.error('Failed to check uniqueness:', error);
+      return { unique: false };
+    }
+  }
+
+  /**
+   * Get drugs statistics
+   */
+  async getStats(): Promise<{ total: number } | null> {
+    try {
+      const response = await this.http
+        .get<ApiResponse<{ total: number }>>(`${this.baseUrl}/stats`)
+        .toPromise();
+
+      if (response) {
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      console.error('Failed to get drugs stats:', error);
+      return null;
     }
   }
 

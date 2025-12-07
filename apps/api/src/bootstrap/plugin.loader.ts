@@ -360,7 +360,7 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
     name: 'business-features',
     description: 'Business feature modules (ready for HIS, Inventory, etc.)',
     plugins: [
-      // Inventory Domain - aggregates all inventory modules
+      // Inventory Domain - aggregates all inventory modules (includes drugs via master-data)
       {
         name: 'inventory-domain',
         plugin: inventoryDomainPlugin,

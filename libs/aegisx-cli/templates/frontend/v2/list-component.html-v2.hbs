@@ -3,17 +3,15 @@
     <!-- Breadcrumb -->
     <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
 
-    <!-- Header with Stats (hide stats when permission error) -->
+    <!-- Header with Stats -->
     <app-{{kebabCase}}-list-header
       [stats]="stats()"
       [loading]="{{camelCaseHelper moduleName}}Service.loading()"
-      [permissionError]="{{camelCaseHelper moduleName}}Service.permissionError()"
       [hasError]="!!{{camelCaseHelper moduleName}}Service.error()"
       (createClicked)="openCreateDialog()"
 {{#if withImport}}
       (importClicked)="openImportDialog()"
 {{/if}}
-      (clearPermissionError)="{{camelCaseHelper moduleName}}Service.clearPermissionError()"
     ></app-{{kebabCase}}-list-header>
 
     <!-- Filters Panel (hide when any error exists) -->
@@ -39,7 +37,7 @@
         (dateFilterChange)="onDateFilterChange($event)"
       >
         <!-- Export Button Slot -->
-{{#if includeEnhanced}}
+{{#if includeExport}}
         <app-export
           export
           [exportService]="exportServiceAdapter"

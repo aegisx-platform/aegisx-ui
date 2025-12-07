@@ -3,14 +3,13 @@
     <!-- Breadcrumb -->
     <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
 
-    <!-- Header with Stats (hide stats when permission error) -->
+    <!-- Header with Stats -->
     <app-drugs-list-header
       [stats]="stats()"
       [loading]="drugsService.loading()"
-      [permissionError]="drugsService.permissionError()"
       [hasError]="!!drugsService.error()"
       (createClicked)="openCreateDialog()"
-      (clearPermissionError)="drugsService.clearPermissionError()"
+      (importClicked)="openImportDialog()"
     ></app-drugs-list-header>
 
     <!-- Filters Panel (hide when any error exists) -->
@@ -34,6 +33,16 @@
           (dateFilterChange)="onDateFilterChange($event)"
         >
           <!-- Export Button Slot -->
+          <app-export
+            export
+            [exportService]="exportServiceAdapter"
+            [currentFilters]="getExportFilters()"
+            [selectedItems]="selectedItems()"
+            [availableFields]="availableExportFields"
+            [moduleName]="'drugs'"
+            (exportStarted)="onExportStarted($event)"
+            (exportCompleted)="onExportCompleted($event)"
+          ></app-export>
 
           <!-- Filter Chips Slot -->
           <div filter-chips>

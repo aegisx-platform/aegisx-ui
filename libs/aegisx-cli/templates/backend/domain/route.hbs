@@ -46,7 +46,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Create {{moduleName}}
   fastify.post('/', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Create a new {{moduleName}}',
       description: 'Create a new {{moduleName}} with the provided data',
       body: Create{{ModuleName}}Schema,
@@ -72,7 +72,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Export {{moduleName}} data
   fastify.get('/export', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Export {{moduleName}} data',
       description: 'Export {{moduleName}} data in various formats (CSV, Excel, PDF)',
       querystring: ExportQuerySchema,
@@ -99,7 +99,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Get {{moduleName}} by ID
   fastify.get('/:id', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Get {{moduleName}} by ID',
       description: 'Retrieve a {{moduleName}} by its unique identifier',
       params: {{ModuleName}}IdParamSchema,
@@ -123,7 +123,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Get all {{moduleName}}s
   fastify.get('/', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Get all {{moduleName}}s with pagination and formats',
       description: 'Retrieve {{moduleName}}s with flexible formatting: ?format=dropdown for UI components, ?format=minimal for lightweight data, ?fields=id,name for custom field selection',
       querystring: List{{ModuleName}}QuerySchema,
@@ -145,7 +145,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Update {{moduleName}}
   fastify.put('/:id', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Update {{moduleName}} by ID',
       description: 'Update an existing {{moduleName}} with new data',
       params: {{ModuleName}}IdParamSchema,
@@ -171,7 +171,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Delete {{moduleName}}
   fastify.delete('/:id', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Delete {{moduleName}} by ID',
       description: 'Delete a {{moduleName}} by its unique identifier',
       params: {{ModuleName}}IdParamSchema,
@@ -199,7 +199,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Get dropdown options for UI components
   fastify.get('/dropdown', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Get {{moduleName}} dropdown options',
       description: 'Get {{moduleName}} options for dropdown/select components',
       querystring: DropdownQuerySchema,
@@ -221,7 +221,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Bulk create {{moduleName}}s
   fastify.post('/bulk', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Bulk create {{moduleName}}s',
       description: 'Create multiple {{moduleName}}s in one operation',
       body: BulkCreateSchema(Create{{ModuleName}}Schema),
@@ -243,7 +243,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Bulk update {{moduleName}}s
   fastify.put('/bulk', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Bulk update {{moduleName}}s',
       description: 'Update multiple {{moduleName}}s in one operation',
       body: BulkUpdateSchema(Update{{ModuleName}}Schema),
@@ -265,7 +265,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Bulk delete {{moduleName}}s
   fastify.delete('/bulk', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Bulk delete {{moduleName}}s',
       description: 'Delete multiple {{moduleName}}s in one operation',
       body: BulkDeleteSchema,
@@ -288,7 +288,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Bulk status update
   fastify.patch('/bulk/status', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Bulk update {{moduleName}} status',
       description: 'Update status of multiple {{moduleName}}s',
       body: BulkStatusSchema,
@@ -310,7 +310,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Activate {{moduleName}}
   fastify.patch('/:id/activate', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Activate {{moduleName}}',
       description: 'Activate a {{moduleName}} by setting is_active to true',
       params: {{ModuleName}}IdParamSchema,
@@ -334,7 +334,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Deactivate {{moduleName}}
   fastify.patch('/:id/deactivate', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Deactivate {{moduleName}}',
       description: 'Deactivate a {{moduleName}} by setting is_active to false',
       params: {{ModuleName}}IdParamSchema,
@@ -358,7 +358,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Toggle {{moduleName}} status
   fastify.patch('/:id/toggle', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Toggle {{moduleName}} status',
       description: 'Toggle the is_active status of a {{moduleName}}',
       params: {{ModuleName}}IdParamSchema,
@@ -384,7 +384,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Get {{moduleName}} statistics
   fastify.get('/stats', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Get {{moduleName}} statistics',
       description: 'Get statistical information about {{moduleName}}s',
       response: {
@@ -411,7 +411,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Validate data before save
   fastify.post('/validate', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Validate {{moduleName}} data',
       description: 'Validate {{moduleName}} data before saving',
       body: ValidationRequestSchema(Create{{ModuleName}}Schema),
@@ -433,7 +433,7 @@ export async function {{currentRoute.camelName}}Routes(
   // Check field uniqueness
   fastify.get('/check/:field', {
     schema: {
-      tags: ['{{ModuleName}}'],
+      tags: ['{{swaggerDisplayTag}}'],
       summary: 'Check field uniqueness',
       description: 'Check if a field value is unique',
       params: UniquenessParamSchema,

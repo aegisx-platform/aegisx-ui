@@ -79,6 +79,7 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
           },
         ],
         tags: [
+          // === Core Platform ===
           {
             name: 'Documentation',
             description: 'OpenAPI specification and documentation endpoints',
@@ -103,8 +104,138 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
             name: 'Settings',
             description: 'Application settings and configuration',
           },
+
+          // === Inventory: Organization ===
+          {
+            name: 'Inventory: Locations',
+            description:
+              'Storage locations management (warehouses, rooms, shelves)',
+          },
+          {
+            name: 'Inventory: Departments',
+            description: 'Hospital departments management',
+          },
+          {
+            name: 'Inventory: Bank',
+            description: 'Bank accounts for payment processing',
+          },
+
+          // === Inventory: Budget Structure ===
+          {
+            name: 'Inventory: Budget Types',
+            description: 'Budget type definitions',
+          },
+          {
+            name: 'Inventory: Budget Categories',
+            description: 'Budget category classifications',
+          },
+          {
+            name: 'Inventory: Budgets',
+            description: 'Master budget management',
+          },
+
+          // === Inventory: Drug & Company ===
+          {
+            name: 'Inventory: Drug Generics',
+            description: 'Generic drug names (e.g., Paracetamol, Amoxicillin)',
+          },
+          {
+            name: 'Inventory: Drugs',
+            description: 'Drug master data with trade names and pricing',
+          },
+          {
+            name: 'Inventory: Companies',
+            description: 'Pharmaceutical companies and vendors',
+          },
+
+          // === Inventory: Drug Information ===
+          {
+            name: 'Inventory: Drug Components',
+            description: 'Drug active ingredients and compositions',
+          },
+          {
+            name: 'Inventory: Drug Focus Lists',
+            description: 'Drug classification lists (High Alert, LASA, etc.)',
+          },
+          {
+            name: 'Inventory: Drug Pack Ratios',
+            description: 'Drug packaging ratios and conversions',
+          },
+
+          // === Inventory: Lookup Tables ===
+          {
+            name: 'Inventory: Dosage Forms',
+            description: 'Drug dosage forms (tablet, capsule, injection, etc.)',
+          },
+          {
+            name: 'Inventory: Drug Units',
+            description: 'Units of measurement for drugs',
+          },
+          {
+            name: 'Inventory: Adjustment Reasons',
+            description: 'Reasons for inventory adjustments',
+          },
+          {
+            name: 'Inventory: Return Actions',
+            description: 'Actions for drug returns',
+          },
         ],
-      },
+        'x-tagGroups': [
+          {
+            name: '🔧 Core Platform',
+            tags: [
+              'Documentation',
+              'System',
+              'Authentication',
+              'Navigation',
+              'User Profile',
+              'Settings',
+            ],
+          },
+          {
+            name: '🏥 Inventory: Organization',
+            tags: [
+              'Inventory: Locations',
+              'Inventory: Departments',
+              'Inventory: Bank',
+            ],
+          },
+          {
+            name: '💰 Inventory: Budget',
+            tags: [
+              'Inventory: Budget Types',
+              'Inventory: Budget Categories',
+              'Inventory: Budgets',
+            ],
+          },
+          {
+            name: '💊 Inventory: Drug & Company',
+            tags: [
+              'Inventory: Drug Generics',
+              'Inventory: Drugs',
+              'Inventory: Companies',
+            ],
+          },
+          {
+            name: '🧪 Inventory: Drug Information',
+            tags: [
+              'Inventory: Drug Components',
+              'Inventory: Drug Focus Lists',
+              'Inventory: Drug Pack Ratios',
+            ],
+          },
+          {
+            name: '📚 Inventory: Lookup Tables',
+            tags: [
+              'Inventory: Dosage Forms',
+              'Inventory: Drug Units',
+              'Inventory: Adjustment Reasons',
+              'Inventory: Return Actions',
+            ],
+          },
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any, // Type assertion for Redoc x-tagGroups extension
       hideUntagged: false,
       stripBasePath: false,
     });

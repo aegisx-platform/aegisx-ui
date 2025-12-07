@@ -106,6 +106,11 @@ program
     false,
   )
   .option(
+    '--with-export',
+    'Include export functionality (CSV/Excel/PDF export)',
+    false,
+  )
+  .option(
     '--no-register',
     'Skip auto-registration in plugin.loader.ts / app.routes.ts',
     false,
@@ -131,6 +136,39 @@ program
   .option(
     '--domain <path>',
     'Domain path for module organization (e.g., inventory/master-data, queue/tickets)',
+  )
+  .addHelpText(
+    'after',
+    `
+
+Examples:
+  Generate standard CRUD only:
+    $ aegisx generate users --target frontend --package standard
+
+  Generate enterprise with bulk operations:
+    $ aegisx generate users --target frontend --package enterprise
+
+  Generate enterprise with import functionality:
+    $ aegisx generate users --target frontend --package enterprise --with-import
+
+  Generate enterprise with export functionality:
+    $ aegisx generate users --target frontend --package enterprise --with-export
+
+  Generate full package with all features:
+    $ aegisx generate users --target frontend --package full --with-import
+
+Feature Matrix:
+  ┌─────────────────┬──────────┬────────────┬──────┐
+  │ Feature         │ Standard │ Enterprise │ Full │
+  ├─────────────────┼──────────┼────────────┼──────┤
+  │ CRUD            │    ✅    │     ✅     │  ✅  │
+  │ Bulk Operations │    ❌    │     ✅     │  ✅  │
+  │ Export          │    ❌    │  --with-export │  ✅  │
+  │ Import          │    ❌    │  --with-import │  ✅  │
+  │ Events          │ --with-events │ --with-events │ --with-events │
+  │ Validation      │    ❌    │     ❌     │  ✅  │
+  └─────────────────┴──────────┴────────────┴──────┘
+`,
   )
   .action(async (tableName, options) => {
     try {
@@ -410,6 +448,7 @@ program
             dryRun: options.dryRun,
             force: options.force,
             withImport: options.withImport,
+            withExport: options.withExport,
             withEvents: options.withEvents,
             includeAuditFields: options.includeAuditFields,
           },

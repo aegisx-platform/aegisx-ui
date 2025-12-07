@@ -24,7 +24,7 @@ export async function {{moduleName}}ImportRoutes(
   // Download import template
   fastify.get('/import/template', {
     schema: {
-      tags: ['{{ModuleName}}', 'Import'],
+      tags: ['{{swaggerDisplayTag}}', 'Import'],
       summary: 'Download import template',
       description:
         'Download Excel/CSV template for {{moduleName}} import with field instructions and example data',
@@ -67,7 +67,7 @@ export async function {{moduleName}}ImportRoutes(
   // Validate import file
   fastify.post('/import/validate', {
     schema: {
-      tags: ['{{ModuleName}}', 'Import'],
+      tags: ['{{swaggerDisplayTag}}', 'Import'],
       summary: 'Validate import file',
       description:
         'Upload and validate Excel/CSV file before import. Returns detailed validation results with row-by-row errors and warnings. Use multipart/form-data with file field.',
@@ -106,7 +106,7 @@ export async function {{moduleName}}ImportRoutes(
   // Execute import
   fastify.post('/import/execute', {
     schema: {
-      tags: ['{{ModuleName}}', 'Import'],
+      tags: ['{{swaggerDisplayTag}}', 'Import'],
       summary: 'Execute import',
       description:
         'Execute validated import using session ID from validate endpoint. Creates/updates {{moduleName}} in database.',
@@ -130,7 +130,7 @@ export async function {{moduleName}}ImportRoutes(
   // Get import job status (optional - for tracking progress)
   fastify.get('/import/status/:jobId', {
     schema: {
-      tags: ['{{ModuleName}}', 'Import'],
+      tags: ['{{swaggerDisplayTag}}', 'Import'],
       summary: 'Get import job status',
       description: 'Get current status and progress of an import job',
       params: {

@@ -148,6 +148,68 @@ export interface PaginatedResponse<T> {
   };
 }
 
+// ===== ENHANCED TYPES =====
+
+export interface DropdownOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface DropdownResponse {
+  options: DropdownOption[];
+  total: number;
+}
+
+export interface BulkOperationSummary {
+  total: number;
+  successful: number;
+  failed: number;
+  errors: Array<{
+    index: number;
+    error: string;
+    data?: any;
+  }>;
+}
+
+export interface BulkResponse {
+  success: boolean;
+  data: Drug[];
+  summary: BulkOperationSummary;
+  message: string;
+  meta?: {
+    timestamp: string;
+    version: string;
+    requestId: string;
+    environment: string;
+  };
+}
+
+// ===== FULL PACKAGE TYPES =====
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  code: string;
+  value?: any;
+}
+
+export interface ValidationResponse {
+  valid: boolean;
+  errors?: ValidationError[];
+}
+
+export interface UniquenessResponse {
+  unique: boolean;
+  message?: string;
+}
+
+export interface StatsResponse {
+  total: number;
+  // Additional stats can be added based on module needs
+  [key: string]: number;
+}
+
 // ===== IMPORT TYPES =====
 
 export interface ImportOptions {
@@ -234,15 +296,4 @@ export interface DrugListOptions {
   sort?: string;
   fields?: DrugField[];
   search?: string;
-}
-
-// ===== BASIC BULK OPERATIONS =====
-
-export interface BulkResponse {
-  success: boolean;
-  created?: number;
-  updated?: number;
-  deleted?: number;
-  errors?: any[];
-  message?: string;
 }

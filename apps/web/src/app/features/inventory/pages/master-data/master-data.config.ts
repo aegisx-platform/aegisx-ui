@@ -20,12 +20,56 @@ import { LauncherApp } from '@aegisx/ui';
 export const SECTION_ITEMS: LauncherApp[] = [
   // === AUTO-GENERATED ENTRIES START ===
   {
+    id: 'hospitals',
+    name: 'Hospitals',
+    description: 'Manage hospitals data',
+    icon: 'description',
+    route: '/inventory/master-data/hospitals',
+    color: 'peach',
+    status: 'active',
+    enabled: true,
+  },
+
+  {
+    id: 'departments',
+    name: 'Departments',
+    description: 'Manage departments data',
+    icon: 'corporate_fare',
+    route: '/inventory/master-data/departments',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+  },
+
+  {
+    id: 'companies',
+    name: 'Companies',
+    description: 'Manage companies data',
+    icon: 'description',
+    route: '/inventory/master-data/companies',
+    color: 'cyan',
+    status: 'active',
+    enabled: true,
+  },
+
+  {
+    id: 'locations',
+    name: 'Locations',
+    description: 'Manage locations data',
+    icon: 'location_on',
+    route: '/inventory/master-data/locations',
+    color: 'rose',
+    status: 'active',
+    enabled: true,
+  },
+
+  {
     id: 'drugs',
     name: 'Drugs',
     description: 'Manage drugs data',
     icon: 'medication',
     route: '/inventory/master-data/drugs',
-    color: 'lavender',
+    color: 'yellow',
     status: 'active',
     enabled: true,
   },

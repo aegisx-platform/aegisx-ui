@@ -62,6 +62,12 @@ import {
   DrugViewDialogComponent,
   DrugViewDialogData,
 } from './drugs-view.dialog';
+import { DrugImportDialogComponent } from './drugs-import.dialog';
+import {
+  SharedExportComponent,
+  ExportOptions,
+  ExportService,
+} from '../../../../../shared/components/shared-export/shared-export.component';
 
 // Import child components
 import { DrugsListFiltersComponent } from './drugs-list-filters.component';
@@ -88,6 +94,7 @@ import { DrugsListHeaderComponent } from './drugs-list-header.component';
     // Child components
     DrugsListHeaderComponent,
     DrugsListFiltersComponent,
+    SharedExportComponent,
     // AegisX UI components
     AxCardComponent,
     AxEmptyStateComponent,
@@ -315,6 +322,23 @@ export class DrugsListComponent {
       recentWeek,
     };
   });
+
+  // Export configuration
+  exportServiceAdapter: ExportService = {
+    export: (options: ExportOptions) => this.drugsService.exportDrug(options),
+  };
+
+  availableExportFields = [
+    { key: 'id', label: 'ID' },
+    { key: 'drug_code', label: 'Drug Code' },
+    { key: 'trade_name', label: 'Trade Name' },
+    { key: 'generic_id', label: 'Generic Id' },
+    { key: 'manufacturer_id', label: 'Manufacturer Id' },
+    { key: 'tmt_tpu_id', label: 'Tmt Tpu Id' },
+    { key: 'nlem_status', label: 'Nlem Status' },
+    { key: 'created_at', label: 'Created At' },
+    { key: 'updated_at', label: 'Updated At' },
+  ];
 
   ngAfterViewInit() {
     this.cdr.detectChanges();
@@ -547,6 +571,22 @@ export class DrugsListComponent {
     });
   }
 
+  openImportDialog() {
+    const dialogRef = this.dialog.open(DrugImportDialogComponent, {
+      width: '900px',
+      maxHeight: '90vh',
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.snackBar.open('Import completed successfully', 'Close', {
+          duration: 3000,
+        });
+        this.reloadTrigger.update((n) => n + 1);
+      }
+    });
+  }
+
   onViewDrug(drug: Drug) {
     const dialogRef = this.dialog.open(DrugViewDialogComponent, {
       width: '600px',
@@ -618,6 +658,37 @@ export class DrugsListComponent {
           }
         }
       });
+  }
+
+  // Export Event Handlers
+  onExportStarted(options: ExportOptions) {
+    this.snackBar.open(
+      `Preparing ${options.format.toUpperCase()} export...`,
+      '',
+      { duration: 2000 },
+    );
+  }
+
+  onExportCompleted(result: { success: boolean; format: string }) {
+    if (result.success) {
+      this.snackBar.open(
+        `${result.format.toUpperCase()} export completed successfully!`,
+        'Close',
+        {
+          duration: 3000,
+          panelClass: ['success-snackbar'],
+        },
+      );
+    } else {
+      this.snackBar.open(
+        `${result.format.toUpperCase()} export failed`,
+        'Close',
+        {
+          duration: 5000,
+          panelClass: ['error-snackbar'],
+        },
+      );
+    }
   }
 
   // Filter Helpers

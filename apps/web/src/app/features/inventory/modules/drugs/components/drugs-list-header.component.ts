@@ -23,6 +23,15 @@ import { AxKpiCardComponent } from '@aegisx/ui';
       </div>
       <div class="flex items-center gap-2">
         <button
+          mat-stroked-button
+          color="primary"
+          (click)="importClicked.emit()"
+          [disabled]="loading || hasError"
+        >
+          <mat-icon>upload_file</mat-icon>
+          Import
+        </button>
+        <button
           mat-flat-button
           color="primary"
           (click)="createClicked.emit()"
@@ -33,37 +42,6 @@ import { AxKpiCardComponent } from '@aegisx/ui';
         </button>
       </div>
     </div>
-
-    <!-- Permission Error -->
-    @if (permissionError) {
-      <div
-        class="bg-[var(--ax-error-faint)] border border-[var(--ax-error-border)] rounded-lg p-2 mb-6"
-      >
-        <div class="flex items-start gap-3">
-          <div
-            class="flex items-center justify-center w-18 h-18 bg-[var(--ax-error-surface)] rounded-full flex-shrink-0"
-          >
-            <mat-icon class="text-[var(--ax-error-default)] !text-4xl !w-7 !h-7"
-              >lock</mat-icon
-            >
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-medium text-[var(--ax-error-emphasis)]">
-              Access Denied
-            </h3>
-            <p class="text-sm text-[var(--ax-error-default)]">
-              You don't have permission to access or modify drugs.
-            </p>
-          </div>
-          <button
-            (click)="clearPermissionError.emit()"
-            class="text-[var(--ax-error-default)] hover:text-[var(--ax-error-hover)]"
-          >
-            <mat-icon class="!text-xl !w-5 !h-5">close</mat-icon>
-          </button>
-        </div>
-      </div>
-    }
 
     <!-- Stats Cards using AxKpiCardComponent (hide when any error exists) -->
     @if (!hasError) {
@@ -114,11 +92,10 @@ export class DrugsListHeaderComponent {
     recentWeek: number;
   };
   @Input() loading = false;
-  @Input() permissionError = false;
   @Input() hasError = false; // General error state (from service)
 
   @Output() createClicked = new EventEmitter<void>();
-  @Output() clearPermissionError = new EventEmitter<void>();
+  @Output() importClicked = new EventEmitter<void>();
 
   getPercentage(count: number): number {
     return this.stats.total > 0
