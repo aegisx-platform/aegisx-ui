@@ -60,6 +60,136 @@ export const INVENTORY_ROUTES: Route[] = [
             },
           },
           // === MASTER-DATA ROUTES START ===
+          // Return Actions (Generated CRUD)
+          {
+            path: 'return-actions',
+            loadChildren: () =>
+              import('./modules/return-actions/return-actions.routes').then(
+                (m) => m.returnActionsRoutes,
+              ),
+            data: {
+              title: 'Return Actions',
+              description: 'Return Actions Management System',
+              requiredPermissions: ['return-actions.read', 'admin.*'],
+            },
+          },
+          // Adjustment Reasons (Generated CRUD)
+          {
+            path: 'adjustment-reasons',
+            loadChildren: () =>
+              import(
+                './modules/adjustment-reasons/adjustment-reasons.routes'
+              ).then((m) => m.adjustmentReasonsRoutes),
+            data: {
+              title: 'Adjustment Reasons',
+              description: 'Adjustment Reasons Management System',
+              requiredPermissions: ['adjustment-reasons.read', 'admin.*'],
+            },
+          },
+          // Drug Units (Generated CRUD)
+          {
+            path: 'drug-units',
+            loadChildren: () =>
+              import('./modules/drug-units/drug-units.routes').then(
+                (m) => m.drugUnitsRoutes,
+              ),
+            data: {
+              title: 'Drug Units',
+              description: 'Drug Units Management System',
+              requiredPermissions: ['drug-units.read', 'admin.*'],
+            },
+          },
+          // Dosage Forms (Generated CRUD)
+          {
+            path: 'dosage-forms',
+            loadChildren: () =>
+              import('./modules/dosage-forms/dosage-forms.routes').then(
+                (m) => m.dosageFormsRoutes,
+              ),
+            data: {
+              title: 'Dosage Forms',
+              description: 'Dosage Forms Management System',
+              requiredPermissions: ['dosage-forms.read', 'admin.*'],
+            },
+          },
+          // Drug Pack Ratios (Generated CRUD)
+          {
+            path: 'drug-pack-ratios',
+            loadChildren: () =>
+              import('./modules/drug-pack-ratios/drug-pack-ratios.routes').then(
+                (m) => m.drugPackRatiosRoutes,
+              ),
+            data: {
+              title: 'Drug Pack Ratios',
+              description: 'Drug Pack Ratios Management System',
+              requiredPermissions: ['drug-pack-ratios.read', 'admin.*'],
+            },
+          },
+          // Drug Focus Lists (Generated CRUD)
+          {
+            path: 'drug-focus-lists',
+            loadChildren: () =>
+              import('./modules/drug-focus-lists/drug-focus-lists.routes').then(
+                (m) => m.drugFocusListsRoutes,
+              ),
+            data: {
+              title: 'Drug Focus Lists',
+              description: 'Drug Focus Lists Management System',
+              requiredPermissions: ['drug-focus-lists.read', 'admin.*'],
+            },
+          },
+          // Drug Components (Generated CRUD)
+          {
+            path: 'drug-components',
+            loadChildren: () =>
+              import('./modules/drug-components/drug-components.routes').then(
+                (m) => m.drugComponentsRoutes,
+              ),
+            data: {
+              title: 'Drug Components',
+              description: 'Drug Components Management System',
+              requiredPermissions: ['drug-components.read', 'admin.*'],
+            },
+          },
+          // Budget Categories (Generated CRUD)
+          {
+            path: 'budget-categories',
+            loadChildren: () =>
+              import(
+                './modules/budget-categories/budget-categories.routes'
+              ).then((m) => m.budgetCategoriesRoutes),
+            data: {
+              title: 'Budget Categories',
+              description: 'Budget Categories Management System',
+              requiredPermissions: ['budget-categories.read', 'admin.*'],
+            },
+          },
+          // Budget Types (Generated CRUD)
+          {
+            path: 'budget-types',
+            loadChildren: () =>
+              import('./modules/budget-types/budget-types.routes').then(
+                (m) => m.budgetTypesRoutes,
+              ),
+            data: {
+              title: 'Budget Types',
+              description: 'Budget Types Management System',
+              requiredPermissions: ['budget-types.read', 'admin.*'],
+            },
+          },
+          // Drug Generics (Generated CRUD)
+          {
+            path: 'drug-generics',
+            loadChildren: () =>
+              import('./modules/drug-generics/drug-generics.routes').then(
+                (m) => m.drugGenericsRoutes,
+              ),
+            data: {
+              title: 'Drug Generics',
+              description: 'Drug Generics Management System',
+              requiredPermissions: ['drug-generics.read', 'admin.*'],
+            },
+          },
           // Budgets (Generated CRUD)
           {
             path: 'budgets',
