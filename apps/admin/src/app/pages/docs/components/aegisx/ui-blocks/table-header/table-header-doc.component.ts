@@ -487,6 +487,175 @@ import {
           </div>
         </mat-tab>
 
+        <!-- CSS Classes Tab -->
+        <mat-tab label="CSS Classes">
+          <div class="doc__tab-content">
+            <section class="doc__section">
+              <h2>Available CSS Classes</h2>
+              <p>
+                Use these classes from
+                <code>aegisx-ui/styles/components/_table-header.scss</code>. All
+                classes use the <code>ax-table-header</code> prefix.
+              </p>
+
+              <h3 class="mt-6">Base Classes</h3>
+              <ax-code-tabs [tabs]="cssBaseCode"></ax-code-tabs>
+
+              <h3 class="mt-6">Variant 1: Search-Centric</h3>
+              <p>Wide search input with action buttons.</p>
+              <ax-live-preview variant="bordered">
+                <div class="ax-table-header ax-table-header--search-centric">
+                  <div
+                    class="ax-table-header__row ax-table-header__row--between"
+                  >
+                    <div
+                      class="ax-table-header__search ax-table-header__search--wide"
+                    >
+                      <mat-form-field
+                        appearance="outline"
+                        class="w-full"
+                        subscriptSizing="dynamic"
+                      >
+                        <mat-icon matPrefix>search</mat-icon>
+                        <input matInput placeholder="Search for..." />
+                      </mat-form-field>
+                    </div>
+                    <div class="ax-table-header__actions">
+                      <button mat-stroked-button>
+                        <mat-icon>tune</mat-icon>
+                        Filter
+                      </button>
+                      <button mat-flat-button color="primary">
+                        <mat-icon>add</mat-icon>
+                        Add New
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ax-live-preview>
+
+              <h3 class="mt-6">Variant 2: Title + Description</h3>
+              <p>Simple header with title, subtitle, and actions.</p>
+              <ax-live-preview variant="bordered">
+                <div class="ax-table-header ax-table-header--title-desc">
+                  <div
+                    class="ax-table-header__row ax-table-header__row--between"
+                  >
+                    <div class="ax-table-header__title-section">
+                      <h2 class="ax-table-header__title">Products Overview</h2>
+                      <p class="ax-table-header__subtitle">
+                        View and manage your product catalog
+                      </p>
+                    </div>
+                    <div class="ax-table-header__actions">
+                      <button mat-stroked-button>Export</button>
+                      <button mat-flat-button color="primary">
+                        <mat-icon>add</mat-icon>
+                        Add Product
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ax-live-preview>
+
+              <h3 class="mt-6">Variant 3: Filter Tabs</h3>
+              <p>Add button in title row with filter chips below.</p>
+              <ax-live-preview variant="bordered">
+                <div class="ax-table-header ax-table-header--filter-tabs">
+                  <div
+                    class="ax-table-header__row ax-table-header__row--between"
+                  >
+                    <div class="ax-table-header__title-section">
+                      <h2 class="ax-table-header__title">Notifications</h2>
+                    </div>
+                    <div class="ax-table-header__actions">
+                      <button mat-flat-button color="primary">
+                        <mat-icon>add</mat-icon>
+                        Add New
+                      </button>
+                    </div>
+                  </div>
+                  <div class="ax-table-header__divider"></div>
+                  <div class="ax-table-header__row">
+                    <div class="ax-table-header__filters">
+                      <span
+                        class="ax-table-header__filter-chip ax-table-header__filter-chip--active"
+                        >All</span
+                      >
+                      <span class="ax-table-header__filter-chip">Unread</span>
+                      <span class="ax-table-header__filter-chip">Archived</span>
+                    </div>
+                  </div>
+                </div>
+              </ax-live-preview>
+
+              <h3 class="mt-6">Variant 4: Analytics Style</h3>
+              <p>Title with count badge and filter chips.</p>
+              <ax-live-preview variant="bordered">
+                <div class="ax-table-header ax-table-header--analytics">
+                  <div
+                    class="ax-table-header__row ax-table-header__row--between"
+                  >
+                    <div class="ax-table-header__title-section">
+                      <h2 class="ax-table-header__title">Workspaces</h2>
+                      <span class="ax-table-header__count">24</span>
+                    </div>
+                    <div class="ax-table-header__filters">
+                      <span
+                        class="ax-table-header__filter-chip ax-table-header__filter-chip--active"
+                        >Overview</span
+                      >
+                      <span class="ax-table-header__filter-chip"
+                        >Workspaces</span
+                      >
+                      <span class="ax-table-header__filter-chip">Settings</span>
+                    </div>
+                  </div>
+                </div>
+              </ax-live-preview>
+
+              <h3 class="mt-6">Variant 5: Full Featured</h3>
+              <p>Pagination info, search, and action buttons.</p>
+              <ax-live-preview variant="bordered">
+                <div class="ax-table-header ax-table-header--full">
+                  <div
+                    class="ax-table-header__row ax-table-header__row--between"
+                  >
+                    <div class="ax-table-header__pagination-info">
+                      Showing <strong>1-10</strong> of
+                      <strong>248</strong> results
+                    </div>
+                    <div class="ax-table-header__search">
+                      <mat-form-field
+                        appearance="outline"
+                        class="w-full"
+                        subscriptSizing="dynamic"
+                      >
+                        <mat-icon matPrefix>search</mat-icon>
+                        <input matInput placeholder="Search..." />
+                      </mat-form-field>
+                    </div>
+                    <div class="ax-table-header__actions">
+                      <button mat-icon-button matTooltip="Settings">
+                        <mat-icon>settings</mat-icon>
+                      </button>
+                      <button mat-icon-button matTooltip="Export">
+                        <mat-icon>download</mat-icon>
+                      </button>
+                      <button mat-flat-button color="primary">
+                        <mat-icon>add</mat-icon>
+                        New Item
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ax-live-preview>
+
+              <ax-code-tabs [tabs]="cssVariantsCode"></ax-code-tabs>
+            </section>
+          </div>
+        </mat-tab>
+
         <!-- API Tab -->
         <mat-tab label="API">
           <div class="doc__tab-content">
@@ -1052,6 +1221,105 @@ pnpm run crud -- products --domain inventory/master-data --schema inventory --fo
 
 # Full featured CRUD (import + events)
 pnpm run crud:full -- products --domain inventory/master-data --schema inventory --force`,
+    },
+  ];
+
+  cssBaseCode = [
+    {
+      label: 'CSS Classes Reference',
+      language: 'scss' as const,
+      code: `/* Base Container */
+.ax-table-header                    /* Base container with border and rounded corners */
+.ax-table-header--elevated          /* Adds shadow */
+.ax-table-header--flat              /* Removes border and radius */
+
+/* Row Layouts */
+.ax-table-header__row               /* Flex row with padding and gap */
+.ax-table-header__row--wrap         /* Allow wrapping */
+.ax-table-header__row--between      /* justify-content: space-between */
+
+/* Title Section */
+.ax-table-header__title-section     /* Flex column for title + subtitle */
+.ax-table-header__title             /* Main heading text */
+.ax-table-header__subtitle          /* Secondary description text */
+.ax-table-header__count             /* Badge with count number */
+
+/* Search */
+.ax-table-header__search            /* Search input container (max-w-md) */
+.ax-table-header__search--wide      /* Wider search (max-w-lg) */
+.ax-table-header__search--full      /* Full width search */
+
+/* Actions */
+.ax-table-header__actions           /* Action buttons container */
+.ax-table-header__actions--end      /* Push actions to end */
+
+/* Filters */
+.ax-table-header__filters           /* Filter chips container */
+.ax-table-header__filter-chip       /* Individual filter chip */
+.ax-table-header__filter-chip--active  /* Active state for chip */
+
+/* Utilities */
+.ax-table-header__divider           /* Horizontal line divider */
+.ax-table-header__pagination-info   /* Pagination text info */`,
+    },
+  ];
+
+  cssVariantsCode = [
+    {
+      label: 'Variant Modifiers',
+      language: 'scss' as const,
+      code: `/* Variant: Search-Centric */
+.ax-table-header--search-centric
+/* Wide search input takes priority */
+
+/* Variant: Title + Description */
+.ax-table-header--title-desc
+/* Extra vertical padding for title emphasis */
+
+/* Variant: Filter Tabs */
+.ax-table-header--filter-tabs
+/* Compact row spacing for stacked rows */
+
+/* Variant: Analytics */
+.ax-table-header--analytics
+/* Horizontal title section for count badge */
+
+/* Variant: Full Featured */
+.ax-table-header--full
+/* Larger gaps for complex layouts */`,
+    },
+    {
+      label: 'Usage Example',
+      language: 'html' as const,
+      code: `<!-- Search-Centric Variant -->
+<div class="ax-table-header ax-table-header--search-centric">
+  <div class="ax-table-header__row ax-table-header__row--between">
+    <div class="ax-table-header__search ax-table-header__search--wide">
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Search..." />
+      </mat-form-field>
+    </div>
+    <div class="ax-table-header__actions">
+      <button mat-stroked-button>Filter</button>
+      <button mat-flat-button color="primary">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Analytics Variant -->
+<div class="ax-table-header ax-table-header--analytics">
+  <div class="ax-table-header__row ax-table-header__row--between">
+    <div class="ax-table-header__title-section">
+      <h2 class="ax-table-header__title">Items</h2>
+      <span class="ax-table-header__count">42</span>
+    </div>
+    <div class="ax-table-header__filters">
+      <span class="ax-table-header__filter-chip ax-table-header__filter-chip--active">All</span>
+      <span class="ax-table-header__filter-chip">Active</span>
+    </div>
+  </div>
+</div>`,
     },
   ];
 }
