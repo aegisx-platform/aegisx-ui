@@ -50,62 +50,43 @@ node libs/aegisx-cli/bin/cli.js generate authors --package full --no-roles --for
 
 ## 📚 Documentation
 
-### Essential Guides (Start Here)
+### Getting Started (Read First!)
 
-1. **[Quick Commands Reference](./QUICK_COMMANDS.md)** ⭐ **Start Here!**
-   - All CLI flags and options
-   - Package comparison table
-   - Common workflows and examples
-   - Fast reference for daily use
+| Guide                                           | Description                                        | Priority           |
+| ----------------------------------------------- | -------------------------------------------------- | ------------------ |
+| **[Workflow Overview](./WORKFLOW_OVERVIEW.md)** | CLI architecture, all features, complete workflows | ⭐ **Start Here!** |
+| **[Quick Reference](./QUICK_REFERENCE.md)**     | Fast command lookup, flags, examples               | ⭐ Daily Use       |
+| **[Command Reference](./COMMAND_REFERENCE.md)** | Complete CLI command documentation                 | Reference          |
 
-2. **[User Guide](./USER_GUIDE.md)** ⭐ **Complete Walkthrough**
-   - Feature-by-feature documentation
-   - Step-by-step tutorials
-   - Best practices and patterns
-   - Enterprise and Full package features
+### Feature Guides
 
-3. **[Events Guide](./EVENTS_GUIDE.md)** - WebSocket Real-Time Events
-   - What is `--with-events`
-   - Backend event emission (EventService, CrudEventHelper)
-   - Frontend integration patterns
-   - Testing and troubleshooting
+| Guide                                                 | Description                                  | When to Read       |
+| ----------------------------------------------------- | -------------------------------------------- | ------------------ |
+| **[Events Guide](./EVENTS_GUIDE.md)**                 | WebSocket real-time events (`--with-events`) | Real-time features |
+| **[Import Guide](./IMPORT_GUIDE.md)**                 | Bulk Excel/CSV import (`--with-import`)      | Bulk data import   |
+| **[Error Handling Guide](./ERROR_HANDLING_GUIDE.md)** | Error codes, validation, 409/422 handling    | Error handling     |
+| **[Validation Reference](./VALIDATION_REFERENCE.md)** | Auto-detected validations by field names     | Form validation    |
+| **[Testing Guide](./TESTING_GUIDE.md)**               | Testing strategies and examples              | Quality assurance  |
 
-4. **[Import Guide](./IMPORT_GUIDE.md)** - Bulk Excel/CSV Import
-   - What is `--with-import`
-   - 5-step import workflow
-   - BaseImportService integration
-   - v2.0.1 type alignment fixes
-   - Session management and progress tracking
+### Reference
 
-5. **[Error Handling Guide](./ERROR_HANDLING_GUIDE.md)** - Validation & Errors
-   - Automatic error detection from database schema
-   - Error code conventions and status codes (409 vs 422)
-   - Generated error types and response formats
-   - Troubleshooting common issues
+| Document                                        | Description                        |
+| ----------------------------------------------- | ---------------------------------- |
+| **[Template Patterns](./TEMPLATE_PATTERNS.md)** | Handlebars templates documentation |
+| **[GIT Workflow](./GIT_WORKFLOW.md)**           | Version release & NPM publishing   |
+| **[CHANGELOG](./CHANGELOG.md)**                 | Version history & migration guides |
 
-6. **[Validation Reference](./VALIDATION_REFERENCE.md)** - Field Validations
-   - Auto-detected validations (email, date, phone, etc.)
-   - Field name patterns that trigger validations
-   - Complete validation rules reference
-   - Testing strategies
+### What's in Workflow Overview?
 
-7. **[Testing Guide](./TESTING_GUIDE.md)** - Quality Assurance
-   - Test setup and configuration
-   - Unit, integration, and E2E testing strategies
-   - Validation and error handling test examples
-   - Test utilities and best practices
+The [Workflow Overview](./WORKFLOW_OVERVIEW.md) covers:
 
-8. **[CHANGELOG](./CHANGELOG.md)** - Version History
-   - v2.0.1 import dialog fixes
-   - v2.0.0 complete rewrite
-   - Migration guides
-   - Future roadmap
-
-### Coming Soon
-
-9. **Type Mapping Guide** - PostgreSQL to TypeScript/TypeBox mapping
-10. **Best Practices** - Database schema design and naming conventions
-11. **API Reference** - Complete API documentation
+1. **CLI Architecture** - System diagram, all commands, entry points
+2. **Feature Categories** - Database, Backend, Frontend commands
+3. **Backend Generation** - File structure, API endpoints, auto-detection
+4. **Frontend Generation** - Components, services, route registration
+5. **Shell & Section System** - App shells, sections, hierarchies
+6. **Domain Management** - Multi-schema, domain isolation
+7. **Complete Workflows** - Step-by-step enterprise setup
 
 ---
 
@@ -429,19 +410,19 @@ describe('Authors Validation', () => {
 
 ## 📖 Documentation Index
 
-| Document                                          | Description                              | Priority |
-| ------------------------------------------------- | ---------------------------------------- | -------- |
-| [Quick Commands Reference](./QUICK_COMMANDS.md)   | Fast CLI reference for daily use         | ⭐ High  |
-| [User Guide](./USER_GUIDE.md)                     | Complete feature walkthrough             | ⭐ High  |
-| [Events Guide](./EVENTS_GUIDE.md)                 | WebSocket real-time events               | ⭐ High  |
-| [Import Guide](./IMPORT_GUIDE.md)                 | Bulk Excel/CSV import                    | ⭐ High  |
-| [CHANGELOG](./CHANGELOG.md)                       | Version history & migration              | ⭐ High  |
-| [Error Handling Guide](./ERROR_HANDLING_GUIDE.md) | Error detection & handling               | High     |
-| [Validation Reference](./VALIDATION_REFERENCE.md) | Field validation rules                   | High     |
-| [Testing Guide](./TESTING_GUIDE.md)               | Testing strategies                       | High     |
-| Type Mapping Guide                                | PostgreSQL to TypeScript (coming soon)   | Medium   |
-| Best Practices                                    | Database design guidelines (coming soon) | Medium   |
-| API Reference                                     | Complete API docs (coming soon)          | Medium   |
+| Document                                          | Description                           | Priority       |
+| ------------------------------------------------- | ------------------------------------- | -------------- |
+| [Workflow Overview](./WORKFLOW_OVERVIEW.md)       | CLI architecture & complete workflows | ⭐⭐ Must Read |
+| [Quick Reference](./QUICK_REFERENCE.md)           | Fast CLI reference for daily use      | ⭐ High        |
+| [Command Reference](./COMMAND_REFERENCE.md)       | Complete command documentation        | Reference      |
+| [Events Guide](./EVENTS_GUIDE.md)                 | WebSocket real-time events            | High           |
+| [Import Guide](./IMPORT_GUIDE.md)                 | Bulk Excel/CSV import                 | High           |
+| [Error Handling Guide](./ERROR_HANDLING_GUIDE.md) | Error detection & handling            | High           |
+| [Validation Reference](./VALIDATION_REFERENCE.md) | Field validation rules                | High           |
+| [Testing Guide](./TESTING_GUIDE.md)               | Testing strategies                    | Medium         |
+| [Template Patterns](./TEMPLATE_PATTERNS.md)       | Handlebars template documentation     | Reference      |
+| [GIT Workflow](./GIT_WORKFLOW.md)                 | Version release & NPM publishing      | Reference      |
+| [CHANGELOG](./CHANGELOG.md)                       | Version history & migration           | Reference      |
 
 ---
 
@@ -576,5 +557,5 @@ After generating a CRUD module, verify:
 
 ---
 
-**Last Updated:** 2025-10-26
-**Generator Version:** 2.0.1
+**Last Updated:** 2025-12-07
+**Generator Version:** 2.3.0
