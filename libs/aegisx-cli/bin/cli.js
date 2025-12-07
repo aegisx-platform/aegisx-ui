@@ -595,6 +595,11 @@ program
     'backend',
   )
   .option('-c, --config <file>', 'Configuration file path')
+  .option(
+    '-s, --schema <schema>',
+    'PostgreSQL schema to read table from (default: public)',
+    'public',
+  )
   .action(async (domainName, options) => {
     try {
       // Determine output directory based on app and target
@@ -625,6 +630,7 @@ program
         : ['core'];
 
       console.log(`🚀 Generating domain: ${domainName}`);
+      console.log(`🗄️  Database schema: ${options.schema}`);
       console.log(`📱 Target app: ${options.app}`);
       console.log(`🎯 Target type: ${options.target}`);
       console.log(`🛣️  Routes: ${routes.join(', ')}`);
@@ -645,6 +651,7 @@ program
         configFile: options.config,
         app: options.app,
         target: options.target,
+        schema: options.schema,
       });
 
       if (options.dryRun) {
