@@ -524,10 +524,12 @@ export class BudgetRequestsService extends BaseService<
           unit: generic.unit || '',
           line_number: itemsCreated + 1,
 
-          // Historical usage
-          usage_year_2566: usage2566,
-          usage_year_2567: usage2567,
-          usage_year_2568: usage2568,
+          // Historical usage (JSONB format)
+          historical_usage: JSON.stringify({
+            '2566': usage2566,
+            '2567': usage2567,
+            '2568': usage2568,
+          }),
           avg_usage: avgUsage,
 
           // Planning data
