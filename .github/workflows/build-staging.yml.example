@@ -1,0 +1,188 @@
+name: 🧪 Build & Deploy Staging
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_ORG: aegisx-platform
+  IMAGE_PROJECT: aegisx-starter
+
+jobs:
+  # ==========================================
+  # Job 1: Build Staging Images
+  # ==========================================
+  build-staging:
+    name: Build ${{ matrix.app }} (Staging)
+    runs-on: self-hosted
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [api, web, admin, landing]
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      short_sha: ${{ steps.vars.outputs.short_sha }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📊 Get version & variables
+        id: vars
+        run: |
+          # Get version from package.json and add -staging suffix
+          VERSION=$(node -p "require('./package.json').version")-staging
+          SHORT_SHA=${GITHUB_SHA::7}
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+
+          echo "📦 Version: $VERSION"
+          echo "🔖 SHA: $SHORT_SHA"
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗️ Build and push ${{ matrix.app }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          no-cache: true
+          pull: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:staging
+            ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:${{ steps.vars.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:staging-${{ steps.vars.outputs.short_sha }}
+          platforms: linux/arm64
+
+      - name: ✅ Verify image
+        run: |
+          echo "✅ ${{ matrix.app }} staging image built successfully"
+          echo "📦 Tags created:"
+          echo "  - staging (latest staging)"
+          echo "  - ${{ steps.vars.outputs.version }}"
+          echo "  - staging-${{ steps.vars.outputs.short_sha }}"
+
+  # ==========================================
+  # Job 2: Deploy to Staging K8s
+  # ==========================================
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build-staging
+    runs-on: self-hosted
+    environment:
+      name: staging
+      url: https://staging.aegisx.dev
+
+    steps:
+      - name: 📥 Checkout infra repo
+        uses: actions/checkout@v4
+        with:
+          repository: aegisx-platform/aegisx-infra
+          token: ${{ secrets.INFRA_REPO_TOKEN }}
+          path: infra
+
+      - name: 🔧 Update Kustomize image tags
+        run: |
+          cd infra/overlays/staging
+
+          # Update all app images to staging tag
+          for app in api web admin landing; do
+            kustomize edit set image \
+              ghcr.io/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-$app:staging
+          done
+
+      - name: 🚀 Apply to Staging cluster
+        run: |
+          # Set kubeconfig to staging cluster
+          export KUBECONFIG=$HOME/.kube/config
+          kubectl config use-context dixon-dev
+
+          # Apply kustomization
+          cd infra/overlays/staging
+          kubectl apply -k . -n staging
+
+          # Wait for rollout
+          for app in api web admin landing; do
+            kubectl rollout status deployment/aegisx-$app -n staging --timeout=5m
+          done
+
+      - name: 🧪 Run smoke tests
+        run: |
+          # Wait for services to be ready
+          sleep 10
+
+          # Health checks for all apps
+          echo "Testing API..."
+          curl -f https://staging-api.aegisx.dev/health || exit 1
+
+          echo "Testing Web App..."
+          curl -f https://staging-app.aegisx.dev || exit 1
+
+          echo "Testing Admin/Docs..."
+          curl -f https://staging-ui.aegisx.dev || exit 1
+
+          echo "Testing Landing..."
+          curl -f https://staging.aegisx.dev || exit 1
+          curl -f https://staging-cli.aegisx.dev || exit 1
+
+          echo "✅ All smoke tests passed"
+
+      - name: 📢 Notify staging deployment
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "🎉 Staging deployment successful!"
+            echo ""
+            echo "🔗 Staging URLs:"
+            echo "  - Landing: https://staging.aegisx.dev"
+            echo "  - Web App: https://staging-app.aegisx.dev"
+            echo "  - API: https://staging-api.aegisx.dev"
+            echo "  - Admin: https://staging-ui.aegisx.dev"
+            echo "  - CLI: https://staging-cli.aegisx.dev"
+          else
+            echo "❌ Staging deployment failed!"
+          fi
+
+  # ==========================================
+  # Job 3: Staging Summary
+  # ==========================================
+  staging-summary:
+    name: 📋 Staging Summary
+    needs: [build-staging, deploy-staging]
+    if: always()
+    runs-on: self-hosted
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🧪 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build Status:** ${{ needs.build-staging.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Deploy Status:** ${{ needs.deploy-staging.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.build-staging.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**SHA:** ${{ needs.build-staging.outputs.short_sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Staging URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **Landing:** https://staging.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web App:** https://staging-app.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **API:** https://staging-api.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Admin:** https://staging-ui.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **CLI:** https://staging-cli.aegisx.dev" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,307 @@
+name: 🚀 Build & Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      skip_build:
+        description: 'Skip build and use existing images'
+        required: false
+        default: 'false'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_ORG: aegisx-platform
+  IMAGE_PROJECT: aegisx-starter
+
+jobs:
+  # ==========================================
+  # Job 1: Semantic Release (Version Bump)
+  # ==========================================
+  release:
+    name: 📝 Semantic Release
+    runs-on: self-hosted
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: 📚 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🚫 Disable Husky in CI
+        run: |
+          git config --global core.hooksPath /dev/null
+          export HUSKY=0
+
+      - name: 🏷️ Run semantic-release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: 0
+        run: pnpm semantic-release
+
+      - name: 📊 Release summary
+        run: |
+          if [ "${{ steps.semantic.outputs.new_release_published }}" = "true" ]; then
+            echo "✅ New release: v${{ steps.semantic.outputs.new_release_version }}"
+          else
+            echo "ℹ️ No new release"
+          fi
+
+  # ==========================================
+  # Job 2: Build Production Images
+  # ==========================================
+  build-production:
+    name: Build ${{ matrix.app }} (Production)
+    needs: release
+    if: needs.release.outputs.new_release_published == 'true' || github.event.inputs.skip_build == 'false'
+    runs-on: self-hosted
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [api, web, admin, landing]
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main  # Ensure we're on latest main after release
+
+      - name: 📊 Get version
+        id: vars
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          echo "📦 Production Version: v$VERSION"
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🧹 Clear Docker cache
+        run: |
+          docker system prune -af || true
+          docker builder prune -af || true
+
+      - name: 🏗️ Build and push ${{ matrix.app }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          no-cache: true
+          pull: true
+          cache-from: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:buildcache
+          cache-to: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:buildcache,mode=max
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:production
+            ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:v${{ steps.vars.outputs.version }}
+          platforms: linux/arm64
+
+      - name: 🔍 Health check image
+        run: |
+          echo "Verifying ${{ matrix.app }} production image..."
+          if [ "${{ matrix.app }}" = "api" ]; then
+            docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:latest node --version
+          else
+            docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-${{ matrix.app }}:latest nginx -t
+          fi
+          echo "✅ Image verified"
+
+  # ==========================================
+  # Job 3: Wait for Manual Approval
+  # ==========================================
+  approval:
+    name: ⏸️ Approval Required
+    needs: [release, build-production]
+    runs-on: self-hosted
+    environment:
+      name: production-approval
+      # This triggers manual approval in GitHub
+    steps:
+      - name: 👀 Waiting for approval
+        run: |
+          echo "⏸️ Deployment to production requires manual approval"
+          echo "📦 Version: v${{ needs.release.outputs.new_release_version }}"
+          echo "🔗 Review at: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+  # ==========================================
+  # Job 4: Deploy to Production
+  # ==========================================
+  deploy-production:
+    name: 🚀 Deploy to Production
+    needs: [release, build-production, approval]
+    runs-on: self-hosted
+    environment:
+      name: production
+      url: https://ui.aegisx.dev
+
+    steps:
+      - name: 📥 Checkout infra repo
+        uses: actions/checkout@v4
+        with:
+          repository: aegisx-platform/aegisx-infra
+          token: ${{ secrets.INFRA_REPO_TOKEN }}
+          path: infra
+
+      - name: 🔧 Update Kustomize image tags
+        run: |
+          cd infra/overlays/production
+
+          VERSION="${{ needs.release.outputs.new_release_version }}"
+
+          # Update all app images to specific version
+          for app in api web admin landing; do
+            kustomize edit set image \
+              ghcr.io/${{ env.IMAGE_ORG }}/${{ env.IMAGE_PROJECT }}-$app:v$VERSION
+          done
+
+          # Commit version update
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore(deploy): update production to v$VERSION"
+          git push
+
+      - name: 🚀 Apply to Production cluster
+        run: |
+          # Set kubeconfig to production cluster
+          export KUBECONFIG=$HOME/.kube/config
+          kubectl config use-context a-prod
+
+          # Apply kustomization
+          cd infra/overlays/production
+          kubectl apply -k . -n production
+
+          # Wait for rollout with timeout
+          echo "⏳ Waiting for deployments to roll out..."
+          for app in api web admin landing; do
+            echo "📦 Rolling out $app..."
+            kubectl rollout status deployment/aegisx-$app -n production --timeout=10m
+          done
+
+      - name: 🧪 Run production smoke tests
+        run: |
+          # Wait for services to be fully ready
+          sleep 15
+
+          # Health checks for all apps
+          echo "Testing API..."
+          curl -f https://api.aegisx.dev/health || exit 1
+
+          echo "Testing Web App..."
+          curl -f https://app.aegisx.dev || exit 1
+
+          echo "Testing Admin/Docs..."
+          curl -f https://ui.aegisx.dev || exit 1
+
+          echo "Testing Landing..."
+          curl -f https://aegisx.dev || exit 1
+          curl -f https://cli.aegisx.dev || exit 1
+
+          echo "✅ All production smoke tests passed"
+
+      - name: 🔄 Rollback on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed, initiating rollback..."
+          kubectl config use-context a-prod
+
+          for app in api web admin landing; do
+            kubectl rollout undo deployment/aegisx-$app -n production
+          done
+
+          echo "🔙 Rollback completed"
+          exit 1
+
+      - name: 📢 Notify deployment
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "🎉 Production deployment successful!"
+            echo "📦 Version: v${{ needs.release.outputs.new_release_version }}"
+            echo ""
+            echo "🔗 Production URLs:"
+            echo "  - Landing: https://aegisx.dev"
+            echo "  - Web App: https://app.aegisx.dev"
+            echo "  - API: https://api.aegisx.dev"
+            echo "  - Admin: https://ui.aegisx.dev"
+            echo "  - CLI: https://cli.aegisx.dev"
+          else
+            echo "❌ Production deployment failed and rolled back!"
+          fi
+
+  # ==========================================
+  # Job 5: Production Summary
+  # ==========================================
+  production-summary:
+    name: 📋 Production Summary
+    needs: [release, build-production, approval, deploy-production]
+    if: always()
+    runs-on: self-hosted
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release:** ${{ needs.release.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Build:** ${{ needs.build-production.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Approval:** ${{ needs.approval.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Deploy:** ${{ needs.deploy-production.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** v${{ needs.release.outputs.new_release_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Production URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **Landing:** https://aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web App:** https://app.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **API:** https://api.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Admin:** https://ui.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **CLI:** https://cli.aegisx.dev" >> $GITHUB_STEP_SUMMARY
+
+          # Overall status
+          if [ "${{ needs.deploy-production.result }}" = "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Deployment Successful" >> $GITHUB_STEP_SUMMARY
+            echo "All services are running in production." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Check the deployment logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
