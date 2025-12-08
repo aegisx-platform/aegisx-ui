@@ -5,10 +5,10 @@ import { map } from 'rxjs/operators';
 
 // Import types from the shared types file
 import {
-  Budget,
-  CreateBudgetRequest,
-  UpdateBudgetRequest,
-  ListBudgetQuery,
+  BudgetPlan,
+  CreateBudgetPlanRequest,
+  UpdateBudgetPlanRequest,
+  ListBudgetPlanQuery,
   ApiResponse,
   BulkResponse,
   PaginatedResponse,
@@ -16,43 +16,43 @@ import {
   ValidateImportResponse,
   ExecuteImportRequest,
   ImportJob,
-} from '../types/budgets.types';
+} from '../types/budget-plans.types';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BudgetService {
+export class BudgetPlanService {
   private http = inject(HttpClient);
-  private baseUrl = '/inventory/operations/budgets';
+  private baseUrl = '/inventory/operations/budget-plans';
 
   // ===== SIGNALS FOR STATE MANAGEMENT =====
 
-  private budgetsListSignal = signal<Budget[]>([]);
+  private budgetPlansListSignal = signal<BudgetPlan[]>([]);
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
   private permissionErrorSignal = signal<boolean>(false);
   private lastErrorStatusSignal = signal<number | null>(null);
-  private selectedBudgetSignal = signal<Budget | null>(null);
+  private selectedBudgetPlanSignal = signal<BudgetPlan | null>(null);
   private currentPageSignal = signal<number>(1);
   private pageSizeSignal = signal<number>(10);
-  private totalBudgetSignal = signal<number>(0);
+  private totalBudgetPlanSignal = signal<number>(0);
 
   // ===== PUBLIC READONLY SIGNALS =====
 
-  readonly budgetsList = this.budgetsListSignal.asReadonly();
+  readonly budgetPlansList = this.budgetPlansListSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
   readonly permissionError = this.permissionErrorSignal.asReadonly();
   readonly lastErrorStatus = this.lastErrorStatusSignal.asReadonly();
-  readonly selectedBudget = this.selectedBudgetSignal.asReadonly();
+  readonly selectedBudgetPlan = this.selectedBudgetPlanSignal.asReadonly();
   readonly currentPage = this.currentPageSignal.asReadonly();
-  readonly totalBudget = this.totalBudgetSignal.asReadonly();
+  readonly totalBudgetPlan = this.totalBudgetPlanSignal.asReadonly();
   readonly pageSize = this.pageSizeSignal.asReadonly();
 
   // ===== COMPUTED SIGNALS =====
 
   readonly totalPages = computed(() => {
-    const total = this.totalBudgetSignal();
+    const total = this.totalBudgetPlanSignal();
     const size = this.pageSizeSignal();
     return Math.ceil(total / size);
   });
@@ -109,9 +109,9 @@ export class BudgetService {
   // ===== STANDARD CRUD OPERATIONS =====
 
   /**
-   * Load budgets list with pagination and filters
+   * Load budgetPlans list with pagination and filters
    */
-  async loadBudgetList(params?: ListBudgetQuery): Promise<void> {
+  async loadBudgetPlanList(params?: ListBudgetPlanQuery): Promise<void> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -132,41 +132,67 @@ export class BudgetService {
       }
 
       // Add smart filter parameters based on table schema
-      // Numeric filtering for budget_type_id
-      if (params?.budget_type_id !== undefined)
+      // Numeric filtering for fiscal_year
+      if (params?.fiscal_year !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id',
-          params.budget_type_id.toString(),
+          'fiscal_year',
+          params.fiscal_year.toString(),
         );
-      if (params?.budget_type_id_min !== undefined)
+      if (params?.fiscal_year_min !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id_min',
-          params.budget_type_id_min.toString(),
+          'fiscal_year_min',
+          params.fiscal_year_min.toString(),
         );
-      if (params?.budget_type_id_max !== undefined)
+      if (params?.fiscal_year_max !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id_max',
-          params.budget_type_id_max.toString(),
+          'fiscal_year_max',
+          params.fiscal_year_max.toString(),
         );
-      // Numeric filtering for budget_category_id
-      if (params?.budget_category_id !== undefined)
+      // Numeric filtering for department_id
+      if (params?.department_id !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id',
-          params.budget_category_id.toString(),
+          'department_id',
+          params.department_id.toString(),
         );
-      if (params?.budget_category_id_min !== undefined)
+      if (params?.department_id_min !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id_min',
-          params.budget_category_id_min.toString(),
+          'department_id_min',
+          params.department_id_min.toString(),
         );
-      if (params?.budget_category_id_max !== undefined)
+      if (params?.department_id_max !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id_max',
-          params.budget_category_id_max.toString(),
+          'department_id_max',
+          params.department_id_max.toString(),
         );
-      // String filtering for description
-      if (params?.description)
-        httpParams = httpParams.set('description', params.description);
+      // String filtering for plan_name
+      if (params?.plan_name)
+        httpParams = httpParams.set('plan_name', params.plan_name);
+      // Numeric filtering for total_planned_amount
+      if (params?.total_planned_amount !== undefined)
+        httpParams = httpParams.set(
+          'total_planned_amount',
+          params.total_planned_amount.toString(),
+        );
+      if (params?.total_planned_amount_min !== undefined)
+        httpParams = httpParams.set(
+          'total_planned_amount_min',
+          params.total_planned_amount_min.toString(),
+        );
+      if (params?.total_planned_amount_max !== undefined)
+        httpParams = httpParams.set(
+          'total_planned_amount_max',
+          params.total_planned_amount_max.toString(),
+        );
+      // Date/DateTime filtering for approved_at
+      if (params?.approved_at)
+        httpParams = httpParams.set('approved_at', params.approved_at);
+      if (params?.approved_at_min)
+        httpParams = httpParams.set('approved_at_min', params.approved_at_min);
+      if (params?.approved_at_max)
+        httpParams = httpParams.set('approved_at_max', params.approved_at_max);
+      // String filtering for approved_by
+      if (params?.approved_by)
+        httpParams = httpParams.set('approved_by', params.approved_by);
       // Boolean filtering for is_active
       if (params?.is_active !== undefined)
         httpParams = httpParams.set('is_active', params.is_active.toString());
@@ -186,43 +212,45 @@ export class BudgetService {
         httpParams = httpParams.set('updated_at_max', params.updated_at_max);
 
       const response = await this.http
-        .get<PaginatedResponse<Budget>>(this.baseUrl, { params: httpParams })
+        .get<
+          PaginatedResponse<BudgetPlan>
+        >(this.baseUrl, { params: httpParams })
         .toPromise();
 
       if (response) {
-        this.budgetsListSignal.set(response.data);
+        this.budgetPlansListSignal.set(response.data);
 
         if (response.pagination) {
-          this.totalBudgetSignal.set(response.pagination.total);
+          this.totalBudgetPlanSignal.set(response.pagination.total);
           this.currentPageSignal.set(response.pagination.page);
           this.pageSizeSignal.set(response.pagination.limit);
         }
       }
     } catch (error: any) {
-      this.handleError(error, 'Failed to load budgets list');
+      this.handleError(error, 'Failed to load budgetPlans list');
     } finally {
       this.loadingSignal.set(false);
     }
   }
 
   /**
-   * Load single budgets by ID
+   * Load single budgetPlans by ID
    */
-  async loadBudgetById(id: number): Promise<Budget | null> {
+  async loadBudgetPlanById(id: number): Promise<BudgetPlan | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .get<ApiResponse<Budget>>(`${this.baseUrl}/${id}`)
+        .get<ApiResponse<BudgetPlan>>(`${this.baseUrl}/${id}`)
         .toPromise();
 
       if (response) {
-        this.selectedBudgetSignal.set(response.data);
+        this.selectedBudgetPlanSignal.set(response.data);
         return response.data;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to load budgets');
+      this.handleError(error, 'Failed to load budgetPlans');
       return null;
     } finally {
       this.loadingSignal.set(false);
@@ -230,14 +258,16 @@ export class BudgetService {
   }
 
   /**
-   * Create new budgets
+   * Create new budgetPlans
    */
-  async createBudget(data: CreateBudgetRequest): Promise<Budget | null> {
+  async createBudgetPlan(
+    data: CreateBudgetPlanRequest,
+  ): Promise<BudgetPlan | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .post<ApiResponse<Budget>>(`${this.baseUrl}`, data)
+        .post<ApiResponse<BudgetPlan>>(`${this.baseUrl}`, data)
         .toPromise();
 
       if (response) {
@@ -247,7 +277,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to create budgets');
+      this.handleError(error, 'Failed to create budgetPlans');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -255,17 +285,17 @@ export class BudgetService {
   }
 
   /**
-   * Update existing budgets
+   * Update existing budgetPlans
    */
-  async updateBudget(
+  async updateBudgetPlan(
     id: number,
-    data: UpdateBudgetRequest,
-  ): Promise<Budget | null> {
+    data: UpdateBudgetPlanRequest,
+  ): Promise<BudgetPlan | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .put<ApiResponse<Budget>>(`${this.baseUrl}/${id}`, data)
+        .put<ApiResponse<BudgetPlan>>(`${this.baseUrl}/${id}`, data)
         .toPromise();
 
       if (response) {
@@ -275,7 +305,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to update budgets');
+      this.handleError(error, 'Failed to update budgetPlans');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -283,9 +313,9 @@ export class BudgetService {
   }
 
   /**
-   * Delete budgets by ID
+   * Delete budgetPlans by ID
    */
-  async deleteBudget(id: number): Promise<boolean> {
+  async deleteBudgetPlan(id: number): Promise<boolean> {
     this.loadingSignal.set(true);
 
     try {
@@ -300,7 +330,7 @@ export class BudgetService {
       }
       return false;
     } catch (error: any) {
-      this.handleError(error, 'Failed to delete budgets');
+      this.handleError(error, 'Failed to delete budgetPlans');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -310,9 +340,9 @@ export class BudgetService {
   // ===== EXPORT OPERATIONS =====
 
   /**
-   * Export budgets data
+   * Export budgetPlans data
    */
-  async exportBudget(options: {
+  async exportBudgetPlan(options: {
     format: 'csv' | 'excel' | 'pdf';
     ids?: number[];
     filters?: Record<string, any>;
@@ -375,7 +405,7 @@ export class BudgetService {
 
       throw new Error('Export failed - no response received');
     } catch (error: any) {
-      console.error('Failed to export budgets data:', error);
+      console.error('Failed to export budgetPlans data:', error);
       throw error;
     }
   }
@@ -383,7 +413,7 @@ export class BudgetService {
   // ===== ENHANCED OPERATIONS (BULK & DROPDOWN) =====
 
   /**
-   * Get dropdown options for budgets
+   * Get dropdown options for budgetPlans
    */
   async getDropdownOptions(
     params: { search?: string; limit?: number } = {},
@@ -408,15 +438,15 @@ export class BudgetService {
       }
       return [];
     } catch (error: any) {
-      console.error('Failed to fetch budgets dropdown options:', error);
+      console.error('Failed to fetch budgetPlans dropdown options:', error);
       return [];
     }
   }
 
   /**
-   * Get budget_types dropdown options for budget_type_id field
+   * Get departments dropdown options for department_id field
    */
-  async getBudgetTypesDropdown(
+  async getDepartmentsDropdown(
     params: { search?: string; limit?: number } = {},
   ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
     try {
@@ -435,7 +465,7 @@ export class BudgetService {
             }>;
             total: number;
           }>
-        >('/budget_types/dropdown', { params: httpParams })
+        >('/departments/dropdown', { params: httpParams })
         .toPromise();
 
       if (response?.success && response.data?.options) {
@@ -443,54 +473,16 @@ export class BudgetService {
       }
       return [];
     } catch (error: any) {
-      console.error('Failed to fetch budget_types dropdown options:', error);
+      console.error('Failed to fetch departments dropdown options:', error);
       return [];
     }
   }
 
   /**
-   * Get budget_categories dropdown options for budget_category_id field
+   * Bulk create budgetPlanss
    */
-  async getBudgetCategoriesDropdown(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{
-              value: string;
-              label: string;
-              disabled?: boolean;
-            }>;
-            total: number;
-          }>
-        >('/budget_categories/dropdown', { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error(
-        'Failed to fetch budget_categories dropdown options:',
-        error,
-      );
-      return [];
-    }
-  }
-
-  /**
-   * Bulk create budgetss
-   */
-  async bulkCreateBudget(
-    items: CreateBudgetRequest[],
+  async bulkCreateBudgetPlan(
+    items: CreateBudgetPlanRequest[],
   ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
@@ -501,12 +493,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetPlanList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk create budgetss');
+      this.handleError(error, 'Failed to bulk create budgetPlanss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -514,10 +506,10 @@ export class BudgetService {
   }
 
   /**
-   * Bulk update budgetss
+   * Bulk update budgetPlanss
    */
-  async bulkUpdateBudget(
-    items: Array<{ id: number; data: UpdateBudgetRequest }>,
+  async bulkUpdateBudgetPlan(
+    items: Array<{ id: number; data: UpdateBudgetPlanRequest }>,
   ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
@@ -528,12 +520,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetPlanList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk update budgetss');
+      this.handleError(error, 'Failed to bulk update budgetPlanss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -541,9 +533,9 @@ export class BudgetService {
   }
 
   /**
-   * Bulk delete budgetss
+   * Bulk delete budgetPlanss
    */
-  async bulkDeleteBudget(ids: number[]): Promise<BulkResponse | null> {
+  async bulkDeleteBudgetPlan(ids: number[]): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
     try {
@@ -553,12 +545,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetPlanList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk delete budgetss');
+      this.handleError(error, 'Failed to bulk delete budgetPlanss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -568,10 +560,10 @@ export class BudgetService {
   // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
 
   /**
-   * Validate budgets data before save
+   * Validate budgetPlans data before save
    */
-  async validateBudget(
-    data: CreateBudgetRequest,
+  async validateBudgetPlan(
+    data: CreateBudgetPlanRequest,
   ): Promise<{ valid: boolean; errors?: any[] }> {
     try {
       const response = await this.http
@@ -585,7 +577,7 @@ export class BudgetService {
       }
       return { valid: false, errors: ['Validation failed'] };
     } catch (error: any) {
-      console.error('Failed to validate budgets:', error);
+      console.error('Failed to validate budgetPlans:', error);
       return { valid: false, errors: [error.message || 'Validation error'] };
     }
   }
@@ -622,7 +614,7 @@ export class BudgetService {
   }
 
   /**
-   * Get budgets statistics
+   * Get budgetPlans statistics
    */
   async getStats(): Promise<{ total: number } | null> {
     try {
@@ -635,7 +627,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      console.error('Failed to get budgets stats:', error);
+      console.error('Failed to get budgetPlans stats:', error);
       return null;
     }
   }
@@ -757,10 +749,10 @@ export class BudgetService {
   }
 
   /**
-   * Select budgets
+   * Select budgetPlans
    */
-  selectBudget(budgets: Budget | null): void {
-    this.selectedBudgetSignal.set(budgets);
+  selectBudgetPlan(budgetPlans: BudgetPlan | null): void {
+    this.selectedBudgetPlanSignal.set(budgetPlans);
   }
 
   /**
@@ -775,11 +767,11 @@ export class BudgetService {
    * Reset service state
    */
   reset(): void {
-    this.budgetsListSignal.set([]);
-    this.selectedBudgetSignal.set(null);
+    this.budgetPlansListSignal.set([]);
+    this.selectedBudgetPlanSignal.set(null);
     this.currentPageSignal.set(1);
     this.errorSignal.set(null);
     this.clearPermissionError();
-    this.totalBudgetSignal.set(0);
+    this.totalBudgetPlanSignal.set(0);
   }
 }

@@ -151,32 +151,6 @@ export const INVENTORY_ROUTES: Route[] = [
               requiredPermissions: ['drug-components.read', 'admin.*'],
             },
           },
-          // Budget Categories (Generated CRUD)
-          {
-            path: 'budget-categories',
-            loadChildren: () =>
-              import(
-                './modules/budget-categories/budget-categories.routes'
-              ).then((m) => m.budgetCategoriesRoutes),
-            data: {
-              title: 'Budget Categories',
-              description: 'Budget Categories Management System',
-              requiredPermissions: ['budget-categories.read', 'admin.*'],
-            },
-          },
-          // Budget Types (Generated CRUD)
-          {
-            path: 'budget-types',
-            loadChildren: () =>
-              import('./modules/budget-types/budget-types.routes').then(
-                (m) => m.budgetTypesRoutes,
-              ),
-            data: {
-              title: 'Budget Types',
-              description: 'Budget Types Management System',
-              requiredPermissions: ['budget-types.read', 'admin.*'],
-            },
-          },
           // Drug Generics (Generated CRUD)
           {
             path: 'drug-generics',
@@ -188,19 +162,6 @@ export const INVENTORY_ROUTES: Route[] = [
               title: 'Drug Generics',
               description: 'Drug Generics Management System',
               requiredPermissions: ['drug-generics.read', 'admin.*'],
-            },
-          },
-          // Budgets (Generated CRUD)
-          {
-            path: 'budgets',
-            loadChildren: () =>
-              import('./modules/budgets/budgets.routes').then(
-                (m) => m.budgetsRoutes,
-              ),
-            data: {
-              title: 'Budgets',
-              description: 'Budgets Management System',
-              requiredPermissions: ['budgets.read', 'admin.*'],
             },
           },
           // Bank (Generated CRUD)
@@ -279,6 +240,115 @@ export const INVENTORY_ROUTES: Route[] = [
           },
           // CRUD modules will be auto-registered here by the generator
           // === MASTER-DATA ROUTES END ===
+        ],
+      },
+
+      // Budget Section (with children for CRUD modules)
+      {
+        path: 'budget',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/budget/budget.page').then((m) => m.BudgetPage),
+            data: {
+              title: 'Budget',
+            },
+          },
+          // === BUDGET ROUTES START ===
+          // Budget Reservations (Generated CRUD)
+          {
+            path: 'budget-reservations',
+            loadChildren: () =>
+              import(
+                './modules/budget-reservations/budget-reservations.routes'
+              ).then((m) => m.budgetReservationsRoutes),
+            data: {
+              title: 'Budget Reservations',
+              description: 'Budget Reservations Management System',
+              requiredPermissions: ['budget-reservations.read', 'admin.*'],
+            },
+          },
+          // Budget Plan Items (Generated CRUD)
+          {
+            path: 'budget-plan-items',
+            loadChildren: () =>
+              import(
+                './modules/budget-plan-items/budget-plan-items.routes'
+              ).then((m) => m.budgetPlanItemsRoutes),
+            data: {
+              title: 'Budget Plan Items',
+              description: 'Budget Plan Items Management System',
+              requiredPermissions: ['budget-plan-items.read', 'admin.*'],
+            },
+          },
+          // Budget Plans (Generated CRUD)
+          {
+            path: 'budget-plans',
+            loadChildren: () =>
+              import('./modules/budget-plans/budget-plans.routes').then(
+                (m) => m.budgetPlansRoutes,
+              ),
+            data: {
+              title: 'Budget Plans',
+              description: 'Budget Plans Management System',
+              requiredPermissions: ['budget-plans.read', 'admin.*'],
+            },
+          },
+          // Budget Allocations (Generated CRUD)
+          {
+            path: 'budget-allocations',
+            loadChildren: () =>
+              import(
+                './modules/budget-allocations/budget-allocations.routes'
+              ).then((m) => m.budgetAllocationsRoutes),
+            data: {
+              title: 'Budget Allocations',
+              description: 'Budget Allocations Management System',
+              requiredPermissions: ['budget-allocations.read', 'admin.*'],
+            },
+          },
+          // Budgets (Generated CRUD)
+          {
+            path: 'budgets',
+            loadChildren: () =>
+              import('./modules/budgets/budgets.routes').then(
+                (m) => m.budgetsRoutes,
+              ),
+            data: {
+              title: 'Budgets',
+              description: 'Budgets Management System',
+              requiredPermissions: ['budgets.read', 'admin.*'],
+            },
+          },
+          // Budget Categories (Generated CRUD)
+          {
+            path: 'budget-categories',
+            loadChildren: () =>
+              import(
+                './modules/budget-categories/budget-categories.routes'
+              ).then((m) => m.budgetCategoriesRoutes),
+            data: {
+              title: 'Budget Categories',
+              description: 'Budget Categories Management System',
+              requiredPermissions: ['budget-categories.read', 'admin.*'],
+            },
+          },
+          // Budget Types (Generated CRUD)
+          {
+            path: 'budget-types',
+            loadChildren: () =>
+              import('./modules/budget-types/budget-types.routes').then(
+                (m) => m.budgetTypesRoutes,
+              ),
+            data: {
+              title: 'Budget Types',
+              description: 'Budget Types Management System',
+              requiredPermissions: ['budget-types.read', 'admin.*'],
+            },
+          },
+          // CRUD modules will be auto-registered here by the generator
+          // === BUDGET ROUTES END ===
         ],
       },
 

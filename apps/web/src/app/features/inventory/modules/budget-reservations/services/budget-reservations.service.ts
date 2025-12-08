@@ -5,10 +5,10 @@ import { map } from 'rxjs/operators';
 
 // Import types from the shared types file
 import {
-  Budget,
-  CreateBudgetRequest,
-  UpdateBudgetRequest,
-  ListBudgetQuery,
+  BudgetReservation,
+  CreateBudgetReservationRequest,
+  UpdateBudgetReservationRequest,
+  ListBudgetReservationQuery,
   ApiResponse,
   BulkResponse,
   PaginatedResponse,
@@ -16,43 +16,48 @@ import {
   ValidateImportResponse,
   ExecuteImportRequest,
   ImportJob,
-} from '../types/budgets.types';
+} from '../types/budget-reservations.types';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BudgetService {
+export class BudgetReservationService {
   private http = inject(HttpClient);
-  private baseUrl = '/inventory/operations/budgets';
+  private baseUrl = '/inventory/operations/budget-reservations';
 
   // ===== SIGNALS FOR STATE MANAGEMENT =====
 
-  private budgetsListSignal = signal<Budget[]>([]);
+  private budgetReservationsListSignal = signal<BudgetReservation[]>([]);
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
   private permissionErrorSignal = signal<boolean>(false);
   private lastErrorStatusSignal = signal<number | null>(null);
-  private selectedBudgetSignal = signal<Budget | null>(null);
+  private selectedBudgetReservationSignal = signal<BudgetReservation | null>(
+    null,
+  );
   private currentPageSignal = signal<number>(1);
   private pageSizeSignal = signal<number>(10);
-  private totalBudgetSignal = signal<number>(0);
+  private totalBudgetReservationSignal = signal<number>(0);
 
   // ===== PUBLIC READONLY SIGNALS =====
 
-  readonly budgetsList = this.budgetsListSignal.asReadonly();
+  readonly budgetReservationsList =
+    this.budgetReservationsListSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
   readonly permissionError = this.permissionErrorSignal.asReadonly();
   readonly lastErrorStatus = this.lastErrorStatusSignal.asReadonly();
-  readonly selectedBudget = this.selectedBudgetSignal.asReadonly();
+  readonly selectedBudgetReservation =
+    this.selectedBudgetReservationSignal.asReadonly();
   readonly currentPage = this.currentPageSignal.asReadonly();
-  readonly totalBudget = this.totalBudgetSignal.asReadonly();
+  readonly totalBudgetReservation =
+    this.totalBudgetReservationSignal.asReadonly();
   readonly pageSize = this.pageSizeSignal.asReadonly();
 
   // ===== COMPUTED SIGNALS =====
 
   readonly totalPages = computed(() => {
-    const total = this.totalBudgetSignal();
+    const total = this.totalBudgetReservationSignal();
     const size = this.pageSizeSignal();
     return Math.ceil(total / size);
   });
@@ -109,9 +114,11 @@ export class BudgetService {
   // ===== STANDARD CRUD OPERATIONS =====
 
   /**
-   * Load budgets list with pagination and filters
+   * Load budgetReservations list with pagination and filters
    */
-  async loadBudgetList(params?: ListBudgetQuery): Promise<void> {
+  async loadBudgetReservationList(
+    params?: ListBudgetReservationQuery,
+  ): Promise<void> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -132,44 +139,100 @@ export class BudgetService {
       }
 
       // Add smart filter parameters based on table schema
-      // Numeric filtering for budget_type_id
-      if (params?.budget_type_id !== undefined)
+      // Numeric filtering for allocation_id
+      if (params?.allocation_id !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id',
-          params.budget_type_id.toString(),
+          'allocation_id',
+          params.allocation_id.toString(),
         );
-      if (params?.budget_type_id_min !== undefined)
+      if (params?.allocation_id_min !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id_min',
-          params.budget_type_id_min.toString(),
+          'allocation_id_min',
+          params.allocation_id_min.toString(),
         );
-      if (params?.budget_type_id_max !== undefined)
+      if (params?.allocation_id_max !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id_max',
-          params.budget_type_id_max.toString(),
+          'allocation_id_max',
+          params.allocation_id_max.toString(),
         );
-      // Numeric filtering for budget_category_id
-      if (params?.budget_category_id !== undefined)
+      // Numeric filtering for pr_id
+      if (params?.pr_id !== undefined)
+        httpParams = httpParams.set('pr_id', params.pr_id.toString());
+      if (params?.pr_id_min !== undefined)
+        httpParams = httpParams.set('pr_id_min', params.pr_id_min.toString());
+      if (params?.pr_id_max !== undefined)
+        httpParams = httpParams.set('pr_id_max', params.pr_id_max.toString());
+      // Numeric filtering for reserved_amount
+      if (params?.reserved_amount !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id',
-          params.budget_category_id.toString(),
+          'reserved_amount',
+          params.reserved_amount.toString(),
         );
-      if (params?.budget_category_id_min !== undefined)
+      if (params?.reserved_amount_min !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id_min',
-          params.budget_category_id_min.toString(),
+          'reserved_amount_min',
+          params.reserved_amount_min.toString(),
         );
-      if (params?.budget_category_id_max !== undefined)
+      if (params?.reserved_amount_max !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id_max',
-          params.budget_category_id_max.toString(),
+          'reserved_amount_max',
+          params.reserved_amount_max.toString(),
         );
-      // String filtering for description
-      if (params?.description)
-        httpParams = httpParams.set('description', params.description);
-      // Boolean filtering for is_active
-      if (params?.is_active !== undefined)
-        httpParams = httpParams.set('is_active', params.is_active.toString());
+      // Numeric filtering for quarter
+      if (params?.quarter !== undefined)
+        httpParams = httpParams.set('quarter', params.quarter.toString());
+      if (params?.quarter_min !== undefined)
+        httpParams = httpParams.set(
+          'quarter_min',
+          params.quarter_min.toString(),
+        );
+      if (params?.quarter_max !== undefined)
+        httpParams = httpParams.set(
+          'quarter_max',
+          params.quarter_max.toString(),
+        );
+      // Date/DateTime filtering for reservation_date
+      if (params?.reservation_date)
+        httpParams = httpParams.set(
+          'reservation_date',
+          params.reservation_date,
+        );
+      if (params?.reservation_date_min)
+        httpParams = httpParams.set(
+          'reservation_date_min',
+          params.reservation_date_min,
+        );
+      if (params?.reservation_date_max)
+        httpParams = httpParams.set(
+          'reservation_date_max',
+          params.reservation_date_max,
+        );
+      // Date/DateTime filtering for expires_date
+      if (params?.expires_date)
+        httpParams = httpParams.set('expires_date', params.expires_date);
+      if (params?.expires_date_min)
+        httpParams = httpParams.set(
+          'expires_date_min',
+          params.expires_date_min,
+        );
+      if (params?.expires_date_max)
+        httpParams = httpParams.set(
+          'expires_date_max',
+          params.expires_date_max,
+        );
+      // Boolean filtering for is_released
+      if (params?.is_released !== undefined)
+        httpParams = httpParams.set(
+          'is_released',
+          params.is_released.toString(),
+        );
+      // Date/DateTime filtering for released_at
+      if (params?.released_at)
+        httpParams = httpParams.set('released_at', params.released_at);
+      if (params?.released_at_min)
+        httpParams = httpParams.set('released_at_min', params.released_at_min);
+      if (params?.released_at_max)
+        httpParams = httpParams.set('released_at_max', params.released_at_max);
       // Date/DateTime filtering for created_at
       if (params?.created_at)
         httpParams = httpParams.set('created_at', params.created_at);
@@ -186,86 +249,64 @@ export class BudgetService {
         httpParams = httpParams.set('updated_at_max', params.updated_at_max);
 
       const response = await this.http
-        .get<PaginatedResponse<Budget>>(this.baseUrl, { params: httpParams })
+        .get<
+          PaginatedResponse<BudgetReservation>
+        >(this.baseUrl, { params: httpParams })
         .toPromise();
 
       if (response) {
-        this.budgetsListSignal.set(response.data);
+        this.budgetReservationsListSignal.set(response.data);
 
         if (response.pagination) {
-          this.totalBudgetSignal.set(response.pagination.total);
+          this.totalBudgetReservationSignal.set(response.pagination.total);
           this.currentPageSignal.set(response.pagination.page);
           this.pageSizeSignal.set(response.pagination.limit);
         }
       }
     } catch (error: any) {
-      this.handleError(error, 'Failed to load budgets list');
+      this.handleError(error, 'Failed to load budgetReservations list');
     } finally {
       this.loadingSignal.set(false);
     }
   }
 
   /**
-   * Load single budgets by ID
+   * Load single budgetReservations by ID
    */
-  async loadBudgetById(id: number): Promise<Budget | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .get<ApiResponse<Budget>>(`${this.baseUrl}/${id}`)
-        .toPromise();
-
-      if (response) {
-        this.selectedBudgetSignal.set(response.data);
-        return response.data;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to load budgets');
-      return null;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  /**
-   * Create new budgets
-   */
-  async createBudget(data: CreateBudgetRequest): Promise<Budget | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .post<ApiResponse<Budget>>(`${this.baseUrl}`, data)
-        .toPromise();
-
-      if (response) {
-        // ✅ Return data without optimistic update
-        // List component will refresh via reloadTrigger
-        return response.data;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to create budgets');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  /**
-   * Update existing budgets
-   */
-  async updateBudget(
+  async loadBudgetReservationById(
     id: number,
-    data: UpdateBudgetRequest,
-  ): Promise<Budget | null> {
+  ): Promise<BudgetReservation | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .put<ApiResponse<Budget>>(`${this.baseUrl}/${id}`, data)
+        .get<ApiResponse<BudgetReservation>>(`${this.baseUrl}/${id}`)
+        .toPromise();
+
+      if (response) {
+        this.selectedBudgetReservationSignal.set(response.data);
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      this.handleError(error, 'Failed to load budgetReservations');
+      return null;
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  /**
+   * Create new budgetReservations
+   */
+  async createBudgetReservation(
+    data: CreateBudgetReservationRequest,
+  ): Promise<BudgetReservation | null> {
+    this.loadingSignal.set(true);
+
+    try {
+      const response = await this.http
+        .post<ApiResponse<BudgetReservation>>(`${this.baseUrl}`, data)
         .toPromise();
 
       if (response) {
@@ -275,7 +316,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to update budgets');
+      this.handleError(error, 'Failed to create budgetReservations');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -283,9 +324,37 @@ export class BudgetService {
   }
 
   /**
-   * Delete budgets by ID
+   * Update existing budgetReservations
    */
-  async deleteBudget(id: number): Promise<boolean> {
+  async updateBudgetReservation(
+    id: number,
+    data: UpdateBudgetReservationRequest,
+  ): Promise<BudgetReservation | null> {
+    this.loadingSignal.set(true);
+
+    try {
+      const response = await this.http
+        .put<ApiResponse<BudgetReservation>>(`${this.baseUrl}/${id}`, data)
+        .toPromise();
+
+      if (response) {
+        // ✅ Return data without optimistic update
+        // List component will refresh via reloadTrigger
+        return response.data;
+      }
+      return null;
+    } catch (error: any) {
+      this.handleError(error, 'Failed to update budgetReservations');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  /**
+   * Delete budgetReservations by ID
+   */
+  async deleteBudgetReservation(id: number): Promise<boolean> {
     this.loadingSignal.set(true);
 
     try {
@@ -300,7 +369,7 @@ export class BudgetService {
       }
       return false;
     } catch (error: any) {
-      this.handleError(error, 'Failed to delete budgets');
+      this.handleError(error, 'Failed to delete budgetReservations');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -310,9 +379,9 @@ export class BudgetService {
   // ===== EXPORT OPERATIONS =====
 
   /**
-   * Export budgets data
+   * Export budgetReservations data
    */
-  async exportBudget(options: {
+  async exportBudgetReservation(options: {
     format: 'csv' | 'excel' | 'pdf';
     ids?: number[];
     filters?: Record<string, any>;
@@ -375,7 +444,7 @@ export class BudgetService {
 
       throw new Error('Export failed - no response received');
     } catch (error: any) {
-      console.error('Failed to export budgets data:', error);
+      console.error('Failed to export budgetReservations data:', error);
       throw error;
     }
   }
@@ -383,7 +452,7 @@ export class BudgetService {
   // ===== ENHANCED OPERATIONS (BULK & DROPDOWN) =====
 
   /**
-   * Get dropdown options for budgets
+   * Get dropdown options for budgetReservations
    */
   async getDropdownOptions(
     params: { search?: string; limit?: number } = {},
@@ -408,15 +477,18 @@ export class BudgetService {
       }
       return [];
     } catch (error: any) {
-      console.error('Failed to fetch budgets dropdown options:', error);
+      console.error(
+        'Failed to fetch budgetReservations dropdown options:',
+        error,
+      );
       return [];
     }
   }
 
   /**
-   * Get budget_types dropdown options for budget_type_id field
+   * Get budget_allocations dropdown options for allocation_id field
    */
-  async getBudgetTypesDropdown(
+  async getBudgetAllocationsDropdown(
     params: { search?: string; limit?: number } = {},
   ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
     try {
@@ -435,42 +507,7 @@ export class BudgetService {
             }>;
             total: number;
           }>
-        >('/budget_types/dropdown', { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error('Failed to fetch budget_types dropdown options:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get budget_categories dropdown options for budget_category_id field
-   */
-  async getBudgetCategoriesDropdown(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{
-              value: string;
-              label: string;
-              disabled?: boolean;
-            }>;
-            total: number;
-          }>
-        >('/budget_categories/dropdown', { params: httpParams })
+        >('/budget_allocations/dropdown', { params: httpParams })
         .toPromise();
 
       if (response?.success && response.data?.options) {
@@ -479,7 +516,7 @@ export class BudgetService {
       return [];
     } catch (error: any) {
       console.error(
-        'Failed to fetch budget_categories dropdown options:',
+        'Failed to fetch budget_allocations dropdown options:',
         error,
       );
       return [];
@@ -487,10 +524,10 @@ export class BudgetService {
   }
 
   /**
-   * Bulk create budgetss
+   * Bulk create budgetReservationss
    */
-  async bulkCreateBudget(
-    items: CreateBudgetRequest[],
+  async bulkCreateBudgetReservation(
+    items: CreateBudgetReservationRequest[],
   ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
@@ -501,12 +538,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetReservationList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk create budgetss');
+      this.handleError(error, 'Failed to bulk create budgetReservationss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -514,10 +551,10 @@ export class BudgetService {
   }
 
   /**
-   * Bulk update budgetss
+   * Bulk update budgetReservationss
    */
-  async bulkUpdateBudget(
-    items: Array<{ id: number; data: UpdateBudgetRequest }>,
+  async bulkUpdateBudgetReservation(
+    items: Array<{ id: number; data: UpdateBudgetReservationRequest }>,
   ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
@@ -528,12 +565,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetReservationList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk update budgetss');
+      this.handleError(error, 'Failed to bulk update budgetReservationss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -541,9 +578,11 @@ export class BudgetService {
   }
 
   /**
-   * Bulk delete budgetss
+   * Bulk delete budgetReservationss
    */
-  async bulkDeleteBudget(ids: number[]): Promise<BulkResponse | null> {
+  async bulkDeleteBudgetReservation(
+    ids: number[],
+  ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
     try {
@@ -553,12 +592,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetReservationList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk delete budgetss');
+      this.handleError(error, 'Failed to bulk delete budgetReservationss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -568,10 +607,10 @@ export class BudgetService {
   // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
 
   /**
-   * Validate budgets data before save
+   * Validate budgetReservations data before save
    */
-  async validateBudget(
-    data: CreateBudgetRequest,
+  async validateBudgetReservation(
+    data: CreateBudgetReservationRequest,
   ): Promise<{ valid: boolean; errors?: any[] }> {
     try {
       const response = await this.http
@@ -585,7 +624,7 @@ export class BudgetService {
       }
       return { valid: false, errors: ['Validation failed'] };
     } catch (error: any) {
-      console.error('Failed to validate budgets:', error);
+      console.error('Failed to validate budgetReservations:', error);
       return { valid: false, errors: [error.message || 'Validation error'] };
     }
   }
@@ -622,7 +661,7 @@ export class BudgetService {
   }
 
   /**
-   * Get budgets statistics
+   * Get budgetReservations statistics
    */
   async getStats(): Promise<{ total: number } | null> {
     try {
@@ -635,7 +674,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      console.error('Failed to get budgets stats:', error);
+      console.error('Failed to get budgetReservations stats:', error);
       return null;
     }
   }
@@ -757,10 +796,10 @@ export class BudgetService {
   }
 
   /**
-   * Select budgets
+   * Select budgetReservations
    */
-  selectBudget(budgets: Budget | null): void {
-    this.selectedBudgetSignal.set(budgets);
+  selectBudgetReservation(budgetReservations: BudgetReservation | null): void {
+    this.selectedBudgetReservationSignal.set(budgetReservations);
   }
 
   /**
@@ -775,11 +814,11 @@ export class BudgetService {
    * Reset service state
    */
   reset(): void {
-    this.budgetsListSignal.set([]);
-    this.selectedBudgetSignal.set(null);
+    this.budgetReservationsListSignal.set([]);
+    this.selectedBudgetReservationSignal.set(null);
     this.currentPageSignal.set(1);
     this.errorSignal.set(null);
     this.clearPermissionError();
-    this.totalBudgetSignal.set(0);
+    this.totalBudgetReservationSignal.set(0);
   }
 }

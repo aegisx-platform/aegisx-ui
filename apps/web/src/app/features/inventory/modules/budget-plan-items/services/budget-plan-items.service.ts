@@ -5,10 +5,10 @@ import { map } from 'rxjs/operators';
 
 // Import types from the shared types file
 import {
-  Budget,
-  CreateBudgetRequest,
-  UpdateBudgetRequest,
-  ListBudgetQuery,
+  BudgetPlanItem,
+  CreateBudgetPlanItemRequest,
+  UpdateBudgetPlanItemRequest,
+  ListBudgetPlanItemQuery,
   ApiResponse,
   BulkResponse,
   PaginatedResponse,
@@ -16,43 +16,44 @@ import {
   ValidateImportResponse,
   ExecuteImportRequest,
   ImportJob,
-} from '../types/budgets.types';
+} from '../types/budget-plan-items.types';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BudgetService {
+export class BudgetPlanItemService {
   private http = inject(HttpClient);
-  private baseUrl = '/inventory/operations/budgets';
+  private baseUrl = '/inventory/operations/budget-plan-items';
 
   // ===== SIGNALS FOR STATE MANAGEMENT =====
 
-  private budgetsListSignal = signal<Budget[]>([]);
+  private budgetPlanItemsListSignal = signal<BudgetPlanItem[]>([]);
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
   private permissionErrorSignal = signal<boolean>(false);
   private lastErrorStatusSignal = signal<number | null>(null);
-  private selectedBudgetSignal = signal<Budget | null>(null);
+  private selectedBudgetPlanItemSignal = signal<BudgetPlanItem | null>(null);
   private currentPageSignal = signal<number>(1);
   private pageSizeSignal = signal<number>(10);
-  private totalBudgetSignal = signal<number>(0);
+  private totalBudgetPlanItemSignal = signal<number>(0);
 
   // ===== PUBLIC READONLY SIGNALS =====
 
-  readonly budgetsList = this.budgetsListSignal.asReadonly();
+  readonly budgetPlanItemsList = this.budgetPlanItemsListSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
   readonly permissionError = this.permissionErrorSignal.asReadonly();
   readonly lastErrorStatus = this.lastErrorStatusSignal.asReadonly();
-  readonly selectedBudget = this.selectedBudgetSignal.asReadonly();
+  readonly selectedBudgetPlanItem =
+    this.selectedBudgetPlanItemSignal.asReadonly();
   readonly currentPage = this.currentPageSignal.asReadonly();
-  readonly totalBudget = this.totalBudgetSignal.asReadonly();
+  readonly totalBudgetPlanItem = this.totalBudgetPlanItemSignal.asReadonly();
   readonly pageSize = this.pageSizeSignal.asReadonly();
 
   // ===== COMPUTED SIGNALS =====
 
   readonly totalPages = computed(() => {
-    const total = this.totalBudgetSignal();
+    const total = this.totalBudgetPlanItemSignal();
     const size = this.pageSizeSignal();
     return Math.ceil(total / size);
   });
@@ -109,9 +110,11 @@ export class BudgetService {
   // ===== STANDARD CRUD OPERATIONS =====
 
   /**
-   * Load budgets list with pagination and filters
+   * Load budgetPlanItems list with pagination and filters
    */
-  async loadBudgetList(params?: ListBudgetQuery): Promise<void> {
+  async loadBudgetPlanItemList(
+    params?: ListBudgetPlanItemQuery,
+  ): Promise<void> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -132,44 +135,293 @@ export class BudgetService {
       }
 
       // Add smart filter parameters based on table schema
-      // Numeric filtering for budget_type_id
-      if (params?.budget_type_id !== undefined)
+      // Numeric filtering for budget_plan_id
+      if (params?.budget_plan_id !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id',
-          params.budget_type_id.toString(),
+          'budget_plan_id',
+          params.budget_plan_id.toString(),
         );
-      if (params?.budget_type_id_min !== undefined)
+      if (params?.budget_plan_id_min !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id_min',
-          params.budget_type_id_min.toString(),
+          'budget_plan_id_min',
+          params.budget_plan_id_min.toString(),
         );
-      if (params?.budget_type_id_max !== undefined)
+      if (params?.budget_plan_id_max !== undefined)
         httpParams = httpParams.set(
-          'budget_type_id_max',
-          params.budget_type_id_max.toString(),
+          'budget_plan_id_max',
+          params.budget_plan_id_max.toString(),
         );
-      // Numeric filtering for budget_category_id
-      if (params?.budget_category_id !== undefined)
+      // Numeric filtering for generic_id
+      if (params?.generic_id !== undefined)
+        httpParams = httpParams.set('generic_id', params.generic_id.toString());
+      if (params?.generic_id_min !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id',
-          params.budget_category_id.toString(),
+          'generic_id_min',
+          params.generic_id_min.toString(),
         );
-      if (params?.budget_category_id_min !== undefined)
+      if (params?.generic_id_max !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id_min',
-          params.budget_category_id_min.toString(),
+          'generic_id_max',
+          params.generic_id_max.toString(),
         );
-      if (params?.budget_category_id_max !== undefined)
+      // Numeric filtering for last_year_qty
+      if (params?.last_year_qty !== undefined)
         httpParams = httpParams.set(
-          'budget_category_id_max',
-          params.budget_category_id_max.toString(),
+          'last_year_qty',
+          params.last_year_qty.toString(),
         );
-      // String filtering for description
-      if (params?.description)
-        httpParams = httpParams.set('description', params.description);
-      // Boolean filtering for is_active
-      if (params?.is_active !== undefined)
-        httpParams = httpParams.set('is_active', params.is_active.toString());
+      if (params?.last_year_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'last_year_qty_min',
+          params.last_year_qty_min.toString(),
+        );
+      if (params?.last_year_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'last_year_qty_max',
+          params.last_year_qty_max.toString(),
+        );
+      // Numeric filtering for two_years_ago_qty
+      if (params?.two_years_ago_qty !== undefined)
+        httpParams = httpParams.set(
+          'two_years_ago_qty',
+          params.two_years_ago_qty.toString(),
+        );
+      if (params?.two_years_ago_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'two_years_ago_qty_min',
+          params.two_years_ago_qty_min.toString(),
+        );
+      if (params?.two_years_ago_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'two_years_ago_qty_max',
+          params.two_years_ago_qty_max.toString(),
+        );
+      // Numeric filtering for three_years_ago_qty
+      if (params?.three_years_ago_qty !== undefined)
+        httpParams = httpParams.set(
+          'three_years_ago_qty',
+          params.three_years_ago_qty.toString(),
+        );
+      if (params?.three_years_ago_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'three_years_ago_qty_min',
+          params.three_years_ago_qty_min.toString(),
+        );
+      if (params?.three_years_ago_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'three_years_ago_qty_max',
+          params.three_years_ago_qty_max.toString(),
+        );
+      // Numeric filtering for planned_quantity
+      if (params?.planned_quantity !== undefined)
+        httpParams = httpParams.set(
+          'planned_quantity',
+          params.planned_quantity.toString(),
+        );
+      if (params?.planned_quantity_min !== undefined)
+        httpParams = httpParams.set(
+          'planned_quantity_min',
+          params.planned_quantity_min.toString(),
+        );
+      if (params?.planned_quantity_max !== undefined)
+        httpParams = httpParams.set(
+          'planned_quantity_max',
+          params.planned_quantity_max.toString(),
+        );
+      // Numeric filtering for estimated_unit_price
+      if (params?.estimated_unit_price !== undefined)
+        httpParams = httpParams.set(
+          'estimated_unit_price',
+          params.estimated_unit_price.toString(),
+        );
+      if (params?.estimated_unit_price_min !== undefined)
+        httpParams = httpParams.set(
+          'estimated_unit_price_min',
+          params.estimated_unit_price_min.toString(),
+        );
+      if (params?.estimated_unit_price_max !== undefined)
+        httpParams = httpParams.set(
+          'estimated_unit_price_max',
+          params.estimated_unit_price_max.toString(),
+        );
+      // Numeric filtering for total_planned_value
+      if (params?.total_planned_value !== undefined)
+        httpParams = httpParams.set(
+          'total_planned_value',
+          params.total_planned_value.toString(),
+        );
+      if (params?.total_planned_value_min !== undefined)
+        httpParams = httpParams.set(
+          'total_planned_value_min',
+          params.total_planned_value_min.toString(),
+        );
+      if (params?.total_planned_value_max !== undefined)
+        httpParams = httpParams.set(
+          'total_planned_value_max',
+          params.total_planned_value_max.toString(),
+        );
+      // Numeric filtering for q1_planned_qty
+      if (params?.q1_planned_qty !== undefined)
+        httpParams = httpParams.set(
+          'q1_planned_qty',
+          params.q1_planned_qty.toString(),
+        );
+      if (params?.q1_planned_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q1_planned_qty_min',
+          params.q1_planned_qty_min.toString(),
+        );
+      if (params?.q1_planned_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q1_planned_qty_max',
+          params.q1_planned_qty_max.toString(),
+        );
+      // Numeric filtering for q2_planned_qty
+      if (params?.q2_planned_qty !== undefined)
+        httpParams = httpParams.set(
+          'q2_planned_qty',
+          params.q2_planned_qty.toString(),
+        );
+      if (params?.q2_planned_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q2_planned_qty_min',
+          params.q2_planned_qty_min.toString(),
+        );
+      if (params?.q2_planned_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q2_planned_qty_max',
+          params.q2_planned_qty_max.toString(),
+        );
+      // Numeric filtering for q3_planned_qty
+      if (params?.q3_planned_qty !== undefined)
+        httpParams = httpParams.set(
+          'q3_planned_qty',
+          params.q3_planned_qty.toString(),
+        );
+      if (params?.q3_planned_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q3_planned_qty_min',
+          params.q3_planned_qty_min.toString(),
+        );
+      if (params?.q3_planned_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q3_planned_qty_max',
+          params.q3_planned_qty_max.toString(),
+        );
+      // Numeric filtering for q4_planned_qty
+      if (params?.q4_planned_qty !== undefined)
+        httpParams = httpParams.set(
+          'q4_planned_qty',
+          params.q4_planned_qty.toString(),
+        );
+      if (params?.q4_planned_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q4_planned_qty_min',
+          params.q4_planned_qty_min.toString(),
+        );
+      if (params?.q4_planned_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q4_planned_qty_max',
+          params.q4_planned_qty_max.toString(),
+        );
+      // Numeric filtering for q1_purchased_qty
+      if (params?.q1_purchased_qty !== undefined)
+        httpParams = httpParams.set(
+          'q1_purchased_qty',
+          params.q1_purchased_qty.toString(),
+        );
+      if (params?.q1_purchased_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q1_purchased_qty_min',
+          params.q1_purchased_qty_min.toString(),
+        );
+      if (params?.q1_purchased_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q1_purchased_qty_max',
+          params.q1_purchased_qty_max.toString(),
+        );
+      // Numeric filtering for q2_purchased_qty
+      if (params?.q2_purchased_qty !== undefined)
+        httpParams = httpParams.set(
+          'q2_purchased_qty',
+          params.q2_purchased_qty.toString(),
+        );
+      if (params?.q2_purchased_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q2_purchased_qty_min',
+          params.q2_purchased_qty_min.toString(),
+        );
+      if (params?.q2_purchased_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q2_purchased_qty_max',
+          params.q2_purchased_qty_max.toString(),
+        );
+      // Numeric filtering for q3_purchased_qty
+      if (params?.q3_purchased_qty !== undefined)
+        httpParams = httpParams.set(
+          'q3_purchased_qty',
+          params.q3_purchased_qty.toString(),
+        );
+      if (params?.q3_purchased_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q3_purchased_qty_min',
+          params.q3_purchased_qty_min.toString(),
+        );
+      if (params?.q3_purchased_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q3_purchased_qty_max',
+          params.q3_purchased_qty_max.toString(),
+        );
+      // Numeric filtering for q4_purchased_qty
+      if (params?.q4_purchased_qty !== undefined)
+        httpParams = httpParams.set(
+          'q4_purchased_qty',
+          params.q4_purchased_qty.toString(),
+        );
+      if (params?.q4_purchased_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'q4_purchased_qty_min',
+          params.q4_purchased_qty_min.toString(),
+        );
+      if (params?.q4_purchased_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'q4_purchased_qty_max',
+          params.q4_purchased_qty_max.toString(),
+        );
+      // Numeric filtering for total_purchased_qty
+      if (params?.total_purchased_qty !== undefined)
+        httpParams = httpParams.set(
+          'total_purchased_qty',
+          params.total_purchased_qty.toString(),
+        );
+      if (params?.total_purchased_qty_min !== undefined)
+        httpParams = httpParams.set(
+          'total_purchased_qty_min',
+          params.total_purchased_qty_min.toString(),
+        );
+      if (params?.total_purchased_qty_max !== undefined)
+        httpParams = httpParams.set(
+          'total_purchased_qty_max',
+          params.total_purchased_qty_max.toString(),
+        );
+      // Numeric filtering for total_purchased_value
+      if (params?.total_purchased_value !== undefined)
+        httpParams = httpParams.set(
+          'total_purchased_value',
+          params.total_purchased_value.toString(),
+        );
+      if (params?.total_purchased_value_min !== undefined)
+        httpParams = httpParams.set(
+          'total_purchased_value_min',
+          params.total_purchased_value_min.toString(),
+        );
+      if (params?.total_purchased_value_max !== undefined)
+        httpParams = httpParams.set(
+          'total_purchased_value_max',
+          params.total_purchased_value_max.toString(),
+        );
+      // String filtering for notes
+      if (params?.notes) httpParams = httpParams.set('notes', params.notes);
       // Date/DateTime filtering for created_at
       if (params?.created_at)
         httpParams = httpParams.set('created_at', params.created_at);
@@ -186,43 +438,45 @@ export class BudgetService {
         httpParams = httpParams.set('updated_at_max', params.updated_at_max);
 
       const response = await this.http
-        .get<PaginatedResponse<Budget>>(this.baseUrl, { params: httpParams })
+        .get<
+          PaginatedResponse<BudgetPlanItem>
+        >(this.baseUrl, { params: httpParams })
         .toPromise();
 
       if (response) {
-        this.budgetsListSignal.set(response.data);
+        this.budgetPlanItemsListSignal.set(response.data);
 
         if (response.pagination) {
-          this.totalBudgetSignal.set(response.pagination.total);
+          this.totalBudgetPlanItemSignal.set(response.pagination.total);
           this.currentPageSignal.set(response.pagination.page);
           this.pageSizeSignal.set(response.pagination.limit);
         }
       }
     } catch (error: any) {
-      this.handleError(error, 'Failed to load budgets list');
+      this.handleError(error, 'Failed to load budgetPlanItems list');
     } finally {
       this.loadingSignal.set(false);
     }
   }
 
   /**
-   * Load single budgets by ID
+   * Load single budgetPlanItems by ID
    */
-  async loadBudgetById(id: number): Promise<Budget | null> {
+  async loadBudgetPlanItemById(id: number): Promise<BudgetPlanItem | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .get<ApiResponse<Budget>>(`${this.baseUrl}/${id}`)
+        .get<ApiResponse<BudgetPlanItem>>(`${this.baseUrl}/${id}`)
         .toPromise();
 
       if (response) {
-        this.selectedBudgetSignal.set(response.data);
+        this.selectedBudgetPlanItemSignal.set(response.data);
         return response.data;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to load budgets');
+      this.handleError(error, 'Failed to load budgetPlanItems');
       return null;
     } finally {
       this.loadingSignal.set(false);
@@ -230,14 +484,16 @@ export class BudgetService {
   }
 
   /**
-   * Create new budgets
+   * Create new budgetPlanItems
    */
-  async createBudget(data: CreateBudgetRequest): Promise<Budget | null> {
+  async createBudgetPlanItem(
+    data: CreateBudgetPlanItemRequest,
+  ): Promise<BudgetPlanItem | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .post<ApiResponse<Budget>>(`${this.baseUrl}`, data)
+        .post<ApiResponse<BudgetPlanItem>>(`${this.baseUrl}`, data)
         .toPromise();
 
       if (response) {
@@ -247,7 +503,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to create budgets');
+      this.handleError(error, 'Failed to create budgetPlanItems');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -255,17 +511,17 @@ export class BudgetService {
   }
 
   /**
-   * Update existing budgets
+   * Update existing budgetPlanItems
    */
-  async updateBudget(
+  async updateBudgetPlanItem(
     id: number,
-    data: UpdateBudgetRequest,
-  ): Promise<Budget | null> {
+    data: UpdateBudgetPlanItemRequest,
+  ): Promise<BudgetPlanItem | null> {
     this.loadingSignal.set(true);
 
     try {
       const response = await this.http
-        .put<ApiResponse<Budget>>(`${this.baseUrl}/${id}`, data)
+        .put<ApiResponse<BudgetPlanItem>>(`${this.baseUrl}/${id}`, data)
         .toPromise();
 
       if (response) {
@@ -275,7 +531,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to update budgets');
+      this.handleError(error, 'Failed to update budgetPlanItems');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -283,9 +539,9 @@ export class BudgetService {
   }
 
   /**
-   * Delete budgets by ID
+   * Delete budgetPlanItems by ID
    */
-  async deleteBudget(id: number): Promise<boolean> {
+  async deleteBudgetPlanItem(id: number): Promise<boolean> {
     this.loadingSignal.set(true);
 
     try {
@@ -300,7 +556,7 @@ export class BudgetService {
       }
       return false;
     } catch (error: any) {
-      this.handleError(error, 'Failed to delete budgets');
+      this.handleError(error, 'Failed to delete budgetPlanItems');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -310,9 +566,9 @@ export class BudgetService {
   // ===== EXPORT OPERATIONS =====
 
   /**
-   * Export budgets data
+   * Export budgetPlanItems data
    */
-  async exportBudget(options: {
+  async exportBudgetPlanItem(options: {
     format: 'csv' | 'excel' | 'pdf';
     ids?: number[];
     filters?: Record<string, any>;
@@ -375,7 +631,7 @@ export class BudgetService {
 
       throw new Error('Export failed - no response received');
     } catch (error: any) {
-      console.error('Failed to export budgets data:', error);
+      console.error('Failed to export budgetPlanItems data:', error);
       throw error;
     }
   }
@@ -383,7 +639,7 @@ export class BudgetService {
   // ===== ENHANCED OPERATIONS (BULK & DROPDOWN) =====
 
   /**
-   * Get dropdown options for budgets
+   * Get dropdown options for budgetPlanItems
    */
   async getDropdownOptions(
     params: { search?: string; limit?: number } = {},
@@ -408,15 +664,15 @@ export class BudgetService {
       }
       return [];
     } catch (error: any) {
-      console.error('Failed to fetch budgets dropdown options:', error);
+      console.error('Failed to fetch budgetPlanItems dropdown options:', error);
       return [];
     }
   }
 
   /**
-   * Get budget_types dropdown options for budget_type_id field
+   * Get budget_plans dropdown options for budget_plan_id field
    */
-  async getBudgetTypesDropdown(
+  async getBudgetPlansDropdown(
     params: { search?: string; limit?: number } = {},
   ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
     try {
@@ -435,7 +691,7 @@ export class BudgetService {
             }>;
             total: number;
           }>
-        >('/budget_types/dropdown', { params: httpParams })
+        >('/budget_plans/dropdown', { params: httpParams })
         .toPromise();
 
       if (response?.success && response.data?.options) {
@@ -443,15 +699,15 @@ export class BudgetService {
       }
       return [];
     } catch (error: any) {
-      console.error('Failed to fetch budget_types dropdown options:', error);
+      console.error('Failed to fetch budget_plans dropdown options:', error);
       return [];
     }
   }
 
   /**
-   * Get budget_categories dropdown options for budget_category_id field
+   * Get drug_generics dropdown options for generic_id field
    */
-  async getBudgetCategoriesDropdown(
+  async getDrugGenericsDropdown(
     params: { search?: string; limit?: number } = {},
   ): Promise<Array<{ value: string; label: string; disabled?: boolean }>> {
     try {
@@ -470,7 +726,7 @@ export class BudgetService {
             }>;
             total: number;
           }>
-        >('/budget_categories/dropdown', { params: httpParams })
+        >('/drug_generics/dropdown', { params: httpParams })
         .toPromise();
 
       if (response?.success && response.data?.options) {
@@ -478,19 +734,16 @@ export class BudgetService {
       }
       return [];
     } catch (error: any) {
-      console.error(
-        'Failed to fetch budget_categories dropdown options:',
-        error,
-      );
+      console.error('Failed to fetch drug_generics dropdown options:', error);
       return [];
     }
   }
 
   /**
-   * Bulk create budgetss
+   * Bulk create budgetPlanItemss
    */
-  async bulkCreateBudget(
-    items: CreateBudgetRequest[],
+  async bulkCreateBudgetPlanItem(
+    items: CreateBudgetPlanItemRequest[],
   ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
@@ -501,12 +754,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetPlanItemList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk create budgetss');
+      this.handleError(error, 'Failed to bulk create budgetPlanItemss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -514,10 +767,10 @@ export class BudgetService {
   }
 
   /**
-   * Bulk update budgetss
+   * Bulk update budgetPlanItemss
    */
-  async bulkUpdateBudget(
-    items: Array<{ id: number; data: UpdateBudgetRequest }>,
+  async bulkUpdateBudgetPlanItem(
+    items: Array<{ id: number; data: UpdateBudgetPlanItemRequest }>,
   ): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
@@ -528,12 +781,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetPlanItemList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk update budgetss');
+      this.handleError(error, 'Failed to bulk update budgetPlanItemss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -541,9 +794,9 @@ export class BudgetService {
   }
 
   /**
-   * Bulk delete budgetss
+   * Bulk delete budgetPlanItemss
    */
-  async bulkDeleteBudget(ids: number[]): Promise<BulkResponse | null> {
+  async bulkDeleteBudgetPlanItem(ids: number[]): Promise<BulkResponse | null> {
     this.loadingSignal.set(true);
 
     try {
@@ -553,12 +806,12 @@ export class BudgetService {
 
       if (response) {
         // Refresh list after bulk operation
-        await this.loadBudgetList();
+        await this.loadBudgetPlanItemList();
         return response;
       }
       return null;
     } catch (error: any) {
-      this.handleError(error, 'Failed to bulk delete budgetss');
+      this.handleError(error, 'Failed to bulk delete budgetPlanItemss');
       throw error;
     } finally {
       this.loadingSignal.set(false);
@@ -568,10 +821,10 @@ export class BudgetService {
   // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
 
   /**
-   * Validate budgets data before save
+   * Validate budgetPlanItems data before save
    */
-  async validateBudget(
-    data: CreateBudgetRequest,
+  async validateBudgetPlanItem(
+    data: CreateBudgetPlanItemRequest,
   ): Promise<{ valid: boolean; errors?: any[] }> {
     try {
       const response = await this.http
@@ -585,7 +838,7 @@ export class BudgetService {
       }
       return { valid: false, errors: ['Validation failed'] };
     } catch (error: any) {
-      console.error('Failed to validate budgets:', error);
+      console.error('Failed to validate budgetPlanItems:', error);
       return { valid: false, errors: [error.message || 'Validation error'] };
     }
   }
@@ -622,7 +875,7 @@ export class BudgetService {
   }
 
   /**
-   * Get budgets statistics
+   * Get budgetPlanItems statistics
    */
   async getStats(): Promise<{ total: number } | null> {
     try {
@@ -635,7 +888,7 @@ export class BudgetService {
       }
       return null;
     } catch (error: any) {
-      console.error('Failed to get budgets stats:', error);
+      console.error('Failed to get budgetPlanItems stats:', error);
       return null;
     }
   }
@@ -757,10 +1010,10 @@ export class BudgetService {
   }
 
   /**
-   * Select budgets
+   * Select budgetPlanItems
    */
-  selectBudget(budgets: Budget | null): void {
-    this.selectedBudgetSignal.set(budgets);
+  selectBudgetPlanItem(budgetPlanItems: BudgetPlanItem | null): void {
+    this.selectedBudgetPlanItemSignal.set(budgetPlanItems);
   }
 
   /**
@@ -775,11 +1028,11 @@ export class BudgetService {
    * Reset service state
    */
   reset(): void {
-    this.budgetsListSignal.set([]);
-    this.selectedBudgetSignal.set(null);
+    this.budgetPlanItemsListSignal.set([]);
+    this.selectedBudgetPlanItemSignal.set(null);
     this.currentPageSignal.set(1);
     this.errorSignal.set(null);
     this.clearPermissionError();
-    this.totalBudgetSignal.set(0);
+    this.totalBudgetPlanItemSignal.set(0);
   }
 }

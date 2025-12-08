@@ -35,6 +35,7 @@ import {
   CreateBudgetRequest,
   UpdateBudgetRequest,
 } from '../types/budgets.types';
+// CRUD-GENERATOR-TAG: Foreign Key Service Import
 
 export type BudgetFormMode = 'create' | 'edit';
 
@@ -79,7 +80,7 @@ export interface BudgetFormData {
                 <mat-label>Budget Type Id</mat-label>
                 <input
                   matInput
-                  type="text"
+                  type="dropdown"
                   formControlName="budget_type_id"
                   placeholder="Enter budget type id"
                 />
@@ -97,7 +98,7 @@ export interface BudgetFormData {
                 <mat-label>Budget Category Id</mat-label>
                 <input
                   matInput
-                  type="text"
+                  type="dropdown"
                   formControlName="budget_category_id"
                   placeholder="Enter budget category id"
                 />
@@ -206,6 +207,7 @@ export interface BudgetFormData {
 })
 export class BudgetFormComponent implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
+  // CRUD-GENERATOR-TAG: Foreign Key Service Injection
 
   @Input() mode: BudgetFormMode = 'create';
   @Input() initialData?: Budget;
@@ -215,6 +217,7 @@ export class BudgetFormComponent implements OnInit, OnChanges {
   @Output() formCancel = new EventEmitter<void>();
 
   private originalFormValue: any;
+  // CRUD-GENERATOR-TAG: Foreign Key Options State
 
   budgetsForm: FormGroup = this.fb.group({
     budget_type_id: ['', [Validators.required]],
@@ -224,6 +227,7 @@ export class BudgetFormComponent implements OnInit, OnChanges {
   });
 
   ngOnInit() {
+    // CRUD-GENERATOR-TAG: Load Foreign Key Options
     if (this.mode === 'edit' && this.initialData) {
       this.populateForm(this.initialData);
     }

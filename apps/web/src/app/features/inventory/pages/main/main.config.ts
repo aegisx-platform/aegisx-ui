@@ -21,6 +21,16 @@ import { LauncherApp } from '@aegisx/ui';
 export const MODULE_ITEMS: LauncherApp[] = [
   // === AUTO-GENERATED ENTRIES START ===
   {
+    id: 'budget',
+    name: 'Budget',
+    description: 'Budget modules',
+    icon: 'folder',
+    route: '/inventory/budget',
+    color: 'blue',
+    status: 'active',
+    enabled: true,
+  },
+  {
     id: 'master-data',
     name: 'Master Data',
     description: 'Master Data modules',
