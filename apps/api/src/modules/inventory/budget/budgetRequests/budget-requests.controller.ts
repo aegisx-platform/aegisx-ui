@@ -794,4 +794,245 @@ export class BudgetRequestsController {
 
     return updateData;
   }
+
+  // ===== ITEM MANAGEMENT METHODS =====
+
+  /**
+   * Add drug item to budget request
+   * POST /budget-requests/:id/items
+   */
+  async addItem(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetRequestsIdParamSchema>;
+      Body: {
+        generic_id: number;
+        estimated_usage_2569?: number;
+        requested_qty: number;
+        unit_price?: number;
+        budget_qty?: number;
+        fund_qty?: number;
+        q1_qty?: number;
+        q2_qty?: number;
+        q3_qty?: number;
+        q4_qty?: number;
+        notes?: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return reply.code(401).error('UNAUTHORIZED', 'User not authenticated');
+    }
+
+    request.log.info(
+      { budgetRequestId: id, genericId: request.body.generic_id },
+      'Adding item to budget request',
+    );
+
+    try {
+      const item = await this.budgetRequestsService.addItem(
+        id,
+        request.body,
+        userId,
+      );
+
+      request.log.info(
+        { budgetRequestId: id, itemId: item.id },
+        'Item added successfully',
+      );
+
+      return reply.code(201).success(item, 'Item added successfully');
+    } catch (error: any) {
+      request.log.error(
+        { error: error.message, budgetRequestId: id },
+        'Failed to add item',
+      );
+      return reply.code(400).error('ADD_ITEM_FAILED', error.message);
+    }
+  }
+
+  /**
+   * Update budget request item
+   * PUT /budget-requests/:id/items/:itemId
+   */
+  async updateItem(
+    request: FastifyRequest<{
+      Params: { id: string | number; itemId: string | number };
+      Body: {
+        estimated_usage_2569?: number;
+        requested_qty?: number;
+        unit_price?: number;
+        budget_qty?: number;
+        fund_qty?: number;
+        q1_qty?: number;
+        q2_qty?: number;
+        q3_qty?: number;
+        q4_qty?: number;
+        notes?: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id, itemId } = request.params;
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return reply.code(401).error('UNAUTHORIZED', 'User not authenticated');
+    }
+
+    request.log.info(
+      { budgetRequestId: id, itemId },
+      'Updating budget request item',
+    );
+
+    try {
+      const item = await this.budgetRequestsService.updateItem(
+        id,
+        itemId,
+        request.body,
+        userId,
+      );
+
+      request.log.info(
+        { budgetRequestId: id, itemId },
+        'Item updated successfully',
+      );
+
+      return reply.success(item, 'Item updated successfully');
+    } catch (error: any) {
+      request.log.error(
+        { error: error.message, budgetRequestId: id, itemId },
+        'Failed to update item',
+      );
+      return reply.code(400).error('UPDATE_ITEM_FAILED', error.message);
+    }
+  }
+
+  /**
+   * Batch update budget request items
+   * PUT /budget-requests/:id/items/batch
+   */
+  async batchUpdateItems(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetRequestsIdParamSchema>;
+      Body: {
+        items: Array<{
+          id: number;
+          estimated_usage_2569?: number;
+          requested_qty?: number;
+          unit_price?: number;
+          budget_qty?: number;
+          fund_qty?: number;
+          q1_qty?: number;
+          q2_qty?: number;
+          q3_qty?: number;
+          q4_qty?: number;
+          notes?: string;
+        }>;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    const { items } = request.body;
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return reply.code(401).error('UNAUTHORIZED', 'User not authenticated');
+    }
+
+    request.log.info(
+      { budgetRequestId: id, itemCount: items.length },
+      'Batch updating budget request items',
+    );
+
+    try {
+      const result = await this.budgetRequestsService.batchUpdateItems(
+        id,
+        items,
+        userId,
+      );
+
+      request.log.info(
+        {
+          budgetRequestId: id,
+          updated: result.updated,
+          failed: result.failed,
+        },
+        'Batch update completed',
+      );
+
+      return reply.send({
+        success: true,
+        data: result,
+        message: `Updated ${result.updated} items successfully`,
+        meta: {
+          timestamp: new Date().toISOString(),
+          version: 'v1',
+          requestId: request.id,
+          environment: process.env.NODE_ENV || 'development',
+        },
+      });
+    } catch (error: any) {
+      request.log.error(
+        { error: error.message, budgetRequestId: id },
+        'Failed to batch update items',
+      );
+      return reply.code(400).error('BATCH_UPDATE_FAILED', error.message);
+    }
+  }
+
+  /**
+   * Delete budget request item
+   * DELETE /budget-requests/:id/items/:itemId
+   */
+  async deleteItem(
+    request: FastifyRequest<{
+      Params: { id: string | number; itemId: string | number };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id, itemId } = request.params;
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return reply.code(401).error('UNAUTHORIZED', 'User not authenticated');
+    }
+
+    request.log.info(
+      { budgetRequestId: id, itemId },
+      'Deleting budget request item',
+    );
+
+    try {
+      const deleted = await this.budgetRequestsService.deleteItem(
+        id,
+        itemId,
+        userId,
+      );
+
+      if (!deleted) {
+        return reply.code(404).error('NOT_FOUND', 'Item not found');
+      }
+
+      request.log.info(
+        { budgetRequestId: id, itemId },
+        'Item deleted successfully',
+      );
+
+      return reply.success(
+        { id: itemId, deleted: true },
+        'Item deleted successfully',
+      );
+    } catch (error: any) {
+      request.log.error(
+        { error: error.message, budgetRequestId: id, itemId },
+        'Failed to delete item',
+      );
+      return reply.code(400).error('DELETE_ITEM_FAILED', error.message);
+    }
+  }
 }

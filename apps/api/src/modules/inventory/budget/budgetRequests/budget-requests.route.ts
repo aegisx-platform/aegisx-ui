@@ -401,4 +401,198 @@ export async function budgetRequestsRoutes(
     ],
     handler: controller.exportSSCJ.bind(controller),
   });
+
+  // ===== ITEM MANAGEMENT ENDPOINTS =====
+
+  // Add drug item to budget request
+  fastify.post('/:id/items', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Add drug item to budget request',
+      description:
+        'Add a new drug item to the budget request. Only allowed when status = DRAFT.',
+      params: BudgetRequestsIdParamSchema,
+      body: Type.Object({
+        generic_id: Type.Number(),
+        estimated_usage_2569: Type.Optional(Type.Number()),
+        requested_qty: Type.Number(),
+        unit_price: Type.Optional(Type.Number()),
+        budget_qty: Type.Optional(Type.Number()),
+        fund_qty: Type.Optional(Type.Number()),
+        q1_qty: Type.Optional(Type.Number()),
+        q2_qty: Type.Optional(Type.Number()),
+        q3_qty: Type.Optional(Type.Number()),
+        q4_qty: Type.Optional(Type.Number()),
+        notes: Type.Optional(Type.String()),
+      }),
+      response: {
+        201: Type.Object({
+          success: Type.Boolean(),
+          data: Type.Any(),
+          message: Type.String(),
+          meta: Type.Object({
+            timestamp: Type.String(),
+            version: Type.String(),
+            requestId: Type.String(),
+            environment: Type.String(),
+          }),
+        }),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'create'),
+    ],
+    handler: controller.addItem.bind(controller),
+  });
+
+  // Update budget request item
+  fastify.put('/:id/items/:itemId', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Update budget request item',
+      description:
+        'Update an existing budget request item. Only allowed when status = DRAFT.',
+      params: Type.Object({
+        id: Type.Union([Type.String(), Type.Number()]),
+        itemId: Type.Union([Type.String(), Type.Number()]),
+      }),
+      body: Type.Object({
+        estimated_usage_2569: Type.Optional(Type.Number()),
+        requested_qty: Type.Optional(Type.Number()),
+        unit_price: Type.Optional(Type.Number()),
+        budget_qty: Type.Optional(Type.Number()),
+        fund_qty: Type.Optional(Type.Number()),
+        q1_qty: Type.Optional(Type.Number()),
+        q2_qty: Type.Optional(Type.Number()),
+        q3_qty: Type.Optional(Type.Number()),
+        q4_qty: Type.Optional(Type.Number()),
+        notes: Type.Optional(Type.String()),
+      }),
+      response: {
+        200: Type.Object({
+          success: Type.Boolean(),
+          data: Type.Any(),
+          message: Type.String(),
+          meta: Type.Object({
+            timestamp: Type.String(),
+            version: Type.String(),
+            requestId: Type.String(),
+            environment: Type.String(),
+          }),
+        }),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'update'),
+    ],
+    handler: controller.updateItem.bind(controller),
+  });
+
+  // Batch update budget request items
+  fastify.put('/:id/items/batch', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Batch update budget request items',
+      description:
+        'Update multiple budget request items at once. Only allowed when status = DRAFT. Max 100 items per request.',
+      params: BudgetRequestsIdParamSchema,
+      body: Type.Object({
+        items: Type.Array(
+          Type.Object({
+            id: Type.Number(),
+            estimated_usage_2569: Type.Optional(Type.Number()),
+            requested_qty: Type.Optional(Type.Number()),
+            unit_price: Type.Optional(Type.Number()),
+            budget_qty: Type.Optional(Type.Number()),
+            fund_qty: Type.Optional(Type.Number()),
+            q1_qty: Type.Optional(Type.Number()),
+            q2_qty: Type.Optional(Type.Number()),
+            q3_qty: Type.Optional(Type.Number()),
+            q4_qty: Type.Optional(Type.Number()),
+            notes: Type.Optional(Type.String()),
+          }),
+          { minItems: 1, maxItems: 100 },
+        ),
+      }),
+      response: {
+        200: Type.Object({
+          success: Type.Boolean(),
+          data: Type.Object({
+            updated: Type.Number(),
+            failed: Type.Number(),
+          }),
+          message: Type.String(),
+          meta: Type.Object({
+            timestamp: Type.String(),
+            version: Type.String(),
+            requestId: Type.String(),
+            environment: Type.String(),
+          }),
+        }),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'update'),
+    ],
+    handler: controller.batchUpdateItems.bind(controller),
+  });
+
+  // Delete budget request item
+  fastify.delete('/:id/items/:itemId', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Delete budget request item',
+      description:
+        'Delete a budget request item. Only allowed when status = DRAFT.',
+      params: Type.Object({
+        id: Type.Union([Type.String(), Type.Number()]),
+        itemId: Type.Union([Type.String(), Type.Number()]),
+      }),
+      response: {
+        200: Type.Object({
+          success: Type.Boolean(),
+          data: Type.Any(),
+          message: Type.String(),
+          meta: Type.Object({
+            timestamp: Type.String(),
+            version: Type.String(),
+            requestId: Type.String(),
+            environment: Type.String(),
+          }),
+        }),
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'delete'),
+    ],
+    handler: controller.deleteItem.bind(controller),
+  });
 }
