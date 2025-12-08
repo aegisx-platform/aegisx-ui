@@ -473,6 +473,104 @@ export class BudgetRequestsController {
     }
   }
 
+  /**
+   * Import Excel/CSV file for budget request items
+   * POST /budgetRequests/:id/import-excel
+   */
+  async importExcel(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetRequestsIdParamSchema>;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return reply.code(401).error('UNAUTHORIZED', 'User not authenticated');
+    }
+
+    try {
+      // Get the uploaded file
+      const data = await request.file();
+
+      if (!data) {
+        return reply.code(400).error('FILE_REQUIRED', 'File is required');
+      }
+
+      // Validate file type
+      const allowedMimeTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel', // .xls
+        'text/csv', // .csv
+      ];
+
+      if (!allowedMimeTypes.includes(data.mimetype)) {
+        return reply
+          .code(422)
+          .error(
+            'INVALID_FILE_FORMAT',
+            'File must be Excel (.xlsx, .xls) or CSV (.csv) format',
+          );
+      }
+
+      // Validate file size (5 MB limit)
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+      const buffer = await data.toBuffer();
+
+      if (buffer.length > MAX_FILE_SIZE) {
+        return reply
+          .code(422)
+          .error('FILE_TOO_LARGE', 'File size must be less than 5 MB');
+      }
+
+      // Get replace_all field from multipart data
+      const fields = data.fields as any;
+      const replaceAll =
+        fields?.replace_all?.value === 'true' ||
+        fields?.replace_all?.value === true;
+
+      request.log.info(
+        {
+          budgetRequestsId: id,
+          userId,
+          filename: data.filename,
+          mimetype: data.mimetype,
+          size: buffer.length,
+          replaceAll,
+        },
+        'Importing Excel/CSV file for budget request items',
+      );
+
+      // Call service method
+      const result = await this.budgetRequestsService.importExcel(
+        id,
+        buffer,
+        replaceAll,
+        userId,
+      );
+
+      request.log.info(
+        {
+          budgetRequestsId: id,
+          imported: result.imported,
+          updated: result.updated,
+          skipped: result.skipped,
+          errors: result.errors.length,
+        },
+        'Excel/CSV import completed',
+      );
+
+      return reply.success(result, 'Import completed');
+    } catch (error: any) {
+      request.log.error(
+        { error: error.message, budgetRequestsId: id },
+        'Failed to import Excel/CSV file',
+      );
+      return reply.code(400).error('IMPORT_FAILED', error.message);
+    }
+  }
+
   // ===== PRIVATE TRANSFORMATION METHODS =====
 
   /**

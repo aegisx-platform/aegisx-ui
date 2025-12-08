@@ -549,6 +549,256 @@ export class BudgetRequestsService extends BaseService<
     return parseFloat(result?.total || 0);
   }
 
+  /**
+   * Import Excel/CSV file to create budget request items
+   * @param id Budget request ID
+   * @param fileBuffer Excel or CSV file buffer
+   * @param replaceAll If true, delete all existing items first
+   * @param userId User performing the import
+   * @returns Import result with counts and errors
+   */
+  async importExcel(
+    id: string | number,
+    fileBuffer: Buffer,
+    replaceAll: boolean = false,
+    userId: string,
+  ): Promise<{
+    imported: number;
+    updated: number;
+    skipped: number;
+    errors: Array<{ row: number; field: string; message: string }>;
+  }> {
+    const request = await this.budgetRequestsRepository.findById(id);
+
+    if (!request) {
+      throw new Error('Budget request not found');
+    }
+
+    if (request.status !== 'DRAFT') {
+      throw new Error(
+        `Cannot import items for budget request with status: ${request.status}. Must be DRAFT.`,
+      );
+    }
+
+    const knex = (this.budgetRequestsRepository as any).knex;
+
+    try {
+      // Parse Excel/CSV file
+      const xlsx = await import('xlsx');
+      const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      // Convert to JSON with header row
+      const rawData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (rawData.length < 2) {
+        throw new Error('File is empty or has no data rows');
+      }
+
+      const headers = rawData[0] as string[];
+      const dataRows = rawData.slice(1);
+
+      // Validate headers (check for required columns)
+      const requiredColumns = [
+        'รหัสยา',
+        'ประมาณการ2569',
+        'ราคา/หน่วย',
+        'จำนวนที่ขอ',
+        'Q1',
+        'Q2',
+        'Q3',
+        'Q4',
+      ];
+
+      const missingColumns = requiredColumns.filter(
+        (col) => !headers.includes(col),
+      );
+      if (missingColumns.length > 0) {
+        throw new Error(
+          `Missing required columns: ${missingColumns.join(', ')}`,
+        );
+      }
+
+      // Replace all existing items if requested
+      if (replaceAll) {
+        await knex('inventory.budget_request_items')
+          .where({ budget_request_id: id })
+          .delete();
+      }
+
+      const results = {
+        imported: 0,
+        updated: 0,
+        skipped: 0,
+        errors: [],
+      };
+
+      // Map header indices
+      const colIndexes = {
+        drugCode: headers.indexOf('รหัสยา'),
+        drugName: headers.indexOf('ชื่อยา'),
+        unit: headers.indexOf('หน่วย'),
+        year2566: headers.indexOf('ปี2566'),
+        year2567: headers.indexOf('ปี2567'),
+        year2568: headers.indexOf('ปี2568'),
+        estimatedUsage: headers.indexOf('ประมาณการ2569'),
+        currentStock: headers.indexOf('คงคลัง'),
+        unitPrice: headers.indexOf('ราคา/หน่วย'),
+        requestedQty: headers.indexOf('จำนวนที่ขอ'),
+        q1: headers.indexOf('Q1'),
+        q2: headers.indexOf('Q2'),
+        q3: headers.indexOf('Q3'),
+        q4: headers.indexOf('Q4'),
+        notes: headers.indexOf('หมายเหตุ'),
+      };
+
+      // Process each data row
+      for (let i = 0; i < dataRows.length; i++) {
+        const row = dataRows[i] as any[];
+        const rowNumber = i + 2; // Excel row number (1-based + 1 for header)
+
+        // Skip empty rows
+        if (!row || row.length === 0 || !row[colIndexes.drugCode]) {
+          continue;
+        }
+
+        try {
+          // Get values
+          const drugCode = String(row[colIndexes.drugCode] || '').trim();
+          const year2566 = parseFloat(row[colIndexes.year2566] || 0);
+          const year2567 = parseFloat(row[colIndexes.year2567] || 0);
+          const year2568 = parseFloat(row[colIndexes.year2568] || 0);
+          const estimatedUsage = parseFloat(
+            row[colIndexes.estimatedUsage] || 0,
+          );
+          const currentStock = parseFloat(row[colIndexes.currentStock] || 0);
+          const unitPrice = parseFloat(row[colIndexes.unitPrice] || 0);
+          const requestedQty = parseFloat(row[colIndexes.requestedQty] || 0);
+          const q1 = parseFloat(row[colIndexes.q1] || 0);
+          const q2 = parseFloat(row[colIndexes.q2] || 0);
+          const q3 = parseFloat(row[colIndexes.q3] || 0);
+          const q4 = parseFloat(row[colIndexes.q4] || 0);
+
+          // Validate drug code exists
+          const generic = await knex('inventory.drug_generics')
+            .where({ generic_code: drugCode, is_active: true })
+            .first();
+
+          if (!generic) {
+            results.errors.push({
+              row: rowNumber,
+              field: 'generic_code',
+              message: `Drug code '${drugCode}' not found in active drug generics`,
+            });
+            results.skipped++;
+            continue;
+          }
+
+          // Validate unit price
+          if (unitPrice <= 0) {
+            results.errors.push({
+              row: rowNumber,
+              field: 'unit_price',
+              message: 'Unit price must be greater than 0',
+            });
+            results.skipped++;
+            continue;
+          }
+
+          // Validate requested quantity
+          if (requestedQty <= 0) {
+            results.errors.push({
+              row: rowNumber,
+              field: 'requested_qty',
+              message: 'Requested quantity must be greater than 0',
+            });
+            results.skipped++;
+            continue;
+          }
+
+          // Validate quarterly split
+          const quarterlySum = q1 + q2 + q3 + q4;
+          if (Math.abs(quarterlySum - requestedQty) > 0.01) {
+            results.errors.push({
+              row: rowNumber,
+              field: 'quarterly_split',
+              message: `Q1+Q2+Q3+Q4 (${quarterlySum}) must equal requested quantity (${requestedQty})`,
+            });
+            results.skipped++;
+            continue;
+          }
+
+          // Calculate averages
+          const avgUsage = (year2566 + year2567 + year2568) / 3;
+          const estimatedPurchase = Math.max(0, estimatedUsage - currentStock);
+          const requestedAmount = requestedQty * unitPrice;
+
+          // Check if item already exists for this generic
+          const existingItem = await knex('inventory.budget_request_items')
+            .where({
+              budget_request_id: id,
+              generic_id: generic.id,
+            })
+            .first();
+
+          const itemData = {
+            budget_request_id: id,
+            budget_id: 1, // Default budget ID
+            generic_id: generic.id,
+            generic_code: generic.generic_code,
+            generic_name: generic.generic_name,
+            package_size: generic.package_size || '',
+            unit: row[colIndexes.unit] || generic.unit || '',
+            line_number: results.imported + results.updated + 1,
+            usage_year_2566: year2566,
+            usage_year_2567: year2567,
+            usage_year_2568: year2568,
+            avg_usage: avgUsage,
+            estimated_usage_2569: estimatedUsage,
+            current_stock: currentStock,
+            estimated_purchase: estimatedPurchase,
+            unit_price: unitPrice,
+            requested_qty: requestedQty,
+            requested_amount: requestedAmount,
+            q1_qty: q1,
+            q2_qty: q2,
+            q3_qty: q3,
+            q4_qty: q4,
+            updated_at: new Date(),
+          };
+
+          if (existingItem && !replaceAll) {
+            // Update existing item
+            await knex('inventory.budget_request_items')
+              .where({ id: existingItem.id })
+              .update(itemData);
+            results.updated++;
+          } else {
+            // Insert new item
+            await knex('inventory.budget_request_items').insert({
+              ...itemData,
+              created_at: new Date(),
+            });
+            results.imported++;
+          }
+        } catch (error: any) {
+          results.errors.push({
+            row: rowNumber,
+            field: 'general',
+            message: error.message || 'Unknown error processing row',
+          });
+          results.skipped++;
+        }
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Error importing Excel file:', error);
+      throw error;
+    }
+  }
+
   // ===== BUSINESS LOGIC HOOKS =====
   // Override these methods in child classes for custom validation/processing
 
