@@ -1,4 +1,4 @@
-import { LauncherApp } from '@aegisx/ui';
+import { LauncherApp, LauncherCategory } from '@aegisx/ui';
 
 /**
  * Master Data Section Configuration
@@ -8,6 +8,42 @@ import { LauncherApp } from '@aegisx/ui';
  *
  * NOTE: CRUD generator will auto-register new modules here when using --section master-data
  */
+
+/**
+ * Master Data Categories
+ *
+ * Organize modules into tabs by category
+ */
+export const MASTER_DATA_CATEGORIES: LauncherCategory[] = [
+  {
+    id: 'organization',
+    name: 'Organization',
+    icon: 'business',
+    description: 'Organization-related master data',
+    order: 1,
+  },
+  {
+    id: 'drugs',
+    name: 'Drugs',
+    icon: 'medication',
+    description: 'Drug-related master data',
+    order: 2,
+  },
+  {
+    id: 'budget',
+    name: 'Budget',
+    icon: 'attach_money',
+    description: 'Budget-related master data',
+    order: 3,
+  },
+  {
+    id: 'operations',
+    name: 'Operations',
+    icon: 'settings',
+    description: 'Operations and configuration data',
+    order: 4,
+  },
+];
 
 /**
  * Section Items
@@ -28,6 +64,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'blue',
     status: 'active',
     enabled: true,
+    categoryId: 'operations',
   },
 
   {
@@ -39,6 +76,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'mint',
     status: 'active',
     enabled: true,
+    categoryId: 'operations',
   },
 
   {
@@ -50,6 +88,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'yellow',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   {
@@ -61,6 +100,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'mint',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   {
@@ -72,6 +112,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'mint',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   {
@@ -83,6 +124,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'rose',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   {
@@ -94,6 +136,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'rose',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   {
@@ -105,6 +148,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'blue',
     status: 'active',
     enabled: true,
+    categoryId: 'budget',
   },
 
   {
@@ -116,6 +160,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'rose',
     status: 'active',
     enabled: true,
+    categoryId: 'budget',
   },
 
   {
@@ -127,6 +172,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'mint',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   {
@@ -138,6 +184,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'cyan',
     status: 'active',
     enabled: true,
+    categoryId: 'budget',
   },
 
   {
@@ -149,6 +196,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'yellow',
     status: 'active',
     enabled: true,
+    categoryId: 'operations',
   },
 
   {
@@ -160,6 +208,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'peach',
     status: 'active',
     enabled: true,
+    categoryId: 'organization',
   },
 
   {
@@ -171,6 +220,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'blue',
     status: 'active',
     enabled: true,
+    categoryId: 'organization',
   },
 
   {
@@ -182,6 +232,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'cyan',
     status: 'active',
     enabled: true,
+    categoryId: 'organization',
   },
 
   {
@@ -193,6 +244,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'rose',
     status: 'active',
     enabled: true,
+    categoryId: 'organization',
   },
 
   {
@@ -204,6 +256,7 @@ export const SECTION_ITEMS: LauncherApp[] = [
     color: 'yellow',
     status: 'active',
     enabled: true,
+    categoryId: 'drugs',
   },
 
   // CRUD modules will be auto-registered here by the generator

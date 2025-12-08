@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import {
   AxLauncherComponent,
   LauncherApp,
+  LauncherCategory,
   LauncherAppClickEvent,
 } from '@aegisx/ui';
-import { SECTION_ITEMS } from './master-data.config';
+import { SECTION_ITEMS, MASTER_DATA_CATEGORIES } from './master-data.config';
 
 /**
  * Master Data Section Page
@@ -20,9 +21,10 @@ import { SECTION_ITEMS } from './master-data.config';
   imports: [CommonModule, AxLauncherComponent],
   template: `
     <div class="section-container">
-      <!-- Launcher Grid -->
+      <!-- Launcher Grid with Categories -->
       <ax-launcher
         [apps]="sectionItems"
+        [categories]="categories"
         title="Master Data"
         subtitle="Select a module to manage"
         (appClick)="onModuleSelect($event)"
@@ -43,6 +45,7 @@ export class MasterDataPage {
   private readonly router = inject(Router);
 
   readonly sectionItems: LauncherApp[] = SECTION_ITEMS;
+  readonly categories: LauncherCategory[] = MASTER_DATA_CATEGORIES;
 
   /**
    * Handle module selection from launcher
