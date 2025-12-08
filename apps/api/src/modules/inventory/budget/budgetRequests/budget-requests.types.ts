@@ -55,6 +55,8 @@ export interface BudgetRequestsEntity {
   finance_reviewed_at: Date | null;
   finance_comments: string | null;
   rejection_reason: string | null;
+  reopened_by: string | null;
+  reopened_at: Date | null;
   created_by: string;
   created_at: Date;
   updated_at: Date;

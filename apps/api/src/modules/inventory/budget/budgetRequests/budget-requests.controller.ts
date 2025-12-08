@@ -635,6 +635,62 @@ export class BudgetRequestsController {
     }
   }
 
+  async reopen(
+    request: FastifyRequest<{
+      Params: Static<typeof BudgetRequestsIdParamSchema>;
+      Body: { reason: string };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params;
+    const { reason } = request.body;
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return reply.code(401).error('UNAUTHORIZED', 'User not authenticated');
+    }
+
+    request.log.info(
+      { budgetRequestId: id, userId, reason },
+      'Reopening budget request',
+    );
+
+    try {
+      const budgetRequest = await this.budgetRequestsService.reopen(
+        id,
+        reason,
+        userId,
+      );
+
+      request.log.info(
+        { budgetRequestId: id, status: budgetRequest.status },
+        'Budget request reopened successfully',
+      );
+
+      return reply.success(
+        budgetRequest,
+        'Budget request reopened successfully',
+      );
+    } catch (error: any) {
+      request.log.error(
+        { budgetRequestId: id, error: error.message, code: error.code },
+        'Failed to reopen budget request',
+      );
+
+      if (error.statusCode === 404) {
+        return reply.code(404).error('NOT_FOUND', error.message);
+      }
+
+      if (error.statusCode === 422) {
+        return reply
+          .code(422)
+          .error(error.code || 'UNPROCESSABLE_ENTITY', error.message);
+      }
+
+      return reply.code(500).error('REOPEN_FAILED', error.message);
+    }
+  }
+
   // ===== PRIVATE TRANSFORMATION METHODS =====
 
   /**

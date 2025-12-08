@@ -1050,6 +1050,67 @@ export class BudgetRequestsService extends BaseService<
     return Buffer.from(buffer);
   }
 
+  /**
+   * Reopen budget request - Send budget request back to DRAFT status
+   *
+   * Business Rules:
+   * - REJECTED → DRAFT (auto-allow)
+   * - SUBMITTED → DRAFT (allowed with proper permission)
+   * - DEPT_APPROVED → DRAFT (allowed with proper permission)
+   * - FINANCE_APPROVED → Not allowed (budget locked, must create new request)
+   */
+  async reopen(
+    id: string | number,
+    reason: string,
+    userId: string,
+  ): Promise<BudgetRequests> {
+    // Get existing budget request
+    const budgetRequest = await this.budgetRequestsRepository.findById(id);
+
+    if (!budgetRequest) {
+      const error = new Error('Budget request not found') as any;
+      error.statusCode = 404;
+      error.code = 'BUDGET_REQUEST_NOT_FOUND';
+      throw error;
+    }
+
+    // Business Rule: Cannot reopen FINANCE_APPROVED (budget locked)
+    if (budgetRequest.status === 'FINANCE_APPROVED') {
+      const error = new Error(
+        'Cannot reopen FINANCE_APPROVED budget request - budget is locked. Please create a new request instead.',
+      ) as any;
+      error.statusCode = 422;
+      error.code = 'BUDGET_REQUEST_CANNOT_REOPEN_FINANCE_APPROVED';
+      throw error;
+    }
+
+    // Business Rule: Cannot reopen DRAFT status (already in DRAFT)
+    if (budgetRequest.status === 'DRAFT') {
+      const error = new Error(
+        'Budget request is already in DRAFT status',
+      ) as any;
+      error.statusCode = 422;
+      error.code = 'BUDGET_REQUEST_ALREADY_DRAFT';
+      throw error;
+    }
+
+    // Update status to DRAFT and set reopen tracking fields
+    const updated = await this.budgetRequestsRepository.update(id, {
+      status: 'DRAFT' as any,
+      reopened_by: userId,
+      reopened_at: new Date() as any,
+    });
+
+    if (!updated) {
+      const error = new Error('Failed to reopen budget request') as any;
+      error.statusCode = 500;
+      error.code = 'BUDGET_REQUEST_REOPEN_FAILED';
+      throw error;
+    }
+
+    return updated;
+  }
+
   // ===== BUSINESS LOGIC HOOKS =====
   // Override these methods in child classes for custom validation/processing
 

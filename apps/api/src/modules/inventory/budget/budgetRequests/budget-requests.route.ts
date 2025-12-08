@@ -252,6 +252,34 @@ export async function budgetRequestsRoutes(
     handler: controller.reject.bind(controller),
   });
 
+  // Reopen budget request
+  fastify.post('/:id/reopen', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Reopen budget request',
+      description:
+        'Send budget request back to DRAFT status for editing. Business rules: REJECTED→DRAFT (auto-allow), SUBMITTED→DRAFT (allowed), DEPT_APPROVED→DRAFT (allowed), FINANCE_APPROVED→Not allowed (budget locked)',
+      params: BudgetRequestsIdParamSchema,
+      body: Type.Object({
+        reason: Type.String({ minLength: 1 }),
+      }),
+      response: {
+        200: BudgetRequestsResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'update'),
+    ],
+    handler: controller.reopen.bind(controller),
+  });
+
   // Initialize budget request with drug generics
   fastify.post('/:id/initialize', {
     schema: {
