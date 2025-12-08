@@ -9,7 +9,6 @@
       [loading]="contractsService.loading()"
       [hasError]="!!contractsService.error()"
       (createClicked)="openCreateDialog()"
-      (importClicked)="openImportDialog()"
     ></app-contracts-list-header>
 
     <!-- Filters Panel (hide when any error exists) -->
@@ -34,16 +33,6 @@
           (dateFilterChange)="onDateFilterChange($event)"
         >
           <!-- Export Button Slot -->
-          <app-export
-            export
-            [exportService]="exportServiceAdapter"
-            [currentFilters]="getExportFilters()"
-            [selectedItems]="selectedItems()"
-            [availableFields]="availableExportFields"
-            [moduleName]="'contracts'"
-            (exportStarted)="onExportStarted($event)"
-            (exportCompleted)="onExportCompleted($event)"
-          ></app-export>
 
           <!-- Filter Chips Slot -->
           <div filter-chips>

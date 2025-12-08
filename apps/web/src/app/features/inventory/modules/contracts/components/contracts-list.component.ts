@@ -62,12 +62,6 @@ import {
   ContractViewDialogComponent,
   ContractViewDialogData,
 } from './contracts-view.dialog';
-import { ContractImportDialogComponent } from './contracts-import.dialog';
-import {
-  SharedExportComponent,
-  ExportOptions,
-  ExportService,
-} from '../../../../../shared/components/shared-export/shared-export.component';
 
 // Import child components
 import { ContractsListFiltersComponent } from './contracts-list-filters.component';
@@ -94,7 +88,6 @@ import { ContractsListHeaderComponent } from './contracts-list-header.component'
     // Child components
     ContractsListHeaderComponent,
     ContractsListFiltersComponent,
-    SharedExportComponent,
     // AegisX UI components
     AxCardComponent,
     AxEmptyStateComponent,
@@ -339,24 +332,6 @@ export class ContractsListComponent {
       recentWeek,
     };
   });
-
-  // Export configuration
-  exportServiceAdapter: ExportService = {
-    export: (options: ExportOptions) =>
-      this.contractsService.exportContract(options),
-  };
-
-  availableExportFields = [
-    { key: 'id', label: 'ID' },
-    { key: 'contract_number', label: 'Contract Number' },
-    { key: 'contract_type', label: 'Contract Type' },
-    { key: 'vendor_id', label: 'Vendor Id' },
-    { key: 'start_date', label: 'Start Date' },
-    { key: 'end_date', label: 'End Date' },
-    { key: 'total_value', label: 'Total Value' },
-    { key: 'created_at', label: 'Created At' },
-    { key: 'updated_at', label: 'Updated At' },
-  ];
 
   ngAfterViewInit() {
     this.cdr.detectChanges();
@@ -604,22 +579,6 @@ export class ContractsListComponent {
     });
   }
 
-  openImportDialog() {
-    const dialogRef = this.dialog.open(ContractImportDialogComponent, {
-      width: '900px',
-      maxHeight: '90vh',
-    });
-
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.snackBar.open('Import completed successfully', 'Close', {
-          duration: 3000,
-        });
-        this.reloadTrigger.update((n) => n + 1);
-      }
-    });
-  }
-
   onViewContract(contract: Contract) {
     const dialogRef = this.dialog.open(ContractViewDialogComponent, {
       width: '600px',
@@ -692,37 +651,6 @@ export class ContractsListComponent {
           }
         }
       });
-  }
-
-  // Export Event Handlers
-  onExportStarted(options: ExportOptions) {
-    this.snackBar.open(
-      `Preparing ${options.format.toUpperCase()} export...`,
-      '',
-      { duration: 2000 },
-    );
-  }
-
-  onExportCompleted(result: { success: boolean; format: string }) {
-    if (result.success) {
-      this.snackBar.open(
-        `${result.format.toUpperCase()} export completed successfully!`,
-        'Close',
-        {
-          duration: 3000,
-          panelClass: ['success-snackbar'],
-        },
-      );
-    } else {
-      this.snackBar.open(
-        `${result.format.toUpperCase()} export failed`,
-        'Close',
-        {
-          duration: 5000,
-          panelClass: ['error-snackbar'],
-        },
-      );
-    }
   }
 
   // Filter Helpers

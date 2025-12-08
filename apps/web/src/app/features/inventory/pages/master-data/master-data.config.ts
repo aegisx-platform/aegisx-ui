@@ -56,6 +56,28 @@ export const MASTER_DATA_CATEGORIES: LauncherCategory[] = [
 export const SECTION_ITEMS: LauncherApp[] = [
   // === AUTO-GENERATED ENTRIES START ===
   {
+    id: 'contract-items',
+    name: 'Contract Items',
+    description: 'Manage contract items data',
+    icon: 'category',
+    route: '/inventory/master-data/contract-items',
+    color: 'rose',
+    status: 'active',
+    enabled: true,
+  },
+
+  {
+    id: 'contracts',
+    name: 'Contracts',
+    description: 'Manage contracts data',
+    icon: 'description',
+    route: '/inventory/master-data/contracts',
+    color: 'mint',
+    status: 'active',
+    enabled: true,
+  },
+
+  {
     id: 'return-actions',
     name: 'Return Actions',
     description: 'จัดการข้อมูลการคืนสินค้า',
