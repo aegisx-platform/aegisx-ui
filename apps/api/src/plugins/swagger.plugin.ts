@@ -250,7 +250,7 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
 
     // Add JSON endpoint for programmatic access
     // Use serverInfo.apiPrefix to avoid duplication
-    const apiPrefix = (fastify as any).serverInfo?.apiPrefix || '/api';
+    const apiPrefix = (fastify as any).serverInfo?.apiPrefix ?? '/api';
     fastify.get(
       `${apiPrefix}/documentation/json`,
       {

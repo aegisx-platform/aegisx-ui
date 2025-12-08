@@ -57,7 +57,7 @@ export function loadAppConfig(): AppConfig {
     },
 
     api: {
-      prefix: process.env.API_PREFIX || '/api',
+      prefix: process.env.API_PREFIX ?? '/api',
       version: process.env.API_VERSION || 'v1',
       title: 'AegisX Platform API',
       description: 'Enterprise-grade API for AegisX Platform',
