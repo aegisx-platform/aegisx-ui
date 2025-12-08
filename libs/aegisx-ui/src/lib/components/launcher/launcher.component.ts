@@ -1359,12 +1359,13 @@ export class AxLauncherComponent {
     return 0;
   });
 
-  /** Filtered apps based on RBAC and search */
-  filteredApps = computed(() => {
+  /** Visible apps based on RBAC, search, and favorites (no category filter)
+   * Used for category count calculations to show total apps in each category
+   */
+  visibleApps = computed(() => {
     const allApps = this.apps();
     const user = this.userContext();
     const search = this.searchQuery().toLowerCase().trim();
-    const selectedCat = this.selectedCategory();
     const favoritesOnly = this.showFavoritesOnly();
     const favs = this.favorites();
 
@@ -1383,18 +1384,30 @@ export class AxLauncherComponent {
         if (!matchesSearch) return false;
       }
 
-      // 3. Category filter
-      if (selectedCat && selectedCat !== 'all') {
-        if (app.categoryId !== selectedCat) return false;
-      }
+      // NOTE: Category filter is intentionally excluded from this computed
+      // so that category counts always reflect total apps in each category
+      // regardless of the currently selected category tab
 
-      // 4. Favorites filter
+      // 3. Favorites filter
       if (favoritesOnly) {
         if (!favs.includes(app.id)) return false;
       }
 
       return true;
     });
+  });
+
+  /** Filtered apps based on RBAC, search, favorites, and selected category */
+  filteredApps = computed(() => {
+    const apps = this.visibleApps();
+    const selectedCat = this.selectedCategory();
+
+    // Apply category filter only if a specific category is selected
+    if (selectedCat && selectedCat !== 'all') {
+      return apps.filter((app) => app.categoryId === selectedCat);
+    }
+
+    return apps;
   });
 
   /** Grouped apps for display */
@@ -1640,11 +1653,11 @@ export class AxLauncherComponent {
   }
 
   getCategoryCount(categoryId: string): number {
+    const visible = this.visibleApps();
     if (categoryId === 'all') {
-      return this.filteredApps().length;
+      return visible.length;
     }
-    return this.filteredApps().filter((app) => app.categoryId === categoryId)
-      .length;
+    return visible.filter((app) => app.categoryId === categoryId).length;
   }
 
   onAppClick(event: LauncherAppClickEvent): void {
