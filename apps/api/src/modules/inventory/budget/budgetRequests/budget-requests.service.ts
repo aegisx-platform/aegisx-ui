@@ -142,7 +142,7 @@ export class BudgetRequestsService extends BaseService<
     const updated = await this.budgetRequestsRepository.update(id, {
       status: 'SUBMITTED',
       submitted_by: userId,
-      submitted_at: new Date(),
+      submitted_at: new Date().toISOString(),
     });
 
     console.log('Budget request submitted:', { id, userId });
@@ -174,7 +174,7 @@ export class BudgetRequestsService extends BaseService<
     const updated = await this.budgetRequestsRepository.update(id, {
       status: 'DEPT_APPROVED',
       dept_reviewed_by: userId,
-      dept_reviewed_at: new Date(),
+      dept_reviewed_at: new Date().toISOString(),
       dept_comments: comments,
     });
 
@@ -347,11 +347,11 @@ export class BudgetRequestsService extends BaseService<
       // Store who rejected it based on current status
       ...(request.status === 'SUBMITTED' && {
         dept_reviewed_by: userId,
-        dept_reviewed_at: new Date(),
+        dept_reviewed_at: new Date().toISOString(),
       }),
       ...(request.status === 'DEPT_APPROVED' && {
         finance_reviewed_by: userId,
-        finance_reviewed_at: new Date(),
+        finance_reviewed_at: new Date().toISOString(),
       }),
     });
 
