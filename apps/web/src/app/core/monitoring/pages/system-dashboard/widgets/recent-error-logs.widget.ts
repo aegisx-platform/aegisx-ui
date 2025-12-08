@@ -24,28 +24,26 @@ interface ErrorLogsResponse {
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
+    <div>
       <!-- Card Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50"
           >
-            <mat-icon class="text-red-600 !text-xl">bug_report</mat-icon>
+            <mat-icon class="text-error !text-xl">bug_report</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               Recent Errors
             </h3>
-            <p class="text-xs text-slate-600">Last 10 errors</p>
+            <p class="text-xs text-muted">Last 10 errors</p>
           </div>
         </div>
         <button
           (click)="loadErrors()"
           [disabled]="loading()"
-          class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+          class="p-2 text-muted hover:text-muted  rounded-lg transition-colors"
           [class.opacity-50]="loading()"
           [class.cursor-not-allowed]="loading()"
         >
@@ -65,8 +63,8 @@ interface ErrorLogsResponse {
         } @else if (error()) {
           <!-- Error State -->
           <div class="text-center py-8">
-            <mat-icon class="text-red-500 !text-4xl mb-2">error</mat-icon>
-            <p class="text-sm text-slate-600 mb-4">{{ error() }}</p>
+            <mat-icon class="text-error !text-4xl mb-2">error</mat-icon>
+            <p class="text-sm text-muted mb-4">{{ error() }}</p>
             <button
               (click)="loadErrors()"
               class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
@@ -80,10 +78,10 @@ interface ErrorLogsResponse {
             <mat-icon class="text-green-500 !text-4xl mb-2"
               >check_circle</mat-icon
             >
-            <p class="text-sm font-medium text-slate-900 mb-1">
+            <p class="text-sm font-medium text-on-surface mb-1">
               No Recent Errors
             </p>
-            <p class="text-xs text-slate-600">System running smoothly</p>
+            <p class="text-xs text-muted">System running smoothly</p>
           </div>
         } @else if (errors()) {
           <!-- Error Logs List -->
@@ -96,21 +94,21 @@ interface ErrorLogsResponse {
                 [class.border-yellow-200]="log.level === 'warning'"
                 [class.bg-yellow-50]="log.level === 'warning'"
                 [class.border-blue-200]="log.level === 'info'"
-                [class.bg-blue-50]="log.level === 'info'"
+                [class.bg-surface-container]="log.level === 'info'"
                 (click)="navigateToErrorLogs()"
               >
                 <!-- Icon -->
                 <div
                   class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-                  [class.bg-red-100]="log.level === 'error'"
-                  [class.bg-yellow-100]="log.level === 'warning'"
-                  [class.bg-blue-100]="log.level === 'info'"
+                  [class.chip-error]="log.level === 'error'"
+                  [class.chip-warning]="log.level === 'warning'"
+                  [class.chip-info]="log.level === 'info'"
                 >
                   <mat-icon
                     class="!text-base"
-                    [class.text-red-600]="log.level === 'error'"
+                    [class.text-error]="log.level === 'error'"
                     [class.text-yellow-600]="log.level === 'warning'"
-                    [class.text-blue-600]="log.level === 'info'"
+                    [class.text-primary]="log.level === 'info'"
                   >
                     {{
                       log.level === 'error'
@@ -124,12 +122,10 @@ interface ErrorLogsResponse {
 
                 <!-- Content -->
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-slate-900 truncate">
+                  <p class="text-sm font-medium text-on-surface truncate">
                     {{ log.message }}
                   </p>
-                  <div
-                    class="flex items-center gap-3 mt-1 text-xs text-slate-500"
-                  >
+                  <div class="flex items-center gap-3 mt-1 text-xs text-muted">
                     <span>{{ timeAgo(log.timestamp) }}</span>
                     @if (log.endpoint) {
                       <span class="font-mono">{{ log.endpoint }}</span>
@@ -140,12 +136,12 @@ interface ErrorLogsResponse {
                 <!-- Level Badge -->
                 <div
                   class="flex-shrink-0 px-2 py-1 rounded text-xs font-medium"
-                  [class.bg-red-100]="log.level === 'error'"
-                  [class.text-red-700]="log.level === 'error'"
-                  [class.bg-yellow-100]="log.level === 'warning'"
+                  [class.chip-error]="log.level === 'error'"
+                  [class.text-error]="log.level === 'error'"
+                  [class.chip-warning]="log.level === 'warning'"
                   [class.text-yellow-700]="log.level === 'warning'"
-                  [class.bg-blue-100]="log.level === 'info'"
-                  [class.text-blue-700]="log.level === 'info'"
+                  [class.chip-info]="log.level === 'info'"
+                  [class.text-primary]="log.level === 'info'"
                 >
                   {{ log.level.toUpperCase() }}
                 </div>
@@ -154,9 +150,9 @@ interface ErrorLogsResponse {
           </div>
 
           <!-- Live Indicator -->
-          <div class="flex items-center gap-2 text-xs text-slate-500 mt-4">
+          <div class="flex items-center gap-2 text-xs text-muted mt-4">
             <span
-              class="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"
+              class="flex h-2 w-2 rounded-full bg-error animate-pulse"
             ></span>
             <span>Live updates every 15 seconds</span>
           </div>
@@ -164,16 +160,14 @@ interface ErrorLogsResponse {
       </div>
 
       <!-- Card Footer -->
-      <div
-        class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between"
-      >
+      <div>
         <button
           (click)="navigateToErrorLogs()"
-          class="text-xs font-medium text-red-600 hover:text-red-700 transition-colors"
+          class="text-xs font-medium text-error hover:text-error transition-colors"
         >
           View All Errors
         </button>
-        <span class="text-xs text-slate-500">
+        <span class="text-xs text-muted">
           {{ totalErrors() }} total errors
         </span>
       </div>
@@ -192,17 +186,17 @@ interface ErrorLogsResponse {
       }
 
       .overflow-y-auto::-webkit-scrollbar-track {
-        background: #f1f5f9;
+        background: var(--mat-sys-surface-container);
         border-radius: 3px;
       }
 
       .overflow-y-auto::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: var(--mat-sys-surface-container-high);
         border-radius: 3px;
       }
 
       .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: var(--mat-sys-outline);
       }
     `,
   ],

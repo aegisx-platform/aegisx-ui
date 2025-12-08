@@ -34,25 +34,24 @@ export interface AttachmentDetailsData {
   template: `
     <div class="attachment-details-dialog">
       <!-- Header -->
-      <h2 mat-dialog-title class="flex items-center gap-2">
-        <mat-icon class="text-blue-600">link</mat-icon>
+      <h2
+        mat-dialog-title
+        class="flex items-center gap-3 text-xl font-semibold"
+      >
+        <mat-icon class="text-brand">link</mat-icon>
         <span>File Usage Details</span>
       </h2>
 
       <mat-dialog-content class="space-y-4">
         <!-- File Info -->
-        <div class="file-info rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+        <div class="file-info rounded-lg p-4">
           <div class="mb-2 flex items-center gap-2">
-            <mat-icon class="icon-size-5 text-gray-600 dark:text-gray-400"
-              >insert_drive_file</mat-icon
-            >
-            <span class="font-medium text-gray-900 dark:text-gray-100">{{
-              data.fileName
-            }}</span>
+            <mat-icon class="icon-size-5">insert_drive_file</mat-icon>
+            <span class="font-medium">{{ data.fileName }}</span>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="text-sm">
             This file is currently attached to
-            <strong class="text-blue-600">{{ data.attachments.length }}</strong>
+            <strong class="text-brand">{{ data.attachments.length }}</strong>
             {{ data.attachments.length === 1 ? 'entity' : 'entities' }}
           </p>
         </div>
@@ -63,23 +62,20 @@ export interface AttachmentDetailsData {
         @if (data.attachments.length === 0) {
           <div class="empty-state py-8 text-center">
             <mat-icon
-              class="mb-2 text-gray-400"
+              class="mb-2"
               style="font-size: 48px; width: 48px; height: 48px;"
-              >link_off</mat-icon
             >
-            <p class="text-gray-600 dark:text-gray-400">
-              This file is not attached to any entities
-            </p>
+              link_off
+            </mat-icon>
+            <p class="text-muted">This file is not attached to any entities</p>
           </div>
         } @else {
           <div class="space-y-3">
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Attached To:
-            </h3>
+            <h3 class="text-sm font-medium">Attached To:</h3>
 
             @for (attachment of data.attachments; track attachment.id) {
               <div
-                class="attachment-item flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900"
+                class="attachment-item flex items-start gap-3 rounded-lg border p-3"
               >
                 <!-- Entity Type Icon -->
                 <div
@@ -109,7 +105,7 @@ export interface AttachmentDetailsData {
                   </div>
 
                   <!-- Entity ID -->
-                  <p class="truncate text-xs text-gray-600 dark:text-gray-400">
+                  <p class="truncate text-xs text-muted">
                     ID: {{ attachment.entityId }}
                   </p>
 
@@ -134,7 +130,7 @@ export interface AttachmentDetailsData {
                   }
 
                   <!-- Created Date -->
-                  <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
+                  <p class="mt-2 text-xs text-muted">
                     Attached: {{ attachment.createdAt | date: 'short' }}
                   </p>
                 </div>
@@ -144,9 +140,9 @@ export interface AttachmentDetailsData {
         }
       </mat-dialog-content>
 
-      <mat-dialog-actions align="end">
-        <button mat-button (click)="close()">Close</button>
-      </mat-dialog-actions>
+      <div mat-dialog-actions align="end" class="flex gap-2">
+        <button mat-button mat-dialog-close>Close</button>
+      </div>
     </div>
   `,
   styles: [
@@ -161,21 +157,26 @@ export interface AttachmentDetailsData {
         overflow-y: auto;
       }
 
+      .file-info {
+        background: var(--mat-sys-surface-container-low);
+        border: 1px solid var(--mat-sys-outline-variant);
+      }
+
       .attachment-item {
+        background: var(--mat-sys-surface);
+        border-color: var(--mat-sys-outline-variant);
         transition: all 0.2s ease;
       }
 
       .attachment-item:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--mat-sys-surface-container-high);
+        box-shadow:
+          0 1px 3px 0 var(--mat-sys-shadow),
+          0 1px 2px -1px var(--mat-sys-shadow);
       }
 
-      /* Dark mode adjustments */
-      :host-context(.dark) .file-info {
-        background-color: #1f2937;
-      }
-
-      :host-context(.dark) .attachment-item {
-        background-color: #111827;
+      .empty-state mat-icon {
+        color: var(--mat-sys-outline);
       }
     `,
   ],

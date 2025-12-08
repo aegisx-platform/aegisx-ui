@@ -73,6 +73,9 @@ export class TestProductService {
 
   /**
    * Handle HTTP errors and set appropriate error signals
+   * - 400 errors: Don't set error state (validation errors should show toast only)
+   * - 403 errors: Set permission error for access denied
+   * - 5xx errors: Set error state for server errors (show full page error)
    */
   private handleError(error: any, defaultMessage: string): void {
     const status = error?.status || null;
@@ -82,7 +85,18 @@ export class TestProductService {
     if (status === 403) {
       this.permissionErrorSignal.set(true);
       this.errorSignal.set('You do not have permission to perform this action');
+    } else if (
+      status === 400 ||
+      status === 404 ||
+      status === 409 ||
+      status === 422
+    ) {
+      // Client errors (validation, not found, conflict) - don't set error state
+      // These should be handled by the component showing a toast
+      this.permissionErrorSignal.set(false);
+      // Don't set errorSignal - let component handle with toast
     } else {
+      // Server errors (5xx) or unknown errors - show full page error
       this.permissionErrorSignal.set(false);
       this.errorSignal.set(error.message || defaultMessage);
     }
@@ -339,264 +353,6 @@ export class TestProductService {
       throw error;
     } finally {
       this.loadingSignal.set(false);
-    }
-  }
-
-  // ===== ENHANCED OPERATIONS =====
-
-  /**
-   * Export testProducts data
-   */
-  async exportTestProduct(options: {
-    format: 'csv' | 'excel' | 'pdf';
-    ids?: string[];
-    filters?: Record<string, any>;
-    fields?: string[];
-    filename?: string;
-    applyFilters?: boolean;
-    includeMetadata?: boolean;
-  }): Promise<Blob> {
-    try {
-      let httpParams = new HttpParams().set('format', options.format);
-
-      if (options.ids && options.ids.length > 0) {
-        options.ids.forEach((id) => {
-          httpParams = httpParams.append('ids', id);
-        });
-      }
-
-      if (options.filters && options.applyFilters) {
-        Object.entries(options.filters).forEach(([key, value]) => {
-          if (value !== null && value !== undefined && value !== '') {
-            httpParams = httpParams.set(`filters[${key}]`, String(value));
-          }
-        });
-      }
-
-      if (options.fields && options.fields.length > 0) {
-        options.fields.forEach((field) => {
-          httpParams = httpParams.append('fields', field);
-        });
-      }
-
-      if (options.filename) {
-        httpParams = httpParams.set('filename', options.filename);
-      }
-
-      if (options.applyFilters !== undefined) {
-        httpParams = httpParams.set(
-          'applyFilters',
-          String(options.applyFilters),
-        );
-      }
-
-      if (options.includeMetadata !== undefined) {
-        httpParams = httpParams.set(
-          'includeMetadata',
-          String(options.includeMetadata),
-        );
-      }
-
-      const response = await this.http
-        .get(`${this.baseUrl}/export`, {
-          params: httpParams,
-          responseType: 'blob',
-        })
-        .toPromise();
-
-      if (response) {
-        return response;
-      }
-
-      throw new Error('Export failed - no response received');
-    } catch (error: any) {
-      console.error('Failed to export testProducts data:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get dropdown options for testProducts
-   */
-  async getDropdownOptions(
-    params: { search?: string; limit?: number } = {},
-  ): Promise<Array<{ value: string; label: string }>> {
-    try {
-      let httpParams = new HttpParams();
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.limit)
-        httpParams = httpParams.set('limit', params.limit.toString());
-
-      const response = await this.http
-        .get<
-          ApiResponse<{
-            options: Array<{ value: string; label: string }>;
-            total: number;
-          }>
-        >(`${this.baseUrl}/dropdown`, { params: httpParams })
-        .toPromise();
-
-      if (response?.success && response.data?.options) {
-        return response.data.options;
-      }
-      return [];
-    } catch (error: any) {
-      console.error('Failed to fetch testProducts dropdown options:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Bulk create testProductss
-   */
-  async bulkCreateTestProduct(
-    items: CreateTestProductRequest[],
-  ): Promise<BulkResponse | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .post<BulkResponse>(`${this.baseUrl}/bulk`, { items })
-        .toPromise();
-
-      if (response) {
-        // Refresh list after bulk operation
-        await this.loadTestProductList();
-        return response;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to bulk create testProductss');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  /**
-   * Bulk update testProductss
-   */
-  async bulkUpdateTestProduct(
-    items: Array<{ id: string; data: UpdateTestProductRequest }>,
-  ): Promise<BulkResponse | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .put<BulkResponse>(`${this.baseUrl}/bulk`, { items })
-        .toPromise();
-
-      if (response) {
-        // Refresh list after bulk operation
-        await this.loadTestProductList();
-        return response;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to bulk update testProductss');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  /**
-   * Bulk delete testProductss
-   */
-  async bulkDeleteTestProduct(ids: string[]): Promise<BulkResponse | null> {
-    this.loadingSignal.set(true);
-
-    try {
-      const response = await this.http
-        .delete<BulkResponse>(`${this.baseUrl}/bulk`, { body: { ids } })
-        .toPromise();
-
-      if (response) {
-        // Refresh list after bulk operation
-        await this.loadTestProductList();
-        return response;
-      }
-      return null;
-    } catch (error: any) {
-      this.handleError(error, 'Failed to bulk delete testProductss');
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
-  }
-
-  // ===== ADVANCED OPERATIONS (FULL PACKAGE) =====
-
-  /**
-   * Validate testProducts data before save
-   */
-  async validateTestProduct(
-    data: CreateTestProductRequest,
-  ): Promise<{ valid: boolean; errors?: any[] }> {
-    try {
-      const response = await this.http
-        .post<
-          ApiResponse<{ valid: boolean; errors?: any[] }>
-        >(`${this.baseUrl}/validate`, { data })
-        .toPromise();
-
-      if (response) {
-        return response.data;
-      }
-      return { valid: false, errors: ['Validation failed'] };
-    } catch (error: any) {
-      console.error('Failed to validate testProducts:', error);
-      return { valid: false, errors: [error.message || 'Validation error'] };
-    }
-  }
-
-  /**
-   * Check field uniqueness
-   */
-  async checkUniqueness(
-    field: string,
-    value: string,
-    excludeId?: string,
-  ): Promise<{ unique: boolean }> {
-    try {
-      let params = new HttpParams().set('value', value);
-
-      if (excludeId) {
-        params = params.set('excludeId', excludeId);
-      }
-
-      const response = await this.http
-        .get<
-          ApiResponse<{ unique: boolean }>
-        >(`${this.baseUrl}/check/${field}`, { params })
-        .toPromise();
-
-      if (response) {
-        return response.data;
-      }
-      return { unique: false };
-    } catch (error: any) {
-      console.error('Failed to check uniqueness:', error);
-      return { unique: false };
-    }
-  }
-
-  /**
-   * Get testProducts statistics
-   */
-  async getStats(): Promise<{ total: number } | null> {
-    try {
-      const response = await this.http
-        .get<ApiResponse<{ total: number }>>(`${this.baseUrl}/stats`)
-        .toPromise();
-
-      if (response) {
-        return response.data;
-      }
-      return null;
-    } catch (error: any) {
-      console.error('Failed to get testProducts stats:', error);
-      return null;
     }
   }
 

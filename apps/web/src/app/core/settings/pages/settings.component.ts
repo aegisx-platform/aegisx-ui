@@ -9,8 +9,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDividerModule } from '@angular/material/divider';
 import { Subject, takeUntil } from 'rxjs';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import {
+  AxCardComponent,
+  AxAlertComponent,
+  AxThemeSwitcherComponent,
+} from '@aegisx/ui';
 import { SettingsService } from '../services/settings.service';
 import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
 
@@ -28,17 +33,19 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
     MatSlideToggleModule,
     MatFormFieldModule,
     MatInputModule,
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    MatDividerModule,
+    AxCardComponent,
+    AxAlertComponent,
+    AxThemeSwitcherComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
       <!-- Page Header -->
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-2xl font-bold" style="color: var(--mat-sys-on-surface)">
           Settings
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">
+        <p class="text-muted mt-1">
           Manage your application preferences and configurations
         </p>
       </div>
@@ -48,9 +55,7 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
         <div class="flex justify-center items-center min-h-[400px]">
           <div class="text-center">
             <mat-spinner diameter="48"></mat-spinner>
-            <p class="text-gray-600 dark:text-gray-400 mt-4">
-              Loading settings...
-            </p>
+            <p class="text-muted mt-4">Loading settings...</p>
           </div>
         </div>
       }
@@ -80,13 +85,60 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
         }
 
         <!-- Settings Tabs -->
-        <ax-card [appearance]="'elevated'">
+        <ax-card [variant]="'elevated'">
           <mat-tab-group
             [(selectedIndex)]="selectedTabIndex"
             animationDuration="200ms"
             class="settings-tabs"
           >
-            <!-- Security Tab (Always First) -->
+            <!-- Appearance Tab (Always First) -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="mr-2">palette</mat-icon>
+                <span>Appearance</span>
+              </ng-template>
+              <div class="tab-content">
+                <div class="space-y-6">
+                  <!-- Theme Selection Card -->
+                  <div
+                    class="rounded-lg p-6"
+                    style="background: var(--mat-sys-surface-container)"
+                  >
+                    <h3
+                      class="text-lg font-medium mb-4"
+                      style="color: var(--mat-sys-on-surface)"
+                    >
+                      Theme & Color
+                    </h3>
+                    <p class="text-muted mb-6">
+                      Customize your application theme and appearance
+                      preferences
+                    </p>
+
+                    <!-- Theme Switcher Component -->
+                    <div
+                      class="rounded-lg p-4"
+                      style="background: var(--mat-sys-surface); border: 1px solid var(--mat-sys-outline-variant)"
+                    >
+                      <ax-theme-switcher></ax-theme-switcher>
+                    </div>
+
+                    <!-- Theme Info -->
+                    <div class="mt-6 p-4 rounded-lg chip-info">
+                      <p class="text-sm">
+                        <mat-icon class="inline-block w-5 h-5 mr-2"
+                          >info</mat-icon
+                        >
+                        Your theme preference will be saved and synchronized
+                        across all your devices.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- Security Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon class="mr-2">security</mat-icon>
@@ -94,13 +146,17 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
               </ng-template>
               <div class="tab-content">
                 <div class="space-y-6">
-                  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div
+                    class="rounded-lg p-4"
+                    style="background: var(--mat-sys-surface-container)"
+                  >
                     <h3
-                      class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                      class="text-lg font-medium mb-4"
+                      style="color: var(--mat-sys-on-surface)"
                     >
                       Security Settings
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-400">
+                    <p class="text-muted">
                       Advanced security configurations will be available in a
                       future update.
                     </p>
@@ -134,9 +190,13 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
                   <!-- Dynamic Settings Form -->
                   <div class="space-y-6">
                     @for (group of categoryGroup.groups; track group.name) {
-                      <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                      <div
+                        class="rounded-lg p-4"
+                        style="background: var(--mat-sys-surface-container)"
+                      >
                         <h3
-                          class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100"
+                          class="text-lg font-medium mb-4"
+                          style="color: var(--mat-sys-on-surface)"
                         >
                           {{ group.name || 'General' }}
                         </h3>
@@ -144,7 +204,8 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
                           @for (setting of group.settings; track setting.key) {
                             <div class="flex flex-col">
                               <label
-                                class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                class="text-sm font-medium mb-1"
+                                style="color: var(--mat-sys-on-surface-variant)"
                               >
                                 {{ setting.label || setting.key }}
                               </label>
@@ -230,7 +291,8 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
 
           <!-- Action Buttons -->
           <div
-            class="flex justify-end space-x-2 p-4 border-t dark:border-gray-700"
+            class="flex justify-end space-x-2 p-4 border-t"
+            style="border-color: var(--mat-sys-outline-variant)"
           >
             <button
               mat-button
@@ -240,7 +302,7 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
               Reset Changes
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="saveSettings()"
               [disabled]="
@@ -277,7 +339,7 @@ import { GroupedSettings, SettingChangeEvent } from '../models/settings.types';
       }
 
       ::ng-deep .mat-mdc-tab-labels {
-        @apply border-b dark:border-gray-700;
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
       }
 
       @keyframes spin {

@@ -47,28 +47,21 @@ interface PermissionGroup {
   ],
   template: `
     <div class="user-permissions-dialog">
-      <div
+      <h2
         mat-dialog-title
-        class="flex items-center justify-between pb-4 border-b"
+        class="flex items-center gap-3 text-xl font-semibold"
       >
-        <div class="flex items-center gap-3">
-          <mat-icon class="!text-2xl text-purple-600">security</mat-icon>
-          <div>
-            <h2 class="text-xl font-semibold m-0">
-              {{ data.userRole ? 'Role' : 'User' }} Permissions
-            </h2>
-            <p class="text-sm text-gray-600 dark:text-gray-400 m-0">
-              {{ data.userName }}
-              <span *ngIf="data.userRole" class="ml-1">
-                ({{ data.userRole.role.name }})
-              </span>
-            </p>
+        <mat-icon class="text-brand">security</mat-icon>
+        <div>
+          <div>{{ data.userRole ? 'Role' : 'User' }} Permissions</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400 font-normal">
+            {{ data.userName }}
+            <span *ngIf="data.userRole" class="ml-1">
+              ({{ data.userRole.role.name }})
+            </span>
           </div>
         </div>
-        <button mat-icon-button mat-dialog-close>
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
+      </h2>
 
       <mat-dialog-content class="max-h-96 overflow-y-auto">
         <!-- Loading State -->
@@ -83,6 +76,7 @@ interface PermissionGroup {
               <div class="py-4">
                 <div *ngIf="permissionGroups().length > 0" class="space-y-4">
                   <mat-card
+                    appearance="outlined"
                     *ngFor="let group of permissionGroups()"
                     class="p-4"
                   >
@@ -143,7 +137,11 @@ interface PermissionGroup {
             <mat-tab label="By Role" *ngIf="!data.userRole">
               <div class="py-4">
                 <div *ngIf="rolePermissions().length > 0" class="space-y-4">
-                  <mat-card *ngFor="let role of rolePermissions()" class="p-4">
+                  <mat-card
+                    appearance="outlined"
+                    *ngFor="let role of rolePermissions()"
+                    class="p-4"
+                  >
                     <div class="flex items-center gap-2 mb-3">
                       <mat-icon class="text-purple-600"
                         >account_circle</mat-icon
@@ -204,7 +202,7 @@ interface PermissionGroup {
               <div class="py-4 space-y-4">
                 <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <mat-card class="p-4 text-center">
+                  <mat-card appearance="outlined" class="p-4 text-center">
                     <div class="text-2xl font-bold text-blue-600 mb-1">
                       {{ totalPermissions() }}
                     </div>
@@ -213,7 +211,7 @@ interface PermissionGroup {
                     </div>
                   </mat-card>
 
-                  <mat-card class="p-4 text-center">
+                  <mat-card appearance="outlined" class="p-4 text-center">
                     <div class="text-2xl font-bold text-green-600 mb-1">
                       {{ uniqueResources() }}
                     </div>
@@ -222,7 +220,7 @@ interface PermissionGroup {
                     </div>
                   </mat-card>
 
-                  <mat-card class="p-4 text-center">
+                  <mat-card appearance="outlined" class="p-4 text-center">
                     <div class="text-2xl font-bold text-purple-600 mb-1">
                       {{ data.userRole ? 1 : activeRolesCount() }}
                     </div>
@@ -233,7 +231,7 @@ interface PermissionGroup {
                 </div>
 
                 <!-- Resource Breakdown -->
-                <mat-card class="p-4">
+                <mat-card appearance="outlined" class="p-4">
                   <h3 class="text-lg font-medium mb-3">Resource Access</h3>
                   <div class="space-y-2">
                     <div
@@ -272,10 +270,10 @@ interface PermissionGroup {
         </div>
       </mat-dialog-content>
 
-      <mat-dialog-actions align="end">
+      <div mat-dialog-actions align="end" class="flex gap-2">
         <button mat-button (click)="onClose()">Close</button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           (click)="onExportPermissions()"
           [disabled]="isLoading() || totalPermissions() === 0"
@@ -283,7 +281,7 @@ interface PermissionGroup {
           <mat-icon>download</mat-icon>
           Export
         </button>
-      </mat-dialog-actions>
+      </div>
     </div>
   `,
   styles: [

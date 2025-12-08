@@ -30,7 +30,7 @@ import { Subject, takeUntil } from 'rxjs';
       <h1>🔌 RBAC WebSocket Integration Test</h1>
 
       <!-- Connection Status -->
-      <mat-card style="margin-bottom: 20px;">
+      <mat-card appearance="outlined" style="margin-bottom: 20px;">
         <mat-card-header>
           <mat-card-title>
             <mat-icon [color]="isConnected() ? 'primary' : 'warn'">
@@ -53,7 +53,7 @@ import { Subject, takeUntil } from 'rxjs';
 
           <div style="margin-top: 15px;">
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="connect()"
               [disabled]="isConnected()"
@@ -61,7 +61,7 @@ import { Subject, takeUntil } from 'rxjs';
               Connect
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="warn"
               (click)="disconnect()"
               [disabled]="!isConnected()"
@@ -70,7 +70,7 @@ import { Subject, takeUntil } from 'rxjs';
               Disconnect
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               (click)="subscribeToRBAC()"
               [disabled]="!isConnected()"
               style="margin-left: 10px;"
@@ -78,7 +78,7 @@ import { Subject, takeUntil } from 'rxjs';
               Subscribe to RBAC
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="accent"
               (click)="checkHealth()"
               style="margin-left: 10px;"
@@ -91,7 +91,7 @@ import { Subject, takeUntil } from 'rxjs';
 
       <div style="display: flex; gap: 20px;">
         <!-- RBAC State -->
-        <mat-card style="flex: 1;">
+        <mat-card appearance="outlined" style="flex: 1;">
           <mat-card-header>
             <mat-card-title>
               <mat-icon>security</mat-icon>
@@ -120,7 +120,7 @@ import { Subject, takeUntil } from 'rxjs';
 
             <div style="margin-bottom: 15px;">
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 (click)="testCreateRole()"
               >
@@ -128,7 +128,7 @@ import { Subject, takeUntil } from 'rxjs';
                 Create Test Role
               </button>
               <button
-                mat-raised-button
+                mat-flat-button
                 (click)="clearRoles()"
                 style="margin-left: 10px;"
               >
@@ -186,7 +186,7 @@ import { Subject, takeUntil } from 'rxjs';
         </mat-card>
 
         <!-- Event Log -->
-        <mat-card style="flex: 1;">
+        <mat-card appearance="outlined" style="flex: 1;">
           <mat-card-header>
             <mat-card-title>
               <mat-icon>history</mat-icon>
@@ -198,7 +198,7 @@ import { Subject, takeUntil } from 'rxjs';
           </mat-card-header>
           <mat-card-content>
             <div style="margin-bottom: 15px;">
-              <button mat-raised-button (click)="clearEventLog()">
+              <button mat-flat-button (click)="clearEventLog()">
                 <mat-icon>clear</mat-icon>
                 Clear Log
               </button>

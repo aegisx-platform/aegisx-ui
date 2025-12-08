@@ -13,7 +13,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
 
 import { MaterialSectionComponent } from './sections/material-section.component';
-import { AegisxUiSectionComponent } from './sections/aegisx-ui-section.component';
+import { AxUiSectionComponent } from './sections/aegisx-ui-section.component';
 import { WidgetsSectionComponent } from './sections/widgets-section.component';
 import { InteractiveDemosComponent } from './sections/interactive-demos.component';
 import { ShowcaseDataService } from './services/showcase-data.service';
@@ -44,7 +44,7 @@ interface ShowcaseTab {
     MatSlideToggleModule,
     MatProgressBarModule,
     MaterialSectionComponent,
-    AegisxUiSectionComponent,
+    AxUiSectionComponent,
     WidgetsSectionComponent,
     InteractiveDemosComponent,
   ],
@@ -231,7 +231,7 @@ export class ComponentShowcaseComponent implements OnInit {
       label: 'AegisX UI',
       icon: 'architecture',
       description: 'Custom AegisX UI library components',
-      component: AegisxUiSectionComponent,
+      component: AxUiSectionComponent,
       badgeCount: 15,
     },
     {

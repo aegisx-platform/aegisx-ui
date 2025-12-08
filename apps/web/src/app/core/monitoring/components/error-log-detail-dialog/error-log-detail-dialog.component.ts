@@ -26,16 +26,13 @@ import { ErrorLog } from '../../models/monitoring.types';
   ],
   template: `
     <!-- Header -->
-    <div
-      mat-dialog-title
-      class="flex items-center justify-between pb-4 border-b border-slate-200"
-    >
+    <div mat-dialog-title>
       <div class="flex items-center gap-2">
         <mat-icon [class]="getLevelIconClass()" class="!leading-[1]">
           {{ getLevelIcon() }}
         </mat-icon>
         <h2 class="text-base font-semibold m-0">Error Log Details</h2>
-        <span class="text-xs text-slate-500">{{
+        <span class="text-xs text-muted">{{
           data.timestamp | date: 'medium'
         }}</span>
       </div>
@@ -47,14 +44,11 @@ import { ErrorLog } from '../../models/monitoring.types';
     <!-- Content -->
     <mat-dialog-content class="dialog-content">
       <!-- Error Info Section -->
-      <mat-card
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-blue-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-primary !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >info</mat-icon
             >
             <span>Error Information</span>
@@ -98,15 +92,11 @@ import { ErrorLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Stack Trace Section -->
-      <mat-card
-        *ngIf="data.stack"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="data.stack" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-rose-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-error !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >code</mat-icon
             >
             <span>Stack Trace</span>
@@ -118,15 +108,11 @@ import { ErrorLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- User Context Section -->
-      <mat-card
-        *ngIf="hasUserContext()"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="hasUserContext()" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-purple-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-secondary !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >person</mat-icon
             >
             <span>User Context</span>
@@ -153,15 +139,11 @@ import { ErrorLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Request Context Section -->
-      <mat-card
-        *ngIf="hasRequestContext()"
-        appearance="outlined"
-        class="info-card mb-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="hasRequestContext()" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-slate-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-muted !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >http</mat-icon
             >
             <span>Request Context</span>
@@ -186,15 +168,11 @@ import { ErrorLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Additional Context Section -->
-      <mat-card
-        *ngIf="data.context"
-        appearance="outlined"
-        class="info-card border border-slate-200 rounded-xl"
-      >
+      <mat-card *ngIf="data.context" appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-orange-400 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-warning !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >data_object</mat-icon
             >
             <span>Additional Context</span>
@@ -206,14 +184,11 @@ import { ErrorLog } from '../../models/monitoring.types';
       </mat-card>
 
       <!-- Timestamps Section -->
-      <mat-card
-        appearance="outlined"
-        class="info-card mt-4 border border-slate-200 rounded-xl"
-      >
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title class="flex items-center gap-2 !mb-0">
             <mat-icon
-              class="text-slate-500 !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
+              class="text-muted !text-[20px] !w-[20px] !h-[20px] !leading-[1]"
               >schedule</mat-icon
             >
             <span>Timestamps</span>
@@ -250,7 +225,7 @@ import { ErrorLog } from '../../models/monitoring.types';
         <mat-icon>close</mat-icon>
         Close
       </button>
-      <button mat-raised-button color="primary" (click)="copyToClipboard()">
+      <button mat-flat-button color="primary" (click)="copyToClipboard()">
         <mat-icon>content_copy</mat-icon>
         Copy Details
       </button>
@@ -266,7 +241,7 @@ import { ErrorLog } from '../../models/monitoring.types';
 
       .dialog-footer {
         padding: 16px 24px;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid var(--mat-sys-outline-variant);
         gap: 12px;
       }
 
@@ -281,7 +256,7 @@ import { ErrorLog } from '../../models/monitoring.types';
       .info-card mat-card-title {
         font-size: 1rem;
         font-weight: 600;
-        color: #374151;
+        color: var(--mat-sys-on-surface);
       }
 
       .info-card mat-card-content {
@@ -307,14 +282,14 @@ import { ErrorLog } from '../../models/monitoring.types';
       .info-label {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6b7280;
+        color: var(--mat-sys-on-surface-variant);
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       .info-value {
         font-size: 0.875rem;
-        color: #1f2937;
+        color: var(--mat-sys-on-surface);
         line-height: 1.5;
       }
 
@@ -322,18 +297,18 @@ import { ErrorLog } from '../../models/monitoring.types';
       .id-code {
         font-family: 'Courier New', monospace;
         font-size: 0.813rem;
-        background-color: #f3f4f6;
+        background-color: var(--mat-sys-surface-container);
         padding: 6px 10px;
         border-radius: 4px;
-        color: #374151;
+        color: var(--mat-sys-on-surface);
         display: inline-block;
       }
 
       .stack-trace {
         font-family: 'Courier New', monospace;
         font-size: 0.813rem;
-        background-color: #1f2937;
-        color: #f3f4f6;
+        background-color: var(--mat-sys-on-surface);
+        color: var(--mat-sys-surface-container);
         padding: 16px;
         border-radius: 6px;
         overflow-x: auto;
@@ -346,52 +321,52 @@ import { ErrorLog } from '../../models/monitoring.types';
       .context-json {
         font-family: 'Courier New', monospace;
         font-size: 0.813rem;
-        background-color: #f9fafb;
-        border: 1px solid #e5e7eb;
+        background-color: var(--mat-sys-surface);
+        border: 1px solid var(--mat-sys-outline-variant);
         padding: 16px;
         border-radius: 6px;
         overflow-x: auto;
         margin: 0;
         line-height: 1.6;
-        color: #1f2937;
+        color: var(--mat-sys-on-surface);
       }
 
       mat-chip.level-error {
-        background-color: #fee2e2 !important;
-        color: #991b1b !important;
+        background-color: rgb(var(--ax-error-100)) !important;
+        color: rgb(var(--ax-error-800)) !important;
       }
 
       mat-chip.level-warn {
-        background-color: #fef3c7 !important;
-        color: #92400e !important;
+        background-color: rgb(var(--ax-warning-100)) !important;
+        color: rgb(var(--ax-warning-900)) !important;
       }
 
       mat-chip.level-info {
-        background-color: #dbeafe !important;
-        color: #1e40af !important;
+        background-color: rgb(var(--ax-primary-100)) !important;
+        color: rgb(var(--ax-primary-900)) !important;
       }
 
       mat-chip.type-chip {
-        background-color: #ede9fe !important;
-        color: #5b21b6 !important;
+        background-color: rgb(var(--ax-secondary-100)) !important;
+        color: rgb(var(--ax-secondary-900)) !important;
       }
 
       .icon-error {
-        color: #f43f5e;
+        color: rgb(var(--ax-error-500));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;
       }
 
       .icon-warn {
-        color: #fb923c;
+        color: rgb(var(--ax-warning-400));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;
       }
 
       .icon-info {
-        color: #3b82f6;
+        color: rgb(var(--ax-primary-500));
         font-size: 1.5rem;
         width: 1.5rem;
         height: 1.5rem;

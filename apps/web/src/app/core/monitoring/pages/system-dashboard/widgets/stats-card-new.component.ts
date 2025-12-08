@@ -17,9 +17,7 @@ export interface StatsCardDataNew {
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div
-      class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow h-full"
-    >
+    <div>
       <!-- Header with Icon -->
       <div class="flex items-center justify-between mb-4">
         <div
@@ -42,16 +40,16 @@ export interface StatsCardDataNew {
       </div>
 
       <!-- Title -->
-      <h3 class="text-sm font-medium text-slate-600 mb-1">{{ data.title }}</h3>
+      <h3 class="text-sm font-medium text-muted mb-1">{{ data.title }}</h3>
 
       <!-- Value -->
       <div class="flex items-baseline gap-2">
-        <p class="text-3xl font-bold text-slate-900">{{ formattedValue() }}</p>
+        <p class="text-3xl font-bold text-on-surface">{{ formattedValue() }}</p>
       </div>
 
       <!-- Change Label -->
       @if (data.changeLabel) {
-        <p class="text-xs text-slate-500 mt-2">{{ data.changeLabel }}</p>
+        <p class="text-xs text-muted mt-2">{{ data.changeLabel }}</p>
       }
 
       <!-- Sparkline (optional) -->
@@ -70,8 +68,8 @@ export interface StatsCardDataNew {
       <!-- Action Button -->
       @if (actionLabel) {
         <button
-          class="mt-4 w-full text-sm font-medium text-slate-600 hover:text-slate-900
-                 flex items-center justify-center gap-1 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+          class="mt-4 w-full text-sm font-medium text-muted hover:text-on-surface
+                 flex items-center justify-center gap-1 py-2 rounded-lg  transition-colors"
           (click)="onAction()"
         >
           <span>{{ actionLabel }}</span>
@@ -119,47 +117,47 @@ export class StatsCardNewComponent {
   // Tremor color classes
   iconBgClass = computed(() => {
     const colorMap = {
-      blue: 'bg-blue-50',
-      emerald: 'bg-emerald-50',
-      amber: 'bg-amber-50',
+      blue: 'bg-surface-container',
+      emerald: 'bg-surface-container',
+      amber: 'bg-surface-container',
       cyan: 'bg-cyan-50',
       violet: 'bg-violet-50',
       rose: 'bg-rose-50',
     };
-    return colorMap[this.data.color] || 'bg-blue-50';
+    return colorMap[this.data.color] || 'bg-surface-container';
   });
 
   iconColorClass = computed(() => {
     const colorMap = {
-      blue: 'text-blue-600',
-      emerald: 'text-emerald-600',
-      amber: 'text-amber-600',
+      blue: 'text-primary',
+      emerald: 'text-success',
+      amber: 'text-warning',
       cyan: 'text-cyan-600',
       violet: 'text-violet-600',
-      rose: 'text-rose-600',
+      rose: 'text-error',
     };
-    return colorMap[this.data.color] || 'text-blue-600';
+    return colorMap[this.data.color] || 'text-primary';
   });
 
   sparklineColorClass = computed(() => {
     const colorMap = {
-      blue: 'bg-blue-500',
-      emerald: 'bg-emerald-500',
-      amber: 'bg-amber-500',
+      blue: 'bg-primary',
+      emerald: 'bg-surface-container0',
+      amber: 'bg-warning',
       cyan: 'bg-cyan-500',
       violet: 'bg-violet-500',
       rose: 'bg-rose-500',
     };
-    return colorMap[this.data.color] || 'bg-blue-500';
+    return colorMap[this.data.color] || 'bg-primary';
   });
 
   changeColorClass = computed(() => {
     if (this.data.trend === 'up') {
-      return 'text-emerald-600';
+      return 'text-success';
     } else if (this.data.trend === 'down') {
-      return 'text-rose-600';
+      return 'text-error';
     }
-    return 'text-slate-600';
+    return 'text-muted';
   });
 
   trendIcon = computed(() => {

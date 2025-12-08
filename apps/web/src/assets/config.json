@@ -1,0 +1,9 @@
+{
+  "apiUrl": "/api",
+  "appName": "AegisX Web",
+  "version": "1.0.0",
+  "features": {
+    "enableAnalytics": false,
+    "enableDebug": false
+  }
+}

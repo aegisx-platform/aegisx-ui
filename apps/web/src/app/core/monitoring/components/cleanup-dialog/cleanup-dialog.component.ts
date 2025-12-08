@@ -22,13 +22,13 @@ import { MatIconModule } from '@angular/material/icon';
   template: `
     <h2 mat-dialog-title>
       <div class="flex items-center gap-2">
-        <mat-icon class="text-orange-600">delete_sweep</mat-icon>
+        <mat-icon class="text-warning">delete_sweep</mat-icon>
         <span>Cleanup Old Error Logs</span>
       </div>
     </h2>
 
     <mat-dialog-content class="py-6">
-      <p class="text-slate-600 mb-4">
+      <p class="text-muted mb-4">
         Delete error logs older than a specified number of days. This action
         cannot be undone.
       </p>
@@ -60,10 +60,12 @@ import { MatIconModule } from '@angular/material/icon';
         }
       </mat-form-field>
 
-      <div class="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+      <div
+        class="mt-4 p-4 bg-surface-container rounded-lg border border-warning"
+      >
         <div class="flex items-start gap-2">
-          <mat-icon class="text-amber-600 text-lg mt-0.5">warning</mat-icon>
-          <div class="text-sm text-amber-800">
+          <mat-icon class="text-warning text-lg mt-0.5">warning</mat-icon>
+          <div class="text-sm text-warning">
             <strong>Warning:</strong> This will permanently delete all error
             logs older than {{ daysControl.value || 0 }} days. This action
             cannot be undone.
@@ -73,7 +75,7 @@ import { MatIconModule } from '@angular/material/icon';
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" class="gap-2 pb-4 px-6">
-      <button mat-stroked-button (click)="onCancel()" class="border-slate-300">
+      <button mat-stroked-button (click)="onCancel()" class="border-outline">
         Cancel
       </button>
       <button
@@ -81,7 +83,7 @@ import { MatIconModule } from '@angular/material/icon';
         color="warn"
         (click)="onConfirm()"
         [disabled]="daysControl.invalid"
-        class="bg-red-600 hover:bg-red-700 text-white"
+        class="bg-error text-on-error"
       >
         <mat-icon>delete_forever</mat-icon>
         Delete Old Logs

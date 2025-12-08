@@ -64,14 +64,14 @@ export class TestNavigationComponent {
     {
       id: 'home',
       title: 'Home',
-      type: 'basic',
+      type: 'item',
       icon: 'heroicons_outline:home',
       link: '/dashboard',
     },
     {
       id: 'analytics',
       title: 'Analytics',
-      type: 'basic',
+      type: 'item',
       icon: 'heroicons_outline:chart-pie',
       link: '/analytics',
     },
@@ -84,13 +84,13 @@ export class TestNavigationComponent {
         {
           id: 'users.list',
           title: 'User List',
-          type: 'basic',
+          type: 'item',
           link: '/users',
         },
         {
           id: 'users.roles',
           title: 'Roles',
-          type: 'basic',
+          type: 'item',
           link: '/users/roles',
         },
       ],

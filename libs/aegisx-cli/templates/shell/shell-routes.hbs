@@ -1,0 +1,47 @@
+import { Routes } from '@angular/router';
+import { {{PascalCase}}ShellComponent } from './{{kebabCase}}-shell.component';
+
+/**
+ * {{Title}} Feature Routes
+ *
+ * Main route structure:
+ * /{{kebabCase}}              -> Main page (ax-launcher with all modules)
+ * /{{kebabCase}}/dashboard    -> Dashboard (simple placeholder)
+ *
+ * CRUD modules are auto-registered by the generator when using --shell {{kebabCase}}
+ */
+export const {{PascalCase}}_ROUTES: Routes = [
+  {
+    path: '',
+    component: {{PascalCase}}ShellComponent,
+    children: [
+      // Main page - ax-launcher with all CRUD modules
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/main/main.page').then((m) => m.MainPage),
+        data: {
+          title: '{{Title}}',
+          description: '{{description}}',
+        },
+      },
+
+      // Dashboard page
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/dashboard/dashboard.page').then(
+            (m) => m.DashboardPage,
+          ),
+        data: {
+          title: 'Dashboard',
+          description: '{{Title}} Dashboard',
+        },
+      },
+
+      // === AUTO-GENERATED ROUTES START ===
+      // CRUD modules will be auto-registered here by the generator
+      // === AUTO-GENERATED ROUTES END ===
+    ],
+  },
+];

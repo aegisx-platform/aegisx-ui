@@ -6,7 +6,6 @@ import { TestProductsRepository } from './repositories/test-products.repository'
 import { testProductsRoutes } from './routes/index';
 import { testProductsImportRoutes } from './routes/test-products-import.routes';
 import { TestProductsImportService } from './services/test-products-import.service';
-import { ExportService } from '../../services/export.service';
 
 // Note: FastifyInstance eventService type is declared in websocket.plugin.ts
 
@@ -41,7 +40,6 @@ export default fp(
       testProductsRepository,
       (fastify as any).eventService,
     );
-    const exportService = new ExportService();
     const testProductsImportService = new TestProductsImportService(
       (fastify as any).knex,
       testProductsRepository,
@@ -51,7 +49,6 @@ export default fp(
     // Controller instantiation with proper dependencies
     const testProductsController = new TestProductsController(
       testProductsService,
-      exportService,
       testProductsImportService,
       (fastify as any).eventService,
     );

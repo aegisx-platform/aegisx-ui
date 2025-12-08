@@ -45,15 +45,39 @@ interface DialogData {
     MatSnackBarModule,
   ],
   template: `
-    <h2 mat-dialog-title>
-      {{ data.mode === 'create' ? 'Create New User' : 'Edit User' }}
+    <h2 mat-dialog-title class="ax-header ax-header-info">
+      <div class="ax-icon-info">
+        <mat-icon>{{
+          data.mode === 'create' ? 'person_add' : 'edit'
+        }}</mat-icon>
+      </div>
+      <div class="header-text">
+        <div class="ax-title">
+          {{ data.mode === 'create' ? 'Create New User' : 'Edit User' }}
+        </div>
+        <div class="ax-subtitle">
+          {{
+            data.mode === 'create'
+              ? 'Add a new user to the system'
+              : 'Update user information'
+          }}
+        </div>
+      </div>
+      <button
+        type="button"
+        mat-icon-button
+        [mat-dialog-close]="false"
+        [disabled]="isSubmitting()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
     </h2>
 
     <mat-dialog-content class="mat-dialog-content">
       <form [formGroup]="userForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-grid">
           <!-- First Name -->
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>First Name</mat-label>
             <input
               matInput
@@ -66,7 +90,7 @@ interface DialogData {
           </mat-form-field>
 
           <!-- Last Name -->
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Last Name</mat-label>
             <input
               matInput
@@ -79,7 +103,7 @@ interface DialogData {
           </mat-form-field>
 
           <!-- Email -->
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Email</mat-label>
             <input
               matInput
@@ -96,7 +120,7 @@ interface DialogData {
           </mat-form-field>
 
           <!-- Username -->
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Username</mat-label>
             <input
               matInput
@@ -113,7 +137,7 @@ interface DialogData {
 
           <!-- Password (only for create mode) -->
           @if (data.mode === 'create') {
-            <mat-form-field appearance="outline" class="w-full md:col-span-2">
+            <mat-form-field appearance="outline" class="form-field full-width">
               <mat-label>Password</mat-label>
               <input
                 matInput
@@ -144,7 +168,7 @@ interface DialogData {
           }
 
           <!-- Roles (Multi-select) -->
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Roles</mat-label>
             <mat-select formControlName="roleIds" multiple>
               @for (role of roles(); track role.id) {
@@ -157,7 +181,7 @@ interface DialogData {
           </mat-form-field>
 
           <!-- Status -->
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Status</mat-label>
             <mat-select formControlName="status">
               <mat-option value="active">Active</mat-option>
@@ -183,13 +207,13 @@ interface DialogData {
         Cancel
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         (click)="onSubmit()"
         [disabled]="userForm.invalid || isSubmitting()"
       >
         @if (isSubmitting()) {
-          <mat-spinner diameter="20" class="inline mr-2"></mat-spinner>
+          <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
         }
         {{ data.mode === 'create' ? 'Create User' : 'Update User' }}
       </button>
@@ -200,18 +224,39 @@ interface DialogData {
       .mat-dialog-content {
         max-height: 80vh;
         overflow-y: auto;
-        padding: 24px;
+        padding: var(--ax-spacing-xl);
         min-width: 500px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: var(--ax-spacing-md);
+      }
+
+      @media (min-width: 768px) {
+        .form-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .form-field {
+        width: 100%;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .spinner-inline {
+        display: inline-block;
+        margin-right: var(--ax-spacing-sm);
       }
 
       @media (max-width: 768px) {
         .mat-dialog-content {
           min-width: auto;
         }
-      }
-
-      mat-form-field {
-        margin-bottom: 8px;
       }
     `,
   ],

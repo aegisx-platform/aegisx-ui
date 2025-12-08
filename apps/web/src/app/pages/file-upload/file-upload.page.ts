@@ -2,6 +2,7 @@ import { Component, ViewChild, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import {
   FileManagementComponent,
@@ -18,6 +19,7 @@ import { UploadWidgetComponent } from '../../shared/components/upload-widget/upl
     CommonModule,
     MatIconModule,
     MatSnackBarModule,
+    MatTabsModule,
     FileManagementComponent,
     UploadWidgetComponent,
   ],
@@ -33,8 +35,8 @@ export class FileUploadPage implements OnInit {
   // Legacy file stats
   readonly fileStats = this.fileUploadService.fileStats;
 
-  // Tab state
-  selectedTab: 'upload' | 'management' = 'upload';
+  // Tab state (0 = Upload, 1 = Management)
+  selectedTabIndex = 0;
 
   ngOnInit(): void {
     // No initialization needed for simple upload

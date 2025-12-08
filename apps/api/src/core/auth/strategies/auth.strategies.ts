@@ -8,17 +8,26 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
   fastify.decorate(
     'verifyJWT',
     async function (request: FastifyRequest, reply: FastifyReply) {
+      console.log('[DEBUG] verifyJWT - START');
       try {
+        console.log('[DEBUG] verifyJWT - Calling jwtVerify');
         await request.jwtVerify();
+        console.log('[DEBUG] verifyJWT - JWT verified successfully');
 
         // Check if user account is deleted (soft delete)
         const user = request.user;
+        console.log('[DEBUG] verifyJWT - User from token:', user.id);
         if (user && user.id) {
+          console.log('[DEBUG] verifyJWT - Checking user in database');
           const userRecord = await fastify
             .knex('users')
             .select('deleted_at')
             .where('id', user.id)
             .first();
+          console.log(
+            '[DEBUG] verifyJWT - User record:',
+            userRecord ? 'FOUND' : 'NOT FOUND',
+          );
 
           if (!userRecord) {
             request.log.warn({ userId: user.id }, 'User not found in database');
@@ -88,10 +97,19 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
 
         try {
           // Try to get permissions from cache first
+          console.log('[DEBUG] Permission check START for user:', user.id);
+          console.log('[DEBUG] About to call permissionCache.get()');
           let permissions = await fastify.permissionCache.get(user.id);
+          console.log(
+            '[DEBUG] permissionCache.get() returned:',
+            permissions ? `${permissions.length} permissions` : 'CACHE MISS',
+          );
 
           if (!permissions) {
             // Cache miss - query from database
+            console.log(
+              '[DEBUG] Cache miss - querying database for user permissions',
+            );
             const permissionsResult = await fastify
               .knex('user_roles')
               .join('roles', 'user_roles.role_id', 'roles.id')
@@ -105,6 +123,11 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
               .where('user_roles.is_active', true) // Only active role assignments
               .select('permissions.resource', 'permissions.action')
               .distinct();
+            console.log(
+              '[DEBUG] Database query returned',
+              permissionsResult.length,
+              'permissions',
+            );
 
             // Convert to "resource:action" format for cache
             permissions = permissionsResult.map(
@@ -112,6 +135,11 @@ async function authStrategiesPlugin(fastify: FastifyInstance) {
             );
 
             // Cache for future requests
+            console.log(
+              '[DEBUG] Caching',
+              permissions.length,
+              'permissions for user',
+            );
             await fastify.permissionCache.set(user.id, permissions);
           }
 

@@ -25,15 +25,14 @@ import {
 
 // Import AegisX UI Components
 import {
-  AegisxCardComponent,
-  AegisxAlertComponent,
-  BreadcrumbComponent,
+  AxCardComponent,
+  AxAlertComponent,
+  AxBreadcrumbComponent,
   AxLoadingBarComponent,
   AxNavigationComponent,
-  UserMenuComponent,
 } from '@aegisx/ui';
 
-interface AegisxSection {
+interface AxSection {
   id: string;
   title: string;
   description: string;
@@ -58,11 +57,10 @@ interface AegisxSection {
     MatButtonToggleModule,
     // Removed unused imports
     // AegisX UI Components
-    AegisxCardComponent,
-    AegisxAlertComponent,
-    BreadcrumbComponent,
+    AxCardComponent,
+    AxAlertComponent,
+    AxBreadcrumbComponent,
     AxLoadingBarComponent,
-    UserMenuComponent,
   ],
   template: `
     <div class="aegisx-ui-section">
@@ -138,31 +136,31 @@ interface AegisxSection {
             <div class="demo-item">
               <h4>Alert Variants</h4>
               <div class="alert-stack">
-                <ax-alert 
-                  type="success" 
+                <ax-alert
+                  variant="success"
                   title="Success Alert"
-                  [dismissible]="true">
+                  [closeable]="true">
                   Operation completed successfully!
                 </ax-alert>
-                
-                <ax-alert 
-                  type="warning" 
+
+                <ax-alert
+                  variant="warning"
                   title="Warning Alert"
-                  [dismissible]="true">
+                  [closeable]="true">
                   Please review your settings before proceeding.
                 </ax-alert>
-                
-                <ax-alert 
-                  type="error" 
+
+                <ax-alert
+                  variant="error"
                   title="Error Alert"
-                  [dismissible]="true">
+                  [closeable]="true">
                   An error occurred while processing your request.
                 </ax-alert>
-                
-                <ax-alert 
-                  type="info" 
+
+                <ax-alert
+                  variant="info"
                   title="Information"
-                  [dismissible]="true">
+                  [closeable]="true">
                   New features are now available in your dashboard.
                 </ax-alert>
               </div>
@@ -186,10 +184,8 @@ interface AegisxSection {
 
             <div class="demo-item">
               <h4>Interactive Breadcrumb</h4>
-              <ax-breadcrumb 
-                [items]="complexBreadcrumbItems" 
-                [showIcons]="true"
-                [maxItems]="4">
+              <ax-breadcrumb
+                [items]="complexBreadcrumbItems">
               </ax-breadcrumb>
             </div>
           </div>
@@ -223,26 +219,6 @@ interface AegisxSection {
           </div>
         </section>
 
-        <!-- User Menu Component Demo -->
-        <section class="demo-section">
-          <h2 class="section-title">
-            <mat-icon>account_circle</mat-icon>
-            User Menu Component
-          </h2>
-          <p class="section-description">Enterprise user menu with avatar, actions, and profile options.</p>
-          
-          <div class="demo-grid">
-            <div class="demo-item">
-              <h4>User Menu</h4>
-              <div class="user-menu-demo">
-                <ax-user-menu>
-                  <!-- User menu will use default settings -->
-                </ax-user-menu>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <!-- Integration Examples -->
         <section class="demo-section">
           <h2 class="section-title">
@@ -265,10 +241,10 @@ interface AegisxSection {
                     <span class="revenue-change positive">+12.5%</span>
                   </div>
                   
-                  <ax-alert 
-                    type="success" 
+                  <ax-alert
+                    variant="success"
                     title="Target Achieved"
-                    [dismissible]="false">
+                    [closeable]="false">
                     Monthly revenue target exceeded by 8.3%
                   </ax-alert>
                 </div>
@@ -286,7 +262,7 @@ interface AegisxSection {
     </div>`,
   styleUrls: ['./aegisx-ui-section.component.scss'],
 })
-export class AegisxUiSectionComponent implements OnInit {
+export class AxUiSectionComponent implements OnInit {
   @Input() searchQuery: string = '';
   @Input() theme: 'light' | 'dark' = 'light';
 
@@ -296,57 +272,43 @@ export class AegisxUiSectionComponent implements OnInit {
   // Demo data
   breadcrumbItems = [
     {
-      id: 'home',
-      title: 'Home',
+      label: 'Home',
       icon: 'home',
-      link: '/',
-      type: 'basic' as const,
+      url: '/',
     },
     {
-      id: 'products',
-      title: 'Products',
-      link: '/products',
-      type: 'basic' as const,
+      label: 'Products',
+      url: '/products',
     },
     {
-      id: 'electronics',
-      title: 'Electronics',
-      link: '/products/electronics',
-      type: 'basic' as const,
+      label: 'Electronics',
+      url: '/products/electronics',
     },
-    { id: 'phones', title: 'Mobile Phones', type: 'basic' as const },
+    { label: 'Mobile Phones' },
   ];
 
   complexBreadcrumbItems = [
     {
-      id: 'dashboard',
-      title: 'Dashboard',
+      label: 'Dashboard',
       icon: 'dashboard',
-      link: '/dashboard',
-      type: 'basic' as const,
+      url: '/dashboard',
     },
     {
-      id: 'analytics',
-      title: 'Analytics',
+      label: 'Analytics',
       icon: 'analytics',
-      link: '/analytics',
-      type: 'basic' as const,
+      url: '/analytics',
     },
     {
-      id: 'reports',
-      title: 'Reports',
+      label: 'Reports',
       icon: 'assessment',
-      link: '/analytics/reports',
-      type: 'basic' as const,
+      url: '/analytics/reports',
     },
     {
-      id: 'sales',
-      title: 'Sales Report',
+      label: 'Sales Report',
       icon: 'trending_up',
-      link: '/analytics/reports/sales',
-      type: 'basic' as const,
+      url: '/analytics/reports/sales',
     },
-    { id: 'monthly', title: 'Monthly Sales', type: 'basic' as const },
+    { label: 'Monthly Sales' },
   ];
 
   demoUser = {

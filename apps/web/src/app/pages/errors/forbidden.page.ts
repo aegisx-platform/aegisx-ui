@@ -40,7 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 justify-center pt-4">
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="goHome()"
             class="!rounded-lg"

@@ -19,16 +19,24 @@ import {
   AxNavigationConfig,
 } from '../types/ax-navigation.types';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'ax-navigation',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatListModule,
+  ],
   template: `
-    <nav
-      class="ax-navigation"
+    <aside
+      class="ax-navigation mat-drawer mat-drawer-side"
       [class.ax-navigation--collapsed]="state === 'collapsed'"
       [class.ax-navigation--expanded]="state === 'expanded'"
       [class.ax-navigation--side]="config.mode === 'side'"
@@ -81,7 +89,7 @@ import { filter } from 'rxjs/operators';
           <ng-content select="[navigation-footer]"></ng-content>
         </div>
       }
-    </nav>
+    </aside>
 
     <!-- Navigation Item Template -->
     <ng-template #navigationItem let-item="item" let-level="level">
@@ -108,26 +116,20 @@ import { filter } from 'rxjs/operators';
                   item.icon
                 }}</mat-icon>
               }
-              @if (state === 'expanded') {
-                <span class="ax-navigation__item-title" [@fadeIn]>{{
-                  item.title
-                }}</span>
-                @if (item.badge) {
-                  <span
-                    class="ax-navigation__item-badge"
-                    [attr.data-type]="item.badge.type || 'primary'"
-                    [@fadeIn]
-                  >
-                    {{ item.badge.content }}
-                  </span>
-                }
-                <mat-icon
-                  class="ax-navigation__item-arrow"
-                  [class.ax-navigation__item-arrow--rotated]="isExpanded(item)"
-                  [@fadeIn]
-                  >chevron_right</mat-icon
+              <span class="ax-navigation__item-title">{{ item.title }}</span>
+              @if (item.badge) {
+                <span
+                  class="ax-navigation__item-badge"
+                  [attr.data-type]="item.badge.type || 'primary'"
                 >
+                  {{ item.badge.content }}
+                </span>
               }
+              <mat-icon
+                class="ax-navigation__item-arrow"
+                [class.ax-navigation__item-arrow--rotated]="isExpanded(item)"
+                >chevron_right</mat-icon
+              >
             </button>
 
             <!-- Collapsible Children -->
@@ -160,24 +162,19 @@ import { filter } from 'rxjs/operators';
                   item.icon
                 }}</mat-icon>
               }
-              @if (state === 'expanded') {
-                <span class="ax-navigation__item-title" [@fadeIn]>{{
-                  item.title
-                }}</span>
-                @if (item.badge) {
-                  <span
-                    class="ax-navigation__item-badge"
-                    [attr.data-type]="item.badge.type || 'primary'"
-                    [@fadeIn]
-                  >
-                    {{ item.badge.content }}
-                  </span>
-                }
-                @if (item.externalLink) {
-                  <mat-icon class="ax-navigation__item-external" [@fadeIn]
-                    >open_in_new</mat-icon
-                  >
-                }
+              <span class="ax-navigation__item-title">{{ item.title }}</span>
+              @if (item.badge) {
+                <span
+                  class="ax-navigation__item-badge"
+                  [attr.data-type]="item.badge.type || 'primary'"
+                >
+                  {{ item.badge.content }}
+                </span>
+              }
+              @if (item.externalLink) {
+                <mat-icon class="ax-navigation__item-external"
+                  >open_in_new</mat-icon
+                >
               }
             </a>
           }
@@ -275,6 +272,11 @@ export class AxNavigationComponent implements OnInit {
   // Getters for template
   get state() {
     return this.config.state;
+  }
+
+  // Map position from 'left'|'right' to Material's 'start'|'end'
+  get drawerPosition(): 'start' | 'end' {
+    return this.config.position === 'right' ? 'end' : 'start';
   }
 
   get isOpen() {

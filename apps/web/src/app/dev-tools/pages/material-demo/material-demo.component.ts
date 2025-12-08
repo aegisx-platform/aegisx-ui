@@ -816,7 +816,7 @@ interface PeriodicElement {
           <!-- Card -->
           <div class="demo-item">
             <h3 class="text-xl font-medium mb-4">Card</h3>
-            <mat-card class="max-w-md">
+            <mat-card appearance="outlined" class="max-w-md">
               <mat-card-header>
                 <mat-card-title>Shiba Inu</mat-card-title>
                 <mat-card-subtitle>Dog Breed</mat-card-subtitle>

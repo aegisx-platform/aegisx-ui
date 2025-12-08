@@ -13,6 +13,9 @@ import {
   BulkAssignRolesRequest,
   BulkRoleUpdateRequest,
   BulkPermissionUpdateRequest,
+  BulkAssignRolesToUserRequest,
+  ReplaceUserRolesRequest,
+  RoleAssignmentHistoryQuery,
 } from './rbac.schemas';
 import { UuidParam } from '../../schemas/base.schemas';
 
@@ -26,7 +29,20 @@ export class RbacController {
     reply: FastifyReply,
   ) {
     try {
+      console.log('[DEBUG] Controller getRoles - Before service call');
       const result = await this.rbacService.getRoles(request.query);
+      console.log(
+        '[DEBUG] Controller getRoles - After service, sending response',
+      );
+
+      // Log first role to check schema compliance
+      if (result.roles.length > 0) {
+        console.log('[DEBUG] First role fields:', Object.keys(result.roles[0]));
+        console.log(
+          '[DEBUG] First role sample:',
+          JSON.stringify(result.roles[0], null, 2),
+        );
+      }
 
       return reply.code(200).send({
         success: true,
@@ -34,6 +50,7 @@ export class RbacController {
         pagination: result.pagination,
       });
     } catch (error) {
+      console.log('[DEBUG] Controller getRoles - ERROR:', error);
       request.log.error({ err: error }, 'Error in getRoles');
       return reply.code(500).send({
         success: false,
@@ -968,6 +985,172 @@ export class RbacController {
     }
   }
 
+  // ===== MULTI-ROLE MANAGEMENT ENDPOINTS =====
+
+  async bulkAssignRolesToUser(
+    request: FastifyRequest<{
+      Params: UuidParam;
+      Body: BulkAssignRolesToUserRequest;
+    }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const assignedBy = request.user?.id;
+      if (!assignedBy) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'User not authenticated',
+          },
+        });
+      }
+
+      const assignedRoles = await this.rbacService.bulkAssignRolesToUser(
+        request.params.id,
+        request.body,
+        assignedBy,
+      );
+
+      // Invalidate permission cache for the affected user
+      await request.server.permissionCache.invalidate(request.params.id);
+
+      return reply.code(201).send({
+        success: true,
+        data: assignedRoles,
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    } catch (error) {
+      request.log.error({ err: error }, 'Error in bulkAssignRolesToUser');
+
+      if (error instanceof Error) {
+        const statusCode = error.message.includes('not found')
+          ? 404
+          : error.message.includes('inactive')
+            ? 400
+            : 500;
+
+        return reply.code(statusCode).send({
+          success: false,
+          error: {
+            code:
+              statusCode === 404
+                ? 'NOT_FOUND'
+                : statusCode === 400
+                  ? 'INVALID_REQUEST'
+                  : 'INTERNAL_SERVER_ERROR',
+            message: error.message,
+          },
+          meta: {
+            requestId: request.id,
+            timestamp: new Date().toISOString(),
+            version: '1.0',
+          },
+        });
+      }
+
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to assign roles to user',
+          statusCode: 500,
+        },
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    }
+  }
+
+  async replaceUserRoles(
+    request: FastifyRequest<{
+      Params: UuidParam;
+      Body: ReplaceUserRolesRequest;
+    }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const assignedBy = request.user?.id;
+      if (!assignedBy) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'User not authenticated',
+          },
+        });
+      }
+
+      const assignedRoles = await this.rbacService.replaceUserRoles(
+        request.params.id,
+        request.body,
+        assignedBy,
+      );
+
+      // Invalidate permission cache for the affected user
+      await request.server.permissionCache.invalidate(request.params.id);
+
+      return reply.code(200).send({
+        success: true,
+        data: assignedRoles,
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    } catch (error) {
+      request.log.error({ err: error }, 'Error in replaceUserRoles');
+
+      if (error instanceof Error) {
+        const statusCode = error.message.includes('not found')
+          ? 404
+          : error.message.includes('inactive')
+            ? 400
+            : 500;
+
+        return reply.code(statusCode).send({
+          success: false,
+          error: {
+            code:
+              statusCode === 404
+                ? 'NOT_FOUND'
+                : statusCode === 400
+                  ? 'INVALID_REQUEST'
+                  : 'INTERNAL_SERVER_ERROR',
+            message: error.message,
+          },
+          meta: {
+            requestId: request.id,
+            timestamp: new Date().toISOString(),
+            version: '1.0',
+          },
+        });
+      }
+
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to replace user roles',
+          statusCode: 500,
+        },
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    }
+  }
+
   async bulkUpdateRoles(
     request: FastifyRequest<{ Body: BulkRoleUpdateRequest }>,
     reply: FastifyReply,
@@ -1220,6 +1403,81 @@ export class RbacController {
         error: {
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to retrieve user effective permissions',
+          statusCode: 500,
+        },
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    }
+  }
+
+  // ===== ROLE ASSIGNMENT HISTORY ENDPOINTS =====
+
+  async getRoleAssignmentHistory(
+    request: FastifyRequest<{ Querystring: RoleAssignmentHistoryQuery }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const result = await this.rbacService.getRoleAssignmentHistory(
+        request.query,
+      );
+
+      return reply.code(200).send({
+        success: true,
+        data: result.history,
+        pagination: result.pagination,
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    } catch (error) {
+      request.log.error({ err: error }, 'Error in getRoleAssignmentHistory');
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to retrieve role assignment history',
+          statusCode: 500,
+        },
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    }
+  }
+
+  async getUserRoleHistory(
+    request: FastifyRequest<{ Params: UuidParam }>,
+    reply: FastifyReply,
+  ) {
+    try {
+      const result = await this.rbacService.getUserRoleHistory(
+        request.params.id,
+      );
+
+      return reply.code(200).send({
+        success: true,
+        data: result.history,
+        meta: {
+          requestId: request.id,
+          timestamp: new Date().toISOString(),
+          version: '1.0',
+        },
+      });
+    } catch (error) {
+      request.log.error({ err: error }, 'Error in getUserRoleHistory');
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to retrieve user role history',
           statusCode: 500,
         },
         meta: {

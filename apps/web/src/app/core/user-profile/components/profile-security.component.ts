@@ -35,10 +35,13 @@ import { UserService } from '../../users/services/user.service';
     <div class="space-y-6">
       <!-- Password Change Section -->
       <div>
-        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        <h3
+          class="text-lg font-semibold mb-4"
+          style="color: var(--mat-sys-on-surface)"
+        >
           Change Password
         </h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">
+        <p class="mb-6" style="color: var(--mat-sys-on-surface-variant)">
           Ensure your account is using a long, random password to stay secure.
         </p>
 
@@ -108,7 +111,7 @@ import { UserService } from '../../users/services/user.service';
 
           <div class="flex gap-2">
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               type="submit"
               [disabled]="passwordForm.invalid || isChangingPassword()"
@@ -158,48 +161,60 @@ import { UserService } from '../../users/services/user.service';
 
       <!-- Security Information -->
       <div>
-        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        <h3
+          class="text-lg font-semibold mb-4"
+          style="color: var(--mat-sys-on-surface)"
+        >
           Security Information
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Password Strength Requirements -->
-          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+          <div
+            class="rounded-lg p-4"
+            style="background-color: var(--mat-sys-surface-container)"
+          >
             <h4
-              class="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center"
+              class="font-medium mb-3 flex items-center"
+              style="color: var(--mat-sys-on-surface)"
             >
-              <mat-icon class="mr-2 text-blue-600">info</mat-icon>
+              <mat-icon class="mr-2" style="color: var(--mat-sys-primary)"
+                >info</mat-icon
+              >
               Password Requirements
             </h4>
-            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+            <ul
+              class="text-sm space-y-2"
+              style="color: var(--mat-sys-on-surface-variant)"
+            >
               <li class="flex items-center">
                 <mat-icon
-                  class="mr-2 text-green-600"
-                  style="font-size: 16px; height: 16px; width: 16px;"
+                  class="mr-2"
+                  style="font-size: 16px; height: 16px; width: 16px; color: var(--ax-success-500)"
                   >check</mat-icon
                 >
                 At least 8 characters long
               </li>
               <li class="flex items-center">
                 <mat-icon
-                  class="mr-2 text-blue-600"
-                  style="font-size: 16px; height: 16px; width: 16px;"
+                  class="mr-2"
+                  style="font-size: 16px; height: 16px; width: 16px; color: var(--mat-sys-primary)"
                   >recommend</mat-icon
                 >
                 Mix of uppercase and lowercase letters
               </li>
               <li class="flex items-center">
                 <mat-icon
-                  class="mr-2 text-blue-600"
-                  style="font-size: 16px; height: 16px; width: 16px;"
+                  class="mr-2"
+                  style="font-size: 16px; height: 16px; width: 16px; color: var(--mat-sys-primary)"
                   >recommend</mat-icon
                 >
                 Include numbers and special characters
               </li>
               <li class="flex items-center">
                 <mat-icon
-                  class="mr-2 text-blue-600"
-                  style="font-size: 16px; height: 16px; width: 16px;"
+                  class="mr-2"
+                  style="font-size: 16px; height: 16px; width: 16px; color: var(--mat-sys-primary)"
                   >recommend</mat-icon
                 >
                 Avoid common passwords and personal information
@@ -208,41 +223,50 @@ import { UserService } from '../../users/services/user.service';
           </div>
 
           <!-- Security Status -->
-          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+          <div
+            class="rounded-lg p-4"
+            style="background-color: var(--mat-sys-surface-container)"
+          >
             <h4
-              class="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center"
+              class="font-medium mb-3 flex items-center"
+              style="color: var(--mat-sys-on-surface)"
             >
-              <mat-icon class="mr-2 text-green-600">shield</mat-icon>
+              <mat-icon class="mr-2" style="color: var(--ax-success-500)"
+                >shield</mat-icon
+              >
               Security Status
             </h4>
             <div class="space-y-3 text-sm">
               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400"
+                <span style="color: var(--mat-sys-on-surface-variant)"
                   >Two-Factor Authentication:</span
                 >
-                <span class="text-red-600 dark:text-red-400 font-medium"
+                <span class="font-medium" style="color: var(--mat-sys-error)"
                   >Disabled</span
                 >
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400"
+                <span style="color: var(--mat-sys-on-surface-variant)"
                   >Last Password Change:</span
                 >
-                <span class="text-gray-900 dark:text-gray-100 font-medium"
+                <span
+                  class="font-medium"
+                  style="color: var(--mat-sys-on-surface)"
                   >Never</span
                 >
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400"
+                <span style="color: var(--mat-sys-on-surface-variant)"
                   >Login Sessions:</span
                 >
-                <span class="text-blue-600 dark:text-blue-400 font-medium"
+                <span class="font-medium" style="color: var(--mat-sys-primary)"
                   >1 active</span
                 >
               </div>
             </div>
             <div
-              class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600"
+              class="mt-4 pt-3 border-t"
+              style="border-color: var(--mat-sys-outline-variant)"
             >
               <button mat-button color="primary" class="text-sm" disabled>
                 <mat-icon
@@ -261,29 +285,38 @@ import { UserService } from '../../users/services/user.service';
 
       <!-- Active Sessions -->
       <div>
-        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        <h3
+          class="text-lg font-semibold mb-4"
+          style="color: var(--mat-sys-on-surface)"
+        >
           Active Sessions
         </h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-4">
+        <p class="mb-4" style="color: var(--mat-sys-on-surface-variant)">
           Monitor and manage your active login sessions across devices.
         </p>
 
-        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+        <div
+          class="rounded-lg p-4"
+          style="background-color: var(--mat-sys-surface-container)"
+        >
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center">
-              <mat-icon class="mr-3 text-green-600">laptop</mat-icon>
+              <mat-icon class="mr-3" style="color: var(--ax-success-500)"
+                >laptop</mat-icon
+              >
               <div>
-                <p class="font-medium text-gray-900 dark:text-gray-100">
+                <p class="font-medium" style="color: var(--mat-sys-on-surface)">
                   Current Session
                 </p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p
+                  class="text-sm"
+                  style="color: var(--mat-sys-on-surface-variant)"
+                >
                   Browser • {{ getCurrentLocation() }} • Active now
                 </p>
               </div>
             </div>
-            <span
-              class="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded"
-            >
+            <span class="chip-success text-xs px-2 py-1 rounded">
               Current
             </span>
           </div>
@@ -309,11 +342,17 @@ import { UserService } from '../../users/services/user.service';
       }
 
       .success-message {
-        @apply bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200;
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-md);
+        background-color: var(--ax-success-subtle);
+        color: var(--ax-success-emphasis);
       }
 
       .error-message {
-        @apply bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200;
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-md);
+        background-color: var(--ax-error-subtle);
+        color: var(--ax-error-emphasis);
       }
     `,
   ],
@@ -352,9 +391,7 @@ export class ProfileSecurityComponent {
     const message = this.passwordChangeMessage();
     if (!message) return '';
 
-    return message.type === 'success'
-      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'
-      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200';
+    return message.type === 'success' ? 'success-message' : 'error-message';
   }
 
   getCurrentLocation(): string {

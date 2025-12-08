@@ -55,28 +55,23 @@ export interface BulkSetExpiryResult {
   ],
   template: `
     <div class="bulk-set-expiry-dialog">
-      <div
+      <h2
         mat-dialog-title
-        class="flex items-center justify-between pb-4 border-b"
+        class="flex items-center gap-3 text-xl font-semibold"
       >
-        <div class="flex items-center gap-3">
-          <mat-icon class="!text-2xl text-orange-600">event_available</mat-icon>
-          <div>
-            <h2 class="text-xl font-semibold m-0">Bulk Set Role Expiry</h2>
-            <p class="text-sm text-gray-600 dark:text-gray-400 m-0">
-              Update expiry dates for {{ data.selectedAssignments.length }} role
-              assignments
-            </p>
+        <mat-icon class="text-brand">event_available</mat-icon>
+        <div>
+          <div>Bulk Set Role Expiry</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400 font-normal">
+            Update expiry dates for {{ data.selectedAssignments.length }} role
+            assignments
           </div>
         </div>
-        <button mat-icon-button mat-dialog-close>
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
+      </h2>
 
       <mat-dialog-content class="space-y-6 max-h-[70vh] overflow-y-auto">
         <!-- Selected Assignments Summary -->
-        <mat-card class="p-4">
+        <mat-card appearance="outlined" class="p-4">
           <div class="flex items-center gap-3 mb-4">
             <mat-icon class="text-blue-600">group</mat-icon>
             <h3 class="text-md font-medium m-0">
@@ -216,7 +211,10 @@ export interface BulkSetExpiryResult {
           </div>
 
           <!-- Impact Preview -->
-          <mat-card class="p-4 bg-blue-50 dark:bg-blue-900/20">
+          <mat-card
+            appearance="outlined"
+            class="p-4 bg-blue-50 dark:bg-blue-900/20"
+          >
             <div class="flex items-center gap-3 mb-3">
               <mat-icon class="text-blue-600">preview</mat-icon>
               <h4
@@ -250,13 +248,10 @@ export interface BulkSetExpiryResult {
         </form>
       </mat-dialog-content>
 
-      <mat-dialog-actions
-        align="end"
-        class="border-t border-gray-200 dark:border-gray-700 pt-4"
-      >
+      <div mat-dialog-actions align="end" class="flex gap-2">
         <button mat-button (click)="onCancel()">Cancel</button>
         <button
-          mat-raised-button
+          mat-flat-button
           [color]="getActionButtonColor()"
           (click)="onConfirm()"
           [disabled]="!isFormValid()"
@@ -264,7 +259,7 @@ export interface BulkSetExpiryResult {
           <mat-icon>{{ getActionButtonIcon() }}</mat-icon>
           {{ getActionButtonText() }}
         </button>
-      </mat-dialog-actions>
+      </div>
     </div>
   `,
   styles: [

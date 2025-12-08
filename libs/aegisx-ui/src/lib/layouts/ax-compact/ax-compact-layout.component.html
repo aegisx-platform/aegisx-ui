@@ -1,5 +1,10 @@
-<!-- Loading bar -->
-<ax-loading-bar></ax-loading-bar>
+<!-- Loading bar - Connected to LoadingBarService -->
+<ax-loading-bar
+  [visible]="loadingBarState().visible"
+  [mode]="loadingBarState().mode"
+  [progress]="loadingBarState().progress"
+  [color]="loadingBarState().color"
+></ax-loading-bar>
 
 <!-- Navigation Overlay for mobile -->
 @if (isScreenSmall && isNavigationExpanded()) {
@@ -15,7 +20,8 @@
 
 <!-- Navigation -->
 <ax-navigation
-  class="dark bg-gray-900 print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
+  [class.dark]="isDarkMode"
+  class="bg-gray-900 print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
   [class.w-16]="!isNavigationExpanded() && !isScreenSmall"
   [class.w-64]="isNavigationExpanded()"
   [class.-translate-x-full]="!isNavigationExpanded() && isScreenSmall"
@@ -33,11 +39,9 @@
     @if (navigationHeader) {
       <ng-container *ngTemplateOutlet="navigationHeader"></ng-container>
     } @else {
-      <span class="text-2xl font-bold text-white">{{
-        appName.split(' ')[0]
-      }}</span>
+      <span class="text-2xl font-bold">{{ appName.split(' ')[0] }}</span>
       @if (appVersion) {
-        <span class="ml-2 text-xs px-2 py-1 bg-primary-600 text-white rounded">
+        <span class="ml-2 text-xs px-2 py-1 bg-primary-600 rounded">
           {{ appVersion }}
         </span>
       }

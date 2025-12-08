@@ -6,7 +6,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { PasswordResetService } from '../../core/auth/services/password-reset.service';
@@ -18,241 +22,411 @@ import { PasswordResetService } from '../../core/auth/services/password-reset.se
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatProgressSpinnerModule,
   ],
   template: `
-    <div
-      class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
-      <div class="max-w-md w-full space-y-6">
+    <div class="auth-container">
+      <div class="auth-wrapper">
         <!-- Logo and Header -->
-        <div class="text-center">
-          <div
-            class="mx-auto h-20 w-20 flex items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl shadow-blue-500/30"
-          >
-            <mat-icon class="text-white text-3xl">lock_reset</mat-icon>
+        <div class="auth-header">
+          <div class="auth-logo">
+            <mat-icon>lock_reset</mat-icon>
           </div>
-          <h2 class="mt-6 text-3xl font-bold text-slate-900 tracking-tight">
-            Reset your password
-          </h2>
-          <p class="mt-2 text-sm text-slate-600">
+          <h1 class="auth-title">Reset your password</h1>
+          <p class="auth-subtitle">
             Enter your email and we'll send you a reset link
           </p>
         </div>
 
-        <!-- Form Card - Tremor Style -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-          <!-- Success Message -->
-          @if (successMessage()) {
-            <div
-              class="rounded-lg bg-green-50 p-4 border border-green-200 mb-6"
-              role="alert"
-              aria-live="polite"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-green-100"
-                  >
-                    <mat-icon class="text-green-600 !text-sm"
-                      >check_circle</mat-icon
-                    >
-                  </div>
+        <!-- Form Card -->
+        <mat-card appearance="outlined" class="auth-card">
+          <mat-card-content>
+            <!-- Success Message -->
+            @if (successMessage()) {
+              <div
+                class="auth-alert auth-alert-success"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>check_circle</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-green-900">
-                    {{ successMessage() }}
-                  </p>
-                  <p class="mt-1 text-xs text-green-700">
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">{{ successMessage() }}</p>
+                  <p class="auth-alert-subtitle">
                     Please check your email inbox (and spam folder) for the
                     reset link.
                   </p>
                 </div>
               </div>
-            </div>
-          }
+            }
 
-          <!-- Error Alert -->
-          @if (errorMessage()) {
-            <div
-              class="rounded-lg bg-red-50 p-4 border border-red-200 mb-6"
-              role="alert"
-              aria-live="polite"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100"
-                  >
-                    <mat-icon class="text-red-600 !text-sm">error</mat-icon>
-                  </div>
+            <!-- Error Alert -->
+            @if (errorMessage()) {
+              <div
+                class="auth-alert auth-alert-error"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>error</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-red-900">
-                    {{ errorMessage() }}
-                  </p>
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">{{ errorMessage() }}</p>
                 </div>
               </div>
-            </div>
-          }
+            }
 
-          <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()">
-            <!-- Email Field - Tremor Style -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-slate-700 mb-2">
-                Email address
-              </label>
-              <div class="relative">
+            <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()">
+              <!-- Email Field -->
+              <mat-form-field appearance="outline" class="auth-field">
+                <mat-label>Email address</mat-label>
                 <input
+                  matInput
                   type="email"
                   formControlName="email"
                   placeholder="name@company.com"
                   autocomplete="email"
-                  class="w-full px-4 py-2.5 text-sm border rounded-lg transition-colors
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed
-                         placeholder:text-slate-400"
-                  [class.border-slate-300]="
-                    !forgotPasswordForm.get('email')?.invalid ||
-                    !forgotPasswordForm.get('email')?.touched
-                  "
-                  [class.border-red-500]="
-                    forgotPasswordForm.get('email')?.invalid &&
-                    forgotPasswordForm.get('email')?.touched
-                  "
-                  [class.bg-red-50]="
-                    forgotPasswordForm.get('email')?.invalid &&
-                    forgotPasswordForm.get('email')?.touched
-                  "
-                  [attr.aria-invalid]="
-                    forgotPasswordForm.get('email')?.invalid &&
-                    forgotPasswordForm.get('email')?.touched
-                  "
                   required
                 />
-                <div
-                  class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+                <mat-error
+                  *ngIf="forgotPasswordForm.get('email')?.hasError('required')"
                 >
-                  <mat-icon class="text-slate-400 !text-base">email</mat-icon>
-                </div>
-              </div>
-              @if (
-                forgotPasswordForm.get('email')?.hasError('required') &&
-                forgotPasswordForm.get('email')?.touched
-              ) {
-                <p class="mt-1.5 text-xs text-red-600">Email is required</p>
-              }
-              @if (
-                forgotPasswordForm.get('email')?.hasError('email') &&
-                forgotPasswordForm.get('email')?.touched
-              ) {
-                <p class="mt-1.5 text-xs text-red-600">
+                  Email is required
+                </mat-error>
+                <mat-error
+                  *ngIf="forgotPasswordForm.get('email')?.hasError('email')"
+                >
                   Please enter a valid email address
-                </p>
-              }
-            </div>
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Submit Button - Tremor Style -->
-            <button
-              type="submit"
-              class="w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg
-                     hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                     disabled:bg-slate-300 disabled:cursor-not-allowed
-                     transition-colors duration-200 shadow-sm"
-              [disabled]="forgotPasswordForm.invalid || isLoading()"
-            >
-              @if (isLoading()) {
-                <span class="flex items-center justify-center gap-2">
-                  <mat-spinner diameter="16" class="inline"></mat-spinner>
-                  <span>Sending reset link...</span>
-                </span>
-              } @else {
-                Send reset link
-              }
-            </button>
-
-            <!-- Back to Login Link -->
-            <div class="mt-6 text-center">
-              <a
-                routerLink="/login"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1"
+              <!-- Submit Button -->
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="forgotPasswordForm.invalid || isLoading()"
               >
-                <mat-icon class="!text-base">arrow_back</mat-icon>
-                Back to login
-              </a>
-            </div>
-          </form>
-        </div>
+                @if (isLoading()) {
+                  <span class="auth-btn-loading">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Sending reset link...</span>
+                  </span>
+                } @else {
+                  Send reset link
+                }
+              </button>
 
-        <!-- Info Card - Tremor Style -->
-        <div class="bg-white rounded-xl border border-blue-200 p-5 shadow-sm">
-          <div class="flex items-start gap-3">
-            <div class="flex-shrink-0">
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50"
-              >
-                <mat-icon class="text-blue-600 !text-base">info</mat-icon>
+              <!-- Back to Login Link -->
+              <div class="auth-footer-link">
+                <a routerLink="/login" mat-button color="primary">
+                  <mat-icon>arrow_back</mat-icon>
+                  Back to login
+                </a>
               </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Info Card -->
+        <mat-card appearance="outlined" class="auth-info-card">
+          <mat-card-content>
+            <div class="auth-info-header">
+              <div class="auth-info-icon">
+                <mat-icon>info</mat-icon>
+              </div>
+              <h4>Password Reset Information</h4>
             </div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-sm font-semibold text-slate-900 mb-2">
-                Password Reset Information
-              </h4>
-              <ul class="space-y-1.5 text-xs text-slate-600">
-                <li class="flex items-start gap-2">
-                  <mat-icon class="text-blue-500 !text-xs mt-0.5"
-                    >check_circle</mat-icon
-                  >
-                  <span>Reset link expires in 1 hour</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <mat-icon class="text-blue-500 !text-xs mt-0.5"
-                    >check_circle</mat-icon
-                  >
-                  <span>Check spam folder if not received</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <mat-icon class="text-blue-500 !text-xs mt-0.5"
-                    >check_circle</mat-icon
-                  >
-                  <span>Limited to 3 requests per hour for security</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+            <ul class="auth-info-list">
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Reset link expires in 1 hour</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Check spam folder if not received</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Limited to 3 requests per hour for security</span>
+              </li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
   `,
   styles: [
     `
-      :host {
-        display: block;
+      .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         min-height: 100vh;
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-md);
+        background-color: var(--ax-background-muted);
       }
 
-      /* Tremor-inspired spinner styling */
-      .mat-spinner {
-        --mdc-circular-progress-active-indicator-color: white !important;
+      .auth-wrapper {
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
       }
 
-      ::ng-deep .mat-mdc-progress-spinner circle {
-        stroke: white !important;
+      /* Header Styles */
+      .auth-header {
+        text-align: center;
       }
 
-      /* Icon size adjustments */
-      .mat-icon {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+      .auth-logo {
+        margin: 0 auto var(--ax-spacing-lg);
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-2xl);
+        background: linear-gradient(
+          135deg,
+          var(--ax-brand-default),
+          var(--ax-brand-emphasis)
+        );
+        box-shadow: 0 8px 20px -4px var(--ax-brand-muted);
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: white;
+        }
+      }
+
+      .auth-title {
+        font-size: var(--ax-font-size-2xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+        margin: 0 0 var(--ax-spacing-sm);
+        letter-spacing: -0.02em;
+      }
+
+      .auth-subtitle {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+        margin: 0;
+      }
+
+      /* Card Styles */
+      .auth-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        box-shadow: var(--ax-shadow-sm);
+      }
+
+      ::ng-deep .auth-card .mat-mdc-card-content {
+        padding: var(--ax-spacing-2xl) !important;
+      }
+
+      /* Alert Styles */
+      .auth-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-lg);
+        margin-bottom: var(--ax-spacing-lg);
+        border: 1px solid;
+      }
+
+      .auth-alert-success {
+        background-color: var(--ax-success-subtle);
+        border-color: var(--ax-success-muted);
+        color: var(--ax-success-emphasis);
+      }
+
+      .auth-alert-error {
+        background-color: var(--ax-error-subtle);
+        border-color: var(--ax-error-muted);
+        color: var(--ax-error-emphasis);
+      }
+
+      .auth-alert-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .auth-alert-success .auth-alert-icon {
+        background-color: var(--ax-success-muted);
+        color: var(--ax-success-emphasis);
+      }
+
+      .auth-alert-error .auth-alert-icon {
+        background-color: var(--ax-error-muted);
+        color: var(--ax-error-emphasis);
+      }
+
+      .auth-alert-content {
+        flex: 1;
+      }
+
+      .auth-alert-title {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        margin: 0 0 var(--ax-spacing-xs);
+      }
+
+      .auth-alert-subtitle {
+        font-size: var(--ax-font-size-xs);
+        margin: 0;
+        opacity: 0.9;
+      }
+
+      /* Form Field Styles */
+      .auth-field {
+        width: 100%;
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      /* Submit Button */
+      .auth-submit-btn {
+        width: 100%;
+        height: 44px;
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        margin-top: var(--ax-spacing-sm);
+      }
+
+      .auth-btn-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      /* Footer Link */
+      .auth-footer-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: var(--ax-spacing-lg);
+      }
+
+      .auth-footer-link a {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--ax-spacing-xs);
+      }
+
+      /* Info Card Styles */
+      .auth-info-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-brand-muted);
+        box-shadow: var(--ax-shadow-sm);
+      }
+
+      ::ng-deep .auth-info-card .mat-mdc-card-content {
+        padding: var(--ax-spacing-lg) !important;
+      }
+
+      .auth-info-header {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-md);
+        margin-bottom: var(--ax-spacing-md);
+      }
+
+      .auth-info-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-lg);
+        background-color: var(--ax-brand-subtle);
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: var(--ax-brand-emphasis);
+        }
+      }
+
+      .auth-info-header h4 {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+        margin: 0;
+      }
+
+      .auth-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .auth-info-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-sm);
+        font-size: var(--ax-font-size-xs);
+        color: var(--ax-text-default);
+
+        mat-icon {
+          flex-shrink: 0;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          margin-top: 2px;
+          color: var(--ax-brand-default);
+        }
+
+        span {
+          flex: 1;
+        }
+      }
+
+      /* Spinner styling */
+      ::ng-deep .auth-btn-loading .mat-mdc-progress-spinner {
+        --mdc-circular-progress-active-indicator-color: currentColor !important;
+      }
+
+      ::ng-deep .auth-btn-loading .mat-mdc-progress-spinner circle {
+        stroke: currentColor !important;
       }
 
       /* Smooth transitions */
-      input,
-      button,
-      a {
-        transition: all 0.15s ease-in-out;
+      .auth-card,
+      .auth-info-card {
+        transition: all 0.2s ease-in-out;
+      }
+
+      .auth-card:hover,
+      .auth-info-card:hover {
+        box-shadow: var(--ax-shadow-md);
       }
     `,
   ],

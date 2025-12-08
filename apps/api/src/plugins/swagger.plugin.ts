@@ -1,8 +1,7 @@
-import fp from 'fastify-plugin';
-import { FastifyInstance } from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
-import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 
 export default fp(
   async function swaggerPlugin(fastify: FastifyInstance) {
@@ -18,7 +17,7 @@ Complete API specification for the AegisX Platform including all UI library endp
 
 This API provides comprehensive functionality for:
 - Authentication and session management
-- User profile and preferences management  
+- User profile and preferences management
 - Navigation structure and menu management
 - Application settings and themes
 - System monitoring and health checks
@@ -80,6 +79,7 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
           },
         ],
         tags: [
+          // === Core Platform ===
           {
             name: 'Documentation',
             description: 'OpenAPI specification and documentation endpoints',
@@ -104,8 +104,138 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
             name: 'Settings',
             description: 'Application settings and configuration',
           },
+
+          // === Inventory: Organization ===
+          {
+            name: 'Inventory: Locations',
+            description:
+              'Storage locations management (warehouses, rooms, shelves)',
+          },
+          {
+            name: 'Inventory: Departments',
+            description: 'Hospital departments management',
+          },
+          {
+            name: 'Inventory: Bank',
+            description: 'Bank accounts for payment processing',
+          },
+
+          // === Inventory: Budget Structure ===
+          {
+            name: 'Inventory: Budget Types',
+            description: 'Budget type definitions',
+          },
+          {
+            name: 'Inventory: Budget Categories',
+            description: 'Budget category classifications',
+          },
+          {
+            name: 'Inventory: Budgets',
+            description: 'Master budget management',
+          },
+
+          // === Inventory: Drug & Company ===
+          {
+            name: 'Inventory: Drug Generics',
+            description: 'Generic drug names (e.g., Paracetamol, Amoxicillin)',
+          },
+          {
+            name: 'Inventory: Drugs',
+            description: 'Drug master data with trade names and pricing',
+          },
+          {
+            name: 'Inventory: Companies',
+            description: 'Pharmaceutical companies and vendors',
+          },
+
+          // === Inventory: Drug Information ===
+          {
+            name: 'Inventory: Drug Components',
+            description: 'Drug active ingredients and compositions',
+          },
+          {
+            name: 'Inventory: Drug Focus Lists',
+            description: 'Drug classification lists (High Alert, LASA, etc.)',
+          },
+          {
+            name: 'Inventory: Drug Pack Ratios',
+            description: 'Drug packaging ratios and conversions',
+          },
+
+          // === Inventory: Lookup Tables ===
+          {
+            name: 'Inventory: Dosage Forms',
+            description: 'Drug dosage forms (tablet, capsule, injection, etc.)',
+          },
+          {
+            name: 'Inventory: Drug Units',
+            description: 'Units of measurement for drugs',
+          },
+          {
+            name: 'Inventory: Adjustment Reasons',
+            description: 'Reasons for inventory adjustments',
+          },
+          {
+            name: 'Inventory: Return Actions',
+            description: 'Actions for drug returns',
+          },
         ],
-      },
+        'x-tagGroups': [
+          {
+            name: '🔧 Core Platform',
+            tags: [
+              'Documentation',
+              'System',
+              'Authentication',
+              'Navigation',
+              'User Profile',
+              'Settings',
+            ],
+          },
+          {
+            name: '🏥 Inventory: Organization',
+            tags: [
+              'Inventory: Locations',
+              'Inventory: Departments',
+              'Inventory: Bank',
+            ],
+          },
+          {
+            name: '💰 Inventory: Budget',
+            tags: [
+              'Inventory: Budget Types',
+              'Inventory: Budget Categories',
+              'Inventory: Budgets',
+            ],
+          },
+          {
+            name: '💊 Inventory: Drug & Company',
+            tags: [
+              'Inventory: Drug Generics',
+              'Inventory: Drugs',
+              'Inventory: Companies',
+            ],
+          },
+          {
+            name: '🧪 Inventory: Drug Information',
+            tags: [
+              'Inventory: Drug Components',
+              'Inventory: Drug Focus Lists',
+              'Inventory: Drug Pack Ratios',
+            ],
+          },
+          {
+            name: '📚 Inventory: Lookup Tables',
+            tags: [
+              'Inventory: Dosage Forms',
+              'Inventory: Drug Units',
+              'Inventory: Adjustment Reasons',
+              'Inventory: Return Actions',
+            ],
+          },
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any, // Type assertion for Redoc x-tagGroups extension
       hideUntagged: false,
       stripBasePath: false,
     });
@@ -114,47 +244,8 @@ API requests are rate limited to prevent abuse. Rate limit headers are included 
     await fastify.register(fastifySwaggerUi, {
       routePrefix: '/documentation',
       uiConfig: {
-        docExpansion: 'list',
-        deepLinking: false,
-        displayOperationId: true,
-        defaultModelsExpandDepth: 2,
-        defaultModelExpandDepth: 2,
-        displayRequestDuration: true,
-        filter: true,
-        showExtensions: true,
-        showCommonExtensions: true,
-        tryItOutEnabled: true,
-        persistAuthorization: true,
-        defaultModelRendering: 'model',
-        syntaxHighlight: {
-          activate: true,
-          theme: 'monokai',
-        },
+        docExpansion: 'none',
       },
-      uiHooks: {
-        onRequest: function (request, reply, next) {
-          next();
-        },
-        preHandler: function (request, reply, next) {
-          next();
-        },
-      },
-      staticCSP: true,
-      transformStaticCSP: (header) => header,
-      transformSpecification: (swaggerObject, request, reply) => {
-        // Fix server URL for Try It Out functionality
-        const modifiedSpec = { ...swaggerObject };
-        if (request.headers.host) {
-          modifiedSpec.servers = [
-            {
-              url: `http://${request.headers.host}`,
-              description: 'Current server',
-            },
-          ];
-        }
-        return modifiedSpec;
-      },
-      transformSpecificationClone: true,
     });
 
     // Add JSON endpoint for programmatic access

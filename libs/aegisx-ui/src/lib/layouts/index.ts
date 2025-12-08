@@ -1,23 +1,31 @@
-// Main Layout Components (standardized names with actual component classes)
-export { ClassicLayoutComponent as AxClassicLayoutComponent } from './classic/classic-layout.component';
-export { CompactLayoutComponent as LegacyAxCompactLayoutComponent } from './compact/compact-layout.component';
+// Layout Components (Modern, Clean)
 export { AxCompactLayoutComponent } from './ax-compact/ax-compact-layout.component';
 export { EmptyLayoutComponent as AxEmptyLayoutComponent } from './empty/empty-layout.component';
 export { EnterpriseLayoutComponent as AxEnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
-export { LayoutWrapperComponent as AxLayoutWrapperComponent } from './layout-wrapper/layout-wrapper.component';
 
-// Legacy exports for backward compatibility (all standalone components)
-export * from './classic/classic-layout.component';
-export * from './compact/compact-layout.component';
-export * from './empty/empty-layout.component';
-export * from './enterprise/enterprise-layout.component';
-export * from './layout-wrapper/layout-wrapper.component';
+// Docs Layout (Shadcn/ui style)
+export * from './docs';
 
-// Layout Components
-export * from './components/navbar/navbar.component';
-export * from './components/toolbar/toolbar.component';
-
-// AX Layout Components (new format)
-export * from './ax-classic/ax-classic-layout.component';
+// Direct exports for backward compatibility
 export * from './ax-compact/ax-compact-layout.component';
-export * from './ax-classic/simple-vertical-navigation.component';
+export * from './empty/empty-layout.component';
+export { EnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
+
+// Enterprise Layout Theme Types
+export type {
+  EnterpriseAppTheme,
+  EnterpriseAppThemeInput,
+  EnterpriseAppThemeOverride,
+  EnterprisePresetTheme,
+} from './enterprise/enterprise-theme.types';
+export {
+  ENTERPRISE_PRESET_THEMES,
+  resolveEnterpriseTheme,
+  generateThemeCSSVariables,
+} from './enterprise/enterprise-theme.types';
+
+// Re-export navigation types from central location
+export type {
+  AxNavigationItem,
+  AxNavigation,
+} from '../types/ax-navigation.types';

@@ -92,7 +92,8 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
         type: 'string',
         maxLength: 255,
         description: 'Slug value (max 255 characters)',
-        defaultExample: 'Sample value',
+
+        transformer: TestProductsImportService.generateSlug,
       },
       {
         name: 'description',
@@ -264,6 +265,30 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
   }
 
   /**
+   * Transform slug field values
+   */
+  private static generateSlug(value: any, _row: any): string {
+    // If slug is provided, use it
+    if (value && typeof value === 'string' && value.trim()) {
+      return value
+        .trim()
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+    // Auto-generate from name field in the row
+    const name = _row?.name || _row?.title || '';
+    if (!name) return '';
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  /**
    * Transform is_active field values
    */
   private static transformIsActive(value: any, _row: any): boolean {
@@ -332,7 +357,7 @@ export class TestProductsImportService extends BaseImportService<TestProducts> {
     return {
       code: row.code,
       name: row.name,
-      slug: row.slug,
+      slug: TestProductsImportService.generateSlug(row.slug, row),
       description: row.description,
       is_active: TestProductsImportService.transformIsActive(
         row.is_active,

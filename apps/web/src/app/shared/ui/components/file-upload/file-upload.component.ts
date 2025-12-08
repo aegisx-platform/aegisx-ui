@@ -57,7 +57,7 @@ import {
     MatButtonToggleModule,
   ],
   template: `
-    <mat-card class="file-upload-container">
+    <mat-card appearance="outlined" class="file-upload-container">
       <mat-card-header>
         <mat-card-title>File Upload</mat-card-title>
         <mat-card-subtitle>
@@ -265,7 +265,7 @@ import {
           *ngIf="validationErrors().length > 0"
           class="validation-errors mt-4"
         >
-          <mat-card class="error-card">
+          <mat-card appearance="outlined" class="error-card">
             <mat-card-header>
               <mat-card-title class="text-red-600">
                 <mat-icon>error</mat-icon>
@@ -296,7 +296,7 @@ import {
           {{ selectedFiles().length > 0 ? 'Clear Selected' : 'Clear All' }}
         </button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           (click)="startUpload()"
           [disabled]="!canUpload()"
@@ -312,6 +312,7 @@ import {
 
     <!-- Uploaded Files Display -->
     <mat-card
+      appearance="outlined"
       class="uploaded-files-container mt-4"
       *ngIf="validUploadedFiles().length > 0"
     >
@@ -430,13 +431,13 @@ import {
       }
 
       .drop-zone {
-        border: 2px dashed #ccc;
+        border: 2px dashed var(--mat-sys-outline-variant);
         border-radius: 8px;
         padding: 2rem;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        background-color: #fafafa;
+        background: var(--mat-sys-surface-container-lowest);
         min-height: 200px;
         display: flex;
         flex-direction: column;
@@ -445,13 +446,13 @@ import {
       }
 
       .drop-zone:hover {
-        border-color: #2196f3;
-        background-color: #f5f5f5;
+        border-color: var(--mat-sys-primary);
+        background: var(--mat-sys-surface-container-low);
       }
 
       .drop-zone.drag-over {
-        border-color: #4caf50;
-        background-color: #e8f5e8;
+        border-color: var(--ax-success-500);
+        background: var(--ax-success-100);
       }
 
       .drop-zone.has-files {
@@ -469,7 +470,7 @@ import {
         font-size: 4rem;
         height: 4rem;
         width: 4rem;
-        color: #ccc;
+        color: var(--mat-sys-outline);
         margin-bottom: 1rem;
       }
 
@@ -484,21 +485,21 @@ import {
         display: flex;
         align-items: center;
         padding: 1rem;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--mat-sys-outline-variant);
         border-radius: 8px;
-        background: white;
+        background: var(--mat-sys-surface);
         position: relative;
         transition: all 0.3s ease;
       }
 
       .file-preview-item.upload-success {
-        border-color: #4caf50;
-        background-color: #f1f8e9;
+        border-color: var(--ax-success-500);
+        background: var(--ax-success-100);
       }
 
       .file-preview-item.upload-error {
-        border-color: #f44336;
-        background-color: #ffebee;
+        border-color: var(--mat-sys-error);
+        background: var(--mat-sys-error-container);
       }
 
       .file-preview {
@@ -511,7 +512,7 @@ import {
         justify-content: center;
         border-radius: 4px;
         overflow: hidden;
-        background-color: #f5f5f5;
+        background: var(--mat-sys-surface-container-high);
       }
 
       .preview-image {
@@ -533,7 +534,7 @@ import {
         font-size: 2rem;
         height: 2rem;
         width: 2rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .file-info {
@@ -551,7 +552,7 @@ import {
       }
 
       .file-size {
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
         font-size: 0.8rem;
         margin: 0;
       }
@@ -573,17 +574,17 @@ import {
         left: 0;
         right: 0;
         font-size: 0.75rem;
-        color: #f44336;
-        background: white;
+        color: var(--mat-sys-error);
+        background: var(--mat-sys-error-container);
         padding: 0.25rem 0.5rem;
         border-radius: 0 0 8px 8px;
-        border: 1px solid #f44336;
+        border: 1px solid var(--mat-sys-error);
         border-top: none;
       }
 
       .upload-summary {
         padding: 1rem;
-        background-color: #f5f5f5;
+        background: var(--mat-sys-surface-container-low);
         border-radius: 8px;
       }
 
@@ -604,7 +605,7 @@ import {
       }
 
       .error-card {
-        border-left: 4px solid #f44336;
+        border-left: 4px solid var(--mat-sys-error);
       }
 
       .error-list {
@@ -614,50 +615,24 @@ import {
 
       .error-item {
         margin-bottom: 0.5rem;
-        color: #f44336;
+        color: var(--mat-sys-error);
         font-size: 0.9rem;
       }
 
       .upload-options {
         margin-bottom: 1rem;
         padding: 1rem;
-        background-color: #f9f9f9;
+        background: var(--mat-sys-surface-container-lowest);
         border-radius: 8px;
       }
 
       .upload-actions {
         padding: 1rem;
-        background-color: #fafafa;
-        border-top: 1px solid #e0e0e0;
+        background: var(--mat-sys-surface-container-lowest);
+        border-top: 1px solid var(--mat-sys-outline-variant);
       }
 
-      /* Dark theme adjustments */
-      :host-context(.dark) .drop-zone {
-        background-color: #303030;
-        border-color: #666;
-      }
-
-      :host-context(.dark) .drop-zone:hover {
-        background-color: #424242;
-      }
-
-      :host-context(.dark) .file-preview-item {
-        background-color: #424242;
-        border-color: #666;
-      }
-
-      :host-context(.dark) .upload-summary {
-        background-color: #303030;
-      }
-
-      :host-context(.dark) .upload-options {
-        background-color: #303030;
-      }
-
-      :host-context(.dark) .upload-actions {
-        background-color: #303030;
-        border-color: #666;
-      }
+      /* Dark theme handled by CSS tokens */
 
       /* Uploaded Files Styles */
       .uploaded-files-container {
@@ -675,15 +650,20 @@ import {
         display: flex;
         align-items: center;
         padding: 1rem;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--mat-sys-outline-variant);
         border-radius: 8px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s ease;
+        background: var(--mat-sys-surface);
+        box-shadow:
+          0 1px 3px 0 var(--mat-sys-shadow),
+          0 1px 2px -1px var(--mat-sys-shadow);
+        transition: all 0.3s ease;
       }
 
       .uploaded-file-item:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        background: var(--mat-sys-surface-container-high);
+        box-shadow:
+          0 4px 6px -1px var(--mat-sys-shadow),
+          0 2px 4px -2px var(--mat-sys-shadow);
       }
 
       .uploaded-file-preview {
@@ -696,7 +676,7 @@ import {
         justify-content: center;
         border-radius: 8px;
         overflow: hidden;
-        background-color: #f5f5f5;
+        background: var(--mat-sys-surface-container-high);
       }
 
       .thumbnail-image {
@@ -708,7 +688,7 @@ import {
 
       .file-icon-large {
         font-size: 2rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .file-icon-large mat-icon {
@@ -726,7 +706,7 @@ import {
         margin: 0 0 0.25rem 0;
         font-weight: 500;
         font-size: 0.95rem;
-        color: #333;
+        color: var(--mat-sys-on-surface);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -735,13 +715,13 @@ import {
       .uploaded-file-info .file-details {
         margin: 0 0 0.25rem 0;
         font-size: 0.85rem;
-        color: #666;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .uploaded-file-info .upload-date {
         margin: 0 0 0.5rem 0;
         font-size: 0.8rem;
-        color: #888;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .file-status {
@@ -775,28 +755,7 @@ import {
         height: 18px;
       }
 
-      /* Dark theme for uploaded files */
-      :host-context(.dark) .uploaded-file-item {
-        background-color: #424242;
-        border-color: #666;
-        color: #ffffff;
-      }
-
-      :host-context(.dark) .uploaded-file-preview {
-        background-color: #303030;
-      }
-
-      :host-context(.dark) .uploaded-file-info .file-name {
-        color: #ffffff;
-      }
-
-      :host-context(.dark) .uploaded-file-info .file-details {
-        color: #cccccc;
-      }
-
-      :host-context(.dark) .uploaded-file-info .upload-date {
-        color: #aaaaaa;
-      }
+      /* Dark theme handled by CSS tokens */
 
       .thumbnail-options {
         display: flex;

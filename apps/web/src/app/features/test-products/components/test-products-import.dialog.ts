@@ -475,7 +475,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
             Cancel
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="validateFile()"
             [disabled]="!selectedFile() || loading()"
@@ -488,7 +488,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
         @if (currentStep() === 'review') {
           <button mat-button (click)="goToStep('upload')">Back</button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="goToStep('options')"
             [disabled]="validationResult()?.validRows === 0"
@@ -501,7 +501,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
         @if (currentStep() === 'options') {
           <button mat-button (click)="goToStep('review')">Back</button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="executeImport()"
             [disabled]="loading()"
@@ -513,7 +513,7 @@ type ImportStep = 'upload' | 'review' | 'options' | 'progress' | 'complete';
 
         @if (currentStep() === 'complete') {
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             [mat-dialog-close]="importJob()"
           >

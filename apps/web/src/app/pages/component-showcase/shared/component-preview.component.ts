@@ -132,7 +132,7 @@ interface DevicePreset {
 
                   <!-- Material Card Demo -->
                   <div *ngSwitchCase="'mat-card'" class="card-demo">
-                    <mat-card>
+                    <mat-card appearance="outlined">
                       <mat-card-header>
                         <mat-card-title>Card Title</mat-card-title>
                         <mat-card-subtitle>Card Subtitle</mat-card-subtitle>

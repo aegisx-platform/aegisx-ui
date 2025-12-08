@@ -1,24 +1,73 @@
-// Individual Components (standardized names with actual component classes)
-export { AegisxCardComponent as AxCardComponent } from './card/card.component';
+// =============================================================================
+// NEW COMPONENT MODULES (v1.0.0 Redesign - Ax Prefix Standard)
+// =============================================================================
 
-// Legacy exports for backward compatibility (all standalone components)
-export * from './card/card.component';
-export * from './alert/alert.component';
-export * from './drawer/drawer.component';
-export * from './breadcrumb/breadcrumb.component';
-export * from './navigation/navigation.component';
-export * from './loading-bar/loading-bar.component';
-export * from './user-menu/user-menu.component';
+// Forms Module
+export * from './forms';
+
+// Data Display Module
+export * from './data-display';
+
+// Feedback Module
+export * from './feedback';
+
+// Navigation Module
+export * from './navigation';
+
+// Layout Module
+export * from './layout';
+
+// =============================================================================
+// EXISTING COMPONENTS (Legacy - kept for backward compatibility)
+// =============================================================================
+
+// Individual Components (standardized names with actual component classes)
+// NOTE: AxCardComponent is now exported from ./data-display module
+
+// State Components (restored for CRUD Generator compatibility)
+export * from './empty-state';
+export * from './error-state';
 
 // Additional Components
-export * from './ax-fullscreen.component';
-export * from './ax-loading-bar.component';
-export * from './ax-navigation-icon.component';
+// Note: AxLoadingBarComponent is now exported from feedback module
 export * from './ax-navigation.component';
 
 // Dialog Components
 export * from './dialogs';
 
-// State Components
-export * from './empty-state/empty-state.component';
-export * from './error-state/error-state.component';
+// Theme & Layout Switchers
+export * from './theme-switcher'; // NEW: Enhanced theme switcher with dropdown mode
+export * from './ax-layout-switcher.component';
+
+// Skeleton Loader Components
+export * from './skeleton';
+
+// Drawer/Sheet Component
+export * from './drawer';
+
+// File Upload Component
+export * from './file-upload';
+
+// App Launcher Component
+export * from './launcher';
+
+// Calendar Component (FullCalendar integration)
+export * from './calendar';
+
+// Gridster Component (Draggable Grid Layout)
+export * from './gridster';
+
+// Integrations (Third-party library wrappers)
+export * from './integrations';
+
+// Theme Builder (Visual Theme Editor)
+export * from './theme-builder';
+
+// Code Tabs (Syntax Highlighting with Prism.js)
+export * from './code-tabs/code-tabs.component';
+
+// Auth Components (Login, Register, Forgot Password, etc.)
+export * from './auth';
+
+// Loading Button Component (Material 3 with shimmer effect)
+export * from './loading-button';

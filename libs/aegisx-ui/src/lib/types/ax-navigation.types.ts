@@ -1,31 +1,114 @@
 /**
  * AegisX Navigation System Types
- * Clean, modern navigation with collapsible states
+ * Unified navigation types for all layouts (Compact, Enterprise, Docs)
  */
 
 /**
- * Navigation Item Interface
+ * Badge Configuration
+ */
+export interface AxNavigationBadge {
+  /** Badge content text or number */
+  content?: string;
+  /** Legacy: Badge title (same as content) */
+  title?: string;
+  /** Badge color type */
+  type?: 'primary' | 'accent' | 'warn' | 'success' | 'info';
+  /** Legacy: CSS classes for custom styling */
+  classes?: string;
+}
+
+/**
+ * Unified Navigation Item Interface
+ *
+ * This is the primary navigation item type used across all layouts:
+ * - AxCompactLayout (sidebar navigation)
+ * - AxEnterpriseLayout (horizontal navigation)
+ * - AxDocsLayout (documentation sidebar)
  */
 export interface AxNavigationItem {
+  /** Unique identifier */
   id: string;
+
+  /** Display title */
   title: string;
-  type: 'item' | 'group' | 'collapsible' | 'divider';
+
+  /** Optional subtitle (for detailed navigation) */
+  subtitle?: string;
+
+  /** Item type - determines rendering behavior */
+  type?:
+    | 'item'
+    | 'basic'
+    | 'group'
+    | 'collapsible'
+    | 'collapsable'
+    | 'divider'
+    | 'spacer';
+
+  /** Material icon name */
   icon?: string;
+
+  /** Router link (string or array for complex routes) */
   link?: string | string[];
+
+  /** Child navigation items */
   children?: AxNavigationItem[];
-  badge?: {
-    content: string;
-    type?: 'primary' | 'accent' | 'warn' | 'success' | 'info';
-  };
+
+  /** Badge configuration */
+  badge?: AxNavigationBadge | { content: string; type?: string };
+
+  /** Hide item - static or dynamic */
   hidden?: boolean | (() => boolean);
+
+  /** Active state - static or dynamic */
   active?: boolean | (() => boolean);
+
+  /** Disabled state - static or dynamic */
   disabled?: boolean | (() => boolean);
+
+  /** Tooltip text */
   tooltip?: string;
+
+  /** Exact URL matching for active state */
   exactMatch?: boolean;
+
+  /** Is this an external link */
   externalLink?: boolean;
+
+  /** Link target */
   target?: '_blank' | '_self' | '_parent' | '_top';
-  permission?: string; // @deprecated Use permissions array instead (backward compatibility)
-  permissions?: string[]; // RBAC permissions required to view this item (OR logic)
+
+  /** @deprecated Use permissions array instead */
+  permission?: string;
+
+  /** RBAC permissions required (OR logic) */
+  permissions?: string[];
+
+  /** CSS classes for custom styling */
+  classes?: string;
+
+  /** Custom metadata */
+  meta?: Record<string, unknown>;
+
+  /** Expanded state for collapsible items */
+  expanded?: boolean;
+
+  /** Default open state for groups (docs layout) */
+  defaultOpen?: boolean;
+
+  /** Badge color for enterprise layout */
+  badgeColor?: 'primary' | 'accent' | 'warn';
+}
+
+/**
+ * Navigation Collection Interface
+ * Contains navigation items for different layout modes
+ */
+export interface AxNavigation {
+  default: AxNavigationItem[];
+  compact: AxNavigationItem[];
+  horizontal?: AxNavigationItem[];
+  mobile?: AxNavigationItem[];
 }
 
 /**

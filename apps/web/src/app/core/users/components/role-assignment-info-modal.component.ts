@@ -43,9 +43,17 @@ interface RoleAssignmentInfoData {
   template: `
     <div class="modal-container">
       <!-- Header -->
-      <h2 mat-dialog-title class="modal-header">
-        <mat-icon class="header-icon">assignment</mat-icon>
-        Role Assignment Details
+      <h2 mat-dialog-title class="ax-header ax-header-info">
+        <div class="ax-icon-info">
+          <mat-icon>assignment</mat-icon>
+        </div>
+        <div class="header-text">
+          <div class="ax-title">Role Assignment Details</div>
+          <div class="ax-subtitle">View detailed role information</div>
+        </div>
+        <button type="button" mat-icon-button (click)="onClose()">
+          <mat-icon>close</mat-icon>
+        </button>
       </h2>
 
       <!-- User Info -->
@@ -59,13 +67,13 @@ interface RoleAssignmentInfoData {
             </div>
             <div class="info-item">
               <label>Email</label>
-              <p class="info-value text-blue-600 dark:text-blue-400">
+              <p class="info-value email-value">
                 {{ data.userEmail }}
               </p>
             </div>
             <div class="info-item">
               <label>Total Roles</label>
-              <p class="info-value font-semibold">{{ data.roles.length }}</p>
+              <p class="info-value total-roles">{{ data.roles.length }}</p>
             </div>
           </div>
         </div>
@@ -83,7 +91,7 @@ interface RoleAssignmentInfoData {
                 >
                   <!-- Role Name and Status -->
                   <div class="role-header">
-                    <div class="flex items-center gap-2">
+                    <div class="role-name-status">
                       <h4 class="role-name">{{ role.roleName | titlecase }}</h4>
                       <span
                         *ngIf="!role.isActive"
@@ -167,9 +175,7 @@ interface RoleAssignmentInfoData {
                           <mat-icon class="detail-icon">access_time</mat-icon>
                           Expires At
                         </div>
-                        <div
-                          class="detail-value text-gray-500 dark:text-gray-400"
-                        >
+                        <div class="detail-value no-expiration">
                           No expiration
                         </div>
                       </div>
@@ -201,7 +207,7 @@ interface RoleAssignmentInfoData {
       </mat-dialog-content>
 
       <!-- Footer -->
-      <mat-dialog-actions align="end" class="modal-footer">
+      <mat-dialog-actions align="end">
         <button mat-button (click)="onClose()">Close</button>
       </mat-dialog-actions>
     </div>
@@ -215,219 +221,216 @@ interface RoleAssignmentInfoData {
         max-width: 800px;
       }
 
-      .modal-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
-        margin: 0;
-        background: linear-gradient(135deg, #f3f4f6 0%, #f9fafb 100%);
-      }
-
-      .header-icon {
-        color: #3b82f6;
-        font-size: 1.5rem;
-      }
-
       .modal-content {
         max-height: 70vh;
         overflow-y: auto;
-        padding: 1.5rem;
-      }
-
-      .modal-footer {
-        padding: 1rem 1.5rem;
-        border-top: 1px solid #e5e7eb;
-        background: #f9fafb;
+        padding: var(--ax-spacing-xl);
       }
 
       /* User Section */
       .user-section {
-        margin-bottom: 2rem;
+        margin-bottom: var(--ax-spacing-2xl);
       }
 
       .section-title {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #666;
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-subtle);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin: 0 0 1rem 0;
+        margin: 0 0 var(--ax-spacing-lg) 0;
       }
 
       .user-info-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
+        gap: var(--ax-spacing-lg);
       }
 
       .info-item {
-        padding: 0.75rem;
-        background: #f3f4f6;
-        border-radius: 0.5rem;
-        border: 1px solid #e5e7eb;
+        padding: var(--ax-spacing-md);
+        background-color: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-md);
+        border: 1px solid var(--ax-border-default);
       }
 
       .info-item label {
         display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #666;
+        font-size: var(--ax-font-size-xs);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-subtle);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
+        margin-bottom: var(--ax-spacing-sm);
       }
 
       .info-value {
         margin: 0;
-        font-size: 0.875rem;
-        color: #111;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-heading);
         word-break: break-word;
+      }
+
+      .email-value {
+        color: var(--ax-brand-default);
+      }
+
+      .total-roles {
+        font-weight: var(--ax-font-weight-semibold);
       }
 
       /* Roles Section */
       .roles-section {
-        margin-bottom: 1rem;
+        margin-bottom: var(--ax-spacing-lg);
       }
 
       .roles-list {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--ax-spacing-lg);
       }
 
       .role-card {
-        padding: 1rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        background: #ffffff;
+        padding: var(--ax-spacing-lg);
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-lg);
+        background-color: var(--ax-background-default);
         transition: all 0.2s ease;
       }
 
       .role-card:hover {
-        border-color: #3b82f6;
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+        border-color: var(--ax-brand-default);
+        box-shadow: var(--ax-shadow-md);
       }
 
       .role-card.role-inactive {
         opacity: 0.7;
-        background: #f9fafb;
+        background-color: var(--ax-background-muted);
       }
 
       .role-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: var(--ax-spacing-lg);
+        padding-bottom: var(--ax-spacing-lg);
+        border-bottom: 1px solid var(--ax-border-default);
+      }
+
+      .role-name-status {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
       }
 
       .role-name {
         margin: 0;
-        font-size: 1rem;
-        font-weight: 600;
-        color: #111;
+        font-size: var(--ax-font-size-md);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
       }
 
       .status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
+        gap: var(--ax-spacing-xs);
+        padding: var(--ax-spacing-xs) var(--ax-spacing-md);
+        border-radius: var(--ax-radius-full);
+        font-size: var(--ax-font-size-xs);
+        font-weight: var(--ax-font-weight-semibold);
       }
 
       .status-active {
-        background: #d1fae5;
-        color: #065f46;
+        background-color: var(--ax-success-subtle);
+        color: var(--ax-success-emphasis);
       }
 
       .status-inactive {
-        background: #fee2e2;
-        color: #991b1b;
+        background-color: var(--ax-error-subtle);
+        color: var(--ax-error-emphasis);
       }
 
       .role-id-copy {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--ax-spacing-sm);
       }
 
       .role-id,
       .assignment-id {
-        padding: 0.25rem 0.5rem;
-        background: #f3f4f6;
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
-        font-family: monospace;
-        color: #666;
+        padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
+        background-color: var(--ax-background-subtle);
+        border-radius: var(--ax-radius-sm);
+        font-size: var(--ax-font-size-xs);
+        font-family: var(--ax-font-mono);
+        color: var(--ax-text-subtle);
       }
 
       .copy-btn {
         width: 32px;
         height: 32px;
-        color: #666;
+        color: var(--ax-text-subtle);
       }
 
       .copy-btn:hover {
-        color: #3b82f6;
-        background: #eff6ff;
+        color: var(--ax-brand-default);
+        background-color: var(--ax-brand-subtle);
       }
 
       /* Role Details */
       .role-details {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: var(--ax-spacing-md);
       }
 
       .detail-row {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        gap: 1rem;
+        gap: var(--ax-spacing-lg);
       }
 
       .detail-label {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--ax-spacing-sm);
         min-width: 140px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #666;
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        color: var(--ax-text-subtle);
       }
 
       .detail-icon {
         font-size: 1.125rem;
         width: 1.125rem;
         height: 1.125rem;
-        color: #9ca3af;
+        color: var(--ax-text-disabled);
       }
 
       .detail-value {
         flex: 1;
-        font-size: 0.875rem;
-        color: #111;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-heading);
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--ax-spacing-sm);
+      }
+
+      .no-expiration {
+        color: var(--ax-text-subtle);
       }
 
       .expiry-warning {
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        padding: 0.25rem 0.5rem;
-        background: #fee2e2;
-        color: #991b1b;
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
-        font-weight: 600;
+        gap: var(--ax-spacing-xs);
+        padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
+        background-color: var(--ax-error-subtle);
+        color: var(--ax-error-emphasis);
+        border-radius: var(--ax-radius-sm);
+        font-size: var(--ax-font-size-xs);
+        font-weight: var(--ax-font-weight-semibold);
       }
 
       .expiry-warning mat-icon {
@@ -439,13 +442,13 @@ interface RoleAssignmentInfoData {
       .expiry-notice {
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        padding: 0.25rem 0.5rem;
-        background: #fef3c7;
-        color: #92400e;
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
-        font-weight: 600;
+        gap: var(--ax-spacing-xs);
+        padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
+        background-color: var(--ax-warning-subtle);
+        color: var(--ax-warning-emphasis);
+        border-radius: var(--ax-radius-sm);
+        font-size: var(--ax-font-size-xs);
+        font-weight: var(--ax-font-weight-semibold);
       }
 
       .expiry-notice mat-icon {
@@ -460,8 +463,8 @@ interface RoleAssignmentInfoData {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 2rem;
-        color: #9ca3af;
+        padding: var(--ax-spacing-2xl);
+        color: var(--ax-text-disabled);
         text-align: center;
       }
 
@@ -469,7 +472,7 @@ interface RoleAssignmentInfoData {
         font-size: 3rem;
         width: 3rem;
         height: 3rem;
-        margin-bottom: 1rem;
+        margin-bottom: var(--ax-spacing-lg);
       }
 
       /* Responsive */
@@ -491,42 +494,6 @@ interface RoleAssignmentInfoData {
         .user-info-grid {
           grid-template-columns: 1fr;
         }
-      }
-
-      /* Dark Mode */
-      :host-context(.dark-mode) .modal-header {
-        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-        border-bottom-color: #374151;
-      }
-
-      :host-context(.dark-mode) .modal-footer {
-        background: #111827;
-        border-top-color: #374151;
-      }
-
-      :host-context(.dark-mode) .info-item {
-        background: #1f2937;
-        border-color: #374151;
-      }
-
-      :host-context(.dark-mode) .role-card {
-        background: #1f2937;
-        border-color: #374151;
-        color: #e5e7eb;
-      }
-
-      :host-context(.dark-mode) .role-name {
-        color: #e5e7eb;
-      }
-
-      :host-context(.dark-mode) .detail-value {
-        color: #e5e7eb;
-      }
-
-      :host-context(.dark-mode) .role-id,
-      :host-context(.dark-mode) .assignment-id {
-        background: #111827;
-        color: #9ca3af;
       }
     `,
   ],

@@ -7,7 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { TestProductService } from '../services/test-products.service';
 import { CreateTestProductRequest } from '../types/test-products.types';
-import { TestProductStateManager } from '../services/test-products-state-manager.service';
 import {
   TestProductFormComponent,
   TestProductFormData,
@@ -24,170 +23,68 @@ import {
     MatIconModule,
   ],
   template: `
-    <div class="dialog-container">
-      <!-- Fixed Header (mat-dialog-title) -->
-      <h2 mat-dialog-title class="dialog-header">
-        <div class="header-content">
-          <div class="flex items-center gap-3">
-            <div class="tremor-icon-wrapper tremor-icon-green">
-              <mat-icon>add_circle</mat-icon>
-            </div>
-            <div>
-              <h3 class="tremor-dialog-title">Create New TestProduct</h3>
-              <p class="tremor-dialog-subtitle">
-                Add a new testproduct to your collection
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            mat-icon-button
-            class="tremor-close-button"
-            [mat-dialog-close]="false"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-      </h2>
+    <!-- Dialog Header -->
+    <h2 mat-dialog-title class="ax-header ax-header-info">
+      <div class="ax-icon-info">
+        <mat-icon>add_circle</mat-icon>
+      </div>
+      <div class="header-text">
+        <div class="ax-title">Create New TestProduct</div>
+        <div class="ax-subtitle">Add a new testproduct to your collection</div>
+      </div>
+      <button
+        type="button"
+        mat-icon-button
+        [mat-dialog-close]="false"
+        aria-label="Close dialog"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
 
-      <!-- Scrollable Content -->
-      <mat-dialog-content class="dialog-content">
-        <app-test-products-form
-          mode="create"
-          [loading]="loading()"
-          (formSubmit)="onFormSubmit($event)"
-          (formCancel)="onCancel()"
-        ></app-test-products-form>
-      </mat-dialog-content>
-    </div>
+    <!-- Dialog Content - Form component handles mat-dialog-content and mat-dialog-actions -->
+    <app-test-products-form
+      mode="create"
+      [loading]="loading()"
+      (formSubmit)="onFormSubmit($event)"
+      (formCancel)="onCancel()"
+    ></app-test-products-form>
   `,
   styles: [
     `
-      /* Material Dialog Container */
-      .dialog-container {
-        display: flex;
-        flex-direction: column;
-        min-width: 600px;
-        max-width: 900px;
-      }
-
-      /* Fixed Header (mat-dialog-title) */
-      .dialog-header {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: linear-gradient(to bottom, #ffffff, #f9fafb);
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.5rem !important;
-        margin: 0 !important;
-      }
-
-      .header-content {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-      }
-
-      /* Icon Styles */
-      .tremor-icon-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 3rem;
-        height: 3rem;
-        border-radius: 0.75rem;
-      }
-
-      .tremor-icon-green {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
-      }
-
-      /* Title & Subtitle */
-      .tremor-dialog-title {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #111827;
-        line-height: 1.4;
-      }
-
-      .tremor-dialog-subtitle {
-        margin: 0.25rem 0 0 0;
-        font-size: 0.875rem;
-        color: #6b7280;
-      }
-
-      /* Close Button */
-      .tremor-close-button {
-        color: #6b7280;
-      }
-
-      .tremor-close-button:hover {
-        color: #111827;
-        background: #f3f4f6;
-      }
-
-      /* Scrollable Content */
-      .dialog-content {
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 1.5rem;
-      }
-
-      /* Utility Classes */
-      .flex {
-        display: flex;
-      }
-      .items-center {
-        align-items: center;
-      }
-      .gap-3 {
-        gap: 0.75rem;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .dialog-container {
-          min-width: 90vw;
-        }
-
-        .dialog-header {
-          padding: 1rem !important;
-        }
-
-        .dialog-content {
-          padding: 1rem;
-        }
+      /* Header text wrapper for flex layout */
+      .header-text {
+        flex: 1;
+        min-width: 0;
       }
     `,
   ],
 })
 export class TestProductCreateDialogComponent {
   private testProductsService = inject(TestProductService);
-  private testProductStateManager = inject(TestProductStateManager);
   private snackBar = inject(MatSnackBar);
   private dialogRef = inject(MatDialogRef<TestProductCreateDialogComponent>);
 
   loading = signal<boolean>(false);
 
   async onFormSubmit(formData: TestProductFormData) {
-    // Call API directly - WebSocket events will handle real-time sync
     this.loading.set(true);
 
     try {
       const createRequest = formData as CreateTestProductRequest;
-
-      // Call API to create
       const result =
         await this.testProductsService.createTestProduct(createRequest);
 
-      // Show success message and close
-      this.snackBar.open('TestProduct created successfully', 'Close', {
-        duration: 3000,
-      });
-      this.dialogRef.close(true); // Close with success flag
+      if (result) {
+        this.snackBar.open('TestProduct created successfully', 'Close', {
+          duration: 3000,
+        });
+        this.dialogRef.close(result);
+      } else {
+        this.snackBar.open('Failed to create testproduct', 'Close', {
+          duration: 5000,
+        });
+      }
     } catch (error: any) {
       const errorMessage = this.testProductsService.permissionError()
         ? 'You do not have permission to create testproduct'

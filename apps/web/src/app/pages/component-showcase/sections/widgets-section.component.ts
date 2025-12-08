@@ -21,7 +21,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { FormsModule } from '@angular/forms';
 
 // Import AegisX UI Components for widgets
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 interface WidgetExample {
   id: string;
@@ -50,7 +50,7 @@ interface WidgetExample {
     MatListModule,
     MatGridListModule,
     // AegisX UI Components
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <div class="widgets-section">

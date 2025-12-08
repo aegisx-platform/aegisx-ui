@@ -35,7 +35,7 @@ import { WebSocketService } from '../../business/services/websocket.service';
     MatTooltipModule,
   ],
   template: `
-    <mat-card class="realtime-user-list">
+    <mat-card appearance="outlined" class="realtime-user-list">
       <mat-card-header>
         <mat-card-title class="flex items-center gap-2">
           <mat-icon>people</mat-icon>
@@ -85,7 +85,7 @@ import { WebSocketService } from '../../business/services/websocket.service';
           </mat-form-field>
 
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="syncData()"
             [disabled]="userStateService.isLoading()"

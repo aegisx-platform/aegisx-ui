@@ -54,6 +54,7 @@ import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 // Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 import testProductsPlugin from '../modules/testProducts';
+import inventoryDomainPlugin from '../modules/inventory';
 
 /**
  * Plugin registration group interface
@@ -359,6 +360,12 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
     name: 'business-features',
     description: 'Business feature modules (ready for HIS, Inventory, etc.)',
     plugins: [
+      // Inventory Domain - aggregates all inventory modules (includes drugs via master-data)
+      {
+        name: 'inventory-domain',
+        plugin: inventoryDomainPlugin,
+        required: true,
+      },
       {
         name: 'test-products',
         plugin: testProductsPlugin,

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRippleModule } from '@angular/material/core';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface QuickAction {
   id: string;
@@ -25,14 +25,13 @@ export interface QuickAction {
     MatIconModule,
     MatTooltipModule,
     MatRippleModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card
       [title]="title"
       [subtitle]="subtitle"
-      [icon]="'flash_on'"
-      [appearance]="'elevated'"
+      [variant]="'elevated'"
       class="h-full"
     >
       <div
@@ -63,7 +62,7 @@ export interface QuickAction {
                 >
                 @if (action.badge) {
                   <span
-                    class="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs font-semibold bg-red-500 text-white rounded-full"
+                    class="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs font-semibold bg-error text-white rounded-full"
                   >
                     {{ action.badge }}
                   </span>

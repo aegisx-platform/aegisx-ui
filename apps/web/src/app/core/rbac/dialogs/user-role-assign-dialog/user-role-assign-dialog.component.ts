@@ -55,25 +55,18 @@ import { RbacService } from '../../services/rbac.service';
     MatDividerModule,
   ],
   template: `
-    <div class="user-role-assign-dialog">
-      <div
-        mat-dialog-title
-        class="flex items-center justify-between pb-4 border-b"
-      >
-        <div class="flex items-center gap-3">
-          <mat-icon class="!text-2xl">person_add</mat-icon>
-          <h2 class="text-xl font-semibold m-0">Assign Role to User</h2>
-        </div>
-        <button mat-icon-button mat-dialog-close>
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
+    <h2 mat-dialog-title class="flex items-center gap-3 text-xl font-semibold">
+      <mat-icon class="text-brand">person_add</mat-icon>
+      Assign Role to User
+    </h2>
 
-      <mat-dialog-content>
-        <form [formGroup]="assignForm" class="space-y-6">
+    <mat-dialog-content>
+      <div class="form-compact">
+        <form [formGroup]="assignForm" class="flex flex-col gap-4">
           <!-- User Search -->
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Search User *</mat-label>
+            <mat-label>Search User <span class="text-error">*</span></mat-label>
+            <mat-icon matPrefix>search</mat-icon>
             <input
               matInput
               formControlName="userSearch"
@@ -81,7 +74,6 @@ import { RbacService } from '../../services/rbac.service';
               placeholder="Type user name or email"
               (input)="onUserSearchChange($event)"
             />
-            <mat-icon matSuffix>search</mat-icon>
             <mat-autocomplete
               #userAutocomplete="matAutocomplete"
               [displayWith]="displayUserFn"
@@ -164,8 +156,11 @@ import { RbacService } from '../../services/rbac.service';
 
           <!-- Role Selection -->
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Select Role *</mat-label>
-            <mat-select formControlName="roleId">
+            <mat-label
+              >Select Roles <span class="text-error">*</span></mat-label
+            >
+            <mat-icon matPrefix>verified_user</mat-icon>
+            <mat-select formControlName="roleIds" multiple>
               <mat-option
                 *ngFor="let role of data.availableRoles"
                 [value]="role.id"
@@ -186,52 +181,55 @@ import { RbacService } from '../../services/rbac.service';
                 </div>
               </mat-option>
             </mat-select>
-            <mat-error *ngIf="assignForm.get('roleId')?.hasError('required')">
-              Please select a role
+            <mat-hint>You can select multiple roles</mat-hint>
+            <mat-error *ngIf="assignForm.get('roleIds')?.hasError('required')">
+              Please select at least one role
             </mat-error>
           </mat-form-field>
 
-          <!-- Selected Role Display -->
+          <!-- Selected Roles Display -->
           <div
-            *ngIf="selectedRole()"
+            *ngIf="selectedRoles().length > 0"
             class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg"
           >
             <h4 class="font-medium mb-2 flex items-center gap-2">
               <mat-icon class="text-green-600">verified_user</mat-icon>
-              Selected Role
+              Selected Roles ({{ selectedRoles().length }})
             </h4>
-            <div class="flex items-center gap-2 mb-2">
-              <span class="font-medium">{{ selectedRole()!.name }}</span>
-              <mat-chip
-                class="!bg-gray-100 !text-gray-800 dark:!bg-gray-700 dark:!text-gray-200"
+            <div class="space-y-3">
+              <div
+                *ngFor="let role of selectedRoles()"
+                class="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-b-0 last:pb-0"
               >
-                {{ selectedRole()!.category }}
-              </mat-chip>
-              <mat-chip
-                *ngIf="selectedRole()!.is_system_role"
-                class="!bg-blue-100 !text-blue-800 dark:!bg-blue-900 dark:!text-blue-200"
-              >
-                System
-              </mat-chip>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ selectedRole()!.description || 'No description available' }}
-            </p>
-            <div
-              class="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400"
-            >
-              <div class="flex items-center gap-1">
-                <mat-icon class="text-base">security</mat-icon>
-                <span
-                  >{{
-                    selectedRole()!.permissions.length || 0
-                  }}
-                  permissions</span
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="font-medium">{{ role.name }}</span>
+                  <mat-chip
+                    class="!bg-gray-100 !text-gray-800 dark:!bg-gray-700 dark:!text-gray-200 !text-xs"
+                  >
+                    {{ role.category }}
+                  </mat-chip>
+                  <mat-chip
+                    *ngIf="role.is_system_role"
+                    class="!bg-blue-100 !text-blue-800 dark:!bg-blue-900 dark:!text-blue-200 !text-xs"
+                  >
+                    System
+                  </mat-chip>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ role.description || 'No description available' }}
+                </p>
+                <div
+                  class="flex items-center gap-4 mt-1 text-xs text-gray-600 dark:text-gray-400"
                 >
-              </div>
-              <div class="flex items-center gap-1">
-                <mat-icon class="text-base">people</mat-icon>
-                <span>{{ selectedRole()!.user_count || 0 }} users</span>
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-xs">security</mat-icon>
+                    <span>{{ role.permissions.length || 0 }} permissions</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-xs">people</mat-icon>
+                    <span>{{ role.user_count || 0 }} users</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -239,6 +237,7 @@ import { RbacService } from '../../services/rbac.service';
           <!-- Expiry Date (Optional) -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Expiry Date (Optional)</mat-label>
+            <mat-icon matPrefix>event</mat-icon>
             <input
               matInput
               [matDatepicker]="expiryPicker"
@@ -260,7 +259,7 @@ import { RbacService } from '../../services/rbac.service';
 
           <!-- Assignment Preview -->
           <div
-            *ngIf="selectedUser() && selectedRole()"
+            *ngIf="selectedUser() && selectedRoles().length > 0"
             class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg"
           >
             <h4 class="font-medium mb-3 flex items-center gap-2">
@@ -274,21 +273,12 @@ import { RbacService } from '../../services/rbac.service';
                 <span>{{ getUserDisplayName(selectedUser()!) }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="font-medium">Role:</span>
-                <span>{{ selectedRole()!.name }}</span>
+                <span class="font-medium">Roles:</span>
+                <span>{{ selectedRoles().length }} role(s)</span>
               </div>
               <div class="flex justify-between">
-                <span class="font-medium">Category:</span>
-                <span>{{ selectedRole()!.category }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-medium">Permissions:</span>
-                <span
-                  >{{
-                    selectedRole()!.permissions.length || 0
-                  }}
-                  permissions</span
-                >
+                <span class="font-medium">Total Permissions:</span>
+                <span>{{ getTotalPermissionsCount() }} permissions</span>
               </div>
               <div class="flex justify-between">
                 <span class="font-medium">Expires:</span>
@@ -310,53 +300,47 @@ import { RbacService } from '../../services/rbac.service';
               <mat-icon class="text-yellow-600 mt-0.5">warning</mat-icon>
               <div>
                 <h4 class="font-medium text-yellow-800 dark:text-yellow-200">
-                  Existing Assignment
+                  Existing Assignment(s)
                 </h4>
                 <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                  This user already has the selected role assigned. Proceeding
-                  will update the existing assignment.
+                  Some of the selected roles are already assigned to this user.
+                  Proceeding will update the expiry date for existing
+                  assignments and add new ones.
                 </p>
               </div>
             </div>
           </div>
         </form>
-      </mat-dialog-content>
+      </div>
+    </mat-dialog-content>
 
-      <mat-dialog-actions class="flex justify-end gap-2 pt-4 border-t">
-        <button mat-button mat-dialog-close [disabled]="isLoading()">
-          Cancel
-        </button>
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="assignRole()"
-          [disabled]="
-            isLoading() ||
-            !assignForm.valid ||
-            !selectedUser() ||
-            !selectedRole()
-          "
-        >
-          <mat-spinner
-            *ngIf="isLoading()"
-            diameter="20"
-            class="mr-2"
-          ></mat-spinner>
-          <mat-icon *ngIf="!isLoading()">person_add</mat-icon>
-          {{ hasExistingAssignment() ? 'Update Assignment' : 'Assign Role' }}
-        </button>
-      </mat-dialog-actions>
+    <div mat-dialog-actions align="end" class="flex gap-2">
+      <button mat-button mat-dialog-close [disabled]="isLoading()">
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="assignRole()"
+        [disabled]="
+          isLoading() ||
+          !assignForm.valid ||
+          !selectedUser() ||
+          selectedRoles().length === 0
+        "
+      >
+        <mat-spinner
+          *ngIf="isLoading()"
+          diameter="20"
+          class="mr-2"
+        ></mat-spinner>
+        <mat-icon *ngIf="!isLoading()">person_add</mat-icon>
+        {{ hasExistingAssignment() ? 'Update Assignments' : 'Assign Roles' }}
+      </button>
     </div>
   `,
   styles: [
     `
-      .user-role-assign-dialog {
-        width: 100%;
-        max-width: 600px;
-      }
-
-      /* Dialog styling now handled by aegisx-ui global styles */
-
       .mat-mdc-chip {
         min-height: 24px;
         font-size: 12px;
@@ -366,31 +350,8 @@ import { RbacService } from '../../services/rbac.service';
         min-height: 60px;
       }
 
-      .mat-mdc-form-field {
-        width: 100%;
-      }
-
       ::ng-deep .mat-mdc-select-panel {
         max-height: 300px;
-      }
-
-      /* Fix icon alignment */
-      mat-icon {
-        vertical-align: middle;
-        display: inline-flex;
-        align-items: center;
-      }
-
-      /* Dialog title icon alignment */
-      .mat-mdc-dialog-title mat-icon {
-        line-height: 1;
-      }
-
-      /* Close button styling now handled by aegisx-ui global styles */
-
-      /* Fix button icon alignment */
-      button mat-icon {
-        vertical-align: middle;
       }
     `,
   ],
@@ -411,7 +372,7 @@ export class UserRoleAssignDialogComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly isSearchingUsers = signal(false);
   readonly selectedUser = signal<User | null>(null);
-  readonly selectedRole = signal<Role | null>(null);
+  readonly selectedRoles = signal<Role[]>([]);
   readonly searchResults = signal<User[]>([]);
   readonly userSearchQuery = signal('');
   readonly existingAssignments = signal<string[]>([]);
@@ -425,19 +386,23 @@ export class UserRoleAssignDialogComponent implements OnInit {
     this.assignForm = this.fb.group({
       userSearch: ['', Validators.required],
       selectedUser: [null, Validators.required],
-      roleId: ['', Validators.required],
+      roleIds: [[], Validators.required],
       expiresAt: [null, this.futureDateValidator],
     });
 
     // Watch for role selection changes
-    this.assignForm.get('roleId')?.valueChanges.subscribe((roleId) => {
-      if (roleId) {
-        const role = this.data.availableRoles.find((r) => r.id === roleId);
-        this.selectedRole.set(role || null);
-      } else {
-        this.selectedRole.set(null);
-      }
-    });
+    this.assignForm
+      .get('roleIds')
+      ?.valueChanges.subscribe((roleIds: string[]) => {
+        if (roleIds && roleIds.length > 0) {
+          const roles = this.data.availableRoles.filter((r) =>
+            roleIds.includes(r.id),
+          );
+          this.selectedRoles.set(roles);
+        } else {
+          this.selectedRoles.set([]);
+        }
+      });
   }
 
   private setupUserSearch(): void {
@@ -640,9 +605,21 @@ export class UserRoleAssignDialogComponent implements OnInit {
     }
   }
 
+  getTotalPermissionsCount(): number {
+    const uniquePermissions = new Set<string>();
+    this.selectedRoles().forEach((role) => {
+      role.permissions.forEach((permission) => {
+        uniquePermissions.add(permission.id);
+      });
+    });
+    return uniquePermissions.size;
+  }
+
   hasExistingAssignment(): boolean {
-    const roleId = this.assignForm.get('roleId')?.value;
-    return roleId ? this.existingAssignments().includes(roleId) : false;
+    const roleIds = this.assignForm.get('roleIds')?.value || [];
+    return roleIds.some((roleId: string) =>
+      this.existingAssignments().includes(roleId),
+    );
   }
 
   formatDate(date: Date): string {
@@ -657,7 +634,7 @@ export class UserRoleAssignDialogComponent implements OnInit {
     if (
       this.assignForm.invalid ||
       !this.selectedUser() ||
-      !this.selectedRole()
+      this.selectedRoles().length === 0
     ) {
       this.markFormGroupTouched();
       return;
@@ -667,21 +644,21 @@ export class UserRoleAssignDialogComponent implements OnInit {
       this.isLoading.set(true);
 
       const formValue = this.assignForm.value;
-      const assignRequest: AssignRoleRequest = {
-        role_id: formValue.roleId,
+      const assignRequest = {
+        role_ids: formValue.roleIds,
         expires_at: formValue.expiresAt
           ? formValue.expiresAt.toISOString()
           : undefined,
       };
 
       await this.rbacService
-        .assignRoleToUser(this.selectedUser()!.id, assignRequest)
+        .bulkAssignRolesToUser(this.selectedUser()!.id, assignRequest)
         .toPromise();
 
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('Failed to assign role:', error);
-      this.snackBar.open('Failed to assign role', 'Close', { duration: 3000 });
+      console.error('Failed to assign roles:', error);
+      this.snackBar.open('Failed to assign roles', 'Close', { duration: 3000 });
     } finally {
       this.isLoading.set(false);
     }

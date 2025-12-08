@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -56,14 +56,10 @@ import { ErrorLogsService } from '../../services/error-logs.service';
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1
-            class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white"
-          >
+          <h1 class="text-3xl font-extrabold tracking-tight text-on-surface">
             Error Logs
           </h1>
-          <p class="text-slate-600 dark:text-slate-400 mt-1">
-            View and manage application error logs
-          </p>
+          <p class="text-muted mt-1">View and manage application error logs</p>
         </div>
 
         <div class="flex flex-wrap gap-2">
@@ -71,7 +67,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
             mat-stroked-button
             (click)="exportLogs()"
             [disabled]="loading()"
-            class="border-slate-300 text-slate-700 hover:bg-slate-200"
+            class="border-outline text-on-surface "
           >
             <mat-icon>download</mat-icon>
             Export CSV
@@ -80,7 +76,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
             mat-stroked-button
             (click)="openCleanupDialog()"
             [disabled]="loading()"
-            class="border-slate-300 text-slate-700 hover:bg-slate-200"
+            class="border-outline text-on-surface "
           >
             <mat-icon>delete_sweep</mat-icon>
             Cleanup Old Logs
@@ -91,110 +87,91 @@ import { ErrorLogsService } from '../../services/error-logs.service';
       <!-- Error Statistics -->
       <div *ngIf="stats()" class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Total Errors Card -->
-        <mat-card
-          appearance="outlined"
-          class="border border-slate-200 bg-white rounded-xl"
-        >
+        <mat-card appearance="outlined">
           <mat-card-content class="p-4">
             <div class="flex items-center gap-1.5 !mb-2">
               <span
-                class="size-2.5 shrink-0 rounded-sm bg-red-500 dark:bg-red-500"
+                class="size-2.5 shrink-0 rounded-sm bg-error"
                 aria-hidden="true"
               ></span>
-              <h3 class="text-md font-medium text-slate-600 !mb-0">
-                Total Errors
-              </h3>
+              <h3 class="text-md font-medium text-muted !mb-0">Total Errors</h3>
             </div>
             <p
-              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+              class="text-4xl font-extrabold tracking-tight text-on-surface mb-1"
             >
               {{ stats()?.totalErrors || 0 }}
             </p>
-            <p class="text-xs text-slate-500">
+            <p class="text-xs text-muted">
               Critical issues requiring attention
             </p>
           </mat-card-content>
         </mat-card>
 
         <!-- Warnings Card -->
-        <mat-card
-          appearance="outlined"
-          class="border border-slate-200 bg-white rounded-xl"
-        >
+        <mat-card appearance="outlined">
           <mat-card-content class="p-4">
             <div class="flex items-center gap-1.5 !mb-2">
               <span
-                class="size-2.5 shrink-0 rounded-sm bg-orange-500 dark:bg-orange-500"
+                class="size-2.5 shrink-0 rounded-sm bg-warning"
                 aria-hidden="true"
               ></span>
-              <h3 class="text-md font-medium text-slate-600 !mb-0">Warnings</h3>
+              <h3 class="text-md font-medium text-muted !mb-0">Warnings</h3>
             </div>
             <p
-              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+              class="text-4xl font-extrabold tracking-tight text-on-surface mb-1"
             >
               {{ stats()?.byLevel?.warn || 0 }}
             </p>
-            <p class="text-xs text-slate-500">Potential issues to review</p>
+            <p class="text-xs text-muted">Potential issues to review</p>
           </mat-card-content>
         </mat-card>
 
         <!-- Info Card -->
-        <mat-card
-          appearance="outlined"
-          class="border border-slate-200 bg-white rounded-xl"
-        >
+        <mat-card appearance="outlined">
           <mat-card-content class="p-4">
             <div class="flex items-center gap-1.5 !mb-2">
               <span
-                class="size-2.5 shrink-0 rounded-sm bg-blue-500 dark:bg-blue-500"
+                class="size-2.5 shrink-0 rounded-sm bg-primary"
                 aria-hidden="true"
               ></span>
-              <h3 class="text-md font-medium text-slate-600 !mb-0">Info</h3>
+              <h3 class="text-md font-medium text-muted !mb-0">Info</h3>
             </div>
             <p
-              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+              class="text-4xl font-extrabold tracking-tight text-on-surface mb-1"
             >
               {{ stats()?.byLevel?.info || 0 }}
             </p>
-            <p class="text-xs text-slate-500">Informational messages</p>
+            <p class="text-xs text-muted">Informational messages</p>
           </mat-card-content>
         </mat-card>
 
         <!-- Recent (24h) Card -->
-        <mat-card
-          appearance="outlined"
-          class="border border-slate-200 bg-white rounded-xl"
-        >
+        <mat-card appearance="outlined">
           <mat-card-content class="p-4">
             <div class="flex items-center gap-1.5 !mb-2">
               <span
-                class="size-2.5 shrink-0 rounded-sm bg-green-500"
+                class="size-2.5 shrink-0 rounded-sm bg-success"
                 aria-hidden="true"
               ></span>
-              <h3 class="text-md font-medium text-slate-600 !mb-0">
-                Recent (24h)
-              </h3>
+              <h3 class="text-md font-medium text-muted !mb-0">Recent (24h)</h3>
             </div>
             <p
-              class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1"
+              class="text-4xl font-extrabold tracking-tight text-on-surface mb-1"
             >
               {{ stats()?.recentErrors || 0 }}
             </p>
-            <p class="text-xs text-slate-500">Errors in the last 24 hours</p>
+            <p class="text-xs text-muted">Errors in the last 24 hours</p>
           </mat-card-content>
         </mat-card>
       </div>
 
       <!-- Filters -->
-      <mat-card
-        appearance="outlined"
-        class="border border-slate-200 bg-white rounded-xl !mb-0"
-      >
+      <mat-card appearance="outlined">
         <mat-card-content class="p-6">
           <!-- Filter Header -->
           <div class="flex items-center gap-2 mb-4">
-            <mat-icon class="text-blue-600">filter_alt</mat-icon>
-            <h3 class="text-base font-semibold text-slate-900 !mb-0">
+            <mat-icon class="text-primary">filter_alt</mat-icon>
+            <h3 class="text-base font-semibold text-on-surface !mb-0">
               Filter Error Logs
             </h3>
           </div>
@@ -249,7 +226,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
               <button
                 mat-flat-button
                 (click)="applyFilters()"
-                class="flex-1 bg-blue-900 hover:bg-blue-800 text-white h-14"
+                class="flex-1 bg-primary text-on-primary h-14"
               >
                 <mat-icon>filter_list</mat-icon>
                 Apply
@@ -257,7 +234,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
               <button
                 mat-stroked-button
                 (click)="clearFilters()"
-                class="flex-1 border-slate-300 text-slate-700 hover:bg-slate-50 h-14"
+                class="flex-1 border-outline text-on-surface  h-14"
               >
                 <mat-icon>clear</mat-icon>
                 Clear
@@ -276,15 +253,15 @@ import { ErrorLogsService } from '../../services/error-logs.service';
       <div *ngIf="error()">
         <mat-card
           appearance="outlined"
-          class="border border-rose-200 bg-rose-50/50 rounded-xl"
+          class="border border-error bg-error-container rounded-xl"
         >
           <mat-card-content class="flex items-center gap-3 p-6">
-            <div class="bg-rose-100 rounded-lg p-3">
-              <mat-icon class="text-rose-600">error</mat-icon>
+            <div class="bg-error-container rounded-lg p-3">
+              <mat-icon class="text-error">error</mat-icon>
             </div>
             <div>
-              <h3 class="font-semibold text-rose-700">Error Loading Logs</h3>
-              <p class="text-sm text-slate-600">{{ error() }}</p>
+              <h3 class="font-semibold text-error">Error Loading Logs</h3>
+              <p class="text-sm text-muted">{{ error() }}</p>
             </div>
           </mat-card-content>
         </mat-card>
@@ -292,10 +269,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
 
       <!-- Error Logs Table -->
       <div *ngIf="!loading() && !error()">
-        <mat-card
-          appearance="outlined"
-          class="border border-slate-200 rounded-xl"
-        >
+        <mat-card appearance="outlined">
           <div class="overflow-x-auto">
             <table
               mat-table
@@ -330,20 +304,20 @@ import { ErrorLogsService } from '../../services/error-logs.service';
                     [class]="
                       'inline-flex items-center whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset gap-2 ' +
                       (log.level === 'error'
-                        ? 'bg-rose-50 text-rose-900 ring-rose-600/20 dark:bg-rose-400/10 dark:text-rose-500 dark:ring-rose-400/20'
+                        ? 'chip-error'
                         : log.level === 'warn'
-                          ? 'bg-amber-50 text-amber-900 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-500 dark:ring-amber-400/20'
-                          : 'bg-blue-50 text-blue-900 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-500 dark:ring-blue-400/20')
+                          ? 'chip-warning ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-500 dark:ring-amber-400/20'
+                          : 'bg-surface-container text-primary ring-blue-600/20 dark:bg-blue-400/10 dark:text-primary dark:ring-blue-400/20')
                     "
                   >
                     <span
                       [class]="
                         'size-2 rounded-sm ' +
                         (log.level === 'error'
-                          ? 'bg-rose-500 dark:bg-rose-500'
+                          ? 'bg-error'
                           : log.level === 'warn'
-                            ? 'bg-amber-500 dark:bg-amber-500'
-                            : 'bg-blue-500 dark:bg-blue-500')
+                            ? 'bg-warning'
+                            : 'bg-primary')
                       "
                       aria-hidden="true"
                     ></span>
@@ -356,7 +330,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
                 <td mat-cell *matCellDef="let log">
-                  <mat-chip class="bg-slate-50 text-slate-700">
+                  <mat-chip class="bg-surface-container text-on-surface">
                     {{ log.type }}
                   </mat-chip>
                 </td>
@@ -414,7 +388,7 @@ import { ErrorLogsService } from '../../services/error-logs.service';
                   class="mat-cell text-center py-8"
                   [attr.colspan]="displayedColumns.length"
                 >
-                  <div class="flex flex-col items-center gap-2 text-slate-500">
+                  <div class="flex flex-col items-center gap-2 text-muted">
                     <mat-icon class="text-4xl">inbox</mat-icon>
                     <p>No error logs found</p>
                   </div>
@@ -457,22 +431,22 @@ import { ErrorLogsService } from '../../services/error-logs.service';
         padding: 14px 16px;
         font-size: 0.75rem;
         font-weight: 600;
-        color: rgb(71, 85, 105); /* text-slate-600 */
+        color: rgb(71, 85, 105); /* text-muted */
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        background-color: rgb(248, 250, 252); /* bg-slate-50 */
+        background-color: rgb(248, 250, 252); /* bg-surface-container */
         border-bottom: 1px solid rgb(226, 232, 240); /* border-slate-200 */
       }
 
       .mat-mdc-cell {
         padding: 14px 16px;
         font-size: 0.875rem;
-        color: rgb(51, 65, 85); /* text-slate-700 */
+        color: rgb(51, 65, 85); /* text-on-surface */
         border-bottom: 1px solid rgb(241, 245, 249); /* border-slate-100 */
       }
 
       .mat-mdc-row:hover {
-        background-color: rgb(248, 250, 252); /* bg-slate-50 */
+        background-color: rgb(248, 250, 252); /* bg-surface-container */
       }
 
       /* Chip Styling */
@@ -496,13 +470,11 @@ export class ErrorLogsComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
-    { id: 'home', title: 'Home', type: 'basic', link: '/', icon: 'home' },
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Home', url: '/', icon: 'home' },
     {
-      id: 'error-logs',
-      title: 'Error Logs',
-      type: 'basic',
-      link: '/monitoring/error-logs',
+      label: 'Error Logs',
+      url: '/monitoring/error-logs',
       icon: 'bug_report',
     },
   ];

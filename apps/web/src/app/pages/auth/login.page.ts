@@ -9,8 +9,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth';
@@ -37,327 +42,573 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatCardModule,
   ],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-md w-full space-y-6">
-
+    <div
+      class="auth-container"
+      style="background-color: var(--ax-background-muted);"
+    >
+      <div class="auth-wrapper">
         <!-- Logo and Header -->
-        <div class="text-center">
-          <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl shadow-blue-500/30">
-            <mat-icon class="text-white text-3xl">shield</mat-icon>
+        <div class="auth-header">
+          <div class="auth-logo-circle">
+            <mat-icon class="auth-logo-icon">shield</mat-icon>
           </div>
-          <h2 class="mt-6 text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 class="auth-title" style="color: var(--ax-text-heading);">
             Welcome back
-          </h2>
-          <p class="mt-2 text-sm text-slate-600">
+          </h1>
+          <p class="auth-subtitle" style="color: var(--ax-text-secondary);">
             Sign in to your AegisX account
           </p>
         </div>
 
-        <!-- Login Form Card - Tremor Style -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-            <!-- Error Alert - Tremor Style -->
-            @if (errorMessage()) {
-              <div
-                class="rounded-lg bg-red-50 p-4 border border-red-200 mb-6"
-                data-testid="login-error"
-                role="alert"
-                aria-live="polite"
-              >
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0">
-                    <div class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
-                      <mat-icon class="text-red-600 !text-sm">error</mat-icon>
-                    </div>
+        <!-- Login Form Card -->
+        <mat-card appearance="outlined" class="auth-card">
+          <mat-card-content>
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Error Alert -->
+              @if (errorMessage()) {
+                <div
+                  class="auth-alert auth-alert-error"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  <div class="auth-alert-icon">
+                    <mat-icon>error</mat-icon>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-red-900">{{ errorMessage() }}</p>
+                  <div class="auth-alert-content">
+                    <p class="auth-alert-message">{{ errorMessage() }}</p>
                   </div>
                 </div>
-              </div>
-            }
+              }
 
-            <!-- Email Field - Tremor Style -->
-            <div class="mb-5">
-              <label class="block text-sm font-medium text-slate-700 mb-2">
-                Email
-              </label>
-              <div class="relative">
+              <!-- Email Field -->
+              <mat-form-field appearance="outline" class="auth-field">
+                <mat-label>Email</mat-label>
                 <input
+                  matInput
                   type="email"
                   formControlName="email"
                   placeholder="name@company.com"
                   autocomplete="email"
-                  class="w-full px-4 py-2.5 text-sm border rounded-lg transition-colors
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed
-                         placeholder:text-slate-400"
-                  [class.border-slate-300]="!loginForm.get('email')?.invalid || !loginForm.get('email')?.touched"
-                  [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-                  [class.bg-red-50]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-                  [attr.aria-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
                   required
-                >
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <mat-icon class="text-slate-400 !text-base">email</mat-icon>
-                </div>
-              </div>
-              @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
-                <p class="mt-1.5 text-xs text-red-600">Email is required</p>
-              }
-              @if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
-                <p class="mt-1.5 text-xs text-red-600">Please enter a valid email address</p>
-              }
-            </div>
+                />
+                <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+                  Email is required
+                </mat-error>
+                <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+                  Please enter a valid email address
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Password Field - Tremor Style -->
-            <div class="mb-5">
-              <label class="block text-sm font-medium text-slate-700 mb-2">
-                Password
-              </label>
-              <div class="relative">
+              <!-- Password Field -->
+              <mat-form-field appearance="outline" class="auth-field">
+                <mat-label>Password</mat-label>
                 <input
+                  matInput
                   [type]="hidePassword() ? 'password' : 'text'"
                   formControlName="password"
                   placeholder="Enter your password"
                   autocomplete="current-password"
-                  class="w-full px-4 py-2.5 text-sm border rounded-lg transition-colors pr-10
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed
-                         placeholder:text-slate-400"
-                  [class.border-slate-300]="!loginForm.get('password')?.invalid || !loginForm.get('password')?.touched"
-                  [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-                  [class.bg-red-50]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-                  [attr.aria-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
                   required
-                >
+                />
                 <button
+                  mat-icon-button
+                  matSuffix
                   type="button"
                   (click)="togglePasswordVisibility()"
-                  class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
-                  [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+                  [attr.aria-label]="
+                    hidePassword() ? 'Show password' : 'Hide password'
+                  "
                 >
-                  <mat-icon class="!text-base">{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+                  <mat-icon>{{
+                    hidePassword() ? 'visibility' : 'visibility_off'
+                  }}</mat-icon>
                 </button>
-              </div>
-              @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
-                <p class="mt-1.5 text-xs text-red-600">Password is required</p>
-              }
-              @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
-                <p class="mt-1.5 text-xs text-red-600">Password must be at least 6 characters</p>
-              }
-            </div>
-
-            <!-- Remember Me & Forgot Password -->
-            <div class="flex items-center justify-between mb-6">
-              <label class="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  formControlName="rememberMe"
-                  class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                <mat-error
+                  *ngIf="loginForm.get('password')?.hasError('required')"
                 >
-                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-900">Remember me</span>
-              </label>
-              <a
-                routerLink="/forgot-password"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-              >
-                Forgot password?
-              </a>
-            </div>
+                  Password is required
+                </mat-error>
+                <mat-error
+                  *ngIf="loginForm.get('password')?.hasError('minlength')"
+                >
+                  Password must be at least 6 characters
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Submit Button - Tremor Style -->
-            <button
-              type="submit"
-              class="w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg
-                     hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                     disabled:bg-slate-300 disabled:cursor-not-allowed
-                     transition-colors duration-200 shadow-sm"
-              [disabled]="loginForm.invalid || isLoading()"
-            >
-              @if (isLoading()) {
-                <span class="flex items-center justify-center gap-2">
-                  <mat-spinner diameter="16" class="inline"></mat-spinner>
-                  <span>Signing in...</span>
-                </span>
-              } @else {
-                Sign in
-              }
-            </button>
-
-            <!-- Divider -->
-            <div class="relative my-6">
-              <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-slate-200"></div>
+              <!-- Remember Me & Forgot Password -->
+              <div class="auth-options">
+                <mat-checkbox formControlName="rememberMe" color="primary">
+                  Remember me
+                </mat-checkbox>
+                <a
+                  routerLink="/forgot-password"
+                  class="auth-link"
+                  style="color: var(--ax-brand-default);"
+                >
+                  Forgot password?
+                </a>
               </div>
-              <div class="relative flex justify-center text-xs">
-                <span class="px-2 bg-white text-slate-500">Don't have an account?</span>
-              </div>
-            </div>
 
-            <!-- Sign Up Link -->
-            <div class="text-center">
-              <a
-                routerLink="/register"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              <!-- Submit Button -->
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="loginForm.invalid || isLoading()"
               >
-                Create an account
-              </a>
-            </div>
-          </form>
-        </div>
+                @if (isLoading()) {
+                  <span class="auth-btn-loading">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Signing in...</span>
+                  </span>
+                } @else {
+                  Sign in
+                }
+              </button>
 
-        <!-- Demo Credentials - Tremor Style (Development Only) -->
+              <!-- Divider -->
+              <div class="auth-divider">
+                <span style="color: var(--ax-text-subtle);"
+                  >Don't have an account?</span
+                >
+              </div>
+
+              <!-- Sign Up Link -->
+              <div class="auth-footer-link">
+                <a
+                  routerLink="/register"
+                  class="auth-link"
+                  style="color: var(--ax-brand-default);"
+                >
+                  Create an account
+                </a>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Demo Credentials (Development Only) -->
         @if (isDevelopment()) {
-          <div class="bg-white rounded-xl border border-blue-200 p-5 shadow-sm">
-            <div class="flex items-start gap-3">
-              <div class="flex-shrink-0">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
-                  <mat-icon class="text-blue-600 !text-base">info</mat-icon>
+          <mat-card appearance="outlined" class="auth-demo-card">
+            <mat-card-content>
+              <div class="auth-demo-header">
+                <div class="auth-demo-header-icon">
+                  <mat-icon>info</mat-icon>
+                </div>
+                <h4>Quick Login (Dev Only)</h4>
+              </div>
+              <div class="auth-demo-buttons">
+                <!-- Admin Button -->
+                <div
+                  class="auth-demo-btn"
+                  (click)="fillDemoCredentials('admin')"
+                >
+                  <div class="auth-demo-btn-icon auth-demo-icon-purple">
+                    <mat-icon>admin_panel_settings</mat-icon>
+                  </div>
+                  <div class="auth-demo-btn-content">
+                    <div class="auth-demo-btn-title">Admin Account</div>
+                    <div class="auth-demo-btn-subtitle">
+                      admin&#64;aegisx.local
+                    </div>
+                  </div>
+                  <mat-icon class="auth-demo-btn-arrow">arrow_forward</mat-icon>
+                </div>
+
+                <!-- Manager Button -->
+                <div
+                  class="auth-demo-btn"
+                  (click)="fillDemoCredentials('manager')"
+                >
+                  <div class="auth-demo-btn-icon auth-demo-icon-blue">
+                    <mat-icon>manage_accounts</mat-icon>
+                  </div>
+                  <div class="auth-demo-btn-content">
+                    <div class="auth-demo-btn-title">Manager Account</div>
+                    <div class="auth-demo-btn-subtitle">
+                      manager&#64;aegisx.local
+                    </div>
+                  </div>
+                  <mat-icon class="auth-demo-btn-arrow">arrow_forward</mat-icon>
+                </div>
+
+                <!-- Demo Button -->
+                <div
+                  class="auth-demo-btn"
+                  (click)="fillDemoCredentials('demo')"
+                >
+                  <div class="auth-demo-btn-icon auth-demo-icon-green">
+                    <mat-icon>person</mat-icon>
+                  </div>
+                  <div class="auth-demo-btn-content">
+                    <div class="auth-demo-btn-title">Demo Account</div>
+                    <div class="auth-demo-btn-subtitle">
+                      demo&#64;aegisx.local
+                    </div>
+                  </div>
+                  <mat-icon class="auth-demo-btn-arrow">arrow_forward</mat-icon>
                 </div>
               </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-semibold text-slate-900 mb-3">Quick Login (Dev Only)</h4>
-                <div class="space-y-2">
-                  <!-- Admin Button -->
-                  <button
-                    type="button"
-                    (click)="fillDemoCredentials('admin')"
-                    class="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg border border-slate-200
-                           hover:border-purple-300 hover:bg-purple-50 transition-all group"
-                  >
-                    <div class="flex-shrink-0">
-                      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                        <mat-icon class="text-white !text-sm">admin_panel_settings</mat-icon>
-                      </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-semibold text-slate-900 group-hover:text-purple-700">Admin Account</div>
-                      <div class="text-xs text-slate-500 truncate">admin@aegisx.local</div>
-                    </div>
-                    <mat-icon class="text-slate-400 group-hover:text-purple-600 !text-base">arrow_forward</mat-icon>
-                  </button>
-
-                  <!-- Manager Button -->
-                  <button
-                    type="button"
-                    (click)="fillDemoCredentials('manager')"
-                    class="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg border border-slate-200
-                           hover:border-blue-300 hover:bg-blue-50 transition-all group"
-                  >
-                    <div class="flex-shrink-0">
-                      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                        <mat-icon class="text-white !text-sm">manage_accounts</mat-icon>
-                      </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-700">Manager Account</div>
-                      <div class="text-xs text-slate-500 truncate">manager@aegisx.local</div>
-                    </div>
-                    <mat-icon class="text-slate-400 group-hover:text-blue-600 !text-base">arrow_forward</mat-icon>
-                  </button>
-
-                  <!-- Demo Button -->
-                  <button
-                    type="button"
-                    (click)="fillDemoCredentials('demo')"
-                    class="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg border border-slate-200
-                           hover:border-green-300 hover:bg-green-50 transition-all group"
-                  >
-                    <div class="flex-shrink-0">
-                      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-                        <mat-icon class="text-white !text-sm">person</mat-icon>
-                      </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-semibold text-slate-900 group-hover:text-green-700">Demo Account</div>
-                      <div class="text-xs text-slate-500 truncate">demo@aegisx.local</div>
-                    </div>
-                    <mat-icon class="text-slate-400 group-hover:text-green-600 !text-base">arrow_forward</mat-icon>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+            </mat-card-content>
+          </mat-card>
         }
       </div>
     </div>
   `,
   styles: [
     `
-      :host {
-        display: block;
+      /* ============================================
+       AUTH PAGE STYLES - USING AEGISX TOKENS
+       ============================================ */
+
+      .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         min-height: 100vh;
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-md);
       }
 
-      /* Tremor-inspired spinner styling */
-      .mat-spinner {
-        --mdc-circular-progress-active-indicator-color: white !important;
+      .auth-wrapper {
+        width: 100%;
+        max-width: 450px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
       }
 
-      ::ng-deep .mat-mdc-progress-spinner circle {
-        stroke: white !important;
+      /* Fix mat-card-content padding */
+      ::ng-deep .auth-card .mat-mdc-card-content {
+        padding: var(--ax-spacing-2xl) !important;
       }
 
-      /* Custom checkbox styling */
-      input[type='checkbox'] {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-color: white;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.25rem;
-        cursor: pointer;
+      /* Header */
+      .auth-header {
+        text-align: center;
+      }
+
+      .auth-logo-circle {
+        margin: 0 auto var(--ax-spacing-lg);
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-2xl);
+        background: linear-gradient(
+          135deg,
+          var(--ax-brand-default),
+          var(--ax-brand-emphasis)
+        );
+        box-shadow: var(--ax-shadow-lg);
+      }
+
+      .auth-logo-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+        color: white;
+      }
+
+      .auth-title {
+        margin: 0 0 var(--ax-spacing-sm);
+        font-size: var(--ax-text-3xl);
+        font-weight: var(--ax-font-bold);
+        letter-spacing: -0.025em;
+      }
+
+      .auth-subtitle {
+        margin: 0;
+        font-size: var(--ax-text-sm);
+      }
+
+      /* Card */
+      .auth-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-xl);
+        box-shadow: var(--ax-shadow-sm);
+      }
+
+      /* Alert */
+      .auth-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-sm);
+        padding: var(--ax-spacing-md);
+        margin-bottom: var(--ax-spacing-lg);
+        border-radius: var(--ax-radius-lg);
+        border: 1px solid;
+      }
+
+      .auth-alert-error {
+        background-color: var(--ax-error-surface);
+        border-color: var(--ax-error-border);
+      }
+
+      .auth-alert-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-full);
+        background-color: var(--ax-error-muted);
+      }
+
+      .auth-alert-icon mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: var(--ax-error-default);
+      }
+
+      .auth-alert-content {
+        flex: 1;
+      }
+
+      .auth-alert-message {
+        margin: 0;
+        font-size: var(--ax-text-sm);
+        font-weight: var(--ax-font-medium);
+        color: var(--ax-error-emphasis);
+      }
+
+      /* Form Field */
+      .auth-field {
+        width: 100%;
+        margin-bottom: var(--ax-spacing-md);
+      }
+
+      /* Options Row */
+      .auth-options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      .auth-link {
+        font-size: var(--ax-text-sm);
+        font-weight: var(--ax-font-medium);
+        text-decoration: none;
+        transition: opacity var(--ax-transition-fast);
+      }
+
+      .auth-link:hover {
+        opacity: var(--ax-opacity-hover);
+      }
+
+      /* Submit Button */
+      .auth-submit-btn {
+        width: 100%;
+        height: 44px;
+        font-size: var(--ax-text-sm);
+        font-weight: var(--ax-font-semibold);
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      .auth-btn-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-sm);
+      }
+
+      /* Divider */
+      .auth-divider {
         position: relative;
-        transition: all 0.2s;
+        text-align: center;
+        margin: var(--ax-spacing-lg) 0;
       }
 
-      input[type='checkbox']:checked {
-        background-color: #2563eb;
-        border-color: #2563eb;
-      }
-
-      input[type='checkbox']:checked::after {
+      .auth-divider::before {
         content: '';
         position: absolute;
-        left: 50%;
         top: 50%;
-        transform: translate(-50%, -50%);
-        width: 0.375rem;
-        height: 0.625rem;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: translate(-50%, -60%) rotate(45deg);
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: var(--ax-border-default);
+        z-index: 0;
       }
 
-      input[type='checkbox']:focus {
-        outline: 2px solid #2563eb;
-        outline-offset: 2px;
+      .auth-divider span {
+        position: relative;
+        display: inline-block;
+        padding: 0 var(--ax-spacing-sm);
+        background-color: var(--ax-background-default);
+        font-size: var(--ax-text-xs);
+        z-index: 1;
       }
 
-      /* Icon size adjustments - allow custom sizes */
-      .mat-icon {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+      /* Footer Link */
+      .auth-footer-link {
+        text-align: center;
       }
 
-      /* Smooth transitions */
-      input,
-      button,
-      a {
-        transition: all 0.15s ease-in-out;
+      /* Demo Card */
+      .auth-demo-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-xl);
+        box-shadow: var(--ax-shadow-sm);
       }
 
-      /* Code blocks */
-      code {
-        font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-        font-size: 0.75rem;
+      .auth-demo-header {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+        margin-bottom: var(--ax-spacing-lg);
+        padding-bottom: var(--ax-spacing-md);
+        border-bottom: 1px solid var(--ax-border-default);
+      }
+
+      .auth-demo-header-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-lg);
+        background-color: var(--ax-info-surface);
+      }
+
+      .auth-demo-header-icon mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: var(--ax-info-default);
+      }
+
+      .auth-demo-header h4 {
+        margin: 0;
+        font-size: var(--ax-text-base);
+        font-weight: var(--ax-font-semibold);
+        color: var(--ax-text-heading);
+      }
+
+      .auth-demo-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-md);
+      }
+
+      .auth-demo-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-md);
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-lg);
+        background-color: var(--ax-background-default);
+        cursor: pointer;
+        transition: all var(--ax-transition-base);
+      }
+
+      .auth-demo-btn:hover {
+        border-color: var(--ax-brand-default);
+        background-color: var(--ax-background-subtle);
+        transform: translateX(4px);
+      }
+
+      .auth-demo-btn-icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-lg);
+      }
+
+      .auth-demo-icon-purple {
+        background: linear-gradient(
+          135deg,
+          var(--ax-purple-default),
+          var(--ax-purple-emphasis)
+        );
+      }
+
+      .auth-demo-icon-blue {
+        background: linear-gradient(
+          135deg,
+          var(--ax-brand-default),
+          var(--ax-brand-emphasis)
+        );
+      }
+
+      .auth-demo-icon-green {
+        background: linear-gradient(
+          135deg,
+          var(--ax-success-default),
+          var(--ax-success-emphasis)
+        );
+      }
+
+      .auth-demo-btn-icon mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      .auth-demo-btn-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .auth-demo-btn-title {
+        font-size: var(--ax-text-base);
+        font-weight: var(--ax-font-semibold);
+        color: var(--ax-text-heading);
+        margin-bottom: var(--ax-spacing-xs);
+        line-height: 1.2;
+      }
+
+      .auth-demo-btn-subtitle {
+        font-size: var(--ax-text-sm);
+        color: var(--ax-text-subtle);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .auth-demo-btn-arrow {
+        flex-shrink: 0;
+        margin-left: auto;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: var(--ax-text-subtle);
+        transition: all var(--ax-transition-fast);
+      }
+
+      .auth-demo-btn:hover .auth-demo-btn-arrow {
+        color: var(--ax-brand-default);
+        transform: translateX(4px);
+      }
+
+      /* Material Overrides */
+      ::ng-deep .mat-mdc-form-field {
+        --mdc-outlined-text-field-container-shape: var(--ax-radius-lg);
+        --mat-form-field-container-text-size: var(--ax-text-sm);
+      }
+
+      ::ng-deep .mat-mdc-progress-spinner {
+        --mdc-circular-progress-active-indicator-color: currentColor;
       }
     `,
   ],
@@ -390,7 +641,6 @@ export class LoginPage {
         email: rememberedEmail,
         rememberMe: true,
       });
-      // Don't mark as touched when loading remembered email
       this.loginForm.get('email')?.markAsUntouched();
     }
   }
@@ -455,14 +705,11 @@ export class LoginPage {
       rememberMe: false,
     });
 
-    // Mark fields as touched to show they're filled
     this.loginForm.get('email')?.markAsTouched();
     this.loginForm.get('password')?.markAsTouched();
   }
 
   private isProduction(): boolean {
-    // Check if we're in production mode
-    // You can customize this based on your environment setup
     return (
       window.location.hostname === 'aegisx.com' ||
       window.location.hostname === 'www.aegisx.com' ||

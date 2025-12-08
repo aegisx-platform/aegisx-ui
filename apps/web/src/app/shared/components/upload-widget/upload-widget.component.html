@@ -2,13 +2,13 @@
 <div class="space-y-4">
   <!-- Drag & Drop Zone -->
   <div
+    class="border-2 border-dashed rounded-xl transition-all duration-200"
     [ngClass]="{
-      'border-2 border-dashed rounded-xl transition-all duration-200': true,
-      'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50':
+      'border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface-container-low)]':
         !dragDropState().isDragging,
-      'border-blue-500 bg-blue-50 dark:bg-blue-900/20':
+      'border-[var(--mat-sys-primary)] bg-[var(--mat-sys-primary-container)]':
         dragDropState().isDragging && dragDropState().isValidDrop,
-      'border-red-500 bg-red-50 dark:bg-red-900/20':
+      'border-[var(--mat-sys-error)] bg-[var(--mat-sys-error-container)]':
         dragDropState().isDragging && !dragDropState().isValidDrop,
     }"
     (dragover)="onDragOver($event)"
@@ -30,9 +30,9 @@
       <div class="py-12 px-6 text-center">
         <!-- Upload Icon -->
         <div class="flex justify-center mb-4">
-          <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-full">
+          <div class="p-4 bg-[var(--mat-sys-surface-container)] rounded-full">
             <mat-icon
-              class="text-gray-400 dark:text-gray-500"
+              class="text-[var(--mat-sys-on-surface-variant)]"
               style="font-size: 48px; width: 48px; height: 48px"
             >
               cloud_upload
@@ -42,7 +42,7 @@
 
         <!-- Title & Description -->
         <h3
-          class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1"
+          class="text-base font-semibold text-[var(--mat-sys-on-surface)] mb-1"
         >
           @if (enableDragDrop) {
             Drag & drop files here
@@ -50,7 +50,7 @@
             Select files to upload
           }
         </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-8">
           {{ mode === 'single' ? 'Single file' : `Up to ${maxFiles} files` }} ·
           Max {{ formatFileSize(maxFileSize) }}
         </p>
@@ -61,7 +61,7 @@
         >
           <!-- Primary Action: Browse Files -->
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             type="button"
             (click)="fileInput.click()"
@@ -81,7 +81,9 @@
 
         <!-- Helpful Hint (optional) -->
         @if (enableDragDrop) {
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-4">
+          <p
+            class="text-xs text-[var(--mat-sys-on-surface-variant)] opacity-70 mt-4"
+          >
             or click Browse Files to select from your device
           </p>
         }
@@ -93,7 +95,7 @@
       <div class="p-4 space-y-3">
         @for (file of selectedFiles(); track file.name; let i = $index) {
           <div
-            class="flex items-center gap-4 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
+            class="flex items-center gap-4 p-3 bg-[var(--mat-sys-surface-container-highest)] border border-[var(--mat-sys-outline-variant)] rounded-lg"
           >
             <!-- File Preview/Icon -->
             <div class="flex-shrink-0">
@@ -105,7 +107,7 @@
                 />
               } @else {
                 <mat-icon
-                  class="text-gray-400 dark:text-gray-500"
+                  class="text-[var(--mat-sys-on-surface-variant)]"
                   style="font-size: 48px; width: 48px; height: 48px"
                   >{{ getFileIcon(file) }}</mat-icon
                 >
@@ -115,11 +117,11 @@
             <!-- File Info -->
             <div class="flex-1 min-w-0">
               <div
-                class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"
+                class="text-sm font-medium text-[var(--mat-sys-on-surface)] truncate"
               >
                 {{ file.name }}
               </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
+              <div class="text-xs text-[var(--mat-sys-on-surface-variant)]">
                 {{ formatFileSize(file.size) }}
               </div>
 
@@ -134,14 +136,15 @@
                           [value]="fileProgress.percentage"
                           class="h-2 rounded"
                         ></mat-progress-bar>
-                        <span class="text-xs text-gray-600 dark:text-gray-400"
+                        <span
+                          class="text-xs text-[var(--mat-sys-on-surface-variant)]"
                           >{{ fileProgress.percentage }}%</span
                         >
                       </div>
                     }
                     @if (fileProgress.status === 'completed') {
                       <div
-                        class="flex items-center gap-1 text-green-600 dark:text-green-400"
+                        class="flex items-center gap-1 text-[var(--ax-success-600)]"
                       >
                         <mat-icon class="icon-size-4">check_circle</mat-icon>
                         <span class="text-xs">Uploaded</span>
@@ -149,7 +152,7 @@
                     }
                     @if (fileProgress.status === 'failed') {
                       <div
-                        class="flex items-center gap-1 text-red-600 dark:text-red-400"
+                        class="flex items-center gap-1 text-[var(--mat-sys-error)]"
                       >
                         <mat-icon class="icon-size-4">error</mat-icon>
                         <span class="text-xs">{{ fileProgress.error }}</span>
@@ -165,7 +168,7 @@
               <button
                 type="button"
                 (click)="removeFile(i)"
-                class="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                class="flex-shrink-0 p-2 text-[var(--mat-sys-on-surface-variant)] hover:text-[var(--mat-sys-error)] hover:bg-[var(--mat-sys-error-container)] rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--mat-sys-error)]"
                 aria-label="Remove file"
               >
                 <mat-icon class="icon-size-5">close</mat-icon>
@@ -184,7 +187,7 @@
       @if (uploadProgress(); as progress) {
         <div class="tremor-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+            <span class="text-sm font-medium text-[var(--mat-sys-on-surface)]">
               {{ progress.uploadedCount }} / {{ progress.totalFiles }} uploaded
             </span>
             @if (progress.failedCount > 0) {
@@ -230,7 +233,7 @@
 
         <!-- Upload Button (Primary) -->
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           type="button"
           (click)="startUpload()"

@@ -30,9 +30,9 @@ import { switchMap } from 'rxjs/operators';
             class="rounded-xl border shadow-sm overflow-hidden animate-slideIn"
             [class.bg-red-50]="alert.type === 'error'"
             [class.border-red-200]="alert.type === 'error'"
-            [class.bg-amber-50]="alert.type === 'warning'"
-            [class.border-amber-200]="alert.type === 'warning'"
-            [class.bg-blue-50]="alert.type === 'info'"
+            [class.bg-surface-container]="alert.type === 'warning'"
+            [class.border-warning]="alert.type === 'warning'"
+            [class.bg-surface-container]="alert.type === 'info'"
             [class.border-blue-200]="alert.type === 'info'"
           >
             <div class="flex items-start gap-4 p-4">
@@ -45,9 +45,9 @@ import { switchMap } from 'rxjs/operators';
                   [class.bg-blue-100]="alert.type === 'info'"
                 >
                   <mat-icon
-                    [class.text-red-600]="alert.type === 'error'"
-                    [class.text-amber-600]="alert.type === 'warning'"
-                    [class.text-blue-600]="alert.type === 'info'"
+                    [class.text-error]="alert.type === 'error'"
+                    [class.text-warning]="alert.type === 'warning'"
+                    [class.text-primary]="alert.type === 'info'"
                     class="!text-xl"
                   >
                     @if (alert.type === 'error') {
@@ -67,21 +67,21 @@ import { switchMap } from 'rxjs/operators';
                   <div>
                     <h4
                       class="text-sm font-semibold"
-                      [class.text-red-900]="alert.type === 'error'"
-                      [class.text-amber-900]="alert.type === 'warning'"
-                      [class.text-blue-900]="alert.type === 'info'"
+                      [class.text-error]="alert.type === 'error'"
+                      [class.text-warning]="alert.type === 'warning'"
+                      [class.text-primary]="alert.type === 'info'"
                     >
                       {{ alert.title }}
                     </h4>
                     <p
                       class="text-sm mt-1"
-                      [class.text-red-700]="alert.type === 'error'"
+                      [class.text-error]="alert.type === 'error'"
                       [class.text-amber-700]="alert.type === 'warning'"
-                      [class.text-blue-700]="alert.type === 'info'"
+                      [class.text-primary]="alert.type === 'info'"
                     >
                       {{ alert.message }}
                     </p>
-                    <p class="text-xs text-slate-500 mt-2">
+                    <p class="text-xs text-muted mt-2">
                       {{ formatTimestamp(alert.timestamp) }}
                     </p>
                   </div>
@@ -89,13 +89,12 @@ import { switchMap } from 'rxjs/operators';
                   <!-- Actions -->
                   <button
                     (click)="acknowledgeAlert(alert.id)"
-                    class="flex-shrink-0 p-2 rounded-lg hover:bg-white/50 transition-colors"
+                    class="bg-surface"
                     [class.hover:bg-red-100]="alert.type === 'error'"
                     [class.hover:bg-amber-100]="alert.type === 'warning'"
                     [class.hover:bg-blue-100]="alert.type === 'info'"
                   >
-                    <mat-icon
-                      class="!text-base text-slate-400 hover:text-slate-600"
+                    <mat-icon class="!text-base text-muted hover:text-muted"
                       >close</mat-icon
                     >
                   </button>
@@ -109,8 +108,8 @@ import { switchMap } from 'rxjs/operators';
         @if (alerts().length > maxVisible()) {
           <button
             (click)="toggleShowAll()"
-            class="w-full px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900
-                   bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors
+            class="w-full px-4 py-2 text-sm font-medium text-muted hover:text-on-surface
+                   bg-white border border-slate-200 rounded-lg  transition-colors
                    flex items-center justify-center gap-2"
           >
             <span>{{
@@ -127,17 +126,17 @@ import { switchMap } from 'rxjs/operators';
     } @else if (!loading()) {
       <!-- No Alerts -->
       <div
-        class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center"
+        class="bg-surface-container border border-success rounded-xl p-6 text-center"
       >
         <div
           class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 mx-auto mb-3"
         >
-          <mat-icon class="text-emerald-600 !text-2xl">check_circle</mat-icon>
+          <mat-icon class="text-success !text-2xl">check_circle</mat-icon>
         </div>
-        <h4 class="text-sm font-semibold text-emerald-900">
+        <h4 class="text-sm font-semibold text-success">
           All Systems Operational
         </h4>
-        <p class="text-sm text-emerald-700 mt-1">
+        <p class="text-sm text-success mt-1">
           No alerts or warnings at this time
         </p>
       </div>

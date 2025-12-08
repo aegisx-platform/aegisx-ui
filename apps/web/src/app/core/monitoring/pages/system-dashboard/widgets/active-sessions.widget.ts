@@ -19,28 +19,26 @@ interface ActiveSessionsStats {
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
+    <div>
       <!-- Card Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50"
           >
-            <mat-icon class="text-green-600 !text-xl">people</mat-icon>
+            <mat-icon class="text-success !text-xl">people</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               Active Sessions
             </h3>
-            <p class="text-xs text-slate-600">Currently online</p>
+            <p class="text-xs text-muted">Currently online</p>
           </div>
         </div>
         <button
           (click)="loadStats()"
           [disabled]="loading()"
-          class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+          class="p-2 text-muted hover:text-muted  rounded-lg transition-colors"
           [class.opacity-50]="loading()"
           [class.cursor-not-allowed]="loading()"
         >
@@ -60,8 +58,8 @@ interface ActiveSessionsStats {
         } @else if (error()) {
           <!-- Error State -->
           <div class="text-center py-8">
-            <mat-icon class="text-red-500 !text-4xl mb-2">error</mat-icon>
-            <p class="text-sm text-slate-600 mb-4">{{ error() }}</p>
+            <mat-icon class="text-error !text-4xl mb-2">error</mat-icon>
+            <p class="text-sm text-muted mb-4">{{ error() }}</p>
             <button
               (click)="loadStats()"
               class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
@@ -75,34 +73,34 @@ interface ActiveSessionsStats {
             <!-- Total Sessions -->
             <div class="p-4 bg-green-50 rounded-lg">
               <div class="flex items-center gap-2 mb-1">
-                <mat-icon class="text-green-600 !text-base">analytics</mat-icon>
-                <span class="text-xs font-medium text-green-900"
+                <mat-icon class="text-success !text-base">analytics</mat-icon>
+                <span class="text-xs font-medium text-success"
                   >Total Sessions</span
                 >
               </div>
-              <div class="text-2xl font-bold text-green-900">
+              <div class="text-2xl font-bold text-success">
                 {{ stats()!.total }}
               </div>
             </div>
 
             <!-- Unique Users -->
-            <div class="p-4 bg-emerald-50 rounded-lg">
+            <div class="p-4 bg-surface-container rounded-lg">
               <div class="flex items-center gap-2 mb-1">
-                <mat-icon class="text-emerald-600 !text-base">people</mat-icon>
-                <span class="text-xs font-medium text-emerald-900"
+                <mat-icon class="text-success !text-base">people</mat-icon>
+                <span class="text-xs font-medium text-success"
                   >Active Users</span
                 >
               </div>
-              <div class="text-2xl font-bold text-emerald-900">
+              <div class="text-2xl font-bold text-success">
                 {{ stats()!.users }}
               </div>
             </div>
           </div>
 
           <!-- Live Indicator -->
-          <div class="flex items-center gap-2 text-xs text-slate-500 mb-3">
+          <div class="flex items-center gap-2 text-xs text-muted mb-3">
             <span
-              class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"
+              class="flex h-2 w-2 rounded-full bg-success animate-pulse"
             ></span>
             <span>Live updates every 10 seconds</span>
           </div>
@@ -110,7 +108,7 @@ interface ActiveSessionsStats {
           <!-- Recent Sessions (Top 5) -->
           @if (stats()!.sessions.length > 0) {
             <div class="space-y-2">
-              <h4 class="text-xs font-medium text-slate-700 mb-2">
+              <h4 class="text-xs font-medium text-on-surface mb-2">
                 Recent Activity
               </h4>
               @for (session of recentSessions(); track session.userId) {
@@ -119,15 +117,13 @@ interface ActiveSessionsStats {
                     <div
                       class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center"
                     >
-                      <mat-icon class="text-green-600 !text-sm"
-                        >person</mat-icon
-                      >
+                      <mat-icon class="text-success !text-sm">person</mat-icon>
                     </div>
-                    <span class="text-slate-700 font-mono">{{
+                    <span class="text-on-surface font-mono">{{
                       truncateUserId(session.userId)
                     }}</span>
                   </div>
-                  <span class="text-slate-500">{{
+                  <span class="text-muted">{{
                     timeAgo(session.lastActivity)
                   }}</span>
                 </div>
@@ -138,13 +134,11 @@ interface ActiveSessionsStats {
       </div>
 
       <!-- Card Footer -->
-      <div
-        class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between"
-      >
-        <span class="text-xs text-slate-500"
+      <div>
+        <span class="text-xs text-muted"
           >Last updated: {{ lastUpdated() }}</span
         >
-        <span class="text-xs text-green-600 font-medium">
+        <span class="text-xs text-success font-medium">
           {{ stats()?.users || 0 }} online
         </span>
       </div>

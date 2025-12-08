@@ -26,20 +26,20 @@ import { UserActivityTimelineWidget } from './widgets/user-activity-timeline.wid
     UserActivityTimelineWidget,
   ],
   template: `
-    <div class="w-full h-full overflow-y-auto overflow-x-hidden bg-gray-50">
+    <div class="w-full h-full overflow-y-auto overflow-x-hidden bg-surface">
       <!-- Page Header - Tremor Style -->
-      <div class="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div>
         <div class="px-6 sm:px-8 py-6">
           <div
             class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
           >
             <div>
               <h1
-                class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight"
+                class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight"
               >
                 System Monitoring Dashboard
               </h1>
-              <p class="text-sm text-slate-600 mt-1">
+              <p class="text-sm text-muted mt-1">
                 Real-time system metrics, performance monitoring, and health
                 status
               </p>

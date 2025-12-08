@@ -24,14 +24,10 @@ export class ApiConfigService {
     const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
     const hostname = window.location.hostname;
 
-    // In development, WebSocket must connect to API server, not dev server
+    // In development, WebSocket connects to same host (Angular dev server)
+    // The proxy.conf.js routes /ws to the correct API port from .env.local
     if (!environment.production) {
-      // In dev, connect directly to API port (3333)
-      // Check if we're on localhost dev server (port 4200)
-      if (window.location.port === '4200') {
-        return `${protocol}//${hostname}:3333`;
-      }
-      // Otherwise use current host
+      // Use current host - proxy will route to API
       return `${protocol}//${window.location.host}`;
     }
 

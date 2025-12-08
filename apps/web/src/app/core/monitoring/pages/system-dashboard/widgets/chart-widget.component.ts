@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface ChartData {
   labels: string[];
@@ -25,17 +25,16 @@ export interface ChartData {
     MatIconModule,
     MatMenuModule,
     MatProgressSpinnerModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card
       [title]="title"
       [subtitle]="subtitle"
-      [icon]="chartIcon"
-      [appearance]="'elevated'"
+      [variant]="'elevated'"
       class="h-full"
     >
-      <div card-header-actions>
+      <div header-actions>
         <button mat-icon-button [matMenuTriggerFor]="menu">
           <mat-icon>more_vert</mat-icon>
         </button>
@@ -65,10 +64,10 @@ export interface ChartData {
             class="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg"
           >
             <div class="text-center">
-              <mat-icon class="text-6xl text-gray-400 dark:text-gray-600">{{
+              <mat-icon class="text-6xl text-gray-400 dark:text-muted">{{
                 chartIcon
               }}</mat-icon>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              <p class="text-sm text-muted dark:text-gray-400 mt-2">
                 {{ chartType | titlecase }} Chart
               </p>
             </div>
@@ -82,9 +81,11 @@ export interface ChartData {
             <div class="flex items-center space-x-2">
               <div
                 class="w-3 h-3 rounded-full"
-                [style.backgroundColor]="dataset.backgroundColor || '#1976d2'"
+                [style.backgroundColor]="
+                  dataset.backgroundColor || 'rgb(var(--ax-primary-600))'
+                "
               ></div>
-              <span class="text-sm text-gray-600 dark:text-gray-400">{{
+              <span class="text-sm text-muted dark:text-gray-400">{{
                 dataset.label
               }}</span>
             </div>

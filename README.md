@@ -44,7 +44,7 @@ aegisx-starter/
 │   ├── admin/        # Angular admin panel
 │   └── e2e/          # Playwright E2E tests
 ├── libs/
-│   ├── aegisx-crud-generator/  # CRUD generator (@aegisx/crud-generator)
+│   ├── aegisx-cli/  # CRUD generator (@aegisx/crud-generator)
 │   ├── aegisx-ui/    # Shared UI components
 │   └── shared/       # Shared utilities
 ├── docs/             # Comprehensive documentation
@@ -148,7 +148,7 @@ The CRUD Generator creates complete full-stack CRUD operations in seconds.
 
 ```bash
 # Publish to npm (for global use)
-cd libs/aegisx-crud-generator
+cd libs/aegisx-cli
 npm publish
 
 # Or use locally
@@ -197,7 +197,7 @@ pnpm aegisx-crud products --package --force
 - Types matching backend schemas
 - Complete CRUD workflow
 
-📚 **Complete Documentation**: See [`docs/crud-generator/`](./docs/crud-generator/) for comprehensive guides.
+📚 **Complete Documentation**: See [`libs/aegisx-cli/docs/`](./libs/aegisx-cli/docs/) for comprehensive guides.
 
 ## 📚 Documentation
 
@@ -209,11 +209,11 @@ pnpm aegisx-crud products --package --force
 
 ### Core Documentation
 
-- **[🤖 CRUD Generator](./docs/crud-generator/)** - Complete CRUD generator documentation (8 guides)
-  - [User Guide](./docs/crud-generator/USER_GUIDE.md) - How to use the generator
-  - [Events Guide](./docs/crud-generator/EVENTS_GUIDE.md) - WebSocket integration
-  - [Import Guide](./docs/crud-generator/IMPORT_GUIDE.md) - Bulk import system
-  - [Quick Commands](./docs/crud-generator/QUICK_COMMANDS.md) - Command reference
+- **[🤖 CRUD Generator](./libs/aegisx-cli/docs/)** - Complete CRUD generator documentation
+  - [Quick Reference](./libs/aegisx-cli/docs/QUICK_REFERENCE.md) - All commands at a glance
+  - [Events Guide](./libs/aegisx-cli/docs/EVENTS_GUIDE.md) - WebSocket integration
+  - [Import Guide](./libs/aegisx-cli/docs/IMPORT_GUIDE.md) - Bulk import system
+  - [Quick Commands](./libs/aegisx-cli/docs/QUICK_COMMANDS.md) - Command reference
 
 ### Development Guides
 

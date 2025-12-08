@@ -14,36 +14,35 @@ import { RouterOutlet } from '@angular/router';
       </div>
     </div>
   `,
-  styles: [`
-    :host {
-      display: flex;
-      flex: 1 1 auto;
-      width: 100%;
-      height: 100%;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+        width: 100%;
+        min-height: 100vh;
+      }
 
-    .ax-empty-layout {
-      display: flex;
-      flex: 1 1 auto;
-      width: 100%;
-      height: 100%;
-      min-height: 100vh;
-      background-color: rgb(var(--ax-bg-default) / 1);
-    }
+      .ax-empty-layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 100vh;
+        padding: var(--ax-spacing-xl) var(--ax-spacing-md);
+        box-sizing: border-box;
+        background-color: var(--ax-background-muted);
+        overflow-y: auto;
+      }
 
-    .ax-empty-layout-content {
-      display: flex;
-      flex: 1 1 auto;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Dark mode */
-    :host-context(.dark) .ax-empty-layout {
-      background-color: rgb(var(--ax-bg-default) / 1);
-    }
-  `]
+      .ax-empty-layout-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 500px;
+      }
+    `,
+  ],
 })
 export class EmptyLayoutComponent {}

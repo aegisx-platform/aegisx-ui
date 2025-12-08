@@ -2,21 +2,21 @@ import { Injectable, computed, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import {
-  AegisxNavigation,
-  AegisxNavigationItem,
-} from '../../types/navigation.types';
+  AxNavigationItem,
+  AxNavigation,
+} from '../../types/ax-navigation.types';
 import { cloneDeep } from 'lodash-es';
 
 @Injectable({ providedIn: 'root' })
-export class AegisxNavigationService {
+export class AxNavigationService {
   // Private writable signals
-  private _navigation = signal<AegisxNavigation>({
+  private _navigation = signal<AxNavigation>({
     default: [],
     compact: [],
     horizontal: [],
     mobile: [],
   });
-  private _currentNavigationItem = signal<AegisxNavigationItem | null>(null);
+  private _currentNavigationItem = signal<AxNavigationItem | null>(null);
 
   // Public readonly signals
   readonly navigation = this._navigation.asReadonly();
@@ -50,34 +50,32 @@ export class AegisxNavigationService {
   /**
    * Get navigation data from the server
    */
-  get(): Observable<AegisxNavigation> {
+  get(): Observable<AxNavigation> {
     return this._httpClient
-      .get<AegisxNavigation>('/api/navigation')
-      .pipe(
-        tap((navigation: AegisxNavigation) => this.setNavigation(navigation)),
-      );
+      .get<AxNavigation>('/api/navigation')
+      .pipe(tap((navigation: AxNavigation) => this.setNavigation(navigation)));
   }
 
   /**
    * Set the navigation
    */
-  setNavigation(navigation: AegisxNavigation): void {
+  setNavigation(navigation: AxNavigation): void {
     this._navigation.set(cloneDeep(navigation));
   }
 
   /**
    * Update navigation item
    */
-  updateNavigationItem(id: string, item: Partial<AegisxNavigationItem>): void {
+  updateNavigationItem(id: string, item: Partial<AxNavigationItem>): void {
     this._navigation.update((navigation) => {
       const updatedNavigation = cloneDeep(navigation);
 
       // Update in all navigation types
       ['default', 'compact', 'horizontal', 'mobile'].forEach((type) => {
-        const navItems = updatedNavigation[type as keyof AegisxNavigation];
+        const navItems = updatedNavigation[type as keyof AxNavigation];
         if (navItems) {
           this._updateItemInNavigation(
-            navItems as AegisxNavigationItem[],
+            navItems as AxNavigationItem[],
             id,
             item,
           );
@@ -91,14 +89,14 @@ export class AegisxNavigationService {
   /**
    * Set current navigation item
    */
-  setCurrentNavigationItem(item: AegisxNavigationItem | null): void {
+  setCurrentNavigationItem(item: AxNavigationItem | null): void {
     this._currentNavigationItem.set(item);
   }
 
   /**
    * Get navigation item by id
    */
-  getNavigationItem(id: string): AegisxNavigationItem | null {
+  getNavigationItem(id: string): AxNavigationItem | null {
     const flatNavigation = this.flatNavigation();
     return flatNavigation.find((item) => item.id === id) || null;
   }
@@ -106,7 +104,7 @@ export class AegisxNavigationService {
   /**
    * Get navigation item by link
    */
-  getNavigationItemByLink(link: string): AegisxNavigationItem | null {
+  getNavigationItemByLink(link: string): AxNavigationItem | null {
     const flatNavigation = this.flatNavigation();
     return flatNavigation.find((item) => item.link === link) || null;
   }
@@ -127,9 +125,9 @@ export class AegisxNavigationService {
    * Helper: Update item in navigation array
    */
   private _updateItemInNavigation(
-    items: AegisxNavigationItem[],
+    items: AxNavigationItem[],
     id: string,
-    updates: Partial<AegisxNavigationItem>,
+    updates: Partial<AxNavigationItem>,
   ): boolean {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
@@ -153,12 +151,10 @@ export class AegisxNavigationService {
   /**
    * Helper: Flatten navigation
    */
-  private _flattenNavigation(
-    items: AegisxNavigationItem[],
-  ): AegisxNavigationItem[] {
-    const flat: AegisxNavigationItem[] = [];
+  private _flattenNavigation(items: AxNavigationItem[]): AxNavigationItem[] {
+    const flat: AxNavigationItem[] = [];
 
-    const addToFlat = (item: AegisxNavigationItem) => {
+    const addToFlat = (item: AxNavigationItem) => {
       flat.push(item);
 
       if (item.children && item.children.length > 0) {
@@ -174,15 +170,13 @@ export class AegisxNavigationService {
   /**
    * Helper: Generate breadcrumbs
    */
-  private _generateBreadcrumbs(
-    item: AegisxNavigationItem,
-  ): AegisxNavigationItem[] {
+  private _generateBreadcrumbs(item: AxNavigationItem): AxNavigationItem[] {
     // Find the path to the item
     const findPath = (
-      items: AegisxNavigationItem[],
+      items: AxNavigationItem[],
       targetId: string,
-      path: AegisxNavigationItem[] = [],
-    ): AegisxNavigationItem[] | null => {
+      path: AxNavigationItem[] = [],
+    ): AxNavigationItem[] | null => {
       for (const navItem of items) {
         const currentPath = [...path, navItem];
 

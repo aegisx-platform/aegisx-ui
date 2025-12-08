@@ -27,7 +27,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxAlertComponent } from '@aegisx/ui';
 import {
   UserService,
   UserPreferences,
@@ -51,32 +51,33 @@ import {
     MatSnackBarModule,
     MatDividerModule,
     MatTooltipModule,
-    AegisxCardComponent,
-    AegisxAlertComponent,
+    AxAlertComponent,
   ],
   template: `
     <div class="preferences-container">
       <!-- Loading State -->
       @if (isLoading()) {
-        <div class="flex justify-center items-center min-h-[300px]">
-          <div class="text-center">
+        <div class="loading-container">
+          <div class="loading-content">
             <mat-spinner diameter="40"></mat-spinner>
-            <p class="text-gray-600 dark:text-gray-400 mt-4">
-              Loading preferences...
-            </p>
+            <p class="loading-text">Loading preferences...</p>
           </div>
         </div>
       }
 
       <!-- Error State -->
       @else if (error()) {
-        <ax-alert type="error" title="Error Loading Preferences" class="mb-6">
+        <ax-alert
+          type="error"
+          title="Error Loading Preferences"
+          class="error-alert"
+        >
           {{ error() }}
           <button
             mat-button
             color="primary"
             (click)="loadPreferences()"
-            class="ml-2"
+            class="retry-button"
           >
             Retry
           </button>
@@ -86,21 +87,21 @@ import {
       <!-- Main Content -->
       @else {
         <form [formGroup]="preferencesForm" (ngSubmit)="savePreferences()">
-          <div class="space-y-6">
+          <div class="preferences-sections">
             <!-- Appearance Section -->
-            <ax-card [appearance]="'outlined'">
-              <div class="card-header">
-                <h3 class="text-lg font-semibold flex items-center">
-                  <mat-icon class="mr-2">palette</mat-icon>
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title class="section-card-title">
+                  <mat-icon class="section-icon">palette</mat-icon>
                   Appearance
-                </h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                </mat-card-title>
+                <mat-card-subtitle>
                   Customize the visual appearance of your interface
-                </p>
-              </div>
+                </mat-card-subtitle>
+              </mat-card-header>
 
-              <div class="card-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <mat-card-content>
+                <div class="form-grid-2col">
                   <!-- Theme -->
                   <mat-form-field appearance="outline">
                     <mat-label>Theme</mat-label>
@@ -139,23 +140,23 @@ import {
                     <mat-hint>Choose your preferred layout style</mat-hint>
                   </mat-form-field>
                 </div>
-              </div>
-            </ax-card>
+              </mat-card-content>
+            </mat-card>
 
             <!-- Localization Section -->
-            <ax-card [appearance]="'outlined'">
-              <div class="card-header">
-                <h3 class="text-lg font-semibold flex items-center">
-                  <mat-icon class="mr-2">language</mat-icon>
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title class="section-card-title">
+                  <mat-icon class="section-icon">language</mat-icon>
                   Localization
-                </h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                </mat-card-title>
+                <mat-card-subtitle>
                   Set your language, timezone, and date/time formats
-                </p>
-              </div>
+                </mat-card-subtitle>
+              </mat-card-header>
 
-              <div class="card-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <mat-card-content>
+                <div class="form-grid-2col">
                   <!-- Language -->
                   <mat-form-field appearance="outline">
                     <mat-label>Language</mat-label>
@@ -235,30 +236,28 @@ import {
                     <mat-hint>How times are displayed</mat-hint>
                   </mat-form-field>
                 </div>
-              </div>
-            </ax-card>
+              </mat-card-content>
+            </mat-card>
 
             <!-- Notifications Section -->
-            <ax-card [appearance]="'outlined'">
-              <div class="card-header">
-                <h3 class="text-lg font-semibold flex items-center">
-                  <mat-icon class="mr-2">notifications</mat-icon>
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title class="section-card-title">
+                  <mat-icon class="section-icon">notifications</mat-icon>
                   Notifications
-                </h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                </mat-card-title>
+                <mat-card-subtitle>
                   Control how and when you receive notifications
-                </p>
-              </div>
+                </mat-card-subtitle>
+              </mat-card-header>
 
-              <div class="card-content" formGroupName="notifications">
-                <div class="space-y-4">
+              <mat-card-content formGroupName="notifications">
+                <div class="toggle-list">
                   <!-- Email Notifications -->
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900 dark:text-gray-100">
-                        Email Notifications
-                      </h4>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <div class="toggle-item">
+                    <div class="toggle-info">
+                      <h4 class="toggle-title">Email Notifications</h4>
+                      <p class="toggle-description">
                         Receive notifications via email
                       </p>
                     </div>
@@ -269,12 +268,10 @@ import {
                   </div>
 
                   <!-- Push Notifications -->
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900 dark:text-gray-100">
-                        Push Notifications
-                      </h4>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <div class="toggle-item">
+                    <div class="toggle-info">
+                      <h4 class="toggle-title">Push Notifications</h4>
+                      <p class="toggle-description">
                         Receive push notifications in your browser
                       </p>
                     </div>
@@ -285,12 +282,10 @@ import {
                   </div>
 
                   <!-- Desktop Notifications -->
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900 dark:text-gray-100">
-                        Desktop Notifications
-                      </h4>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <div class="toggle-item">
+                    <div class="toggle-info">
+                      <h4 class="toggle-title">Desktop Notifications</h4>
+                      <p class="toggle-description">
                         Show desktop notifications when app is minimized
                       </p>
                     </div>
@@ -301,12 +296,10 @@ import {
                   </div>
 
                   <!-- Sound Notifications -->
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900 dark:text-gray-100">
-                        Sound Alerts
-                      </h4>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <div class="toggle-item">
+                    <div class="toggle-info">
+                      <h4 class="toggle-title">Sound Alerts</h4>
+                      <p class="toggle-description">
                         Play sounds for notifications and alerts
                       </p>
                     </div>
@@ -316,30 +309,28 @@ import {
                     ></mat-slide-toggle>
                   </div>
                 </div>
-              </div>
-            </ax-card>
+              </mat-card-content>
+            </mat-card>
 
             <!-- Navigation Section -->
-            <ax-card [appearance]="'outlined'">
-              <div class="card-header">
-                <h3 class="text-lg font-semibold flex items-center">
-                  <mat-icon class="mr-2">menu</mat-icon>
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title class="section-card-title">
+                  <mat-icon class="section-icon">menu</mat-icon>
                   Navigation
-                </h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                </mat-card-title>
+                <mat-card-subtitle>
                   Customize the navigation menu behavior
-                </p>
-              </div>
+                </mat-card-subtitle>
+              </mat-card-header>
 
-              <div class="card-content" formGroupName="navigation">
-                <div class="space-y-4">
+              <mat-card-content formGroupName="navigation">
+                <div class="toggle-list">
                   <!-- Navigation Collapsed -->
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900 dark:text-gray-100">
-                        Collapsed by Default
-                      </h4>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <div class="toggle-item">
+                    <div class="toggle-info">
+                      <h4 class="toggle-title">Collapsed by Default</h4>
+                      <p class="toggle-description">
                         Start with navigation menu collapsed
                       </p>
                     </div>
@@ -349,7 +340,7 @@ import {
                     ></mat-slide-toggle>
                   </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div class="form-grid-2col nav-grid-spacing">
                     <!-- Navigation Type -->
                     <mat-form-field appearance="outline">
                       <mat-label>Navigation Type</mat-label>
@@ -375,11 +366,11 @@ import {
                     </mat-form-field>
                   </div>
                 </div>
-              </div>
-            </ax-card>
+              </mat-card-content>
+            </mat-card>
 
             <!-- Action Buttons -->
-            <div class="flex justify-between items-center pt-4">
+            <div class="action-buttons-row">
               <button
                 type="button"
                 mat-button
@@ -389,7 +380,7 @@ import {
                 Reset to Defaults
               </button>
 
-              <div class="flex space-x-2">
+              <div class="button-group">
                 <button
                   type="button"
                   mat-button
@@ -400,7 +391,7 @@ import {
                 </button>
                 <button
                   type="submit"
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   [disabled]="
                     !hasChanges() || preferencesForm.invalid || isSaving()
@@ -424,18 +415,118 @@ import {
         display: block;
       }
 
+      /* ===== CONTAINER ===== */
       .preferences-container {
         max-width: 800px;
       }
 
-      .card-header {
-        padding: 16px 16px 0 16px;
+      /* ===== LOADING STATE ===== */
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
       }
 
-      .card-content {
-        padding: 16px;
+      .loading-content {
+        text-align: center;
       }
 
+      .loading-text {
+        margin-top: var(--ax-spacing-lg);
+        color: var(--mat-sys-on-surface-variant);
+      }
+
+      /* ===== ERROR STATE ===== */
+      .error-alert {
+        margin-bottom: var(--ax-spacing-xl);
+      }
+
+      .retry-button {
+        margin-left: var(--ax-spacing-sm);
+      }
+
+      /* ===== SECTIONS ===== */
+      .preferences-sections {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-xl);
+      }
+
+      /* ===== SECTION CARDS ===== */
+      .section-card-title {
+        display: flex;
+        align-items: center;
+        gap: var(--ax-spacing-sm);
+        font-size: var(--ax-text-lg);
+        font-weight: var(--ax-font-semibold);
+      }
+
+      .section-icon {
+        margin-right: 0;
+      }
+
+      /* ===== FORM GRID ===== */
+      .form-grid-2col {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: var(--ax-spacing-md);
+      }
+
+      @media (min-width: 768px) {
+        .form-grid-2col {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .nav-grid-spacing {
+        margin-top: var(--ax-spacing-lg);
+      }
+
+      /* ===== TOGGLE LIST ===== */
+      .toggle-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
+      }
+
+      .toggle-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--ax-spacing-md);
+      }
+
+      .toggle-info {
+        flex: 1;
+      }
+
+      .toggle-title {
+        margin: 0 0 var(--ax-spacing-xs) 0;
+        font-weight: var(--ax-font-medium);
+        color: var(--mat-sys-on-surface);
+      }
+
+      .toggle-description {
+        margin: 0;
+        font-size: var(--ax-text-sm);
+        color: var(--mat-sys-on-surface-variant);
+      }
+
+      /* ===== ACTION BUTTONS ===== */
+      .action-buttons-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--ax-spacing-lg);
+      }
+
+      .button-group {
+        display: flex;
+        gap: var(--ax-spacing-sm);
+      }
+
+      /* ===== ANIMATIONS ===== */
       @keyframes spin {
         from {
           transform: rotate(0deg);
@@ -449,6 +540,7 @@ import {
         animation: spin 1s linear infinite;
       }
 
+      /* ===== MATERIAL OVERRIDES ===== */
       ::ng-deep .mat-mdc-form-field {
         width: 100%;
       }

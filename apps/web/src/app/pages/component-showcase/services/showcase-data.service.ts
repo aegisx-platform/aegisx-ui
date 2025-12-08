@@ -36,7 +36,7 @@ export class ShowcaseDataService {
     try {
       // Initialize component categories
       await this.initializeMaterialDesignComponents();
-      await this.initializeAegisxUiComponents();
+      await this.initializeAxUiComponents();
       await this.initializeApplicationWidgets();
       await this.initializeInteractiveDemos();
 
@@ -520,7 +520,7 @@ export class ShowcaseDataService {
     });
   }
 
-  private async initializeAegisxUiComponents(): Promise<void> {
+  private async initializeAxUiComponents(): Promise<void> {
     const aegisxComponents: ComponentExample[] = [
       // Layout Components
       {

@@ -1,0 +1,228 @@
+/**
+ * AegisX UI - Dark Theme
+ *
+ * Dark color scheme using design tokens.
+ */
+
+.dark {
+  // ============================================
+  // BACKGROUND COLORS
+  // ============================================
+  --ax-bg: #1f2937; // gray-800
+  --ax-background-muted: #030712; // gray-950
+  --ax-background-subtle: #111827; // gray-900
+  --ax-background-emphasis: #f9fafb; // gray-50 (inverted)
+
+  // ============================================
+  // TEXT COLORS
+  // ============================================
+  --ax-text: #d1d5db; // gray-300
+  --ax-text-primary: #d1d5db; // gray-300
+  --ax-text-secondary: #9ca3af; // gray-400
+  --ax-text-subtle: #6b7280; // gray-500
+  --ax-text-disabled: #4b5563; // gray-600
+  --ax-text-heading: #f9fafb; // gray-50
+  --ax-text-inverted: #000000;
+
+  // ============================================
+  // BORDER COLORS
+  // ============================================
+  --ax-border: #374151; // gray-700
+  --ax-border-muted: #1f2937; // gray-800
+  --ax-border-emphasis: #4b5563; // gray-600
+
+  // ============================================
+  // BRAND/PRIMARY COLORS (Lighter for dark mode)
+  // ============================================
+  --ax-primary: #818cf8; // indigo-400 (lighter)
+  --ax-primary-faint: #312e81; // indigo-900
+  --ax-primary-muted: #3730a3; // indigo-800
+  --ax-primary-subtle: #4338ca; // indigo-700
+  --ax-primary-emphasis: #a5b4fc; // indigo-300 (even lighter)
+  --ax-primary-inverted: #000000;
+
+  // ============================================
+  // SEMANTIC COLORS
+  // ============================================
+
+  // Success (Lighter green for dark backgrounds)
+  --ax-success: #4ade80; // green-400
+  --ax-success-faint: #14532d; // green-900
+  --ax-success-muted: #166534; // green-800
+  --ax-success-subtle: #15803d; // green-700
+  --ax-success-emphasis: #86efac; // green-300
+  --ax-success-inverted: #000000;
+
+  // Warning (Lighter amber)
+  --ax-warning: #fbbf24; // amber-400
+  --ax-warning-faint: #78350f; // amber-900
+  --ax-warning-muted: #92400e; // amber-800
+  --ax-warning-subtle: #b45309; // amber-700
+  --ax-warning-emphasis: #fcd34d; // amber-300
+  --ax-warning-inverted: #000000;
+
+  // Error (Lighter red)
+  --ax-error: #f87171; // red-400
+  --ax-error-faint: #7f1d1d; // red-900
+  --ax-error-muted: #991b1b; // red-800
+  --ax-error-subtle: #b91c1c; // red-700
+  --ax-error-emphasis: #fca5a5; // red-300
+  --ax-error-inverted: #000000;
+
+  // Info (Lighter blue)
+  --ax-info: #60a5fa; // blue-400
+  --ax-info-faint: #1e3a8a; // blue-900
+  --ax-info-muted: #1e40af; // blue-800
+  --ax-info-subtle: #1d4ed8; // blue-700
+  --ax-info-emphasis: #93c5fd; // blue-300
+  --ax-info-inverted: #000000;
+
+  // ============================================
+  // EXTENDED COLORS
+  // ============================================
+
+  // Cyan
+  --ax-cyan: #22d3ee; // cyan-400
+  --ax-cyan-faint: #164e63;
+  --ax-cyan-emphasis: #67e8f9;
+
+  // Purple
+  --ax-purple: #c084fc; // purple-400
+  --ax-purple-faint: #581c87;
+  --ax-purple-emphasis: #d8b4fe;
+
+  // Pink
+  --ax-pink: #f472b6; // pink-400
+  --ax-pink-faint: #831843;
+  --ax-pink-emphasis: #f9a8d4;
+
+  // ============================================
+  // STATE COLORS
+  // ============================================
+  --ax-hover-bg: rgba(255, 255, 255, 0.05);
+  --ax-active-bg: rgba(255, 255, 255, 0.1);
+  --ax-selected-bg: rgba(129, 140, 248, 0.15); // primary with opacity
+
+  // ============================================
+  // COMPONENT SPECIFIC
+  // ============================================
+  --ax-card-bg: #1f2937; // gray-800
+  --ax-input-bg: #111827; // gray-900
+  --ax-input-border: #4b5563; // gray-600
+  --ax-button-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+
+  // ============================================
+  // MATERIAL 3 SURFACE TOKENS (Dark)
+  // ============================================
+  --ax-surface: #1c1b1f;
+  --ax-surface-dim: #141316;
+  --ax-surface-bright: #3b383e;
+  --ax-surface-container-lowest: #0f0d13;
+  --ax-surface-container-low: #1d1b20;
+  --ax-surface-container: #211f26;
+  --ax-surface-container-high: #2b2930;
+  --ax-surface-container-highest: #36343b;
+
+  // ============================================
+  // M3 ON-SURFACE TOKENS (Dark)
+  // ============================================
+  --ax-on-surface: #e6e1e5;
+  --ax-on-surface-variant: #cac4d0;
+  --ax-outline: #938f99;
+  --ax-outline-variant: #49454f;
+
+  // ============================================
+  // SEMANTIC ALIASES (for component use)
+  // ============================================
+
+  // Brand/Primary aliases
+  --ax-brand-default: var(--ax-primary);
+  --ax-brand-emphasis: var(--ax-primary-emphasis);
+  --ax-brand-subtle: var(--ax-primary-subtle);
+  --ax-brand-muted: var(--ax-primary-muted);
+  --ax-brand-faint: var(--ax-primary-faint);
+
+  // Background aliases
+  --ax-background-default: var(--ax-bg);
+
+  // Border aliases
+  --ax-border-default: var(--ax-border);
+
+  // Text aliases
+  --ax-text-default: var(--ax-text);
+
+  // Success surface
+  --ax-success-default: var(--ax-success);
+  --ax-success-surface: var(--ax-success-faint);
+  --ax-success-border: var(--ax-success-muted);
+
+  // Warning surface
+  --ax-warning-default: var(--ax-warning);
+  --ax-warning-surface: var(--ax-warning-faint);
+  --ax-warning-border: var(--ax-warning-muted);
+
+  // Error/Danger surface
+  --ax-error-default: var(--ax-error);
+  --ax-error-surface: var(--ax-error-faint);
+  --ax-error-border: var(--ax-error-muted);
+  --ax-danger-default: var(--ax-error);
+  --ax-danger-subtle: var(--ax-error-faint);
+
+  // Info surface
+  --ax-info-default: var(--ax-info);
+  --ax-info-surface: var(--ax-info-faint);
+  --ax-info-border: var(--ax-info-muted);
+
+  // ============================================
+  // M3 GRADIENT TOKENS (Dark - lighter colors)
+  // ============================================
+  --ax-gradient-primary: linear-gradient(
+    135deg,
+    var(--ax-primary) 0%,
+    var(--ax-purple) 100%
+  );
+  --ax-gradient-success: linear-gradient(
+    135deg,
+    var(--ax-success) 0%,
+    var(--ax-success-emphasis) 100%
+  );
+  --ax-gradient-warning: linear-gradient(
+    135deg,
+    var(--ax-warning) 0%,
+    var(--ax-warning-emphasis) 100%
+  );
+  --ax-gradient-info: linear-gradient(
+    135deg,
+    var(--ax-info) 0%,
+    var(--ax-info-emphasis) 100%
+  );
+  --ax-gradient-cyan: linear-gradient(
+    135deg,
+    var(--ax-cyan) 0%,
+    var(--ax-cyan-emphasis) 100%
+  );
+
+  // ============================================
+  // RADIUS TOKENS (M3 - same as light)
+  // ============================================
+  --ax-radius-none: 0;
+  --ax-radius-xs: 4px;
+  --ax-radius-sm: 8px;
+  --ax-radius-md: 12px;
+  --ax-radius-lg: 16px;
+  --ax-radius-xl: 20px;
+  --ax-radius-2xl: 28px;
+  --ax-radius-full: 9999px;
+
+  // ============================================
+  // SHADOW TOKENS (M3 Elevation - darker for dark mode)
+  // ============================================
+  --ax-shadow-none: none;
+  --ax-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --ax-shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --ax-shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --ax-shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+}

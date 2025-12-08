@@ -13,24 +13,20 @@ import { switchMap } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div
-      class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
+    <div>
       <!-- Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50"
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-container"
           >
-            <mat-icon class="text-blue-600 !text-xl">speed</mat-icon>
+            <mat-icon class="text-primary !text-xl">speed</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               System Metrics
             </h3>
-            <p class="text-xs text-slate-600">Real-time monitoring</p>
+            <p class="text-xs text-muted">Real-time monitoring</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -39,10 +35,10 @@ import { switchMap } from 'rxjs/operators';
               class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"
             ></span>
             <span
-              class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
+              class="relative inline-flex rounded-full h-2 w-2 bg-success"
             ></span>
           </span>
-          <span class="text-xs text-slate-500">Live</span>
+          <span class="text-xs text-muted">Live</span>
         </div>
       </div>
 
@@ -52,12 +48,12 @@ import { switchMap } from 'rxjs/operators';
           <div
             class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"
           ></div>
-          <p class="mt-3 text-sm text-slate-500">Loading metrics...</p>
+          <p class="mt-3 text-sm text-muted">Loading metrics...</p>
         </div>
       } @else if (error()) {
         <div class="px-6 py-8 text-center">
-          <mat-icon class="text-red-500 !text-4xl mb-2">error_outline</mat-icon>
-          <p class="text-sm text-slate-600">{{ error() }}</p>
+          <mat-icon class="text-error !text-4xl mb-2">error_outline</mat-icon>
+          <p class="text-sm text-muted">{{ error() }}</p>
         </div>
       } @else if (metrics()) {
         <div class="p-6 space-y-4">
@@ -65,30 +61,32 @@ import { switchMap } from 'rxjs/operators';
           <div>
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
-                <mat-icon class="text-blue-600 !text-lg">memory</mat-icon>
-                <span class="text-sm font-medium text-slate-700"
+                <mat-icon class="text-primary !text-lg">memory</mat-icon>
+                <span class="text-sm font-medium text-on-surface"
                   >CPU Usage</span
                 >
               </div>
               <span
                 class="text-sm font-bold"
-                [class.text-red-600]="cpuUsage() > 80"
-                [class.text-amber-600]="cpuUsage() > 60 && cpuUsage() <= 80"
-                [class.text-emerald-600]="cpuUsage() <= 60"
+                [class.text-error]="cpuUsage() > 80"
+                [class.text-warning]="cpuUsage() > 60 && cpuUsage() <= 80"
+                [class.text-success]="cpuUsage() <= 60"
               >
                 {{ cpuUsage() }}%
               </span>
             </div>
-            <div class="flex h-3 rounded-full overflow-hidden bg-slate-100">
+            <div
+              class="flex h-3 rounded-full overflow-hidden bg-surface-container"
+            >
               <div
                 class="transition-all duration-500"
                 [style.width.%]="cpuUsage()"
-                [class.bg-red-500]="cpuUsage() > 80"
-                [class.bg-amber-500]="cpuUsage() > 60 && cpuUsage() <= 80"
-                [class.bg-emerald-500]="cpuUsage() <= 60"
+                [class.bg-error]="cpuUsage() > 80"
+                [class.bg-warning]="cpuUsage() > 60 && cpuUsage() <= 80"
+                [class.bg-surface-container0]="cpuUsage() <= 60"
               ></div>
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-muted">
               {{ metrics()!.cpu.cores }} cores • Load:
               {{ metrics()!.cpu.loadAverage[0].toFixed(2) }}
             </div>
@@ -99,53 +97,55 @@ import { switchMap } from 'rxjs/operators';
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
                 <mat-icon class="text-purple-600 !text-lg">storage</mat-icon>
-                <span class="text-sm font-medium text-slate-700">Memory</span>
+                <span class="text-sm font-medium text-on-surface">Memory</span>
               </div>
               <span
                 class="text-sm font-bold"
-                [class.text-red-600]="memoryUsagePercent() > 85"
-                [class.text-amber-600]="
+                [class.text-error]="memoryUsagePercent() > 85"
+                [class.text-warning]="
                   memoryUsagePercent() > 70 && memoryUsagePercent() <= 85
                 "
-                [class.text-emerald-600]="memoryUsagePercent() <= 70"
+                [class.text-success]="memoryUsagePercent() <= 70"
               >
                 {{ memoryUsagePercent() }}%
               </span>
             </div>
-            <div class="flex h-3 rounded-full overflow-hidden bg-slate-100">
+            <div
+              class="flex h-3 rounded-full overflow-hidden bg-surface-container"
+            >
               <div
                 class="transition-all duration-500"
                 [style.width.%]="memoryUsagePercent()"
-                [class.bg-red-500]="memoryUsagePercent() > 85"
-                [class.bg-amber-500]="
+                [class.bg-error]="memoryUsagePercent() > 85"
+                [class.bg-warning]="
                   memoryUsagePercent() > 70 && memoryUsagePercent() <= 85
                 "
                 [class.bg-purple-500]="memoryUsagePercent() <= 70"
               ></div>
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-muted">
               {{ formatBytes(metrics()!.memory.used) }} /
               {{ formatBytes(metrics()!.memory.total) }}
             </div>
           </div>
 
           <!-- Process Info -->
-          <div class="pt-3 border-t border-slate-200">
+          <div>
             <div class="grid grid-cols-2 gap-3">
               <div class="flex items-center gap-2">
-                <mat-icon class="text-slate-400 !text-base">timer</mat-icon>
+                <mat-icon class="text-muted !text-base">timer</mat-icon>
                 <div>
-                  <div class="text-xs text-slate-500">Uptime</div>
-                  <div class="text-sm font-semibold text-slate-700">
+                  <div class="text-xs text-muted">Uptime</div>
+                  <div class="text-sm font-semibold text-on-surface">
                     {{ formatUptime(metrics()!.process.uptime) }}
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <mat-icon class="text-slate-400 !text-base">insights</mat-icon>
+                <mat-icon class="text-muted !text-base">insights</mat-icon>
                 <div>
-                  <div class="text-xs text-slate-500">Process</div>
-                  <div class="text-sm font-semibold text-slate-700">
+                  <div class="text-xs text-muted">Process</div>
+                  <div class="text-sm font-semibold text-on-surface">
                     {{ formatBytes(metrics()!.process.memoryUsage) }}
                   </div>
                 </div>
@@ -155,8 +155,8 @@ import { switchMap } from 'rxjs/operators';
         </div>
 
         <!-- Footer -->
-        <div class="px-6 py-3 border-t border-slate-200 bg-slate-50">
-          <div class="flex items-center justify-between text-xs text-slate-500">
+        <div>
+          <div class="flex items-center justify-between text-xs text-muted">
             <span>Updated: {{ formatTimestamp(metrics()!.timestamp) }}</span>
             <span>Refreshes every 5s</span>
           </div>

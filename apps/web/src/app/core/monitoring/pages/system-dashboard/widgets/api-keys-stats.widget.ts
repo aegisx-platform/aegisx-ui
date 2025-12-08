@@ -12,13 +12,9 @@ import {
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div
-      class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
+    <div>
       <!-- Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
-      >
+      <div>
         <div class="flex items-center gap-3">
           <div
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50"
@@ -26,10 +22,10 @@ import {
             <mat-icon class="text-violet-600 !text-xl">vpn_key</mat-icon>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-slate-900">
+            <h3 class="text-base font-semibold text-on-surface">
               API Keys Management
             </h3>
-            <p class="text-xs text-slate-600">Active keys & usage</p>
+            <p class="text-xs text-muted">Active keys & usage</p>
           </div>
         </div>
       </div>
@@ -40,15 +36,15 @@ import {
           <div
             class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"
           ></div>
-          <p class="mt-3 text-sm text-slate-500">Loading statistics...</p>
+          <p class="mt-3 text-sm text-muted">Loading statistics...</p>
         </div>
       } @else if (error()) {
         <div class="px-6 py-8 text-center">
-          <mat-icon class="text-red-500 !text-4xl mb-2">error_outline</mat-icon>
-          <p class="text-sm text-slate-600">{{ error() }}</p>
+          <mat-icon class="text-error !text-4xl mb-2">error_outline</mat-icon>
+          <p class="text-sm text-muted">{{ error() }}</p>
           <button
             (click)="loadStats()"
-            class="mt-3 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+            class="mt-3 px-4 py-2 text-sm font-medium text-primary hover:text-primary"
           >
             Retry
           </button>
@@ -74,27 +70,27 @@ import {
 
           <!-- Active Keys -->
           <div
-            class="p-4 rounded-lg bg-emerald-50 border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
+            class="p-4 rounded-lg bg-surface-container border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
             (click)="navigateToApiKeys()"
           >
             <div class="flex items-center gap-2 mb-2">
-              <mat-icon class="text-emerald-600 !text-lg"
-                >check_circle</mat-icon
-              >
-              <span class="text-xs font-medium text-emerald-700">Active</span>
+              <mat-icon class="text-success !text-lg">check_circle</mat-icon>
+              <span class="text-xs font-medium text-success">Active</span>
             </div>
-            <p class="text-2xl font-bold text-emerald-900">
+            <p class="text-2xl font-bold text-success">
               {{ stats()!.activeKeys }}
             </p>
           </div>
 
           <!-- Usage Today -->
-          <div class="p-4 rounded-lg bg-blue-50 border border-blue-100">
+          <div
+            class="p-4 rounded-lg bg-surface-container border border-blue-100"
+          >
             <div class="flex items-center gap-2 mb-2">
-              <mat-icon class="text-blue-600 !text-lg">today</mat-icon>
-              <span class="text-xs font-medium text-blue-700">Used Today</span>
+              <mat-icon class="text-primary !text-lg">today</mat-icon>
+              <span class="text-xs font-medium text-primary">Used Today</span>
             </div>
-            <p class="text-2xl font-bold text-blue-900">
+            <p class="text-2xl font-bold text-primary">
               {{ stats()!.usageToday }}
             </p>
           </div>
@@ -113,15 +109,17 @@ import {
 
         <!-- Status Bar -->
         <div class="px-6 pb-4">
-          <div class="flex items-center gap-2 text-xs text-slate-600 mb-2">
+          <div class="flex items-center gap-2 text-xs text-muted mb-2">
             <span>Active vs Inactive</span>
             <span class="font-medium"
               >{{ stats()!.activeKeys }}/{{ stats()!.totalKeys }}</span
             >
           </div>
-          <div class="flex h-2 rounded-full overflow-hidden bg-slate-100">
+          <div
+            class="flex h-2 rounded-full overflow-hidden bg-surface-container"
+          >
             <div
-              class="bg-emerald-500"
+              class="bg-surface-container0"
               [style.width.%]="activePercentage()"
             ></div>
             <div
@@ -130,11 +128,9 @@ import {
             ></div>
           </div>
           <div class="flex items-center justify-between mt-2 text-xs">
-            <span class="text-emerald-600"
-              >{{ activePercentage() }}% Active</span
-            >
+            <span class="text-success">{{ activePercentage() }}% Active</span>
             @if (stats()!.expiredKeys > 0) {
-              <span class="text-amber-600"
+              <span class="text-warning"
                 >{{ stats()!.expiredKeys }} Expired</span
               >
             }
@@ -142,19 +138,17 @@ import {
         </div>
 
         <!-- Footer Action -->
-        <div
-          class="flex items-center justify-between px-6 py-3 border-t border-slate-200 bg-slate-50"
-        >
+        <div>
           <button
             (click)="navigateToApiKeys()"
-            class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1"
+            class="text-sm font-medium text-primary hover:text-primary transition-colors flex items-center gap-1"
           >
             <span>Manage API Keys</span>
             <mat-icon class="!text-base">arrow_forward</mat-icon>
           </button>
           <button
             (click)="loadStats()"
-            class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            class="text-sm font-medium text-muted hover:text-on-surface transition-colors"
           >
             <mat-icon class="!text-base">refresh</mat-icon>
           </button>

@@ -8,19 +8,9 @@ export interface ActivityLog {
   ip_address?: string;
   user_agent?: string;
   session_id?: string;
-  request_id?: string;
   device_info?: {
-    browser?: string;
-    os?: string;
     device?: string;
     isMobile?: boolean;
-    isDesktop?: boolean;
-    isTablet?: boolean;
-  };
-  location_info?: {
-    country?: string;
-    city?: string;
-    timezone?: string;
   };
   metadata?: Record<string, any>;
 }
@@ -59,7 +49,6 @@ export interface ActivityLogFilters {
   search?: string;
   dateFrom?: string;
   dateTo?: string;
-  sessionId?: string;
   page?: number;
   limit?: number;
 }
@@ -77,26 +66,25 @@ export const SEVERITY_CONFIG = {
     label: 'Info',
     color: 'primary',
     icon: 'info',
-    badgeClass: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+    badgeClass: 'chip-info',
   },
   warning: {
     label: 'Warning',
     color: 'accent',
     icon: 'warning',
-    badgeClass:
-      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+    badgeClass: 'chip-warning',
   },
   error: {
     label: 'Error',
     color: 'warn',
     icon: 'error',
-    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    badgeClass: 'chip-error',
   },
   critical: {
     label: 'Critical',
     color: 'warn',
     icon: 'dangerous',
-    badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    badgeClass: 'chip-error',
   },
 } as const;
 

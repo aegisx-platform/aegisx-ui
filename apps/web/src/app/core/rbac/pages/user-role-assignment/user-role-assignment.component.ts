@@ -1,4 +1,4 @@
-import { AegisxNavigationItem, BreadcrumbComponent } from '@aegisx/ui';
+import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
 import {
@@ -39,6 +39,7 @@ import { UserOverviewDialogComponent } from '../../dialogs/user-overview-dialog/
 import { UserPermissionsDialogComponent } from '../../dialogs/user-permissions-dialog/user-permissions-dialog.component';
 import { UserRoleAssignDialogComponent } from '../../dialogs/user-role-assign-dialog/user-role-assign-dialog.component';
 import { UserRolesDialogComponent } from '../../dialogs/user-roles-dialog/user-roles-dialog.component';
+import { UserRolesManagementDialogComponent } from '../../dialogs/user-roles-management-dialog/user-roles-management-dialog.component';
 import { HasPermissionDirective } from '../../directives/has-permission.directive';
 import { Role, UserRole, UserRoleFilters } from '../../models/rbac.interfaces';
 import { RbacService } from '../../services/rbac.service';
@@ -82,10 +83,8 @@ import { RbacService } from '../../services/rbac.service';
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            User Role Assignments
-          </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 class="heading-title">User Role Assignments</h1>
+          <p class="subtitle-text">
             Manage role assignments and user access permissions
           </p>
         </div>
@@ -93,7 +92,7 @@ import { RbacService } from '../../services/rbac.service';
         <div class="flex flex-wrap gap-2">
           <button
             *hasPermission="'roles:update'"
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="openAssignDialog()"
             [disabled]="isLoading()"
@@ -103,7 +102,7 @@ import { RbacService } from '../../services/rbac.service';
           </button>
           <button
             *hasPermission="'roles:update'"
-            mat-raised-button
+            mat-flat-button
             color="accent"
             (click)="openBulkAssignDialog()"
             [disabled]="isLoading()"
@@ -112,7 +111,7 @@ import { RbacService } from '../../services/rbac.service';
             Bulk Assign
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             (click)="refreshAssignments()"
             [disabled]="isLoading()"
           >
@@ -124,43 +123,37 @@ import { RbacService } from '../../services/rbac.service';
 
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <mat-card class="p-4 text-center">
-          <div class="text-2xl font-bold text-blue-600 mb-1">
+        <mat-card appearance="outlined" class="p-4 text-center">
+          <div class="stat-number stat-info">
             {{ totalAssignments() }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            Total Assignments
-          </div>
+          <div class="secondary-text">Total Assignments</div>
         </mat-card>
 
-        <mat-card class="p-4 text-center">
-          <div class="text-2xl font-bold text-green-600 mb-1">
+        <mat-card appearance="outlined" class="p-4 text-center">
+          <div class="stat-number stat-success">
             {{ activeAssignments() }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            Active Assignments
-          </div>
+          <div class="secondary-text">Active Assignments</div>
         </mat-card>
 
-        <mat-card class="p-4 text-center">
-          <div class="text-2xl font-bold text-orange-600 mb-1">
+        <mat-card appearance="outlined" class="p-4 text-center">
+          <div class="stat-number stat-warning">
             {{ expiringAssignments() }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            Expiring Soon
-          </div>
+          <div class="secondary-text">Expiring Soon</div>
         </mat-card>
 
-        <mat-card class="p-4 text-center">
-          <div class="text-2xl font-bold text-red-600 mb-1">
+        <mat-card appearance="outlined" class="p-4 text-center">
+          <div class="stat-number stat-error">
             {{ expiredAssignments() }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Expired</div>
+          <div class="secondary-text">Expired</div>
         </mat-card>
       </div>
 
       <!-- Filters -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <mat-card-content class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <mat-form-field
@@ -235,9 +228,9 @@ import { RbacService } from '../../services/rbac.service';
           <!-- Bulk Actions -->
           <div
             *ngIf="selection.hasValue()"
-            class="flex items-center gap-2 mt-4 pt-4 border-t"
+            class="flex items-center gap-2 mt-4 pt-4 bulk-actions-container"
           >
-            <span class="text-sm text-gray-600">
+            <span class="bulk-actions-count">
               {{ selection.selected.length }} assignment(s) selected
             </span>
             <button
@@ -272,7 +265,7 @@ import { RbacService } from '../../services/rbac.service';
       </mat-card>
 
       <!-- Assignments Table -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" matSort class="w-full">
             <!-- Selection Column -->
@@ -300,10 +293,8 @@ import { RbacService } from '../../services/rbac.service';
               <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
               <td mat-cell *matCellDef="let assignment">
                 <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center"
-                  >
-                    <mat-icon class="text-blue-600 text-base">person</mat-icon>
+                  <div class="user-avatar">
+                    <mat-icon class="text-base">person</mat-icon>
                   </div>
                   <div class="flex-1">
                     <div class="flex items-center gap-2">
@@ -312,14 +303,12 @@ import { RbacService } from '../../services/rbac.service';
                       }}</span>
                       <!-- Multi-role indicator -->
                       @if (getUserRoleCount(assignment) > 1) {
-                        <mat-chip
-                          class="!text-xs !bg-purple-100 !text-purple-800 dark:!bg-purple-900 dark:!text-purple-200 !h-5"
-                        >
+                        <mat-chip class="chip-info">
                           {{ getUserRoleCount(assignment) }} roles
                         </mat-chip>
                       }
                     </div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                    <div class="secondary-text">
                       {{ getUserEmail(assignment) }}
                     </div>
                   </div>
@@ -327,22 +316,28 @@ import { RbacService } from '../../services/rbac.service';
               </td>
             </ng-container>
 
-            <!-- Role Column -->
+            <!-- Roles Column (Chips) -->
             <ng-container matColumnDef="role">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Roles</th>
               <td mat-cell *matCellDef="let assignment">
-                <div class="flex items-center gap-2">
-                  <span class="font-medium">{{ assignment.role.name }}</span>
-                  <mat-chip
-                    *ngIf="assignment.role.is_system_role"
-                    class="!bg-blue-100 !text-blue-800 dark:!bg-blue-900 dark:!text-blue-200"
-                  >
-                    System
+                <mat-chip-set>
+                  <mat-chip class="role-chip">
+                    <mat-icon matChipAvatar class="!text-sm">shield</mat-icon>
+                    {{ assignment.role.name }}
+                    @if (assignment.expires_at && isExpiringSoon(assignment)) {
+                      <mat-icon
+                        matChipTrailingIcon
+                        class="expiring-warning !text-sm"
+                        >schedule</mat-icon
+                      >
+                    }
                   </mat-chip>
-                </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ assignment.role.category }}
-                </div>
+                </mat-chip-set>
+                @if (getUserRoleCount(assignment) > 1) {
+                  <div class="secondary-text mt-1">
+                    + {{ getUserRoleCount(assignment) - 1 }} more role(s)
+                  </div>
+                }
               </td>
             </ng-container>
 
@@ -351,10 +346,10 @@ import { RbacService } from '../../services/rbac.service';
               <th mat-header-cell *matHeaderCellDef>Assigned By</th>
               <td mat-cell *matCellDef="let assignment">
                 <div class="flex items-center gap-2">
-                  <mat-icon class="text-gray-500 text-base"
+                  <mat-icon class="secondary-text text-base"
                     >account_circle</mat-icon
                   >
-                  <span class="text-sm">
+                  <span class="secondary-text">
                     {{ assignment.assigned_by || 'System' }}
                   </span>
                 </div>
@@ -367,7 +362,7 @@ import { RbacService } from '../../services/rbac.service';
                 Assigned Date
               </th>
               <td mat-cell *matCellDef="let assignment">
-                <div class="text-sm">
+                <div class="secondary-text">
                   {{ formatDate(assignment.assigned_at) }}
                 </div>
               </td>
@@ -378,22 +373,18 @@ import { RbacService } from '../../services/rbac.service';
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Expires</th>
               <td mat-cell *matCellDef="let assignment">
                 <div *ngIf="assignment.expires_at; else noExpiry">
-                  <div class="text-sm">
+                  <div class="secondary-text">
                     {{ formatDate(assignment.expires_at) }}
                   </div>
                   <mat-chip
                     [class]="getExpiryStatusClass(assignment)"
-                    class="!text-xs !mt-1"
+                    class="mt-1"
                   >
                     {{ getExpiryStatusText(assignment) }}
                   </mat-chip>
                 </div>
                 <ng-template #noExpiry>
-                  <mat-chip
-                    class="!bg-gray-100 !text-gray-800 dark:!bg-gray-700 dark:!text-gray-200 !text-xs"
-                  >
-                    No Expiry
-                  </mat-chip>
+                  <mat-chip class="chip-neutral"> No Expiry </mat-chip>
                 </ng-template>
               </td>
             </ng-container>
@@ -402,15 +393,15 @@ import { RbacService } from '../../services/rbac.service';
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
               <td mat-cell *matCellDef="let assignment">
-                <mat-chip
-                  [class]="
-                    assignment.is_active
-                      ? '!bg-green-100 !text-green-800 dark:!bg-green-900 dark:!text-green-200'
-                      : '!bg-red-100 !text-red-800 dark:!bg-red-900 dark:!text-red-200'
-                  "
-                >
-                  {{ assignment.is_active ? 'Active' : 'Inactive' }}
-                </mat-chip>
+                <mat-chip-set>
+                  <mat-chip
+                    [class]="
+                      assignment.is_active ? 'chip-success' : 'chip-error'
+                    "
+                  >
+                    {{ assignment.is_active ? 'Active' : 'Inactive' }}
+                  </mat-chip>
+                </mat-chip-set>
               </td>
             </ng-container>
 
@@ -427,6 +418,14 @@ import { RbacService } from '../../services/rbac.service';
                 </button>
 
                 <mat-menu #actionMenu="matMenu">
+                  <button
+                    *hasPermission="'roles:update'"
+                    mat-menu-item
+                    (click)="openManageRolesDialog(assignment)"
+                  >
+                    <mat-icon>manage_accounts</mat-icon>
+                    Manage Roles
+                  </button>
                   <button mat-menu-item (click)="viewUserOverview(assignment)">
                     <mat-icon>account_circle</mat-icon>
                     View Overview
@@ -453,10 +452,10 @@ import { RbacService } from '../../services/rbac.service';
                     *hasPermission="'roles:update'"
                     mat-menu-item
                     (click)="removeRole(assignment)"
-                    class="text-red-600"
+                    class="delete-action"
                   >
-                    <mat-icon class="text-red-600">person_remove</mat-icon>
-                    Remove Role
+                    <mat-icon>person_remove</mat-icon>
+                    Remove This Role
                   </button>
                 </mat-menu>
               </td>
@@ -467,7 +466,7 @@ import { RbacService } from '../../services/rbac.service';
               mat-row
               *matRowDef="let row; columns: displayedColumns"
               (click)="viewAssignmentDetails(row)"
-              class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+              class="cursor-pointer table-row-hover"
             ></tr>
           </table>
         </div>
@@ -480,11 +479,11 @@ import { RbacService } from '../../services/rbac.service';
         <!-- Empty State -->
         <div
           *ngIf="!isLoading() && dataSource.data.length === 0"
-          class="flex flex-col items-center justify-center py-12 text-gray-500"
+          class="empty-state"
         >
-          <mat-icon class="text-6xl mb-4 opacity-50">assignment_ind</mat-icon>
-          <h3 class="text-lg font-medium mb-2">No role assignments found</h3>
-          <p class="text-center mb-4">
+          <mat-icon class="empty-state-icon">assignment_ind</mat-icon>
+          <h3 class="empty-state-title">No role assignments found</h3>
+          <p class="empty-state-message">
             {{
               hasActiveFilters()
                 ? 'Try adjusting your filters'
@@ -492,7 +491,7 @@ import { RbacService } from '../../services/rbac.service';
             }}
           </p>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="hasActiveFilters() ? clearFilters() : openAssignDialog()"
           >
@@ -517,48 +516,180 @@ import { RbacService } from '../../services/rbac.service';
   `,
   styles: [
     `
+      /* Layout */
       .user-role-assignment {
         min-height: 100vh;
       }
 
+      /* Card styling with Material tokens */
       mat-card {
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--mat-sys-surface-container);
+        border: 1px solid var(--mat-sys-outline-variant);
+        border-radius: var(--ax-radius-lg);
+        box-shadow: var(--mat-sys-level1);
       }
 
+      /* Typography */
+      .heading-title {
+        color: var(--mat-sys-on-surface);
+        font-size: var(--ax-text-3xl);
+        font-weight: var(--ax-font-bold);
+        line-height: var(--ax-leading-tight);
+      }
+
+      .subtitle-text {
+        color: var(--mat-sys-on-surface-variant);
+        font-size: var(--ax-text-base);
+        line-height: var(--ax-leading-normal);
+        margin-top: var(--ax-spacing-xs);
+      }
+
+      .secondary-text {
+        color: var(--mat-sys-on-surface-variant);
+        font-size: var(--ax-text-sm);
+      }
+
+      /* Statistics Cards */
+      .stat-number {
+        font-size: var(--ax-text-2xl);
+        font-weight: var(--ax-font-bold);
+        margin-bottom: var(--ax-spacing-xs);
+      }
+
+      .stat-info {
+        color: var(--ax-info-default);
+      }
+
+      .stat-success {
+        color: var(--ax-success-default);
+      }
+
+      .stat-warning {
+        color: var(--ax-warning-default);
+      }
+
+      .stat-error {
+        color: var(--ax-error-default);
+      }
+
+      /* Bulk Actions */
+      .bulk-actions-container {
+        border-top: 1px solid var(--mat-sys-outline-variant);
+      }
+
+      .bulk-actions-count {
+        color: var(--mat-sys-on-surface-variant);
+        font-size: var(--ax-text-sm);
+      }
+
+      /* Table styling */
       .mat-mdc-table {
         background: transparent;
       }
 
-      .mat-mdc-row:hover {
-        background: rgba(0, 0, 0, 0.04);
-      }
-
-      :host-context(.dark) .mat-mdc-row:hover {
-        background: rgba(255, 255, 255, 0.04);
-      }
-
-      .mat-mdc-chip {
-        min-height: 24px;
-        font-size: 12px;
-      }
-
       .mat-mdc-header-cell {
-        font-weight: 600;
-        color: var(--mdc-theme-on-surface);
+        color: var(--mat-sys-on-surface);
+        font-weight: var(--ax-font-semibold);
+        font-size: var(--ax-text-sm);
       }
 
+      .table-row-hover:hover {
+        background: var(--mat-sys-surface-variant);
+      }
+
+      /* User Avatar */
       .user-avatar {
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: linear-gradient(45deg, #6366f1, #8b5cf6);
+        background: var(--ax-info-faint);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 14px;
+        color: var(--ax-info-emphasis);
+      }
+
+      /* Chips */
+      .mat-mdc-chip {
+        min-height: 24px;
+        font-size: var(--ax-text-xs);
+        font-weight: var(--ax-font-medium);
+      }
+
+      .chip-info {
+        background: var(--ax-info-faint);
+        color: var(--ax-info-emphasis);
+      }
+
+      .chip-neutral {
+        background: var(--mat-sys-surface-variant);
+        color: var(--mat-sys-on-surface);
+      }
+
+      .chip-success {
+        background: var(--ax-success-faint);
+        color: var(--ax-success-emphasis);
+      }
+
+      .chip-error {
+        background: var(--ax-error-faint);
+        color: var(--ax-error-emphasis);
+      }
+
+      .chip-warning {
+        background: var(--ax-warning-faint);
+        color: var(--ax-warning-emphasis);
+      }
+
+      /* Role Chip */
+      .role-chip {
+        background: var(--ax-info-faint) !important;
+        color: var(--ax-info-emphasis) !important;
+        font-size: var(--ax-text-xs) !important;
+      }
+
+      .expiring-warning {
+        color: var(--ax-warning-default) !important;
+      }
+
+      /* Delete action */
+      .delete-action {
+        color: var(--ax-error-default);
+      }
+
+      .delete-action mat-icon {
+        color: var(--ax-error-default);
+      }
+
+      /* Empty State */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-lg);
+        color: var(--mat-sys-on-surface-variant);
+      }
+
+      .empty-state-icon {
+        font-size: 72px;
+        width: 72px;
+        height: 72px;
+        opacity: 0.5;
+        margin-bottom: var(--ax-spacing-lg);
+      }
+
+      .empty-state-title {
+        color: var(--mat-sys-on-surface);
+        font-size: var(--ax-text-lg);
+        font-weight: var(--ax-font-medium);
+        margin-bottom: var(--ax-spacing-sm);
+      }
+
+      .empty-state-message {
+        text-align: center;
+        margin-bottom: var(--ax-spacing-lg);
+        font-size: var(--ax-text-base);
       }
     `,
   ],
@@ -596,32 +727,24 @@ export class UserRoleAssignmentComponent implements OnInit {
   readonly currentPage = signal(0);
 
   // Breadcrumb items
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: BreadcrumbItem[] = [
     {
-      id: 'dashboard',
-      title: 'Dashboard',
+      label: 'Dashboard',
       icon: 'dashboard',
-      link: '/',
-      type: 'basic',
+      url: '/',
     },
     {
-      id: 'management',
-      title: 'Management',
+      label: 'Management',
       icon: 'settings',
-      type: 'basic',
     },
     {
-      id: 'rbac',
-      title: 'RBAC Management',
+      label: 'RBAC Management',
       icon: 'security',
-      link: '/rbac',
-      type: 'basic',
+      url: '/rbac',
     },
     {
-      id: 'user-roles',
-      title: 'User Role Assignments',
+      label: 'User Role Assignments',
       icon: 'assignment_ind',
-      type: 'basic',
     },
   ];
 
@@ -952,6 +1075,24 @@ export class UserRoleAssignmentComponent implements OnInit {
     });
   }
 
+  openManageRolesDialog(assignment: UserRole): void {
+    const dialogRef = this.dialog.open(UserRolesManagementDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: {
+        userId: assignment.user_id,
+        userName: this.getUserDisplayName(assignment),
+        availableRoles: this.availableRoles(),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.refreshAssignments();
+      }
+    });
+  }
+
   viewPermissions(assignment: UserRole): void {
     const dialogRef = this.dialog.open(UserPermissionsDialogComponent, {
       width: '900px',
@@ -1138,11 +1279,11 @@ export class UserRoleAssignmentComponent implements OnInit {
 
   getExpiryStatusClass(assignment: UserRole): string {
     if (this.isExpired(assignment)) {
-      return '!bg-red-100 !text-red-800 dark:!bg-red-900 dark:!text-red-200';
+      return 'chip-error';
     } else if (this.isExpiringSoon(assignment)) {
-      return '!bg-orange-100 !text-orange-800 dark:!bg-orange-900 dark:!text-orange-200';
+      return 'chip-warning';
     } else {
-      return '!bg-green-100 !text-green-800 dark:!bg-green-900 dark:!text-green-200';
+      return 'chip-success';
     }
   }
 }

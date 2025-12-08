@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -22,8 +24,6 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
  * - Error - Invalid Token: Show error message
  * - Error - Expired Token: Show resend button
  * - Already Verified: Show info message
- *
- * Design: Tremor-inspired (matches other auth pages)
  */
 @Component({
   selector: 'app-verify-email',
@@ -31,31 +31,29 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
   imports: [
     CommonModule,
     RouterModule,
+    MatButtonModule,
+    MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
   ],
   template: `
-    <div
-      class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
-      <div class="max-w-md w-full space-y-6">
+    <div class="auth-container">
+      <div class="auth-wrapper">
         <!-- Logo and Header -->
-        <div class="text-center">
+        <div class="auth-header">
           <div
-            class="mx-auto h-20 w-20 flex items-center justify-center rounded-3xl shadow-xl"
+            class="auth-logo"
             [ngClass]="{
-              'bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/30':
-                isVerifying() || (!isVerifying() && !verificationState()),
-              'bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/30':
+              'auth-logo-success':
                 verificationState() === 'success' ||
                 verificationState() === 'already-verified',
-              'bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30':
+              'auth-logo-error':
                 verificationState() === 'invalid' ||
                 verificationState() === 'expired' ||
                 verificationState() === 'error',
             }"
           >
-            <mat-icon class="text-white text-3xl">
+            <mat-icon>
               @if (isVerifying()) {
                 mail
               } @else if (
@@ -70,7 +68,7 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
               }
             </mat-icon>
           </div>
-          <h2 class="mt-6 text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 class="auth-title">
             @if (isVerifying()) {
               Verifying email...
             } @else if (verificationState() === 'success') {
@@ -84,8 +82,8 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
             } @else {
               Verification failed
             }
-          </h2>
-          <p class="mt-2 text-sm text-slate-600">
+          </h1>
+          <p class="auth-subtitle">
             @if (isVerifying()) {
               Please wait while we verify your email address...
             } @else if (verificationState() === 'success') {
@@ -104,219 +102,166 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
 
         <!-- Verifying State -->
         @if (isVerifying()) {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div class="flex flex-col items-center justify-center gap-4">
-              <mat-spinner diameter="40"></mat-spinner>
-              <p class="text-sm text-slate-600 text-center">
-                Verifying your email address...
-              </p>
-            </div>
-          </div>
+          <mat-card appearance="outlined" class="auth-card">
+            <mat-card-content>
+              <div class="auth-loading">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Verifying your email address...</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
         }
 
         <!-- Success State -->
         @if (!isVerifying() && verificationState() === 'success') {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div
-              class="rounded-lg bg-green-50 p-4 border border-green-200 mb-6"
-              role="alert"
-              aria-live="polite"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-green-100"
-                  >
-                    <mat-icon class="text-green-600 !text-sm"
-                      >check_circle</mat-icon
-                    >
-                  </div>
+          <mat-card appearance="outlined" class="auth-card">
+            <mat-card-content>
+              <div
+                class="auth-alert auth-alert-success"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>check_circle</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-green-900">
-                    {{ statusMessage() }}
-                  </p>
-                  <p class="mt-1 text-xs text-green-700">
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">{{ statusMessage() }}</p>
+                  <p class="auth-alert-subtitle">
                     Your email has been verified successfully. You can now sign
                     in to your account.
                   </p>
                 </div>
               </div>
-            </div>
 
-            <button
-              type="button"
-              (click)="goToLogin()"
-              class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent
-                     rounded-lg shadow-sm text-sm font-semibold text-white
-                     bg-gradient-to-r from-blue-600 to-blue-700
-                     hover:from-blue-700 hover:to-blue-800
-                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                     transition-all duration-200 transform hover:scale-[1.02]"
-            >
-              Go to Login
-              <mat-icon class="!text-base">arrow_forward</mat-icon>
-            </button>
-
-            <div class="mt-4 text-center">
-              <a
-                routerLink="/"
-                class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors inline-flex items-center gap-1"
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                class="auth-submit-btn"
+                (click)="goToLogin()"
               >
-                <mat-icon class="!text-base">home</mat-icon>
-                Back to Home
-              </a>
-            </div>
-          </div>
+                Go to Login
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+
+              <div class="auth-footer-link">
+                <a routerLink="/" mat-button>
+                  <mat-icon>home</mat-icon>
+                  Back to Home
+                </a>
+              </div>
+            </mat-card-content>
+          </mat-card>
         }
 
         <!-- Already Verified State -->
         @if (!isVerifying() && verificationState() === 'already-verified') {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div
-              class="rounded-lg bg-blue-50 p-4 border border-blue-200 mb-6"
-              role="alert"
-              aria-live="polite"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100"
-                  >
-                    <mat-icon class="text-blue-600 !text-sm">info</mat-icon>
-                  </div>
+          <mat-card appearance="outlined" class="auth-card">
+            <mat-card-content>
+              <div
+                class="auth-alert auth-alert-info"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>info</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-blue-900">
-                    {{ statusMessage() }}
-                  </p>
-                  <p class="mt-1 text-xs text-blue-700">
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">{{ statusMessage() }}</p>
+                  <p class="auth-alert-subtitle">
                     Your email was already verified. You can sign in to your
                     account.
                   </p>
                 </div>
               </div>
-            </div>
 
-            <button
-              type="button"
-              (click)="goToLogin()"
-              class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent
-                     rounded-lg shadow-sm text-sm font-semibold text-white
-                     bg-gradient-to-r from-blue-600 to-blue-700
-                     hover:from-blue-700 hover:to-blue-800
-                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                     transition-all duration-200 transform hover:scale-[1.02]"
-            >
-              Go to Login
-              <mat-icon class="!text-base">arrow_forward</mat-icon>
-            </button>
-          </div>
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                class="auth-submit-btn"
+                (click)="goToLogin()"
+              >
+                Go to Login
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </mat-card-content>
+          </mat-card>
         }
 
         <!-- Expired Token State -->
         @if (!isVerifying() && verificationState() === 'expired') {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div
-              class="rounded-lg bg-amber-50 p-4 border border-amber-200 mb-6"
-              role="alert"
-              aria-live="polite"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100"
-                  >
-                    <mat-icon class="text-amber-600 !text-sm"
-                      >schedule</mat-icon
-                    >
-                  </div>
+          <mat-card appearance="outlined" class="auth-card">
+            <mat-card-content>
+              <div
+                class="auth-alert auth-alert-warning"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>schedule</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-amber-900">
-                    {{ statusMessage() }}
-                  </p>
-                  <p class="mt-1 text-xs text-amber-700">
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">{{ statusMessage() }}</p>
+                  <p class="auth-alert-subtitle">
                     Verification links expire after 24 hours. Click below to
                     request a new verification email.
                   </p>
                 </div>
               </div>
-            </div>
 
-            @if (resendSuccess()) {
-              <div
-                class="rounded-lg bg-green-50 p-4 border border-green-200 mb-4"
-                role="alert"
-              >
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0">
-                    <div
-                      class="flex h-5 w-5 items-center justify-center rounded-full bg-green-100"
-                    >
-                      <mat-icon class="text-green-600 !text-sm"
-                        >check_circle</mat-icon
-                      >
-                    </div>
+              @if (resendSuccess()) {
+                <div
+                  class="auth-alert auth-alert-success"
+                  role="alert"
+                  style="margin-top: var(--ax-spacing-md);"
+                >
+                  <div class="auth-alert-icon">
+                    <mat-icon>check_circle</mat-icon>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-green-900">
-                      New verification email sent!
-                    </p>
-                    <p class="mt-1 text-xs text-green-700">
+                  <div class="auth-alert-content">
+                    <p class="auth-alert-title">New verification email sent!</p>
+                    <p class="auth-alert-subtitle">
                       Please check your email inbox (and spam folder).
                     </p>
                   </div>
                 </div>
+              }
+
+              <div class="auth-button-group">
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  type="button"
+                  class="auth-button"
+                  (click)="resendVerificationEmail()"
+                  [disabled]="isResending() || resendSuccess()"
+                >
+                  @if (isResending()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Sending...</span>
+                  } @else if (resendSuccess()) {
+                    <mat-icon>check</mat-icon>
+                    <span>Email Sent</span>
+                  } @else {
+                    <mat-icon>refresh</mat-icon>
+                    <span>Resend Verification Email</span>
+                  }
+                </button>
+
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="button"
+                  class="auth-button"
+                  (click)="goToLogin()"
+                >
+                  Go to Login
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
               </div>
-            }
-
-            <div class="space-y-3">
-              <button
-                type="button"
-                (click)="resendVerificationEmail()"
-                [disabled]="isResending() || resendSuccess()"
-                class="w-full flex justify-center items-center gap-2 py-3 px-4 border-2 border-amber-500
-                       rounded-lg text-sm font-semibold text-amber-700
-                       bg-white hover:bg-amber-50
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500
-                       transition-all duration-200
-                       disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
-              >
-                @if (isResending()) {
-                  <mat-spinner diameter="20"></mat-spinner>
-                  <span>Sending...</span>
-                } @else if (resendSuccess()) {
-                  <mat-icon class="!text-base">check</mat-icon>
-                  <span>Email Sent</span>
-                } @else {
-                  <mat-icon class="!text-base">refresh</mat-icon>
-                  <span>Resend Verification Email</span>
-                }
-              </button>
-
-              <button
-                type="button"
-                (click)="goToLogin()"
-                class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-slate-300
-                       rounded-lg text-sm font-medium text-slate-700
-                       bg-white hover:bg-slate-50
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500
-                       transition-all duration-200"
-              >
-                Go to Login
-                <mat-icon class="!text-base">arrow_forward</mat-icon>
-              </button>
-            </div>
-          </div>
+            </mat-card-content>
+          </mat-card>
         }
 
         <!-- Invalid Token or Error State -->
@@ -324,68 +269,297 @@ import { EmailVerificationService } from '../../core/auth/services/email-verific
           !isVerifying() &&
           (verificationState() === 'invalid' || verificationState() === 'error')
         ) {
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"
-          >
-            <div
-              class="rounded-lg bg-red-50 p-4 border border-red-200 mb-6"
-              role="alert"
-              aria-live="polite"
-            >
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100"
-                  >
-                    <mat-icon class="text-red-600 !text-sm">error</mat-icon>
-                  </div>
+          <mat-card appearance="outlined" class="auth-card">
+            <mat-card-content>
+              <div
+                class="auth-alert auth-alert-error"
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="auth-alert-icon">
+                  <mat-icon>error</mat-icon>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-red-900">
-                    {{ statusMessage() }}
-                  </p>
-                  <p class="mt-1 text-xs text-red-700">
+                <div class="auth-alert-content">
+                  <p class="auth-alert-title">{{ statusMessage() }}</p>
+                  <p class="auth-alert-subtitle">
                     The verification link is invalid or has already been used.
                     Please contact support if you need assistance.
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div class="space-y-3">
               <button
+                mat-flat-button
+                color="primary"
                 type="button"
+                class="auth-submit-btn"
                 (click)="goToLogin()"
-                class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent
-                       rounded-lg shadow-sm text-sm font-semibold text-white
-                       bg-gradient-to-r from-blue-600 to-blue-700
-                       hover:from-blue-700 hover:to-blue-800
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                       transition-all duration-200 transform hover:scale-[1.02]"
               >
                 Go to Login
-                <mat-icon class="!text-base">arrow_forward</mat-icon>
+                <mat-icon>arrow_forward</mat-icon>
               </button>
 
-              <div class="text-center">
-                <a
-                  routerLink="/"
-                  class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors inline-flex items-center gap-1"
-                >
-                  <mat-icon class="!text-base">home</mat-icon>
+              <div class="auth-footer-link">
+                <a routerLink="/" mat-button>
+                  <mat-icon>home</mat-icon>
                   Back to Home
                 </a>
               </div>
-            </div>
-          </div>
+            </mat-card-content>
+          </mat-card>
         }
       </div>
     </div>
   `,
   styles: [
     `
-      :host {
-        display: block;
+      .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: var(--ax-spacing-2xl) var(--ax-spacing-md);
+        background-color: var(--ax-background-muted);
+      }
+
+      .auth-wrapper {
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-lg);
+      }
+
+      /* Header Styles */
+      .auth-header {
+        text-align: center;
+      }
+
+      .auth-logo {
+        margin: 0 auto var(--ax-spacing-lg);
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ax-radius-2xl);
+        background: linear-gradient(
+          135deg,
+          var(--ax-brand-default),
+          var(--ax-brand-emphasis)
+        );
+        box-shadow: 0 8px 20px -4px var(--ax-brand-muted);
+        transition: all 0.3s ease-in-out;
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: white;
+        }
+      }
+
+      .auth-logo-success {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.5) !important;
+      }
+
+      .auth-logo-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        box-shadow: 0 8px 20px -4px rgba(239, 68, 68, 0.5) !important;
+      }
+
+      .auth-title {
+        font-size: var(--ax-font-size-2xl);
+        font-weight: var(--ax-font-weight-bold);
+        color: var(--ax-text-heading);
+        margin: 0 0 var(--ax-spacing-sm);
+        letter-spacing: -0.02em;
+      }
+
+      .auth-subtitle {
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+        margin: 0;
+      }
+
+      /* Card Styles */
+      .auth-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        box-shadow: var(--ax-shadow-sm);
+      }
+
+      ::ng-deep .auth-card .mat-mdc-card-content {
+        padding: var(--ax-spacing-2xl) !important;
+      }
+
+      /* Loading State */
+      .auth-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-xl) 0;
+
+        p {
+          font-size: var(--ax-font-size-sm);
+          color: var(--ax-text-subtle);
+          margin: 0;
+        }
+      }
+
+      /* Alert Styles */
+      .auth-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-spacing-md);
+        padding: var(--ax-spacing-md);
+        border-radius: var(--ax-radius-lg);
+        margin-bottom: var(--ax-spacing-lg);
+        border: 1px solid;
+      }
+
+      .auth-alert-success {
+        background-color: var(--ax-success-subtle);
+        border-color: var(--ax-success-muted);
+        color: var(--ax-success-emphasis);
+      }
+
+      .auth-alert-error {
+        background-color: var(--ax-error-subtle);
+        border-color: var(--ax-error-muted);
+        color: var(--ax-error-emphasis);
+      }
+
+      .auth-alert-info {
+        background-color: var(--ax-brand-subtle);
+        border-color: var(--ax-brand-muted);
+        color: var(--ax-brand-emphasis);
+      }
+
+      .auth-alert-warning {
+        background-color: var(--ax-warning-subtle);
+        border-color: var(--ax-warning-muted);
+        color: var(--ax-warning-emphasis);
+      }
+
+      .auth-alert-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .auth-alert-success .auth-alert-icon {
+        background-color: var(--ax-success-muted);
+        color: var(--ax-success-emphasis);
+      }
+
+      .auth-alert-error .auth-alert-icon {
+        background-color: var(--ax-error-muted);
+        color: var(--ax-error-emphasis);
+      }
+
+      .auth-alert-info .auth-alert-icon {
+        background-color: var(--ax-brand-muted);
+        color: var(--ax-brand-emphasis);
+      }
+
+      .auth-alert-warning .auth-alert-icon {
+        background-color: var(--ax-warning-muted);
+        color: var(--ax-warning-emphasis);
+      }
+
+      .auth-alert-content {
+        flex: 1;
+      }
+
+      .auth-alert-title {
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        margin: 0 0 var(--ax-spacing-xs);
+      }
+
+      .auth-alert-subtitle {
+        font-size: var(--ax-font-size-xs);
+        margin: 0;
+        opacity: 0.9;
+      }
+
+      /* Button Styles */
+      .auth-submit-btn {
+        width: 100%;
+        height: 44px;
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        margin-top: var(--ax-spacing-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-xs);
+      }
+
+      .auth-button-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ax-spacing-sm);
+        margin-top: var(--ax-spacing-sm);
+      }
+
+      .auth-button {
+        width: 100%;
+        height: 44px;
+        font-size: var(--ax-font-size-sm);
+        font-weight: var(--ax-font-weight-medium);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ax-spacing-xs);
+      }
+
+      /* Footer Link */
+      .auth-footer-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: var(--ax-spacing-lg);
+      }
+
+      .auth-footer-link a {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--ax-spacing-xs);
+      }
+
+      /* Spinner styling */
+      ::ng-deep .auth-loading .mat-mdc-progress-spinner {
+        --mdc-circular-progress-active-indicator-color: var(
+          --ax-brand-default
+        ) !important;
+      }
+
+      ::ng-deep .auth-loading .mat-mdc-progress-spinner circle {
+        stroke: var(--ax-brand-default) !important;
+      }
+
+      /* Smooth transitions */
+      .auth-card {
+        transition: all 0.2s ease-in-out;
+      }
+
+      .auth-card:hover {
+        box-shadow: var(--ax-shadow-md);
       }
     `,
   ],

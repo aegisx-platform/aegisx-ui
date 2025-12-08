@@ -1,0 +1,267 @@
+import {
+  Component,
+  Input,
+  inject,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+  ViewEncapsulation,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { CodeTab, CodeLanguage } from '../../../types/docs.types';
+
+// Import Prism core and languages
+import Prism from 'prismjs';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-scss';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-json';
+
+/**
+ * Code Tabs Component
+ *
+ * Displays code examples with syntax highlighting in tabbed format.
+ * Uses Prism.js for syntax highlighting.
+ * Supports HTML, TypeScript, SCSS, Bash, JSON, and Preview mode.
+ *
+ * Preview mode: Use language='preview' to render ng-content as live preview.
+ *
+ * @example
+ * ```html
+ * <ax-code-tabs [tabs]="[
+ *   { label: 'Preview', code: '', language: 'preview' },
+ *   { label: 'HTML', code: htmlCode, language: 'html' },
+ *   { label: 'TypeScript', code: tsCode, language: 'typescript' }
+ * ]">
+ *   <div preview>Live component here</div>
+ * </ax-code-tabs>
+ * ```
+ */
+@Component({
+  selector: 'ax-code-tabs',
+  standalone: true,
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    CommonModule,
+    MatTabsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+  ],
+  template: `
+    <div class="code-tabs">
+      @if (tabs.length === 1) {
+        <!-- Single code block -->
+        <div class="code-tabs__single">
+          <div class="code-tabs__header">
+            <div class="code-tabs__dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <span class="code-tabs__filename">{{ tabs[0].label }}</span>
+            @if (tabs[0].language !== 'preview') {
+              <button
+                mat-icon-button
+                class="code-tabs__copy-btn"
+                matTooltip="Copy code"
+                (click)="copyCode(tabs[0].code)"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            }
+          </div>
+          @if (tabs[0].language === 'preview') {
+            <div class="code-tabs__preview">
+              <ng-content></ng-content>
+            </div>
+          } @else {
+            <pre class="code-tabs__code"><code
+              #codeBlock
+              class="language-{{ getPrismLanguage(tabs[0].language) }}"
+            >{{ tabs[0].code.trim() }}</code></pre>
+          }
+        </div>
+      } @else {
+        <!-- Tabbed code blocks -->
+        <div class="code-tabs__tabbed">
+          <div class="code-tabs__tab-header">
+            <div class="code-tabs__dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <div class="code-tabs__tab-buttons">
+              @for (tab of tabs; track tab.label; let i = $index) {
+                <button
+                  class="code-tabs__tab-btn"
+                  [class.active]="activeTabIndex === i"
+                  (click)="selectTab(i)"
+                >
+                  {{ tab.label }}
+                </button>
+              }
+            </div>
+            @if (tabs[activeTabIndex].language !== 'preview') {
+              <button
+                mat-icon-button
+                class="code-tabs__copy-btn"
+                matTooltip="Copy code"
+                (click)="copyCode(tabs[activeTabIndex].code)"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            }
+          </div>
+          @for (tab of tabs; track getTabTrackId(tab, i); let i = $index) {
+            @if (activeTabIndex === i) {
+              @if (tab.language === 'preview') {
+                <div class="code-tabs__preview">
+                  <ng-content></ng-content>
+                </div>
+              } @else {
+                <pre class="code-tabs__code"><code
+                  #codeBlock
+                  class="language-{{ getPrismLanguage(tab.language) }}"
+                >{{ tab.code.trim() }}</code></pre>
+              }
+            }
+          }
+        </div>
+      }
+    </div>
+  `,
+  // Styles are provided by @aegisx/ui theme styles (_docs.scss)
+})
+export class CodeTabsComponent implements AfterViewInit, OnChanges {
+  private readonly clipboard = inject(Clipboard);
+  private readonly snackBar = inject(MatSnackBar);
+
+  @ViewChildren('codeBlock') codeBlocks!: QueryList<ElementRef>;
+
+  @Input() tabs: CodeTab[] = [];
+  @Input() showLineNumbers = false;
+
+  activeTabIndex = 0;
+
+  // Convenience inputs for single-tab usage
+  @Input() set html(value: string) {
+    if (value) this.addTab('HTML', value, 'html');
+  }
+  @Input() set typescript(value: string) {
+    if (value) this.addTab('TypeScript', value, 'typescript');
+  }
+  @Input() set scss(value: string) {
+    if (value) this.addTab('SCSS', value, 'scss');
+  }
+
+  private addTab(label: string, code: string, language: CodeLanguage): void {
+    // Prevent duplicates
+    if (!this.tabs.find((t) => t.label === label)) {
+      this.tabs = [...this.tabs, { label, code, language }];
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Initial highlighting
+    this.highlightAllCode();
+
+    // Subscribe to codeBlocks changes for dynamically added code blocks
+    this.codeBlocks.changes.subscribe(() => {
+      setTimeout(() => this.highlightAllCode(), 0);
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tabs']) {
+      // Reset highlighted status when tabs change
+      // Use setTimeout to ensure DOM is updated
+      setTimeout(() => this.forceHighlightAllCode(), 0);
+    }
+  }
+
+  selectTab(index: number): void {
+    this.activeTabIndex = index;
+    // Highlight code when tab changes (for lazy-loaded content)
+    setTimeout(() => this.highlightAllCode(), 0);
+  }
+
+  private highlightAllCode(): void {
+    if (this.codeBlocks && this.codeBlocks.length > 0) {
+      this.codeBlocks.forEach((codeBlock) => {
+        const element = codeBlock.nativeElement;
+        if (element && !element.classList.contains('prism-highlighted')) {
+          Prism.highlightElement(element);
+          element.classList.add('prism-highlighted');
+        }
+      });
+    }
+  }
+
+  private forceHighlightAllCode(): void {
+    if (this.codeBlocks && this.codeBlocks.length > 0) {
+      this.codeBlocks.forEach((codeBlock) => {
+        const element = codeBlock.nativeElement;
+        if (element) {
+          // Remove prism-highlighted class to force re-highlight
+          element.classList.remove('prism-highlighted');
+          Prism.highlightElement(element);
+          element.classList.add('prism-highlighted');
+        }
+      });
+    }
+  }
+
+  copyCode(code: string): void {
+    this.clipboard.copy(code.trim());
+    this.snackBar.open('Code copied to clipboard', 'Close', {
+      duration: 2000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
+  }
+
+  getPrismLanguage(language: CodeLanguage): string {
+    const languageMap: Record<CodeLanguage, string> = {
+      html: 'markup',
+      typescript: 'typescript',
+      scss: 'scss',
+      bash: 'bash',
+      json: 'json',
+      preview: 'plaintext', // Preview doesn't use Prism
+    };
+    return languageMap[language] || 'plaintext';
+  }
+
+  isPreviewTab(tab: CodeTab): boolean {
+    return tab.language === 'preview';
+  }
+
+  getTabTrackId(tab: CodeTab, index: number): string {
+    // Include code hash in track id to force re-render when code changes
+    return `${tab.label}-${index}-${this.hashCode(tab.code)}`;
+  }
+
+  private hashCode(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+  }
+}

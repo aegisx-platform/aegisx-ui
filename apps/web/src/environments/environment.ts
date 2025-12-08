@@ -10,7 +10,7 @@ export const environment = {
     reconnectionAttempts: 3, // Reduce reconnection attempts
     reconnectionDelay: 2000, // Add delay between reconnections
     forceSecure: false,
-    transports: ['websocket', 'polling'], // Allow fallback
+    transports: ['websocket', 'polling'],
     upgrade: true,
     autoConnect: false, // Don't auto-connect, wait for manual connection
   },

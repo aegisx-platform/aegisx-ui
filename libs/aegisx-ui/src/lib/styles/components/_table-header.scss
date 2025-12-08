@@ -1,0 +1,179 @@
+/* ============================================
+   Table Header - UI Block Styles
+   Reusable patterns for list/table page headers
+   Uses Tailwind utilities + minimal custom CSS
+   ============================================ */
+
+// Base container
+.ax-table-header {
+  @apply bg-white dark:bg-gray-900 rounded-lg;
+  border: 1px solid var(--ax-border-default);
+  transition: box-shadow 0.2s ease;
+}
+
+.ax-table-header--elevated {
+  box-shadow: var(--ax-shadow-sm);
+}
+
+.ax-table-header--flat {
+  border: none;
+  border-radius: 0;
+}
+
+// Row layouts
+.ax-table-header__row {
+  @apply flex items-center gap-3 p-4;
+}
+
+.ax-table-header__row--wrap {
+  @apply flex-wrap;
+}
+
+.ax-table-header__row--between {
+  @apply justify-between;
+}
+
+// Title section
+.ax-table-header__title-section {
+  @apply flex flex-col gap-1;
+}
+
+.ax-table-header__title {
+  @apply text-lg font-semibold;
+  color: var(--ax-text-primary);
+}
+
+.ax-table-header__subtitle {
+  @apply text-sm;
+  color: var(--ax-text-secondary);
+}
+
+.ax-table-header__count {
+  @apply text-sm font-medium px-2 py-0.5 rounded-full;
+  background: var(--ax-background-subtle);
+  color: var(--ax-text-secondary);
+}
+
+// Search section
+.ax-table-header__search {
+  @apply flex-1 max-w-md;
+}
+
+.ax-table-header__search--wide {
+  @apply max-w-lg;
+}
+
+.ax-table-header__search--full {
+  @apply max-w-none;
+}
+
+// Actions section
+.ax-table-header__actions {
+  @apply flex items-center gap-2;
+}
+
+.ax-table-header__actions--end {
+  @apply ml-auto;
+}
+
+// Filter section
+.ax-table-header__filters {
+  @apply flex items-center gap-2 flex-wrap;
+}
+
+.ax-table-header__filter-chip {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer;
+  background: var(--ax-background-subtle);
+  color: var(--ax-text-secondary);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--ax-background-hover);
+  }
+
+  &.active,
+  &--active {
+    background: var(--ax-primary-50);
+    color: var(--ax-primary-700);
+    border-color: var(--ax-primary-200);
+  }
+}
+
+// Divider
+.ax-table-header__divider {
+  @apply w-full;
+  height: 1px;
+  background: var(--ax-border-default);
+}
+
+// Pagination info
+.ax-table-header__pagination-info {
+  @apply text-sm;
+  color: var(--ax-text-secondary);
+}
+
+// ============================================
+// Variant: Search-Centric (wide search + actions)
+// ============================================
+.ax-table-header--search-centric {
+  .ax-table-header__search {
+    @apply flex-1 max-w-2xl;
+  }
+}
+
+// ============================================
+// Variant: Title-Description (simple header)
+// ============================================
+.ax-table-header--title-desc {
+  .ax-table-header__row {
+    @apply py-6;
+  }
+}
+
+// ============================================
+// Variant: Filter Tabs (add button + filter chips)
+// ============================================
+.ax-table-header--filter-tabs {
+  .ax-table-header__row:first-child {
+    @apply pb-2;
+  }
+  .ax-table-header__row:last-child {
+    @apply pt-2;
+  }
+}
+
+// ============================================
+// Variant: Analytics (title + count + filter chips)
+// ============================================
+.ax-table-header--analytics {
+  .ax-table-header__title-section {
+    @apply flex-row items-center gap-3;
+  }
+}
+
+// ============================================
+// Variant: Full Featured (pagination + search + actions)
+// ============================================
+.ax-table-header--full {
+  .ax-table-header__row {
+    @apply gap-4;
+  }
+}
+
+// ============================================
+// Responsive adjustments
+// ============================================
+@media (max-width: 640px) {
+  .ax-table-header__row {
+    @apply flex-wrap gap-2;
+  }
+
+  .ax-table-header__search {
+    @apply max-w-none w-full order-last;
+  }
+
+  .ax-table-header__actions {
+    @apply w-full justify-end;
+  }
+}

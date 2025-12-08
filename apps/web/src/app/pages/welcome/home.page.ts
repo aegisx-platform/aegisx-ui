@@ -1,9 +1,9 @@
-import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/services/auth.service';
 
 interface QuickAction {
@@ -11,7 +11,6 @@ interface QuickAction {
   description: string;
   icon: string;
   route: string;
-  color: string;
   permissions?: string[]; // Optional - if not specified, visible to all
 }
 
@@ -26,170 +25,121 @@ interface Feature {
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule],
   template: `
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div class="home-container">
       <!-- Hero Section -->
-      <div class="relative overflow-hidden bg-white border-b border-slate-200">
-        <div
-          class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-50"
-        ></div>
-        <div
-          class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24"
-        >
-          <div class="text-center">
-            <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
-              Welcome back, {{ getUserName() }}! 👋
-            </h1>
-            <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto">
-              Your enterprise platform for building scalable applications with
-              modern technology stack.
-            </p>
-            <div class="mt-8 flex justify-center gap-4">
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="navigateTo('/profile')"
-                class="!bg-blue-600 hover:!bg-blue-700"
-              >
-                <mat-icon class="mr-2">person</mat-icon>
-                View Profile
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1 class="hero-title">Welcome back, {{ getUserName() }}! 👋</h1>
+          <p class="hero-subtitle">
+            Your enterprise platform for building scalable applications with
+            modern technology stack.
+          </p>
+          <div class="hero-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="navigateTo('/profile')"
+            >
+              <mat-icon>person</mat-icon>
+              View Profile
+            </button>
+            @if (hasSettingsPermission()) {
+              <button mat-stroked-button (click)="navigateTo('/settings')">
+                <mat-icon>settings</mat-icon>
+                Settings
               </button>
-              @if (hasSettingsPermission()) {
-                <button mat-stroked-button (click)="navigateTo('/settings')">
-                  <mat-icon class="mr-2">settings</mat-icon>
-                  Settings
-                </button>
-              }
-            </div>
+            }
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Main Content -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main class="main-content">
         <!-- Quick Actions -->
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold text-slate-900 mb-6">Quick Actions</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <section class="section">
+          <h2 class="section-title">Quick Actions</h2>
+          <div class="quick-actions-grid">
             @for (action of filteredQuickActions(); track action.title) {
-              <div
-                class="bg-white rounded-xl p-6 border border-slate-200 hover:border-{{
-                  action.color
-                }}-300 hover:shadow-lg transition-all cursor-pointer group"
+              <mat-card
+                appearance="outlined"
+                class="quick-action-card"
                 (click)="navigateTo(action.route)"
               >
-                <div
-                  class="w-12 h-12 rounded-lg bg-{{
-                    action.color
-                  }}-50 flex items-center justify-center mb-4 group-hover:bg-{{
-                    action.color
-                  }}-100 transition-colors"
-                >
-                  <mat-icon class="text-{{ action.color }}-600 !text-2xl">{{
-                    action.icon
-                  }}</mat-icon>
-                </div>
-                <h3 class="text-lg font-semibold text-slate-900 mb-2">
-                  {{ action.title }}
-                </h3>
-                <p class="text-sm text-slate-600">{{ action.description }}</p>
-              </div>
+                <mat-card-content>
+                  <div class="action-icon-wrapper">
+                    <mat-icon>{{ action.icon }}</mat-icon>
+                  </div>
+                  <h3 class="action-title">{{ action.title }}</h3>
+                  <p class="action-description">{{ action.description }}</p>
+                </mat-card-content>
+              </mat-card>
             }
           </div>
-        </div>
+        </section>
 
         <!-- Features Highlight -->
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold text-slate-900 mb-6">
-            Platform Features
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section class="section">
+          <h2 class="section-title">Platform Features</h2>
+          <div class="features-grid">
             @for (feature of features(); track feature.title) {
-              <div class="bg-white rounded-xl p-6 border border-slate-200">
-                <div class="flex items-start gap-4">
-                  <div
-                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center flex-shrink-0"
-                  >
-                    <mat-icon class="text-blue-600">{{
-                      feature.icon
-                    }}</mat-icon>
+              <mat-card appearance="outlined" class="feature-card">
+                <mat-card-content>
+                  <div class="feature-icon-wrapper">
+                    <mat-icon>{{ feature.icon }}</mat-icon>
                   </div>
                   <div>
-                    <h3 class="text-lg font-semibold text-slate-900 mb-2">
-                      {{ feature.title }}
-                    </h3>
-                    <p class="text-sm text-slate-600">
-                      {{ feature.description }}
-                    </p>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-description">{{ feature.description }}</p>
                   </div>
-                </div>
-              </div>
+                </mat-card-content>
+              </mat-card>
             }
           </div>
-        </div>
+        </section>
 
-        <!-- Info Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Getting Started -->
-          <div
-            class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200"
-          >
-            <div class="flex items-start gap-4">
-              <div
-                class="w-12 h-12 rounded-lg bg-white flex items-center justify-center flex-shrink-0"
-              >
-                <mat-icon class="text-blue-600 !text-2xl"
-                  >rocket_launch</mat-icon
-                >
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-blue-900 mb-2">
-                  Getting Started
-                </h3>
-                <p class="text-sm text-blue-700 mb-4">
+        <section class="section">
+          <div class="info-cards-grid">
+            <!-- Getting Started -->
+            <mat-card
+              appearance="outlined"
+              class="info-card info-card--primary"
+            >
+              <mat-card-content>
+                <div class="info-icon-wrapper">
+                  <mat-icon>rocket_launch</mat-icon>
+                </div>
+                <h3 class="info-title">Getting Started</h3>
+                <p class="info-description">
                   New to the platform? Check out our quick start guide to learn
                   about key features.
                 </p>
-                <button mat-button class="!text-blue-700 !font-medium" disabled>
-                  <mat-icon class="mr-2">menu_book</mat-icon>
+                <button mat-button disabled class="info-button">
+                  <mat-icon>menu_book</mat-icon>
                   View Documentation (Coming Soon)
                 </button>
-              </div>
-            </div>
-          </div>
+              </mat-card-content>
+            </mat-card>
 
-          <!-- Need Help? -->
-          <div
-            class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200"
-          >
-            <div class="flex items-start gap-4">
-              <div
-                class="w-12 h-12 rounded-lg bg-white flex items-center justify-center flex-shrink-0"
-              >
-                <mat-icon class="text-purple-600 !text-2xl"
-                  >support_agent</mat-icon
-                >
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-purple-900 mb-2">
-                  Need Help?
-                </h3>
-                <p class="text-sm text-purple-700 mb-4">
+            <!-- Need Help? -->
+            <mat-card appearance="outlined" class="info-card info-card--accent">
+              <mat-card-content>
+                <div class="info-icon-wrapper">
+                  <mat-icon>support_agent</mat-icon>
+                </div>
+                <h3 class="info-title">Need Help?</h3>
+                <p class="info-description">
                   Our support team is here to help you with any questions or
                   issues.
                 </p>
-                <button
-                  mat-button
-                  class="!text-purple-700 !font-medium"
-                  disabled
-                >
-                  <mat-icon class="mr-2">email</mat-icon>
+                <button mat-button disabled class="info-button">
+                  <mat-icon>email</mat-icon>
                   Contact Support (Coming Soon)
                 </button>
-              </div>
-            </div>
+              </mat-card-content>
+            </mat-card>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   `,
   styles: [
@@ -200,57 +150,358 @@ interface Feature {
         height: 100%;
       }
 
-      // Custom hover effects for dynamic colors
-      .hover-border-blue-300:hover {
-        border-color: rgb(147 197 253);
-      }
-      .hover-border-green-300:hover {
-        border-color: rgb(134 239 172);
-      }
-      .hover-border-purple-300:hover {
-        border-color: rgb(216 180 254);
-      }
-      .hover-border-amber-300:hover {
-        border-color: rgb(252 211 77);
+      .home-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: 100%;
+        background-color: var(--ax-background-muted);
       }
 
-      .bg-blue-50 {
-        background-color: rgb(239 246 255);
-      }
-      .bg-green-50 {
-        background-color: rgb(240 253 244);
-      }
-      .bg-purple-50 {
-        background-color: rgb(250 245 255);
-      }
-      .bg-amber-50 {
-        background-color: rgb(255 251 235);
+      /* ===== HERO SECTION ===== */
+      .hero-section {
+        background-color: var(--ax-background-default);
+        border-bottom: 1px solid var(--ax-border-default);
+        padding: var(--ax-spacing-3xl) var(--ax-spacing-lg);
       }
 
-      .hover-bg-blue-100:hover {
-        background-color: rgb(219 234 254);
-      }
-      .hover-bg-green-100:hover {
-        background-color: rgb(220 252 231);
-      }
-      .hover-bg-purple-100:hover {
-        background-color: rgb(243 232 255);
-      }
-      .hover-bg-amber-100:hover {
-        background-color: rgb(254 243 199);
+      .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
       }
 
-      .text-blue-600 {
-        color: rgb(37 99 235);
+      .hero-title {
+        margin: 0 0 var(--ax-spacing-sm) 0;
+        font-size: var(--ax-font-size-3xl);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+        letter-spacing: -0.02em;
       }
-      .text-green-600 {
-        color: rgb(22 163 74);
+
+      .hero-subtitle {
+        margin: 0 0 var(--ax-spacing-2xl) 0;
+        font-size: var(--ax-font-size-md);
+        color: var(--ax-text-subtle);
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.5;
       }
-      .text-purple-600 {
-        color: rgb(147 51 234);
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        gap: var(--ax-spacing-md);
+        flex-wrap: wrap;
       }
-      .text-amber-600 {
-        color: rgb(217 119 6);
+
+      /* ===== MAIN CONTENT ===== */
+      .main-content {
+        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        padding: var(--ax-spacing-3xl) var(--ax-spacing-lg);
+      }
+
+      .section {
+        margin-bottom: var(--ax-spacing-3xl);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .section-title {
+        margin: 0 0 var(--ax-spacing-lg) 0;
+        font-size: var(--ax-font-size-2xl);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+        letter-spacing: -0.02em;
+      }
+
+      /* ===== QUICK ACTIONS GRID ===== */
+      .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--ax-spacing-md);
+      }
+
+      .quick-action-card {
+        cursor: pointer;
+        transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--ax-shadow-md);
+          border-color: var(--ax-brand-default);
+
+          .action-icon-wrapper {
+            background-color: var(--ax-brand-default);
+
+            mat-icon {
+              color: white;
+            }
+          }
+        }
+
+        ::ng-deep .mat-mdc-card-content {
+          padding: var(--ax-spacing-lg) !important;
+          text-align: center;
+        }
+      }
+
+      .action-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto var(--ax-spacing-md);
+        background-color: var(--ax-background-muted);
+        border-radius: var(--ax-radius-lg);
+        transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+
+        mat-icon {
+          color: var(--ax-text-subtle);
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          transition: color 200ms cubic-bezier(0.2, 0, 0, 1);
+        }
+      }
+
+      .action-title {
+        margin: 0 0 var(--ax-spacing-xs) 0;
+        font-size: var(--ax-font-size-md);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+      }
+
+      .action-description {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+        line-height: 1.4;
+      }
+
+      /* ===== FEATURES GRID ===== */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--ax-spacing-md);
+      }
+
+      .feature-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+        transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+
+        &:hover {
+          border-color: var(--ax-border-emphasis);
+          box-shadow: var(--ax-shadow-sm);
+        }
+
+        ::ng-deep .mat-mdc-card-content {
+          padding: var(--ax-spacing-lg) !important;
+          display: flex;
+          gap: var(--ax-spacing-md);
+          align-items: flex-start;
+        }
+      }
+
+      .feature-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        background-color: var(--ax-background-muted);
+        border-radius: var(--ax-radius-md);
+
+        mat-icon {
+          color: var(--ax-text-default);
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .feature-title {
+        margin: 0 0 var(--ax-spacing-2xs) 0;
+        font-size: var(--ax-font-size-md);
+        font-weight: var(--ax-font-weight-semibold);
+        color: var(--ax-text-heading);
+      }
+
+      .feature-description {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        color: var(--ax-text-subtle);
+        line-height: 1.4;
+      }
+
+      /* ===== INFO CARDS GRID ===== */
+      .info-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--ax-spacing-md);
+      }
+
+      .info-card {
+        background-color: var(--ax-background-default);
+        border: 1px solid var(--ax-border-default);
+
+        ::ng-deep .mat-mdc-card-content {
+          padding: var(--ax-spacing-lg) !important;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ax-spacing-sm);
+        }
+
+        &.info-card--primary {
+          background: linear-gradient(
+            135deg,
+            var(--ax-brand-default),
+            var(--ax-brand-emphasis)
+          );
+          border: none;
+          box-shadow: 0 8px 20px -4px var(--ax-brand-muted);
+
+          .info-title {
+            color: white;
+          }
+
+          .info-description {
+            color: rgba(255, 255, 255, 0.95);
+          }
+
+          .info-icon-wrapper {
+            background-color: rgba(255, 255, 255, 0.25);
+
+            mat-icon {
+              color: white;
+            }
+          }
+
+          .info-button {
+            color: white;
+
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
+          }
+        }
+
+        &.info-card--accent {
+          background: linear-gradient(
+            135deg,
+            var(--ax-success-default),
+            var(--ax-success-emphasis)
+          );
+          border: none;
+          box-shadow: 0 8px 20px -4px var(--ax-success-muted);
+
+          .info-title {
+            color: white;
+          }
+
+          .info-description {
+            color: rgba(255, 255, 255, 0.95);
+          }
+
+          .info-icon-wrapper {
+            background-color: rgba(255, 255, 255, 0.25);
+
+            mat-icon {
+              color: white;
+            }
+          }
+
+          .info-button {
+            color: white;
+
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
+          }
+        }
+      }
+
+      .info-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--ax-radius-lg);
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .info-title {
+        margin: 0;
+        font-size: var(--ax-font-size-lg);
+        font-weight: var(--ax-font-weight-semibold);
+      }
+
+      .info-description {
+        margin: 0;
+        font-size: var(--ax-font-size-sm);
+        line-height: 1.5;
+      }
+
+      .info-button {
+        align-self: flex-start;
+        text-transform: none;
+
+        mat-icon {
+          margin-right: var(--ax-spacing-xs);
+        }
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .hero-section {
+          padding: var(--ax-spacing-2xl) var(--ax-spacing-md);
+        }
+
+        .hero-title {
+          font-size: var(--ax-font-size-2xl);
+        }
+
+        .hero-subtitle {
+          font-size: var(--ax-font-size-sm);
+        }
+
+        .main-content {
+          padding: var(--ax-spacing-2xl) var(--ax-spacing-md);
+        }
+
+        .section-title {
+          font-size: var(--ax-font-size-xl);
+        }
+
+        .quick-actions-grid {
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: var(--ax-spacing-sm);
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .info-cards-grid {
+          grid-template-columns: 1fr;
+        }
       }
     `,
   ],
@@ -265,32 +516,27 @@ export class HomePage implements OnInit {
       description: 'View and update your profile information',
       icon: 'account_circle',
       route: '/profile',
-      color: 'blue',
-      // No permissions required - everyone can see their profile
     },
     {
       title: 'User Management',
       description: 'Manage users, roles and permissions',
       icon: 'people',
       route: '/users',
-      color: 'green',
-      permissions: ['users:read', '*:*'], // Admin or users with user management permission
+      permissions: ['users:read', '*:*'],
     },
     {
       title: 'Settings',
       description: 'Configure system preferences',
       icon: 'settings',
       route: '/settings',
-      color: 'purple',
-      permissions: ['settings:view', '*:*'], // Admin only
+      permissions: ['settings:view', '*:*'],
     },
     {
       title: 'API Keys',
       description: 'Manage your API keys and tokens',
       icon: 'key',
       route: '/settings/api-keys',
-      color: 'amber',
-      permissions: ['api-keys:read', '*:*'], // Admin only
+      permissions: ['api-keys:read', '*:*'],
     },
   ]);
 

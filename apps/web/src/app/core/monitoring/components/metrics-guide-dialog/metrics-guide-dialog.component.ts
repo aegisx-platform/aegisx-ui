@@ -39,7 +39,7 @@ interface MetricDetail {
       <!-- Header -->
       <div class="dialog-header">
         <h2 mat-dialog-title class="flex items-center gap-3">
-          <mat-icon class="text-4xl text-blue-600">school</mat-icon>
+          <mat-icon class="text-4xl text-primary">school</mat-icon>
           <span>คู่มือการใช้งาน System Monitoring</span>
         </h2>
         <button mat-icon-button [mat-dialog-close]="true" class="close-button">
@@ -51,13 +51,15 @@ interface MetricDetail {
       <mat-dialog-content class="dialog-content">
         <!-- Introduction -->
         <div class="intro-section">
-          <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-lg mb-6">
-            <mat-icon class="text-blue-600 mt-1">info</mat-icon>
+          <div
+            class="flex items-start gap-3 p-4 bg-surface-container rounded-lg mb-6"
+          >
+            <mat-icon class="text-primary mt-1">info</mat-icon>
             <div>
-              <h3 class="font-semibold text-blue-900 mb-2">
+              <h3 class="font-semibold text-primary mb-2">
                 ยินดีต้อนรับสู่ระบบติดตามประสิทธิภาพ
               </h3>
-              <p class="text-sm text-blue-800">
+              <p class="text-sm text-primary">
                 หน้าจอนี้แสดงข้อมูลสถานะของระบบแบบเรียลไทม์
                 เพื่อให้คุณสามารถติดตามและวิเคราะห์ประสิทธิภาพการทำงานของแอปพลิเคชันได้อย่างครอบคลุม
               </p>
@@ -81,7 +83,7 @@ interface MetricDetail {
             </mat-expansion-panel-header>
 
             <div class="section-content">
-              <p class="text-sm text-gray-600 mb-4">
+              <p class="text-sm text-muted mb-4">
                 {{ section.description }}
               </p>
 
@@ -91,10 +93,8 @@ interface MetricDetail {
                   class="metric-item"
                 >
                   <div class="metric-header">
-                    <mat-icon class="text-sm text-gray-500"
-                      >show_chart</mat-icon
-                    >
-                    <h4 class="font-semibold text-gray-800">
+                    <mat-icon class="text-sm text-muted">show_chart</mat-icon>
+                    <h4 class="font-semibold text-on-surface">
                       {{ metric.name }}
                     </h4>
                   </div>
@@ -134,15 +134,15 @@ interface MetricDetail {
 
         <!-- Tips Section -->
         <div class="tips-section mt-6">
-          <div class="p-4 bg-amber-50 rounded-lg">
+          <div class="p-4 bg-surface-container rounded-lg">
             <div class="flex items-start gap-3">
-              <mat-icon class="text-amber-600 mt-1">tips_and_updates</mat-icon>
+              <mat-icon class="text-warning mt-1">tips_and_updates</mat-icon>
               <div>
-                <h3 class="font-semibold text-amber-900 mb-2">
+                <h3 class="font-semibold text-warning mb-2">
                   💡 เคล็ดลับการใช้งาน
                 </h3>
                 <ul
-                  class="text-sm text-amber-800 space-y-1 list-disc list-inside"
+                  class="text-sm text-warning space-y-1 list-disc list-inside"
                 >
                   <li>
                     คลิกปุ่ม "Start Auto-Refresh"
@@ -172,7 +172,7 @@ interface MetricDetail {
 
       <!-- Footer -->
       <mat-dialog-actions align="end" class="dialog-footer">
-        <button mat-raised-button color="primary" [mat-dialog-close]="true">
+        <button mat-flat-button color="primary" [mat-dialog-close]="true">
           <mat-icon>check</mat-icon>
           เข้าใจแล้ว
         </button>
@@ -191,14 +191,14 @@ interface MetricDetail {
         justify-content: space-between;
         align-items: flex-start;
         padding: 20px 24px 16px;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
       }
 
       .dialog-header h2 {
         margin: 0;
         font-size: 1.5rem;
         font-weight: 600;
-        color: #1f2937;
+        color: var(--mat-sys-on-surface);
       }
 
       .close-button {
@@ -214,7 +214,7 @@ interface MetricDetail {
 
       .dialog-footer {
         padding: 16px 24px;
-        border-top: 1px solid #e5e7eb;
+        border-top: 1px solid var(--mat-sys-outline-variant);
       }
 
       .section-content {
@@ -241,13 +241,13 @@ interface MetricDetail {
 
       .metric-meaning {
         font-size: 0.875rem;
-        color: #4b5563;
+        color: var(--mat-sys-on-surface-variant);
         margin: 0;
       }
 
       .metric-explanation {
         font-size: 0.875rem;
-        color: #6b7280;
+        color: var(--mat-sys-on-surface-variant);
         line-height: 1.5;
         margin: 0;
       }
@@ -269,37 +269,37 @@ interface MetricDetail {
       }
 
       .good-value {
-        background-color: #d1fae5;
-        color: #065f46;
+        background-color: rgb(var(--ax-success-100));
+        color: rgb(var(--ax-success-900));
       }
 
       .good-value mat-icon {
-        color: #059669;
+        color: rgb(var(--ax-success-600));
       }
 
       .bad-value {
-        background-color: #fee2e2;
-        color: #991b1b;
+        background-color: rgb(var(--ax-error-100));
+        color: rgb(var(--ax-error-800));
       }
 
       .bad-value mat-icon {
-        color: #dc2626;
+        color: rgb(var(--ax-error-600));
       }
 
       .example-box {
         display: flex;
         align-items: flex-start;
         gap: 6px;
-        background-color: #eff6ff;
+        background-color: rgb(var(--ax-primary-50));
         padding: 8px 12px;
         border-radius: 6px;
         font-size: 0.813rem;
-        color: #1e40af;
+        color: rgb(var(--ax-primary-900));
         margin-top: 4px;
       }
 
       .example-box mat-icon {
-        color: #3b82f6;
+        color: rgb(var(--ax-primary-500));
         margin-top: 2px;
       }
 

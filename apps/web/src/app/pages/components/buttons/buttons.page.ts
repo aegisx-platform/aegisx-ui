@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
+import { AxCardComponent, AxAlertComponent } from '@aegisx/ui';
 
 @Component({
   selector: 'ax-buttons-page',
@@ -15,8 +15,8 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
     MatIconModule,
     MatButtonToggleModule,
     MatProgressSpinnerModule,
-    AegisxCardComponent,
-    AegisxAlertComponent
+    AxCardComponent,
+    AxAlertComponent,
   ],
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -232,12 +232,14 @@ import { AegisxCardComponent, AegisxAlertComponent } from '@aegisx/ui';
       </section>
     </div>
   `,
-  styles: [`
-    mat-spinner {
-      display: inline-block;
-      vertical-align: middle;
-    }
-  `]
+  styles: [
+    `
+      mat-spinner {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    `,
+  ],
 })
 export class ButtonsPage {
   isLoading = false;

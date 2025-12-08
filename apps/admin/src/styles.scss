@@ -1,70 +1,60 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Import AegisX Design System Theme - @use MUST be FIRST */
+@use '../../../libs/aegisx-ui/src/lib/styles/themes/aegisx-light.scss';
+
+/* Import All Theme Variants (for theme switching) */
+@import '../../../libs/aegisx-ui/src/lib/styles/themes/all-themes';
+
+/* Import Inter + Noto Sans Thai + JetBrains Mono Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+
 /* Import Tailwind CSS */
 @tailwind base;
-
-/* Fuse Base Styles Layer */
-@layer base {
-  * {
-    /* Text rendering */
-    text-rendering: optimizeLegibility;
-    -o-text-rendering: optimizeLegibility;
-    -ms-text-rendering: optimizeLegibility;
-    -moz-text-rendering: optimizeLegibility;
-    -webkit-text-rendering: optimizeLegibility;
-    -webkit-tap-highlight-color: transparent;
-
-    /* Remove the focus ring */
-    &:focus {
-      outline: none !important;
-    }
-  }
-
-  /* HTML and Body default styles */
-  html,
-  body {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    width: 100%;
-    min-height: 100%;
-    -webkit-font-smoothing: auto;
-    -moz-osx-font-smoothing: auto;
-  }
-
-  /* Font size */
-  html {
-    font-size: 16px;
-  }
-
-  body {
-    font-size: 0.875rem;
-    font-feature-settings: 'salt';
-  }
-}
-
 @tailwind components;
 @tailwind utilities;
 
-/* Material Icons CSS (font loaded by aegisx-ui IconService) */
-.mat-icon {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Material Icons', 'Material Icons Outlined' !important;
-  font-feature-settings: 'liga' 1;
-  font-display: swap;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* Import Documentation Patterns - Shared documentation styles */
+@import './styles/documentation-patterns.scss';
 
-/* Import Angular Material Theme */
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+/* Import AegisX UI Utilities */
+@import '../../../libs/aegisx-ui/src/lib/styles/utilities/typography-utilities';
+@import '../../../libs/aegisx-ui/src/lib/styles/utilities/prose-typography';
+
+/* Import AegisX UI Components */
+@import '../../../libs/aegisx-ui/src/lib/styles/components/kpi-cards';
+@import '../../../libs/aegisx-ui/src/lib/styles/components/table-header';
+@import '../../../libs/aegisx-ui/src/lib/styles/components/docs';
+
+/* Import FullCalendar Theme */
+@import '../../../libs/aegisx-ui/src/lib/styles/vendors/fullcalendar';
+
+/* Import ngx-toastr styles */
+@import 'ngx-toastr/toastr';
+
+/* Import AegisX Toast customizations */
+@import '../../../libs/aegisx-ui/src/lib/services/toast/ax-toast.styles';
+
+/* Override Material CSS variables to use AegisX tokens */
+/* This ensures theme switching works with Angular Material components */
+:root,
+[data-theme] {
+  --mat-app-background-color: var(--ax-background-default) !important;
+  --mat-app-text-color: var(--ax-text-default) !important;
+}
 
 /* Global Styles */
 html,
 body {
   height: 100%;
   margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family:
+    'Inter',
+    'Noto Sans Thai',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  /* Use AegisX theme tokens for theme switching support */
+  background-color: var(--ax-background-default) !important;
+  color: var(--ax-text-default) !important;
 }

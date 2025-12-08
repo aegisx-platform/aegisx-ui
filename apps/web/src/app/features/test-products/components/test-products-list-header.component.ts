@@ -2,35 +2,33 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AxKpiCardComponent } from '@aegisx/ui';
 
 @Component({
   selector: 'app-test-products-list-header',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, AxKpiCardComponent],
   template: `
     <!-- Header with Stats Summary -->
     <div class="flex items-start justify-between mt-4">
       <div class="flex-1">
         <div class="flex items-center gap-3">
-          <h1 class="text-2xl font-semibold text-gray-900">TestProducts</h1>
+          <h1 class="text-2xl font-semibold text-[var(--ax-text-default)]">
+            TestProducts
+          </h1>
         </div>
-        <p class="text-sm text-gray-600">Manage your testproduct collection</p>
+        <p class="text-sm text-[var(--ax-text-secondary)]">
+          Manage your testproduct collection
+        </p>
       </div>
       <div class="flex items-center gap-2">
         <button
-          (click)="importClicked.emit()"
-          [disabled]="loading || hasError"
-          class="px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
-        >
-          <mat-icon class="!text-lg !w-5 !h-5">upload_file</mat-icon>
-          Import
-        </button>
-        <button
+          mat-flat-button
+          color="primary"
           (click)="createClicked.emit()"
           [disabled]="loading || hasError"
-          class="px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
         >
-          <mat-icon class="!text-lg !w-5 !h-5">add</mat-icon>
+          <mat-icon>add</mat-icon>
           Add testproduct
         </button>
       </div>
@@ -38,22 +36,28 @@ import { MatIconModule } from '@angular/material/icon';
 
     <!-- Permission Error -->
     @if (permissionError) {
-      <div class="bg-red-50 border border-red-200 rounded-lg p-2 mb-6">
+      <div
+        class="bg-[var(--ax-error-faint)] border border-[var(--ax-error-border)] rounded-lg p-2 mb-6"
+      >
         <div class="flex items-start gap-3">
           <div
-            class="flex items-center justify-center w-18 h-18  bg-red-100 rounded-full flex-shrink-0"
+            class="flex items-center justify-center w-18 h-18 bg-[var(--ax-error-surface)] rounded-full flex-shrink-0"
           >
-            <mat-icon class="text-red-600 !text-4xl !w-7 !h-7">lock</mat-icon>
+            <mat-icon class="text-[var(--ax-error-default)] !text-4xl !w-7 !h-7"
+              >lock</mat-icon
+            >
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-medium text-red-900">Access Denied</h3>
-            <p class=" text-sm text-red-700">
+            <h3 class="text-lg font-medium text-[var(--ax-error-emphasis)]">
+              Access Denied
+            </h3>
+            <p class="text-sm text-[var(--ax-error-default)]">
               You don't have permission to access or modify test_products.
             </p>
           </div>
           <button
             (click)="clearPermissionError.emit()"
-            class="text-red-400 hover:text-red-600"
+            class="text-[var(--ax-error-default)] hover:text-[var(--ax-error-hover)]"
           >
             <mat-icon class="!text-xl !w-5 !h-5">close</mat-icon>
           </button>
@@ -61,84 +65,42 @@ import { MatIconModule } from '@angular/material/icon';
       </div>
     }
 
-    <!-- Minimal Stats Cards - Separated (hide when any error exists) -->
+    <!-- Stats Cards using AxKpiCardComponent (hide when any error exists) -->
     @if (!hasError) {
       <div
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2 mb-4"
       >
-        <!-- Total TestProducts Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full"
-            >
-              <mat-icon class="!w-5 !h-5 text-blue-600">library_books</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">Total TestProducts</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.total }}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ax-kpi-card
+          [flat]="true"
+          label="Total TestProducts"
+          [value]="stats.total"
+          variant="simple"
+        ></ax-kpi-card>
 
-        <!-- Available Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full"
-            >
-              <mat-icon class="!w-5 !h-5 text-green-600">check_circle</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">Available</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.available }}
-                <span class="text-xs text-green-600"
-                  >{{ getPercentage(stats.available) }}%</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+        <ax-kpi-card
+          [flat]="true"
+          label="Available"
+          [value]="stats.available"
+          variant="badge"
+          [badge]="getPercentage(stats.available) + '%'"
+          badgeType="success"
+        ></ax-kpi-card>
 
-        <!-- Unavailable Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full"
-            >
-              <mat-icon class="!w-5 !h-5 text-red-600">block</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">Unavailable</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.unavailable }}
-                <span class="text-xs text-red-600"
-                  >{{ getPercentage(stats.unavailable) }}%</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+        <ax-kpi-card
+          [flat]="true"
+          label="Unavailable"
+          [value]="stats.unavailable"
+          variant="badge"
+          [badge]="getPercentage(stats.unavailable) + '%'"
+          badgeType="error"
+        ></ax-kpi-card>
 
-        <!-- This Week Card -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center w-10 h-10 bg-orange-100 rounded-full"
-            >
-              <mat-icon class="!w-5 !h-5 text-orange-600">trending_up</mat-icon>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500">This Week</div>
-              <div class="text-xl font-bold text-gray-900">
-                {{ stats.recentWeek }}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ax-kpi-card
+          [flat]="true"
+          label="This Week"
+          [value]="stats.recentWeek"
+          variant="simple"
+        ></ax-kpi-card>
       </div>
     }
   `,
@@ -156,7 +118,6 @@ export class TestProductsListHeaderComponent {
   @Input() hasError = false; // General error state (from service)
 
   @Output() createClicked = new EventEmitter<void>();
-  @Output() importClicked = new EventEmitter<void>();
   @Output() clearPermissionError = new EventEmitter<void>();
 
   getPercentage(count: number): number {

@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { AegisxCardComponent } from '@aegisx/ui';
+import { AxCardComponent } from '@aegisx/ui';
 
 export interface ActivityItem {
   id: string | number;
@@ -29,17 +29,16 @@ export interface ActivityItem {
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    AegisxCardComponent,
+    AxCardComponent,
   ],
   template: `
     <ax-card
       [title]="title"
       [subtitle]="subtitle"
-      [icon]="'history'"
-      [appearance]="'elevated'"
+      [variant]="'elevated'"
       class="h-full"
     >
-      <div card-header-actions>
+      <div header-actions>
         <button mat-icon-button [matMenuTriggerFor]="menu">
           <mat-icon>more_vert</mat-icon>
         </button>
@@ -54,11 +53,11 @@ export interface ActivityItem {
           </button>
           <mat-divider></mat-divider>
           <button mat-menu-item (click)="filterActivities('critical')">
-            <mat-icon class="text-red-600">error</mat-icon>
+            <mat-icon class="text-error">error</mat-icon>
             <span>Critical Only</span>
           </button>
           <button mat-menu-item (click)="filterActivities('user')">
-            <mat-icon class="text-blue-600">person</mat-icon>
+            <mat-icon class="text-primary">person</mat-icon>
             <span>User Activities</span>
           </button>
         </mat-menu>
@@ -70,14 +69,14 @@ export interface ActivityItem {
             <mat-icon class="text-4xl text-gray-400 animate-pulse"
               >hourglass_empty</mat-icon
             >
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p class="text-sm text-muted dark:text-gray-400 mt-2">
               Loading activities...
             </p>
           </div>
         } @else if (activities.length === 0) {
           <div class="text-center py-8">
             <mat-icon class="text-4xl text-gray-400">inbox</mat-icon>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p class="text-sm text-muted dark:text-gray-400 mt-2">
               No activities to show
             </p>
           </div>
@@ -102,12 +101,12 @@ export interface ActivityItem {
                     >
                       {{ activity.title }}
                     </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                    <p class="text-xs text-muted dark:text-gray-400">
                       {{ activity.time }}
                     </p>
                   </div>
                   @if (activity.description) {
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <p class="text-sm text-muted dark:text-gray-400">
                       {{ activity.description }}
                     </p>
                   }
@@ -128,7 +127,7 @@ export interface ActivityItem {
                           }}</span>
                         </div>
                       }
-                      <span class="text-xs text-gray-600 dark:text-gray-400">
+                      <span class="text-xs text-muted dark:text-gray-400">
                         {{ activity.user.name }}
                       </span>
                     </div>
@@ -185,16 +184,16 @@ export interface ActivityItem {
       }
 
       .bg-activity-primary {
-        @apply bg-blue-500;
+        @apply bg-primary;
       }
       .bg-activity-accent {
         @apply bg-pink-500;
       }
       .bg-activity-warn {
-        @apply bg-orange-500;
+        @apply bg-warning;
       }
       .bg-activity-success {
-        @apply bg-green-500;
+        @apply bg-success;
       }
       .bg-activity-info {
         @apply bg-cyan-500;

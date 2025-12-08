@@ -12,7 +12,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { BreadcrumbComponent, AegisxNavigationItem } from '@aegisx/ui';
+import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApiKeyWithPreview } from '../models/api-keys.types';
 import { GenerateKeyDialogComponent } from '../dialogs/generate-key-dialog.component';
@@ -46,15 +46,13 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            API Keys Management
-          </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 class="text-3xl font-bold">API Keys Management</h1>
+          <p class="text-muted mt-1">
             Manage your API keys for programmatic access
           </p>
         </div>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           (click)="openGenerateDialog()"
           [disabled]="loading()"
@@ -66,57 +64,57 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
 
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <mat-card class="shadow-sm">
+        <mat-card appearance="outlined" class="shadow-sm">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">Total Keys</p>
+                <p class="text-sm text-muted">Total Keys</p>
                 <p class="text-2xl font-bold">{{ totalKeys() }}</p>
               </div>
-              <mat-icon class="text-blue-500 text-4xl">vpn_key</mat-icon>
+              <mat-icon class="text-primary text-4xl">vpn_key</mat-icon>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="shadow-sm">
+        <mat-card appearance="outlined" class="shadow-sm">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">Active Keys</p>
-                <p class="text-2xl font-bold text-green-600">
+                <p class="text-sm text-muted">Active Keys</p>
+                <p class="text-2xl font-bold text-success-emphasis">
                   {{ activeKeys() }}
                 </p>
               </div>
-              <mat-icon class="text-green-500 text-4xl">check_circle</mat-icon>
+              <mat-icon class="text-success text-4xl">check_circle</mat-icon>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="shadow-sm">
+        <mat-card appearance="outlined" class="shadow-sm">
           <mat-card-content class="p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">Revoked Keys</p>
-                <p class="text-2xl font-bold text-red-600">
+                <p class="text-sm text-muted">Revoked Keys</p>
+                <p class="text-2xl font-bold text-error-emphasis">
                   {{ revokedKeys() }}
                 </p>
               </div>
-              <mat-icon class="text-red-500 text-4xl">cancel</mat-icon>
+              <mat-icon class="text-error text-4xl">cancel</mat-icon>
             </div>
           </mat-card-content>
         </mat-card>
       </div>
 
       <!-- Table Card -->
-      <mat-card class="shadow-md">
+      <mat-card appearance="outlined" class="shadow-md">
         <mat-card-content class="p-6">
           @if (loading()) {
             <div class="flex justify-center items-center py-12">
               <mat-spinner diameter="50"></mat-spinner>
             </div>
           } @else if (error()) {
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-              <p class="text-red-700">{{ error() }}</p>
+            <div class="bg-error-faint border-l-4 border-error p-4 rounded">
+              <p class="text-error-emphasis">{{ error() }}</p>
               <button mat-button color="warn" (click)="loadKeys()" class="mt-2">
                 <mat-icon class="mr-1">refresh</mat-icon>
                 Retry
@@ -147,7 +145,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     Key Preview
                   </th>
                   <td mat-cell *matCellDef="let key">
-                    <code class="text-sm text-gray-600">{{ key.preview }}</code>
+                    <code class="text-sm text-muted">{{ key.preview }}</code>
                   </td>
                 </ng-container>
 
@@ -163,12 +161,12 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                   </th>
                   <td mat-cell *matCellDef="let key">
                     @if (key.is_active) {
-                      <mat-chip class="bg-green-100 text-green-800">
+                      <mat-chip class="chip-success">
                         <mat-icon class="text-sm mr-1">check_circle</mat-icon>
                         Active
                       </mat-chip>
                     } @else {
-                      <mat-chip class="bg-red-100 text-red-800">
+                      <mat-chip class="chip-error">
                         <mat-icon class="text-sm mr-1">cancel</mat-icon>
                         Revoked
                       </mat-chip>
@@ -190,7 +188,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     @if (key.last_used_at) {
                       <span>{{ key.last_used_at | date: 'short' }}</span>
                     } @else {
-                      <span class="text-gray-400">Never</span>
+                      <span class="text-muted">Never</span>
                     }
                   </td>
                 </ng-container>
@@ -209,7 +207,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     @if (key.expires_at) {
                       <span>{{ key.expires_at | date: 'short' }}</span>
                     } @else {
-                      <span class="text-gray-600">Never</span>
+                      <span class="text-muted">Never</span>
                     }
                   </td>
                 </ng-container>
@@ -234,20 +232,20 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     <mat-menu #menu="matMenu">
                       @if (key.is_active) {
                         <button mat-menu-item (click)="rotateKey(key)">
-                          <mat-icon class="text-blue-600">autorenew</mat-icon>
+                          <mat-icon class="text-primary">autorenew</mat-icon>
                           <span>Rotate Key</span>
                         </button>
                         <button mat-menu-item (click)="revokeKey(key)">
-                          <mat-icon class="text-orange-600">block</mat-icon>
+                          <mat-icon class="text-warning">block</mat-icon>
                           <span>Revoke Key</span>
                         </button>
                       }
                       <button
                         mat-menu-item
                         (click)="deleteKey(key)"
-                        class="text-red-600"
+                        class="text-error"
                       >
-                        <mat-icon class="text-red-600">delete</mat-icon>
+                        <mat-icon class="text-error">delete</mat-icon>
                         <span>Delete Key</span>
                       </button>
                     </mat-menu>
@@ -266,7 +264,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
                     class="mat-cell text-center py-8"
                     [attr.colspan]="displayedColumns.length"
                   >
-                    <div class="text-gray-500">
+                    <div class="text-muted">
                       <mat-icon class="text-6xl mb-2">vpn_key_off</mat-icon>
                       <p>No API keys found</p>
                       <button
@@ -304,6 +302,16 @@ import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-di
       :host ::ng-deep .mat-mdc-row:hover {
         background-color: rgba(0, 0, 0, 0.04);
       }
+
+      .chip-success {
+        background: var(--ax-success-faint);
+        color: var(--ax-success-emphasis);
+      }
+
+      .chip-error {
+        background: var(--ax-error-faint);
+        color: var(--ax-error-emphasis);
+      }
     `,
   ],
 })
@@ -315,18 +323,14 @@ export class ApiKeysManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  breadcrumbItems: AegisxNavigationItem[] = [
+  breadcrumbItems: BreadcrumbItem[] = [
     {
-      id: 'settings',
-      title: 'Settings',
-      link: '/settings',
-      type: 'basic',
+      label: 'Settings',
+      url: '/settings',
     },
     {
-      id: 'api-keys',
-      title: 'API Keys',
-      link: '/settings/api-keys',
-      type: 'basic',
+      label: 'API Keys',
+      url: '/settings/api-keys',
     },
   ];
 
