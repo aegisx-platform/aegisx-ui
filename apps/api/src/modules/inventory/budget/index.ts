@@ -2,6 +2,7 @@ import fp from 'fastify-plugin';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import budgetRequestsPlugin from './budgetRequests';
+import budgetRequestItemsPlugin from './budgetRequestItems';
 
 /**
  * Budget Domain Plugin
@@ -21,9 +22,13 @@ export default fp(
       ...options,
       prefix: `${prefix}/budget-requests`,
     });
+    await fastify.register(budgetRequestItemsPlugin, {
+      ...options,
+      prefix: `${prefix}/budget-request-items`,
+    });
 
     fastify.addHook('onReady', async () => {
-      fastify.log.info(`Budget domain loaded with 1 modules at ${prefix}`);
+      fastify.log.info(`Budget domain loaded with 2 modules at ${prefix}`);
     });
   },
   {
