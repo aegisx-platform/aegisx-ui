@@ -282,6 +282,19 @@ export const INVENTORY_ROUTES: Route[] = [
             },
           },
           // === BUDGET ROUTES START ===
+          // Budget Requests (Generated CRUD)
+          {
+            path: 'budget-requests',
+            loadChildren: () =>
+              import('./modules/budget-requests/budget-requests.routes').then(
+                (m) => m.budgetRequestsRoutes,
+              ),
+            data: {
+              title: 'Budget Requests',
+              description: 'Budget Requests Management System',
+              requiredPermissions: ['budget-requests.read', 'admin.*'],
+            },
+          },
           // Budget Reservations (Generated CRUD)
           {
             path: 'budget-reservations',
