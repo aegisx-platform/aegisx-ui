@@ -1,0 +1,147 @@
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { Type } from '@sinclair/typebox';
+import { BudgetRequestsController } from './budget-requests.controller';
+import {
+  CreateBudgetRequestsSchema,
+  UpdateBudgetRequestsSchema,
+  BudgetRequestsIdParamSchema,
+  GetBudgetRequestsQuerySchema,
+  ListBudgetRequestsQuerySchema,
+  BudgetRequestsResponseSchema,
+  BudgetRequestsListResponseSchema,
+  FlexibleBudgetRequestsListResponseSchema,
+} from './budget-requests.schemas';
+import { ApiErrorResponseSchema as ErrorResponseSchema } from '../../../../schemas/base.schemas';
+import { SchemaRefs } from '../../../../schemas/registry';
+
+export interface BudgetRequestsRoutesOptions extends FastifyPluginOptions {
+  controller: BudgetRequestsController;
+}
+
+export async function budgetRequestsRoutes(
+  fastify: FastifyInstance,
+  options: BudgetRequestsRoutesOptions,
+) {
+  const { controller } = options;
+
+  // Create budgetRequests
+  fastify.post('/', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Create a new budgetRequests',
+      description: 'Create a new budgetRequests with the provided data',
+      body: CreateBudgetRequestsSchema,
+      response: {
+        201: BudgetRequestsResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        409: SchemaRefs.Conflict,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'create'),
+    ], // Authentication & authorization required
+    handler: controller.create.bind(controller),
+  });
+
+  // Get budgetRequests by ID
+  fastify.get('/:id', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Get budgetRequests by ID',
+      description: 'Retrieve a budgetRequests by its unique identifier',
+      params: BudgetRequestsIdParamSchema,
+      querystring: GetBudgetRequestsQuerySchema,
+      response: {
+        200: BudgetRequestsResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'read'),
+    ], // Authentication & authorization required
+    handler: controller.findOne.bind(controller),
+  });
+
+  // Get all budgetRequestss
+  fastify.get('/', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Get all budgetRequestss with pagination and formats',
+      description:
+        'Retrieve budgetRequestss with flexible formatting: ?format=dropdown for UI components, ?format=minimal for lightweight data, ?fields=id,name for custom field selection',
+      querystring: ListBudgetRequestsQuerySchema,
+      response: {
+        200: FlexibleBudgetRequestsListResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'read'),
+    ], // Authentication & authorization required
+    handler: controller.findMany.bind(controller),
+  });
+
+  // Update budgetRequests
+  fastify.put('/:id', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Update budgetRequests by ID',
+      description: 'Update an existing budgetRequests with new data',
+      params: BudgetRequestsIdParamSchema,
+      body: UpdateBudgetRequestsSchema,
+      response: {
+        200: BudgetRequestsResponseSchema,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        409: SchemaRefs.Conflict,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'update'),
+    ], // Authentication & authorization required
+    handler: controller.update.bind(controller),
+  });
+
+  // Delete budgetRequests
+  fastify.delete('/:id', {
+    schema: {
+      tags: ['Inventory: Budget Requests'],
+      summary: 'Delete budgetRequests by ID',
+      description: 'Delete a budgetRequests by its unique identifier',
+      params: BudgetRequestsIdParamSchema,
+      response: {
+        200: SchemaRefs.OperationResult,
+        400: SchemaRefs.ValidationError,
+        401: SchemaRefs.Unauthorized,
+        403: SchemaRefs.Forbidden,
+        404: SchemaRefs.NotFound,
+        422: SchemaRefs.UnprocessableEntity,
+        500: SchemaRefs.ServerError,
+      },
+    },
+    preValidation: [
+      fastify.authenticate,
+      fastify.verifyPermission('budgetRequests', 'delete'),
+    ], // Authentication & authorization required
+    handler: controller.delete.bind(controller),
+  });
+}
