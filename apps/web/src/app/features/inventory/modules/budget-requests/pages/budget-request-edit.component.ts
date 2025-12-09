@@ -144,6 +144,17 @@ import { BudgetRequestItem } from '../../budget-request-items/types/budget-reque
                   Save All Changes
                 </button>
               }
+              @if (itemsCount() > 0) {
+                <button
+                  mat-raised-button
+                  color="accent"
+                  (click)="exportSSCJ()"
+                  [disabled]="loading()"
+                >
+                  <mat-icon>download</mat-icon>
+                  Export SSCJ
+                </button>
+              }
             </div>
           </mat-card-header>
           <mat-card-content>
@@ -757,6 +768,16 @@ export class BudgetRequestEditComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  /**
+   * Export budget request to SSCJ Excel format
+   */
+  exportSSCJ() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    this.budgetRequestService.exportSSCJ(+id, 'xlsx');
   }
 
   goBack() {

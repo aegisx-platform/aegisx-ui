@@ -876,4 +876,14 @@ export class BudgetRequestService {
       this.loadingSignal.set(false);
     }
   }
+
+  /**
+   * Export budget request to SSCJ Excel format
+   * GET /:id/export-sscj
+   * Downloads Excel file with SSCJ format (Provincial Public Health Office)
+   */
+  exportSSCJ(id: number, format: 'xlsx' | 'csv' = 'xlsx'): void {
+    const url = `${this.baseUrl}/${id}/export-sscj?format=${format}`;
+    window.open(url, '_blank');
+  }
 }
