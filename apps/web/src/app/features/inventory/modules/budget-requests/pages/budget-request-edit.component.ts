@@ -99,11 +99,23 @@ import { BudgetRequestItem } from '../../budget-request-items/types/budget-reque
               >Budget Items ({{ itemsCount() }} items)</mat-card-title
             >
             <div class="header-actions">
-              @if (budgetRequest()?.status === 'DRAFT') {
+              @if (budgetRequest()?.status === 'DRAFT' && itemsCount() === 0) {
+                <button
+                  mat-raised-button
+                  color="warn"
+                  (click)="initializeFromDrugMaster()"
+                  [disabled]="loading()"
+                >
+                  <mat-icon>auto_awesome</mat-icon>
+                  Initialize from Drug Master
+                </button>
+              }
+              @if (budgetRequest()?.status === 'DRAFT' && itemsCount() > 0) {
                 <button
                   mat-raised-button
                   color="primary"
                   (click)="saveBatchChanges()"
+                  [disabled]="loading()"
                 >
                   <mat-icon>save</mat-icon>
                   Save All Changes
@@ -564,6 +576,32 @@ export class BudgetRequestEditComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error saving batch changes:', error);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  /**
+   * Initialize budget request from drug master
+   * Calls backend API to populate budget_request_items from drug_generics table
+   */
+  async initializeFromDrugMaster() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    try {
+      this.loading.set(true);
+
+      const result =
+        await this.budgetRequestService.initializeBudgetRequest(+id);
+
+      if (result) {
+        console.log('Budget request initialized:', result);
+        // Reload data to show the new items
+        await this.loadBudgetRequest(+id);
+      }
+    } catch (error) {
+      console.error('Error initializing budget request:', error);
     } finally {
       this.loading.set(false);
     }
