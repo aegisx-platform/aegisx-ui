@@ -25,9 +25,6 @@ export const BudgetRequestItemsSchema = Type.Object({
   package_size: Type.Optional(Type.String()),
   unit: Type.Optional(Type.String()),
   line_number: Type.Optional(Type.Integer()),
-  usage_year_2566: Type.Optional(Type.Number()),
-  usage_year_2567: Type.Optional(Type.Number()),
-  usage_year_2568: Type.Optional(Type.Number()),
   avg_usage: Type.Optional(Type.Number()),
   estimated_usage_2569: Type.Optional(Type.Number()),
   current_stock: Type.Optional(Type.Number()),
@@ -36,6 +33,7 @@ export const BudgetRequestItemsSchema = Type.Object({
   requested_qty: Type.Optional(Type.Number()),
   budget_type_id: Type.Optional(Type.Integer()),
   budget_category_id: Type.Optional(Type.Integer()),
+  historical_usage: Type.Optional(Type.Record(Type.String(), Type.Any())),
 });
 
 // Create Schema (without auto-generated fields)
@@ -55,9 +53,6 @@ export const CreateBudgetRequestItemsSchema = Type.Object({
   package_size: Type.Optional(Type.String()),
   unit: Type.Optional(Type.String()),
   line_number: Type.Optional(Type.Integer()),
-  usage_year_2566: Type.Optional(Type.Number()),
-  usage_year_2567: Type.Optional(Type.Number()),
-  usage_year_2568: Type.Optional(Type.Number()),
   avg_usage: Type.Optional(Type.Number()),
   estimated_usage_2569: Type.Optional(Type.Number()),
   current_stock: Type.Optional(Type.Number()),
@@ -66,6 +61,7 @@ export const CreateBudgetRequestItemsSchema = Type.Object({
   requested_qty: Type.Optional(Type.Number()),
   budget_type_id: Type.Optional(Type.Integer()),
   budget_category_id: Type.Optional(Type.Integer()),
+  historical_usage: Type.Optional(Type.Record(Type.String(), Type.Any())),
 });
 
 // Update Schema (partial, without auto-generated fields)
@@ -86,9 +82,6 @@ export const UpdateBudgetRequestItemsSchema = Type.Partial(
     package_size: Type.Optional(Type.String()),
     unit: Type.Optional(Type.String()),
     line_number: Type.Optional(Type.Integer()),
-    usage_year_2566: Type.Optional(Type.Number()),
-    usage_year_2567: Type.Optional(Type.Number()),
-    usage_year_2568: Type.Optional(Type.Number()),
     avg_usage: Type.Optional(Type.Number()),
     estimated_usage_2569: Type.Optional(Type.Number()),
     current_stock: Type.Optional(Type.Number()),
@@ -97,6 +90,7 @@ export const UpdateBudgetRequestItemsSchema = Type.Partial(
     requested_qty: Type.Optional(Type.Number()),
     budget_type_id: Type.Optional(Type.Integer()),
     budget_category_id: Type.Optional(Type.Integer()),
+    historical_usage: Type.Optional(Type.Record(Type.String(), Type.Any())),
   }),
 );
 
@@ -194,15 +188,6 @@ export const ListBudgetRequestItemsQuerySchema = Type.Object({
   line_number: Type.Optional(Type.Number({ minimum: 0 })),
   line_number_min: Type.Optional(Type.Number({ minimum: 0 })),
   line_number_max: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2566: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2566_min: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2566_max: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2567: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2567_min: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2567_max: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2568: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2568_min: Type.Optional(Type.Number({ minimum: 0 })),
-  usage_year_2568_max: Type.Optional(Type.Number({ minimum: 0 })),
   avg_usage: Type.Optional(Type.Number({ minimum: 0 })),
   avg_usage_min: Type.Optional(Type.Number({ minimum: 0 })),
   avg_usage_max: Type.Optional(Type.Number({ minimum: 0 })),
@@ -244,6 +229,35 @@ export const PartialBudgetRequestItemsSchema = Type.Partial(
 export const FlexibleBudgetRequestItemsListResponseSchema =
   PartialPaginatedResponseSchema(BudgetRequestItemsSchema);
 
+// Batch Update Schema (for updating multiple items at once)
+export const BatchUpdateItemSchema = Type.Object({
+  id: Type.Number(),
+  estimated_usage_2569: Type.Optional(Type.Number()),
+  unit_price: Type.Optional(Type.Number()),
+  requested_qty: Type.Optional(Type.Number()),
+  q1_qty: Type.Optional(Type.Number()),
+  q2_qty: Type.Optional(Type.Number()),
+  q3_qty: Type.Optional(Type.Number()),
+  q4_qty: Type.Optional(Type.Number()),
+});
+
+export const BatchUpdateBudgetRequestItemsSchema = Type.Object({
+  items: Type.Array(BatchUpdateItemSchema, { minItems: 1, maxItems: 100 }),
+});
+
+export const BatchUpdateResponseSchema = Type.Object({
+  updated: Type.Number(),
+  failed: Type.Number(),
+  errors: Type.Optional(
+    Type.Array(
+      Type.Object({
+        id: Type.Number(),
+        error: Type.String(),
+      }),
+    ),
+  ),
+});
+
 // Export types
 export type BudgetRequestItems = Static<typeof BudgetRequestItemsSchema>;
 export type CreateBudgetRequestItems = Static<
@@ -269,3 +283,10 @@ export type PartialBudgetRequestItems = Static<
 export type FlexibleBudgetRequestItemsList = Static<
   typeof FlexibleBudgetRequestItemsListResponseSchema
 >;
+
+// Batch Update types
+export type BatchUpdateItem = Static<typeof BatchUpdateItemSchema>;
+export type BatchUpdateBudgetRequestItems = Static<
+  typeof BatchUpdateBudgetRequestItemsSchema
+>;
+export type BatchUpdateResponse = Static<typeof BatchUpdateResponseSchema>;
