@@ -831,4 +831,49 @@ export class BudgetRequestService {
       this.loadingSignal.set(false);
     }
   }
+
+  /**
+   * Import Excel/CSV file
+   * POST /:id/import-excel
+   * Uploads Excel/CSV file for budget request items import
+   */
+  async importExcel(
+    id: number,
+    file: File,
+  ): Promise<{
+    imported: number;
+    updated: number;
+    skipped: number;
+    errors: Array<{ row: number; field: string; message: string }>;
+  }> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await this.http
+        .post<
+          ApiResponse<{
+            imported: number;
+            updated: number;
+            skipped: number;
+            errors: Array<{ row: number; field: string; message: string }>;
+          }>
+        >(`${this.baseUrl}/${id}/import-excel`, formData)
+        .toPromise();
+
+      if (response?.data) {
+        return response.data;
+      }
+
+      throw new Error('Invalid response from server');
+    } catch (error: any) {
+      this.handleError(error, 'Failed to import Excel file');
+      throw error;
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
 }

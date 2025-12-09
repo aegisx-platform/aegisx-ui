@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -109,6 +116,22 @@ import { BudgetRequestItem } from '../../budget-request-items/types/budget-reque
                   <mat-icon>auto_awesome</mat-icon>
                   Initialize from Drug Master
                 </button>
+                <button
+                  mat-raised-button
+                  color="accent"
+                  (click)="importExcel()"
+                  [disabled]="loading()"
+                >
+                  <mat-icon>upload_file</mat-icon>
+                  Import Excel/CSV
+                </button>
+                <input
+                  #fileInput
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  style="display: none"
+                  (change)="onFileSelected($event)"
+                />
               }
               @if (budgetRequest()?.status === 'DRAFT' && itemsCount() > 0) {
                 <button
@@ -304,6 +327,9 @@ export class BudgetRequestEditComponent implements OnInit {
   // AG Grid
   private gridApi?: GridApi;
   modifiedRows = signal<Map<number, Partial<BudgetRequestItem>>>(new Map());
+
+  // File input for Excel/CSV import
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   // Column definitions for AG Grid
   columnDefs: ColDef[] = [
@@ -604,6 +630,60 @@ export class BudgetRequestEditComponent implements OnInit {
       console.error('Error initializing budget request:', error);
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  /**
+   * Trigger file input click for Excel/CSV import
+   */
+  importExcel() {
+    this.fileInput.nativeElement.click();
+  }
+
+  /**
+   * Handle file selection and upload
+   */
+  async onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    try {
+      this.loading.set(true);
+
+      const result = await this.budgetRequestService.importExcel(+id, file);
+
+      if (result) {
+        const { imported, updated, skipped, errors } = result;
+        const totalProcessed = imported + updated + skipped;
+
+        console.log(
+          `Import complete: ${imported} imported, ${updated} updated, ${skipped} skipped, ${errors.length} errors`,
+        );
+
+        // Show result alert
+        let message = `นำเข้าสำเร็จ ${imported} รายการ`;
+        if (updated > 0) message += `, อัพเดท ${updated} รายการ`;
+        if (skipped > 0) message += `, ข้าม ${skipped} รายการ`;
+        if (errors.length > 0)
+          message += `\n\nพบข้อผิดพลาด ${errors.length} รายการ`;
+
+        alert(message);
+
+        // Reload data
+        await this.loadBudgetRequest(+id);
+      }
+    } catch (error) {
+      console.error('Error importing Excel:', error);
+      alert('เกิดข้อผิดพลาดในการนำเข้าไฟล์');
+    } finally {
+      this.loading.set(false);
+      // Clear file input
+      input.value = '';
     }
   }
 
