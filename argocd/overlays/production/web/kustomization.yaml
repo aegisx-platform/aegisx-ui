@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: production
+
+namePrefix: production-
+
+bases:
+  - ../../../base/web
+
+images:
+  - name: ghcr.io/aegisx-platform/aegisx-starter-web
+    newTag: production
+
+replicas:
+  - name: aegisx-web
+    count: 3
+
+commonLabels:
+  environment: production
+
+configMapGenerator:
+  - name: aegisx-web-config
+    behavior: merge
+    literals:
+      - API_URL= # Empty string - no prefix (same as API)
+      - APP_NAME=AegisX
+      - ENABLE_DEBUG=false
