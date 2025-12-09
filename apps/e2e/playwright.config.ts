@@ -23,7 +23,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4249',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -52,7 +52,7 @@ export default defineConfig({
     // Chrome Desktop
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -62,7 +62,7 @@ export default defineConfig({
     // Firefox Desktop
     {
       name: 'firefox',
-      use: { 
+      use: {
         ...devices['Desktop Firefox'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -72,7 +72,7 @@ export default defineConfig({
     // Safari Desktop
     {
       name: 'webkit',
-      use: { 
+      use: {
         ...devices['Desktop Safari'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -82,7 +82,7 @@ export default defineConfig({
     // Mobile Chrome
     {
       name: 'Mobile Chrome',
-      use: { 
+      use: {
         ...devices['Pixel 5'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -92,7 +92,7 @@ export default defineConfig({
     // Mobile Safari
     {
       name: 'Mobile Safari',
-      use: { 
+      use: {
         ...devices['iPhone 12'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -108,7 +108,7 @@ export default defineConfig({
     // Visual regression tests
     {
       name: 'visual-regression',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -119,7 +119,7 @@ export default defineConfig({
     // Accessibility tests
     {
       name: 'accessibility',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -130,7 +130,7 @@ export default defineConfig({
     // Performance tests
     {
       name: 'performance',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'src/fixtures/.auth/user.json',
       },
@@ -143,13 +143,13 @@ export default defineConfig({
   webServer: [
     {
       command: 'nx serve api',
-      url: 'http://localhost:3333/api/health',
+      url: 'http://localhost:3383/api/health',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
     },
     {
       command: 'nx serve web',
-      url: 'http://localhost:4200',
+      url: 'http://localhost:4249',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
     },
