@@ -33,12 +33,13 @@ export const BudgetRequestsSchema = Type.Object({
 });
 
 // Create Schema (without auto-generated fields)
+// Note: request_number, status, total_requested_amount, department_id are auto-filled by service
 export const CreateBudgetRequestsSchema = Type.Object({
-  request_number: Type.String(),
+  request_number: Type.Optional(Type.String()),
   fiscal_year: Type.Integer(),
-  department_id: Type.Integer(),
-  status: Type.Any(),
-  total_requested_amount: Type.Number(),
+  department_id: Type.Optional(Type.Integer()),
+  status: Type.Optional(Type.Any()),
+  total_requested_amount: Type.Optional(Type.Number()),
   justification: Type.Optional(Type.String()),
   submitted_by: Type.Optional(Type.String({ format: 'uuid' })),
   submitted_at: Type.Optional(Type.String({ format: 'date-time' })),

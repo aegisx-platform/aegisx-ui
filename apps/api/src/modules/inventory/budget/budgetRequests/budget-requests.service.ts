@@ -78,11 +78,46 @@ export class BudgetRequestsService extends BaseService<
 
   /**
    * Create new budgetRequests
+   * Auto-generates: request_number, status=DRAFT, total_requested_amount=0
    */
   async create(data: CreateBudgetRequests): Promise<BudgetRequests> {
-    const budgetRequests = await super.create(data);
+    // Auto-generate request_number if not provided
+    const requestNumber =
+      data.request_number ||
+      (await this.generateRequestNumber(data.fiscal_year));
+
+    // Build create data with defaults
+    const createData: CreateBudgetRequests = {
+      ...data,
+      request_number: requestNumber,
+      status: data.status || 'DRAFT',
+      total_requested_amount: data.total_requested_amount ?? 0,
+      // department_id is optional - null means "all departments"
+    };
+
+    const budgetRequests = await super.create(createData);
 
     return budgetRequests;
+  }
+
+  /**
+   * Generate unique request number for budget request
+   * Format: BR-{fiscal_year}-{sequence}
+   * Example: BR-2568-001
+   */
+  private async generateRequestNumber(fiscalYear: number): Promise<string> {
+    const knex = (this.budgetRequestsRepository as any).knex;
+
+    // Get count of existing requests for this fiscal year
+    const result = await knex('inventory.budget_requests')
+      .where({ fiscal_year: fiscalYear })
+      .count('id as count')
+      .first();
+
+    const sequence = (parseInt(result?.count || '0') + 1)
+      .toString()
+      .padStart(3, '0');
+    return `BR-${fiscalYear}-${sequence}`;
   }
 
   /**
