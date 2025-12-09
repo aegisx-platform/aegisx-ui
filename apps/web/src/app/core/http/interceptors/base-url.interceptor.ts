@@ -5,11 +5,13 @@ import {
   HttpEvent,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { RuntimeConfigService } from '../../services/runtime-config.service';
 
 /**
  * Pattern-based URL exclusions (Industry Standard)
- * URLs matching these patterns will NOT get /api prefix
+ * URLs matching these patterns will NOT get API prefix
  */
 const SKIP_API_PREFIX_PATTERNS = [
   // Static assets
@@ -44,21 +46,27 @@ const SKIP_API_PREFIX_PATTERNS = [
 /**
  * Base URL Interceptor (Industry Standard Pattern-based)
  *
- * Automatically prepends /api prefix to relative URLs except for excluded patterns.
+ * Automatically prepends API prefix to relative URLs except for excluded patterns.
  * This centralizes API URL management and removes the need for services
- * to include /api prefix manually.
+ * to include API prefix manually.
+ *
+ * The API prefix is loaded from runtime configuration (config.json) which is
+ * generated from environment variables at container startup. This allows
+ * changing the API prefix without rebuilding the Docker image.
  *
  * Behavior:
  * - Absolute URLs (http/https): Passed through unchanged
  * - Excluded patterns: Passed through unchanged
- * - Other relative URLs: Get /api prefix added
- * - Development: /api/users → proxy → http://localhost:3333/api/users
- * - Production: /api/users → same domain /api/users
+ * - Other relative URLs: Get API prefix added (from runtime config)
+ * - Development: /users → proxy → http://localhost:3333/api/users
+ * - Production: /users → same domain + apiUrl from config.json
  */
 export const baseUrlInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
+  const configService = inject(RuntimeConfigService);
+
   // Skip absolute URLs (external APIs)
   if (req.url.startsWith('http://') || req.url.startsWith('https://')) {
     return next(req);
@@ -69,15 +77,23 @@ export const baseUrlInterceptor: HttpInterceptorFn = (
     return next(req);
   }
 
-  // Add /api prefix for internal API calls
+  // Get API URL from runtime config (loaded from /assets/config.json)
+  const apiUrl = configService.apiUrl || '';
+
+  // Add API prefix for internal API calls (only if apiUrl is not empty)
+  const finalUrl = apiUrl ? `${apiUrl}${req.url}` : req.url;
   const apiReq = req.clone({
-    url: `/api${req.url}`,
+    url: finalUrl,
   });
 
   // Debug logging in development (optional)
-  if (!environment.production) {
-    // Uncomment for debugging:
-    // console.log(`[BaseUrlInterceptor] ${req.method} ${req.url} → ${apiReq.url}`);
+  if (
+    !environment.production &&
+    configService.isFeatureEnabled('enableDebug')
+  ) {
+    console.log(
+      `[BaseUrlInterceptor] ${req.method} ${req.url} → ${apiReq.url}`,
+    );
   }
 
   return next(apiReq);
@@ -123,11 +139,13 @@ export interface BaseUrlConfig {
 /**
  * Helper function to create config-based interceptor
  * For advanced use cases
+ *
+ * Note: This function allows override of apiPrefix. If not provided,
+ * it will use the runtime config from RuntimeConfigService.
  */
 export function createBaseUrlInterceptor(
   config: BaseUrlConfig,
 ): HttpInterceptorFn {
-  const apiPrefix = config.apiPrefix || '/api';
   const combinedPatterns = [
     ...SKIP_API_PREFIX_PATTERNS,
     ...(config.skipPatterns || []),
@@ -137,6 +155,8 @@ export function createBaseUrlInterceptor(
     req: HttpRequest<unknown>,
     next: HttpHandlerFn,
   ): Observable<HttpEvent<unknown>> => {
+    const configService = inject(RuntimeConfigService);
+
     // Skip absolute URLs
     if (req.url.startsWith('http://') || req.url.startsWith('https://')) {
       return next(req);
@@ -147,9 +167,13 @@ export function createBaseUrlInterceptor(
       return next(req);
     }
 
-    // Add API prefix
+    // Use provided apiPrefix or fall back to runtime config
+    const apiPrefix = config.apiPrefix ?? configService.apiUrl ?? '';
+
+    // Add API prefix (only if not empty)
+    const finalUrl = apiPrefix ? `${apiPrefix}${req.url}` : req.url;
     const apiReq = req.clone({
-      url: `${apiPrefix}${req.url}`,
+      url: finalUrl,
     });
 
     // Debug logging
