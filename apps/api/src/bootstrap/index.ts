@@ -134,7 +134,9 @@ export async function bootstrap(): Promise<BootstrapResult> {
       logDetails('Configuration Summary', {
         server: `${appConfig.server.host}:${appConfig.server.port}`,
         environment: appConfig.server.environment,
-        apiPrefix: appConfig.api.prefix,
+        apiPrefix: appConfig.api.prefix
+          ? `"${appConfig.api.prefix}"`
+          : '(none - routes at root level)',
         cors: Array.isArray(securityConfig.cors.origin)
           ? `${securityConfig.cors.origin.length} origins`
           : 'configured',
@@ -286,7 +288,9 @@ export async function bootstrap(): Promise<BootstrapResult> {
     console.log(
       `📍 Server: http://${appConfig.server.host}:${appConfig.server.port}`,
     );
-    console.log(`🔗 API Prefix: ${appConfig.api.prefix}`);
+    console.log(
+      `🔗 API Prefix: ${appConfig.api.prefix ? `"${appConfig.api.prefix}"` : '(none - routes at root level)'}`,
+    );
     console.log(`🌍 Environment: ${appConfig.server.environment}`);
     console.log(`📊 Startup Time: ${totalTime}ms`);
     console.log(`📦 Node Version: ${process.version}`);
