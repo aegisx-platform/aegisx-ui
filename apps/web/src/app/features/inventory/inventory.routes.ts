@@ -282,6 +282,32 @@ export const INVENTORY_ROUTES: Route[] = [
             },
           },
           // === BUDGET ROUTES START ===
+          // Budget Request Items (Generated CRUD)
+          {
+            path: 'budget-request-items',
+            loadChildren: () =>
+              import('./modules/budget-request-items/budget-request-items.routes').then(
+                (m) => m.budgetRequestItemsRoutes,
+              ),
+            data: {
+              title: 'Budget Request Items',
+              description: 'Budget Request Items Management System',
+              requiredPermissions: ['budget-request-items.read', 'admin.*'],
+            },
+          },
+          // Budget Request Comments (Generated CRUD)
+          {
+            path: 'budget-request-comments',
+            loadChildren: () =>
+              import('./modules/budget-request-comments/budget-request-comments.routes').then(
+                (m) => m.budgetRequestCommentsRoutes,
+              ),
+            data: {
+              title: 'Budget Request Comments',
+              description: 'Budget Request Comments Management System',
+              requiredPermissions: ['budget-request-comments.read', 'admin.*'],
+            },
+          },
           // Budget Requests (Generated CRUD)
           {
             path: 'budget-requests',

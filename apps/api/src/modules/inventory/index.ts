@@ -15,26 +15,26 @@ import budgetPlugin from './budget';
 export default fp(
   async function inventoryDomainPlugin(
     fastify: FastifyInstance,
-    options: FastifyPluginOptions,
+    options: FastifyPluginOptions
   ) {
     const prefix = options.prefix || '/inventory';
 
     // Register all domain modules
     await fastify.register(masterDataPlugin, {
       ...options,
-      prefix: `${prefix}/master-data`,
+      prefix: `${prefix}/master-data`
     });
     await fastify.register(procurementPlugin, {
       ...options,
-      prefix: `${prefix}/procurement`,
+      prefix: `${prefix}/procurement`
     });
     await fastify.register(operationsPlugin, {
       ...options,
-      prefix: `${prefix}/operations`,
+      prefix: `${prefix}/operations`
     });
     await fastify.register(budgetPlugin, {
       ...options,
-      prefix: `${prefix}/budget`,
+      prefix: `${prefix}/budget`
     });
 
     fastify.addHook('onReady', async () => {
@@ -43,8 +43,8 @@ export default fp(
   },
   {
     name: 'inventory-domain-plugin',
-    dependencies: ['knex-plugin'],
-  },
+    dependencies: ['knex-plugin']
+  }
 );
 
 // Note: Individual module exports are accessed through their respective index.ts files

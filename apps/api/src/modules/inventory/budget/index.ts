@@ -14,22 +14,22 @@ import budgetRequestCommentsPlugin from './budgetRequestComments';
 export default fp(
   async function budgetDomainPlugin(
     fastify: FastifyInstance,
-    options: FastifyPluginOptions,
+    options: FastifyPluginOptions
   ) {
     const prefix = options.prefix || '/inventory/budget';
 
     // Register all domain modules
     await fastify.register(budgetRequestsPlugin, {
       ...options,
-      prefix: `${prefix}/budget-requests`,
+      prefix: `${prefix}/budget-requests`
     });
     await fastify.register(budgetRequestItemsPlugin, {
       ...options,
-      prefix: `${prefix}/budget-request-items`,
+      prefix: `${prefix}/budget-request-items`
     });
     await fastify.register(budgetRequestCommentsPlugin, {
       ...options,
-      prefix: `${prefix}/budget-request-comments`,
+      prefix: `${prefix}/budget-request-comments`
     });
 
     fastify.addHook('onReady', async () => {
@@ -38,8 +38,8 @@ export default fp(
   },
   {
     name: 'budget-domain-plugin',
-    dependencies: ['knex-plugin'],
-  },
+    dependencies: ['knex-plugin']
+  }
 );
 
 // Note: Individual module exports are accessed through their respective index.ts files
