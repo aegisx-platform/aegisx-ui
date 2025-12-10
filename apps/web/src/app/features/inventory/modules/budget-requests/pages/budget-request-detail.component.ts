@@ -318,6 +318,7 @@ interface BudgetRequestItem {
               <div class="flex items-center gap-4">
                 <mat-form-field
                   appearance="outline"
+                  subscriptSizing="dynamic"
                   class="!flex-1 dense-field"
                 >
                   <mat-label>ค้นหารายการยา</mat-label>
@@ -328,7 +329,11 @@ interface BudgetRequestItem {
                   />
                   <mat-icon matSuffix>search</mat-icon>
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="!w-48 dense-field">
+                <mat-form-field
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="!w-48 dense-field"
+                >
                   <mat-label>ค้นหาตาม</mat-label>
                   <mat-select [(ngModel)]="searchField">
                     <mat-option value="generic_code">รหัสยา</mat-option>
@@ -795,11 +800,22 @@ interface BudgetRequestItem {
       .dense-field {
         ::ng-deep .mat-mdc-form-field-infix {
           min-height: 40px !important;
-          padding-top: 8px !important;
-          padding-bottom: 8px !important;
+          padding-top: 10px !important;
+          padding-bottom: 10px !important;
         }
         ::ng-deep .mat-mdc-text-field-wrapper {
           height: 40px !important;
+        }
+        ::ng-deep .mat-mdc-floating-label {
+          top: 20px !important;
+        }
+        ::ng-deep input.mat-mdc-input-element {
+          height: 20px !important;
+          line-height: 20px !important;
+        }
+        ::ng-deep .mat-mdc-select-value {
+          height: 20px !important;
+          line-height: 20px !important;
         }
       }
       .items-table {
