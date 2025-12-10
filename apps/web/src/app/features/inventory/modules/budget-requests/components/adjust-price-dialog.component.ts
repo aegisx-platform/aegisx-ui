@@ -302,29 +302,35 @@ export interface AdjustPriceResult {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 16px;
+        gap: 12px;
       }
 
-      /* Input box container */
+      /* Input box container - no overlap */
       .percentage-input-box {
-        position: relative;
-        width: 140px;
-        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        background: white;
+      }
+
+      .percentage-input-box:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
 
       .percentage-input {
-        width: 100%;
-        height: 48px;
-        padding: 0 36px 0 12px;
-        font-size: 22px;
+        width: 80px;
+        height: 36px;
+        padding: 0;
+        font-size: 28px;
         font-weight: 600;
         text-align: center;
-        border: 2px solid #e5e7eb;
-        border-radius: 10px;
+        border: none;
         outline: none;
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
+        background: transparent;
         -moz-appearance: textfield;
       }
 
@@ -334,20 +340,10 @@ export interface AdjustPriceResult {
         margin: 0;
       }
 
-      .percentage-input:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-
       .percentage-suffix {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 500;
         color: #6b7280;
-        pointer-events: none;
       }
 
       /* Quick select row */
