@@ -26,4 +26,6 @@ configMapGenerator:
       - DATABASE_PORT=5432
       - DATABASE_USER=aegisx
       - DATABASE_NAME=aegisx
-      - REDIS_URL=redis://staging-aegisx-redis:6379
+      - REDIS_HOST=staging-aegisx-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
