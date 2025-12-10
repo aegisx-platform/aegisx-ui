@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
+import { AxDialogService } from '@aegisx/ui';
 import { AddDrugDialogComponent } from '../components/add-drug-dialog.component';
 
 interface BudgetRequest {
@@ -709,6 +710,7 @@ export class BudgetRequestDetailComponent implements OnInit {
   private http = inject(HttpClient);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private axDialog = inject(AxDialogService);
 
   budgetRequest = signal<BudgetRequest | null>(null);
   items = signal<BudgetRequestItem[]>([]);
@@ -923,89 +925,107 @@ export class BudgetRequestDetailComponent implements OnInit {
     }
   }
 
-  async deleteItem(item: BudgetRequestItem) {
-    if (!confirm(`ต้องการลบ ${item.generic_name} หรือไม่?`)) return;
+  deleteItem(item: BudgetRequestItem) {
+    this.axDialog
+      .confirmDelete(item.generic_name)
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
 
-    try {
-      await firstValueFrom(
-        this.http.delete(`/inventory/budget/budget-request-items/${item.id}`),
-      );
-      this.snackBar.open('ลบรายการสำเร็จ', 'ปิด', { duration: 3000 });
-      await this.loadItems();
-      await this.loadData();
-    } catch (error: any) {
-      this.snackBar.open(error?.error?.message || 'ไม่สามารถลบได้', 'ปิด', {
-        duration: 3000,
+        try {
+          await firstValueFrom(
+            this.http.delete(
+              `/inventory/budget/budget-request-items/${item.id}`,
+            ),
+          );
+          this.snackBar.open('ลบรายการสำเร็จ', 'ปิด', { duration: 3000 });
+          await this.loadItems();
+          await this.loadData();
+        } catch (error: any) {
+          this.snackBar.open(error?.error?.message || 'ไม่สามารถลบได้', 'ปิด', {
+            duration: 3000,
+          });
+        }
       });
-    }
   }
 
-  async initialize() {
-    if (
-      !confirm(
-        'ต้องการ Initialize รายการยาจาก Drug Master หรือไม่?\n\n• จะดึงรายการยาทั้งหมด\n• คำนวณยอดใช้ย้อนหลัง 3 ปี\n• ดึงราคาและสต็อกปัจจุบัน\n\nหากมีข้อมูลอยู่แล้ว จะถูกเขียนทับ',
-      )
-    )
-      return;
+  initialize() {
+    this.axDialog
+      .confirm({
+        title: 'Initialize รายการยา',
+        message:
+          'จะดึงรายการยาทั้งหมดพร้อมคำนวณยอดใช้ย้อนหลัง 3 ปี, ราคา และสต็อกปัจจุบัน\n\nหากมีข้อมูลอยู่แล้ว จะถูกเขียนทับ',
+        confirmText: 'Initialize',
+        cancelText: 'ยกเลิก',
+        isDangerous: false,
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
 
-    this.actionLoading.set(true);
-    try {
-      const response = await firstValueFrom(
-        this.http.post<any>(
-          `/inventory/budget/budget-requests/${this.requestId}/initialize`,
-          {},
-        ),
-      );
-      this.snackBar.open(
-        `Initialize สำเร็จ ${response.data?.itemsCreated || 0} รายการ`,
-        'ปิด',
-        { duration: 3000 },
-      );
-      await this.loadItems();
-      await this.loadData();
-    } catch (error: any) {
-      this.snackBar.open(
-        error?.error?.message || 'Initialize ไม่สำเร็จ',
-        'ปิด',
-        { duration: 3000 },
-      );
-    } finally {
-      this.actionLoading.set(false);
-    }
+        this.actionLoading.set(true);
+        try {
+          const response = await firstValueFrom(
+            this.http.post<any>(
+              `/inventory/budget/budget-requests/${this.requestId}/initialize`,
+              {},
+            ),
+          );
+          this.snackBar.open(
+            `Initialize สำเร็จ ${response.data?.itemsCreated || 0} รายการ`,
+            'ปิด',
+            { duration: 3000 },
+          );
+          await this.loadItems();
+          await this.loadData();
+        } catch (error: any) {
+          this.snackBar.open(
+            error?.error?.message || 'Initialize ไม่สำเร็จ',
+            'ปิด',
+            { duration: 3000 },
+          );
+        } finally {
+          this.actionLoading.set(false);
+        }
+      });
   }
 
-  async initializeFromMaster() {
-    if (
-      !confirm(
-        'ต้องการดึงรายการยาจาก Drug Master หรือไม่?\n\n• จะดึงรายการยาทั้งหมด\n• ไม่คำนวณยอดใช้ย้อนหลัง\n• ค่าทุกอย่างจะเป็น 0\n\nหากมีข้อมูลอยู่แล้ว จะถูกเขียนทับ',
-      )
-    )
-      return;
+  initializeFromMaster() {
+    this.axDialog
+      .confirm({
+        title: 'ดึงรายการยาจาก Drug Master',
+        message:
+          'จะดึงรายการยาทั้งหมด (ไม่คำนวณยอดใช้ย้อนหลัง) ค่าทุกอย่างจะเป็น 0\n\nหากมีข้อมูลอยู่แล้ว จะถูกเขียนทับ',
+        confirmText: 'ดึงรายการ',
+        cancelText: 'ยกเลิก',
+        isDangerous: false,
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
 
-    this.actionLoading.set(true);
-    try {
-      const response = await firstValueFrom(
-        this.http.post<any>(
-          `/inventory/budget/budget-requests/${this.requestId}/initialize-from-master`,
-          {},
-        ),
-      );
-      this.snackBar.open(
-        `ดึงรายการยาสำเร็จ ${response.data?.itemsCreated || 0} รายการ`,
-        'ปิด',
-        { duration: 3000 },
-      );
-      await this.loadItems();
-      await this.loadData();
-    } catch (error: any) {
-      this.snackBar.open(
-        error?.error?.message || 'ดึงรายการยาไม่สำเร็จ',
-        'ปิด',
-        { duration: 3000 },
-      );
-    } finally {
-      this.actionLoading.set(false);
-    }
+        this.actionLoading.set(true);
+        try {
+          const response = await firstValueFrom(
+            this.http.post<any>(
+              `/inventory/budget/budget-requests/${this.requestId}/initialize-from-master`,
+              {},
+            ),
+          );
+          this.snackBar.open(
+            `ดึงรายการยาสำเร็จ ${response.data?.itemsCreated || 0} รายการ`,
+            'ปิด',
+            { duration: 3000 },
+          );
+          await this.loadItems();
+          await this.loadData();
+        } catch (error: any) {
+          this.snackBar.open(
+            error?.error?.message || 'ดึงรายการยาไม่สำเร็จ',
+            'ปิด',
+            { duration: 3000 },
+          );
+        } finally {
+          this.actionLoading.set(false);
+        }
+      });
   }
 
   async importExcel() {
@@ -1106,77 +1126,115 @@ export class BudgetRequestDetailComponent implements OnInit {
     }
   }
 
-  async submit() {
-    if (!confirm('ต้องการ Submit คำขอเพื่อขออนุมัติหรือไม่?')) return;
+  submit() {
+    this.axDialog
+      .confirm({
+        title: 'Submit คำของบประมาณ',
+        message: 'ต้องการ Submit คำขอเพื่อขออนุมัติหรือไม่?',
+        confirmText: 'Submit',
+        cancelText: 'ยกเลิก',
+        isDangerous: false,
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
 
-    this.actionLoading.set(true);
-    try {
-      await firstValueFrom(
-        this.http.post<any>(
-          `/inventory/budget/budget-requests/${this.requestId}/submit`,
-          {},
-        ),
-      );
-      this.snackBar.open('Submit สำเร็จ', 'ปิด', { duration: 3000 });
-      await this.loadData();
-    } catch (error: any) {
-      this.snackBar.open(error?.error?.message || 'Submit ไม่สำเร็จ', 'ปิด', {
-        duration: 3000,
+        this.actionLoading.set(true);
+        try {
+          await firstValueFrom(
+            this.http.post<any>(
+              `/inventory/budget/budget-requests/${this.requestId}/submit`,
+              {},
+            ),
+          );
+          this.snackBar.open('Submit สำเร็จ', 'ปิด', { duration: 3000 });
+          await this.loadData();
+        } catch (error: any) {
+          this.snackBar.open(
+            error?.error?.message || 'Submit ไม่สำเร็จ',
+            'ปิด',
+            {
+              duration: 3000,
+            },
+          );
+        } finally {
+          this.actionLoading.set(false);
+        }
       });
-    } finally {
-      this.actionLoading.set(false);
-    }
   }
 
-  async approveDept() {
-    if (!confirm('ต้องการอนุมัติ (หัวหน้างาน) หรือไม่?')) return;
+  approveDept() {
+    this.axDialog
+      .confirm({
+        title: 'อนุมัติ (หัวหน้างาน)',
+        message: 'ต้องการอนุมัติคำของบประมาณนี้หรือไม่?',
+        confirmText: 'อนุมัติ',
+        cancelText: 'ยกเลิก',
+        isDangerous: false,
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
 
-    this.actionLoading.set(true);
-    try {
-      await firstValueFrom(
-        this.http.post<any>(
-          `/inventory/budget/budget-requests/${this.requestId}/approve-dept`,
-          {},
-        ),
-      );
-      this.snackBar.open('อนุมัติสำเร็จ', 'ปิด', { duration: 3000 });
-      await this.loadData();
-    } catch (error: any) {
-      this.snackBar.open(error?.error?.message || 'อนุมัติไม่สำเร็จ', 'ปิด', {
-        duration: 3000,
+        this.actionLoading.set(true);
+        try {
+          await firstValueFrom(
+            this.http.post<any>(
+              `/inventory/budget/budget-requests/${this.requestId}/approve-dept`,
+              {},
+            ),
+          );
+          this.snackBar.open('อนุมัติสำเร็จ', 'ปิด', { duration: 3000 });
+          await this.loadData();
+        } catch (error: any) {
+          this.snackBar.open(
+            error?.error?.message || 'อนุมัติไม่สำเร็จ',
+            'ปิด',
+            {
+              duration: 3000,
+            },
+          );
+        } finally {
+          this.actionLoading.set(false);
+        }
       });
-    } finally {
-      this.actionLoading.set(false);
-    }
   }
 
-  async approveFinance() {
-    if (
-      !confirm(
-        'ต้องการอนุมัติ (การเงิน) หรือไม่?\n\nระบบจะจัดสรรงบประมาณให้อัตโนมัติ',
-      )
-    )
-      return;
+  approveFinance() {
+    this.axDialog
+      .confirm({
+        title: 'อนุมัติ (การเงิน)',
+        message:
+          'ต้องการอนุมัติคำของบประมาณนี้หรือไม่?\n\nระบบจะจัดสรรงบประมาณให้อัตโนมัติ',
+        confirmText: 'อนุมัติ',
+        cancelText: 'ยกเลิก',
+        isDangerous: false,
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
 
-    this.actionLoading.set(true);
-    try {
-      await firstValueFrom(
-        this.http.post<any>(
-          `/inventory/budget/budget-requests/${this.requestId}/approve-finance`,
-          {},
-        ),
-      );
-      this.snackBar.open('อนุมัติและจัดสรรงบประมาณสำเร็จ', 'ปิด', {
-        duration: 3000,
+        this.actionLoading.set(true);
+        try {
+          await firstValueFrom(
+            this.http.post<any>(
+              `/inventory/budget/budget-requests/${this.requestId}/approve-finance`,
+              {},
+            ),
+          );
+          this.snackBar.open('อนุมัติและจัดสรรงบประมาณสำเร็จ', 'ปิด', {
+            duration: 3000,
+          });
+          await this.loadData();
+        } catch (error: any) {
+          this.snackBar.open(
+            error?.error?.message || 'อนุมัติไม่สำเร็จ',
+            'ปิด',
+            {
+              duration: 3000,
+            },
+          );
+        } finally {
+          this.actionLoading.set(false);
+        }
       });
-      await this.loadData();
-    } catch (error: any) {
-      this.snackBar.open(error?.error?.message || 'อนุมัติไม่สำเร็จ', 'ปิด', {
-        duration: 3000,
-      });
-    } finally {
-      this.actionLoading.set(false);
-    }
   }
 
   async reject() {
