@@ -27,3 +27,7 @@ configMapGenerator:
       - API_PREFIX= # Empty string - no prefix
       - CORS_ORIGINS=https://aegisx.example.com,https://admin.aegisx.example.com
       - LOG_LEVEL=warn
+      - DATABASE_HOST=production-aegisx-postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=aegisx
+      - DATABASE_NAME=aegisx

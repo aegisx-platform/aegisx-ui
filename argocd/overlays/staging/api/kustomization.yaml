@@ -22,3 +22,7 @@ configMapGenerator:
       - NODE_ENV=staging
       - API_PREFIX= # Empty string - no prefix
       - CORS_ORIGINS=https://staging.aegisx.example.com,https://staging-admin.aegisx.example.com
+      - DATABASE_HOST=staging-aegisx-postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=aegisx
+      - DATABASE_NAME=aegisx
