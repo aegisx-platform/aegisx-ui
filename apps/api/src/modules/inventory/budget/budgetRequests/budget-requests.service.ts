@@ -87,12 +87,14 @@ export class BudgetRequestsService extends BaseService<
       (await this.generateRequestNumber(data.fiscal_year));
 
     // Build create data with defaults
+    // Handle department_id: 0 → null (TypeBox may coerce null to 0 for Integer type)
+    // null means "all departments" per business logic
     const createData: CreateBudgetRequests = {
       ...data,
       request_number: requestNumber,
       status: data.status || 'DRAFT',
       total_requested_amount: data.total_requested_amount ?? 0,
-      // department_id is optional - null means "all departments"
+      department_id: data.department_id === 0 ? null : data.department_id,
     };
 
     const budgetRequests = await super.create(createData);
@@ -500,7 +502,7 @@ export class BudgetRequestsService extends BaseService<
       const drugGenerics = await knex('inventory.drug_generics')
         .where({ is_active: true })
         .select('*')
-        .orderBy('generic_code');
+        .orderBy('working_code');
 
       console.log(`Found ${drugGenerics.length} active drug generics`);
 
@@ -542,7 +544,16 @@ export class BudgetRequestsService extends BaseService<
         // Estimate usage for 2569 (using average)
         const estimatedUsage2569 = Math.round(avgUsage);
 
-        // Get current stock (placeholder - would come from inventory table)
+        // Get drug info with unit_price from drugs table (linked by generic_id)
+        const drugRecord = await knex('inventory.drugs')
+          .where({ generic_id: generic.id, is_active: true })
+          .orderBy('updated_at', 'desc')
+          .first();
+
+        // Get unit_price from drugs table (0 if not found)
+        const unitPrice = parseFloat(drugRecord?.unit_price || 0);
+
+        // Get current stock (placeholder - would come from inventory table in Task 1.2)
         const currentStock = 0;
 
         // Calculate estimated purchase
@@ -550,9 +561,6 @@ export class BudgetRequestsService extends BaseService<
           0,
           estimatedUsage2569 - currentStock,
         );
-
-        // Get latest unit price (placeholder - would come from drugs table)
-        const unitPrice = 0;
 
         // Calculate requested amount
         const requestedAmount = estimatedPurchase * unitPrice;
@@ -570,7 +578,7 @@ export class BudgetRequestsService extends BaseService<
 
           // Drug information
           generic_id: generic.id,
-          generic_code: generic.generic_code,
+          generic_code: generic.working_code,
           generic_name: generic.generic_name,
           package_size: generic.package_size || '',
           unit: generic.unit || '',
@@ -828,13 +836,13 @@ export class BudgetRequestsService extends BaseService<
 
           // Validate drug code exists
           const generic = await knex('inventory.drug_generics')
-            .where({ generic_code: drugCode, is_active: true })
+            .where({ working_code: drugCode, is_active: true })
             .first();
 
           if (!generic) {
             results.errors.push({
               row: rowNumber,
-              field: 'generic_code',
+              field: 'working_code',
               message: `Drug code '${drugCode}' not found in active drug generics`,
             });
             results.skipped++;
@@ -892,14 +900,17 @@ export class BudgetRequestsService extends BaseService<
             budget_request_id: id,
             budget_id: 1, // Default budget ID
             generic_id: generic.id,
-            generic_code: generic.generic_code,
+            generic_code: generic.working_code,
             generic_name: generic.generic_name,
             package_size: generic.package_size || '',
             unit: row[colIndexes.unit] || generic.unit || '',
             line_number: results.imported + results.updated + 1,
-            usage_year_2566: year2566,
-            usage_year_2567: year2567,
-            usage_year_2568: year2568,
+            // Use JSONB historical_usage instead of individual year columns
+            historical_usage: {
+              '2566': year2566,
+              '2567': year2567,
+              '2568': year2568,
+            },
             avg_usage: avgUsage,
             estimated_usage_2569: estimatedUsage,
             current_stock: currentStock,
@@ -972,7 +983,8 @@ export class BudgetRequestsService extends BaseService<
 
     // Import ExcelJS
     const ExcelJS = await import('exceljs');
-    const workbook = new ExcelJS.Workbook();
+    const { Workbook } = ExcelJS.default || ExcelJS;
+    const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('แผนงบประมาณยา');
 
     // Set column widths
@@ -1144,7 +1156,7 @@ export class BudgetRequestsService extends BaseService<
 
       // Set values
       row.getCell(1).value = item.line_number || rowIndex - 4; // A: ลำดับ
-      row.getCell(2).value = item.generic_code || ''; // B: รหัส
+      row.getCell(2).value = item.working_code || ''; // B: รหัส
       row.getCell(3).value = item.generic_name || ''; // C: รายการ
       row.getCell(4).value = item.package_size || ''; // D: ขนาดบรรจุ
       row.getCell(5).value = item.unit || ''; // E: หน่วย
@@ -1441,7 +1453,7 @@ export class BudgetRequestsService extends BaseService<
       budget_request_id: budgetRequestId,
       budget_id: 1, // Default budget
       generic_id: data.generic_id,
-      generic_code: generic.generic_code,
+      generic_code: generic.working_code,
       generic_name: generic.generic_name,
       package_size: generic.package_size || '',
       unit: generic.unit || '',
