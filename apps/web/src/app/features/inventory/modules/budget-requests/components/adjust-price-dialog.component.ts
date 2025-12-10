@@ -241,20 +241,36 @@ export class AdjustPriceDialogComponent {
 
   form: FormGroup;
 
+  // Signals to track form values for reactivity
+  private applyToSignal = signal<'all' | 'selected'>('all');
+  private fieldSignal = signal<'unit_price' | 'requested_qty'>('unit_price');
+  private percentageSignal = signal<number>(10);
+
   constructor() {
+    const initialApplyTo = this.data.hasSelection ? 'selected' : 'all';
+    this.applyToSignal.set(initialApplyTo as 'all' | 'selected');
+
     this.form = this.fb.group({
-      applyTo: [
-        this.data.hasSelection ? 'selected' : 'all',
-        Validators.required,
-      ],
+      applyTo: [initialApplyTo, Validators.required],
       field: ['unit_price', Validators.required],
       percentage: [10, [Validators.required, Validators.min(-99.99)]],
     });
+
+    // Subscribe to form changes and update signals
+    this.form.get('applyTo')?.valueChanges.subscribe((value) => {
+      this.applyToSignal.set(value);
+    });
+    this.form.get('field')?.valueChanges.subscribe((value) => {
+      this.fieldSignal.set(value);
+    });
+    this.form.get('percentage')?.valueChanges.subscribe((value) => {
+      this.percentageSignal.set(value ?? 0);
+    });
   }
 
-  // Computed values
+  // Computed values using signals for reactivity
   affectedItemsCount = computed(() => {
-    const applyTo = this.form?.get('applyTo')?.value;
+    const applyTo = this.applyToSignal();
     if (applyTo === 'selected') {
       return this.data.selectedItemIds.length;
     }
@@ -262,12 +278,12 @@ export class AdjustPriceDialogComponent {
   });
 
   fieldLabel = computed(() => {
-    const field = this.form?.get('field')?.value;
+    const field = this.fieldSignal();
     return field === 'unit_price' ? 'ราคา/หน่วย' : 'จำนวนที่ขอ';
   });
 
   currentTotal = computed(() => {
-    const applyTo = this.form?.get('applyTo')?.value;
+    const applyTo = this.applyToSignal();
     const items =
       applyTo === 'selected'
         ? this.data.items.filter((i) =>
@@ -278,9 +294,9 @@ export class AdjustPriceDialogComponent {
   });
 
   estimatedNewTotal = computed(() => {
-    const percentage = this.form?.get('percentage')?.value || 0;
-    const field = this.form?.get('field')?.value;
-    const applyTo = this.form?.get('applyTo')?.value;
+    const percentage = this.percentageSignal();
+    const field = this.fieldSignal();
+    const applyTo = this.applyToSignal();
 
     const items =
       applyTo === 'selected'
