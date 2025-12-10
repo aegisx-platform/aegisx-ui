@@ -8,6 +8,9 @@ namePrefix: production-
 bases:
   - ../../../base/api
 
+resources:
+  - migration-job.yaml
+
 images:
   - name: ghcr.io/aegisx-platform/aegisx-starter-api
     newTag: production

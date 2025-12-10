@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aegisx-api
+spec:
+  template:
+    spec:
+      # Init Container สำหรับ Database Migration
+      initContainers:
+        - name: db-migration
+          image: ghcr.io/aegisx-platform/aegisx-starter-api:staging
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "=================================="
+              echo "Database Migration - Staging"
+              echo "=================================="
+              echo "Started at: $(date)"
+              echo ""
+
+              # Check database connection
+              echo "Checking database connection..."
+              if ! npm run db:ping 2>/dev/null; then
+                echo "Warning: Cannot ping database, but will try migration anyway"
+              fi
+
+              # Show current migration status
+              echo ""
+              echo "Current migration status:"
+              npm run db:migrate:status || true
+
+              # Run migrations
+              echo ""
+              echo "Running migrations..."
+              npm run db:migrate
+
+              # Show final status
+              echo ""
+              echo "Final migration status:"
+              npm run db:migrate:status
+
+              echo ""
+              echo "Completed at: $(date)"
+              echo "=================================="
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_PORT
+            - name: DATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_USER
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_NAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: aegisx-api-secrets
+                  key: DATABASE_PASSWORD
+            - name: NODE_ENV
+              value: 'production'
+          resources:
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+            requests:
+              memory: '256Mi'
+              cpu: '250m'

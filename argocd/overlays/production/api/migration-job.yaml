@@ -1,0 +1,158 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: aegisx-api-migration
+  namespace: production
+  annotations:
+    # ArgoCD Hook: รันก่อน sync application
+    argocd.argoproj.io/hook: PreSync
+    # ลบ Job เก่าก่อนสร้างใหม่
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    # Sync wave: ให้รัน migration ก่อนสิ่งอื่น
+    argocd.argoproj.io/sync-wave: '-1'
+  labels:
+    app: aegisx-api
+    component: migration
+    environment: production
+spec:
+  # Retry 3 ครั้งถ้า migration fail
+  backoffLimit: 3
+  # ลบ Job หลังสำเร็จ 7 วัน (เก็บไว้ดู logs)
+  ttlSecondsAfterFinished: 604800
+  template:
+    metadata:
+      labels:
+        app: aegisx-api
+        component: migration
+        environment: production
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migration
+          image: ghcr.io/aegisx-platform/aegisx-starter-api:production
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "=========================================="
+              echo "Database Migration - PRODUCTION"
+              echo "=========================================="
+              echo "Started at: $(date)"
+              echo "Image: $IMAGE_TAG"
+              echo "Database: $DATABASE_NAME"
+              echo ""
+
+              # Function to send Slack notification (if configured)
+              send_notification() {
+                local status=$1
+                local message=$2
+                if [ -n "$SLACK_WEBHOOK_URL" ]; then
+                  curl -X POST "$SLACK_WEBHOOK_URL" \
+                    -H 'Content-Type: application/json' \
+                    -d "{\"text\":\"[PRODUCTION] Migration $status: $message\"}" \
+                    || true
+                fi
+              }
+
+              # Check database connection
+              echo "Step 1: Checking database connection..."
+              if ! npm run db:ping 2>/dev/null; then
+                echo "ERROR: Cannot connect to database!"
+                send_notification "FAILED" "Cannot connect to database"
+                exit 1
+              fi
+              echo "✓ Database connection OK"
+
+              # Show current migration status
+              echo ""
+              echo "Step 2: Current migration status:"
+              npm run db:migrate:status || true
+
+              # Optional: Create backup
+              echo ""
+              echo "Step 3: Creating database backup..."
+              if command -v pg_dump > /dev/null 2>&1; then
+                BACKUP_FILE="/tmp/db_backup_$(date +%Y%m%d_%H%M%S).sql"
+                echo "Backup file: $BACKUP_FILE"
+                # pg_dump command here if needed
+                echo "Note: Backup skipped (configure pg_dump if needed)"
+              else
+                echo "Note: pg_dump not available, skipping backup"
+              fi
+
+              # Run migrations
+              echo ""
+              echo "Step 4: Running migrations..."
+              send_notification "STARTED" "Running database migrations"
+
+              if npm run db:migrate; then
+                echo "✓ Migrations completed successfully"
+                send_notification "SUCCESS" "Database migrations completed"
+              else
+                echo "✗ Migration failed!"
+                send_notification "FAILED" "Migration execution failed"
+                exit 1
+              fi
+
+              # Verify migrations
+              echo ""
+              echo "Step 5: Verifying migrations..."
+              npm run db:migrate:status
+
+              # Optional: Run data integrity checks
+              echo ""
+              echo "Step 6: Data integrity checks..."
+              # Add your integrity check commands here
+              # npm run db:verify || exit 1
+              echo "Note: Add custom integrity checks if needed"
+
+              echo ""
+              echo "=========================================="
+              echo "Migration completed successfully"
+              echo "Completed at: $(date)"
+              echo "=========================================="
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_PORT
+            - name: DATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_USER
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: aegisx-api-config
+                  key: DATABASE_NAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: aegisx-api-secrets
+                  key: DATABASE_PASSWORD
+            - name: NODE_ENV
+              value: 'production'
+            - name: IMAGE_TAG
+              value: 'production'
+          # Optional: Slack webhook for notifications
+          # - name: SLACK_WEBHOOK_URL
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: aegisx-api-secrets
+          #       key: SLACK_WEBHOOK_URL
+          resources:
+            limits:
+              memory: '1Gi'
+              cpu: '1000m'
+            requests:
+              memory: '512Mi'
+              cpu: '500m'
