@@ -87,7 +87,7 @@ interface ImportResult {
       </button>
     </h2>
 
-    <mat-dialog-content class="!p-0 !overflow-hidden">
+    <mat-dialog-content class="!p-0 !overflow-y-auto" style="max-height: 70vh;">
       <mat-stepper
         #stepper
         [linear]="true"
@@ -460,23 +460,84 @@ interface ImportResult {
                       <div class="text-3xl font-bold text-orange-600">
                         {{ importResult()?.skipped | number }}
                       </div>
-                      <div class="text-gray-600">ข้าม</div>
+                      <div class="text-gray-600">ข้าม (ซ้ำ)</div>
+                    </div>
+                  }
+                  @if (importResult()?.errors?.length) {
+                    <div class="stat text-center">
+                      <div class="text-3xl font-bold text-red-600">
+                        {{ importResult()?.errors?.length | number }}
+                      </div>
+                      <div class="text-gray-600">ผิดพลาด</div>
                     </div>
                   }
                 </div>
 
                 @if (importResult()?.errors?.length) {
                   <div
-                    class="errors-list mt-6 text-left max-h-40 overflow-auto"
+                    class="errors-section mt-6 p-4 bg-red-50 rounded-lg text-left"
                   >
-                    <div class="text-sm font-medium text-red-600 mb-2">
-                      รายการที่มีข้อผิดพลาด:
-                    </div>
-                    @for (err of importResult()?.errors || []; track err.row) {
-                      <div class="text-sm text-red-600 py-1">
-                        แถว {{ err.row }}: {{ err.message }}
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="text-sm font-medium text-red-800">
+                        รายการที่มีข้อผิดพลาด ({{
+                          importResult()?.errors?.length
+                        }}
+                        รายการ)
                       </div>
-                    }
+                      <button
+                        mat-stroked-button
+                        color="warn"
+                        (click)="downloadErrorReport()"
+                        matTooltip="ดาวน์โหลดรายการที่มีปัญหาเป็น Excel"
+                      >
+                        <mat-icon>download</mat-icon>
+                        <span class="ml-1">Export รายการผิดพลาด</span>
+                      </button>
+                    </div>
+                    <div
+                      class="errors-list max-h-32 overflow-auto border rounded bg-white"
+                    >
+                      <table class="w-full text-sm">
+                        <thead class="bg-red-100 sticky top-0">
+                          <tr>
+                            <th class="px-3 py-2 text-left w-16">แถว</th>
+                            <th class="px-3 py-2 text-left">
+                              รายละเอียดข้อผิดพลาด
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (
+                            err of importResult()?.errors || [];
+                            track err.row
+                          ) {
+                            <tr class="border-t">
+                              <td class="px-3 py-2 text-red-600 font-medium">
+                                {{ err.row }}
+                              </td>
+                              <td class="px-3 py-2 text-red-700">
+                                {{ err.message }}
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+
+                @if (
+                  (importResult()?.skipped || 0) > 0 &&
+                  !importResult()?.errors?.length
+                ) {
+                  <div class="mt-6 p-4 bg-orange-50 rounded-lg text-center">
+                    <div class="text-orange-800">
+                      <mat-icon class="align-middle mr-1">info</mat-icon>
+                      รายการที่ข้ามเนื่องจากมีรหัสยาซ้ำกับรายการที่มีอยู่แล้ว
+                    </div>
+                    <div class="text-sm text-orange-600 mt-1">
+                      (ใช้โหมด "อัปเดต" หากต้องการแทนที่รายการที่มีอยู่)
+                    </div>
                   </div>
                 }
               </div>
@@ -893,6 +954,55 @@ export class BudgetRequestImportDialogComponent {
     XLSX.utils.book_append_sheet(wb, ws, 'Template');
 
     const fileName = `budget_request_import_template_${this.data.fiscalYear}.${format}`;
+    XLSX.writeFile(wb, fileName);
+  }
+
+  downloadErrorReport() {
+    const errors = this.importResult()?.errors || [];
+    if (errors.length === 0) return;
+
+    // Get original data for failed rows
+    const headers = [
+      'แถว',
+      'รหัสยา',
+      'ชื่อยา',
+      'หน่วย',
+      'ราคาต่อหน่วย',
+      'จำนวน',
+      'ข้อผิดพลาด',
+    ];
+    const errorData = errors.map((err) => {
+      const originalRow = this.parsedRows().find(
+        (r) => r.rowNumber === err.row,
+      );
+      return [
+        err.row,
+        originalRow?.generic_code || '',
+        originalRow?.generic_name || '',
+        originalRow?.unit || '',
+        originalRow?.unit_price || '',
+        originalRow?.requested_qty || '',
+        err.message,
+      ];
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...errorData]);
+
+    // Set column widths
+    ws['!cols'] = [
+      { wch: 6 }, // แถว
+      { wch: 12 }, // รหัสยา
+      { wch: 40 }, // ชื่อยา
+      { wch: 8 }, // หน่วย
+      { wch: 12 }, // ราคา
+      { wch: 10 }, // จำนวน
+      { wch: 40 }, // ข้อผิดพลาด
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Import Errors');
+
+    const fileName = `import_errors_${this.data.fiscalYear}_${new Date().toISOString().slice(0, 10)}.xlsx`;
     XLSX.writeFile(wb, fileName);
   }
 
