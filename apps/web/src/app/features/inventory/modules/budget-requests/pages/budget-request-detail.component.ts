@@ -91,6 +91,7 @@ interface BudgetRequestItem {
                 mat-icon-button
                 (click)="goBack()"
                 class="!bg-[var(--ax-background-subtle)]"
+                matTooltip="กลับไปหน้ารายการคำขอ"
               >
                 <mat-icon>arrow_back</mat-icon>
               </button>
@@ -211,6 +212,7 @@ interface BudgetRequestItem {
                     mat-stroked-button
                     (click)="importExcel()"
                     [disabled]="actionLoading()"
+                    matTooltip="นำเข้าข้อมูลจากไฟล์ Excel (SSCJ Format)"
                   >
                     <mat-icon>upload_file</mat-icon>
                     <span class="ml-1">Import Excel</span>
@@ -219,6 +221,7 @@ interface BudgetRequestItem {
                     mat-stroked-button
                     (click)="addDrug()"
                     [disabled]="actionLoading()"
+                    matTooltip="เพิ่มรายการยาทีละรายการ"
                   >
                     <mat-icon>add</mat-icon>
                     <span class="ml-1">Add Drug</span>
@@ -238,6 +241,7 @@ interface BudgetRequestItem {
                     mat-stroked-button
                     (click)="saveAll()"
                     [disabled]="actionLoading() || !hasChanges()"
+                    matTooltip="บันทึกการแก้ไขทั้งหมด"
                   >
                     <mat-icon>save</mat-icon>
                     <span class="ml-1">Save All</span>
@@ -247,6 +251,7 @@ interface BudgetRequestItem {
                     color="accent"
                     (click)="submit()"
                     [disabled]="actionLoading() || items().length === 0"
+                    matTooltip="ส่งคำขอเพื่อรออนุมัติ"
                   >
                     <mat-icon>send</mat-icon>
                     <span class="ml-1">Submit</span>
@@ -260,6 +265,7 @@ interface BudgetRequestItem {
                     color="primary"
                     (click)="approveDept()"
                     [disabled]="actionLoading()"
+                    matTooltip="อนุมัติโดยหัวหน้างาน"
                   >
                     <mat-icon>thumb_up</mat-icon>
                     <span class="ml-1">Approve (Dept)</span>
@@ -269,6 +275,7 @@ interface BudgetRequestItem {
                     color="warn"
                     (click)="reject()"
                     [disabled]="actionLoading()"
+                    matTooltip="ปฏิเสธคำขอ พร้อมระบุเหตุผล"
                   >
                     <mat-icon>thumb_down</mat-icon>
                     <span class="ml-1">Reject</span>
@@ -283,6 +290,7 @@ interface BudgetRequestItem {
                     color="primary"
                     (click)="approveFinance()"
                     [disabled]="actionLoading()"
+                    matTooltip="อนุมัติโดยการเงินและจัดสรรงบประมาณ"
                   >
                     <mat-icon>thumb_up</mat-icon>
                     <span class="ml-1">Approve (Finance)</span>
@@ -292,6 +300,7 @@ interface BudgetRequestItem {
                     color="warn"
                     (click)="reject()"
                     [disabled]="actionLoading()"
+                    matTooltip="ปฏิเสธคำขอ พร้อมระบุเหตุผล"
                   >
                     <mat-icon>thumb_down</mat-icon>
                     <span class="ml-1">Reject</span>
@@ -304,6 +313,7 @@ interface BudgetRequestItem {
                   mat-stroked-button
                   (click)="exportSSCJ()"
                   [disabled]="actionLoading()"
+                  matTooltip="ดาวน์โหลดไฟล์ Excel ตามรูปแบบ SSCJ"
                 >
                   <mat-icon>download</mat-icon>
                   <span class="ml-1">Export SSCJ</span>
@@ -326,6 +336,7 @@ interface BudgetRequestItem {
                     matInput
                     [(ngModel)]="searchTerm"
                     placeholder="รหัสยา, ชื่อยา..."
+                    (keyup.enter)="applySearch()"
                   />
                   <mat-icon matSuffix>search</mat-icon>
                 </mat-form-field>
@@ -341,12 +352,21 @@ interface BudgetRequestItem {
                     <mat-option value="all">ทั้งหมด</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <button mat-flat-button color="primary" (click)="applySearch()">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="applySearch()"
+                  matTooltip="ค้นหารายการยา (กด Enter ได้)"
+                >
                   <mat-icon>search</mat-icon>
                   ค้นหา
                 </button>
                 @if (searchTerm) {
-                  <button mat-stroked-button (click)="clearSearch()">
+                  <button
+                    mat-stroked-button
+                    (click)="clearSearch()"
+                    matTooltip="ล้างการค้นหาและแสดงทั้งหมด"
+                  >
                     <mat-icon>clear</mat-icon>
                     ล้าง
                   </button>
@@ -379,6 +399,7 @@ interface BudgetRequestItem {
                       color="primary"
                       (click)="initialize()"
                       [disabled]="actionLoading()"
+                      matTooltip="ดึงรายการยาพร้อมคำนวณยอดใช้ย้อนหลัง ราคา และสต็อก"
                     >
                       <mat-icon>auto_fix_high</mat-icon>
                       Initialize
@@ -387,6 +408,7 @@ interface BudgetRequestItem {
                       mat-stroked-button
                       (click)="initializeFromMaster()"
                       [disabled]="actionLoading()"
+                      matTooltip="ดึงรายการยาจาก Drug Master (ไม่คำนวณยอดใช้)"
                     >
                       <mat-icon>playlist_add</mat-icon>
                       From Master
@@ -424,6 +446,7 @@ interface BudgetRequestItem {
                         <mat-checkbox
                           [checked]="isSelected(item.id)"
                           (change)="toggleSelectItem(item.id)"
+                          (click)="$event.stopPropagation()"
                         ></mat-checkbox>
                       }
                     </td>
@@ -694,7 +717,9 @@ interface BudgetRequestItem {
                   <tr
                     mat-row
                     *matRowDef="let row; columns: displayedColumns"
-                    class="hover:bg-[var(--ax-background-subtle)]"
+                    [class.selected-row]="isSelected(row.id)"
+                    class="hover:bg-[var(--ax-background-subtle)] cursor-pointer"
+                    (click)="toggleSelectItem(row.id)"
                   ></tr>
                 </table>
               </div>
@@ -731,6 +756,7 @@ interface BudgetRequestItem {
                   color="warn"
                   (click)="bulkDeleteSelected()"
                   [disabled]="actionLoading()"
+                  matTooltip="ลบรายการที่เลือกทั้งหมด"
                 >
                   <mat-icon>delete</mat-icon>
                   <span class="ml-1">ลบที่เลือก</span>
@@ -829,6 +855,12 @@ interface BudgetRequestItem {
           padding: 8px 16px;
           font-size: 13px;
         }
+      }
+      ::ng-deep .items-table tr.mat-mdc-row.selected-row {
+        background-color: #dbeafe !important;
+      }
+      ::ng-deep .items-table tr.mat-mdc-row.selected-row:hover {
+        background-color: #bfdbfe !important;
       }
     `,
   ],

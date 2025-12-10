@@ -658,12 +658,12 @@ interface ImportResult {
 
       .drop-zone:hover {
         border-color: #64b5f6;
-        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        background: #e3f2fd;
       }
 
       .drop-zone.dragover {
         border-color: #1976d2;
-        background: linear-gradient(135deg, #bbdefb 0%, #e1bee7 100%);
+        background: #bbdefb;
         border-width: 3px;
         transform: scale(1.01);
       }
