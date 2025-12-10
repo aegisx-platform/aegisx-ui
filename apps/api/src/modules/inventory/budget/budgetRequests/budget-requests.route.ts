@@ -359,51 +359,62 @@ export async function budgetRequestsRoutes(
     handler: controller.initializeFromMaster.bind(controller),
   });
 
-  // Import Excel/CSV file
-  fastify.post('/:id/import-excel', {
-    schema: {
-      tags: ['Inventory: Budget Requests'],
-      summary: 'Import Excel/CSV file for budget request items',
-      description:
-        'Import budget request items from Excel (.xlsx, .xls) or CSV (.csv) file. Status must be DRAFT. ' +
-        'File format: รหัสยา, ชื่อยา, หน่วย, ปี2566, ปี2567, ปี2568, ประมาณการ2569, คงคลัง, ราคา/หน่วย, จำนวนที่ขอ, Q1, Q2, Q3, Q4, หมายเหตุ',
-      params: BudgetRequestsIdParamSchema,
-      consumes: ['multipart/form-data'],
-      response: {
-        200: Type.Object({
-          success: Type.Boolean(),
-          data: Type.Object({
-            imported: Type.Number(),
-            updated: Type.Number(),
-            skipped: Type.Number(),
-            errors: Type.Array(
-              Type.Object({
-                row: Type.Number(),
-                field: Type.String(),
-                message: Type.String(),
-              }),
-            ),
-          }),
-          message: Type.String(),
-          meta: Type.Object({
-            timestamp: Type.String(),
-            version: Type.String(),
-            requestId: Type.String(),
-            environment: Type.String(),
-          }),
+  // Import Excel/CSV file (main endpoint)
+  const importExcelSchema = {
+    tags: ['Inventory: Budget Requests'],
+    summary: 'Import Excel/CSV file for budget request items',
+    description:
+      'Import budget request items from Excel (.xlsx, .xls) or CSV (.csv) file. Status must be DRAFT. ' +
+      'Supports modes: append, replace, update. File columns: รหัสยา, ชื่อยา, หน่วย, ราคาต่อหน่วย, จำนวน',
+    params: BudgetRequestsIdParamSchema,
+    consumes: ['multipart/form-data'],
+    response: {
+      200: Type.Object({
+        success: Type.Boolean(),
+        data: Type.Object({
+          imported: Type.Number(),
+          updated: Type.Number(),
+          skipped: Type.Number(),
+          errors: Type.Array(
+            Type.Object({
+              row: Type.Number(),
+              field: Type.String(),
+              message: Type.String(),
+            }),
+          ),
         }),
-        400: ApiErrorResponseSchema, // Use flexible error schema (details is optional)
-        401: SchemaRefs.Unauthorized,
-        403: SchemaRefs.Forbidden,
-        404: SchemaRefs.NotFound,
-        422: SchemaRefs.UnprocessableEntity,
-        500: SchemaRefs.ServerError,
-      },
+        message: Type.String(),
+        meta: Type.Object({
+          timestamp: Type.String(),
+          version: Type.String(),
+          requestId: Type.String(),
+          environment: Type.String(),
+        }),
+      }),
+      400: ApiErrorResponseSchema,
+      401: SchemaRefs.Unauthorized,
+      403: SchemaRefs.Forbidden,
+      404: SchemaRefs.NotFound,
+      422: SchemaRefs.UnprocessableEntity,
+      500: SchemaRefs.ServerError,
     },
-    preValidation: [
-      fastify.authenticate,
-      fastify.verifyPermission('budgetRequests', 'create'), // Using create permission for import
-    ],
+  };
+
+  const importExcelPreValidation = [
+    fastify.authenticate,
+    fastify.verifyPermission('budgetRequests', 'create'),
+  ];
+
+  // Register both /import and /import-excel endpoints (alias)
+  fastify.post('/:id/import', {
+    schema: importExcelSchema,
+    preValidation: importExcelPreValidation,
+    handler: controller.importExcel.bind(controller),
+  });
+
+  fastify.post('/:id/import-excel', {
+    schema: importExcelSchema,
+    preValidation: importExcelPreValidation,
     handler: controller.importExcel.bind(controller),
   });
 

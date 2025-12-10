@@ -572,8 +572,12 @@ export class BudgetRequestsController {
           .error('FILE_TOO_LARGE', 'File size must be less than 5 MB');
       }
 
-      // Get replace_all field from multipart data
-      const replaceAll = fields?.replace_all === 'true';
+      // Get import options from multipart data
+      // Support both legacy 'replace_all' and new 'mode' field
+      const mode =
+        (fields?.mode as string) ||
+        (fields?.replace_all === 'true' ? 'replace' : 'append');
+      const skipErrors = fields?.skipErrors === 'true';
 
       request.log.info(
         {
@@ -582,16 +586,17 @@ export class BudgetRequestsController {
           filename: file.filename,
           mimetype: file.mimetype,
           size: buffer.length,
-          replaceAll,
+          mode,
+          skipErrors,
         },
         'Importing Excel/CSV file for budget request items',
       );
 
-      // Call service method
+      // Call service method with new options
       const result = await this.budgetRequestsService.importExcel(
         id,
         buffer,
-        replaceAll,
+        { mode: mode as 'append' | 'replace' | 'update', skipErrors },
         userId,
       );
 

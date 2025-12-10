@@ -21,6 +21,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { firstValueFrom } from 'rxjs';
 import { AxDialogService, AxErrorStateComponent } from '@aegisx/ui';
 import { AddDrugDialogComponent } from '../components/add-drug-dialog.component';
+import { BudgetRequestImportDialogComponent } from '../components/budget-request-import-dialog.component';
 
 interface BudgetRequest {
   id: number;
@@ -1293,42 +1294,27 @@ export class BudgetRequestDetailComponent implements OnInit {
       });
   }
 
-  async importExcel() {
-    // Create file input
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.xlsx,.xls,.csv';
-    input.onchange = async (e: any) => {
-      const file = e.target.files[0];
-      if (!file) return;
+  importExcel() {
+    const dialogRef = this.dialog.open(BudgetRequestImportDialogComponent, {
+      width: '900px',
+      maxHeight: '90vh',
+      disableClose: true,
+      data: {
+        budgetRequestId: this.requestId,
+        fiscalYear:
+          this.budgetRequest()?.fiscal_year || new Date().getFullYear() + 543,
+      },
+    });
 
-      const formData = new FormData();
-      formData.append('file', file);
-
-      this.actionLoading.set(true);
-      try {
-        const response = await firstValueFrom(
-          this.http.post<any>(
-            `/inventory/budget/budget-requests/${this.requestId}/import`,
-            formData,
-          ),
-        );
-        this.snackBar.open(
-          `Import สำเร็จ ${response.data?.imported || 0} รายการ`,
-          'ปิด',
-          { duration: 3000 },
-        );
-        await this.loadItems();
-        await this.loadData();
-      } catch (error: any) {
-        this.snackBar.open(error?.error?.message || 'Import ไม่สำเร็จ', 'ปิด', {
+    dialogRef.afterClosed().subscribe(async (importedCount) => {
+      if (importedCount && importedCount > 0) {
+        this.snackBar.open(`Import สำเร็จ ${importedCount} รายการ`, 'ปิด', {
           duration: 3000,
         });
-      } finally {
-        this.actionLoading.set(false);
+        await this.loadItems();
+        await this.loadData();
       }
-    };
-    input.click();
+    });
   }
 
   addDrug() {

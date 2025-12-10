@@ -832,9 +832,13 @@ export class BudgetRequestsService extends BaseService<
   async importExcel(
     id: string | number,
     fileBuffer: Buffer,
-    replaceAll: boolean = false,
+    options: { mode: 'append' | 'replace' | 'update'; skipErrors: boolean } = {
+      mode: 'append',
+      skipErrors: true,
+    },
     userId: string,
   ): Promise<{
+    success: boolean;
     imported: number;
     updated: number;
     skipped: number;
@@ -853,6 +857,7 @@ export class BudgetRequestsService extends BaseService<
     }
 
     const knex = (this.budgetRequestsRepository as any).knex;
+    const { mode, skipErrors } = options;
 
     try {
       // Parse Excel/CSV file
@@ -871,42 +876,33 @@ export class BudgetRequestsService extends BaseService<
       const headers = rawData[0] as string[];
       const dataRows = rawData.slice(1);
 
-      // Validate headers (check for required columns)
-      const requiredColumns = [
-        'รหัสยา',
-        'ประมาณการ2569',
-        'ราคา/หน่วย',
-        'จำนวนที่ขอ',
-        'Q1',
-        'Q2',
-        'Q3',
-        'Q4',
-      ];
+      // Support both old format (full columns) and new format (simple columns)
+      // New format: รหัสยา, ชื่อยา, หน่วย, ราคาต่อหน่วย, จำนวน
+      // Old format: รหัสยา, ชื่อยา, หน่วย, ปี2566, ปี2567, ปี2568, ประมาณการ2569, คงคลัง, ราคา/หน่วย, จำนวนที่ขอ, Q1, Q2, Q3, Q4
+      const isSimpleFormat =
+        headers.includes('ราคาต่อหน่วย') || headers.includes('จำนวน');
 
-      const missingColumns = requiredColumns.filter(
-        (col) => !headers.includes(col),
-      );
-      if (missingColumns.length > 0) {
-        throw new Error(
-          `Missing required columns: ${missingColumns.join(', ')}`,
-        );
+      // Only check for drug code - it's required in both formats
+      if (!headers.includes('รหัสยา')) {
+        throw new Error('Missing required column: รหัสยา');
       }
 
-      // Replace all existing items if requested
-      if (replaceAll) {
+      // Handle replace mode - delete all existing items
+      if (mode === 'replace') {
         await knex('inventory.budget_request_items')
           .where({ budget_request_id: id })
           .delete();
       }
 
       const results = {
+        success: true,
         imported: 0,
         updated: 0,
         skipped: 0,
-        errors: [],
+        errors: [] as Array<{ row: number; field: string; message: string }>,
       };
 
-      // Map header indices
+      // Map header indices - support both formats
       const colIndexes = {
         drugCode: headers.indexOf('รหัสยา'),
         drugName: headers.indexOf('ชื่อยา'),
@@ -916,8 +912,16 @@ export class BudgetRequestsService extends BaseService<
         year2568: headers.indexOf('ปี2568'),
         estimatedUsage: headers.indexOf('ประมาณการ2569'),
         currentStock: headers.indexOf('คงคลัง'),
-        unitPrice: headers.indexOf('ราคา/หน่วย'),
-        requestedQty: headers.indexOf('จำนวนที่ขอ'),
+        // Support both 'ราคา/หน่วย' and 'ราคาต่อหน่วย'
+        unitPrice:
+          headers.indexOf('ราคา/หน่วย') !== -1
+            ? headers.indexOf('ราคา/หน่วย')
+            : headers.indexOf('ราคาต่อหน่วย'),
+        // Support both 'จำนวนที่ขอ' and 'จำนวน'
+        requestedQty:
+          headers.indexOf('จำนวนที่ขอ') !== -1
+            ? headers.indexOf('จำนวนที่ขอ')
+            : headers.indexOf('จำนวน'),
         q1: headers.indexOf('Q1'),
         q2: headers.indexOf('Q2'),
         q3: headers.indexOf('Q3'),
@@ -938,19 +942,57 @@ export class BudgetRequestsService extends BaseService<
         try {
           // Get values
           const drugCode = String(row[colIndexes.drugCode] || '').trim();
-          const year2566 = parseFloat(row[colIndexes.year2566] || 0);
-          const year2567 = parseFloat(row[colIndexes.year2567] || 0);
-          const year2568 = parseFloat(row[colIndexes.year2568] || 0);
-          const estimatedUsage = parseFloat(
-            row[colIndexes.estimatedUsage] || 0,
-          );
-          const currentStock = parseFloat(row[colIndexes.currentStock] || 0);
-          const unitPrice = parseFloat(row[colIndexes.unitPrice] || 0);
-          const requestedQty = parseFloat(row[colIndexes.requestedQty] || 0);
-          const q1 = parseFloat(row[colIndexes.q1] || 0);
-          const q2 = parseFloat(row[colIndexes.q2] || 0);
-          const q3 = parseFloat(row[colIndexes.q3] || 0);
-          const q4 = parseFloat(row[colIndexes.q4] || 0);
+          const year2566 =
+            colIndexes.year2566 !== -1
+              ? parseFloat(row[colIndexes.year2566] || 0)
+              : 0;
+          const year2567 =
+            colIndexes.year2567 !== -1
+              ? parseFloat(row[colIndexes.year2567] || 0)
+              : 0;
+          const year2568 =
+            colIndexes.year2568 !== -1
+              ? parseFloat(row[colIndexes.year2568] || 0)
+              : 0;
+          const estimatedUsage =
+            colIndexes.estimatedUsage !== -1
+              ? parseFloat(row[colIndexes.estimatedUsage] || 0)
+              : 0;
+          const currentStock =
+            colIndexes.currentStock !== -1
+              ? parseFloat(row[colIndexes.currentStock] || 0)
+              : 0;
+          const unitPrice =
+            colIndexes.unitPrice !== -1
+              ? parseFloat(row[colIndexes.unitPrice] || 0)
+              : 0;
+          const requestedQty =
+            colIndexes.requestedQty !== -1
+              ? parseFloat(row[colIndexes.requestedQty] || 0)
+              : 0;
+
+          // Q1-Q4: Use provided values or auto-split if not in file
+          const hasQuarterlyColumns =
+            colIndexes.q1 !== -1 &&
+            colIndexes.q2 !== -1 &&
+            colIndexes.q3 !== -1 &&
+            colIndexes.q4 !== -1;
+          let q1: number, q2: number, q3: number, q4: number;
+
+          if (hasQuarterlyColumns) {
+            q1 = parseFloat(row[colIndexes.q1] || 0);
+            q2 = parseFloat(row[colIndexes.q2] || 0);
+            q3 = parseFloat(row[colIndexes.q3] || 0);
+            q4 = parseFloat(row[colIndexes.q4] || 0);
+          } else {
+            // Auto-split quarterly based on requestedQty
+            const quarterQty = Math.floor(requestedQty / 4);
+            const remainder = requestedQty % 4;
+            q1 = quarterQty + (remainder > 0 ? 1 : 0);
+            q2 = quarterQty + (remainder > 1 ? 1 : 0);
+            q3 = quarterQty + (remainder > 2 ? 1 : 0);
+            q4 = quarterQty;
+          }
 
           // Validate drug code exists
           const generic = await knex('inventory.drug_generics')
@@ -963,17 +1005,25 @@ export class BudgetRequestsService extends BaseService<
               field: 'working_code',
               message: `Drug code '${drugCode}' not found in active drug generics`,
             });
+            if (!skipErrors) {
+              results.success = false;
+              results.skipped++;
+              continue;
+            }
             results.skipped++;
             continue;
           }
 
-          // Validate unit price
-          if (unitPrice <= 0) {
+          // Validate unit price (allow 0 for simple format)
+          if (unitPrice < 0) {
             results.errors.push({
               row: rowNumber,
               field: 'unit_price',
-              message: 'Unit price must be greater than 0',
+              message: 'Unit price cannot be negative',
             });
+            if (!skipErrors) {
+              results.success = false;
+            }
             results.skipped++;
             continue;
           }
@@ -985,20 +1035,28 @@ export class BudgetRequestsService extends BaseService<
               field: 'requested_qty',
               message: 'Requested quantity must be greater than 0',
             });
+            if (!skipErrors) {
+              results.success = false;
+            }
             results.skipped++;
             continue;
           }
 
-          // Validate quarterly split
-          const quarterlySum = q1 + q2 + q3 + q4;
-          if (Math.abs(quarterlySum - requestedQty) > 0.01) {
-            results.errors.push({
-              row: rowNumber,
-              field: 'quarterly_split',
-              message: `Q1+Q2+Q3+Q4 (${quarterlySum}) must equal requested quantity (${requestedQty})`,
-            });
-            results.skipped++;
-            continue;
+          // Validate quarterly split only if quarters were provided in file
+          if (hasQuarterlyColumns) {
+            const quarterlySum = q1 + q2 + q3 + q4;
+            if (Math.abs(quarterlySum - requestedQty) > 0.01) {
+              results.errors.push({
+                row: rowNumber,
+                field: 'quarterly_split',
+                message: `Q1+Q2+Q3+Q4 (${quarterlySum}) must equal requested quantity (${requestedQty})`,
+              });
+              if (!skipErrors) {
+                results.success = false;
+              }
+              results.skipped++;
+              continue;
+            }
           }
 
           // Calculate averages
@@ -1043,14 +1101,19 @@ export class BudgetRequestsService extends BaseService<
             updated_at: new Date(),
           };
 
-          if (existingItem && !replaceAll) {
-            // Update existing item
-            await knex('inventory.budget_request_items')
-              .where({ id: existingItem.id })
-              .update(itemData);
-            results.updated++;
+          if (existingItem && (mode === 'update' || mode === 'append')) {
+            // Update existing item in update or append mode
+            if (mode === 'update') {
+              await knex('inventory.budget_request_items')
+                .where({ id: existingItem.id })
+                .update(itemData);
+              results.updated++;
+            } else {
+              // append mode - skip duplicates
+              results.skipped++;
+            }
           } else {
-            // Insert new item
+            // Insert new item (replace mode always inserts, append/update insert new)
             await knex('inventory.budget_request_items').insert({
               ...itemData,
               created_at: new Date(),
