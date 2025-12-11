@@ -589,7 +589,7 @@ export class BudgetRequestsService extends BaseService<
           generic_code: generic.working_code,
           generic_name: generic.generic_name,
           package_size: generic.package_size || '',
-          unit: generic.unit || '',
+          unit: generic.strength_unit || '', // Use strength_unit from drug_generics table
           line_number: itemsCreated + 1,
 
           // Historical usage (JSONB format)
@@ -703,7 +703,7 @@ export class BudgetRequestsService extends BaseService<
           generic_code: generic.working_code,
           generic_name: generic.generic_name,
           package_size: generic.package_size || '',
-          unit: generic.unit || '',
+          unit: generic.strength_unit || '', // Use strength_unit from drug_generics table
           line_number: itemsCreated + 1,
 
           // Historical usage - empty (no calculation)
@@ -1588,8 +1588,6 @@ export class BudgetRequestsService extends BaseService<
       estimated_usage_2569?: number;
       requested_qty: number;
       unit_price?: number;
-      budget_qty?: number;
-      fund_qty?: number;
       q1_qty?: number;
       q2_qty?: number;
       q3_qty?: number;
@@ -1639,10 +1637,8 @@ export class BudgetRequestsService extends BaseService<
     // Calculate amounts
     const unitPrice = data.unit_price || 0;
     const requestedAmount = requestedQty * unitPrice;
-    const budgetQty = data.budget_qty || 0;
-    const fundQty = data.fund_qty || requestedQty;
 
-    // Create item
+    // Create item (only columns that exist in the database)
     const itemData: any = {
       budget_request_id: budgetRequestId,
       budget_id: 1, // Default budget
@@ -1650,14 +1646,12 @@ export class BudgetRequestsService extends BaseService<
       generic_code: generic.working_code,
       generic_name: generic.generic_name,
       package_size: generic.package_size || '',
-      unit: generic.unit || '',
+      unit: generic.strength_unit || '', // Use strength_unit from drug_generics table
       line_number: lineNumber,
       estimated_usage_2569: data.estimated_usage_2569 || 0,
       requested_qty: requestedQty,
       unit_price: unitPrice,
       requested_amount: requestedAmount,
-      budget_qty: budgetQty,
-      fund_qty: fundQty,
       q1_qty: q1Qty,
       q2_qty: q2Qty,
       q3_qty: q3Qty,
@@ -1685,13 +1679,15 @@ export class BudgetRequestsService extends BaseService<
       estimated_usage_2569?: number;
       requested_qty?: number;
       unit_price?: number;
-      budget_qty?: number;
-      fund_qty?: number;
       q1_qty?: number;
       q2_qty?: number;
       q3_qty?: number;
       q4_qty?: number;
       notes?: string;
+      // Historical usage fields (editable)
+      historical_usage?: Record<string, number>;
+      avg_usage?: number;
+      current_stock?: number;
     },
     userId: string,
   ): Promise<any> {
@@ -1750,14 +1746,6 @@ export class BudgetRequestsService extends BaseService<
       updateData.requested_amount = qty * price;
     }
 
-    if (data.budget_qty !== undefined) {
-      updateData.budget_qty = data.budget_qty;
-    }
-
-    if (data.fund_qty !== undefined) {
-      updateData.fund_qty = data.fund_qty;
-    }
-
     if (data.q1_qty !== undefined) {
       updateData.q1_qty = data.q1_qty;
     }
@@ -1776,6 +1764,19 @@ export class BudgetRequestsService extends BaseService<
 
     if (data.notes !== undefined) {
       updateData.item_justification = data.notes;
+    }
+
+    // Historical usage fields (editable)
+    if (data.historical_usage !== undefined) {
+      updateData.historical_usage = JSON.stringify(data.historical_usage);
+    }
+
+    if (data.avg_usage !== undefined) {
+      updateData.avg_usage = data.avg_usage;
+    }
+
+    if (data.current_stock !== undefined) {
+      updateData.current_stock = data.current_stock;
     }
 
     // Update item
@@ -1798,13 +1799,15 @@ export class BudgetRequestsService extends BaseService<
       estimated_usage_2569?: number;
       requested_qty?: number;
       unit_price?: number;
-      budget_qty?: number;
-      fund_qty?: number;
       q1_qty?: number;
       q2_qty?: number;
       q3_qty?: number;
       q4_qty?: number;
       notes?: string;
+      // Historical usage fields (editable)
+      historical_usage?: Record<string, number>;
+      avg_usage?: number;
+      current_stock?: number;
     }>,
     userId: string,
   ): Promise<{ updated: number; failed: number }> {

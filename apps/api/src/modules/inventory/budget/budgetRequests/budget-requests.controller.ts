@@ -981,6 +981,10 @@ export class BudgetRequestsController {
           q3_qty?: number;
           q4_qty?: number;
           notes?: string;
+          // Historical usage fields (editable)
+          historical_usage?: Record<string, number>;
+          avg_usage?: number;
+          current_stock?: number;
         }>;
       };
     }>,

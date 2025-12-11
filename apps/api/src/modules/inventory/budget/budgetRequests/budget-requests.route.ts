@@ -576,6 +576,12 @@ export async function budgetRequestsRoutes(
             q3_qty: Type.Optional(Type.Number()),
             q4_qty: Type.Optional(Type.Number()),
             notes: Type.Optional(Type.String()),
+            // Historical usage fields (editable)
+            historical_usage: Type.Optional(
+              Type.Record(Type.String(), Type.Number()),
+            ),
+            avg_usage: Type.Optional(Type.Number()),
+            current_stock: Type.Optional(Type.Number()),
           }),
           { minItems: 1, maxItems: 100 },
         ),
