@@ -681,7 +681,22 @@ interface BudgetRequestItem {
                       *matCellDef="let item"
                       class="sticky-column sticky-name"
                     >
-                      {{ item.generic_name }}
+                      <div class="drug-name-cell group relative">
+                        <span>{{ item.generic_name }}</span>
+                        <button
+                          mat-icon-button
+                          class="copy-btn !absolute !right-0 !top-1/2 !-translate-y-1/2 !w-6 !h-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          (click)="
+                            copyDrugName(item.generic_name);
+                            $event.stopPropagation()
+                          "
+                          matTooltip="คัดลอกชื่อยา"
+                        >
+                          <mat-icon class="!text-base !w-4 !h-4"
+                            >content_copy</mat-icon
+                          >
+                        </button>
+                      </div>
                     </td>
                   </ng-container>
 
@@ -1306,6 +1321,21 @@ interface BudgetRequestItem {
       .sparkline {
         display: block;
       }
+      /* Drug name cell with copy button */
+      .drug-name-cell {
+        display: flex;
+        align-items: center;
+        padding-right: 28px;
+      }
+      .drug-name-cell .copy-btn {
+        color: #6b7280;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 4px;
+      }
+      .drug-name-cell .copy-btn:hover {
+        color: #3b82f6;
+        background: #eff6ff;
+      }
     `,
   ],
 })
@@ -1928,6 +1958,14 @@ export class BudgetRequestDetailComponent implements OnInit {
       currentModified.add(item.id);
       this.modifiedItemIds.set(currentModified);
     }
+  }
+
+  copyDrugName(drugName: string) {
+    navigator.clipboard.writeText(drugName).then(() => {
+      this.snackBar.open(`คัดลอก "${drugName}" แล้ว`, 'ปิด', {
+        duration: 2000,
+      });
+    });
   }
 
   deleteItem(item: BudgetRequestItem) {
