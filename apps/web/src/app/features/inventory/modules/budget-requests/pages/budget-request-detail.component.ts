@@ -518,6 +518,20 @@ interface BudgetRequestItem {
                     >
                       มีค่า 0 ({{ zeroAnyCount() }})
                     </mat-chip-option>
+                    <mat-chip-option
+                      value="has_gpu"
+                      [selected]="dataFilter === 'has_gpu'"
+                      [disabled]="hasGpuCount() === 0"
+                    >
+                      มี GPU ({{ hasGpuCount() }})
+                    </mat-chip-option>
+                    <mat-chip-option
+                      value="no_gpu"
+                      [selected]="dataFilter === 'no_gpu'"
+                      [disabled]="noGpuCount() === 0"
+                    >
+                      ไม่มี GPU ({{ noGpuCount() }})
+                    </mat-chip-option>
                   </mat-chip-listbox>
                   @if (dataFilter !== 'all') {
                     <button
@@ -1315,7 +1329,13 @@ export class BudgetRequestDetailComponent implements OnInit {
   // Search
   searchTerm = '';
   searchField = 'all';
-  dataFilter: 'all' | 'zero_price' | 'zero_qty' | 'zero_any' = 'all';
+  dataFilter:
+    | 'all'
+    | 'zero_price'
+    | 'zero_qty'
+    | 'zero_any'
+    | 'has_gpu'
+    | 'no_gpu' = 'all';
 
   // Pagination
   pageSize = 50;
@@ -1368,6 +1388,10 @@ export class BudgetRequestDetailComponent implements OnInit {
           !item.requested_qty ||
           item.requested_qty === 0,
       );
+    } else if (this.dataFilter === 'has_gpu') {
+      result = result.filter((item) => !!item.tmt_gpu_code);
+    } else if (this.dataFilter === 'no_gpu') {
+      result = result.filter((item) => !item.tmt_gpu_code);
     }
 
     // Apply search filter
@@ -1437,6 +1461,14 @@ export class BudgetRequestDetailComponent implements OnInit {
           !i.requested_qty ||
           i.requested_qty === 0,
       ).length,
+  );
+
+  // GPU filter counts
+  hasGpuCount = computed(
+    () => this.items().filter((i) => !!i.tmt_gpu_code).length,
+  );
+  noGpuCount = computed(
+    () => this.items().filter((i) => !i.tmt_gpu_code).length,
   );
 
   // Dynamic historical usage years based on fiscal_year
