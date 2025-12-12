@@ -34,6 +34,10 @@ interface ParsedRow {
   unit_price: number | null;
   requested_qty: number | null;
   requested_amount: number | null;
+  // Historical usage - dynamic keys based on fiscal_year (e.g., "2566", "2567", "2568")
+  historical_usage: Record<string, number>;
+  avg_usage: number | null;
+  current_stock: number | null; // คงเหลือปัจจุบัน
   errors: string[];
   warnings: string[];
   isValid: boolean;
@@ -763,7 +767,7 @@ export class BudgetRequestImportDialogComponent {
   skipErrors = true;
   showOnlyErrors = false;
 
-  // Table columns
+  // Table columns (only columns with ng-container matColumnDef defined)
   displayedColumns = [
     'rowNumber',
     'status',
@@ -898,6 +902,12 @@ export class BudgetRequestImportDialogComponent {
       throw new Error('ไฟล์ว่างหรือไม่มีข้อมูล');
     }
 
+    // Calculate dynamic years based on fiscal_year
+    const fiscalYear = this.data.fiscalYear;
+    const year1 = String(fiscalYear - 3); // e.g., "2566" if fiscal_year = 2569
+    const year2 = String(fiscalYear - 2); // e.g., "2567"
+    const year3 = String(fiscalYear - 1); // e.g., "2568"
+
     // Skip header row
     const rows: ParsedRow[] = [];
     for (let i = 1; i < data.length; i++) {
@@ -907,12 +917,42 @@ export class BudgetRequestImportDialogComponent {
       const errors: string[] = [];
       const warnings: string[] = [];
 
-      // Parse fields
+      // Parse fields - new column order with historical usage and current_stock
+      // Columns: 0=รหัสยา, 1=ชื่อยา, 2=หน่วย, 3=ใช้ปี66, 4=ใช้ปี67, 5=ใช้ปี68, 6=คงเหลือ, 7=ราคาต่อหน่วย, 8=จำนวน
       const generic_code = String(row[0] || '').trim();
       const generic_name = String(row[1] || '').trim();
       const unit = String(row[2] || '').trim();
-      const unit_price = this.parseNumber(row[3]);
-      const requested_qty = this.parseNumber(row[4]);
+
+      // Historical usage data (columns 3, 4, 5)
+      const usage_year1 = this.parseNumber(row[3]);
+      const usage_year2 = this.parseNumber(row[4]);
+      const usage_year3 = this.parseNumber(row[5]);
+
+      // Current stock (column 6)
+      const current_stock = this.parseNumber(row[6]);
+
+      // Price and quantity (columns 7, 8)
+      const unit_price = this.parseNumber(row[7]);
+      const requested_qty = this.parseNumber(row[8]);
+
+      // Build historical_usage Record with dynamic year keys
+      const historical_usage: Record<string, number> = {};
+      if (usage_year1 !== null && usage_year1 >= 0) {
+        historical_usage[year1] = usage_year1;
+      }
+      if (usage_year2 !== null && usage_year2 >= 0) {
+        historical_usage[year2] = usage_year2;
+      }
+      if (usage_year3 !== null && usage_year3 >= 0) {
+        historical_usage[year3] = usage_year3;
+      }
+
+      // Calculate average usage from historical data
+      const usageValues = Object.values(historical_usage);
+      const avg_usage =
+        usageValues.length > 0
+          ? usageValues.reduce((sum, v) => sum + v, 0) / usageValues.length
+          : null;
 
       // Validate
       if (!generic_code) errors.push('ไม่มีรหัสยา');
@@ -934,6 +974,9 @@ export class BudgetRequestImportDialogComponent {
         unit_price,
         requested_qty,
         requested_amount,
+        historical_usage,
+        avg_usage,
+        current_stock,
         errors,
         warnings,
         isValid: errors.length === 0,
@@ -979,13 +1022,64 @@ export class BudgetRequestImportDialogComponent {
   }
 
   downloadTemplate(format: 'xlsx' | 'csv') {
-    const headers = ['รหัสยา', 'ชื่อยา', 'หน่วย', 'ราคาต่อหน่วย', 'จำนวน'];
+    // Calculate dynamic years based on fiscal_year
+    const fiscalYear = this.data.fiscalYear;
+    const year1 = fiscalYear - 3; // e.g., 2566 if fiscal_year = 2569
+    const year2 = fiscalYear - 2; // e.g., 2567
+    const year3 = fiscalYear - 1; // e.g., 2568
+
+    const headers = [
+      'รหัสยา',
+      'ชื่อยา',
+      'หน่วย',
+      `ใช้ปี${String(year1).slice(-2)}`, // Dynamic year label e.g., "ใช้ปี66"
+      `ใช้ปี${String(year2).slice(-2)}`, // e.g., "ใช้ปี67"
+      `ใช้ปี${String(year3).slice(-2)}`, // e.g., "ใช้ปี68"
+      'คงเหลือ', // current_stock - สต็อกคงเหลือปัจจุบัน
+      'ราคาต่อหน่วย',
+      'จำนวน',
+    ];
+    // Columns: 0=รหัสยา, 1=ชื่อยา, 2=หน่วย, 3-5=ใช้ปี, 6=คงเหลือ, 7=ราคา, 8=จำนวน
     const sampleData = [
-      ['7400001', 'PARACETAMOL 500MG TABLET', 'TAB', 0.5, 1000],
-      ['7400002', 'AMOXICILLIN 500MG CAPSULE', 'CAP', 2.0, 500],
+      [
+        '7400001',
+        'PARACETAMOL 500MG TABLET',
+        'TAB',
+        12000,
+        13500,
+        14200,
+        5000,
+        0.5,
+        1000,
+      ],
+      [
+        '7400002',
+        'AMOXICILLIN 500MG CAPSULE',
+        'CAP',
+        5000,
+        5200,
+        5500,
+        2000,
+        2.0,
+        500,
+      ],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleData]);
+
+    // Set column widths
+    ws['!cols'] = [
+      { wch: 12 }, // รหัสยา
+      { wch: 40 }, // ชื่อยา
+      { wch: 8 }, // หน่วย
+      { wch: 10 }, // ใช้ปี66
+      { wch: 10 }, // ใช้ปี67
+      { wch: 10 }, // ใช้ปี68
+      { wch: 10 }, // คงเหลือ
+      { wch: 12 }, // ราคาต่อหน่วย
+      { wch: 10 }, // จำนวน
+    ];
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Template');
 

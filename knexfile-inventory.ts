@@ -12,6 +12,9 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Knex configuration for Inventory System
  * Uses separate schema 'inventory' to isolate from system tables in 'public'
+ *
+ * The afterCreate hook ensures the inventory schema exists before knex tries
+ * to create its migrations table in that schema.
  */
 const config: { [key: string]: Knex.Config } = {
   development: {
@@ -34,6 +37,14 @@ const config: { [key: string]: Knex.Config } = {
     pool: {
       min: 2,
       max: 10,
+      afterCreate: (conn: unknown, done: (err?: Error) => void) => {
+        // Create inventory schema if not exists before knex uses it
+        (
+          conn as { query: (sql: string, cb: (err?: Error) => void) => void }
+        ).query('CREATE SCHEMA IF NOT EXISTS inventory', (err?: Error) => {
+          done(err);
+        });
+      },
     },
     migrations: {
       directory: './apps/api/src/database/migrations-inventory',
@@ -67,6 +78,14 @@ const config: { [key: string]: Knex.Config } = {
     pool: {
       min: 5,
       max: 20,
+      afterCreate: (conn: unknown, done: (err?: Error) => void) => {
+        // Create inventory schema if not exists before knex uses it
+        (
+          conn as { query: (sql: string, cb: (err?: Error) => void) => void }
+        ).query('CREATE SCHEMA IF NOT EXISTS inventory', (err?: Error) => {
+          done(err);
+        });
+      },
     },
     migrations: {
       directory: './apps/api/src/database/migrations-inventory',

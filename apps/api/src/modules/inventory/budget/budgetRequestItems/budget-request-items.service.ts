@@ -182,6 +182,10 @@ export class BudgetRequestItemsService extends BaseService<
             }
 
             // Build update object (only include fields that were provided)
+            console.log(
+              '=== BATCH UPDATE: item received ===',
+              JSON.stringify(item),
+            );
             const updateData: any = {
               updated_at: new Date(),
             };
@@ -207,7 +211,23 @@ export class BudgetRequestItemsService extends BaseService<
             if (item.q4_qty !== undefined) {
               updateData.q4_qty = item.q4_qty;
             }
+            // Historical usage fields (editable)
+            if (item.historical_usage !== undefined) {
+              updateData.historical_usage = JSON.stringify(
+                item.historical_usage,
+              );
+            }
+            if (item.avg_usage !== undefined) {
+              updateData.avg_usage = item.avg_usage;
+            }
+            if (item.current_stock !== undefined) {
+              updateData.current_stock = item.current_stock;
+            }
 
+            console.log(
+              '=== BATCH UPDATE: updateData ===',
+              JSON.stringify(updateData),
+            );
             // Update the item
             await trx('inventory.budget_request_items')
               .where({ id: item.id })

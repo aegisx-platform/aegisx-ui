@@ -32,6 +32,7 @@ import {
   AxStatsCardComponent,
   AxAlertComponent,
 } from '@aegisx/ui';
+import { AxTmtBadgeComponent } from '../../../../../shared/ui/components/tmt';
 import { AddDrugDialogComponent } from '../components/add-drug-dialog.component';
 import { BudgetRequestImportDialogComponent } from '../components/budget-request-import-dialog.component';
 import {
@@ -107,6 +108,7 @@ interface BudgetRequestItem {
     AxErrorStateComponent,
     AxStatsCardComponent,
     AxAlertComponent,
+    AxTmtBadgeComponent,
   ],
   template: `
     <div class="min-h-screen bg-[var(--ax-background-subtle)] p-6">
@@ -661,9 +663,15 @@ interface BudgetRequestItem {
                           : ''
                       "
                     >
-                      <span class="font-mono text-sm">{{
-                        item.tmt_gpu_code || ''
-                      }}</span>
+                      @if (item.tmt_gpu_code) {
+                        <ax-tmt-badge
+                          [code]="item.tmt_gpu_code"
+                          level="GPU"
+                          size="sm"
+                          [clickable]="true"
+                          [showLevel]="false"
+                        ></ax-tmt-badge>
+                      }
                     </td>
                   </ng-container>
 
@@ -1068,8 +1076,7 @@ interface BudgetRequestItem {
                     mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     [class.selected-row]="isSelected(row.id)"
-                    class="hover:bg-[var(--ax-background-subtle)] cursor-pointer"
-                    (click)="toggleSelectItem(row.id)"
+                    class="hover:bg-[var(--ax-background-subtle)]"
                   ></tr>
                 </table>
               </div>

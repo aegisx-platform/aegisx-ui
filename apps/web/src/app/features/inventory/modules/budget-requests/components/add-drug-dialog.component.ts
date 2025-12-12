@@ -21,8 +21,12 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
 import { firstValueFrom, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+
+type EdCategory = 'ED' | 'NED' | 'CM' | 'NDMS' | null;
 
 interface DrugGeneric {
   id: number;
@@ -30,6 +34,13 @@ interface DrugGeneric {
   generic_name: string;
   strength_unit: string | null;
   dosage_form: string | null;
+  ed_category: EdCategory;
+}
+
+interface EdCategoryOption {
+  value: EdCategory | '';
+  label: string;
+  description: string;
 }
 
 interface AddDrugDialogData {
@@ -53,6 +64,8 @@ interface AddDrugDialogData {
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDividerModule,
+    MatSelectModule,
+    MatChipsModule,
   ],
   template: `
     <!-- Dialog Header -->
@@ -76,6 +89,29 @@ interface AddDrugDialogData {
 
     <mat-dialog-content class="!p-6">
       <form [formGroup]="form" class="space-y-4">
+        <!-- ED Category Filter -->
+        <div class="flex items-center gap-4 mb-2">
+          <span class="text-sm font-medium text-gray-600 whitespace-nowrap"
+            >ประเภทยา:</span
+          >
+          <div class="flex flex-wrap gap-2">
+            @for (cat of edCategories; track cat.value) {
+              <button
+                type="button"
+                mat-stroked-button
+                [color]="
+                  selectedEdCategory() === cat.value ? 'primary' : undefined
+                "
+                [class.!bg-primary-50]="selectedEdCategory() === cat.value"
+                (click)="onEdCategoryChange(cat.value)"
+                class="!min-w-0 !px-3 !py-1 !h-8 !text-sm"
+              >
+                {{ cat.label }}
+              </button>
+            }
+          </div>
+        </div>
+
         <!-- Drug Search -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>ค้นหายา</mat-label>
@@ -107,11 +143,16 @@ interface AddDrugDialogData {
                 [disabled]="isDrugAlreadyAdded(drug.id)"
               >
                 <div class="flex items-center justify-between gap-2">
-                  <div>
+                  <div class="flex items-center gap-2">
+                    @if (drug.ed_category) {
+                      <span [class]="getEdCategoryClass(drug.ed_category)">
+                        {{ drug.ed_category }}
+                      </span>
+                    }
                     <span class="font-mono text-sm text-gray-500">{{
                       drug.working_code
                     }}</span>
-                    <span class="ml-2">{{ drug.generic_name }}</span>
+                    <span>{{ drug.generic_name }}</span>
                   </div>
                   <span class="text-sm text-gray-400">{{
                     drug.strength_unit || drug.dosage_form || '-'
@@ -293,6 +334,20 @@ export class AddDrugDialogComponent implements OnInit {
   filteredDrugs = signal<DrugGeneric[]>([]);
   selectedDrug = signal<DrugGeneric | null>(null);
   searchTerm = signal('');
+  selectedEdCategory = signal<EdCategory | ''>('');
+
+  // ED Category filter options
+  edCategories: EdCategoryOption[] = [
+    { value: '', label: 'ทั้งหมด', description: 'แสดงยาทุกประเภท' },
+    {
+      value: 'ED',
+      label: 'ในบัญชี (ED)',
+      description: 'ยาในบัญชียาหลักแห่งชาติ',
+    },
+    { value: 'NED', label: 'นอกบัญชี (NED)', description: 'ยานอกบัญชียาหลัก' },
+    { value: 'CM', label: 'ยาเคมี (CM)', description: 'ยาเคมี/สัญญา' },
+    { value: 'NDMS', label: 'NDMS', description: 'ยา NDMS' },
+  ];
 
   private searchSubject = new Subject<string>();
 
@@ -335,17 +390,47 @@ export class AddDrugDialogComponent implements OnInit {
 
     this.searchLoading.set(true);
     try {
-      const response = await firstValueFrom(
-        this.http.get<any>(
-          `/inventory/master-data/drug-generics?search=${encodeURIComponent(term)}&is_active=true&limit=50`,
-        ),
-      );
+      let url = `/inventory/master-data/drug-generics?search=${encodeURIComponent(term)}&is_active=true&limit=50`;
+
+      // Add ed_category filter if selected
+      const edCategory = this.selectedEdCategory();
+      if (edCategory) {
+        url += `&ed_category=${edCategory}`;
+      }
+
+      const response = await firstValueFrom(this.http.get<any>(url));
       this.filteredDrugs.set(response.data || []);
     } catch (error) {
       console.error('Failed to search drugs:', error);
       this.filteredDrugs.set([]);
     } finally {
       this.searchLoading.set(false);
+    }
+  }
+
+  onEdCategoryChange(category: EdCategory | '') {
+    this.selectedEdCategory.set(category);
+    // Re-search with current term if there's one
+    const currentTerm = this.searchTerm();
+    if (currentTerm && currentTerm.length >= 2) {
+      this.searchDrugs(currentTerm);
+    }
+  }
+
+  getEdCategoryClass(category: EdCategory): string {
+    const baseClass =
+      'inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium';
+    switch (category) {
+      case 'ED':
+        return `${baseClass} bg-green-100 text-green-800`;
+      case 'NED':
+        return `${baseClass} bg-yellow-100 text-yellow-800`;
+      case 'CM':
+        return `${baseClass} bg-purple-100 text-purple-800`;
+      case 'NDMS':
+        return `${baseClass} bg-blue-100 text-blue-800`;
+      default:
+        return `${baseClass} bg-gray-100 text-gray-800`;
     }
   }
 
