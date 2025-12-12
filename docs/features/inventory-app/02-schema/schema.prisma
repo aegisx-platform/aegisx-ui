@@ -116,6 +116,25 @@ model Bank {
 // Priority 1 & 2 Lookup Tables
 // ==========================================
 
+// ED Group - กลุ่มการรักษา/ประเภทผลิตภัณฑ์ (Phase 9 - v2.7.0)
+// จาก ed_group ใน MySQL (209 records)
+// ใช้จำแนก therapeutic class ของยาและเวชภัณฑ์
+model EdGroup {
+  id             BigInt        @id @default(autoincrement())
+  code           String        @unique @db.VarChar(8) // CODE: "01000000", "93000000", etc.
+  name           String        @db.VarChar(60) // NAME: therapeutic class name
+  subCommitCode  Int?          @map("sub_commit_code") // SUB_COMMIT_CODE
+  forecast       Float?        // FORECAST percentage
+  isHidden       Boolean       @default(false) @map("is_hidden")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  generics       DrugGeneric[]
+
+  @@map("ed_groups")
+}
+
 // Dosage Form - รูปแบบยา (Priority 1)
 // จาก dosage_form ใน MySQL (107 records)
 model DosageForm {
@@ -303,6 +322,11 @@ model DrugGeneric {
   dosageFormId         BigInt?                         @map("dosage_form_id") // FK to dosage_forms
   saleUnitId           BigInt?                         @map("sale_unit_id") // FK to drug_units
 
+  // Phase 9: ED Classification fields (v2.7.0) - จากคู่มือหน้า 12
+  edCategory           EdCategory?                     @map("ed_category") // ED, NED, NDMS, CM, LS, PS
+  edList               Int?                            @map("ed_list") // 1-6 บัญชีย่อย ED (NULL/-1/0 = ไม่ระบุ)
+  edGroupId            BigInt?                         @map("ed_group_id") // FK to ed_groups (therapeutic class)
+
   // Legacy fields (will be removed after migration)
   dosageForm           String?                         @map("dosage_form") @db.VarChar(20)
   saleUnit             String?                         @map("sale_unit") @db.VarChar(5)
@@ -316,6 +340,17 @@ model DrugGeneric {
   tmtVtmId             BigInt?                         @map("tmt_vtm_id")
   tmtGpCode            String?                         @map("tmt_gp_code") @db.VarChar(10)
   tmtGpId              BigInt?                         @map("tmt_gp_id")
+  tmtGpuCode           String?                         @map("tmt_gpu_code") @db.VarChar(10) // Phase 17: GPU from MySQL GPUID
+  tmtGpuId             BigInt?                         @map("tmt_gpu_id") // Phase 17: FK to tmt_concepts (GPU level)
+
+  // Phase 18: VEN Analysis (v2.8.0)
+  venCategory          VenCategory?                    @map("ven_category") // V=Vital, E=Essential, N=Non-essential
+
+  // Phase 19: Procurement Data (v2.8.0)
+  hospList             Int?                            @map("hosp_list") // บัญชียา รพ. (1-21)
+  lastBuyCost          Decimal?                        @map("last_buy_cost") @db.Decimal(12, 2) // ราคาซื้อล่าสุด
+  lastVendorCode       String?                         @map("last_vendor_code") @db.VarChar(6) // รหัสผู้จำหน่ายล่าสุด
+
   tmtGpfCode           String?                         @map("tmt_gpf_code") @db.VarChar(10)
   tmtGpfId             BigInt?                         @map("tmt_gpf_id")
   tmtGpxCode           String?                         @map("tmt_gpx_code") @db.VarChar(10)
@@ -327,6 +362,7 @@ model DrugGeneric {
   // Relations
   dosageFormRel        DosageForm?                     @relation(fields: [dosageFormId], references: [id])
   saleUnitRel          DrugUnit?                       @relation("GenericSaleUnit", fields: [saleUnitId], references: [id])
+  edGroup              EdGroup?                        @relation(fields: [edGroupId], references: [id])
   drugs                Drug[]
   hppProducts          HospitalPharmaceuticalProduct[]
   purchaseRequestItems PurchaseRequestItem[]
@@ -1591,4 +1627,22 @@ enum DeptConsumptionGroup {
   PRIMARY_CARE      @map("5") // รพ.สต.
   PC_TRANSFERRED    @map("6") // รพ.สต.ที่ถ่ายโอน
   OTHER_EXTERNAL    @map("9") // อื่นๆ ภายนอก
+}
+
+// ED Category - ประเภทบัญชี ED (จากคู่มือหน้า 12)
+// ใช้กำหนดประเภทผลิตภัณฑ์ในระบบ INVS (ยา/เวชภัณฑ์/วัสดุ)
+enum EdCategory {
+  ED    @map("ED")    // บัญชียา ED (Essential Drug list)
+  NED   @map("NED")   // บัญชียา NED (Non-Essential Drug)
+  NDMS  @map("NDMS")  // เวชภัณฑ์มิใช่ยา (Non-drug Medical Supplies)
+  CM    @map("CM")    // สารเคมี (Chemicals)
+  LS    @map("LS")    // วัสดุทางห้องปฏิบัติการ (Lab Supplies)
+  PS    @map("PS")    // วัสดุทางเภสัชกรรม (Pharmacy Supplies)
+}
+
+// Phase 18: VEN Analysis Classification (v2.8.0)
+enum VenCategory {
+  V     @map("V")     // Vital - ยาช่วยชีวิต/ขาดไม่ได้ (เช่น Adrenaline, Antidote, Serum)
+  E     @map("E")     // Essential - ยาจำเป็น/ใช้บ่อย
+  N     @map("N")     // Non-essential - ยาไม่จำเป็น/ทดแทนได้
 }
