@@ -5,6 +5,14 @@ import {
   PartialPaginatedResponseSchema,
 } from '../../../../schemas/base.schemas';
 
+// ED Category Enum Schema - ประเภทยาตามบัญชียาหลักแห่งชาติ
+export const EdCategoryEnum = Type.Union([
+  Type.Literal('ED'), // Essential Drug - ยาในบัญชียาหลัก
+  Type.Literal('NED'), // Non-Essential Drug - ยานอกบัญชียาหลัก
+  Type.Literal('CM'), // Contract Managed - ยาเคมี/สัญญา
+  Type.Literal('NDMS'), // NDMS Managed - ยา NDMS
+]);
+
 // Base DrugGenerics Schema
 export const DrugGenericsSchema = Type.Object({
   id: Type.Integer(),
@@ -15,6 +23,8 @@ export const DrugGenericsSchema = Type.Object({
   dosage_form_id: Type.Optional(Type.Integer()),
   strength_unit_id: Type.Optional(Type.Integer()),
   strength_value: Type.Optional(Type.Number()),
+  ed_category: Type.Optional(EdCategoryEnum),
+  ed_group_id: Type.Optional(Type.Integer()),
   is_active: Type.Optional(Type.Boolean()),
   created_at: Type.Optional(Type.String({ format: 'date-time' })),
   updated_at: Type.Optional(Type.String({ format: 'date-time' })),
@@ -117,6 +127,10 @@ export const ListDrugGenericsQuerySchema = Type.Object({
   strength_value_min: Type.Optional(Type.Number({ minimum: 0 })),
   strength_value_max: Type.Optional(Type.Number({ minimum: 0 })),
   is_active: Type.Optional(Type.Boolean()),
+
+  // ED Classification filters - ตัวกรองประเภทยาตามบัญชียาหลัก
+  ed_category: Type.Optional(EdCategoryEnum),
+  ed_group_id: Type.Optional(Type.Number({ minimum: 0 })),
 });
 
 // Response Schemas using base wrappers
@@ -131,6 +145,7 @@ export const FlexibleDrugGenericsListResponseSchema =
   PartialPaginatedResponseSchema(DrugGenericsSchema);
 
 // Export types
+export type EdCategory = Static<typeof EdCategoryEnum>;
 export type DrugGenerics = Static<typeof DrugGenericsSchema>;
 export type CreateDrugGenerics = Static<typeof CreateDrugGenericsSchema>;
 export type UpdateDrugGenerics = Static<typeof UpdateDrugGenericsSchema>;

@@ -1,5 +1,6 @@
 // Import and re-export types from schemas for convenience
 import {
+  type EdCategory,
   type DrugGenerics,
   type CreateDrugGenerics,
   type UpdateDrugGenerics,
@@ -9,6 +10,7 @@ import {
 } from './drug-generics.schemas';
 
 export {
+  type EdCategory,
   type DrugGenerics,
   type CreateDrugGenerics,
   type UpdateDrugGenerics,
@@ -47,6 +49,8 @@ export interface DrugGenericsEntity {
   dosage_form_id: number | null;
   strength_unit_id: number | null;
   strength_value: number | null;
+  ed_category: EdCategory | null;
+  ed_group_id: number | null;
   is_active: boolean | null;
   created_at: Date | null;
   updated_at: Date | null;
