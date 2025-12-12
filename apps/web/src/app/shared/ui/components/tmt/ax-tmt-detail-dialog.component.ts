@@ -403,7 +403,7 @@ export class AxTmtDetailDialogComponent implements OnInit {
     // If concept provided directly
     if (this.data.concept) {
       this.concept.set(this.data.concept);
-      this.loadRelatedDrugs(this.data.concept.id);
+      this.loadRelatedDrugs(this.data.concept.tmt_id);
       return;
     }
 
@@ -425,7 +425,7 @@ export class AxTmtDetailDialogComponent implements OnInit {
 
       if (result) {
         this.concept.set(result);
-        this.loadRelatedDrugs(result.id);
+        this.loadRelatedDrugs(result.tmt_id);
       } else {
         this.error.set(true);
       }
