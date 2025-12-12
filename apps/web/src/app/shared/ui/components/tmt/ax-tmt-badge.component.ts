@@ -98,8 +98,17 @@ export class AxTmtBadgeComponent {
   onClick() {
     if (!this.clickable || !this.code) return;
 
+    // Try to parse as number for TMT ID lookup, otherwise use as concept code
+    const codeAsNumber = parseInt(this.code, 10);
+    const isTmtId =
+      !isNaN(codeAsNumber) && codeAsNumber.toString() === this.code;
+
     // Load concept and open dialog
-    this.tmtService.getByCode(this.code).subscribe((concept) => {
+    const lookup$ = isTmtId
+      ? this.tmtService.getByTmtId(codeAsNumber)
+      : this.tmtService.getByCode(this.code);
+
+    lookup$.subscribe((concept) => {
       if (concept) {
         this.concept.set(concept);
         this.clicked.emit(concept);
