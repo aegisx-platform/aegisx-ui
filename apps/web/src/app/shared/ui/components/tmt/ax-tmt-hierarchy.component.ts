@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TmtService } from './tmt.service';
@@ -28,6 +29,7 @@ import {
   imports: [
     CommonModule,
     MatIconModule,
+    MatButtonModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
@@ -57,21 +59,40 @@ import {
               class="tree-node flex items-start gap-2 py-1"
               [style.padding-left.px]="i * 20"
             >
-              <div class="flex items-center gap-1.5 flex-1 min-w-0">
+              <div class="flex items-start gap-1.5 flex-1 min-w-0">
                 <span [class]="getNodeClasses(ancestor, false)">
                   <mat-icon class="!text-sm !w-4 !h-4">{{
                     getLevelIcon(ancestor.level)
                   }}</mat-icon>
                 </span>
-                <span
-                  class="font-medium truncate"
-                  [matTooltip]="ancestor.preferred_term || ancestor.fsn || ''"
-                >
-                  {{ ancestor.level }}: {{ getDisplayName(ancestor) }}
-                </span>
-                <span class="text-gray-400 text-xs font-mono"
-                  >({{ ancestor.concept_code }})</span
-                >
+                <div class="flex-1 min-w-0">
+                  <span
+                    class="font-medium"
+                    [class.break-words]="isNameExpanded(ancestor.id)"
+                  >
+                    {{ ancestor.level }}:
+                    {{ getDisplayName(ancestor, !isNameExpanded(ancestor.id)) }}
+                  </span>
+                  @if (shouldShowToggle(ancestor)) {
+                    <button
+                      mat-icon-button
+                      class="!w-5 !h-5 ml-1 align-middle"
+                      (click)="toggleNameExpansion(ancestor.id, $event)"
+                      [matTooltip]="
+                        isNameExpanded(ancestor.id) ? 'ย่อชื่อ' : 'ดูชื่อเต็ม'
+                      "
+                    >
+                      <mat-icon class="!text-sm !w-4 !h-4 text-gray-500">{{
+                        isNameExpanded(ancestor.id)
+                          ? 'unfold_less'
+                          : 'unfold_more'
+                      }}</mat-icon>
+                    </button>
+                  }
+                  <span class="text-gray-400 text-xs font-mono ml-2"
+                    >({{ ancestor.concept_code }})</span
+                  >
+                </div>
               </div>
             </div>
           }
@@ -81,29 +102,52 @@ import {
             class="tree-node flex items-start gap-2 py-1.5 bg-blue-50 rounded-md -mx-2 px-2"
             [style.padding-left.px]="hierarchy()!.ancestors.length * 20"
           >
-            <div class="flex items-center gap-1.5 flex-1 min-w-0">
+            <div class="flex items-start gap-1.5 flex-1 min-w-0">
               <span [class]="getNodeClasses(hierarchy()!.concept, true)">
                 <mat-icon class="!text-sm !w-4 !h-4">{{
                   getLevelIcon(hierarchy()!.concept.level)
                 }}</mat-icon>
               </span>
-              <span
-                class="font-bold truncate text-blue-700"
-                [matTooltip]="
-                  hierarchy()!.concept.preferred_term ||
-                  hierarchy()!.concept.fsn ||
-                  ''
-                "
-              >
-                {{ hierarchy()!.concept.level }}:
-                {{ getDisplayName(hierarchy()!.concept) }}
-              </span>
-              <span class="text-blue-500 text-xs font-mono"
-                >({{ hierarchy()!.concept.concept_code }})</span
-              >
-              <mat-icon class="!text-sm !w-4 !h-4 text-blue-500"
-                >arrow_back</mat-icon
-              >
+              <div class="flex-1 min-w-0">
+                <span
+                  class="font-bold text-blue-700"
+                  [class.break-words]="isNameExpanded(hierarchy()!.concept.id)"
+                >
+                  {{ hierarchy()!.concept.level }}:
+                  {{
+                    getDisplayName(
+                      hierarchy()!.concept,
+                      !isNameExpanded(hierarchy()!.concept.id)
+                    )
+                  }}
+                </span>
+                @if (shouldShowToggle(hierarchy()!.concept)) {
+                  <button
+                    mat-icon-button
+                    class="!w-5 !h-5 ml-1 align-middle"
+                    (click)="
+                      toggleNameExpansion(hierarchy()!.concept.id, $event)
+                    "
+                    [matTooltip]="
+                      isNameExpanded(hierarchy()!.concept.id)
+                        ? 'ย่อชื่อ'
+                        : 'ดูชื่อเต็ม'
+                    "
+                  >
+                    <mat-icon class="!text-sm !w-4 !h-4 text-blue-600">{{
+                      isNameExpanded(hierarchy()!.concept.id)
+                        ? 'unfold_less'
+                        : 'unfold_more'
+                    }}</mat-icon>
+                  </button>
+                }
+                <span class="text-blue-500 text-xs font-mono ml-2"
+                  >({{ hierarchy()!.concept.concept_code }})</span
+                >
+                <mat-icon class="!text-sm !w-4 !h-4 text-blue-500 ml-2"
+                  >arrow_back</mat-icon
+                >
+              </div>
             </div>
           </div>
 
@@ -137,28 +181,42 @@ import {
         [style.padding-left.px]="depth * 20"
         (click)="onNodeClick(node)"
       >
-        <div class="flex items-center gap-1.5 flex-1 min-w-0">
+        <div class="flex items-start gap-1.5 flex-1 min-w-0">
           @if (node.children?.length) {
-            <mat-icon class="!text-xs !w-3 !h-3 text-gray-400"
+            <mat-icon class="!text-xs !w-3 !h-3 text-gray-400 mt-0.5"
               >subdirectory_arrow_right</mat-icon
             >
           } @else {
             <span class="w-3"></span>
           }
-          <span [class]="getNodeClasses(node, false)">
+          <span [class]="getNodeClasses(node, false)" class="mt-0.5">
             <mat-icon class="!text-sm !w-4 !h-4">{{
               getLevelIcon(node.level)
             }}</mat-icon>
           </span>
-          <span
-            class="truncate"
-            [matTooltip]="node.preferred_term || node.fsn || ''"
-          >
-            {{ node.level }}: {{ getDisplayName(node) }}
-          </span>
-          <span class="text-gray-400 text-xs font-mono"
-            >({{ node.concept_code }})</span
-          >
+          <div class="flex-1 min-w-0">
+            <span [class.break-words]="isNameExpanded(node.id)">
+              {{ node.level }}:
+              {{ getDisplayName(node, !isNameExpanded(node.id)) }}
+            </span>
+            @if (shouldShowToggle(node)) {
+              <button
+                mat-icon-button
+                class="!w-5 !h-5 ml-1 align-middle"
+                (click)="toggleNameExpansion(node.id, $event)"
+                [matTooltip]="
+                  isNameExpanded(node.id) ? 'ย่อชื่อ' : 'ดูชื่อเต็ม'
+                "
+              >
+                <mat-icon class="!text-sm !w-4 !h-4 text-gray-500">{{
+                  isNameExpanded(node.id) ? 'unfold_less' : 'unfold_more'
+                }}</mat-icon>
+              </button>
+            }
+            <span class="text-gray-400 text-xs font-mono ml-2"
+              >({{ node.concept_code }})</span
+            >
+          </div>
         </div>
       </div>
       @if (node.children?.length && expandedNodes().has(node.id)) {
@@ -204,6 +262,7 @@ export class AxTmtHierarchyComponent implements OnChanges {
   error = signal(false);
   hierarchy = signal<TmtHierarchy | null>(null);
   expandedNodes = signal<Set<number>>(new Set());
+  expandedNames = signal<Set<number>>(new Set()); // Track expanded names
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['tmtId'] || changes['tmtCode']) {
@@ -274,11 +333,36 @@ export class AxTmtHierarchyComponent implements OnChanges {
     this.expandedNodes.set(expanded);
   }
 
-  getDisplayName(concept: TmtConcept): string {
+  getDisplayName(concept: TmtConcept, truncate: boolean = true): string {
     // Prefer Thai name, fallback to FSN
     const name = concept.preferred_term || concept.fsn || concept.concept_code;
-    // Truncate if too long
-    return name.length > 40 ? name.substring(0, 37) + '...' : name;
+
+    // Truncate if requested and name is long
+    if (truncate && name.length > 50) {
+      return name.substring(0, 47) + '...';
+    }
+
+    return name;
+  }
+
+  isNameExpanded(conceptId: number): boolean {
+    return this.expandedNames().has(conceptId);
+  }
+
+  toggleNameExpansion(conceptId: number, event: Event): void {
+    event.stopPropagation(); // Prevent triggering node click
+    const expanded = new Set(this.expandedNames());
+    if (expanded.has(conceptId)) {
+      expanded.delete(conceptId);
+    } else {
+      expanded.add(conceptId);
+    }
+    this.expandedNames.set(expanded);
+  }
+
+  shouldShowToggle(concept: TmtConcept): boolean {
+    const name = concept.preferred_term || concept.fsn || concept.concept_code;
+    return name.length > 50;
   }
 
   getLevelIcon(level: TmtLevel): string {
