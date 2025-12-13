@@ -61,37 +61,49 @@
     <div class="overview-grid">
       <!-- Total Modules Card -->
       <ax-kpi-card
-        title="Total Modules"
+        variant="accent"
+        label="Total Modules"
         [value]="totalModules()"
-        color="primary"
-        icon="layers"
+        subtitle="MODULES TO IMPORT"
+        accentColor="primary"
+        accentPosition="top"
+        [hoverable]="true"
       >
       </ax-kpi-card>
 
       <!-- Completed Card -->
       <ax-kpi-card
-        title="Completed"
+        variant="accent"
+        label="Completed"
         [value]="completedModules()"
-        color="success"
-        icon="check_circle"
+        subtitle="MODULES COMPLETED"
+        accentColor="success"
+        accentPosition="top"
+        [hoverable]="true"
       >
       </ax-kpi-card>
 
       <!-- In Progress Card -->
       <ax-kpi-card
-        title="In Progress"
+        variant="accent"
+        label="In Progress"
         [value]="inProgressModules()"
-        color="warning"
-        icon="sync"
+        subtitle="MODULES IMPORTING"
+        accentColor="warning"
+        accentPosition="top"
+        [hoverable]="true"
       >
       </ax-kpi-card>
 
       <!-- Pending Card -->
       <ax-kpi-card
-        title="Pending"
+        variant="accent"
+        label="Pending"
         [value]="pendingModules()"
-        color="error"
-        icon="pause_circle"
+        subtitle="MODULES PENDING"
+        accentColor="error"
+        accentPosition="top"
+        [hoverable]="true"
       >
       </ax-kpi-card>
     </div>
