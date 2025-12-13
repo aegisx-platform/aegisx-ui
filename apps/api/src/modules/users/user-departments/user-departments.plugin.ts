@@ -17,7 +17,7 @@ import { DepartmentsRepository } from '../../inventory/master-data/departments/d
  * - knex-plugin (database)
  * - jwt-auth-plugin (authentication)
  * - users-plugin (UsersService)
- * - inventory-plugin (DepartmentsRepository)
+ * - inventory-domain-plugin (DepartmentsRepository from master-data)
  */
 export default fp(
   async function userDepartmentsPlugin(
@@ -56,7 +56,7 @@ export default fp(
       'knex-plugin',
       'jwt-auth-plugin',
       'users-plugin',
-      'inventory-plugin',
+      'inventory-domain-plugin',
     ],
   },
 );
