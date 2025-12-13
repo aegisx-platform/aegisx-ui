@@ -56,6 +56,7 @@ import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 import testProductsPlugin from '../modules/testProducts';
 import inventoryDomainPlugin from '../modules/inventory';
+import adminPlugin from '../modules/admin';
 
 // User-related modules
 import userDepartmentsPlugin from '../modules/users/user-departments/user-departments.plugin';
@@ -369,6 +370,12 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
     name: 'business-features',
     description: 'Business feature modules (ready for HIS, Inventory, etc.)',
     plugins: [
+      // Admin Module - system initialization and admin features
+      {
+        name: 'admin',
+        plugin: adminPlugin,
+        required: true,
+      },
       // Inventory Domain - aggregates all inventory modules (includes drugs via master-data)
       {
         name: 'inventory-domain',
