@@ -9,11 +9,11 @@ import type {
   ImportOptions,
   ImportJobResponse,
   ImportStatus,
-  HealthResponse
+  HealthResponse,
 } from '../types/system-init.types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SystemInitService {
   private readonly baseUrl = '/api/admin/system-init';
@@ -22,7 +22,9 @@ export class SystemInitService {
 
   // Dashboard APIs
   getAvailableModules(): Observable<AvailableModulesResponse> {
-    return this.http.get<AvailableModulesResponse>(`${this.baseUrl}/available-modules`);
+    return this.http.get<AvailableModulesResponse>(
+      `${this.baseUrl}/available-modules`,
+    );
   }
 
   getImportOrder(): Observable<ImportOrderResponse> {
@@ -34,10 +36,13 @@ export class SystemInitService {
   }
 
   // Module-specific APIs
-  downloadTemplate(moduleName: string, format: 'csv' | 'xlsx'): Observable<Blob> {
+  downloadTemplate(
+    moduleName: string,
+    format: 'csv' | 'xlsx',
+  ): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/module/${moduleName}/template`, {
       params: { format },
-      responseType: 'blob'
+      responseType: 'blob',
     });
   }
 
@@ -47,34 +52,34 @@ export class SystemInitService {
 
     return this.http.post<ValidationResult>(
       `${this.baseUrl}/module/${moduleName}/validate`,
-      formData
+      formData,
     );
   }
 
   importData(
     moduleName: string,
     sessionId: string,
-    options: ImportOptions
+    options: ImportOptions,
   ): Observable<ImportJobResponse> {
     return this.http.post<ImportJobResponse>(
       `${this.baseUrl}/module/${moduleName}/import`,
-      { sessionId, options }
+      { sessionId, options },
     );
   }
 
   getImportStatus(moduleName: string, jobId: string): Observable<ImportStatus> {
     return this.http.get<ImportStatus>(
-      `${this.baseUrl}/module/${moduleName}/status/${jobId}`
+      `${this.baseUrl}/module/${moduleName}/status/${jobId}`,
     );
   }
 
   rollbackImport(moduleName: string, jobId: string): Observable<void> {
     return this.http.delete<void>(
-      `${this.baseUrl}/module/${moduleName}/rollback/${jobId}`
+      `${this.baseUrl}/module/${moduleName}/rollback/${jobId}`,
     );
   }
 
   getHealth(): Observable<HealthResponse> {
-    return this.http.get<HealthResponse>(`${this.baseUrl}/health`);
+    return this.http.get<HealthResponse>(`${this.baseUrl}/health-status`);
   }
 }

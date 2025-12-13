@@ -232,13 +232,13 @@ export async function systemInitRoutes(fastify: FastifyInstance) {
     (request, reply) => controller.getDashboard(request, reply),
   );
 
-  // --- 9. GET /health ---
+  // --- 9. GET /health-status ---
   fastify.get(
-    '/health',
+    '/health-status',
     {
       schema: {
         tags: ['System Initialization'],
-        summary: 'Health status',
+        summary: 'System-init health status',
         description:
           'Check health of import discovery service (validation errors, circular dependencies)',
         response: {
