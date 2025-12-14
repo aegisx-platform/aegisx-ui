@@ -310,13 +310,14 @@
 
 ## Phase 6: Complete Migration - High-Risk Modules (Week 8)
 
-- [-] 6.1. Migrate monitoring module to Core layer
+- [x] 6.1. Migrate monitoring module to Core layer
   - Move: `apps/api/src/core/monitoring/` → `apps/api/src/layers/core/monitoring/`
   - Keep fp() wrapper (infrastructure plugin)
   - Verify it decorates fastify instance correctly
   - Test metrics collection
   - _Leverage: `docs/architecture/api-standards/03-plugin-pattern-specification.md`, proven patterns from Phase 3_
   - _Requirements: 1, 3, 8_
+  - _Completed: 2025-12-14_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps Engineer with monitoring infrastructure expertise | Task: Migrate monitoring module to Core layer maintaining fp() wrapper (correct for infrastructure), verifying metrics collection continues | Restrictions: Must not lose metrics, verify Prometheus integration, test alerting | Success: Monitoring migrated to Core, metrics collection works, dashboards functional | Instructions: 1) Mark in-progress, 2) Log with artifacts (metrics samples), 3) Mark complete_
 
 - [ ] 6.2. Migrate auth and audit modules to Core layer
