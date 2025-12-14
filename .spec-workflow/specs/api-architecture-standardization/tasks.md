@@ -310,7 +310,7 @@
 
 ## Phase 6: Complete Migration - High-Risk Modules (Week 8)
 
-- [ ] 6.1. Migrate monitoring module to Core layer
+- [-] 6.1. Migrate monitoring module to Core layer
   - Move: `apps/api/src/core/monitoring/` → `apps/api/src/layers/core/monitoring/`
   - Keep fp() wrapper (infrastructure plugin)
   - Verify it decorates fastify instance correctly

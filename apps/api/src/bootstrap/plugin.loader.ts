@@ -40,7 +40,7 @@ import { errorLogsPlugin } from '../core/error-logs';
 import { fileAuditPlugin } from '../core/audit-system/file-audit';
 import importDiscoveryPlugin from '../core/import/plugin/import-discovery.plugin';
 import { loginAttemptsPlugin } from '../core/audit-system/login-attempts';
-import { monitoringPlugin as monitoringModulePlugin } from '../core/monitoring';
+import { monitoringPlugin as monitoringModulePlugin } from '../layers/core/monitoring';
 import permissionCachePlugin from '../core/rbac/permission-cache.plugin';
 import rbacPlugin from '../core/rbac/rbac.plugin';
 import systemPlugin from '../core/system/default.plugin';
@@ -70,6 +70,8 @@ import websocketPlugin from '../shared/websocket/websocket.plugin';
 import testProductsPlugin from '../modules/testProducts';
 import inventoryDomainPlugin from '../modules/inventory';
 import adminPlugin from '../modules/admin';
+// import testAuthPlugin from '../modules/testAuth';
+// import testUsersPlugin from '../modules/testUsers';
 
 // User-related modules
 import userDepartmentsPlugin from '../modules/users/user-departments/user-departments.plugin';
@@ -340,11 +342,8 @@ export function createCorePluginGroup(apiPrefix: string): PluginGroup {
         plugin: systemPlugin,
         required: true,
       },
-      {
-        name: 'websocket',
-        plugin: websocketPlugin,
-        required: true,
-      },
+      // NOTE: websocket plugin is loaded in "application" group, not here
+      // to avoid duplicate registration when both old and new routes are enabled
       {
         name: 'auth',
         plugin: authPlugin,
@@ -402,6 +401,16 @@ export function createFeaturePluginGroup(apiPrefix: string): PluginGroup {
     name: 'business-features',
     description: 'Business feature modules (ready for HIS, Inventory, etc.)',
     plugins: [
+      // {
+      //   name: 'testUsers',
+      //   plugin: testUsersPlugin,
+      //   required: true,
+      // },
+      // {
+      //   name: 'testAuth',
+      //   plugin: testAuthPlugin,
+      //   required: true,
+      // },
       // Admin Module - system initialization and admin features
       {
         name: 'admin',
