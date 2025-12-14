@@ -1,0 +1,198 @@
+# Tasks Document: TMT Backend API
+
+## Task Breakdown
+
+Total: 22 tasks organized into 5 phases (Setup → Core Modules → Advanced Features → Integration → Testing)
+
+---
+
+## Phase 1: Setup & Foundation (Tasks 1-3)
+
+- [ ] 1. Setup inventory layer structure and domain folders
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/index.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/index.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/utils/index.ts` (create)
+  - Purpose: Create folder structure following domain architecture guide
+  - _Leverage: docs/architecture/DOMAIN_ARCHITECTURE_GUIDE.md_
+  - _Requirements: Design Section "Project Structure"_
+  - _Prompt: Role: Backend Developer with expertise in Node.js project structure and domain-driven design | Task: Create the folder structure for TMT Backend API following the domain architecture guide. Create `inventory/master-data/tmt-concepts/` for TMT concepts (reference data) and `inventory/operations/tmt-mappings/` for mappings (transactional), including a `utils/` subfolder for confidence scorer and mapping validator. Reference design document section "Project Structure" for exact structure. | Restrictions: Follow domain classification exactly (master-data vs operations), do not create files yet (only folders), maintain consistency with existing platform layer structure | Success: Folders created with correct domain classification, index.ts placeholder files in each module folder, utils subfolder ready for utilities_
+  - _Instructions: After completing this task, run `mcp__spec-workflow__log-implementation` to log the implementation details with artifacts (list created folders and their purpose), then mark this task as [x] complete in tasks.md_
+- [ ] 2. Create TypeBox schema registry entries for TMT modules
+  - Files:
+    - `apps/api/src/schemas/registry.ts` (modify - add TMT module refs)
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.schemas.ts` (create placeholder)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.schemas.ts` (create placeholder)
+  - Purpose: Register TMT modules in schema registry for TypeBox validation
+  - _Leverage: apps/api/src/schemas/registry.ts (existing SchemaRefs pattern)_
+  - _Requirements: Design Section "TypeBox Schema-First Design"_
+  - _Prompt: Role: TypeScript Developer specializing in TypeBox schemas and API validation | Task: Register TMT modules in the schema registry following existing patterns from apps/api/src/schemas/registry.ts. Add module entries for 'tmt-concepts' and 'tmt-mappings'. Create placeholder schema files that will be populated in later tasks. | Restrictions: Follow existing SchemaRefs.module() pattern exactly, do not define actual schemas yet (only placeholders), ensure module names match folder structure | Success: Registry contains entries for both TMT modules, placeholder schema files created with correct exports, can be imported via SchemaRefs.module('tmt-concepts', 'schema-name')_
+  - _Instructions: After completing, log implementation with artifacts (schema registry modifications, module names added), mark task [x] complete_
+- [ ] 3. Create shared TMT enums and base types
+  - Files:
+    - `apps/api/src/layers/inventory/shared/types/tmt.types.ts` (create)
+  - Purpose: Define shared TypeScript types and enums used across both TMT modules
+  - _Leverage: None (new file)_
+  - _Requirements: Design Section "Data Models" (TMTLevel enum, ConfidenceLevel enum)_
+  - _Prompt: Role: TypeScript Developer with expertise in type systems and domain modeling | Task: Create shared TMT types file containing TMTLevel enum (VTM, GP, GPU, TP, TPU), ConfidenceLevel enum (HIGH, MEDIUM, LOW), and base interfaces for TMTConcept and TMTMapping following design document "Data Models" section. | Restrictions: Only create types/interfaces/enums (no implementation), follow exact enum values from design, ensure types are reusable across modules | Success: All enums and base types defined, properly exported, follow TypeScript best practices for type definitions_
+  - _Instructions: After completing, log implementation with artifacts (types defined, enum values), mark task [x] complete_
+- [ ] 4. Create TMTConceptsRepository extending BaseRepository
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.repository.ts` (create)
+  - Purpose: Implement database access layer for TMT concepts with custom queries
+  - _Leverage: apps/api/src/shared/repositories/base.repository.ts (BaseRepository)_
+  - _Requirements: Design Section "Component 1: TMT Concepts Module" - Repository_
+  - _Prompt: Role: Backend Developer with expertise in Knex.js and repository pattern | Task: Create TMTConceptsRepository extending BaseRepository from apps/api/src/shared/repositories/base.repository.ts. Configure for 'tmt_concepts' table with search fields ['preferred_term', 'fsn', 'concept_code']. Implement custom methods: findByLevel(level), getHierarchy(conceptId), bulkInsert(concepts). Reference design document "Component 1" for method signatures. | Restrictions: Must extend BaseRepository, use Knex query builder, do not duplicate base CRUD methods, configure field config with hasCreatedBy=false/hasUpdatedBy=false (readonly data) | Success: Repository extends BaseRepository correctly, custom methods implemented with proper SQL queries, BigInt handled correctly for PostgreSQL, all methods return typed results_
+  - _Instructions: After completing, log implementation with artifacts (class name, methods, table name, extends BaseRepository), mark task [x] complete_
+- [ ] 5. Create TMTConceptsService with business logic
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.service.ts` (create)
+  - Purpose: Implement business logic layer for TMT concept operations
+  - _Leverage: tmt-concepts.repository.ts (from task 4)_
+  - _Requirements: Design Section "Component 1: TMT Concepts Module" - Service_
+  - _Prompt: Role: Backend Developer with expertise in service layer architecture | Task: Create TMTConceptsService implementing methods: searchConcepts(query, filters), getConceptById(id), getHierarchy(conceptId), loadConceptsFromCSV(file, userId). Inject TMTConceptsRepository via constructor. Reference design document "Component 1" for method signatures and business logic. | Restrictions: Inject repository via constructor DI, implement error handling for not found scenarios, validate inputs before repository calls, do not expose repository directly | Success: Service implements all required methods, proper dependency injection, error handling with custom errors (NotFoundError for missing concepts), business logic properly encapsulated_
+  - _Instructions: After completing, log implementation with artifacts (class name, methods, dependencies injected), mark task [x] complete_
+- [ ] 6. Create TMTConceptsController for HTTP handling
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.controller.ts` (create)
+  - Purpose: Handle HTTP requests/responses for TMT concept endpoints
+  - _Leverage: tmt-concepts.service.ts (from task 5), existing controller patterns_
+  - _Requirements: Design Section "Component 1: TMT Concepts Module"_
+  - _Prompt: Role: Backend Developer with expertise in Fastify controllers and HTTP handling | Task: Create TMTConceptsController with methods: listConcepts(request, reply), getConceptById(request, reply), searchConcepts(request, reply), getHierarchy(request, reply). Inject TMTConceptsService via constructor. Extract params/query from request, call service methods, return standardized responses { success, data, pagination/meta }. | Restrictions: Controller only handles HTTP I/O (no business logic), use async/await for all methods, bind methods in routes, handle errors with try/catch and return appropriate HTTP status codes | Success: Controller implements all endpoint handlers, proper request extraction, standardized response format, error handling returns correct HTTP status codes (200, 404, 500)_
+  - _Instructions: After completing, log implementation with artifacts (controller class, methods, service dependency), mark task [x] complete_
+- [ ] 7. Create TMT Concepts TypeBox schemas
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.schemas.ts` (populate from task 2)
+  - Purpose: Define request/response validation schemas for TMT concepts endpoints
+  - _Leverage: apps/api/src/layers/inventory/shared/types/tmt.types.ts (TMTLevel enum)_
+  - _Requirements: Design Section "TypeBox Schema Patterns", "Data Models - TMTConcept"_
+  - _Prompt: Role: TypeScript Developer specializing in TypeBox schemas and API contracts | Task: Define TypeBox schemas for TMT concepts endpoints: TMTConceptSchema (base entity), ListTMTConceptsQuerySchema (page, limit, search, level filter), ListTMTConceptsResponseSchema, GetTMTConceptResponseSchema, SearchTMTConceptsQuerySchema, GetHierarchyResponseSchema. Reference design document "Data Models" section for TMTConcept structure. | Restrictions: Use Type.Object() for all schemas, reference TMTLevel enum from shared types, follow existing pagination schema patterns, ensure all BigInt fields use Type.String() (JSON serialization) | Success: All schemas defined with proper validation rules, schemas exported and registered in module, compile-time type safety, follow TypeBox best practices_
+  - _Instructions: After completing, log implementation with artifacts (schema names, validation rules, referenced types), mark task [x] complete_
+- [ ] 8. Create TMT Concepts routes with authentication
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.routes.ts` (create)
+  - Purpose: Define Fastify routes for TMT concepts with schema validation
+  - _Leverage: tmt-concepts.controller.ts, tmt-concepts.schemas.ts, SchemaRefs, auth middleware_
+  - _Requirements: Design Section "TypeBox Schema-First Design", Requirements "RBAC"_
+  - _Prompt: Role: Backend Developer with expertise in Fastify routing and authentication | Task: Create TMT concepts routes function registering 4 endpoints: GET /concepts (list), GET /concepts/:id (detail), GET /concepts/search (search), GET /hierarchy/:conceptId (hierarchy). Use TypeBox schemas from tmt-concepts.schemas.ts, add authentication (fastify.authenticate), add RBAC (fastify.verifyPermission('tmt', 'read')). Follow pattern from apps/api/src/layers/platform/users/users.routes.ts. | Restrictions: All routes require authentication, use SchemaRefs for error responses (Unauthorized, Forbidden, NotFound, ServerError), bind controller methods, set proper descriptions/tags for OpenAPI docs | Success: All routes defined with proper schemas, authentication/authorization applied, controller methods bound, OpenAPI documentation complete, follows existing route patterns_
+  - _Instructions: After completing, log implementation with artifacts (endpoints list with methods/paths, auth applied, schemas used), mark task [x] complete_
+- [ ] 9. Create TMT Concepts plugin with dependency injection
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/tmt-concepts.plugin.ts` (create)
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/index.ts` (update - export plugin)
+  - Purpose: Create Fastify plugin with DI setup for TMT concepts module
+  - _Leverage: apps/api/src/layers/platform/users/users.plugin.ts (plugin pattern)_
+  - _Requirements: Design Section "Plugin Registration Flow", "Fastify Plugin Pattern"_
+  - _Prompt: Role: Backend Developer with expertise in Fastify plugins and dependency injection | Task: Create TMT concepts plugin following apps/api/src/layers/platform/users/users.plugin.ts pattern. Instantiate repository (with knex), service (with repository), controller (with service). Register routes with prefix '/v1/inventory/tmt/concepts'. Decorate fastify instance with tmtConceptsService. Add onReady lifecycle hook for logging. | Restrictions: Use plain async function (no fp() wrapper), inject dependencies in correct order (repo → service → controller), verify knex is available, register routes before decorating instance | Success: Plugin exports default async function, all dependencies injected correctly, routes registered with proper prefix, service decorated on fastify instance, lifecycle hook logs success_
+  - _Instructions: After completing, log implementation with artifacts (plugin structure, DI chain, decorated services, route prefix), mark task [x] complete_
+- [ ] 10. Create ConfidenceScorer utility
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/utils/confidence-scorer.ts` (create)
+  - Purpose: Calculate AI confidence score for drug-TMT matching
+  - _Leverage: None (pure function utility)_
+  - _Requirements: Design Section "Component 3: Confidence Scorer"_
+  - _Prompt: Role: Backend Developer with expertise in algorithms and scoring systems | Task: Create ConfidenceScorer utility with calculateMappingConfidence(drug, tmtConcept) function. Implement scoring algorithm: name similarity (50 points using Levenshtein distance), strength exact match (30 points), dosage_form exact match (20 points). Return { score: number, level: 'HIGH'|'MEDIUM'|'LOW', matchedFields: string[], breakdown }. Reference design document "Component 3" for algorithm details. | Restrictions: Pure function (no side effects), use string similarity algorithm (suggest: fastest-levenshtein npm package), score ranges: HIGH ≥90, MEDIUM 70-89, LOW <70, return breakdown for transparency | Success: Function calculates confidence correctly, returns proper structure, handles null values gracefully, threshold levels accurate, documented with JSDoc_
+  - _Instructions: After completing, log implementation with artifacts (function name, scoring algorithm, thresholds, npm packages used), mark task [x] complete_
+- [ ] 11. Create MappingValidator utility
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/utils/mapping-validator.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/utils/index.ts` (update - export both utilities)
+  - Purpose: Validate business rules for drug-TMT mappings
+  - _Leverage: apps/api/src/layers/inventory/shared/types/tmt.types.ts (TMTLevel enum)_
+  - _Requirements: Design Section "Component 4: Mapping Validator", Requirements "Business Rules"_
+  - _Prompt: Role: Backend Developer with expertise in validation logic and business rules | Task: Create MappingValidator class with static methods: validateMapping(drug, tmtConcept), validateTMTLevel(level), checkDuplicateMapping(drugId, existingMapping). Implement validation rules: TMT concept must be active, Drug must be active, TMT level should be GP/TP (warn if VTM/SUBS), no duplicate mapping. Return { isValid: boolean, errors: string[], warnings: string[] }. Reference design document "Component 4" for rules. | Restrictions: Static methods only (no instance state), validate against TMTLevel enum from shared types, separate errors (blocking) from warnings (informational), return detailed messages | Success: Validator implements all rules from design, proper error/warning categorization, clear validation messages (Thai + English), comprehensive test coverage possible_
+  - _Instructions: After completing, log implementation with artifacts (class name, validation methods, rules implemented), mark task [x] complete_
+- [ ] 12. Create TMTMappingsRepository extending BaseRepository
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.repository.ts` (create)
+  - Purpose: Implement database access layer for TMT mappings
+  - _Leverage: apps/api/src/shared/repositories/base.repository.ts_
+  - _Requirements: Design Section "Component 2: TMT Mappings Module" - Repository_
+  - _Prompt: Role: Backend Developer with expertise in Knex.js and repository pattern | Task: Create TMTMappingsRepository extending BaseRepository for 'tmt_mappings' table. Configure with search fields, enable audit fields (hasCreatedBy=true, hasUpdatedBy=true). Implement custom methods: findByDrugId(drugId), findUnmappedDrugs(), getComplianceStats(), getMappingsByConfidence(level). Reference design document "Component 2" for method signatures. | Restrictions: Must extend BaseRepository, enable audit fields for tracking who created/updated, implement complex queries with joins to drugs and tmt_concepts tables, use Knex transactions where needed | Success: Repository extends BaseRepository with audit fields enabled, custom queries return proper joined data, compliance stats calculated correctly, all methods return typed results_
+  - _Instructions: After completing, log implementation with artifacts (class name, methods, table name, audit fields enabled), mark task [x] complete_
+- [ ] 13. Create TMTMappingsService with business logic and AI suggestions
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.service.ts` (create)
+  - Purpose: Implement business logic for mapping operations with AI-assisted suggestions
+  - _Leverage: tmt-mappings.repository.ts, utils/confidence-scorer.ts, utils/mapping-validator.ts, TMTConceptsRepository_
+  - _Requirements: Design Section "Component 2: TMT Mappings Module" - Service_
+  - _Prompt: Role: Backend Developer with expertise in service layer architecture and transaction management | Task: Create TMTMappingsService implementing methods: createMapping(dto, userId), updateMapping(id, dto, userId), deleteMapping(id, userId), getMappingByDrugId(drugId), suggestMappings(drugId), getComplianceReport(), getUnmappedDrugs(), generateMinistryExport(format). Inject TMTMappingsRepository, TMTConceptsRepository, ConfidenceScorer, MappingValidator. Use transactions for create/update. Reference design document "Component 2" for method details and "Data Flow Architecture" for transaction flow. | Restrictions: Inject all dependencies via constructor, use Knex transactions for data consistency, call MappingValidator before saving, calculate confidence score using ConfidenceScorer, handle not found and conflict scenarios with custom errors | Success: Service implements all methods with proper DI, transactions ensure atomicity, AI suggestions use confidence scorer, business rules validated, compliance calculations accurate, export formats supported (CSV/XLSX/JSON)_
+  - _Instructions: After completing, log implementation with artifacts (class name, methods, dependencies injected, transaction usage, AI suggestions), mark task [x] complete_
+- [ ] 14. Create TMTMappingsController for HTTP handling
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.controller.ts` (create)
+  - Purpose: Handle HTTP requests/responses for TMT mapping endpoints
+  - _Leverage: tmt-mappings.service.ts, EventService (for real-time updates)_
+  - _Requirements: Design Section "Component 2: TMT Mappings Module" - Controller_
+  - _Prompt: Role: Backend Developer with expertise in Fastify controllers and WebSocket events | Task: Create TMTMappingsController with methods for all endpoints: createMapping, updateMapping, deleteMapping, getMappingByDrugId, listMappings, suggestMappings, getComplianceReport, getUnmappedDrugs, exportMinistry. Inject TMTMappingsService and EventService. Broadcast WebSocket events on mapping create/update/delete using eventService.broadcast(). Reference design document "Component 2" for endpoint handlers. | Restrictions: Controller handles HTTP I/O only, extract user ID from request.user for audit trails, broadcast events for real-time updates ('tmt:mapping-created', 'tmt:mapping-updated'), handle errors with try/catch | Success: Controller implements all endpoint handlers, real-time events broadcasted correctly, user ID passed to service methods, proper HTTP status codes returned (200, 201, 404, 409, 500)_
+  - _Instructions: After completing, log implementation with artifacts (controller class, methods, WebSocket events, service dependency), mark task [x] complete_
+- [ ] 15. Create TMT Mappings TypeBox schemas
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.schemas.ts` (populate from task 2)
+  - Purpose: Define request/response validation schemas for TMT mapping endpoints
+  - _Leverage: apps/api/src/layers/inventory/shared/types/tmt.types.ts (TMTLevel, ConfidenceLevel enums)_
+  - _Requirements: Design Section "Data Models - TMTMapping", "TypeBox Schema Patterns"_
+  - _Prompt: Role: TypeScript Developer specializing in TypeBox schemas and API validation | Task: Define TypeBox schemas for TMT mappings: TMTMappingSchema (base entity), CreateMappingRequestSchema (drug_id, tmt_concept_id), UpdateMappingRequestSchema, ListMappingsQuerySchema, GetMappingResponseSchema, SuggestMappingsResponseSchema (array of suggestions with confidence), ComplianceReportResponseSchema. Reference design document "Data Models - TMTMapping" and "ComplianceReport" for structure. | Restrictions: Use Type.Object() for all schemas, reference enums from shared types, validate BigInt fields as strings, ensure confidence_score has min/max constraints (0-100), proper nested schemas for complex responses | Success: All schemas defined with validation rules, proper enum references, compile-time type safety, support all endpoint request/response structures_
+  - _Instructions: After completing, log implementation with artifacts (schema names, validation rules, enum references), mark task [x] complete_
+- [ ] 16. Create TMT Mappings routes with authentication and RBAC
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.routes.ts` (create)
+  - Purpose: Define Fastify routes for TMT mappings with proper authorization
+  - _Leverage: tmt-mappings.controller.ts, tmt-mappings.schemas.ts, SchemaRefs, auth middleware_
+  - _Requirements: Design Section "Authentication & Authorization", Requirements "RBAC"_
+  - _Prompt: Role: Backend Developer with expertise in Fastify routing and role-based access control | Task: Create TMT mappings routes function registering 9 endpoints: POST /mappings (create - Pharmacist/Finance Manager only), PUT /mappings/:id (update - Pharmacist/Finance Manager), DELETE /mappings/:id (delete - Admin only), GET /mappings (list - all authenticated), GET /mappings/drug/:drugId (get by drug), GET /mappings/suggest/:drugId (AI suggestions - Pharmacist/Finance Manager), GET /coverage-report (compliance - Finance Manager/Pharmacist), GET /unmapped-drugs (list unmapped - Pharmacist/Finance Manager), GET /ministry-export (export - Finance Manager/Pharmacist). Use proper RBAC for each endpoint. Reference requirements "Authentication & Authorization" table. | Restrictions: All routes require authentication, RBAC based on role (Finance Manager, Pharmacist, Dept Head, Nurse), use SchemaRefs for standard error responses, bind controller methods, set OpenAPI descriptions/tags | Success: All routes defined with correct HTTP methods, proper RBAC applied per endpoint, schemas validate requests/responses, OpenAPI documentation complete_
+  - _Instructions: After completing, log implementation with artifacts (endpoints list with methods/paths/RBAC, schemas used), mark task [x] complete_
+- [ ] 17. Create TMT Mappings plugin with dependency injection
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/tmt-mappings.plugin.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/index.ts` (update - export plugin)
+  - Purpose: Create Fastify plugin with DI setup for TMT mappings module
+  - _Leverage: apps/api/src/layers/platform/users/users.plugin.ts (plugin pattern), TMTConceptsRepository_
+  - _Requirements: Design Section "Plugin Registration Flow", "Dependency Management"_
+  - _Prompt: Role: Backend Developer with expertise in Fastify plugins and complex dependency injection | Task: Create TMT mappings plugin following plugin pattern. Instantiate: TMTMappingsRepository, TMTConceptsRepository (cross-module dependency), ConfidenceScorer, MappingValidator, TMTMappingsService (with all dependencies), TMTMappingsController (with service + eventService). Register routes with prefix '/v1/inventory/tmt/mappings'. Decorate fastify instance with tmtMappingsService. Verify eventService is available. Reference design document "Plugin Registration Flow" diagram. | Restrictions: Use plain async function, inject dependencies in correct order, verify cross-module dependencies (TMTConceptsRepository from master-data layer), check eventService exists before controller instantiation | Success: Plugin exports default async function, all dependencies injected correctly including cross-module TMTConceptsRepository, routes registered, service decorated, lifecycle hook logs success, error if eventService missing_
+  - _Instructions: After completing, log implementation with artifacts (plugin structure, DI chain with cross-module deps, decorated services, route prefix), mark task [x] complete_
+- [ ] 18. Register TMT plugins in bootstrap loader
+  - Files:
+    - `apps/api/src/bootstrap/plugin.loader.ts` (modify - add inventory layer plugins)
+  - Purpose: Load TMT plugins in correct order during application startup
+  - _Leverage: apps/api/src/bootstrap/plugin.loader.ts (existing plugin loading pattern)_
+  - _Requirements: Design Section "Plugin Registration Flow"_
+  - _Prompt: Role: DevOps Engineer with expertise in application bootstrap and plugin loading | Task: Register TMT plugins in bootstrap plugin loader following existing pattern. Load in order: 1) tmt-concepts plugin (master-data), 2) tmt-mappings plugin (operations - depends on tmt-concepts). Ensure inventory layer plugins load after platform layer (users, departments) but before routes. Reference existing plugin loading in apps/api/src/bootstrap/plugin.loader.ts. | Restrictions: Follow existing loading pattern, maintain plugin load order (dependencies first), use proper Fastify plugin registration with prefix option, add error handling for plugin load failures | Success: Both TMT plugins registered in correct order, load without errors, services available on fastify instance after startup, proper logging on successful load_
+  - _Instructions: After completing, log implementation with artifacts (plugins registered, load order, prefixes used), mark task [x] complete_
+- [ ] 19. Unit tests for TMT Concepts module
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/__tests__/tmt-concepts.service.test.ts` (create)
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/__tests__/tmt-concepts.repository.test.ts` (create)
+  - Purpose: Ensure TMT concepts service and repository work correctly in isolation
+  - _Leverage: Jest, existing test utilities_
+  - _Requirements: Design Section "Testing Strategy - Unit Testing"_
+  - _Prompt: Role: QA Engineer with expertise in unit testing and Jest framework | Task: Create unit tests for TMTConceptsService and TMTConceptsRepository. Test scenarios: search concepts by name/level, get concept by ID (success + not found), get hierarchy (with parents/children), bulk insert concepts. Mock repository in service tests. Reference design document "Testing Strategy - Unit Testing" section for test examples. | Restrictions: Mock all external dependencies (repository in service tests, knex in repository tests), test both success and failure scenarios, aim for ≥80% code coverage, tests must be independent and isolated | Success: All service methods tested with mocked repository, all repository methods tested with mocked knex, edge cases covered (not found, empty results), tests run independently, coverage ≥80%_
+  - _Instructions: After completing, log implementation with artifacts (test files created, scenarios covered, coverage %), mark task [x] complete_
+- [ ] 20. Unit tests for TMT Mappings module and utilities
+  - Files:
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/__tests__/tmt-mappings.service.test.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/__tests__/confidence-scorer.test.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/__tests__/mapping-validator.test.ts` (create)
+  - Purpose: Ensure TMT mappings service, confidence scorer, and validator work correctly
+  - _Leverage: Jest, existing test utilities_
+  - _Requirements: Design Section "Testing Strategy - Unit Testing" (Services and Utilities)_
+  - _Prompt: Role: QA Engineer with expertise in unit testing complex business logic | Task: Create unit tests for TMTMappingsService (15 tests), ConfidenceScorer (8 tests), MappingValidator (6 tests). Service tests: create mapping (success, duplicate, validation), calculate confidence on creation, compliance rate calculation, AI suggestions. Scorer tests: exact match (100%), partial match, name mismatch. Validator tests: level restrictions, inactive concept/drug, duplicate check. Reference design document "Testing Strategy - Unit Testing" for specific test cases. | Restrictions: Mock all dependencies in service tests, confidence scorer and validator are pure functions (no mocks needed), test all business rules, verify error types (ConflictError, NotFoundError, ValidationError) | Success: All methods tested comprehensively, business logic verified, error scenarios covered, confidence scoring algorithm accurate, validation rules enforced, coverage ≥80%_
+  - _Instructions: After completing, log implementation with artifacts (test files, test count per module, scenarios covered), mark task [x] complete_
+- [ ] 21. Integration tests for all TMT API endpoints
+  - Files:
+    - `apps/api/src/layers/inventory/master-data/tmt-concepts/__tests__/tmt-concepts.integration.test.ts` (create)
+    - `apps/api/src/layers/inventory/operations/tmt-mappings/__tests__/tmt-mappings.integration.test.ts` (create)
+  - Purpose: Test full API flows with real database and authentication
+  - _Leverage: Supertest, test database, existing auth tokens_
+  - _Requirements: Design Section "Testing Strategy - Integration Testing"_
+  - _Prompt: Role: QA Engineer with expertise in API integration testing | Task: Create integration tests for all TMT endpoints using Supertest and test database. TMT Concepts: search with authentication (success, 401 without token), list with pagination, get by ID (success, 404), get hierarchy. TMT Mappings: create mapping (success, 409 duplicate, 403 role check), update mapping, delete mapping, get compliance report, suggest mappings, export ministry data. Use real database with seeded test data. Reference design document "Testing Strategy - Integration Testing" for test examples. | Restrictions: Use test database (not production), seed test data before each test suite, clean up after tests, test authentication and authorization, verify HTTP status codes and response structure | Success: All endpoints tested end-to-end, authentication/authorization verified, database operations work correctly, RBAC enforced, tests isolated and repeatable_
+  - _Instructions: After completing, log implementation with artifacts (test files, endpoints covered, auth/RBAC tested), mark task [x] complete_
+- [ ] 22. End-to-end tests for user scenarios
+  - Files:
+    - `apps/api/src/layers/inventory/__tests__/e2e/tmt-mapping-workflow.e2e.test.ts` (create)
+    - `apps/api/src/layers/inventory/__tests__/e2e/compliance-tracking.e2e.test.ts` (create)
+  - Purpose: Validate complete user workflows from end-to-end
+  - _Leverage: Supertest for API E2E (frontend E2E will be in frontend spec)_
+  - _Requirements: Design Section "Testing Strategy - End-to-End Testing"_
+  - _Prompt: Role: QA Automation Engineer with expertise in E2E testing and user workflow validation | Task: Create E2E tests for user scenarios: 1) Pharmacist maps unmapped drug (search TMT, get suggestions, create mapping, verify compliance updated), 2) Finance Manager exports ministry report (view compliance, generate export, download file), 3) Compliance tracking over time (map multiple drugs, track compliance rate changes, verify trend data), 4) Cross-module integration (create mapping, verify drug details API includes TMT mapping). Reference design document "Testing Strategy - End-to-End Testing" for scenarios. | Restrictions: Test real workflows (no shortcuts), use real database with seeded data, verify cross-module integration, simulate actual user actions via API calls, verify final state matches expectations | Success: All user scenarios tested end-to-end, workflows complete successfully, cross-module integration verified, compliance calculations accurate over time, ministry export generates correct data_
+  - _Instructions: After completing, log implementation with artifacts (E2E test scenarios, workflow steps tested, cross-module integrations verified), mark task [x] complete. This is the final task - ensure all requirements from requirements.md are covered._
