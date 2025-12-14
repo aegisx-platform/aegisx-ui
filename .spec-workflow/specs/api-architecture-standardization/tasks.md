@@ -290,7 +290,7 @@
   - _Requirements: 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Full-stack Developer with code generation expertise | Task: Update controller, service, and repository templates to work with layer-based directory structure, using patterns proven in manual migrations | Restrictions: Must preserve Repository→Service→Controller pattern, maintain type safety, follow existing conventions | Success: Generated code has correct import paths matching migrated code, architectural pattern maintained, code compiles and passes linting | Instructions: 1) Mark in-progress, 2) Log with artifacts (import path changes, template updates), 3) Mark complete_
 
-- [-] 5.6. Test generator with sample tables
+- [x] 5.6. Test generator with sample tables
   - Create test cases for all three layers (Core, Platform, Domains)
   - Run generator for sample tables: `test_auth` (Core), `test_users` (Platform), `test_inventory` (Domains)
   - Verify generated code matches hand-migrated patterns
