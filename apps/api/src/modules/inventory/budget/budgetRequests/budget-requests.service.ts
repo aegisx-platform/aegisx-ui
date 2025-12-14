@@ -11,7 +11,7 @@ import {
 } from './budget-requests.types';
 import { BudgetRequestsAuditService } from './budget-requests-audit.service';
 import { BudgetRequestItemsRepository } from '../budgetRequestItems/budget-request-items.repository';
-import { UserDepartmentsRepository } from '../../../../core/users/user-departments.repository';
+import { UserDepartmentsRepository } from '../../../../layers/platform/users/user-departments.repository';
 import type { Knex } from 'knex';
 
 /**

@@ -58,6 +58,7 @@ import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 import platformDepartmentsPlugin from '../layers/platform/departments';
 import { settingsPlugin as platformSettingsPlugin } from '../layers/platform/settings';
 import { navigationPlugin as platformNavigationPlugin } from '../layers/platform/navigation';
+import platformUsersPlugin from '../layers/platform/users';
 
 // Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
@@ -491,7 +492,8 @@ export function createPlatformLayerGroup(): PluginGroup {
       'Platform shared services layer (users, rbac, files, settings, departments)',
     plugins: [
       // Platform layer plugins loaded from apps/api/src/layers/platform/
-      // Phase 3 migrations: departments (3.1), settings (3.2), navigation (3.3)
+      // Phase 3 Batch 1: departments (3.1), settings (3.2), navigation (3.3)
+      // Phase 3 Batch 2: users (3.5), rbac (3.6), files (3.7), pdf/import (3.8)
       {
         name: 'platform-departments',
         plugin: platformDepartmentsPlugin,
@@ -505,6 +507,11 @@ export function createPlatformLayerGroup(): PluginGroup {
       {
         name: 'platform-navigation',
         plugin: platformNavigationPlugin,
+        required: true,
+      },
+      {
+        name: 'platform-users',
+        plugin: platformUsersPlugin,
         required: true,
       },
     ],

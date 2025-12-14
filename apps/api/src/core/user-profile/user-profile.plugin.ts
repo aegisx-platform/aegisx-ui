@@ -11,7 +11,7 @@ import { DeleteAccountController } from './delete-account.controller';
 import { userProfileRoutes } from './user-profile.routes';
 import activityLogsRoutes from './activity-logs.routes';
 import { userProfileSchemas } from './user-profile.schemas';
-import { UsersService } from '../../core/users/users.service';
+import { UsersService } from '../../layers/platform/users/users.service';
 
 declare module 'fastify' {
   interface FastifyInstance {

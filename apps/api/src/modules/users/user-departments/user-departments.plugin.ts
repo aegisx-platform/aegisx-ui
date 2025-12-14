@@ -2,10 +2,10 @@ import fp from 'fastify-plugin';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { UserDepartmentsController } from './user-departments.controller';
 import { userDepartmentsRoutes } from './user-departments.route';
-import { UserDepartmentsService } from '../../../core/users/user-departments.service';
-import { UserDepartmentsRepository } from '../../../core/users/user-departments.repository';
-import { UsersRepository } from '../../../core/users/users.repository';
-import { DepartmentsRepository } from '../../../core/departments';
+import { UserDepartmentsService } from '../../../layers/platform/users/user-departments.service';
+import { UserDepartmentsRepository } from '../../../layers/platform/users/user-departments.repository';
+import { UsersRepository } from '../../../layers/platform/users/users.repository';
+import { DepartmentsRepository } from '../../../layers/platform/departments/departments.repository';
 
 /**
  * User-Departments Plugin

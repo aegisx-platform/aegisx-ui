@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { UsersService } from '../../core/users/users.service';
+import { UsersService } from '../../layers/platform/users/users.service';
 import { UserActivityService } from './user-activity.service';
 import { ACTIVITY_ACTIONS } from './user-activity.schemas';
 import {

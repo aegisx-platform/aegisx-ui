@@ -170,7 +170,7 @@
 
 ### Batch 2: Medium-Risk Platform Services (Week 5)
 
-- [ ] 3.5. Migrate users module to Platform layer
+- [x] 3.5. Migrate users module to Platform layer
   - Copy: `apps/api/src/core/users/` → `apps/api/src/layers/platform/users/`
   - Remove fp() wrapper from users.plugin.ts
   - Update all import references throughout codebase

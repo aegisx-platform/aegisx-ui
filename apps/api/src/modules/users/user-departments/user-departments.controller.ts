@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { UserDepartmentsService } from '../../../core/users/user-departments.service';
+import { UserDepartmentsService } from '../../../layers/platform/users/user-departments.service';
 import { AppError } from '../../../core/errors/app-error';
 import type {
   AssignUserToDepartment,
@@ -293,7 +293,8 @@ export class UserDepartmentsController {
       const { page = 1, limit = 20 } = request.query;
 
       // Fetch department users from service
-      const users = await this.userDepartmentsService.getDepartmentUsers(deptId);
+      const users =
+        await this.userDepartmentsService.getDepartmentUsers(deptId);
 
       // Calculate pagination
       const total = users.length;

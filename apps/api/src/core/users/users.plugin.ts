@@ -32,8 +32,10 @@ export default fp(
       controller: usersController,
     });
 
-    // Decorate fastify instance with service for other plugins
-    fastify.decorate('usersService', usersService);
+    // NOTE: Decoration commented out during migration to avoid type conflicts
+    // The new platform/users plugin already decorates fastify.usersService
+    // This will be removed entirely once migration is complete (Phase 8)
+    // fastify.decorate('usersService', usersService);
   },
   {
     name: 'users-plugin',

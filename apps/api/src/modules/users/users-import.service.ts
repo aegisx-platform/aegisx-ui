@@ -26,9 +26,9 @@ import {
   TemplateColumn,
   ValidationError,
 } from '../../core/import';
-import type { User } from '../../core/users/users.types';
-import { UsersRepository } from '../../core/users/users.repository';
-import { UserDepartmentsRepository } from '../../core/users/user-departments.repository';
+import type { User } from '../../layers/platform/users/users.types';
+import { UsersRepository } from '../../layers/platform/users/users.repository';
+import { UserDepartmentsRepository } from '../../layers/platform/users/user-departments.repository';
 
 /**
  * Users Import Service
