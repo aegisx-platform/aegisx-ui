@@ -216,7 +216,7 @@
 
 ## Phase 4: Documentation from Lessons Learned (Week 6)
 
-- [ ] 4.1. Document migration patterns and best practices
+- [x] 4.1. Document migration patterns and best practices
   - File: `docs/architecture/api-standards/07-migration-patterns.md` (NEW)
   - Document successful patterns from Batch 1 & 2 migrations
   - Record common issues and their solutions
@@ -225,7 +225,7 @@
   - _Requirements: 7_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical Writer with migration expertise | Task: Create comprehensive migration patterns documentation based on real experience from Phase 3 trial migrations, capturing successful patterns, issues encountered, and solutions | Restrictions: Must be practical and actionable, include real examples, maintain consistency with existing documentation | Success: Documentation is complete with proven patterns, common pitfalls documented, reusable checklists created | Instructions: 1) Mark in-progress, 2) Log with artifacts (pattern documentation, checklists), 3) Mark complete_
 
-- [ ] 4.2. Update architecture specification with real-world insights
+- [x] 4.2. Update architecture specification with real-world insights
   - File: `docs/architecture/api-standards/02-architecture-specification.md`
   - Add lessons learned section
   - Update categorization rules based on edge cases discovered
@@ -234,7 +234,7 @@
   - _Requirements: 2, 7_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Software Architect with documentation expertise | Task: Update architecture specification with insights from real migrations, adding lessons learned and refining categorization rules | Restrictions: Maintain consistency with original spec, preserve existing decisions, only add clarifications | Success: Specification enhanced with practical insights, edge cases documented, migration difficulty clearly stated | Instructions: 1) Mark in-progress, 2) Log with artifacts (spec updates, lessons section), 3) Mark complete_
 
-- [ ] 4.3. Create plugin migration guide with examples
+- [x] 4.3. Create plugin migration guide with examples
   - File: `docs/architecture/api-standards/08-plugin-migration-guide.md` (NEW)
   - Step-by-step guide for fp() wrapper removal
   - Real examples from departments, settings, users migrations
