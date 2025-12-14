@@ -225,6 +225,16 @@ async function generateCrudModule(tableName, options = {}) {
                 2 + domain.split('/').length + type.split('/').length,
               ) + 'services'
             : '../../../services',
+    sharedPath:
+      classification.layer === 'core'
+        ? '../../../shared'
+        : classification.layer === 'platform'
+          ? '../../../shared'
+          : domain && type
+            ? '../'.repeat(
+                2 + domain.split('/').length + type.split('/').length,
+              ) + 'shared'
+            : '../../../shared',
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,

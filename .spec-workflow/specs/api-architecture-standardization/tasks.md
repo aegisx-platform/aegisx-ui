@@ -254,7 +254,7 @@
   - _Requirements: 2, 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: TypeScript Developer with code generation expertise | Task: Create layer classification utility implementing proven categorization rules from real migrations, with comprehensive decision tree logic | Restrictions: Must handle all edge cases discovered in Phase 3-4, provide clear error messages, follow TypeScript best practices | Success: Function correctly classifies modules using proven rules, handles edge cases gracefully, includes unit tests with 100% coverage | Instructions: 1) Mark in-progress, 2) Log with artifacts (function signature, test cases, classification examples), 3) Mark complete_
 
-- [ ] 5.2. Update backend plugin template
+- [x] 5.2. Update backend plugin template
   - File: `libs/aegisx-cli/templates/backend/plugin.ejs`
   - Add conditional fp() wrapper based on layer and module type
   - Update directory path to use `layers/{layer}/{domain}/{type}/`
@@ -263,7 +263,7 @@
   - _Requirements: 3, 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Template Engineer with Fastify plugin expertise | Task: Update plugin template using proven patterns from Phase 3 migrations, adding conditional fp() wrapper logic and layers-based directory structure | Restrictions: Must generate code matching hand-migrated examples, maintain backward compatibility, follow template best practices | Success: Template generates plugins identical to hand-migrated code, fp() wrapper logic correct, code compiles without errors | Instructions: 1) Mark in-progress, 2) Log with artifacts (template diff, generated code examples), 3) Mark complete_
 
-- [ ] 5.3. Update backend routes template
+- [x] 5.3. Update backend routes template
   - File: `libs/aegisx-cli/templates/backend/routes.ejs`
   - Update URL prefix to `/api/v1/{layer}/{domain}/{resource}` pattern
   - Ensure route registration follows new standards
@@ -272,7 +272,7 @@
   - _Requirements: 4, 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend Developer with Fastify routing expertise | Task: Update routes template following URL routing specification and patterns from successful migrations | Restrictions: Must maintain route object format, preserve schema validation, follow Fastify routing best practices | Success: Generated routes use correct URL pattern, schema validation properly configured, routes register correctly | Instructions: 1) Mark in-progress, 2) Log with artifacts (route examples, URL patterns), 3) Mark complete_
 
-- [ ] 5.4. Update generator main logic
+- [x] 5.4. Update generator main logic
   - File: `libs/aegisx-cli/src/generators/backend.generator.ts`
   - Integrate layer classification logic
   - Update output directory path calculation
@@ -281,7 +281,7 @@
   - _Requirements: 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Node.js Developer with CLI tool development experience | Task: Integrate proven layer classification into backend generator, updating directory path calculation and adding --layer CLI option | Restrictions: Must maintain existing CLI interface, preserve backward compatibility, handle errors gracefully | Success: Generator creates files in correct layer directory, --layer option works correctly, existing functionality preserved | Instructions: 1) Mark in-progress, 2) Log with artifacts (CLI signature, directory path logic), 3) Mark complete_
 
-- [ ] 5.5. Update generator templates (controller, service, repository)
+- [x] 5.5. Update generator templates (controller, service, repository)
   - Files: `libs/aegisx-cli/templates/backend/{controller,service,repository}.ejs`
   - Ensure templates work with new directory structure
   - Update import paths to reference layer-based locations
