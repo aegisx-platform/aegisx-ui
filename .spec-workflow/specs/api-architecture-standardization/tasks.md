@@ -132,7 +132,7 @@
 
 ### Batch 1: Low-Risk Platform Services (Week 4)
 
-- [ ] 3.1. Migrate departments module to Platform layer
+- [x] 3.1. Migrate departments module to Platform layer
   - Copy: `apps/api/src/core/departments/` → `apps/api/src/layers/platform/departments/`
   - Remove fp() wrapper from plugin (change to plain async)
   - Update import paths
@@ -141,7 +141,7 @@
   - _Requirements: 1, 3, 8_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend Developer with module migration expertise | Task: Migrate departments module from core/ to layers/platform/, converting from fp() wrapper to plain async function following plugin pattern specification | Restrictions: Must maintain exact functionality, register both routes during transition, test thoroughly | Success: Module works in new location, fp() wrapper removed correctly, old and new routes both functional | Instructions: 1) Mark in-progress, 2) Log with artifacts (file moves, plugin changes, test results), 3) Mark complete_
 
-- [ ] 3.2. Migrate settings module to Platform layer
+- [x] 3.2. Migrate settings module to Platform layer
   - Copy: `apps/api/src/core/settings/` → `apps/api/src/layers/platform/settings/`
   - Remove fp() wrapper from plugin
   - Update import paths and references
@@ -150,7 +150,7 @@
   - _Requirements: 1, 3, 8_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend Developer with migration expertise | Task: Migrate settings module to Platform layer following the same pattern used for departments (task 3.1) | Restrictions: Same as 3.1 - maintain functionality, dual registration, thorough testing | Success: Settings module migrated successfully, both routes work, no regressions | Instructions: 1) Mark in-progress, 2) Log with artifacts (migration details, tests), 3) Mark complete_
 
-- [ ] 3.3. Migrate navigation module to Platform layer
+- [x] 3.3. Migrate navigation module to Platform layer
   - Copy: `apps/api/src/core/navigation/` → `apps/api/src/layers/platform/navigation/`
   - Remove fp() wrapper from plugin
   - Update import paths

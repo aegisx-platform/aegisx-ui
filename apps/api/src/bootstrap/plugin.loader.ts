@@ -54,6 +54,12 @@ import navigationPlugin from '../core/navigation/navigation.plugin';
 import settingsPlugin from '../core/settings/settings.plugin';
 import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 
+// Platform layer modules (migrated to layers/platform/)
+// TODO: Tasks 3.1 and 3.2 - Uncomment when departments and settings migrations are complete
+// import platformDepartmentsPlugin from '../layers/platform/departments';
+// import platformSettingsPlugin from '../layers/platform/settings';
+import { navigationPlugin as platformNavigationPlugin } from '../layers/platform/navigation';
+
 // Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 import testProductsPlugin from '../modules/testProducts';
@@ -478,10 +484,26 @@ export function createPlatformLayerGroup(): PluginGroup {
   return {
     name: 'platform-layer',
     description:
-      'Platform shared services layer (users, rbac, files, settings)',
+      'Platform shared services layer (users, rbac, files, settings, departments)',
     plugins: [
-      // Platform layer plugins will be loaded from apps/api/src/layers/platform/
-      // Currently empty - plugins will be migrated here in Phase 3
+      // Platform layer plugins loaded from apps/api/src/layers/platform/
+      // Phase 3 migrations: departments (3.1), settings (3.2), navigation (3.3)
+      // TODO: Tasks 3.1 and 3.2 - Uncomment when departments and settings migrations are complete
+      // {
+      //   name: 'platform-departments',
+      //   plugin: platformDepartmentsPlugin,
+      //   required: true,
+      // },
+      // {
+      //   name: 'platform-settings',
+      //   plugin: platformSettingsPlugin,
+      //   required: true,
+      // },
+      {
+        name: 'platform-navigation',
+        plugin: platformNavigationPlugin,
+        required: true,
+      },
     ],
   };
 }
