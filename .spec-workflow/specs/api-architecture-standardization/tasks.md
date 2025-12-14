@@ -298,13 +298,14 @@
   - _Requirements: 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer with code generation testing expertise | Task: Create comprehensive test suite comparing generated code against hand-migrated examples, ensuring generator produces correct code | Restrictions: Must test all code paths, verify generated code matches manual migrations, ensure compilation and linting pass | Success: Generated code matches hand-migrated patterns, all tests pass, linting passes, code follows proven architectural standards | Instructions: 1) Mark in-progress, 2) Log with artifacts (test cases, code comparison), 3) Mark complete_
 
-- [-] 5.7. Update generator documentation
+- [x] 5.7. Update generator documentation
   - File: `libs/aegisx-cli/docs/CRUD_GENERATOR.md`
   - Document new --layer option
   - Explain layer classification logic
   - Provide examples for all three layers
   - _Leverage: `docs/architecture/api-standards/05-crud-generator-specification.md`, Phase 4 documentation_
   - _Requirements: 6, 7_
+  - _Completed: 2025-12-14_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical Writer with developer tools documentation expertise | Task: Update CRUD generator documentation to reflect layer-based changes with practical examples from real migrations | Restrictions: Must be clear and concise, include working examples, maintain existing documentation structure | Success: Documentation is complete and accurate, examples work as shown, developers can use generator confidently | Instructions: 1) Mark in-progress, 2) Log with artifacts (documentation sections, examples), 3) Mark complete_
 
 ## Phase 6: Complete Migration - High-Risk Modules (Week 8)
