@@ -205,36 +205,20 @@ async function generateCrudModule(tableName, options = {}) {
             ? `${toPascalCase(domain).replace(/([a-z])([A-Z])/g, '$1 $2')}: ${toPascalCase(tableName).replace(/([a-z])([A-Z])/g, '$1 $2')}`
             : toPascalCase(tableName).replace(/([a-z])([A-Z])/g, '$1 $2'),
     // Calculate relative paths to shared resources based on layer depth
+    // Core/Platform: layers/{layer}/{table}/{module}/ -> 4 levels up to src/
+    // Domains: layers/domains/{domain}/{table}/{module}/ -> 5 levels up to src/
     schemasPath:
-      classification.layer === 'core'
-        ? '../../../schemas'
-        : classification.layer === 'platform'
-          ? '../../../schemas'
-          : domain && type
-            ? '../'.repeat(
-                2 + domain.split('/').length + type.split('/').length,
-              ) + 'schemas'
-            : '../../../schemas',
+      classification.layer === 'domains'
+        ? '../../../../../schemas'
+        : '../../../../schemas',
     servicesPath:
-      classification.layer === 'core'
-        ? '../../../services'
-        : classification.layer === 'platform'
-          ? '../../../services'
-          : domain && type
-            ? '../'.repeat(
-                2 + domain.split('/').length + type.split('/').length,
-              ) + 'services'
-            : '../../../services',
+      classification.layer === 'domains'
+        ? '../../../../../services'
+        : '../../../../services',
     sharedPath:
-      classification.layer === 'core'
-        ? '../../../shared'
-        : classification.layer === 'platform'
-          ? '../../../shared'
-          : domain && type
-            ? '../'.repeat(
-                2 + domain.split('/').length + type.split('/').length,
-              ) + 'shared'
-            : '../../../shared',
+      classification.layer === 'domains'
+        ? '../../../../../shared'
+        : '../../../../shared',
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,
@@ -1461,12 +1445,9 @@ async function generateDomainModule(domainName, options = {}) {
   console.log(`📂 Output Path: ${classification.path}`);
   console.log(`🔗 URL Prefix: ${classification.urlPrefix}`);
 
-  // Calculate the full output path including domain
+  // Use classified path as output directory (ignore CLI outputDir for layer-based generation)
+  const fullOutputDir = getMonorepoPath(classification.path);
   const domainPath = domain ? domain : '';
-  const outputDir = options.outputDir || getMonorepoPath('apps/api/src/layers');
-  const fullOutputDir = domain
-    ? path.join(outputDir, classification.layer, domain)
-    : path.join(outputDir, classification.layer, domainName);
 
   // Initialize template system
   await initializeTemplateSystem();
@@ -1595,24 +1576,21 @@ async function generateDomainModule(domainName, options = {}) {
     fullRoutePath: domain
       ? `/${domain}/${toKebabCase(domainName)}`
       : `/${toKebabCase(domainName)}`,
-    // Calculate relative path to shared folder based on domain depth
-    // With FLAT structure: modules/inventory/master-data/drugs/drugs.service.ts -> needs ../../../../shared
-    // Path: drugs.service.ts -> drugs -> master-data -> inventory -> modules -> src
-    // domain depth (inventory/master-data) = 2, plus module folder + modules folder = 4 levels up
-    sharedPath: domain
-      ? '../'.repeat(domain.split('/').length + 2) + 'shared'
-      : '../../../shared',
-    // Calculate relative path to schemas folder (at same level as modules, not in shared)
-    // With FLAT structure: modules/inventory/master-data/drugs/drugs.schemas.ts -> needs ../../../../schemas
-    // domain depth (inventory/master-data) = 2, plus module folder + modules folder = 4 levels up
-    schemasPath: domain
-      ? '../'.repeat(domain.split('/').length + 2) + 'schemas'
-      : '../../../schemas',
-    // Calculate relative path to services folder (at same level as modules, not in shared)
-    // Same calculation as schemasPath
-    servicesPath: domain
-      ? '../'.repeat(domain.split('/').length + 2) + 'services'
-      : '../../../services',
+    // Calculate relative paths to shared resources based on layer depth
+    // Core/Platform: layers/{layer}/{table}/{module}/ -> 4 levels up to src/
+    // Domains: layers/domains/{domain}/{table}/{module}/ -> 5 levels up to src/
+    sharedPath:
+      classification.layer === 'domains'
+        ? '../../../../../shared'
+        : '../../../../shared',
+    schemasPath:
+      classification.layer === 'domains'
+        ? '../../../../../schemas'
+        : '../../../../schemas',
+    servicesPath:
+      classification.layer === 'domains'
+        ? '../../../../../services'
+        : '../../../../services',
     // Calculate relative path to modules root (for routes to reach schemas/)
     // With FLAT structure: modules/inventory/master-data/drugs/drugs.route.ts -> needs ../../../../
     modulesRootPath: domain

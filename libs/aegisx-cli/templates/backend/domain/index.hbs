@@ -115,13 +115,12 @@ import * as {{moduleName}}Schemas from './{{toKebabCase currentRoute.camelName}}
     // Add any cleanup logic here
   });
   {{/if}}
-{{#if useFpWrapper}}},
+}{{#if useFpWrapper}},
   {
     name: '{{#if (eq layer 'platform')}}platform-{{moduleName}}{{else if (eq layer 'domains')}}{{domain}}-{{moduleName}}{{else}}{{moduleName}}{{/if}}-plugin',
     dependencies: ['knex-plugin'{{#if withEvents}}, 'websocket-plugin'{{/if}}{{#if (eq layer 'core')}}, 'response-handler-plugin', 'schemas-plugin'{{/if}}]
   }
 );
-{{else}}}
 {{/if}}
 
 {{#if (eq moduleType 'infrastructure')}}

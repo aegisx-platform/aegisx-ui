@@ -137,6 +137,14 @@ program
     '--domain <path>',
     'Domain path for module organization (e.g., inventory/master-data, queue/tickets)',
   )
+  .option(
+    '--layer <layer>',
+    'Architectural layer for the module: core, platform, or domains',
+  )
+  .option(
+    '--type <type>',
+    'Module type within domain (e.g., master-data, operations)',
+  )
   .addHelpText(
     'after',
     `
@@ -497,6 +505,8 @@ Feature Matrix:
           withImport: options.withImport,
           schema: options.schema,
           domain: options.domain,
+          layer: options.layer,
+          type: options.type,
         });
       }
 
