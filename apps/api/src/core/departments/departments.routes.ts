@@ -103,7 +103,9 @@ export async function departmentsRoutes(
       querystring: {
         type: 'object',
         properties: {
-          parentId: { type: ['string', 'number'] },
+          parentId: {
+            oneOf: [{ type: 'string' }, { type: 'number' }],
+          },
         },
       },
       response: {
