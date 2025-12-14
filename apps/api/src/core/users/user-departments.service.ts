@@ -3,7 +3,7 @@ import {
   UserDepartment,
 } from './user-departments.repository';
 import { UsersRepository } from './users.repository';
-import { DepartmentsRepository } from '../../modules/inventory/master-data/departments/departments.repository';
+import { DepartmentsRepository } from '../departments';
 import { AppError } from '../errors/app-error';
 
 /**

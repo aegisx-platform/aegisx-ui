@@ -3,39 +3,33 @@ import {
   ApiSuccessResponseSchema,
   PaginatedResponseSchema,
   PartialPaginatedResponseSchema,
-} from '../../../../schemas/base.schemas';
+} from '../../schemas/base.schemas';
 
-// Base Departments Schema
+// Base Departments Schema - Core fields only
 export const DepartmentsSchema = Type.Object({
   id: Type.Integer(),
-  dept_code: Type.String(),
-  dept_name: Type.String(),
-  his_code: Type.Optional(Type.String()),
+  dept_code: Type.String({ maxLength: 10 }),
+  dept_name: Type.String({ maxLength: 100 }),
   parent_id: Type.Optional(Type.Integer()),
-  consumption_group: Type.Optional(Type.Any()),
-  is_active: Type.Optional(Type.Boolean()),
+  is_active: Type.Optional(Type.Boolean({ default: true })),
   created_at: Type.Optional(Type.String({ format: 'date-time' })),
   updated_at: Type.Optional(Type.String({ format: 'date-time' })),
 });
 
-// Create Schema (without auto-generated fields)
+// Create Schema (without auto-generated fields: id, timestamps)
 export const CreateDepartmentsSchema = Type.Object({
-  dept_code: Type.String(),
-  dept_name: Type.String(),
-  his_code: Type.Optional(Type.String()),
+  dept_code: Type.String({ maxLength: 10 }),
+  dept_name: Type.String({ maxLength: 100 }),
   parent_id: Type.Optional(Type.Integer()),
-  consumption_group: Type.Optional(Type.Any()),
-  is_active: Type.Optional(Type.Boolean()),
+  is_active: Type.Optional(Type.Boolean({ default: true })),
 });
 
 // Update Schema (partial, without auto-generated fields)
 export const UpdateDepartmentsSchema = Type.Partial(
   Type.Object({
-    dept_code: Type.String(),
-    dept_name: Type.String(),
-    his_code: Type.Optional(Type.String()),
+    dept_code: Type.String({ maxLength: 10 }),
+    dept_name: Type.String({ maxLength: 100 }),
     parent_id: Type.Optional(Type.Integer()),
-    consumption_group: Type.Optional(Type.Any()),
     is_active: Type.Optional(Type.Boolean()),
   }),
 );
@@ -70,7 +64,7 @@ export const ListDepartmentsQuerySchema = Type.Object({
   // Search and filtering
   search: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
 
-  // 🛡️ Secure field selection with validation
+  // Secure field selection with validation
   fields: Type.Optional(
     Type.Array(
       Type.String({
@@ -93,9 +87,8 @@ export const ListDepartmentsQuerySchema = Type.Object({
   ),
 
   // Smart field-based filters
-  dept_code: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
+  dept_code: Type.Optional(Type.String({ minLength: 1, maxLength: 10 })),
   dept_name: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
-  his_code: Type.Optional(Type.String({ minLength: 1, maxLength: 50 })),
   parent_id: Type.Optional(Type.Number({ minimum: 0 })),
   parent_id_min: Type.Optional(Type.Number({ minimum: 0 })),
   parent_id_max: Type.Optional(Type.Number({ minimum: 0 })),

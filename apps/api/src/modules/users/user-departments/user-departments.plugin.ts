@@ -5,7 +5,7 @@ import { userDepartmentsRoutes } from './user-departments.route';
 import { UserDepartmentsService } from '../../../core/users/user-departments.service';
 import { UserDepartmentsRepository } from '../../../core/users/user-departments.repository';
 import { UsersRepository } from '../../../core/users/users.repository';
-import { DepartmentsRepository } from '../../inventory/master-data/departments/departments.repository';
+import { DepartmentsRepository } from '../../../core/departments';
 
 /**
  * User-Departments Plugin

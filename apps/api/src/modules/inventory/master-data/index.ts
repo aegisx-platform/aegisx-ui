@@ -3,7 +3,6 @@ import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import drugsPlugin from './drugs';
 import locationsPlugin from './locations';
-import departmentsPlugin from './departments';
 import companiesPlugin from './companies';
 import drugGenericsPlugin from './drugGenerics';
 import dosageFormsPlugin from './dosageForms';
@@ -42,10 +41,6 @@ export default fp(
     await fastify.register(locationsPlugin, {
       ...options,
       prefix: `${prefix}/locations`,
-    });
-    await fastify.register(departmentsPlugin, {
-      ...options,
-      prefix: `${prefix}/departments`,
     });
     await fastify.register(companiesPlugin, {
       ...options,
@@ -114,7 +109,7 @@ export default fp(
 
     fastify.addHook('onReady', async () => {
       fastify.log.info(
-        `Master-data domain loaded with 19 modules at ${prefix}`,
+        `Master-data domain loaded with 18 modules at ${prefix}`,
       );
     });
   },

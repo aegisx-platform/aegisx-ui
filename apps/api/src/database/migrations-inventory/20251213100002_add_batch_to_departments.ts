@@ -21,39 +21,82 @@ import type { Knex } from 'knex';
  */
 
 export async function up(knex: Knex): Promise<void> {
-  // Add import_batch_id to inventory.departments table
-  await knex.schema.alterTable('inventory.departments', (table) => {
-    table
-      .string('import_batch_id', 100)
-      .nullable()
-      .index('idx_departments_import_batch')
-      .comment(
-        'Batch ID from import_history table for precise rollback tracking',
+  // Check if inventory.departments table exists and add column if not present
+  const hasInventoryDepts = await knex.schema
+    .withSchema('inventory')
+    .hasTable('departments');
+
+  if (hasInventoryDepts) {
+    const hasBatchColumn = await knex.schema
+      .withSchema('inventory')
+      .hasColumn('departments', 'import_batch_id');
+
+    if (!hasBatchColumn) {
+      await knex.schema.alterTable('inventory.departments', (table) => {
+        table
+          .string('import_batch_id', 100)
+          .nullable()
+          .index('idx_inv_departments_import_batch')
+          .comment(
+            'Batch ID from import_history table for precise rollback tracking',
+          );
+      });
+    } else {
+      console.log(
+        'inventory.departments.import_batch_id already exists, skipping',
       );
-  });
+    }
+  } else {
+    console.log('inventory.departments table not found, skipping');
+  }
 
   // Add import_batch_id to users table (in public schema)
-  await knex.schema.alterTable('users', (table) => {
-    table
-      .string('import_batch_id', 100)
-      .nullable()
-      .index('idx_users_import_batch')
-      .comment(
-        'Batch ID from import_history table for precise rollback tracking',
-      );
-  });
+  const hasUserBatchColumn = await knex.schema.hasColumn(
+    'users',
+    'import_batch_id',
+  );
+
+  if (!hasUserBatchColumn) {
+    await knex.schema.alterTable('users', (table) => {
+      table
+        .string('import_batch_id', 100)
+        .nullable()
+        .index('idx_users_import_batch')
+        .comment(
+          'Batch ID from import_history table for precise rollback tracking',
+        );
+    });
+  } else {
+    console.log('users.import_batch_id already exists, skipping');
+  }
 }
 
 export async function down(knex: Knex): Promise<void> {
   // Drop import_batch_id from users table first (to avoid foreign key issues)
-  await knex.schema.alterTable('users', (table) => {
-    table.dropIndex([], 'idx_users_import_batch');
-    table.dropColumn('import_batch_id');
-  });
+  const hasUserBatchColumn = await knex.schema.hasColumn(
+    'users',
+    'import_batch_id',
+  );
+  if (hasUserBatchColumn) {
+    await knex.schema.alterTable('users', (table) => {
+      table.dropColumn('import_batch_id');
+    });
+  }
 
   // Drop import_batch_id from inventory.departments table
-  await knex.schema.alterTable('inventory.departments', (table) => {
-    table.dropIndex([], 'idx_departments_import_batch');
-    table.dropColumn('import_batch_id');
-  });
+  const hasInventoryDepts = await knex.schema
+    .withSchema('inventory')
+    .hasTable('departments');
+
+  if (hasInventoryDepts) {
+    const hasBatchColumn = await knex.schema
+      .withSchema('inventory')
+      .hasColumn('departments', 'import_batch_id');
+
+    if (hasBatchColumn) {
+      await knex.schema.alterTable('inventory.departments', (table) => {
+        table.dropColumn('import_batch_id');
+      });
+    }
+  }
 }

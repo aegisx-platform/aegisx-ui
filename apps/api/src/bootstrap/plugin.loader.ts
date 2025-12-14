@@ -34,6 +34,7 @@ import swaggerPlugin from '../plugins/swagger.plugin';
 // Core infrastructure modules
 import authPlugin from '../core/auth/auth.plugin';
 import authStrategiesPlugin from '../core/auth/strategies/auth.strategies';
+import departmentsPlugin from '../core/departments';
 import { errorLogsPlugin } from '../core/error-logs';
 import { fileAuditPlugin } from '../core/audit-system/file-audit';
 import importDiscoveryPlugin from '../core/import/plugin/import-discovery.plugin';
@@ -326,6 +327,11 @@ export function createCorePluginGroup(apiPrefix: string): PluginGroup {
       {
         name: 'users',
         plugin: usersPlugin,
+        required: true,
+      },
+      {
+        name: 'departments',
+        plugin: departmentsPlugin,
         required: true,
       },
       {

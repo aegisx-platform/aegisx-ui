@@ -1,17 +1,17 @@
 /**
  * Departments Import Service
- * Auto-Discovery Import System implementation for hospital departments
+ * Auto-Discovery Import System implementation for core departments
  *
  * Features:
  * - Auto-discovery via @ImportService decorator
  * - Template generation (CSV/Excel)
  * - Session-based validation
  * - Batch import with transaction support
+ * - Hierarchical department support (parent_code → parent_id lookup)
  * - Duplicate code detection
- * - Hospital validation
  * - Rollback support
  *
- * Dependencies: None (base master-data)
+ * Dependencies: None (core master-data)
  * Priority: 1 (can import first)
  */
 
@@ -21,30 +21,28 @@ import {
   BaseImportService,
   TemplateColumn,
   ValidationError,
-} from '../../../../core/import';
-import type { Departments, CreateDepartments } from './departments.types';
+} from '../import';
+import type { Departments, CreateDepartments } from './departments.schemas';
 import { DepartmentsRepository } from './departments.repository';
 
 /**
  * Departments Import Service
- * Handles bulk import of department master data
+ * Handles bulk import of core department master data
  *
  * Template columns:
  * - code (required, unique): Department code
  * - name (required): Department name
- * - hospital_id (optional): Hospital assignment
- * - description (optional): Department description
+ * - parent_code (optional): Parent department code for hierarchy
  * - is_active (optional, default: true): Active status
  */
 @ImportService({
   module: 'departments',
-  domain: 'inventory',
-  subdomain: 'master-data',
+  domain: 'core',
   displayName: 'Departments (แผนก)',
-  description: 'Master list of hospital departments',
-  dependencies: [], // No dependencies - base master data
-  priority: 1, // Highest priority (import first)
-  tags: ['master-data', 'required', 'inventory'],
+  description: 'Core organization departments',
+  dependencies: [], // No dependencies - import first
+  priority: 1, // Highest priority
+  tags: ['core', 'required', 'master-data'],
   supportsRollback: true,
   version: '1.0.0',
 })
@@ -68,13 +66,12 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
   getMetadata() {
     return {
       module: 'departments',
-      domain: 'inventory',
-      subdomain: 'master-data',
+      domain: 'core',
       displayName: 'Departments (แผนก)',
-      description: 'Master list of hospital departments',
+      description: 'Core organization departments',
       dependencies: [],
       priority: 1,
-      tags: ['master-data', 'required', 'inventory'],
+      tags: ['core', 'required', 'master-data'],
       supportsRollback: true,
       version: '1.0.0',
     };
@@ -93,7 +90,7 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
         displayName: 'Department Code',
         required: true,
         type: 'string',
-        maxLength: 50,
+        maxLength: 10,
         pattern: '^[A-Z0-9_-]+$',
         description: 'Unique code for the department (e.g., ICU, ED, OPD)',
         example: 'ICU-01',
@@ -103,27 +100,19 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
         displayName: 'Department Name',
         required: true,
         type: 'string',
-        maxLength: 255,
+        maxLength: 100,
         description: 'Full name of the department in Thai or English',
         example: 'Intensive Care Unit',
       },
       {
-        name: 'hospital_id',
-        displayName: 'Hospital ID',
-        required: false,
-        type: 'number',
-        description:
-          'Hospital ID assignment (if provided, must exist in database)',
-        example: '1',
-      },
-      {
-        name: 'description',
-        displayName: 'Description',
+        name: 'parent_code',
+        displayName: 'Parent Department Code',
         required: false,
         type: 'string',
-        maxLength: 500,
-        description: 'Additional description or notes about the department',
-        example: 'High-dependency unit for critical patients',
+        maxLength: 10,
+        description:
+          'Parent department code (if provided, must exist in database or import file)',
+        example: 'NURSING',
       },
       {
         name: 'is_active',
@@ -140,8 +129,9 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
    * Validate a single row during batch validation
    * Performs business logic validation including:
    * - Duplicate code detection
-   * - Hospital existence validation
+   * - Parent code existence validation
    * - Required field checks
+   * - Code format validation
    *
    * @param row - Row data from uploaded file
    * @param rowNumber - 1-indexed row number
@@ -171,9 +161,24 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
       });
     }
 
-    // 2. Check duplicate code (if code is valid)
+    // 2. Validate code format (if provided)
+    if (row.code && typeof row.code === 'string') {
+      const codePattern = /^[A-Z0-9_-]+$/;
+      if (!codePattern.test(row.code.trim())) {
+        errors.push({
+          row: rowNumber,
+          field: 'code',
+          message:
+            'Code must contain only uppercase letters, numbers, hyphens, and underscores',
+          severity: 'ERROR',
+          code: 'INVALID_FORMAT',
+        });
+      }
+    }
+
+    // 3. Check duplicate code in database (if code is valid)
     if (row.code && typeof row.code === 'string' && row.code.trim()) {
-      const existing = await this.knex('inventory.departments')
+      const existing = await this.knex('departments')
         .where('dept_code', row.code.trim())
         .first();
 
@@ -188,59 +193,33 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
       }
     }
 
-    // 3. Validate hospital_id if provided (optional - skip if hospitals table doesn't exist)
+    // 4. Validate parent_code existence (if provided)
     if (
-      row.hospital_id !== undefined &&
-      row.hospital_id !== null &&
-      row.hospital_id !== ''
+      row.parent_code !== undefined &&
+      row.parent_code !== null &&
+      row.parent_code !== ''
     ) {
-      const hospitalId = parseInt(row.hospital_id, 10);
+      if (typeof row.parent_code === 'string' && row.parent_code.trim()) {
+        const parentExists = await this.knex('departments')
+          .where('dept_code', row.parent_code.trim())
+          .first();
 
-      if (isNaN(hospitalId)) {
+        if (!parentExists) {
+          errors.push({
+            row: rowNumber,
+            field: 'parent_code',
+            message: `Parent department with code '${row.parent_code}' does not exist`,
+            severity: 'ERROR',
+            code: 'INVALID_REFERENCE',
+          });
+        }
+      } else {
         errors.push({
           row: rowNumber,
-          field: 'hospital_id',
-          message: 'Hospital ID must be a valid number',
+          field: 'parent_code',
+          message: 'Parent code must be a valid string',
           severity: 'ERROR',
           code: 'INVALID_TYPE',
-        });
-      } else {
-        // Check if hospitals table exists before validating
-        try {
-          const tableExists = await this.knex.schema.hasTable('hospitals');
-          if (tableExists) {
-            const hospital = await this.knex('hospitals')
-              .where('id', hospitalId)
-              .first();
-
-            if (!hospital) {
-              errors.push({
-                row: rowNumber,
-                field: 'hospital_id',
-                message: `Hospital with ID ${hospitalId} does not exist`,
-                severity: 'ERROR',
-                code: 'INVALID_REFERENCE',
-              });
-            }
-          }
-          // If table doesn't exist, skip validation (hospital_id is optional)
-        } catch {
-          // If error checking table, skip validation
-        }
-      }
-    }
-
-    // 4. Validate code format (if provided)
-    if (row.code && typeof row.code === 'string') {
-      const codePattern = /^[A-Z0-9_-]+$/;
-      if (!codePattern.test(row.code.trim())) {
-        errors.push({
-          row: rowNumber,
-          field: 'code',
-          message:
-            'Code must contain only uppercase letters, numbers, hyphens, and underscores',
-          severity: 'ERROR',
-          code: 'INVALID_FORMAT',
         });
       }
     }
@@ -281,15 +260,15 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
     for (const row of batch) {
       try {
         // Transform row data to database format
-        const dbData = this.transformRowToDb(row);
+        const dbData = await this.transformRowToDb(row, trx);
 
         // Include import_batch_id from the row (added by parent class)
         if (row.import_batch_id) {
           dbData.import_batch_id = row.import_batch_id;
         }
 
-        // Insert into database
-        const [inserted] = await trx('inventory.departments')
+        // Insert into database (public schema)
+        const [inserted] = await trx('departments')
           .insert(dbData)
           .returning('*');
 
@@ -321,7 +300,7 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
   ): Promise<number> {
     try {
       // Delete departments by batch_id - precise and safe
-      const deleted = await knex('inventory.departments')
+      const deleted = await knex('departments')
         .where({ import_batch_id: batchId })
         .delete();
 
@@ -335,20 +314,40 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
 
   /**
    * Transform row data to database format
+   * Handles parent_code → parent_id lookup
    * @private
    */
-  private transformRowToDb(row: any): Partial<any> {
+  private async transformRowToDb(
+    row: any,
+    trx: Knex.Transaction,
+  ): Promise<Partial<any>> {
     const isActiveStr = String(row.is_active || 'true')
       .toLowerCase()
       .trim();
     const isActive =
       isActiveStr === 'true' || isActiveStr === 'yes' || isActiveStr === '1';
 
+    // Lookup parent_id from parent_code
+    let parentId: number | null = null;
+    if (
+      row.parent_code &&
+      typeof row.parent_code === 'string' &&
+      row.parent_code.trim()
+    ) {
+      const parent = await trx('departments')
+        .select('id')
+        .where('dept_code', row.parent_code.trim())
+        .first();
+
+      if (parent) {
+        parentId = parent.id;
+      }
+    }
+
     return {
       dept_code: row.code ? row.code.trim() : null,
       dept_name: row.name ? row.name.trim() : null,
-      his_code: row.hospital_id ? String(row.hospital_id) : null,
-      consumption_group: null, // Optional, not in import
+      parent_id: parentId,
       is_active: isActive,
       created_at: new Date(),
       updated_at: new Date(),
@@ -364,9 +363,7 @@ export class DepartmentsImportService extends BaseImportService<Departments> {
       id: dbRow.id,
       dept_code: dbRow.dept_code,
       dept_name: dbRow.dept_name,
-      his_code: dbRow.his_code,
       parent_id: dbRow.parent_id,
-      consumption_group: dbRow.consumption_group,
       is_active: dbRow.is_active,
       created_at: dbRow.created_at,
       updated_at: dbRow.updated_at,
