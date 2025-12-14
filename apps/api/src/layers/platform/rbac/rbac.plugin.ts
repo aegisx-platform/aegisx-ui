@@ -3,6 +3,7 @@ import { RbacController } from './rbac.controller';
 import { RbacService } from './rbac.service';
 import { RbacRepository } from './rbac.repository';
 import { rbacRoutes } from './rbac.routes';
+import * as rbacSchemas from './rbac.schemas';
 
 /**
  * Platform RBAC Plugin
@@ -30,6 +31,11 @@ export default async function platformRbacPlugin(
   fastify: FastifyInstance,
   options: FastifyPluginOptions,
 ) {
+  // Register module schemas using the schema registry
+  if ((fastify as any).schemaRegistry) {
+    (fastify as any).schemaRegistry.registerModuleSchemas('rbac', rbacSchemas);
+  }
+
   // Get database instance from global decorators
   const db = (fastify as any).db || (fastify as any).knex;
   if (!db) {
@@ -43,9 +49,10 @@ export default async function platformRbacPlugin(
   const rbacService = new RbacService(rbacRepository);
   const rbacController = new RbacController(rbacService);
 
-  // Register routes
+  // Register routes under the specified prefix or /v1/platform
   await fastify.register(rbacRoutes, {
     controller: rbacController,
+    prefix: options.prefix || '/v1/platform',
   });
 
   // Decorate fastify instance with RBAC services for use in other plugins
