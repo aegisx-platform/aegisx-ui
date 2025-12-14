@@ -1,4 +1,4 @@
-import { BaseService } from '../../../../shared/services/base.service';
+import { BaseService } from '../../../../../shared/services/base.service';
 import { BudgetRequestsRepository } from './budget-requests.repository';
 import {
   type BudgetRequests,
@@ -12,7 +12,7 @@ import {
 import { BudgetRequestsAuditService } from './budget-requests-audit.service';
 import { BudgetRequestItemsRepository } from '../budgetRequestItems/budget-request-items.repository';
 // TODO: Re-enable when user-departments is migrated to layers/platform/users/
-// import { UserDepartmentsRepository } from '../../../../layers/platform/users/user-departments.repository';
+// import { UserDepartmentsRepository } from '../../../../../platform/users/user-departments.repository';
 import type { Knex } from 'knex';
 
 /**

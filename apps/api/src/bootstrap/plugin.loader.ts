@@ -68,8 +68,8 @@ import { importDiscoveryPlugin as platformImportDiscoveryPlugin } from '../layer
 // Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
 import testProductsPlugin from '../modules/testProducts';
-import inventoryDomainPlugin from '../modules/inventory';
-import adminPlugin from '../modules/admin';
+import inventoryDomainPlugin from '../layers/domains/inventory';
+import adminPlugin from '../layers/domains/admin';
 // import testAuthPlugin from '../modules/testAuth';
 // import testUsersPlugin from '../modules/testUsers';
 
@@ -568,8 +568,18 @@ export function createDomainsLayerGroup(): PluginGroup {
     name: 'domains-layer',
     description: 'Business domains layer (inventory, admin, hr, finance)',
     plugins: [
-      // Domains layer plugins will be loaded from apps/api/src/layers/domains/
-      // Currently empty - plugins will be migrated here in Phase 6
+      // Domains layer plugins loaded from apps/api/src/layers/domains/
+      // Phase 6: Migrated inventory and admin domains
+      {
+        name: 'admin',
+        plugin: adminPlugin,
+        required: true,
+      },
+      {
+        name: 'inventory-domain',
+        plugin: inventoryDomainPlugin,
+        required: true,
+      },
     ],
   };
 }
