@@ -6,6 +6,7 @@ const { generateRolesAndPermissions } = require('./role-generator');
 const TemplateManager = require('../core/template-manager');
 const TemplateRenderer = require('../core/template-renderer');
 const { analyzeImportFields } = require('../utils/import-field-analyzer');
+const { determineLayer } = require('../utils/layer-classifier');
 
 // Initialize template manager (will use defaults if config doesn't exist)
 let templateManager = null;
@@ -106,15 +107,35 @@ async function generateCrudModule(tableName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = getMonorepoPath('apps/api/src/modules'),
     configFile = null,
     schema: dbSchema = 'public',
+    // Layer-based architecture options
+    layer = null,
+    domain = null,
+    type = null,
   } = options;
 
   // Initialize template system
   await initializeTemplateSystem();
 
   console.log(`🔍 Analyzing table: ${tableName} (schema: ${dbSchema})`);
+
+  // Determine layer classification for the module
+  const classification = determineLayer(tableName, {
+    domain: domain || (dbSchema !== 'public' ? dbSchema : null),
+    type,
+    isAggregator: false, // CRUD modules are leaf modules
+  });
+
+  console.log(`📍 Layer Classification: ${classification.layer.toUpperCase()}`);
+  console.log(`📂 Output Path: ${classification.path}`);
+  console.log(`🔗 URL Prefix: ${classification.urlPrefix}`);
+  console.log(
+    `🔧 Plugin Pattern: ${classification.useFpWrapper ? 'fp() wrapper' : 'plain async function'}`,
+  );
+
+  // Use classified path as output directory
+  const outputDir = options.outputDir || getMonorepoPath(classification.path);
 
   // Get enhanced database schema for the table (includes constraint detection)
   const schema = await getEnhancedSchema(tableName, dbSchema);
@@ -168,11 +189,42 @@ async function generateCrudModule(tableName, options = {}) {
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
     defaultLabelField: findDefaultLabelField(schema.columns),
-    // Swagger display tag (for non-domain modules, same as ModuleName with spaces)
-    swaggerDisplayTag: toPascalCase(tableName).replace(
-      /([a-z])([A-Z])/g,
-      '$1 $2',
-    ),
+    // Layer-based architecture variables from classification
+    layer: classification.layer,
+    urlPrefix: classification.urlPrefix,
+    useFpWrapper: classification.useFpWrapper,
+    moduleType: classification.moduleType,
+    domain: domain || null,
+    // Swagger display tag - layer-specific format
+    swaggerDisplayTag:
+      classification.layer === 'core'
+        ? `Core: ${toPascalCase(tableName).replace(/([a-z])([A-Z])/g, '$1 $2')}`
+        : classification.layer === 'platform'
+          ? `Platform: ${toPascalCase(tableName).replace(/([a-z])([A-Z])/g, '$1 $2')}`
+          : domain
+            ? `${toPascalCase(domain).replace(/([a-z])([A-Z])/g, '$1 $2')}: ${toPascalCase(tableName).replace(/([a-z])([A-Z])/g, '$1 $2')}`
+            : toPascalCase(tableName).replace(/([a-z])([A-Z])/g, '$1 $2'),
+    // Calculate relative paths to shared resources based on layer depth
+    schemasPath:
+      classification.layer === 'core'
+        ? '../../../schemas'
+        : classification.layer === 'platform'
+          ? '../../../schemas'
+          : domain && type
+            ? '../'.repeat(
+                2 + domain.split('/').length + type.split('/').length,
+              ) + 'schemas'
+            : '../../../schemas',
+    servicesPath:
+      classification.layer === 'core'
+        ? '../../../services'
+        : classification.layer === 'platform'
+          ? '../../../services'
+          : domain && type
+            ? '../'.repeat(
+                2 + domain.split('/').length + type.split('/').length,
+              ) + 'services'
+            : '../../../services',
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,
@@ -1378,7 +1430,6 @@ async function generateDomainModule(domainName, options = {}) {
     withEvents = false,
     dryRun = false,
     force = false,
-    outputDir = getMonorepoPath('apps/api/src/modules'),
     configFile = null,
     directDb = false,
     noRoles = false,
@@ -1386,11 +1437,26 @@ async function generateDomainModule(domainName, options = {}) {
     multipleRoles = false,
     schema: dbSchema = 'public',
     domain = null, // Domain path for nested structure (e.g., 'inventory/master-data')
+    type = null, // Module type (e.g., 'master-data', 'operations')
   } = options;
+
+  // Determine layer classification for the module
+  const classification = determineLayer(domainName, {
+    domain: domain || (dbSchema !== 'public' ? dbSchema : null),
+    type,
+    isAggregator: false, // Domain modules are typically leaf modules
+  });
+
+  console.log(`📍 Layer Classification: ${classification.layer.toUpperCase()}`);
+  console.log(`📂 Output Path: ${classification.path}`);
+  console.log(`🔗 URL Prefix: ${classification.urlPrefix}`);
 
   // Calculate the full output path including domain
   const domainPath = domain ? domain : '';
-  const fullOutputDir = domain ? path.join(outputDir, domain) : outputDir;
+  const outputDir = options.outputDir || getMonorepoPath('apps/api/src/layers');
+  const fullOutputDir = domain
+    ? path.join(outputDir, classification.layer, domain)
+    : path.join(outputDir, classification.layer, domainName);
 
   // Initialize template system
   await initializeTemplateSystem();
@@ -1450,6 +1516,11 @@ async function generateDomainModule(domainName, options = {}) {
     primaryKey: schema.primaryKey,
     foreignKeys: schema.foreignKeys,
     defaultLabelField: findDefaultLabelField(schema.columns),
+    // Layer-based architecture variables from classification
+    layer: classification.layer,
+    urlPrefix: classification.urlPrefix,
+    useFpWrapper: classification.useFpWrapper,
+    moduleType: classification.moduleType,
     // Enhanced CRUD package configuration
     package: options.package || 'standard',
     smartStats: options.smartStats || false,
