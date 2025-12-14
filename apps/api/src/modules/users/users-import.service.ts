@@ -25,7 +25,7 @@ import {
   BaseImportService,
   TemplateColumn,
   ValidationError,
-} from '../../core/import';
+} from '../../layers/platform/import';
 import type { User } from '../../layers/platform/users/users.types';
 import { UsersRepository } from '../../layers/platform/users/users.repository';
 import { UserDepartmentsRepository } from '../../layers/platform/users/user-departments.repository';

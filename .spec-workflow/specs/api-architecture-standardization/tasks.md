@@ -188,7 +188,7 @@
   - _Requirements: 1, 3, 8_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Security Engineer with RBAC expertise | Task: Migrate rbac module to Platform layer carefully, maintaining permission cache infrastructure and testing all authorization flows | Restrictions: Must not break permissions, test all roles, verify cache still works | Success: RBAC migrated successfully, permissions work correctly, cache functional | Instructions: 1) Mark in-progress, 2) Log with artifacts (security tests), 3) Mark complete_
 
-- [ ] 3.7. Migrate file-upload and attachments modules to Platform layer
+- [x] 3.7. Migrate file-upload and attachments modules to Platform layer
   - Copy both modules to `apps/api/src/layers/platform/`
   - Remove fp() wrappers
   - Update S3/storage configurations if needed
@@ -197,7 +197,7 @@
   - _Requirements: 1, 3, 8_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend Developer with file storage expertise | Task: Migrate file-upload and attachments modules to Platform layer, ensuring file operations continue working correctly | Restrictions: Must test upload/download/delete, verify storage integration, check permissions | Success: Both modules migrated, file operations work, storage integration intact | Instructions: 1) Mark in-progress, 2) Log with artifacts (file operation tests), 3) Mark complete_
 
-- [ ] 3.8. Migrate pdf-export and import modules to Platform layer
+- [x] 3.8. Migrate pdf-export and import modules to Platform layer
   - Copy both modules to `apps/api/src/layers/platform/`
   - Update plugin patterns appropriately
   - Test PDF generation and import functionality

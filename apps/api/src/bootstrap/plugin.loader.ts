@@ -60,6 +60,10 @@ import { settingsPlugin as platformSettingsPlugin } from '../layers/platform/set
 import { navigationPlugin as platformNavigationPlugin } from '../layers/platform/navigation';
 import platformUsersPlugin from '../layers/platform/users';
 import { platformRbacPlugin } from '../layers/platform/rbac';
+import { platformFileUploadPlugin } from '../layers/platform/file-upload';
+import { platformAttachmentPlugin } from '../layers/platform/attachments';
+import platformPdfExportPlugin from '../layers/platform/pdf-export';
+import { importDiscoveryPlugin as platformImportDiscoveryPlugin } from '../layers/platform/import';
 
 // Business feature modules (ready for HIS, Inventory, etc.)
 import websocketPlugin from '../shared/websocket/websocket.plugin';
@@ -519,6 +523,26 @@ export function createPlatformLayerGroup(): PluginGroup {
         name: 'platform-rbac',
         plugin: platformRbacPlugin,
         required: true,
+      },
+      {
+        name: 'platform-file-upload',
+        plugin: platformFileUploadPlugin,
+        required: true,
+      },
+      {
+        name: 'platform-attachments',
+        plugin: platformAttachmentPlugin,
+        required: true,
+      },
+      {
+        name: 'platform-pdf-export',
+        plugin: platformPdfExportPlugin,
+        required: true,
+      },
+      {
+        name: 'platform-import-discovery',
+        plugin: platformImportDiscoveryPlugin,
+        required: false, // Optional - system can run without import discovery
       },
     ],
   };

@@ -21,7 +21,7 @@ import {
   BaseImportService,
   TemplateColumn,
   ValidationError,
-} from '../../../core/import';
+} from '../import';
 import type { Departments, CreateDepartments } from './departments.schemas';
 import { DepartmentsRepository } from './departments.repository';
 
