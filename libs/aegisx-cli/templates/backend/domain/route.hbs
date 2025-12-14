@@ -1,3 +1,61 @@
+/**
+ * {{ModuleName}} Routes Module
+ *
+ * Layer-Based URL Routing Architecture:
+ * =====================================
+ *
+ * This module defines route handlers for the {{ModuleName}} resource following the
+ * AegisX Platform's layer-based architecture specification.
+ *
+ * URL Construction Pattern:
+ * -------------------------
+ * Bootstrap (/api) + Plugin Prefix ({{urlPrefix}}) + Route Path (/, /:id, etc.)
+ *
+ * Final URLs:
+{{#if (eq layer 'core')}} * - POST   /api{{urlPrefix}}/                      - Create {{moduleName}}
+ * - GET    /api{{urlPrefix}}/:id                   - Get {{moduleName}} by ID
+ * - GET    /api{{urlPrefix}}/                      - List {{moduleName}}s
+ * - PUT    /api{{urlPrefix}}/:id                   - Update {{moduleName}}
+ * - DELETE /api{{urlPrefix}}/:id                   - Delete {{moduleName}}
+{{else if (eq layer 'platform')}} * - POST   /api{{urlPrefix}}/                      - Create {{moduleName}}
+ * - GET    /api{{urlPrefix}}/:id                   - Get {{moduleName}} by ID
+ * - GET    /api{{urlPrefix}}/                      - List {{moduleName}}s
+ * - PUT    /api{{urlPrefix}}/:id                   - Update {{moduleName}}
+ * - DELETE /api{{urlPrefix}}/:id                   - Delete {{moduleName}}
+{{else if (eq layer 'domains')}} * - POST   /api{{urlPrefix}}/                      - Create {{moduleName}}
+ * - GET    /api{{urlPrefix}}/:id                   - Get {{moduleName}} by ID
+ * - GET    /api{{urlPrefix}}/                      - List {{moduleName}}s
+ * - PUT    /api{{urlPrefix}}/:id                   - Update {{moduleName}}
+ * - DELETE /api{{urlPrefix}}/:id                   - Delete {{moduleName}}
+{{else}} * - POST   /api/v1/{layer}/{resource}/              - Create {{moduleName}}
+ * - GET    /api/v1/{layer}/{resource}/:id          - Get {{moduleName}} by ID
+ * - GET    /api/v1/{layer}/{resource}/             - List {{moduleName}}s
+ * - PUT    /api/v1/{layer}/{resource}/:id          - Update {{moduleName}}
+ * - DELETE /api/v1/{layer}/{resource}/:id          - Delete {{moduleName}}
+{{/if}} *
+ * Route Registration:
+ * -------------------
+ * Routes are registered in the plugin with prefix: {{urlPrefix}}
+ * (Note: Bootstrap automatically adds /api prefix, so plugins use /v1/... format)
+ *
+ * Schema Validation:
+ * ------------------
+ * - All routes use TypeBox schemas for request/response validation
+ * - Error responses use centralized SchemaRefs for consistency
+ * - Supports flexible response formats (full, minimal, dropdown, custom fields)
+ *
+ * Authentication & Authorization:
+ * -------------------------------
+ * - All routes require authentication via fastify.authenticate hook
+ * - Permission-based authorization via fastify.verifyPermission('{{moduleName}}', action)
+ *
+ * Related Documentation:
+ * ----------------------
+ * - Architecture: docs/architecture/api-standards/02-architecture-specification.md
+ * - URL Routing: Section 6 "URL Routing Standards"
+ * - Plugin Patterns: docs/architecture/api-standards/03-plugin-pattern-specification.md
+ */
+
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { Type } from '@sinclair/typebox';
 import { {{ModuleName}}Controller } from './{{toKebabCase currentRoute.camelName}}.controller';
