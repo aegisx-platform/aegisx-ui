@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/drug-return-backend-api/requirements.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-14T14:20:55.677Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765722055664_316fz4q9n",
+      "approvalTitle": "Requirements - Drug Return Backend API"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-14T14:21:26.006Z",
+      "trigger": "approved",
+      "approvalId": "approval_1765722055664_316fz4q9n",
+      "approvalTitle": "Requirements - Drug Return Backend API"
+    }
+  ]
+}

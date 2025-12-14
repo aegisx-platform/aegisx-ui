@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/drug-return-frontend-ui/tasks.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-14T15:08:53.294Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765724933284_7kod0r3rp",
+      "approvalTitle": "Tasks - Drug Return Frontend UI"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-14T15:09:53.370Z",
+      "trigger": "approved",
+      "approvalId": "approval_1765724933284_7kod0r3rp",
+      "approvalTitle": "Tasks - Drug Return Frontend UI"
+    }
+  ]
+}

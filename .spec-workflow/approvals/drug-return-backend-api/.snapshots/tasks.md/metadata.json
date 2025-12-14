@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/drug-return-backend-api/tasks.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-14T14:34:58.232Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765722898221_pmtk5d2ad",
+      "approvalTitle": "Tasks - Drug Return Backend API (Format Fixed)"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-14T14:37:15.302Z",
+      "trigger": "approved",
+      "approvalId": "approval_1765722898221_pmtk5d2ad",
+      "approvalTitle": "Tasks - Drug Return Backend API (Format Fixed)"
+    }
+  ]
+}

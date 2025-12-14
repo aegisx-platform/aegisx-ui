@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/drug-return-frontend-ui/requirements.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-14T14:40:59.336Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765723259319_9dd4feog3",
+      "approvalTitle": "Requirements - Drug Return Frontend UI"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-14T14:56:10.154Z",
+      "trigger": "approved",
+      "approvalId": "approval_1765723259319_9dd4feog3",
+      "approvalTitle": "Requirements - Drug Return Frontend UI"
+    }
+  ]
+}
