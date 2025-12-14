@@ -245,7 +245,7 @@
 
 ## Phase 5: Update CRUD Generator (Week 7)
 
-- [ ] 5.1. Add layer classification logic to generator
+- [x] 5.1. Add layer classification logic to generator
   - File: `libs/aegisx-cli/src/utils/layer-classifier.ts` (NEW)
   - Implement `determineLayer(domain, type)` function
   - Add decision tree logic based on proven categorization from Phase 4
