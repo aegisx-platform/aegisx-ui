@@ -298,7 +298,7 @@
   - _Requirements: 6_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer with code generation testing expertise | Task: Create comprehensive test suite comparing generated code against hand-migrated examples, ensuring generator produces correct code | Restrictions: Must test all code paths, verify generated code matches manual migrations, ensure compilation and linting pass | Success: Generated code matches hand-migrated patterns, all tests pass, linting passes, code follows proven architectural standards | Instructions: 1) Mark in-progress, 2) Log with artifacts (test cases, code comparison), 3) Mark complete_
 
-- [ ] 5.7. Update generator documentation
+- [-] 5.7. Update generator documentation
   - File: `libs/aegisx-cli/docs/CRUD_GENERATOR.md`
   - Document new --layer option
   - Explain layer classification logic

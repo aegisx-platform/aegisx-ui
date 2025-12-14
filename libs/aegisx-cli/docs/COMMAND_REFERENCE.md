@@ -25,10 +25,16 @@ Detailed reference for all CRUD Generator commands and options (v2.3.0)
    - [Target Selection Flags](#target-selection-flags)
    - [Schema and Domain Flags (Backend)](#schema-and-domain-flags-backend)
    - [Shell and Section Flags (Frontend)](#shell-and-section-flags-frontend)
+   - [Layer Classification Logic](#layer-classification-logic)
    - [Feature Package Flags](#feature-package-flags)
    - [Feature Flags](#feature-flags)
    - [Generation Control Flags](#generation-control-flags)
 4. [Examples](#examples)
+   - [Example 6: Core Layer](#example-6-core-layer-infrastructure-services)
+   - [Example 7: Platform Layer](#example-7-platform-layer-shared-services)
+   - [Example 8: Domains Layer](#example-8-domains-layer-business-logic)
+   - [Example 9: Layer Migration](#example-9-layer-migration)
+   - [Example 10: Complete Multi-Domain Application](#example-10-complete-multi-domain-application)
 5. [Table Name Conventions](#table-name-conventions)
 
 ---
@@ -756,6 +762,70 @@ MULTI-APP
 # API: /api/inventory/master-data/drugs
 ```
 
+#### `--layer <layer>`
+
+- **Options**: `core`, `platform`, `domains`
+- **Default**: Auto-determined based on module characteristics
+- **Description**: Specify architectural layer for module generation
+- **Use Case**: Override automatic layer classification for precise control
+- **Impact**: Changes output path, URL prefix, and plugin wrapper pattern
+
+**Layer Architecture**:
+
+| Layer    | Purpose                        | Example Modules              | Output Path                               | URL Pattern                         |
+| -------- | ------------------------------ | ---------------------------- | ----------------------------------------- | ----------------------------------- |
+| Core     | Infrastructure services        | auth, monitoring, audit      | `layers/core/{module}`                    | `/api/v1/core/{module}`             |
+| Platform | Shared multi-domain services   | users, departments, files    | `layers/platform/{module}`                | `/api/v1/platform/{module}`         |
+| Domains  | Domain-specific business logic | drugs, requisitions, budgets | `layers/domains/{domain}/{type}/{module}` | `/api/v1/domains/{domain}/{module}` |
+
+**Automatic Classification**:
+
+The generator automatically determines the layer based on:
+
+1. **Infrastructure modules** → Core layer
+   - Matches: `auth`, `authentication`, `security`, `monitoring`, `logging`, `audit`, `health-check`
+   - Characteristics: System-wide infrastructure services
+
+2. **Platform modules** → Platform layer
+   - Matches: `users`, `roles`, `permissions`, `departments`, `files`, `settings`
+   - Characteristics: Shared services used by multiple domains
+   - Special rule: Lookup tables (ending with `-types`, `-categories`, `-statuses`) → Platform
+
+3. **Domain modules** → Domains layer
+   - Matches: Business domain keywords (`inventory`, `hr`, `finance`, etc.)
+   - Characteristics: Domain-specific business logic and transactional data
+   - Requires: `--domain` option for proper path generation
+
+**Manual Override Examples**:
+
+```bash
+# Override auto-classification to Core layer
+./bin/cli.js generate system-config --layer core --force
+
+# Override auto-classification to Platform layer
+./bin/cli.js generate users --layer platform --force
+
+# Override auto-classification to Domains layer
+./bin/cli.js generate drugs --layer domains --domain inventory/master-data --force
+```
+
+**Combined with Domain**:
+
+```bash
+# Domains layer with domain path (recommended)
+./bin/cli.js generate drugs --layer domains --domain inventory/master-data --schema inventory --force
+
+# Output: layers/domains/inventory/master-data/drugs/
+# API: /api/v1/domains/inventory/drugs
+```
+
+**When to use --layer**:
+
+- ✅ When auto-classification doesn't match your architecture
+- ✅ When migrating modules between layers
+- ✅ When creating new module types not covered by auto-classification
+- ❌ Don't use if auto-classification is correct (let the generator decide)
+
 ---
 
 ### Shell and Section Flags (Frontend)
@@ -821,6 +891,318 @@ MULTI-APP
 - Frontend: `apps/web/src/app/features/inventory/modules/drugs/`
 - API Route: `/api/inventory/master-data/drugs`
 - Frontend Route: `/inventory/master-data/drugs`
+
+---
+
+## Layer Classification Logic
+
+### Overview
+
+The CRUD Generator uses an intelligent classification system to automatically determine which architectural layer a module belongs to. This ensures consistent organization and prevents modules from being placed in incorrect layers.
+
+### Classification Decision Tree
+
+The generator follows this 5-step decision process:
+
+```
+1. Is it an Infrastructure module?
+   └─ YES → Core layer (auth, monitoring, audit, etc.)
+   └─ NO → Continue to step 2
+
+2. Is it a Platform module?
+   └─ YES → Platform layer (users, departments, files, etc.)
+   └─ NO → Continue to step 3
+
+3. Is it a Domain-specific module?
+   └─ YES → Domains layer (drugs, requisitions, budgets, etc.)
+   └─ NO → Continue to step 4
+
+4. No domain specified?
+   └─ YES → Platform layer (default for shared services)
+   └─ NO → Continue to step 5
+
+5. Has domain but no match?
+   └─ YES → Domains layer (explicit domain classification)
+```
+
+### Step 1: Infrastructure Module Detection (Core Layer)
+
+**Matches when**:
+
+- Module name matches infrastructure keywords
+- Domain is `core`, `infrastructure`, or `system`
+
+**Infrastructure Keywords**:
+
+```
+auth, authentication, security, api-keys, rate-limiting,
+monitoring, logging, metrics, health-check, audit,
+audit-trail, compliance
+```
+
+**Examples**:
+
+```bash
+./bin/cli.js generate auth --force
+# → Core layer: layers/core/auth
+# → URL: /api/v1/core/auth
+# → Uses fp() wrapper
+
+./bin/cli.js generate monitoring --force
+# → Core layer: layers/core/monitoring
+# → URL: /api/v1/core/monitoring
+# → Uses fp() wrapper
+```
+
+**Characteristics**:
+
+- System-wide infrastructure services
+- Decorate Fastify instance or provide cross-cutting concerns
+- Always use `fp()` wrapper pattern
+
+---
+
+### Step 2: Platform Module Detection (Platform Layer)
+
+**Matches when**:
+
+- Module name matches platform keywords
+- Domain is `platform`, `shared`, or `common`
+- Module name ends with lookup indicators (types, categories, statuses)
+
+**Platform Keywords**:
+
+```
+users, user, rbac, roles, permissions, departments, department,
+files, file-upload, file-download, attachments, attachment,
+pdf, pdf-export, pdf-templates, settings, setting,
+configuration, config, navigation, menu, import, export,
+import-export
+```
+
+**Lookup Table Indicators**:
+
+```
+Modules ending with: -types, -categories, -statuses, -codes,
+-classifications, -options, -configs, -templates
+```
+
+**Examples**:
+
+```bash
+./bin/cli.js generate users --force
+# → Platform layer: layers/platform/users
+# → URL: /api/v1/platform/users
+# → Plain async function (no fp wrapper)
+
+./bin/cli.js generate departments --force
+# → Platform layer: layers/platform/departments
+# → URL: /api/v1/platform/departments
+# → Plain async function
+
+./bin/cli.js generate budget-types --domain inventory/master-data --schema inventory --force
+# → Platform layer: layers/platform/budget-types
+# → URL: /api/v1/platform/budget-types
+# → Classified as Platform despite domain association (lookup table rule)
+```
+
+**Characteristics**:
+
+- Shared services used by multiple domains
+- Horizontal functionality across application
+- Lookup/reference data (even if domain-specific)
+- Leaf modules use plain async functions
+
+---
+
+### Step 3: Domain Module Detection (Domains Layer)
+
+**Matches when**:
+
+- Module name contains business domain keywords
+- Domain parameter matches business domains
+- Module type is `operations` or `transactions`
+- NOT a lookup table
+
+**Business Domain Keywords**:
+
+```
+inventory, hr, human-resources, finance, accounting,
+procurement, sales, marketing, admin, administration,
+budget, budgeting
+```
+
+**Operational Type Indicators**:
+
+```
+operations, transactions, operational, transactional
+```
+
+**Examples**:
+
+```bash
+./bin/cli.js generate drugs --domain inventory/master-data --schema inventory --force
+# → Domains layer: layers/domains/inventory/master-data/drugs
+# → URL: /api/v1/domains/inventory/drugs
+# → Plain async function
+
+./bin/cli.js generate requisitions --domain inventory/operations --schema inventory --force
+# → Domains layer: layers/domains/inventory/operations/requisitions
+# → URL: /api/v1/domains/inventory/requisitions
+# → Plain async function (transactional data)
+
+./bin/cli.js generate employees --domain hr/master-data --schema hr --force
+# → Domains layer: layers/domains/hr/master-data/employees
+# → URL: /api/v1/domains/hr/employees
+```
+
+**Characteristics**:
+
+- Domain-specific business logic
+- Transactional/operational data
+- Requires `--domain` option for proper path
+- Leaf modules use plain async functions
+
+---
+
+### Step 4 & 5: Default Handling
+
+**Step 4 - No Domain Specified**:
+
+```bash
+./bin/cli.js generate custom-module --force
+# → Platform layer (default for shared services)
+```
+
+**Step 5 - Has Domain but No Match**:
+
+```bash
+./bin/cli.js generate special-data --domain custom-domain --force
+# → Domains layer (explicit domain classification)
+```
+
+---
+
+### Special Classification Rules
+
+#### Rule 1: Lookup Tables → Always Platform
+
+Lookup tables (master data ending with types/categories/etc.) are ALWAYS classified as Platform, even if they belong to a specific domain.
+
+**Why?** Lookup tables are configuration/reference data used across domains, not transactional business logic.
+
+```bash
+# These go to Platform layer despite domain association
+./bin/cli.js generate budget-types --domain inventory/master-data --force
+./bin/cli.js generate drug-categories --domain inventory/master-data --force
+./bin/cli.js generate department-types --domain hr/master-data --force
+
+# All output to: layers/platform/{module-name}
+# All use URL: /api/v1/platform/{module-name}
+```
+
+#### Rule 2: Aggregator Plugins → Always use fp()
+
+Modules that register child plugins (aggregators) always use `fp()` wrapper, regardless of layer.
+
+```bash
+./bin/cli.js generate inventory --type aggregator --force
+# → Uses fp() wrapper even in Domains layer
+```
+
+#### Rule 3: Core Layer → Always fp()
+
+All Core layer modules use `fp()` wrapper because they provide infrastructure services.
+
+---
+
+### Plugin Wrapper Rules
+
+| Layer    | Module Type | Wrapper Pattern      | Reason                  |
+| -------- | ----------- | -------------------- | ----------------------- |
+| Core     | Any         | `fp()` wrapper       | Infrastructure services |
+| Platform | Aggregator  | `fp()` wrapper       | Registers child plugins |
+| Platform | Leaf        | Plain async function | Standard route module   |
+| Domains  | Aggregator  | `fp()` wrapper       | Registers child plugins |
+| Domains  | Leaf        | Plain async function | Standard route module   |
+
+**Example - Core layer**:
+
+```typescript
+// layers/core/auth/index.ts
+import fp from 'fastify-plugin';
+
+export default fp(async function authPlugin(fastify, opts) {
+  // Infrastructure service
+});
+```
+
+**Example - Platform/Domains leaf**:
+
+```typescript
+// layers/platform/users/index.ts
+export default async function usersPlugin(fastify, opts) {
+  // Standard route module
+}
+```
+
+---
+
+### Validation and Warnings
+
+The generator validates classifications and provides warnings:
+
+```bash
+./bin/cli.js generate users --layer core --force
+
+# ⚠️  Warning: Core layer modules should use fp() wrapper
+```
+
+Common warnings:
+
+- Core modules without `fp()` wrapper
+- Platform leaf modules with `fp()` wrapper (should be plain async)
+- Domains leaf modules with `fp()` wrapper (should be plain async)
+
+---
+
+### Using --layer to Override
+
+You can override automatic classification with `--layer`:
+
+```bash
+# Force to Core layer
+./bin/cli.js generate custom-service --layer core --force
+
+# Force to Platform layer
+./bin/cli.js generate shared-util --layer platform --force
+
+# Force to Domains layer
+./bin/cli.js generate business-logic --layer domains --domain custom/operations --force
+```
+
+**When to override**:
+
+1. Creating new module types not in predefined lists
+2. Migrating modules between layers
+3. Custom architecture requirements
+
+**Best practice**: Let auto-classification work unless you have specific architectural needs.
+
+---
+
+### Quick Reference Table
+
+| Module Name    | Auto-Classification | Output Path                                        | URL Pattern                              |
+| -------------- | ------------------- | -------------------------------------------------- | ---------------------------------------- |
+| auth           | Core                | `layers/core/auth`                                 | `/api/v1/core/auth`                      |
+| users          | Platform            | `layers/platform/users`                            | `/api/v1/platform/users`                 |
+| departments    | Platform            | `layers/platform/departments`                      | `/api/v1/platform/departments`           |
+| budget-types   | Platform            | `layers/platform/budget-types`                     | `/api/v1/platform/budget-types`          |
+| drugs\*        | Domains             | `layers/domains/inventory/master-data/drugs`       | `/api/v1/domains/inventory/drugs`        |
+| requisitions\* | Domains             | `layers/domains/inventory/operations/requisitions` | `/api/v1/domains/inventory/requisitions` |
+
+\* Requires `--domain` option
 
 ---
 
@@ -1023,6 +1405,181 @@ pnpm run crud -- products --force
 
 ---
 
+### Example 6: Core Layer (Infrastructure Services)
+
+```bash
+# Generate authentication module in Core layer
+./bin/cli.js generate auth --layer core --force
+
+# Generate monitoring module in Core layer
+./bin/cli.js generate monitoring --layer core --force
+
+# Generate audit trail module in Core layer
+./bin/cli.js generate audit-trail --layer core --force
+
+# Result:
+# - Output: layers/core/{module}/
+# - URL: /api/v1/core/{module}
+# - Uses fp() wrapper pattern
+# - System-wide infrastructure services
+```
+
+**When to use Core layer**:
+
+- Infrastructure services that decorate Fastify instance
+- System-wide services (auth, monitoring, logging, audit)
+- Services that provide cross-cutting concerns
+- Rate limiting, security, health checks
+
+---
+
+### Example 7: Platform Layer (Shared Services)
+
+```bash
+# Generate users module (shared across all domains)
+./bin/cli.js generate users --layer platform --force
+
+# Generate departments module (organizational structure)
+./bin/cli.js generate departments --layer platform --force
+
+# Generate file-upload module (shared utility)
+./bin/cli.js generate file-upload --layer platform --force
+
+# Generate lookup table (budget-types)
+./bin/cli.js generate budget-types --layer platform --force
+
+# Result:
+# - Output: layers/platform/{module}/
+# - URL: /api/v1/platform/{module}
+# - Uses plain async function (leaf modules)
+# - Shared services used by multiple domains
+```
+
+**When to use Platform layer**:
+
+- Services used by multiple domains (users, roles, permissions)
+- Organizational structures (departments, positions)
+- Shared utilities (files, PDF export, import/export)
+- Lookup/reference data (types, categories, statuses)
+- Configuration and settings
+
+---
+
+### Example 8: Domains Layer (Business Logic)
+
+```bash
+# Step 1: Generate backend in Domains layer
+./bin/cli.js generate drugs \
+  --layer domains \
+  --domain inventory/master-data \
+  --schema inventory \
+  --force
+
+# Step 2: Generate frontend
+./bin/cli.js generate drugs \
+  --target frontend \
+  --shell inventory \
+  --section master-data \
+  --force
+
+# Result (Backend):
+# - Output: layers/domains/inventory/master-data/drugs/
+# - URL: /api/v1/domains/inventory/drugs
+# - Plain async function (leaf module)
+# - Domain-specific master data
+
+# Result (Frontend):
+# - Output: features/inventory/modules/drugs/
+# - Route: /inventory/master-data/drugs
+```
+
+**More Domains Examples**:
+
+```bash
+# Operational/transactional data
+./bin/cli.js generate requisitions \
+  --layer domains \
+  --domain inventory/operations \
+  --schema inventory \
+  --package enterprise \
+  --with-events \
+  --force
+
+# HR domain
+./bin/cli.js generate employees \
+  --layer domains \
+  --domain hr/master-data \
+  --schema hr \
+  --force
+
+# Finance domain
+./bin/cli.js generate budget-allocations \
+  --layer domains \
+  --domain finance/operations \
+  --schema finance \
+  --package full \
+  --force
+```
+
+**When to use Domains layer**:
+
+- Domain-specific business logic (inventory, HR, finance)
+- Transactional/operational data (requisitions, orders, invoices)
+- Domain-specific master data (drugs, employees, assets)
+- Business rules specific to a domain
+
+---
+
+### Example 9: Layer Migration
+
+```bash
+# Scenario: Moving a module from one layer to another
+
+# Step 1: Regenerate in new layer
+./bin/cli.js generate users --layer platform --force
+
+# Step 2: Update imports in dependent modules
+# Step 3: Update plugin loader registration
+# Step 4: Test API endpoints
+# Step 5: Remove old module directory
+
+# New paths:
+# - Old: apps/api/src/modules/users/
+# - New: apps/api/src/layers/platform/users/
+# - Old URL: /api/users
+# - New URL: /api/v1/platform/users
+```
+
+---
+
+### Example 10: Complete Multi-Domain Application
+
+```bash
+# Core layer - Infrastructure
+./bin/cli.js generate auth --layer core --force
+./bin/cli.js generate monitoring --layer core --force
+
+# Platform layer - Shared services
+./bin/cli.js generate users --layer platform --force
+./bin/cli.js generate departments --layer platform --force
+./bin/cli.js generate roles --layer platform --force
+
+# Domains layer - Inventory domain
+./bin/cli.js generate drugs --layer domains --domain inventory/master-data --schema inventory --force
+./bin/cli.js generate requisitions --layer domains --domain inventory/operations --schema inventory --force
+
+# Domains layer - HR domain
+./bin/cli.js generate employees --layer domains --domain hr/master-data --schema hr --force
+./bin/cli.js generate leave-requests --layer domains --domain hr/operations --schema hr --force
+
+# Result: Clean 3-tier architecture
+# - Core: System infrastructure
+# - Platform: Shared services
+# - Domains: Business logic per domain
+```
+
+---
+
 ## Table Name Conventions
 
 ### Automatic Conversions
@@ -1094,5 +1651,6 @@ pnpm run crud:list
 ---
 
 **Generator Version**: 2.3.0
-**Last Updated**: December 7, 2025
+**Last Updated**: December 14, 2025
+**Added**: Layer classification system with `--layer` option, comprehensive documentation for Core/Platform/Domains layers
 **Status**: ✅ Production Ready
