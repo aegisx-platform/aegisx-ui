@@ -223,7 +223,7 @@
   - _Requirements: Reliability (link integrity)_
   - _Prompt: Implement the task for spec docs-restructure, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer with expertise in documentation validation and quality assurance | Task: Run comprehensive link validation following reliability requirements, using scripts/validate-links.sh to verify 0 broken internal links and checking external link health | Restrictions: Must achieve 0 broken internal links, external links are informational only, generate clear report | \_Leverage: scripts/validate-links.sh_ | _Requirements: Reliability NFR_ | Success: Link validation shows 0 broken internal links, external links checked, final report generated and clean | Instructions: Before starting, mark this task as in-progress ([-]) in tasks.md. After completion, use log-implementation tool to record validation results, then mark as complete ([x])\_
 
-- [ ] 6.2. Test web documentation build end-to-end
+- [x] 6.2. Test web documentation build end-to-end
   - Execute full build: npm run docs:build (or equivalent)
   - Test local preview: npm run docs:preview
   - Verify all pages render correctly
