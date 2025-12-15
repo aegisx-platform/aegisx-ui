@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitepress';
-import { withMermaid } from 'vitepress-plugin-mermaid';
+// Note: Using CDN-based mermaid instead of vitepress-plugin-mermaid
+// to avoid Vite optimization issues with CommonJS dependencies
 
 // https://vitepress.dev/reference/site-config
-export default withMermaid(
-  defineConfig({
+export default defineConfig({
   title: 'AegisX Platform',
   description:
     'Enterprise-ready full-stack application with Angular 19+, Fastify 4+, PostgreSQL, and Nx monorepo',
@@ -238,6 +238,15 @@ export default withMermaid(
           'Angular, Fastify, PostgreSQL, Nx, TypeScript, Enterprise, Full-Stack, AegisX',
       },
     ],
+    // Load Mermaid from CDN to avoid Vite bundling issues
+    [
+      'script',
+      { type: 'module' },
+      `
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+      `,
+    ],
   ],
 
   // Build output directory
@@ -345,25 +354,5 @@ export default withMermaid(
     build: {
       chunkSizeWarningLimit: 1000,
     },
-    optimizeDeps: {
-      exclude: ['dayjs', 'exceljs'],
-    },
-    ssr: {
-      noExternal: ['dayjs'],
-    },
-    resolve: {
-      alias: {
-        dayjs: 'dayjs/esm',
-      },
-    },
   },
-
-  // Mermaid configuration
-  mermaid: {
-    // Mermaid theme configuration
-  },
-  mermaidPlugin: {
-    class: 'mermaid',
-  },
-  }),
-);
+});
