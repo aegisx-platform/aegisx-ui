@@ -442,7 +442,9 @@
   - _Requirements: 5, 9_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps Engineer with production operations expertise | Task: Enable new routes in production, activating migration mode, and monitor route usage patterns and redirect performance | Restrictions: Must monitor continuously, track metrics, be ready to disable if issues | Success: New routes enabled, aliasing working, metrics tracked, no errors | Instructions: 1) Mark in-progress, 2) Log with artifacts (metrics dashboard, usage stats), 3) Mark complete_
 
-- [ ] 8.3. Add deprecation headers to old routes
+- [x] 8.3. Add deprecation headers to old routes
+  - _Completed: 2025-12-15_
+  - _Note: Implemented RFC-compliant deprecation headers for old routes in route aliasing plugin. Added 8 headers per response: Deprecation (RFC 8594), Sunset with ISO 8601 date, Link with rel="deprecation" (RFC 8288), X-API-Deprecated, X-API-Sunset, X-API-Migration-Guide, and Warning (RFC 7234) with human-readable message. Sunset date defaults to 2 weeks from now, configurable via ROUTE_SUNSET_DATE environment variable. Changed redirect logs from debug to warn level with event="deprecated_route_usage". Added plugin initialization warning log. Migration guide URL configurable via MIGRATION_GUIDE_URL (default: https://docs.aegisx.com/api/migration-guide). Build passes. Headers warn clients that old routes will be removed, provide sunset date, and link to migration guide. Next: Monitor deprecated route usage (Task 8.4), reach out to clients, disable old routes after sunset period (Task 8.5)._
   - Update route aliasing plugin to add deprecation headers
   - Set sunset date (e.g., 2 weeks from now)
   - Log deprecation warnings

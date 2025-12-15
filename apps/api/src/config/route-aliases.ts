@@ -9,6 +9,11 @@
  * - Preserves the request body (critical for POST/PUT/PATCH requests)
  * - Indicates the redirect is temporary (not permanent/SEO-affecting)
  *
+ * Deprecation Strategy:
+ * - Adds deprecation headers (Deprecation, Sunset, Link) to warn clients
+ * - Logs deprecation warnings for tracking
+ * - Sunset date defaults to 2 weeks from now (configurable via ROUTE_SUNSET_DATE)
+ *
  * Usage Metrics:
  * - Tracks which old routes are still being used
  * - Helps identify clients that need migration assistance
@@ -60,10 +65,40 @@ const DEFAULT_ALIAS_MAP: Record<string, string> = {
 };
 
 /**
+ * Calculate sunset date for route deprecation
+ * Default: 2 weeks from now (configurable via ROUTE_SUNSET_DATE environment variable)
+ *
+ * Format: ISO 8601 (e.g., "2025-12-29T00:00:00Z")
+ */
+function getSunsetDate(): string {
+  // Allow override via environment variable (format: YYYY-MM-DD or ISO 8601)
+  if (process.env.ROUTE_SUNSET_DATE) {
+    const sunsetDate = new Date(process.env.ROUTE_SUNSET_DATE);
+    if (!isNaN(sunsetDate.getTime())) {
+      return sunsetDate.toISOString();
+    }
+  }
+
+  // Default: 2 weeks from now
+  const twoWeeksFromNow = new Date();
+  twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+  return twoWeeksFromNow.toISOString();
+}
+
+/**
+ * Migration guide URL
+ * Points clients to documentation on how to migrate to new routes
+ */
+const MIGRATION_GUIDE_URL =
+  process.env.MIGRATION_GUIDE_URL ||
+  'https://docs.aegisx.com/api/migration-guide';
+
+/**
  * Route Aliasing Plugin
  *
  * Registers wildcard routes that redirect old API paths to new layer-based paths.
  * Uses HTTP 307 to preserve the original request method and body.
+ * Adds deprecation headers to warn clients of upcoming route removal.
  */
 export const routeAliasPlugin = fp(
   async function routeAliasPlugin(
@@ -86,8 +121,16 @@ export const routeAliasPlugin = fp(
     const aliasMap = DEFAULT_ALIAS_MAP;
     const aliasCount = Object.keys(aliasMap).length;
 
+    // Calculate sunset date for deprecation headers
+    const sunsetDate = getSunsetDate();
+
     fastify.log.info(
       `Route aliasing plugin: Registering ${aliasCount} route aliases for backward compatibility`,
+    );
+
+    fastify.log.warn(
+      `Route aliasing plugin: Old routes are DEPRECATED and will be removed on ${sunsetDate}. ` +
+        `Clients should migrate to new routes (/api/v1/*). Migration guide: ${MIGRATION_GUIDE_URL}`,
     );
 
     // Register redirect handlers for each alias mapping
@@ -102,15 +145,17 @@ export const routeAliasPlugin = fp(
         // Example: /api/users/123/profile -> /api/v1/platform/users/123/profile
         const targetPath = request.url.replace(oldPath, newPath);
 
-        // Log redirect for metrics tracking
-        // This helps identify which clients are still using old routes
-        fastify.log.debug({
-          event: 'route_alias_redirect',
+        // Log deprecation warning
+        // Helps identify which clients are still using deprecated routes
+        fastify.log.warn({
+          event: 'deprecated_route_usage',
           oldUrl: request.url,
           newUrl: targetPath,
           method: request.method,
           userAgent: request.headers['user-agent'],
           ip: request.ip,
+          sunsetDate,
+          message: `DEPRECATED: Route ${request.url} will be removed on ${sunsetDate}. Use ${targetPath} instead.`,
         });
 
         // Track metrics if monitoring service is available
@@ -140,6 +185,27 @@ export const routeAliasPlugin = fp(
           }
         }
 
+        // Add deprecation headers to warn clients
+        // RFC 8594: Deprecation header
+        reply.header('Deprecation', 'true');
+
+        // Sunset header: When the route will be removed (ISO 8601 format)
+        reply.header('Sunset', sunsetDate);
+
+        // Link header: Migration guide with deprecation relationship
+        // Format: <url>; rel="deprecation"
+        reply.header('Link', `<${MIGRATION_GUIDE_URL}>; rel="deprecation"`);
+
+        // Custom header for clarity (easier for clients to check)
+        reply.header('X-API-Deprecated', 'true');
+        reply.header('X-API-Sunset', sunsetDate);
+        reply.header('X-API-Migration-Guide', MIGRATION_GUIDE_URL);
+
+        // Warning header (RFC 7234): Human-readable deprecation message
+        // Format: warn-code warn-agent "warn-text" ["warn-date"]
+        const warningMessage = `299 - "This route is deprecated and will be removed on ${sunsetDate}. Please migrate to ${targetPath}. See ${MIGRATION_GUIDE_URL} for migration guide."`;
+        reply.header('Warning', warningMessage);
+
         // HTTP 307: Temporary Redirect
         // - Preserves HTTP method (POST stays POST, etc.)
         // - Preserves request body (critical for mutations)
@@ -155,13 +221,16 @@ export const routeAliasPlugin = fp(
       fastify.all(oldPath, async (request, reply) => {
         const targetPath = newPath;
 
-        fastify.log.debug({
-          event: 'route_alias_redirect',
+        // Log deprecation warning
+        fastify.log.warn({
+          event: 'deprecated_route_usage',
           oldUrl: request.url,
           newUrl: targetPath,
           method: request.method,
           userAgent: request.headers['user-agent'],
           ip: request.ip,
+          sunsetDate,
+          message: `DEPRECATED: Route ${request.url} will be removed on ${sunsetDate}. Use ${targetPath} instead.`,
         });
 
         if ((fastify as any).errorQueue) {
@@ -181,6 +250,17 @@ export const routeAliasPlugin = fp(
             );
           }
         }
+
+        // Add deprecation headers to warn clients
+        reply.header('Deprecation', 'true');
+        reply.header('Sunset', sunsetDate);
+        reply.header('Link', `<${MIGRATION_GUIDE_URL}>; rel="deprecation"`);
+        reply.header('X-API-Deprecated', 'true');
+        reply.header('X-API-Sunset', sunsetDate);
+        reply.header('X-API-Migration-Guide', MIGRATION_GUIDE_URL);
+
+        const warningMessage = `299 - "This route is deprecated and will be removed on ${sunsetDate}. Please migrate to ${targetPath}. See ${MIGRATION_GUIDE_URL} for migration guide."`;
+        reply.header('Warning', warningMessage);
 
         return reply.code(307).redirect(targetPath);
       });
