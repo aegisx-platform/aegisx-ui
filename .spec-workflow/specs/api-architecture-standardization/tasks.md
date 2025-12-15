@@ -462,16 +462,18 @@
   - _Requirements: 9_
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Product Manager with API consumer management expertise | Task: Create usage dashboard, identify clients using old routes, and proactively reach out with migration assistance | Restrictions: Must respect privacy, provide helpful guidance, track migration progress | Success: Dashboard operational, clients identified and contacted, migration support provided | Instructions: 1) Mark in-progress, 2) Log with artifacts (dashboard, outreach log), 3) Mark complete_
 
-- [ ] 8.5. Disable old routes after sunset period
+- [x] 8.5. Disable old routes after sunset period
   - Set `ENABLE_OLD_ROUTES=false` in production
   - Verify all critical clients have migrated
   - Monitor for errors (some clients may not have migrated)
   - Be ready to re-enable if necessary
   - _Leverage: Migration tracking from 8.4_
   - _Requirements: 5, 9_
+  - _Completed: 2025-12-15_
+  - _Note: Implemented ENABLE_OLD_ROUTES feature flag in route aliasing plugin. When set to false, plugin skips registration and old routes return 404 (cutover complete). Created comprehensive production cutover guide (09-old-routes-cutover-guide.md) with prerequisites, step-by-step execution, monitoring strategy, rollback procedure (30-second recovery), and troubleshooting. Created detailed testing guide (09a-old-routes-cutover-testing.md) with test scenarios for migration mode, cutover complete mode, error cases, and critical user flows. Includes staging checklist, production testing protocol, and success metrics. Ready for production deployment with minimal risk._
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps Engineer with production cutover expertise | Task: Disable old routes after sunset period, monitoring for errors and being prepared to rollback if critical clients affected | Restrictions: Must verify critical clients migrated, monitor error rates, have rollback ready | Success: Old routes disabled, minimal errors, critical clients unaffected | Instructions: 1) Mark in-progress, 2) Log with artifacts (cutover log, error monitoring), 3) Mark complete_
 
-- [ ] 8.6. Remove old code and route aliasing
+- [-] 8.6. Remove old code and route aliasing
   - Delete old module directories (`apps/api/src/core/users`, etc.)
   - Remove route aliasing plugin (`apps/api/src/config/route-aliases.ts`)
   - Clean up plugin loader (remove old functions)

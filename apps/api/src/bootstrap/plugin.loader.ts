@@ -24,35 +24,18 @@ import knexPlugin from '../plugins/knex.plugin';
 import loggingPlugin from '../plugins/logging.plugin';
 import pluginMonitoring from '../plugins/monitoring.plugin';
 import multipartPlugin from '../plugins/multipart.plugin';
-import pdfExportPlugin from '../core/pdf-export';
 import redisPlugin from '../plugins/redis.plugin';
-import { routeAliasPlugin } from '../config/route-aliases';
 import responseHandlerPlugin from '../plugins/response-handler.plugin';
 import schemasPlugin from '../plugins/schemas.plugin';
 import staticFilesPlugin from '../plugins/static-files.plugin';
 import swaggerPlugin from '../plugins/swagger.plugin';
 
-// Core infrastructure modules
+// Core infrastructure modules (kept from layers/)
 import authPlugin from '../layers/core/auth/auth.plugin';
 import authStrategiesPlugin from '../layers/core/auth/strategies/auth.strategies';
-import departmentsPlugin from '../core/departments';
-import { errorLogsPlugin } from '../core/error-logs';
 import { fileAuditPlugin } from '../layers/core/audit/file-audit';
-import importDiscoveryPlugin from '../core/import/plugin/import-discovery.plugin';
 import { loginAttemptsPlugin } from '../layers/core/audit/login-attempts';
 import { monitoringPlugin as monitoringModulePlugin } from '../layers/core/monitoring';
-import permissionCachePlugin from '../core/rbac/permission-cache.plugin';
-import rbacPlugin from '../core/rbac/rbac.plugin';
-import systemPlugin from '../core/system/default.plugin';
-import { usersPlugin } from '../core/users';
-
-// Core platform modules (now in core/)
-import apiKeysPlugin from '../core/api-keys';
-import { attachmentPlugin } from '../core/attachments/attachment.plugin';
-import fileUploadPlugin from '../core/file-upload/file-upload.plugin';
-import navigationPlugin from '../core/navigation/navigation.plugin';
-import settingsPlugin from '../core/settings/settings.plugin';
-import userProfilePlugin from '../core/user-profile/user-profile.plugin';
 
 // Platform layer modules (migrated to layers/platform/)
 import platformDepartmentsPlugin from '../layers/platform/departments';
@@ -65,16 +48,10 @@ import { platformAttachmentPlugin } from '../layers/platform/attachments';
 import platformPdfExportPlugin from '../layers/platform/pdf-export';
 import { importDiscoveryPlugin as platformImportDiscoveryPlugin } from '../layers/platform/import';
 
-// Business feature modules (ready for HIS, Inventory, etc.)
+// Business feature modules
 import websocketPlugin from '../shared/websocket/websocket.plugin';
-import testProductsPlugin from '../modules/testProducts';
 import inventoryDomainPlugin from '../layers/domains/inventory';
 import adminPlugin from '../layers/domains/admin';
-// import testAuthPlugin from '../modules/testAuth';
-// import testUsersPlugin from '../modules/testUsers';
-
-// User-related modules
-import userDepartmentsPlugin from '../modules/users/user-departments/user-departments.plugin';
 
 /**
  * Plugin registration group interface
@@ -114,15 +91,6 @@ export function createPluginGroups(
             logDirectory: appConfig.logging.directory,
           },
           required: true,
-        },
-        {
-          name: 'route-alias',
-          plugin: routeAliasPlugin,
-          required: false,
-          // Note: This plugin is conditionally loaded based on enableNewRoutes flag
-          // It will skip registration if new routes are not enabled
-          // Dependencies: Must load after logging-plugin for fastify.log availability
-          // Must load before feature routes to establish alias mappings
         },
         {
           name: 'global-error-hooks',
