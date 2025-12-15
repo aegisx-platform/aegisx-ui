@@ -60,6 +60,14 @@ export async function seed(knex: Knex): Promise<void> {
     // Tables might not exist yet, ignore
   }
 
+  // Clear import-related tables that reference users (FK constraints)
+  try {
+    await knex('import_history').del();
+    await knex('import_sessions').del();
+  } catch {
+    // Tables might not exist yet, ignore
+  }
+
   await knex('user_sessions').del();
   await knex('user_roles').del();
   await knex('users').del();
