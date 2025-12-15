@@ -1,3 +1,12 @@
+> **⚠️ ARCHIVED:** This document has been archived as part of the documentation restructure.
+>
+> **Archive Date:** 2024-Q4
+> **Original Location:** `docs/reports/migration-summary.md`
+> **Current Location:** `docs/archive/2024-Q4/migration-summary-archived.md`
+> **Reason:** Historical record - migration analysis completed
+>
+> For current migration documentation, see [Analysis Section](../../analysis/migration/)
+
 # Knex to Drizzle ORM Migration - Executive Summary
 
 ## Quick Facts

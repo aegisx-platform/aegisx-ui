@@ -1,3 +1,12 @@
+> **⚠️ ARCHIVED:** This session document has been moved to the quarterly archive.
+>
+> **Archive Date:** 2024-Q4
+> **Original Location:** `docs/sessions/SESSION_59_DASHBOARD_WIDGETS.md`
+> **Current Location:** `docs/archive/2024-Q4/session-59-dashboard-widgets.md`
+> **Reason:** Documentation restructure - completed session archiving
+>
+> For current session notes, see [PROJECT_STATUS.md](../../PROJECT_STATUS.md)
+
 # Session 59: Platform Dashboard Widgets Implementation
 
 **Date:** 2025-11-02

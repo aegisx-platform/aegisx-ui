@@ -139,7 +139,7 @@
   - _Requirements: 5 (Deprecation and Archive Strategy)_
   - _Prompt: Implement the task for spec docs-restructure, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical Writer with expertise in content consolidation and information architecture | Task: Consolidate duplicate documentation following requirement 5, reviewing all sections for duplicates, merging content, and archiving outdated versions using design.md archive strategy | Restrictions: Do not delete content without archiving, ensure merged documents are comprehensive, update all references | \_Leverage: file-mapping.json, design.md_ | _Requirements: 5_ | Success: All duplicates identified and consolidated, outdated versions archived, single source of truth established, links updated | Instructions: Before starting, mark this task as in-progress ([-]) in tasks.md. After completion, use log-implementation tool to record consolidation results, then mark as complete ([x])\_
 
-- [-] 4.2. Archive old session notes quarterly
+- [x] 4.2. Archive old session notes quarterly
   - Review docs/sessions/daily/ directory
   - Consolidate session notes by quarter into archive files (ARCHIVE_2024_Q4.md, ARCHIVE_2025_Q1.md)
   - Move consolidated archives to docs/archive/{year-quarter}/
@@ -149,7 +149,7 @@
   - _Requirements: 5 (Deprecation and Archive Strategy)_
   - _Prompt: Implement the task for spec docs-restructure, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Documentation Manager with expertise in archival and knowledge management | Task: Archive session notes following requirement 5, consolidating docs/sessions/daily/ by quarter into archive files and moving to docs/archive/ using design.md archive strategy | Restrictions: Preserve all historical content, ensure chronological organization, keep current quarter accessible | \_Leverage: design.md, existing ARCHIVE files_ | _Requirements: 5_ | Success: All session notes consolidated by quarter, archives moved to proper location, current quarter clean and accessible | Instructions: Before starting, mark this task as in-progress ([-]) in tasks.md. After completion, use log-implementation tool to record archival results, then mark as complete ([x])\_
 
-- [ ] 4.3. Create redirect map for legacy URLs
+- [-] 4.3. Create redirect map for legacy URLs
   - File: docs/.redirects or similar configuration
   - Map old documentation URLs to new locations
   - Add deprecation notices to archived files

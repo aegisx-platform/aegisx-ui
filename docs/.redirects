@@ -1,0 +1,64 @@
+# Documentation Redirect Map
+# Generated from docs-restructure specification
+# Format: <old-path> <new-path> <status-code>
+# Compatible with: Netlify, Vercel, Cloudflare Pages
+#
+# For VitePress/Docusaurus:
+# - VitePress: Configure in .vitepress/config.ts using rewrites
+# - Docusaurus: Configure in docusaurus.config.js using redirects plugin
+#
+# Last updated: 2025-12-15
+
+# CLI Documentation
+/aegisx-cli/README.md /reference/cli/aegisx-cli/README.md 301
+/aegisx-cli/COMPLETE_WORKFLOW.md /reference/cli/aegisx-cli/complete-workflow.md 301
+/aegisx-cli/GIT_WORKFLOW.md /reference/cli/aegisx-cli/git-workflow.md 301
+/aegisx-cli/TESTING_GUIDE.md /reference/cli/aegisx-cli/testing-guide.md 301
+/aegisx-cli/WEBSOCKET_IMPLEMENTATION_SPEC.md /reference/cli/aegisx-cli/websocket-implementation-spec.md 301
+
+# UI Standards
+/AEGISX_UI_STANDARDS.md /reference/ui/aegisx-ui-standards.md 301
+/ui/THEME_SYSTEM_STANDARD.md /reference/ui/theme-system-standard.md 301
+/ui/TOKEN_REFERENCE.md /reference/ui/token-reference.md 301
+
+# API Standards
+/api/api-response-standard.md /reference/api/api-response-standard.md 301
+/api/typebox-schema-standard.md /reference/api/typebox-schema-standard.md 301
+/api/bulk-operations-api-design.md /reference/api/bulk-operations-api-design.md 301
+/api/file-upload-guide.md /reference/api/file-upload-guide.md 301
+
+# Development Guides
+/development/feature-development-standard.md /guides/development/feature-development-standard.md 301
+/development/API_CALLING_STANDARD.md /guides/development/api-calling-standard.md 301
+/development/qa-checklist.md /guides/development/qa-checklist.md 301
+/development/universal-fullstack-standard.md /guides/development/universal-fullstack-standard.md 301
+
+# Infrastructure Guides
+/infrastructure/multi-instance-setup.md /guides/infrastructure/multi-instance-setup.md 301
+/infrastructure/git-subtree-guide.md /guides/infrastructure/git-subtree-guide.md 301
+/infrastructure/GIT-FLOW-RELEASE-GUIDE.md /guides/infrastructure/version-management/git-flow-release-guide.md 301
+
+# CI/CD Guides
+/QUICK-START-CICD.md /guides/infrastructure/ci-cd/quick-start.md 301
+/CI_CD_BEST_PRACTICES.md /guides/infrastructure/ci-cd/best-practices.md 301
+
+# Architecture Documents
+/architecture/microservices-adoption-path.md /architecture/patterns/microservices-adoption-path.md 301
+/architecture/MODULE_ISOLATION_CONCEPT.md /architecture/concepts/module-isolation.md 301
+/architecture/module-development-concepts.md /architecture/concepts/module-development.md 301
+/architecture/dynamic-architecture.md /architecture/patterns/dynamic-architecture.md 301
+/architecture/DOMAIN_ARCHITECTURE_GUIDE.md /architecture/domains/domain-architecture-guide.md 301
+/architecture/QUICK_DOMAIN_REFERENCE.md /architecture/domains/quick-domain-reference.md 301
+
+# Analysis Documents
+/analysis/fuse-integration-summary.md /analysis/platform/fuse-integration-summary.md 301
+/analysis/knex-to-drizzle-migration.md /analysis/migration/knex-to-drizzle-migration.md 301
+/analysis/ui-components-implementation-summary.md /analysis/platform/ui-components-implementation-summary.md 301
+
+# Reports
+/UI-TEST-REPORT.md /reports/ui-test-report.md 301
+/reports/migration-summary.md /archive/2024-Q4/migration-summary-archived.md 301
+
+# Session Archives
+/sessions/ARCHIVE_2025_Q1.md /archive/2025-Q1/sessions-archive.md 301
+/sessions/SESSION_59_DASHBOARD_WIDGETS.md /archive/2024-Q4/session-59-dashboard-widgets.md 301

@@ -1,3 +1,12 @@
+> **⚠️ ARCHIVED:** This document has been moved to the quarterly archive.
+>
+> **Archive Date:** 2025-Q1
+> **Original Location:** `docs/sessions/ARCHIVE_2025_Q1.md`
+> **Current Location:** `docs/archive/2025-Q1/sessions-archive.md`
+> **Reason:** Documentation restructure - quarterly session archiving
+>
+> For current session notes, see [PROJECT_STATUS.md](../../PROJECT_STATUS.md)
+
 # Development Sessions Archive - 2025 Q1
 
 > **Archived Sessions:** Sessions 47-71 (October-November 2024)
