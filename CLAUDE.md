@@ -136,9 +136,14 @@ pnpm run dev:api          # Start API server
 pnpm run dev:admin        # Start Admin frontend
 pnpm run build            # Build all
 
-# Database
-pnpm run db:migrate       # Run migrations
-pnpm run db:seed          # Seed database
+# Database (Main System - public schema)
+pnpm run db:migrate       # Run main system migrations
+pnpm run db:seed          # Seed main system data
+
+# Database (Domain-Specific - see docs/guides/infrastructure/domain-separated-migrations.md)
+pnpm run db:migrate:inventory   # Run inventory domain migrations
+pnpm run db:seed:inventory      # Seed inventory domain data
+pnpm run db:status:inventory    # Check inventory migration status
 
 # CRUD Generator
 pnpm run crud -- TABLE --force              # Basic CRUD
@@ -196,6 +201,7 @@ Our documentation follows the **Diátaxis Framework** organized in 4 main sectio
 #### Infrastructure Guides
 
 - [Multi-Instance Setup](./docs/guides/infrastructure/multi-instance-setup.md) - Parallel development setup
+- [Domain-Separated Migrations](./docs/guides/infrastructure/domain-separated-migrations.md) - **CRITICAL** Multi-domain migration architecture
 - [Git Subtree Guide](./docs/guides/infrastructure/git-subtree-guide.md) - Shared library management
 - [Git Flow & Release](./docs/guides/infrastructure/version-management/git-flow-release-guide.md) - Branch strategy & releases
 

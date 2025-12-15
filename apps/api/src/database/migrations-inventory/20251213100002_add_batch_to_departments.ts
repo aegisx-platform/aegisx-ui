@@ -22,16 +22,24 @@ import type { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   // Check if inventory.departments table exists and add column if not present
-  const hasInventoryDepts = await knex.schema
-    .withSchema('inventory')
-    .hasTable('departments');
+  // Use raw SQL check instead of hasTable/hasColumn to avoid Knex caching issues
+  const deptTableCheck = await knex.raw(`
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'inventory'
+      AND table_name = 'departments'
+  `);
 
-  if (hasInventoryDepts) {
-    const hasBatchColumn = await knex.schema
-      .withSchema('inventory')
-      .hasColumn('departments', 'import_batch_id');
+  if (deptTableCheck.rows.length > 0) {
+    const deptColumnCheck = await knex.raw(`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'inventory'
+        AND table_name = 'departments'
+        AND column_name = 'import_batch_id'
+    `);
 
-    if (!hasBatchColumn) {
+    if (deptColumnCheck.rows.length === 0) {
       await knex.schema.alterTable('inventory.departments', (table) => {
         table
           .string('import_batch_id', 100)
@@ -41,22 +49,27 @@ export async function up(knex: Knex): Promise<void> {
             'Batch ID from import_history table for precise rollback tracking',
           );
       });
+      console.log('✅ Added import_batch_id to inventory.departments table');
     } else {
       console.log(
-        'inventory.departments.import_batch_id already exists, skipping',
+        '⏭️  inventory.departments.import_batch_id already exists, skipping',
       );
     }
   } else {
-    console.log('inventory.departments table not found, skipping');
+    console.log('⏭️  inventory.departments table not found, skipping');
   }
 
   // Add import_batch_id to users table (in public schema)
-  const hasUserBatchColumn = await knex.schema.hasColumn(
-    'users',
-    'import_batch_id',
-  );
+  // Use raw SQL check instead of hasColumn to avoid Knex caching issues
+  const userColumnCheck = await knex.raw(`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'users'
+      AND column_name = 'import_batch_id'
+  `);
 
-  if (!hasUserBatchColumn) {
+  if (userColumnCheck.rows.length === 0) {
     await knex.schema.alterTable('users', (table) => {
       table
         .string('import_batch_id', 100)
@@ -66,8 +79,9 @@ export async function up(knex: Knex): Promise<void> {
           'Batch ID from import_history table for precise rollback tracking',
         );
     });
+    console.log('✅ Added import_batch_id to users table');
   } else {
-    console.log('users.import_batch_id already exists, skipping');
+    console.log('⏭️  users.import_batch_id already exists, skipping');
   }
 }
 
