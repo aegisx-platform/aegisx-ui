@@ -297,6 +297,10 @@ export default defineConfig({
               text: 'Feature Documentation Standard',
               link: '/features/FEATURE_DOCUMENTATION_STANDARD',
             },
+            {
+              text: 'Feature Templates',
+              link: '/features/templates/README',
+            },
           ],
         },
         {
@@ -307,8 +311,12 @@ export default defineConfig({
               link: '/features/authentication/README',
             },
             {
-              text: 'User Management',
-              link: '/features/user-management/README',
+              text: 'Users & Departments',
+              link: '/features/users/README',
+            },
+            {
+              text: 'Core Departments',
+              link: '/features/core-departments/README',
             },
             {
               text: 'RBAC',
@@ -321,23 +329,91 @@ export default defineConfig({
           ],
         },
         {
-          text: 'Advanced Features',
+          text: 'Security & Access',
+          items: [
+            {
+              text: 'API Keys',
+              link: '/features/api-keys/README',
+            },
+            {
+              text: 'Password Reset',
+              link: '/features/password-reset/README',
+            },
+          ],
+        },
+        {
+          text: 'Content & Media',
           items: [
             {
               text: 'PDF Export',
               link: '/features/pdf-export/README',
             },
             {
+              text: 'PDF Templates',
+              link: '/features/pdf-templates/README',
+            },
+            {
               text: 'File Upload',
               link: '/features/file-upload/README',
+            },
+            {
+              text: 'Attachment System',
+              link: '/features/attachment-system/README',
+            },
+          ],
+        },
+        {
+          text: 'System Features',
+          items: [
+            {
+              text: 'System Configuration',
+              link: '/features/system/README',
+            },
+            {
+              text: 'System Initialization',
+              link: '/features/system-initialization/README',
+            },
+            {
+              text: 'Settings',
+              link: '/features/settings/README',
+            },
+            {
+              text: 'Navigation',
+              link: '/features/navigation/README',
+            },
+            {
+              text: 'Monitoring',
+              link: '/features/monitoring/README',
+            },
+          ],
+        },
+        {
+          text: 'Domain Features',
+          items: [
+            {
+              text: 'Drug Management',
+              link: '/features/drug-management/README',
+            },
+            {
+              text: 'TMT Lookup',
+              link: '/features/tmt-lookup/README',
+            },
+          ],
+        },
+        {
+          text: 'Advanced Features',
+          items: [
+            {
+              text: 'WebSocket',
+              link: '/features/websocket/README',
             },
             {
               text: 'Bulk Import',
               link: '/features/bulk-import/README',
             },
             {
-              text: 'WebSocket',
-              link: '/features/websocket/README',
+              text: 'Widget Framework',
+              link: '/features/widget-framework/README',
             },
           ],
         },
