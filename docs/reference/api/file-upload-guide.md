@@ -1,3 +1,10 @@
+---
+title: 'File Upload Guide'
+description: 'File upload API reference and implementation guide'
+category: reference
+tags: [api, file-upload, backend]
+---
+
 # File Upload API Guide
 
 ## Overview
@@ -309,7 +316,3 @@ Navigate to `/documentation` (default port: 3333) and expand the "File Upload" s
 - `apps/api/src/modules/file-upload/file-upload.controller.ts` - Request handling
 - `apps/api/src/modules/file-upload/file-upload.schemas.ts` - TypeBox schemas
 - `apps/web/src/app/shared/components/file-upload/file-upload.service.ts` - Frontend service
-
----
-
-**📝 This approach successfully solves the TypeBox + multipart validation conflict while maintaining full Swagger UI functionality.**

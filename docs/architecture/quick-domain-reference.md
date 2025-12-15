@@ -1,3 +1,10 @@
+---
+title: 'Quick Domain Reference'
+description: 'Quick reference for domain classification decisions'
+category: architecture
+tags: [architecture, domain, reference]
+---
+
 # Quick Domain Reference
 
 > **ใช้อ้างอิงด่วน:** เมื่อไม่แน่ใจว่าต้องใช้ domain ไหน

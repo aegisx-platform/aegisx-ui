@@ -1,3 +1,10 @@
+---
+title: 'AegisX UI Standards'
+description: 'UI component standards and guidelines'
+category: reference
+tags: [ui, standards, components]
+---
+
 # AegisX UI Library Development Standards
 
 ## 🎯 Overview
@@ -229,7 +236,3 @@ For questions or clarifications:
 1. Check this document first
 2. Review ESLint error messages
 3. Consult team lead for exceptions (rare)
-
----
-
-**Remember: These standards prevent bugs, improve accessibility, and ensure maintainable code. They are mandatory for all AegisX UI library development.**

@@ -1,24 +1,13 @@
+---
+title: 'Files to Migrate'
+description: 'Inventory of files requiring migration'
+category: analysis
+tags: [analysis, migration]
+---
+
 # Files to Migrate - Knex to Drizzle ORM
 
 Complete file inventory for migration effort estimation.
-
----
-
-## Priority 1: Foundation (CRITICAL - Do First)
-
-### Base Repositories (2 files, ~920 lines)
-
-| File                                                     | Lines | Complexity | Notes                                                |
-| -------------------------------------------------------- | ----- | ---------- | ---------------------------------------------------- |
-| `apps/api/src/shared/repositories/base.repository.ts`    | 430   | HIGH       | Generic CRUD, pagination, filtering - **START HERE** |
-| `apps/api/src/core/audit-system/base/base.repository.ts` | 489   | HIGH       | Audit patterns, date filtering, statistics           |
-
-**Effort:** 40-50 hours
-**Critical Dependencies:** None (foundational)
-**Test Coverage:** Comprehensive unit tests required
-**Validation:** Must pass all base CRUD operations
-
----
 
 ## Priority 2: Complex Domain Repositories (HIGH COMPLEXITY)
 
@@ -61,45 +50,6 @@ Complete file inventory for migration effort estimation.
 **Dependencies:** Depends on BaseRepository
 **Test Coverage:** Role association tests, soft delete scenarios
 
----
-
-## Priority 3: Authentication & User Profile (MEDIUM)
-
-### Authentication (2 files, ~150 lines)
-
-| File                                              | Lines | Complexity | Details                                   |
-| ------------------------------------------------- | ----- | ---------- | ----------------------------------------- |
-| `apps/api/src/core/auth/auth.repository.ts`       | 80+   | MEDIUM     | Login, password reset, email verification |
-| `apps/api/src/core/auth/services/auth.service.ts` | 70+   | MEDIUM     | Auth orchestration                        |
-
-**Patterns:**
-
-- User lookup by email/username
-- Token management
-- Session tracking
-
-**Effort:** 8-10 hours
-
-### User Profile (2 files, ~200 lines)
-
-| File                                                        | Lines | Complexity | Details             |
-| ----------------------------------------------------------- | ----- | ---------- | ------------------- |
-| `apps/api/src/core/user-profile/user-profile.repository.ts` | 100+  | MEDIUM     | Profile data access |
-| `apps/api/src/core/user-profile/user-profile.service.ts`    | 100+  | MEDIUM     | Profile operations  |
-
-**Effort:** 8-10 hours
-
-### User Activity (2 files, ~150 lines)
-
-| File                                                         | Lines | Complexity | Details           |
-| ------------------------------------------------------------ | ----- | ---------- | ----------------- |
-| `apps/api/src/core/user-profile/user-activity.repository.ts` | 80+   | MEDIUM     | Activity logging  |
-| `apps/api/src/core/user-profile/user-activity.service.ts`    | 70+   | MEDIUM     | Activity tracking |
-
-**Effort:** 6-8 hours
-
----
-
 ## Priority 4: Audit & Logging (MEDIUM)
 
 ### Error Logging (2 files, ~150 lines)
@@ -134,36 +84,6 @@ Complete file inventory for migration effort estimation.
 | `apps/api/src/core/audit-system/login-attempts/login-attempts.service.ts`    | 70+   | MEDIUM     | Security monitoring |
 
 **Effort:** 8-10 hours
-
----
-
-## Priority 5: File Operations (MEDIUM)
-
-### File Upload (2 files, ~250 lines)
-
-| File                                                      | Lines | Complexity | Details                 |
-| --------------------------------------------------------- | ----- | ---------- | ----------------------- |
-| `apps/api/src/core/file-upload/file-upload.repository.ts` | 150+  | MEDIUM     | File storage operations |
-| `apps/api/src/core/file-upload/file-upload.service.ts`    | 100+  | MEDIUM     | File management         |
-
-**Patterns:**
-
-- File storage tracking
-- Access control queries
-- Encryption metadata
-
-**Effort:** 10-12 hours
-
-### Attachments (2 files, ~150 lines)
-
-| File                                                     | Lines | Complexity | Details             |
-| -------------------------------------------------------- | ----- | ---------- | ------------------- |
-| `apps/api/src/core/attachments/attachment.repository.ts` | 80+   | MEDIUM     | Attachment queries  |
-| `apps/api/src/core/attachments/attachment.service.ts`    | 70+   | MEDIUM     | Attachment handling |
-
-**Effort:** 8-10 hours
-
----
 
 ## Priority 6: Specialized Features (LOW-MEDIUM)
 
@@ -212,52 +132,6 @@ Complete file inventory for migration effort estimation.
 
 **Effort:** 4-6 hours
 
----
-
-## Configuration & Database (LOW PRIORITY)
-
-### Migrations (19 files, ~3,653 lines)
-
-| Category            | Count | Lines  | Effort | Notes                                  |
-| ------------------- | ----- | ------ | ------ | -------------------------------------- |
-| Active migrations   | 19    | 3,653  | 10-15h | Mechanical conversion, test thoroughly |
-| Archived migrations | 40+   | 3,000+ | Skip   | Already archived, not needed           |
-
-**Key Patterns:**
-
-- UUID generation with gen_random_uuid()
-- Foreign key constraints
-- Indexes
-- JSONB defaults
-- PostgreSQL functions (triggers, checks)
-- Enum types
-
-**Files:**
-
-- `apps/api/src/database/migrations/001_create_roles_and_permissions.ts`
-- `apps/api/src/database/migrations/002_create_users.ts`
-- ... 17 more active migrations
-- `knexfile.ts` (will be removed)
-
-### Seeds (9 files, ~3,787 lines)
-
-| File                                    | Lines | Complexity | Details          |
-| --------------------------------------- | ----- | ---------- | ---------------- |
-| `seeds/001_initial_data.ts`             | 400+  | MEDIUM     | Core data        |
-| `seeds/002_enhanced_seed_data.ts`       | 400+  | MEDIUM     | Extended data    |
-| `seeds/003_navigation_menu.ts`          | 200+  | LOW        | Menu structure   |
-| `seeds/006_settings.ts`                 | 200+  | LOW        | System settings  |
-| `seeds/007_pdf_template_starters.ts`    | 300+  | LOW        | PDF templates    |
-| `seeds/008_monitoring_navigation.ts`    | 200+  | LOW        | Monitoring menus |
-| `seeds/009_audit_system.ts`             | 300+  | LOW        | Audit data       |
-| `seeds/011_test_categories_dev_only.ts` | 200+  | LOW        | Dev test data    |
-| `seeds/012_test_products_dev_only.ts`   | 200+  | LOW        | Dev test data    |
-
-**Effort:** 8-12 hours
-**Notes:** Mostly data insertion, mechanical conversion
-
----
-
 ## Service Layer Updates (20+ files, varies)
 
 Files that call repositories and will need minor updates:
@@ -295,24 +169,6 @@ Files that call repositories and will need minor updates:
 **Effort:** 15-25 hours total (mostly find-and-replace)
 **Changes:** Constructor injection updates, query method calls
 
----
-
-## Test Files
-
-### Repository Tests
-
-- Multiple test files (`*.spec.ts`, `*.integration.spec.ts`)
-- Update repository instantiation and Knex references
-- Effort: Included in repository migration
-
-### Database Tests
-
-- `apps/api/src/database/migrations.spec.ts`
-- Update migration validation
-- Effort: 2-4 hours
-
----
-
 ## Summary Table
 
 | Category          | Files   | Lines      | Effort       | Priority     |
@@ -325,20 +181,6 @@ Files that call repositories and will need minor updates:
 | Seeds             | 9       | 3,787      | 8-12h        | 5 (LOW)      |
 | Service Updates   | 20+     | varies     | 15-25h       | 6 (MEDIUM)   |
 | **TOTAL**         | **65+** | **15,000** | **163-217h** |              |
-
----
-
-## Recommended Migration Order
-
-1. **Week 1:** BaseRepository, BaseAuditRepository (40-50h)
-2. **Week 1-2:** RbacRepository, UsersRepository (30-35h)
-3. **Week 2:** AuthRepository, UserProfileRepository, UserActivityRepository (25-30h)
-4. **Week 2-3:** File/Audit/Error repositories (30-40h)
-5. **Week 3:** Migrations & Seeds (18-27h)
-6. **Week 3-4:** Service updates & integration testing (25-35h)
-7. **Week 4-5:** Testing, validation, cleanup (20-30h)
-
----
 
 ## Critical Dependencies
 
@@ -360,19 +202,6 @@ All Domain Repos
 
 **Migration Strategy:** Start at bottom of dependency tree, move up.
 
----
-
-## Files That Can Be Skipped
-
-- Archived migrations (in `migrations/_archived/`)
-- Old test data generators
-- Temporary/debug utilities
-- Already-removed features
-
-**Savings:** ~3,000-4,000 lines to ignore
-
----
-
 ## Configuration Files to Update
 
 - `knexfile.ts` - Remove entirely
@@ -382,15 +211,3 @@ All Domain Repos
 - Setup scripts - Update migration commands
 
 **Effort:** 2-4 hours
-
----
-
-## Documentation to Update
-
-- Database guide
-- Repository documentation
-- Migration guide
-- Setup instructions
-- Developer guide
-
-**Effort:** 4-8 hours

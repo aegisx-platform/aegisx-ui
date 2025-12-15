@@ -1,3 +1,10 @@
+---
+title: 'Git Workflow'
+description: 'Git workflow for AegisX CLI development'
+category: reference
+tags: [cli, git, workflow]
+---
+
 # CRUD Generator Git Workflow
 
 > **⚠️ CRITICAL: libs/aegisx-cli/ is synced to a separate repository**
@@ -201,7 +208,3 @@ git tag v2.1.0  # ❌ Don't do this for CRUD generator versions
 1. Ensure you're logged in: `npm whoami`
 2. Get fresh OTP from authenticator app
 3. Run publish script with OTP: `./publish.sh <OTP>`
-
----
-
-**For usage documentation, see [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)**

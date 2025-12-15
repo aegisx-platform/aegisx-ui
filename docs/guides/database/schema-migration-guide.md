@@ -1,3 +1,10 @@
+---
+title: 'Schema Migration Guide'
+description: 'Database schema design and migration patterns'
+category: guides
+tags: [database, schema, design]
+---
+
 # Schema Migration Guide: JSON Schema to TypeBox
 
 This guide explains how to migrate from JSON Schema to TypeBox for better type safety and developer experience in our Fastify application.

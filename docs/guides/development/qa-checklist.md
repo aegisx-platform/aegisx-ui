@@ -1,3 +1,10 @@
+---
+title: 'QA Checklist'
+description: 'Quality assurance checklist before deployment'
+category: guides
+tags: [development, qa, testing]
+---
+
 # Development Quality Assurance Checklist
 
 > **📋 บังคับใช้**: ต้องทำทุกครั้งหลังเขียนโค้ดเสร็จ ก่อนจะ commit
@@ -255,16 +262,5 @@ nx test <project-name> --testNamePattern="test name"
 - E2E test execution
 - Security scanning
 - Performance monitoring
-
----
-
-## 📚 Related Documentation
-
-- [Development Workflow](./development-workflow.md)
-- [Testing Strategy](../testing/testing-strategy.md)
-- [API-First Workflow](./api-first-workflow.md)
-- [Quick Commands](./quick-commands.md)
-
----
 
 **⚠️ Important**: ไม่มีข้อยกเว้นสำหรับ QA Checklist นี้ - ต้องปฏิบัติทุกครั้งก่อน commit

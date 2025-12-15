@@ -1,3 +1,10 @@
+---
+title: 'Domain Architecture Guide'
+description: 'Domain-driven design principles and domain classification guide'
+category: architecture
+tags: [architecture, domain-driven-design, backend]
+---
+
 # Domain Architecture Guide
 
 > **คู่มือสำคัญ:** อ่านก่อนสร้าง CRUD module ใหม่ทุกครั้ง เพื่อเลือก domain ที่ถูกต้อง

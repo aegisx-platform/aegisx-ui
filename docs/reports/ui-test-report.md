@@ -1,3 +1,10 @@
+---
+title: 'UI Test Report'
+description: 'Frontend UI testing results and findings'
+category: reports
+tags: [reports, testing, ui]
+---
+
 # UI Integration Test Report
 
 ## Test Date: 2025-09-02

@@ -1,3 +1,10 @@
+---
+title: 'Git Subtree Guide'
+description: 'Managing shared libraries with git subtree'
+category: guides
+tags: [infrastructure, git, libraries]
+---
+
 # Git Subtree Guide - Shared Libraries Management
 
 ## Overview
@@ -257,11 +264,3 @@ rm -rf /tmp/aegisx-mcp
 2. Commit: `chore(library): bump version to X.Y.Z`
 3. Sync to standalone repo
 4. Publish to npm
-
----
-
-**Related Documentation:**
-
-- [Git Flow & Release Guide](./GIT-FLOW-RELEASE-GUIDE.md)
-- [Automated Versioning Guide](./AUTOMATED-VERSIONING-GUIDE.md)
-- [CRUD Generator Git Workflow](../../libs/aegisx-cli/docs/GIT_WORKFLOW.md)

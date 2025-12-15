@@ -1,3 +1,10 @@
+---
+title: 'API Testing'
+description: 'Backend API testing patterns and tools'
+category: guides
+tags: [testing, api, backend]
+---
+
 # API Testing Guide
 
 This guide covers all aspects of testing the AegisX API, including unit tests, integration tests, and end-to-end API route testing.

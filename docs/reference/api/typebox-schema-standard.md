@@ -1,3 +1,10 @@
+---
+title: 'TypeBox Schema Standard'
+description: 'TypeBox schema definition standards for type-safe APIs'
+category: reference
+tags: [api, typebox, validation, backend]
+---
+
 # TypeBox Schema Standard
 
 > **🚨 MANDATORY**: All API routes MUST use TypeBox schemas for type safety and validation

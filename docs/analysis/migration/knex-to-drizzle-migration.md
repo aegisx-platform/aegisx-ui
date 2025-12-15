@@ -1,3 +1,10 @@
+---
+title: 'Knex to Drizzle Migration'
+description: 'ORM migration analysis from Knex to Drizzle'
+category: analysis
+tags: [analysis, migration, database]
+---
+
 # Knex to Drizzle ORM Migration Analysis
 
 ## Executive Summary
@@ -9,50 +16,6 @@
 **Breaking Changes:** Moderate - Repository layer and all data access patterns will change
 
 **Recommended Timeline:** 2-3 week sprint with proper testing and validation
-
----
-
-## 1. Codebase Knex Usage Analysis
-
-### 1.1 Overall Scope
-
-| Metric                       | Count | Details                     |
-| ---------------------------- | ----- | --------------------------- |
-| Total Repository Files       | 17    | Core data access layer      |
-| Repository Lines of Code     | 7,891 | Implementation files        |
-| Active Migrations            | 19    | Database schema definitions |
-| Migration Lines of Code      | 3,653 | Schema setup logic          |
-| Seed Files                   | 9     | Data seeding scripts        |
-| Seed Lines of Code           | 3,787 | Test data generation        |
-| Knex Query Patterns          | 1,767 | Total query builder calls   |
-| Complex Patterns (raw/joins) | 302   | Advanced query patterns     |
-
-**Total Scope:** ~15,000 lines of Knex-dependent code
-
-### 1.2 Current Knex Version
-
-```
-knex: ^3.1.0 (latest major version)
-pg: 8.16.3 (PostgreSQL driver)
-Node.js: >=22.0.0
-```
-
-### 1.3 File Distribution
-
-**Repositories (17 files):**
-
-- Base repositories: 2 (base.repository.ts, audit base.repository.ts)
-- Domain repositories: 15 (users, rbac, auth, file-upload, etc.)
-- Average size: ~465 lines per file
-
-**Key Repository Files:**
-
-- `/shared/repositories/base.repository.ts` - 430 lines (core CRUD)
-- `/core/rbac/rbac.repository.ts` - 852 lines (complex queries)
-- `/core/users/users.repository.ts` - 150+ lines (joins & filters)
-- `/core/audit-system/base/base.repository.ts` - 489 lines (audit queries)
-
----
 
 ## 2. Knex Usage Patterns Identified
 
@@ -126,59 +89,6 @@ await this.db.transaction(async (trx) => {
 | JSONB columns            | ~5 uses          | Low                  |
 | Soft deletes             | whereNull checks | Low                  |
 
----
-
-## 3. Migration Scope Breakdown
-
-### 3.1 Category Breakdown
-
-| Category                     | Files | Effort   | Complexity |
-| ---------------------------- | ----- | -------- | ---------- |
-| **A. Base Repository Layer** | 2     | 40-50h   | High       |
-| **B. Domain Repositories**   | 15    | 45-60h   | Medium     |
-| **C. Migrations**            | 19    | 10-15h   | Low        |
-| **D. Seeds**                 | 9     | 8-12h    | Low        |
-| **E. Service Layer Queries** | 20+   | 15-25h   | Medium     |
-| **F. Testing & Validation**  | -     | 20-30h   | Medium     |
-| **TOTAL**                    | 65+   | 138-192h | **MEDIUM** |
-
-### 3.2 Detailed File List
-
-**Base Repositories (HIGHEST PRIORITY):**
-
-- `/shared/repositories/base.repository.ts` - Generic CRUD operations
-- `/core/audit-system/base/base.repository.ts` - Audit query patterns
-
-**Domain Repositories (MEDIUM PRIORITY):**
-
-1. `/core/rbac/rbac.repository.ts` - Complex joins, aggregates
-2. `/core/users/users.repository.ts` - User queries with roles
-3. `/core/auth/auth.repository.ts` - Authentication queries
-4. `/core/user-profile/user-profile.repository.ts` - Profile data
-5. `/core/user-profile/user-activity.repository.ts` - Activity logs
-6. `/core/error-logs/error-logs.repository.ts` - Audit logs
-7. `/core/audit-system/file-audit/file-audit.repository.ts` - File audits
-8. `/core/audit-system/login-attempts/login-attempts.repository.ts` - Login logs
-9. `/core/file-upload/file-upload.repository.ts` - File management
-10. `/core/attachments/attachment.repository.ts` - Attachments
-11. `/core/pdf-export/repositories/pdf-template.repository.ts` - PDF templates
-12. `/core/api-keys/repositories/apiKeys.repository.ts` - API keys
-13. `/core/navigation/navigation.repository.ts` - Navigation menus
-14. `/core/settings/settings.repository.ts` - Settings storage
-15. `/modules/testProducts/repositories/test-products.repository.ts` - Test data
-
-**Migrations (LOW PRIORITY):**
-
-- 19 active migration files using Knex schema builder
-- Clear up/down patterns, can be converted mechanically
-
-**Seeds (LOW PRIORITY):**
-
-- 9 seed files with insertion logic
-- Relatively simple insert patterns
-
----
-
 ## 4. Risk Assessment
 
 ### 4.1 High Risk Areas
@@ -220,52 +130,6 @@ await this.db.transaction(async (trx) => {
    - knexfile.ts can be removed
    - Migration location and runner changes
    - Seed runner changes
-
----
-
-## 5. Benefits of Switching to Drizzle
-
-### 5.1 Code Quality Improvements
-
-| Benefit                           | Impact                                          |
-| --------------------------------- | ----------------------------------------------- |
-| **Full Type Safety**              | Eliminate `as any` patterns, better IDE support |
-| **No SQL Injection**              | Parameterized queries by default                |
-| **Better TypeScript Integration** | Types derived from schema, not runtime          |
-| **Smaller Bundle**                | ~50KB vs Knex's ~200KB                          |
-| **Fewer Runtime Errors**          | Compile-time validation of schema               |
-
-### 5.2 Development Experience
-
-```
-Knex approach (current):
-- Manual type mapping (domain model → DB schema → API response)
-- Runtime query building
-- Loose typing on query results
-- Verbose transaction handling
-
-Drizzle approach (new):
-- Single source of truth: schema.ts
-- Compile-time query checking
-- Strict types from schema
-- Elegant transaction handling
-```
-
-### 5.3 Performance Improvements
-
-- Similar query performance (both use pg driver)
-- Fewer runtime type checks
-- Better query plan with Drizzle's strictness
-- Smaller memory footprint
-
-### 5.4 Maintenance Benefits
-
-- Schema changes in one place (schema.ts)
-- No separate migration files needed (can use declarative)
-- Better IDE autocomplete
-- Easier for new developers to understand
-
----
 
 ## 6. Migration Strategy
 
@@ -314,23 +178,6 @@ Drizzle approach (new):
 4. Merge to main
 
 **Total: 23-33 days (3-5 weeks)**
-
----
-
-## 7. Estimated Effort by Role
-
-### Development Team
-
-| Role               | Effort  | Tasks                                    |
-| ------------------ | ------- | ---------------------------------------- |
-| **Lead Developer** | 80-120h | Architecture, complex repos, integration |
-| **Backend Dev 1**  | 60-80h  | Domain repositories, migrations          |
-| **Backend Dev 2**  | 40-60h  | Seeds, services, testing                 |
-| **QA Engineer**    | 30-40h  | Testing, validation, performance         |
-
-**Total Team Effort: 210-300 developer hours**
-
----
 
 ## 8. Detailed Migration Checklist
 
@@ -418,124 +265,6 @@ Drizzle approach (new):
 - [ ] Code review
 - [ ] Merge to develop/main
 
----
-
-## 9. Code Migration Examples
-
-### Example 1: Simple CRUD Repository
-
-**Knex (Current):**
-
-```typescript
-export class UsersRepository extends BaseRepository<User> {
-  constructor(knex: Knex) {
-    super(knex, 'users', ['email', 'username']);
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return this.query().where('email', email).first();
-  }
-}
-```
-
-**Drizzle (New):**
-
-```typescript
-export class UsersRepository {
-  constructor(private db: DrizzleDB) {}
-
-  async findByEmail(email: string): Promise<User | null> {
-    return this.db.query.users.findFirst({
-      where: eq(schema.users.email, email),
-    });
-  }
-}
-```
-
-### Example 2: Complex Join Query
-
-**Knex (Current):**
-
-```typescript
-async getRoles(query: RoleQuery) {
-  let baseQuery = this.db('roles')
-    .select(selectColumns)
-    .leftJoin(
-      this.db('user_roles')
-        .select('role_id')
-        .count('* as user_count')
-        .where('is_active', true)
-        .groupBy('role_id')
-        .as('user_role_counts'),
-      'roles.id',
-      'user_role_counts.role_id'
-    );
-  // ... filtering
-}
-```
-
-**Drizzle (New):**
-
-```typescript
-async getRoles(query: RoleQuery) {
-  return this.db
-    .select({
-      ...schema.roles,
-      userCount: sql<number>`coalesce(count(${schema.userRoles.id}), 0)`
-    })
-    .from(schema.roles)
-    .leftJoin(
-      schema.userRoles,
-      and(
-        eq(schema.userRoles.roleId, schema.roles.id),
-        eq(schema.userRoles.isActive, true)
-      )
-    )
-    .groupBy(schema.roles.id)
-    // ... filtering
-}
-```
-
-### Example 3: Transaction Handling
-
-**Knex (Current):**
-
-```typescript
-async createRoleWithPermissions(role: CreateRoleRequest) {
-  return await this.db.transaction(async (trx) => {
-    const [newRole] = await trx('roles')
-      .insert(role)
-      .returning('*');
-
-    await trx('role_permissions')
-      .insert(permissions);
-
-    return newRole;
-  });
-}
-```
-
-**Drizzle (New):**
-
-```typescript
-async createRoleWithPermissions(role: CreateRoleRequest) {
-  return await this.db.transaction(async (tx) => {
-    const [newRole] = await tx
-      .insert(schema.roles)
-      .values(role)
-      .returning();
-
-    await tx
-      .insert(schema.rolePermissions)
-      .values(permissions);
-
-    return newRole;
-  });
-}
-```
-
----
-
 ## 10. Testing Strategy
 
 ### Unit Tests
@@ -572,45 +301,6 @@ describe('RbacRepository', () => {
 - Error handling and edge cases
 - Performance benchmarks
 
----
-
-## 11. Recommendations
-
-### Priority 1: High Impact, Lower Effort
-
-1. **Start with BaseRepository** - Sets foundation for all other repos
-2. **Migrate RbacRepository** - Most complex, good validation of approach
-3. **Create utility layer** - Transaction helpers, query builders
-
-### Priority 2: Lower Effort
-
-1. **Migrate straightforward repositories** - Auth, Users, FileUpload
-2. **Convert migrations** - Mechanical conversion, low risk
-3. **Update services** - Point to new repositories
-
-### Priority 3: Testing & Validation
-
-1. **Comprehensive testing** - Unit, integration, E2E
-2. **Performance validation** - Ensure no regressions
-3. **Documentation** - Update all relevant guides
-
-### Go/No-Go Criteria
-
-**Must Have:**
-
-- All tests passing (100% of original test suite)
-- No performance degradation (< 5% variance)
-- Transaction rollback working
-- Migration/seed flow working
-
-**Nice to Have:**
-
-- Performance improvement (10-20% expected)
-- Type safety improvements
-- Code reduction (20-30% expected)
-
----
-
 ## 12. Resource Requirements
 
 ### Tools & Infrastructure
@@ -633,21 +323,6 @@ describe('RbacRepository', () => {
 - **Testing gaps** if QA not involved early
 - **Integration issues** if services not updated carefully
 - **Production incidents** if validation insufficient
-
----
-
-## 13. Success Metrics
-
-After migration, validate:
-
-1. **Functionality** - All CRUD operations work
-2. **Performance** - Query response times match or improve
-3. **Type Safety** - No `any` types, better IDE support
-4. **Test Coverage** - 100% of original tests passing
-5. **Code Quality** - Reduced lines of code, better readability
-6. **Developer Experience** - Easier onboarding, better error messages
-
----
 
 ## Conclusion
 

@@ -1,3 +1,10 @@
+---
+title: 'Multi-Instance Setup'
+description: 'Setup guide for running multiple AegisX instances in parallel'
+category: guides
+tags: [infrastructure, deployment, docker]
+---
+
 # Multi-Instance Development Setup
 
 > **For working on multiple features simultaneously using cloned repositories**
@@ -561,7 +568,3 @@ git checkout feature/auth-approach-2
 - **[Docker Guide](./monorepo-docker-guide.md)** - Docker management for monorepo
 - **[Development Workflow](../development/development-workflow.md)** - Step-by-step development guide
 - **[Port Configuration](../getting-started/port-configuration.md)** - Detailed port assignment logic
-
----
-
-**📚 For complete infrastructure documentation, see `docs/infrastructure/` directory**

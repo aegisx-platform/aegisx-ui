@@ -1,3 +1,10 @@
+---
+title: 'Fuse Integration Summary'
+description: 'Summary of Fuse UI framework integration evaluation'
+category: analysis
+tags: [analysis, ui, integration]
+---
+
 # สรุป Fuse Components ที่นำมาใช้ในโปรเจค
 
 ## 📁 โครงสร้างที่ Copy มา

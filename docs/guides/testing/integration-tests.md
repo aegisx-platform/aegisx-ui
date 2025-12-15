@@ -1,3 +1,10 @@
+---
+title: 'Integration Tests'
+description: 'Full-stack integration testing guide'
+category: guides
+tags: [testing, integration]
+---
+
 # AegisX API Integration Tests - Setup Complete
 
 ## 🎉 Integration Test Suite Successfully Created

@@ -1,3 +1,10 @@
+---
+title: 'Simple CI/CD Guide'
+description: 'Simplified CI/CD setup guide for beginners'
+category: guides
+tags: [infrastructure, ci-cd, deployment]
+---
+
 # 🚀 Simple CI/CD Guide - เริ่มต้นใช้งานง่ายๆ
 
 ## 📋 สิ่งที่ได้จาก Setup นี้

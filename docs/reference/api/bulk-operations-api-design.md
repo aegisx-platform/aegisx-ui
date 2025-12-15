@@ -1,3 +1,10 @@
+---
+title: 'Bulk Operations API Design'
+description: 'API design patterns for bulk operations'
+category: reference
+tags: [api, bulk-operations, design-patterns]
+---
+
 # Bulk Operations API Design for User Management
 
 ## Overview

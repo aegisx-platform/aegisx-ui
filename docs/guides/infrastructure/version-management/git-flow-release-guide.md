@@ -1,3 +1,10 @@
+---
+title: 'Git Flow Release Guide'
+description: 'Git flow branching strategy and release management'
+category: guides
+tags: [infrastructure, git, release]
+---
+
 # 🌊 Git Flow & Release Strategy Guide
 
 ## 📋 Branch Strategy Overview

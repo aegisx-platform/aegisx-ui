@@ -1,17 +1,13 @@
+---
+title: 'AegisX CLI'
+description: 'CRUD generator and CLI tools for AegisX Platform'
+category: reference
+tags: [cli, crud, generator]
+---
+
 # AegisX CLI Documentation (Monorepo)
 
 > **Internal documentation for monorepo developers & maintainers**
-
----
-
-## Documentation Structure
-
-| Location                | Purpose          | Publish to NPM? |
-| ----------------------- | ---------------- | --------------- |
-| `libs/aegisx-cli/docs/` | User-facing docs | ✅ Yes          |
-| `docs/aegisx-cli/`      | Internal docs    | ❌ No           |
-
----
 
 ## User Documentation
 
@@ -23,23 +19,6 @@
 | [Workflow Overview](../../libs/aegisx-cli/docs/WORKFLOW_OVERVIEW.md) | CLI architecture & workflows |
 | [Events Guide](../../libs/aegisx-cli/docs/EVENTS_GUIDE.md)           | WebSocket real-time events   |
 | [Import Guide](../../libs/aegisx-cli/docs/IMPORT_GUIDE.md)           | Bulk Excel/CSV import        |
-
----
-
-## Internal Documentation (This Folder)
-
-These docs are for **maintainers only** and are NOT published to npm:
-
-| Document                                                               | Description                       |
-| ---------------------------------------------------------------------- | --------------------------------- |
-| [COMPLETE_WORKFLOW.md](./COMPLETE_WORKFLOW.md)                         | **Full workflow: DB → API → UI**  |
-| [GIT_WORKFLOW.md](./GIT_WORKFLOW.md)                                   | Git release & npm publishing      |
-| [TESTING_GUIDE.md](./TESTING_GUIDE.md)                                 | Testing strategies for monorepo   |
-| [TEST_PRODUCTS_REFERENCE.md](./TEST_PRODUCTS_REFERENCE.md)             | Test products schema reference    |
-| [WEBSOCKET_IMPLEMENTATION_SPEC.md](./WEBSOCKET_IMPLEMENTATION_SPEC.md) | WebSocket implementation details  |
-| [internal/](./internal/)                                               | Contributing & development guides |
-
----
 
 ## Monorepo-Specific Commands
 
@@ -61,7 +40,3 @@ pnpm run crud:full -- <table_name> --force
 # List tables
 pnpm run crud:list
 ```
-
----
-
-**Last Updated:** 2025-12-07

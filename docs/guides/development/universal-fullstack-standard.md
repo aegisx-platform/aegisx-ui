@@ -1,3 +1,10 @@
+---
+title: 'Universal Full-Stack Standard'
+description: 'Database-first development workflow for full-stack features'
+category: guides
+tags: [development, full-stack, workflow]
+---
+
 # Universal Full-Stack Development Standard
 
 > **🚨 MANDATORY**: มาตรฐานสำหรับทุก feature ทุกครั้ง - ไม่มีข้อยกเว้น
@@ -695,21 +702,6 @@ curl -X GET "/api/{MODULE}" \
 # - Feature repos: auto-assigned ports (3334, 3335, etc.)
 # - Use ${API_URL}/documentation for environment-specific access
 ```
-
----
-
-## 🎯 Key Success Patterns
-
-1. **API-First**: ดู OpenAPI spec ก่อนเขียน frontend เสมอ
-2. **Test Endpoints**: ทดสอบ curl ก่อนเขียน service
-3. **Match Schemas**: TypeScript interfaces ต้องตรงกับ API schemas
-4. **Correct URLs**: ต้องมี `/api/{MODULE}` prefix และ port ถูกต้อง
-5. **CRUD Consistency**: ทุก module ใช้ pattern เดียวกัน
-6. **End-to-End**: ทดสอบ user flow จริงก่อน commit
-
-**🎯 เป้าหมาย: Zero integration bugs ด้วยการใช้มาตรฐานเดียวกันทุก feature**
-
----
 
 ## ⚡ **Quick Checklist (ป้องกันตกหล่น)**
 

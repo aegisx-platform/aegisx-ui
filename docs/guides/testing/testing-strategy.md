@@ -1,3 +1,10 @@
+---
+title: 'Testing Strategy'
+description: 'Overall testing strategy for unit, integration, and E2E tests'
+category: guides
+tags: [testing, strategy]
+---
+
 # Testing Strategy & Playwright E2E
 
 ## Testing Strategy

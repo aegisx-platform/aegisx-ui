@@ -1,3 +1,10 @@
+---
+title: 'API Response Standard'
+description: 'Standard response format for all API endpoints'
+category: reference
+tags: [api, standards, backend]
+---
+
 # API Response Standardization
 
 > **MANDATORY**: All API endpoints must follow this standardized response format
@@ -651,7 +658,3 @@ openapi-generator generate \
 5. **Offline Support** - Easy to cache and handle offline scenarios
 6. **SDK Generation** - Auto-generate client libraries
 7. **Testing** - Predictable responses across all platforms
-
----
-
-> ⚠️ **Important**: All new endpoints MUST follow this standard. Legacy endpoints should be migrated progressively. Mobile apps should implement proper offline handling and caching strategies.

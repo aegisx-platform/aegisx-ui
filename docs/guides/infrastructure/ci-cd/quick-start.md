@@ -1,3 +1,10 @@
+---
+title: 'CI/CD Quick Start'
+description: 'Quick start guide for CI/CD pipeline setup'
+category: guides
+tags: [infrastructure, ci-cd, deployment]
+---
+
 # 🚀 Quick Start Guide - CI/CD & Docker
 
 ## 📋 สิ่งที่ต้องเตรียมก่อน

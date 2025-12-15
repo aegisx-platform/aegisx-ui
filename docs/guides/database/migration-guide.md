@@ -1,3 +1,10 @@
+---
+title: 'Database Migration Guide'
+description: 'Guide for creating and running database migrations'
+category: guides
+tags: [database, migration, postgresql]
+---
+
 # Database Migration Guide
 
 ## Overview
