@@ -1,0 +1,76 @@
+name: Documentation PR Preview
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs-*.yml'
+      - 'package.json'
+
+jobs:
+  build-preview:
+    name: Build Documentation Preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build documentation
+        run: |
+          echo "Building documentation preview for PR #${{ github.event.pull_request.number }}"
+          START_TIME=$(date +%s)
+          pnpm docs:build
+          END_TIME=$(date +%s)
+          BUILD_DURATION=$((END_TIME - START_TIME))
+          echo "Build completed in ${BUILD_DURATION}s"
+          echo "build_duration=${BUILD_DURATION}" >> $GITHUB_OUTPUT
+          if [ $BUILD_DURATION -gt 60 ]; then
+            echo "::warning::Build took ${BUILD_DURATION}s (>60s target)"
+          fi
+        id: build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildDuration = '${{ steps.build.outputs.build_duration }}';
+            const body = `## 📚 Documentation Build Preview
+
+            ✅ Documentation build completed successfully in **${buildDuration}s**
+
+            ${buildDuration > 60 ? '⚠️ **Warning**: Build time exceeded 60s target' : '✨ Build time within performance target'}
+
+            **Build Details:**
+            - Commit: \`${{ github.event.pull_request.head.sha }}\`
+            - Branch: \`${{ github.head_ref }}\`
+
+            **Note:** This is a build validation only. Full deployment happens after merge to main/develop.
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

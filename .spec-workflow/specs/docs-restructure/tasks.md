@@ -182,7 +182,7 @@
   - _Requirements: 3 (Web Documentation Metadata), Performance (build performance)_
   - _Prompt: Implement the task for spec docs-restructure, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Frontend Developer with expertise in static site generators and documentation platforms | Task: Choose and install static site generator (VitePress recommended) following requirements 3 and performance NFR, researching options, installing chosen tool, and initializing basic configuration | Restrictions: Ensure compatibility with metadata-schema.md frontmatter, maintain build performance <60s, choose well-maintained tool | \_Leverage: metadata-schema.md, package.json_ | _Requirements: 3, Performance NFR_ | Success: Static site generator installed and initialized, basic configuration working, compatible with metadata schema | Instructions: Before starting, mark this task as in-progress ([-]) in tasks.md. After completion, use log-implementation tool to record tool choice and installation, then mark as complete ([x])\_
 
-- [-] 5.2. Configure web documentation (navigation, theme, plugins)
+- [x] 5.2. Configure web documentation (navigation, theme, plugins)
   - File: docs/.vitepress/config.js (or equivalent for chosen generator)
   - Configure navigation based on directory structure
   - Set up theme and styling
@@ -192,7 +192,7 @@
   - _Requirements: 6 (Documentation Index and Navigation), Usability (visual hierarchy, code examples)_
   - _Prompt: Implement the task for spec docs-restructure, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Frontend Developer with expertise in VitePress/Docusaurus configuration and UX | Task: Configure web documentation following requirements 6 and usability NFRs, setting up navigation from directory structure, theme, and plugins for search/syntax highlighting/Mermaid using metadata-schema.md and section indexes | Restrictions: Ensure navigation auto-generates from frontmatter, theme is professional and accessible, all plugins work correctly | \_Leverage: metadata-schema.md, section indexes_ | _Requirements: 6, Usability NFRs_ | Success: Navigation works automatically, theme is polished, search functional, code highlighting and Mermaid diagrams working | Instructions: Before starting, mark this task as in-progress ([-]) in tasks.md. After completion, use log-implementation tool to record configuration with artifacts, then mark as complete ([x])\_
 
-- [ ] 5.3. Set up GitHub Pages deployment with CI/CD
+- [x] 5.3. Set up GitHub Pages deployment with CI/CD
   - File: .github/workflows/docs-deploy.yml
   - Create GitHub Actions workflow for documentation build
   - Configure automatic deployment to GitHub Pages

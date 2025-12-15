@@ -1,7 +1,15 @@
 name: Deploy Documentation to GitHub Pages
 
 on:
-  workflow_dispatch: # Manual trigger only
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'docs/**'
+      - '.github/workflows/deploy-docs.yml'
+      - 'package.json'
+  workflow_dispatch: # Manual trigger option
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -39,14 +47,23 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build documentation
-        run: pnpm docs:build
+        run: |
+          echo "Build started at $(date)"
+          START_TIME=$(date +%s)
+          pnpm docs:build
+          END_TIME=$(date +%s)
+          BUILD_DURATION=$((END_TIME - START_TIME))
+          echo "Build completed in ${BUILD_DURATION}s"
+          if [ $BUILD_DURATION -gt 60 ]; then
+            echo "::warning::Build took ${BUILD_DURATION}s (>60s target)"
+          fi
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs-site/.vitepress/dist
+          path: dist/docs
 
   deploy:
     name: Deploy to GitHub Pages
