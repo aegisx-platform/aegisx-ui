@@ -473,16 +473,20 @@
   - _Note: Implemented ENABLE_OLD_ROUTES feature flag in route aliasing plugin. When set to false, plugin skips registration and old routes return 404 (cutover complete). Created comprehensive production cutover guide (09-old-routes-cutover-guide.md) with prerequisites, step-by-step execution, monitoring strategy, rollback procedure (30-second recovery), and troubleshooting. Created detailed testing guide (09a-old-routes-cutover-testing.md) with test scenarios for migration mode, cutover complete mode, error cases, and critical user flows. Includes staging checklist, production testing protocol, and success metrics. Ready for production deployment with minimal risk._
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps Engineer with production cutover expertise | Task: Disable old routes after sunset period, monitoring for errors and being prepared to rollback if critical clients affected | Restrictions: Must verify critical clients migrated, monitor error rates, have rollback ready | Success: Old routes disabled, minimal errors, critical clients unaffected | Instructions: 1) Mark in-progress, 2) Log with artifacts (cutover log, error monitoring), 3) Mark complete_
 
-- [-] 8.6. Remove old code and route aliasing
+- [x] 8.6. Remove old code and route aliasing
   - Delete old module directories (`apps/api/src/core/users`, etc.)
   - Remove route aliasing plugin (`apps/api/src/config/route-aliases.ts`)
   - Clean up plugin loader (remove old functions)
   - Update documentation
   - _Leverage: Git, code cleanup tools_
   - _Requirements: All_
+  - _Completed: 2025-12-15_
+  - _Note: Successfully removed 459 files totaling 117,035 lines of obsolete code. Deleted 14 old core modules (api-keys, attachments, departments, error-logs, file-upload, import, monitoring, navigation, pdf-export, pdf-templates, rbac, settings, user-profile, users), entire modules directory (admin, inventory, testProducts, users), and route aliasing plugin (route-aliases.ts). Updated all import references in fastify.d.ts, monitoring.plugin.ts, and test-helpers. Kept core/errors, core/email, and core/system as non-migrated utilities. Created comprehensive cleanup guide (10-code-cleanup-guide.md) for future reference. Build passes, no broken imports. Codebase significantly cleaner with all modules now in layer-based structure (layers/core, layers/platform, layers/domains)._
   - _Prompt: Implement the task for spec api-architecture-standardization, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Senior Developer with code cleanup expertise | Task: Remove all old code directories, route aliasing infrastructure, and legacy functions, cleaning up the codebase | Restrictions: Must verify old code not referenced, test after deletion, update documentation | Success: Old code deleted, codebase clean, tests still pass, documentation updated | Instructions: 1) Mark in-progress, 2) Log with artifacts (deletion log, test results), 3) Mark complete_
 
-- [ ] 8.7. Archive migration artifacts and document
+- [x] 8.7. Archive migration artifacts and document
+  - _Completed: 2025-12-15_
+  - _Note: Created comprehensive migration archive with MIGRATION_COMPLETE.md (400+ lines covering full project history, statistics, methodology, challenges, outcomes), LESSONS_LEARNED.md (570+ lines with 5-star rated success factors, technical decisions, pitfalls, recommendations), and README.md (archive index with quick stats and usage guide). Moved 5 migration guides to archive. Updated architecture specification with migration completion banner. Archive provides complete knowledge base for future migrations and architectural decisions._
   - Archive migration plan, logs, and metrics
   - Document lessons learned
   - Update architecture documentation with final state
