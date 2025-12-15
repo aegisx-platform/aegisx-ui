@@ -516,9 +516,7 @@ export default defineConfig({
   cleanUrls: true,
 
   // Ignore dead links - allow localhost URLs and template placeholders
-  // Note: Set to true to disable all dead link checking during file rename transition
-  ignoreDeadLinks: true,
-  /* ignoreDeadLinks: [
+  ignoreDeadLinks: [
     // Localhost URLs (development examples)
     /^http:\/\/localhost/,
     /^https:\/\/localhost/,
@@ -618,12 +616,8 @@ export default defineConfig({
     /FRONTEND_GENERATOR/,
     /SPEC-SESSION/,
     // Template placeholder links (not actual files)
-    /\/template-.*\/.*user-guide/,
-    /\/template-.*\/.*developer-guide/,
-    /\/template-.*\/.*api-reference/,
-    /\/template-.*\/.*architecture/,
-    /\/template-.*\/.*troubleshooting/,
-    /\/template-.*\/.*deployment-guide/,
+    /\/template-.*\/.*/,
+    /\/templates\/.*\/(user-guide|developer-guide|api-reference|architecture|troubleshooting|deployment-guide)/,
     // Remaining old SCREAMING_SNAKE_CASE references
     /BATCH_TRACKING_MIGRATION/,
     /FIXES_SPECIFICATION/,
@@ -633,7 +627,30 @@ export default defineConfig({
     /DASHBOARD-SPEC/,
     /VALIDATION-RULES/,
     /UI-UX-IMPROVEMENTS/,
-  ], */
+    // Inventory app specific patterns
+    /INTEGRATION-SPEC/,
+    /WORKFLOW-ANALYSIS/,
+    /BACKEND/,
+    /WORKFLOWS/,
+    /API$/,
+    // Non-markdown files (sql, prisma, etc.)
+    /\.sql$/,
+    /\.prisma$/,
+    // Specific missing files
+    /api-calling-standard$/,
+    /auto-discovery-import-system$/,
+    /\/implementation$/,
+    /account-lockout$/,
+    /session-management\/index$/,
+    /jwt-authentication$/,
+    /07-migration-patterns$/,
+    /08-plugin-migration-guide$/,
+    /\/components$/,
+    /\/development$/,
+    /phase-.*_(DATABASE|DATA_MIGRATION|BACKEND|FRONTEND)$/,
+    /system-init-integration$/,
+    /migration-guide$/,
+  ],
 
   // Ignore patterns
   srcExclude: [
@@ -641,6 +658,8 @@ export default defineConfig({
     // '**/features/**', // Re-enabled with Handlebars handling in markdown config
     '**/features/advanced/**', // Temporarily exclude - has extensive Handlebars examples
     '**/features/pdf-templates/**', // Temporarily exclude - has Handlebars syntax
+    '**/features/templates/**', // Exclude templates - contain placeholder links
+    '**/features/inventory-app/**', // Exclude - has many internal cross-references to fix later
     '**/styling/**',
     '**/reference/cli/aegisx-cli/**',
     '**/archive/**', // Exclude archived content
