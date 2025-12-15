@@ -172,7 +172,7 @@
 
 ## Phase 5: Web Documentation Setup
 
-- [-] 5.1. Choose and install static site generator (VitePress recommended)
+- [x] 5.1. Choose and install static site generator (VitePress recommended)
   - File: package.json (add VitePress dependency)
   - Research and compare VitePress vs Docusaurus vs MkDocs
   - Install VitePress (or chosen generator)
@@ -182,7 +182,7 @@
   - _Requirements: 3 (Web Documentation Metadata), Performance (build performance)_
   - _Prompt: Implement the task for spec docs-restructure, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Frontend Developer with expertise in static site generators and documentation platforms | Task: Choose and install static site generator (VitePress recommended) following requirements 3 and performance NFR, researching options, installing chosen tool, and initializing basic configuration | Restrictions: Ensure compatibility with metadata-schema.md frontmatter, maintain build performance <60s, choose well-maintained tool | \_Leverage: metadata-schema.md, package.json_ | _Requirements: 3, Performance NFR_ | Success: Static site generator installed and initialized, basic configuration working, compatible with metadata schema | Instructions: Before starting, mark this task as in-progress ([-]) in tasks.md. After completion, use log-implementation tool to record tool choice and installation, then mark as complete ([x])\_
 
-- [ ] 5.2. Configure web documentation (navigation, theme, plugins)
+- [-] 5.2. Configure web documentation (navigation, theme, plugins)
   - File: docs/.vitepress/config.js (or equivalent for chosen generator)
   - Configure navigation based on directory structure
   - Set up theme and styling

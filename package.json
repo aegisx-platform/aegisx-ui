@@ -260,6 +260,7 @@
     "jest-util": "^30.0.2",
     "jsonc-eslint-parser": "^2.1.0",
     "lint-staged": "^16.1.6",
+    "mermaid": "^11.12.2",
     "ng-packagr": "~20.1.0",
     "nx": "21.4.1",
     "postcss": "^8.5.6",
@@ -276,6 +277,7 @@
     "typescript-eslint": "^8.29.0",
     "verdaccio": "^6.0.5",
     "vitepress": "^1.6.4",
+    "vitepress-plugin-mermaid": "^2.0.17",
     "vue": "^3.5.22",
     "ws": "^8.18.3"
   },

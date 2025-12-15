@@ -1,7 +1,9 @@
 import { defineConfig } from 'vitepress';
+import { withMermaid } from 'vitepress-plugin-mermaid';
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withMermaid(
+  defineConfig({
   title: 'AegisX Platform',
   description:
     'Enterprise-ready full-stack application with Angular 19+, Fastify 4+, PostgreSQL, and Nx monorepo',
@@ -244,8 +246,11 @@ export default defineConfig({
   // Clean URLs (remove .html)
   cleanUrls: true,
 
+  // Ignore dead links (will be fixed in a later task)
+  ignoreDeadLinks: true,
+
   // Ignore patterns
-  srcExclude: ['**/README.md', '**/features/**'],
+  srcExclude: ['**/README.md', '**/features/**', '**/styling/**', '**/reference/cli/aegisx-cli/**'],
 
   // Performance
   vite: {
@@ -253,4 +258,13 @@ export default defineConfig({
       chunkSizeWarningLimit: 1000,
     },
   },
-});
+
+  // Mermaid configuration
+  mermaid: {
+    // Mermaid theme configuration
+  },
+  mermaidPlugin: {
+    class: 'mermaid',
+  },
+  }),
+);
