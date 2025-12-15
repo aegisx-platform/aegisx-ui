@@ -20,7 +20,7 @@ export default defineConfig({
       { text: 'Getting Started', link: '/getting-started/getting-started' },
       { text: 'Guides', link: '/guides/development/feature-development-standard' },
       { text: 'Reference', link: '/reference/api/api-response-standard' },
-      { text: 'Architecture', link: '/architecture/concepts/module-isolation' },
+      { text: 'Architecture', link: '/architecture/architecture-overview' },
       { text: 'Development', link: '/development/claude-detailed-rules' },
       { text: 'Infrastructure', link: '/infrastructure/CI-CD-SETUP' },
       { text: 'Testing', link: '/testing/avatar-testing-guide' },
@@ -144,41 +144,69 @@ export default defineConfig({
 
       '/architecture/': [
         {
-          text: 'Concepts',
+          text: 'Overview',
           items: [
             {
-              text: 'Module Isolation',
-              link: '/architecture/concepts/module-isolation',
+              text: 'Architecture Overview',
+              link: '/architecture/architecture-overview',
             },
-            {
-              text: 'Module Development',
-              link: '/architecture/concepts/module-development',
-            },
-          ],
-        },
-        {
-          text: 'Patterns',
-          items: [
-            {
-              text: 'Microservices Adoption',
-              link: '/architecture/patterns/microservices-adoption-path',
-            },
-            {
-              text: 'Dynamic Architecture',
-              link: '/architecture/patterns/dynamic-architecture',
-            },
-          ],
-        },
-        {
-          text: 'Domains',
-          items: [
             {
               text: 'Domain Architecture Guide',
-              link: '/architecture/domains/domain-architecture-guide',
+              link: '/architecture/domain-architecture-guide',
             },
             {
               text: 'Quick Domain Reference',
-              link: '/architecture/domains/quick-domain-reference',
+              link: '/architecture/quick-domain-reference',
+            },
+          ],
+        },
+        {
+          text: 'Frontend',
+          items: [
+            {
+              text: 'Frontend Architecture',
+              link: '/architecture/frontend-architecture',
+            },
+            {
+              text: 'Angular Signals Patterns',
+              link: '/architecture/frontend/angular-signals-patterns',
+            },
+            {
+              text: 'Auth System',
+              link: '/architecture/frontend/auth-system',
+            },
+            {
+              text: 'Form Validation Patterns',
+              link: '/architecture/frontend/form-validation-patterns',
+            },
+            {
+              text: 'Performance Optimization',
+              link: '/architecture/frontend/performance-optimization',
+            },
+          ],
+        },
+        {
+          text: 'Backend',
+          items: [
+            {
+              text: 'Backend Architecture',
+              link: '/architecture/backend-architecture',
+            },
+            {
+              text: 'Fastify Plugins',
+              link: '/architecture/backend/fastify-plugins',
+            },
+            {
+              text: 'RBAC & Auth',
+              link: '/architecture/backend/rbac-auth',
+            },
+            {
+              text: 'Error Handling & Monitoring',
+              link: '/architecture/backend/error-handling-monitoring',
+            },
+            {
+              text: 'Performance Optimization',
+              link: '/architecture/backend/performance-optimization',
             },
           ],
         },
