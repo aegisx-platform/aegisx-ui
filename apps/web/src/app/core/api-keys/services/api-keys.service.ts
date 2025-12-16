@@ -34,7 +34,7 @@ import {
 })
 export class ApiKeysService {
   private http = inject(HttpClient);
-  private readonly baseUrl = '/api-keys';
+  private readonly baseUrl = '/v1/platform/api-keys';
 
   // Signal-based state management
   private _state = signal<ApiKeysState>({

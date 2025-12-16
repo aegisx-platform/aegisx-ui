@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/user-department-integration/requirements.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T00:24:13.669Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765844653591_bjmov1tik",
+      "approvalTitle": "Requirements: User Department Integration"
+    }
+  ]
+}

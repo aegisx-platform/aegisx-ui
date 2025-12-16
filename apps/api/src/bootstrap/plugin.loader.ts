@@ -15,8 +15,8 @@ import fastifyHelmet from '@fastify/helmet';
 import fastifyJwt from '@fastify/jwt';
 import fastifyRateLimit from '@fastify/rate-limit';
 
-// DISABLED: Activity logging plugin depends on deleted user-profile module
-// import { activityLoggingPlugin } from '../plugins/activity-logging';
+// NOTE: Re-enabled with stub implementations (Phase 1.3). Will use proper service in Phase 3.
+import activityLoggingPlugin from '../plugins/activity-logging/activity-logging.plugin';
 import errorHandlerPlugin from '../plugins/error-handler.plugin';
 import globalErrorHooksPlugin from '../plugins/global-error-hooks.plugin';
 import healthCheckPlugin from '../plugins/health-check.plugin';
@@ -35,6 +35,8 @@ import swaggerPlugin from '../plugins/swagger.plugin';
 import authPlugin from '../layers/core/auth/auth.plugin';
 import permissionCachePlugin from '../layers/core/auth/permission-cache.plugin';
 import authStrategiesPlugin from '../layers/core/auth/strategies/auth.strategies';
+import { activityLogsModulePlugin } from '../layers/core/audit/activity-logs';
+import { errorLogsModulePlugin } from '../layers/core/audit/error-logs';
 import { fileAuditPlugin } from '../layers/core/audit/file-audit';
 import { loginAttemptsPlugin } from '../layers/core/audit/login-attempts';
 import { monitoringPlugin as monitoringModulePlugin } from '../layers/core/monitoring';
@@ -49,6 +51,8 @@ import { platformFileUploadPlugin } from '../layers/platform/file-upload';
 import { platformAttachmentPlugin } from '../layers/platform/attachments';
 import platformPdfExportPlugin from '../layers/platform/pdf-export';
 import { importDiscoveryPlugin as platformImportDiscoveryPlugin } from '../layers/platform/import';
+import { userProfileModulePlugin } from '../layers/platform/user-profile';
+import { apiKeysModulePlugin } from '../layers/platform/api-keys';
 
 // Business feature modules
 import websocketPlugin from '../shared/websocket/websocket.plugin';
@@ -265,25 +269,25 @@ export function createPluginGroups(
           plugin: authStrategiesPlugin,
           required: true,
         },
-        // DISABLED: Activity logging plugin depends on deleted user-profile module
-        // {
-        //   name: 'activity-logging',
-        //   plugin: activityLoggingPlugin,
-        //   options: {
-        //     config: {
-        //       enabled: process.env.ACTIVITY_LOGGING_ENABLED !== 'false',
-        //       autoLogErrors: true,
-        //       enableBatching: appConfig.server.isProduction,
-        //       batchSize: 20,
-        //       batchInterval: 5000,
-        //       defaultConfig: {
-        //         async: true,
-        //         skipSuccessfulGets: true,
-        //       },
-        //     },
-        //   },
-        //   required: false,
-        // },
+        // NOTE: Re-enabled with stub implementations (Phase 1.3)
+        {
+          name: 'activity-logging',
+          plugin: activityLoggingPlugin,
+          options: {
+            config: {
+              enabled: process.env.ACTIVITY_LOGGING_ENABLED !== 'false',
+              autoLogErrors: true,
+              enableBatching: appConfig.server.isProduction,
+              batchSize: 20,
+              batchInterval: 5000,
+              defaultConfig: {
+                async: true,
+                skipSuccessfulGets: true,
+              },
+            },
+          },
+          required: false,
+        },
         {
           name: 'swagger',
           plugin: swaggerPlugin,
@@ -490,6 +494,16 @@ export function createCoreLayerGroup(): PluginGroup {
       },
       // Audit modules - audit logging
       {
+        name: 'core-activity-logs',
+        plugin: activityLogsModulePlugin,
+        required: true,
+      },
+      {
+        name: 'core-error-logs',
+        plugin: errorLogsModulePlugin,
+        required: true,
+      },
+      {
         name: 'core-file-audit',
         plugin: fileAuditPlugin,
         required: true,
@@ -562,6 +576,16 @@ export function createPlatformLayerGroup(): PluginGroup {
         name: 'platform-import-discovery',
         plugin: platformImportDiscoveryPlugin,
         required: false, // Optional - system can run without import discovery
+      },
+      {
+        name: 'platform-user-profile',
+        plugin: userProfileModulePlugin,
+        required: true,
+      },
+      {
+        name: 'platform-api-keys',
+        plugin: apiKeysModulePlugin,
+        required: true,
       },
     ],
   };

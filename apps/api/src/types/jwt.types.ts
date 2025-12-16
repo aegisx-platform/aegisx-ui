@@ -11,8 +11,8 @@ export interface JWTPayload {
 
   // User claims
   id: string;
-  email: string;
-  role: string; // Deprecated: Use roles[] for multi-role support
+  email?: string;
+  role?: string; // Deprecated: Use roles[] for multi-role support
   roles?: string[]; // Multi-role support
 
   // Custom claims
@@ -20,4 +20,9 @@ export interface JWTPayload {
   sessionId?: string;
   fingerprint?: string;
   v?: number;
+
+  // API Key authentication fields
+  keyId?: string;
+  keyName?: string;
+  authenticatedVia?: 'jwt' | 'api-key';
 }

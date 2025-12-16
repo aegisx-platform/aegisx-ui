@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/monitoring-audit-modules/requirements.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T06:58:30.980Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765868310937_nqlshsmiu",
+      "approvalTitle": "Requirements: Monitoring & Audit Modules Restoration"
+    }
+  ]
+}

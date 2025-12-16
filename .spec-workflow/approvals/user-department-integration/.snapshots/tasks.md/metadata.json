@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/user-department-integration/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T00:29:41.890Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765844981854_96ikm43zk",
+      "approvalTitle": "Tasks: User Department Integration"
+    }
+  ]
+}

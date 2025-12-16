@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/import-discovery-layers-fix/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T01:04:09.001Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765847048967_bw0rqgwym",
+      "approvalTitle": "Tasks Document - Import Discovery Layers Fix"
+    }
+  ]
+}

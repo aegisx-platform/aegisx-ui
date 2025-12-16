@@ -1,5 +1,4 @@
 /* eslint-disable */
-// DISABLED: This plugin depends on deleted user-profile module
 import {
   FastifyInstance,
   FastifyPluginOptions,
@@ -7,10 +6,7 @@ import {
   FastifyReply,
 } from 'fastify';
 import fp from 'fastify-plugin';
-// @ts-ignore - Module deleted during migration
-import { UserActivityService } from '../../core/user-profile/user-activity.service';
-// @ts-ignore - Module deleted during migration
-import { UserActivityRepository } from '../../core/user-profile/user-activity.repository';
+import { ActivityLogsService } from '../../layers/core/audit/activity-logs';
 import { ActivityMiddleware } from './activity-middleware';
 import {
   ActivityLogPluginConfig,
@@ -49,8 +45,8 @@ async function activityLoggingPlugin(
     return;
   }
 
-  // Initialize UserActivityService after dependencies are available
-  let userActivityService: UserActivityService | undefined;
+  // Initialize ActivityLogsService after dependencies are available
+  let userActivityService: ActivityLogsService | undefined;
   let middleware: ActivityMiddleware | undefined;
 
   fastify.addHook('onReady', async function () {
@@ -60,8 +56,11 @@ async function activityLoggingPlugin(
       );
     }
 
-    const userActivityRepository = new UserActivityRepository(fastify.knex);
-    userActivityService = new UserActivityService(userActivityRepository);
+    // Use real ActivityLogsService
+    userActivityService = new ActivityLogsService(
+      fastify.knex,
+      fastify.redis || null,
+    );
 
     // Initialize middleware after service is ready
     middleware = new ActivityMiddleware(fastify, userActivityService, config);
@@ -133,13 +132,19 @@ async function activityLoggingPlugin(
         return;
       }
 
-      return userActivityService.logActivity(
+      return userActivityService.create({
         userId,
-        action as any,
+        action: action as any,
         description,
-        request,
-        options,
-      );
+        severity: options?.severity || 'info',
+        metadata: options?.metadata ? JSON.stringify(options.metadata) : null,
+        timestamp: new Date().toISOString(),
+        ipAddress: request?.ip || null,
+        userAgent: (request?.headers['user-agent'] as string) || null,
+        sessionId: null,
+        resourceType: null,
+        resourceId: null,
+      } as any);
     },
   );
 

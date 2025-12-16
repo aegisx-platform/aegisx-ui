@@ -1,8 +1,6 @@
 /* eslint-disable */
-// DISABLED: This plugin depends on deleted user-profile module
 import { FastifyRequest, FastifyReply, FastifyInstance } from 'fastify';
-// @ts-ignore - Module deleted during migration
-import { UserActivityService } from '../../core/user-profile/user-activity.service';
+import { ActivityLogsService } from '../../layers/core/audit/activity-logs';
 import {
   ActivityLogConfig,
   ActivityLogPluginConfig,
@@ -32,7 +30,7 @@ export class ActivityMiddleware {
 
   constructor(
     private fastify: FastifyInstance,
-    private userActivityService: UserActivityService,
+    private userActivityService: ActivityLogsService,
     private pluginConfig: ActivityLogPluginConfig,
   ) {
     // Set up batch processing if enabled
@@ -137,7 +135,17 @@ export class ActivityMiddleware {
     }
 
     try {
-      await this.userActivityService.logApiError(userId, error, request);
+      await this.createActivityLog(
+        userId,
+        'api_error',
+        `API Error: ${error.message}`,
+        'error',
+        {
+          errorName: error.name,
+          errorMessage: error.message,
+          errorStack: error.stack,
+        },
+      );
     } catch (logError: any) {
       this.fastify.log.error({ error: logError }, 'Error logging API error');
     }
@@ -183,25 +191,26 @@ export class ActivityMiddleware {
     // Log activity (async or sync based on config)
     if (config.async !== false && !this.pluginConfig.enableBatching) {
       // Async logging - don't wait
-      this.userActivityService
-        .logActivity(userId, action as any, description, request, {
-          severity,
-          metadata,
-        })
-        .catch((error: any) => {
-          this.fastify.log.error({ error }, 'Async activity logging failed');
-        });
+      this.createActivityLog(
+        userId,
+        action,
+        description,
+        severity,
+        metadata,
+      ).catch((error: any) => {
+        this.fastify.log.error({ error }, 'Async activity logging failed');
+      });
     } else if (this.pluginConfig.enableBatching) {
       // Add to batch queue
       this.addToBatch(activityData);
     } else {
       // Synchronous logging
-      await this.userActivityService.logActivity(
+      await this.createActivityLog(
         userId,
-        action as any,
+        action,
         description,
-        request,
-        { severity, metadata },
+        severity,
+        metadata,
       );
     }
   }
@@ -380,18 +389,53 @@ export class ActivityMiddleware {
     try {
       // Process activities in parallel but limit concurrency
       const promises = batch.map((activity) =>
-        this.userActivityService.logActivity(
+        this.createActivityLog(
           activity.userId,
-          activity.action as any,
+          activity.action,
           activity.description,
-          activity.request,
-          { severity: activity.severity, metadata: activity.metadata },
+          activity.severity,
+          activity.metadata,
         ),
       );
 
       await Promise.all(promises);
     } catch (error: any) {
       this.fastify.log.error({ error }, 'Batch activity logging failed');
+    }
+  }
+
+  /**
+   * Helper method to create activity log entry using ActivityLogsService
+   *
+   * Maps the middleware API to the service's create() method.
+   */
+  private async createActivityLog(
+    userId: string,
+    action: string,
+    description: string,
+    severity: 'info' | 'warning' | 'error' | 'critical',
+    metadata?: Record<string, any>,
+  ): Promise<void> {
+    try {
+      await this.userActivityService.create({
+        userId,
+        action: action as any, // ActivityLog uses specific action enum
+        description,
+        severity,
+        metadata: metadata ? JSON.stringify(metadata) : null,
+        timestamp: new Date().toISOString(),
+        ipAddress: null, // Could be extracted from request if needed
+        userAgent: null, // Could be extracted from request if needed
+        sessionId: null, // Could be extracted from request if needed
+        resourceType: null, // Could be set based on route context
+        resourceId: null, // Could be set based on route context
+      } as any);
+    } catch (error: any) {
+      this.fastify.log.error(
+        { error, userId, action },
+        'Failed to create activity log',
+      );
+      throw error;
     }
   }
 

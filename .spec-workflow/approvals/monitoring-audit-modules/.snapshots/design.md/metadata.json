@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/monitoring-audit-modules/design.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T07:08:26.871Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765868906852_1tf55yjv7",
+      "approvalTitle": "Design: Monitoring & Audit Modules Architecture"
+    }
+  ]
+}

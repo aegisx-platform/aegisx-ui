@@ -225,6 +225,69 @@ export interface AvatarUploadResponse {
   };
 }
 
+// Profile-related types
+export interface ProfileResponse {
+  success: boolean;
+  data: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    departmentId?: string;
+    avatarUrl?: string;
+    theme: 'light' | 'dark' | 'auto';
+    language: 'en' | 'th';
+    notifications: boolean;
+  };
+}
+
+export interface UpdateProfile {
+  firstName?: string;
+  lastName?: string;
+  departmentId?: string | null;
+  theme?: 'light' | 'dark' | 'auto';
+  language?: 'en' | 'th';
+  notifications?: boolean;
+}
+
+export interface PreferencesResponse {
+  success: boolean;
+  data: {
+    theme: 'light' | 'dark' | 'auto';
+    language: 'en' | 'th';
+    notifications: boolean;
+  };
+}
+
+export interface UpdatePreferences {
+  theme?: 'light' | 'dark' | 'auto';
+  language?: 'en' | 'th';
+  notifications?: boolean;
+}
+
+export interface ActivityQueryParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface ActivityListResponse {
+  success: boolean;
+  data: Array<{
+    id: string;
+    action: string;
+    description: string;
+    timestamp: string;
+    ipAddress?: string;
+    userAgent?: string;
+  }>;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -964,5 +1027,32 @@ export class UserService {
     } finally {
       this.loadingSignal.set(false);
     }
+  }
+
+  // ===== USER ACTIVITY METHODS =====
+
+  getUserActivity(
+    params?: ActivityQueryParams,
+  ): Observable<ActivityListResponse> {
+    let httpParams = new HttpParams();
+    if (params?.page) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params?.limit) {
+      httpParams = httpParams.set('limit', params.limit.toString());
+    }
+
+    return this.http
+      .get<ActivityListResponse>(`/v1/platform/profile/activity`, {
+        params: httpParams,
+      })
+      .pipe(
+        map((response) => {
+          if (response.success && response.data) {
+            return response;
+          }
+          throw new Error('Failed to get user activity');
+        }),
+      );
   }
 }
