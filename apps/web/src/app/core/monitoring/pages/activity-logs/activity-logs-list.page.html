@@ -1,0 +1,494 @@
+<div class="activity-logs-page p-4 md:p-6 space-y-6">
+  <!-- Breadcrumb -->
+  <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
+
+  <!-- Header Section -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+  >
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-on-surface">
+        {{ pageConfig.title }}
+      </h1>
+      <p class="text-muted mt-1">{{ pageConfig.description }}</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <button
+        mat-stroked-button
+        (click)="exportLogs()"
+        [disabled]="loading()"
+        class="border-outline text-on-surface"
+      >
+        <mat-icon>download</mat-icon>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards Grid -->
+  <div
+    *ngIf="computedStats()"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+  >
+    <!-- Total Activities Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-primary"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Total Activities</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ computedStats().total }}
+        </p>
+        <p class="text-xs text-muted">All recorded activities</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Today Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-success"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Today</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ computedStats().today }}
+        </p>
+        <p class="text-xs text-muted">Today's activities</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- This Week Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-warning"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">This Week</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ computedStats().thisWeek }}
+        </p>
+        <p class="text-xs text-muted">This week's total</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Critical/Error Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-error"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Critical</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ computedStats().critical }}
+        </p>
+        <p class="text-xs text-muted">Critical issues</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filter Expansion Panel -->
+  <mat-expansion-panel
+    [expanded]="isFiltersExpanded()"
+    (opened)="isFiltersExpanded.set(true)"
+    (closed)="isFiltersExpanded.set(false)"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title class="flex items-center gap-2">
+        <mat-icon class="text-primary">filter_alt</mat-icon>
+        <span class="font-semibold">Filter Activity Logs</span>
+      </mat-panel-title>
+      <mat-panel-description *ngIf="!isFiltersExpanded()">
+        <span class="text-xs text-muted">Click to expand filters</span>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="filterForm" class="space-y-4 p-4">
+      <!-- First Row: Search and Action -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full"
+        >
+          <mat-label>Search Description</mat-label>
+          <input
+            matInput
+            placeholder="Search in descriptions"
+            formControlName="search"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full"
+        >
+          <mat-label>Action</mat-label>
+          <input
+            matInput
+            placeholder="e.g., login, create, update"
+            formControlName="action"
+          />
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Second Row: Severity and User -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full"
+        >
+          <mat-label>Severity</mat-label>
+          <mat-select formControlName="severity">
+            <mat-option [value]="null">All Severities</mat-option>
+            <mat-option value="info">Info</mat-option>
+            <mat-option value="warning">Warning</mat-option>
+            <mat-option value="error">Error</mat-option>
+            <mat-option value="critical">Critical</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full"
+        >
+          <mat-label>User ID</mat-label>
+          <input
+            matInput
+            placeholder="Filter by user ID"
+            formControlName="userId"
+          />
+          <mat-icon matPrefix>person</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Third Row: Date Range -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full"
+        >
+          <mat-label>Start Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="startPicker"
+            formControlName="startDate"
+            placeholder="From"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="startPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full"
+        >
+          <mat-label>End Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            formControlName="endDate"
+            placeholder="To"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="endPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-2 pt-2">
+        <button
+          type="button"
+          mat-flat-button
+          (click)="onFilterChange()"
+          class="bg-primary text-on-primary flex-1 md:flex-none"
+        >
+          <mat-icon>filter_list</mat-icon>
+          Apply Filters
+        </button>
+        <button
+          type="button"
+          mat-stroked-button
+          (click)="clearFilters()"
+          class="border-outline text-on-surface flex-1 md:flex-none"
+        >
+          <mat-icon>clear</mat-icon>
+          Clear
+        </button>
+      </div>
+    </form>
+  </mat-expansion-panel>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex justify-center items-center py-12">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()">
+    <mat-card
+      appearance="outlined"
+      class="border border-error bg-error-container rounded-xl"
+    >
+      <mat-card-content class="flex items-center gap-3 p-6">
+        <div class="bg-error-container rounded-lg p-3">
+          <mat-icon class="text-error">error</mat-icon>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-semibold text-error">Error Loading Logs</h3>
+          <p class="text-sm text-muted">{{ error() }}</p>
+        </div>
+        <button
+          mat-icon-button
+          (click)="loadLogs()"
+          matTooltip="Retry"
+          class="text-error"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Timeline View -->
+  <div *ngIf="!loading() && !error()">
+    <!-- Empty State -->
+    <div *ngIf="activityLogs().length === 0">
+      <mat-card appearance="outlined" class="rounded-xl">
+        <mat-card-content class="flex flex-col items-center gap-4 py-12">
+          <mat-icon class="text-6xl text-muted opacity-50">inbox</mat-icon>
+          <div class="text-center">
+            <h3 class="text-lg font-semibold text-on-surface mb-1">
+              No Activity Logs Found
+            </h3>
+            <p class="text-sm text-muted">
+              Try adjusting your filters or check back later
+            </p>
+          </div>
+          <button
+            mat-stroked-button
+            (click)="clearFilters()"
+            class="border-outline text-on-surface mt-2"
+          >
+            <mat-icon>clear</mat-icon>
+            Clear Filters
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Timeline Container -->
+    <div *ngIf="activityLogs().length > 0" class="timeline-container space-y-0">
+      <!-- Timeline Item -->
+      <div
+        *ngFor="
+          let log of activityLogs();
+          trackBy: trackByLogId;
+          let isLast = last
+        "
+        class="timeline-item"
+        [class.is-last]="isLast"
+      >
+        <!-- Timeline Line and Dot -->
+        <div class="timeline-line">
+          <div
+            class="timeline-dot"
+            [class]="'timeline-dot-' + log.severity"
+            [matTooltip]="log.severity | uppercase"
+          >
+            <mat-icon class="timeline-dot-icon"
+              >{{ getActionIcon(log.action) }}</mat-icon
+            >
+          </div>
+        </div>
+
+        <!-- Activity Card -->
+        <mat-card
+          appearance="outlined"
+          class="timeline-card"
+          [class]="
+            'timeline-card-' +
+            log.severity +
+            ' ' +
+            getTimelineCardColor(log.severity)
+          "
+        >
+          <mat-card-content class="p-4 md:p-6">
+            <!-- Header with timestamp and severity badge -->
+            <div
+              class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-3"
+            >
+              <div class="flex-1">
+                <!-- Action and User -->
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <mat-chip
+                    class="bg-surface-container text-on-surface text-xs"
+                  >
+                    <mat-icon class="mr-1" matChipAvatar
+                      >{{ getActionIcon(log.action) }}</mat-icon
+                    >
+                    {{ log.action }}
+                  </mat-chip>
+                  <mat-chip class="bg-surface-container text-muted text-xs">
+                    <mat-icon class="mr-1" matChipAvatar>person</mat-icon>
+                    {{ log.user_id.substring(0, 8) }}...
+                  </mat-chip>
+                </div>
+
+                <!-- Timestamp -->
+                <div class="flex flex-col text-xs text-muted">
+                  <span class="font-medium">
+                    {{ formatTimelineTimestamp(log.created_at).date }} at {{
+                    formatTimelineTimestamp(log.created_at).time }}
+                  </span>
+                  <span class="text-xs">
+                    ({{ formatTimelineTimestamp(log.created_at).relative }})
+                  </span>
+                </div>
+              </div>
+
+              <!-- Severity Badge -->
+              <div class="self-start md:self-center">
+                <span
+                  [class]="getSeverityBadge(log.severity).class"
+                  class="timeline-severity-badge"
+                >
+                  <span
+                    class="size-2 rounded-full"
+                    [class]="
+                      log.severity === 'critical'
+                        ? 'bg-red-700'
+                        : log.severity === 'error'
+                          ? 'bg-red-500'
+                          : log.severity === 'warning'
+                            ? 'bg-amber-500'
+                            : 'bg-blue-500'
+                    "
+                    aria-hidden="true"
+                  ></span>
+                  {{ getSeverityBadge(log.severity).label }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p class="text-sm text-on-surface mb-4 leading-relaxed">
+              {{ log.description }}
+            </p>
+
+            <!-- Metadata -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-4">
+              <!-- Session ID -->
+              <div
+                *ngIf="log.session_id"
+                class="flex items-start gap-2 p-2 bg-surface-container rounded"
+              >
+                <mat-icon class="text-muted" style="font-size: 16px"
+                  >fingerprint</mat-icon
+                >
+                <div class="flex-1 min-w-0">
+                  <p class="text-muted font-medium">Session</p>
+                  <p class="text-on-surface truncate" [title]="log.session_id">
+                    {{ log.session_id.substring(0, 12) }}...
+                  </p>
+                </div>
+              </div>
+
+              <!-- IP Address -->
+              <div
+                *ngIf="log.ip_address"
+                class="flex items-start gap-2 p-2 bg-surface-container rounded"
+              >
+                <mat-icon class="text-muted" style="font-size: 16px"
+                  >location_on</mat-icon
+                >
+                <div class="flex-1 min-w-0">
+                  <p class="text-muted font-medium">IP Address</p>
+                  <p class="text-on-surface truncate" [title]="log.ip_address">
+                    {{ log.ip_address }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Device Info -->
+              <div
+                *ngIf="log.device_info && log.device_info.device"
+                class="flex items-start gap-2 p-2 bg-surface-container rounded"
+              >
+                <mat-icon class="text-muted" style="font-size: 16px"
+                  >devices</mat-icon
+                >
+                <div class="flex-1 min-w-0">
+                  <p class="text-muted font-medium">Device</p>
+                  <p class="text-on-surface truncate">
+                    {{ log.device_info?.device }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="viewDetails(log)"
+                matTooltip="View Details"
+                class="flex-1 md:flex-none"
+              >
+                <mat-icon>visibility</mat-icon>
+                <span class="md:hidden ml-2">Details</span>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Paginator -->
+    <div *ngIf="activityLogs().length > 0" class="flex justify-center pt-4">
+      <mat-paginator
+        [length]="totalLogs()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageConfig.pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+    </div>
+  </div>
+</div>

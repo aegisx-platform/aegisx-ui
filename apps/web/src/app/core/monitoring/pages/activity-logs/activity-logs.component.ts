@@ -2,6 +2,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -549,6 +550,7 @@ export class ActivityLogsComponent implements OnInit {
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   // Breadcrumb items
   breadcrumbItems: BreadcrumbItem[] = [
@@ -720,22 +722,7 @@ export class ActivityLogsComponent implements OnInit {
   }
 
   viewLogDetails(log: ActivityLog): void {
-    const dialogRef = this.dialog.open(ActivityLogDetailDialogComponent, {
-      width: '800px',
-      maxWidth: '90vw',
-      maxHeight: '90vh',
-      data: log,
-      autoFocus: false,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result === true) {
-        // User clicked "Copy to Clipboard"
-        this.snackBar.open('Activity details copied to clipboard', 'Close', {
-          duration: 2000,
-        });
-      }
-    });
+    this.router.navigate(['/monitoring/activity-logs', log.id]);
   }
 
   exportLogs(): void {
