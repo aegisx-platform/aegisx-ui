@@ -74,7 +74,7 @@ export interface ApiResponse<T> {
 })
 export class NavigationItemsService {
   private http = inject(HttpClient);
-  private readonly baseUrl = '/navigation-items';
+  private readonly baseUrl = '/v1/platform/navigation/navigation-items';
 
   /**
    * Get all navigation items

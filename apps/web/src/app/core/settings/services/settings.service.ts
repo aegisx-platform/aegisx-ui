@@ -29,7 +29,7 @@ import {
 })
 export class SettingsService {
   private http: HttpClient = inject(HttpClient);
-  private readonly baseUrl = '/settings';
+  private readonly baseUrl = '/v1/platform/settings';
 
   // Signal-based state management
   private _state = signal<SettingsState>({

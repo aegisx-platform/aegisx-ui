@@ -243,7 +243,7 @@ interface ApiResponse<T> {
 })
 export class UserService {
   private http = inject(HttpClient);
-  private baseUrl = '/users';
+  private baseUrl = '/v1/platform/users';
 
   // Signals for state management
   private usersSignal = signal<User[]>([]);

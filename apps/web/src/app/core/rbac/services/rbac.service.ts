@@ -34,7 +34,7 @@ import {
 })
 export class RbacService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/rbac';
+  private readonly baseUrl = '/v1/platform/rbac';
 
   // ===== ROLE METHODS =====
 
