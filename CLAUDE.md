@@ -1,6 +1,6 @@
 # Enterprise Monorepo Application
 
-> **Complete documentation in `docs/` directory. Detailed rules in [docs/development/claude-detailed-rules.md](./docs/development/claude-detailed-rules.md)**
+> **Complete documentation in `docs/` directory. Detailed rules in [docs/guides/development/claude-detailed-rules.md](./docs/guides/development/claude-detailed-rules.md)**
 
 ## Critical Development Rules
 
@@ -196,7 +196,7 @@ Our documentation follows the **Diátaxis Framework** organized in 4 main sectio
 - [API Calling Standard](./docs/guides/development/api-calling-standard.md) - Correct API patterns
 - [QA Checklist](./docs/guides/development/qa-checklist.md) - Quality assurance steps
 - [Universal Full-Stack Standard](./docs/guides/development/universal-fullstack-standard.md) - Database-first workflow
-- [Claude Detailed Rules](./docs/development/claude-detailed-rules.md) - Verbose development rules
+- [Claude Detailed Rules](./docs/guides/development/claude-detailed-rules.md) - Verbose development rules
 
 #### Infrastructure Guides
 

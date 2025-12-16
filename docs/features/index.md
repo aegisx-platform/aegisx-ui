@@ -177,7 +177,7 @@ cp docs/features/templates/*.md docs/features/[feature-name]/
 # Add your feature to "Active Features" table
 
 # 6. Begin development following the standard
-# See: docs/development/feature-development-standard.md
+# See: docs/guides/development/feature-development-standard.md
 
 # 7. Before PR: Complete documentation quality checklist
 # All 8 files must be complete before merge

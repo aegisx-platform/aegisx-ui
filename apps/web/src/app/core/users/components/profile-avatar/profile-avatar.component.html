@@ -1,0 +1,105 @@
+<div class="profile-avatar-container">
+  <!-- Main Avatar Container -->
+  <div class="avatar-wrapper">
+    <!-- Avatar Display (Circular) -->
+    <div class="avatar-display" [class.has-avatar]="hasAvatar()">
+      <!-- User Avatar Image -->
+      @if (hasAvatar()) {
+        <img
+          [src]="user().avatar"
+          [alt]="userFullName()"
+          class="avatar-image"
+        />
+      } @else {
+        <!-- Initials Placeholder -->
+        <div class="avatar-placeholder">
+          <span class="initials">{{ userInitials() }}</span>
+        </div>
+      }
+
+      <!-- Hover Overlay with Actions -->
+      <div class="avatar-overlay">
+        <div class="overlay-actions">
+          <!-- Upload Button -->
+          <button
+            mat-mini-fab
+            color="primary"
+            type="button"
+            (click)="triggerFileInput()"
+            [disabled]="uploading()"
+            matTooltip="Upload new avatar"
+            class="action-button upload-button"
+          >
+            @if (uploading()) {
+              <mat-icon class="spinner">sync</mat-icon>
+            } @else {
+              <mat-icon>photo_camera</mat-icon>
+            }
+          </button>
+
+          <!-- Delete Button (only if avatar exists) -->
+          @if (hasAvatar()) {
+            <button
+              mat-mini-fab
+              color="warn"
+              type="button"
+              (click)="deleteAvatarClick()"
+              [disabled]="uploading()"
+              matTooltip="Delete avatar"
+              class="action-button delete-button"
+            >
+              @if (uploading()) {
+                <mat-icon class="spinner">sync</mat-icon>
+              } @else {
+                <mat-icon>delete</mat-icon>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Upload Progress Indicator -->
+      @if (uploading()) {
+        <div class="progress-overlay">
+          <mat-spinner diameter="50"></mat-spinner>
+          <div class="progress-text">{{ uploadProgress() }}%</div>
+        </div>
+      }
+    </div>
+
+    <!-- Hidden File Input -->
+    <input
+      #fileInput
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      class="hidden-input"
+      (change)="onFileSelected($event)"
+      aria-label="Upload profile avatar"
+    />
+  </div>
+
+  <!-- User Info Section -->
+  <div class="user-info">
+    <h3 class="user-name">{{ userFullName() }}</h3>
+    <p class="user-email">{{ user().email }}</p>
+  </div>
+
+  <!-- Error Message -->
+  @if (errorMessage()) {
+    <div class="error-message" role="alert">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Upload Instructions -->
+  @if (!hasAvatar() && !uploading()) {
+    <div class="upload-instructions">
+      <p class="instruction-text">
+        <mat-icon>info</mat-icon>
+        Click the camera icon or drag and drop an image to upload your avatar
+      </p>
+      <p class="file-requirements">JPG, PNG, or WebP • Maximum 5MB</p>
+    </div>
+  }
+</div>

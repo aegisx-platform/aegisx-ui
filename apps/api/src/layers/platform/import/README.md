@@ -404,7 +404,7 @@ After implementing the decorator infrastructure:
 ## References
 
 - Design Document: `docs/features/system-initialization/AUTO_DISCOVERY_IMPORT_SYSTEM.md`
-- Development Standard: `docs/development/universal-fullstack-standard.md`
+- Development Standard: `docs/guides/development/universal-fullstack-standard.md`
 - API Specification: Design doc, section "API Specification"
 
 ## Support

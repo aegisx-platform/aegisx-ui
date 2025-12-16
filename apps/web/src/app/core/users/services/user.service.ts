@@ -25,6 +25,8 @@ export interface User {
   primaryRole?: UserRole; // Explicitly marked primary role
   // Department assignment (REQ-2)
   department_id?: number | null;
+  phone?: string;
+  avatar?: string;
   createdAt: string;
   updatedAt: string;
   lastLoginAt?: string;
@@ -69,6 +71,7 @@ export interface UpdateUserRequest {
   status?: UserStatus;
   roleId?: string;
   department_id?: number | null;
+  phone?: string;
 }
 
 interface GetUsersParams {

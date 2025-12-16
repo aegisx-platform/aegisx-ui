@@ -1,0 +1,224 @@
+::ng-deep .api-key-wizard {
+  width: 100%;
+  max-width: 700px;
+  min-height: 400px;
+
+  @media (max-width: 768px) {
+    max-width: 90vw;
+  }
+
+  .dialog-header {
+    padding: 0 24px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .wizard-stepper {
+    background: transparent !important;
+
+    .mat-mdc-step-header {
+      padding: 0 16px !important;
+      height: auto !important;
+
+      .mat-mdc-step-label {
+        padding: 12px 0 !important;
+      }
+    }
+
+    .mdc-step-indicator__content {
+      padding: 0 !important;
+    }
+
+    .mat-mdc-step-content {
+      padding: 0 !important;
+    }
+  }
+
+  .step-content {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding: 24px;
+
+    @media (max-width: 768px) {
+      max-height: 60vh;
+      padding: 16px;
+    }
+  }
+
+  .success-content {
+    padding: 24px !important;
+  }
+
+  .permission-group {
+    margin-bottom: 16px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      border-color: var(--ax-primary);
+      box-shadow: 0 2px 8px rgba(var(--ax-primary-rgb), 0.1);
+    }
+
+    .mat-mdc-card-header {
+      padding: 16px;
+      background: rgba(var(--ax-primary-rgb), 0.02);
+
+      .mat-mdc-checkbox {
+        margin-left: auto;
+      }
+    }
+
+    .mat-mdc-card-content {
+      padding: 12px 0;
+    }
+  }
+
+  .surface-hover {
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: rgba(var(--ax-surface-rgb), 0.5) !important;
+    }
+  }
+
+  // Material Stepper overrides
+  .mat-mdc-stepper-horizontal {
+    background: transparent;
+  }
+
+  .mat-mdc-stepper-horizontal-line {
+    border-top-color: var(--ax-border);
+  }
+
+  .mat-mdc-step-header:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
+  .mat-mdc-step-header.mat-completed {
+    color: var(--ax-success);
+
+    .mat-step-icon {
+      background-color: var(--ax-success) !important;
+      color: white;
+    }
+  }
+
+  .mat-mdc-step-header.mat-active {
+    color: var(--ax-primary);
+
+    .mat-step-icon {
+      background-color: var(--ax-primary) !important;
+      color: white;
+    }
+  }
+
+  // Form field styling
+  mat-form-field {
+    .mat-mdc-form-field-error {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }
+
+  // Warning banner animations
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.95;
+    }
+  }
+
+  // API Key display styling
+  code {
+    word-break: break-all;
+    white-space: normal;
+  }
+
+  // Action buttons styling
+  .action-buttons {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    padding-top: 16px;
+    padding-bottom: 16px;
+
+    button {
+      min-width: 100px;
+
+      mat-icon {
+        margin-right: 6px;
+      }
+    }
+  }
+
+  // Material spinner styling
+  mat-spinner {
+    display: inline !important;
+  }
+
+  // Checkbox custom styling
+  .mat-mdc-checkbox {
+    margin-right: 8px;
+  }
+
+  // Card styling
+  mat-card[appearance='outlined'] {
+    border: 1px solid var(--ax-border);
+    border-radius: 8px;
+
+    &.mat-mdc-card {
+      padding: 0;
+    }
+  }
+
+  // Divider styling
+  mat-divider {
+    margin: 0 !important;
+    border-color: var(--ax-border);
+  }
+
+  // Response panel styling
+  .response-panel {
+    background-color: var(--ax-surface);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  // Responsive adjustments
+  @media (max-width: 640px) {
+    .dialog-header {
+      padding: 16px;
+    }
+
+    .step-content {
+      padding: 16px;
+      max-height: 60vh;
+    }
+
+    .action-buttons {
+      flex-direction: column-reverse;
+      gap: 8px;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .permission-group {
+      .mat-mdc-card-header {
+        flex-direction: column;
+        gap: 12px;
+
+        .mat-mdc-checkbox {
+          align-self: flex-start;
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}

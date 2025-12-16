@@ -1,0 +1,375 @@
+<div class="api-keys-list p-6 space-y-6">
+  <!-- Breadcrumb -->
+  <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
+
+  <!-- Header -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+  >
+    <div>
+      <h1 class="text-3xl font-bold">API Keys</h1>
+      <p class="text-muted mt-1">
+        Manage your API keys for programmatic access
+      </p>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="createNewKey()"
+      [disabled]="loading()"
+      class="flex items-center gap-2"
+    >
+      <mat-icon>add</mat-icon>
+      Create New Key
+    </button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Total Keys Card -->
+    <mat-card
+      appearance="outlined"
+      class="shadow-sm hover:shadow-md transition-shadow"
+    >
+      <mat-card-content class="p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-muted">Total Keys</p>
+            <p class="text-2xl font-bold">{{ totalKeys() }}</p>
+          </div>
+          <mat-icon class="text-primary text-4xl opacity-20">vpn_key</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Active Keys Card -->
+    <mat-card
+      appearance="outlined"
+      class="shadow-sm hover:shadow-md transition-shadow"
+    >
+      <mat-card-content class="p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-muted">Active</p>
+            <p class="text-2xl font-bold text-success-emphasis">
+              {{ activeKeysCount() }}
+            </p>
+          </div>
+          <mat-icon class="text-success text-4xl opacity-20"
+            >check_circle</mat-icon
+          >
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Expired Keys Card -->
+    <mat-card
+      appearance="outlined"
+      class="shadow-sm hover:shadow-md transition-shadow"
+    >
+      <mat-card-content class="p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-muted">Expired</p>
+            <p class="text-2xl font-bold text-warning-emphasis">
+              {{ expiredKeys() }}
+            </p>
+          </div>
+          <mat-icon class="text-warning text-4xl opacity-20">schedule</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Revoked Keys Card -->
+    <mat-card
+      appearance="outlined"
+      class="shadow-sm hover:shadow-md transition-shadow"
+    >
+      <mat-card-content class="p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-muted">Revoked</p>
+            <p class="text-2xl font-bold text-error-emphasis">
+              {{ revokedKeys() }}
+            </p>
+          </div>
+          <mat-icon class="text-error text-4xl opacity-20">cancel</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filter Panel -->
+  <mat-expansion-panel class="shadow-sm" [disabled]="loading()">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="flex items-center gap-2">
+        <mat-icon>filter_list</mat-icon>
+        Filters
+      </mat-panel-title>
+      <mat-panel-description>
+        @if ((filterForm.get('search')?.value ||
+        filterForm.get('status')?.value)) {
+        <span
+          class="text-xs bg-primary-faint text-primary px-2 py-1 rounded-full"
+        >
+          {{ (filterForm.get('search')?.value ? 1 : 0) +
+          (filterForm.get('status')?.value ? 1 : 0) }} active
+        </span>
+        }
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="filterForm" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Search Field -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Search by name</mat-label>
+          <input
+            matInput
+            formControlName="search"
+            placeholder="Enter key name..."
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">All Statuses</mat-option>
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="expired">Expired</mat-option>
+            <mat-option value="revoked">Revoked</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2 justify-end pt-2 border-t">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearFilters()"
+          class="flex items-center gap-2"
+        >
+          <mat-icon>refresh</mat-icon>
+          Clear
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          (click)="applyFilters()"
+          class="flex items-center gap-2"
+        >
+          <mat-icon>search</mat-icon>
+          Apply Filters
+        </button>
+      </div>
+    </form>
+  </mat-expansion-panel>
+
+  <!-- Table Card -->
+  <mat-card appearance="outlined" class="shadow-md">
+    <mat-card-content class="p-6">
+      @if (loading()) {
+      <div class="flex justify-center items-center py-12">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      } @else if (error()) {
+      <div class="bg-error-faint border-l-4 border-error p-4 rounded">
+        <p class="text-error-emphasis font-medium">{{ error() }}</p>
+        <button mat-button color="warn" (click)="loadKeys()" class="mt-2">
+          <mat-icon class="mr-1">refresh</mat-icon>
+          Retry
+        </button>
+      </div>
+      } @else if (keys().length === 0) {
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <mat-icon class="text-6xl mb-4 opacity-30">vpn_key_off</mat-icon>
+        <h3 class="text-lg font-semibold mb-2">No API Keys Found</h3>
+        <p class="text-muted mb-6">
+          You haven't created any API keys yet. Create one to get started.
+        </p>
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="createNewKey()"
+          class="flex items-center gap-2 mx-auto"
+        >
+          <mat-icon>add</mat-icon>
+          Create Your First Key
+        </button>
+      </div>
+      } @else {
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          (matSortChange)="onSortChange($event)"
+          class="w-full"
+        >
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="font-semibold"
+            >
+              Name
+            </th>
+            <td mat-cell *matCellDef="let key">
+              <div class="font-medium">{{ key.name }}</div>
+              @if (isExpiringSoon(key.expires_at)) {
+              <div class="text-xs text-warning-emphasis">Expiring soon</div>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Preview Column -->
+          <ng-container matColumnDef="preview">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold">
+              API Key
+            </th>
+            <td mat-cell *matCellDef="let key" class="font-mono text-sm">
+              <div class="flex items-center gap-2">
+                <code class="text-muted">{{ maskKey(key.preview) }}</code>
+                <button
+                  mat-icon-button
+                  matTooltip="Copy key"
+                  (click)="copyKey(key, $event)"
+                  class="h-8 w-8"
+                >
+                  <mat-icon class="text-sm">content_copy</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="font-semibold"
+            >
+              Status
+            </th>
+            <td mat-cell *matCellDef="let key">
+              <div [class]="getStatusBadgeClass(key)">
+                <mat-icon class="text-sm">
+                  {{ getStatusBadgeIcon(key) }}
+                </mat-icon>
+                <span class="capitalize">{{ getStatus(key) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Created Column -->
+          <ng-container matColumnDef="created_at">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="font-semibold"
+            >
+              Created
+            </th>
+            <td mat-cell *matCellDef="let key">
+              <span class="text-muted">
+                {{ formatDateDisplay(key.created_at) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Expires Column -->
+          <ng-container matColumnDef="expires_at">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="font-semibold"
+            >
+              Expires
+            </th>
+            <td mat-cell *matCellDef="let key">
+              @if (key.expires_at) {
+              <span class="text-muted">
+                {{ formatDateDisplay(key.expires_at) }}
+              </span>
+              } @else {
+              <span class="text-muted italic">Never</span>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="font-semibold text-right"
+            >
+              Actions
+            </th>
+            <td mat-cell *matCellDef="let key" class="text-right">
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                matTooltip="More actions"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="viewKeyDetails(key, $event)">
+                  <mat-icon class="text-primary">visibility</mat-icon>
+                  <span>View Details</span>
+                </button>
+                @if (getStatus(key) === 'active') {
+                <button
+                  mat-menu-item
+                  (click)="revokeKey(key, $event)"
+                  class="text-warning"
+                >
+                  <mat-icon class="text-warning">block</mat-icon>
+                  <span>Revoke Key</span>
+                </button>
+                }
+                <button
+                  mat-menu-item
+                  (click)="deleteKey(key, $event)"
+                  class="text-error"
+                >
+                  <mat-icon class="text-error">delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="hover:bg-surface-dim transition-colors"
+          ></tr>
+        </table>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [pageSizeOptions]="pageConfig.pageSizeOptions"
+        [pageSize]="pageConfig.pageSize"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="border-t mt-4"
+      ></mat-paginator>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -4,29 +4,34 @@
 
 The Activity Tracking System is a comprehensive fullstack feature that provides automated logging, visualization, and analysis of user activities across the AegisX platform. It offers both automatic activity logging through middleware and manual logging capabilities, with a powerful dashboard for users to monitor their account activities and security events.
 
-![Activity Dashboard](./images/activity-dashboard.png)
+<!-- TODO: Add activity dashboard screenshot -->
+<!-- ![Activity Dashboard](./images/activity-dashboard.png) -->
 
 ## Key Features
 
 ### 🔄 Automatic Activity Logging
+
 - **Zero-configuration setup** - Activities are logged automatically via middleware
 - **Request correlation** - Each activity includes request ID, session ID, and device info
 - **Performance optimized** - Asynchronous logging with batching support
 - **Security focused** - IP tracking, device fingerprinting, and suspicious activity detection
 
 ### 📊 Rich Analytics Dashboard
+
 - **Real-time statistics** - Activity counts by action, severity, and time periods
 - **Advanced filtering** - Filter by action type, severity, date range, and search terms
 - **Interactive visualization** - Charts and graphs showing activity trends
 - **Responsive design** - Works seamlessly on desktop and mobile devices
 
 ### 🔍 Comprehensive Activity Types
+
 - **Authentication Events** - Login, logout, failed attempts, password changes
 - **Profile Management** - Profile updates, avatar changes, preferences
 - **Security Events** - Suspicious activity detection, session management
 - **System Events** - API errors, validation failures, and system alerts
 
 ### 🛡️ Security & Privacy
+
 - **Device tracking** - Browser, OS, and device type detection
 - **IP geolocation** - Location tracking with privacy controls
 - **Session correlation** - Track activities across user sessions
@@ -35,12 +40,14 @@ The Activity Tracking System is a comprehensive fullstack feature that provides 
 ## Quick Start
 
 ### For End Users
+
 1. **Access the Dashboard**: Navigate to your profile settings and click "Activity Log"
 2. **View Recent Activities**: See your latest account activities and events
 3. **Filter Activities**: Use the search and filter options to find specific events
 4. **Monitor Security**: Check for any suspicious login attempts or security events
 
 ### For Developers
+
 1. **Automatic Logging**: Activities are logged automatically when the middleware is enabled
 2. **Manual Logging**: Use the service methods to log custom activities
 3. **Configuration**: Customize logging behavior through plugin configuration
@@ -51,18 +58,13 @@ The Activity Tracking System is a comprehensive fullstack feature that provides 
 // Activities are logged automatically for all API endpoints
 
 // Manual logging
-await fastify.logActivity(
-  userId, 
-  'custom_action', 
-  'User performed custom action',
-  request,
-  { severity: 'info', metadata: { customData: 'value' } }
-);
+await fastify.logActivity(userId, 'custom_action', 'User performed custom action', request, { severity: 'info', metadata: { customData: 'value' } });
 ```
 
 ## Architecture Overview
 
 ### Backend Components
+
 - **Activity Logging Plugin** - Fastify plugin for automatic middleware integration
 - **Activity Middleware** - Intercepts requests and logs activities asynchronously
 - **Activity Service** - Business logic for activity management and specialized logging
@@ -70,12 +72,14 @@ await fastify.logActivity(
 - **TypeBox Schemas** - Complete type safety and validation for all activity data
 
 ### Frontend Components
+
 - **Activity Log Component** - Main dashboard with table, filters, and pagination
 - **Activity Stats Component** - Statistics visualization and charts
 - **Activity Filter Component** - Advanced filtering and search interface
 - **Activity Service** - Angular service with signal-based state management
 
 ### Database Schema
+
 - **user_activity_logs table** - Optimized schema with strategic indexing
 - **JSON fields** - Flexible storage for device info, location data, and metadata
 - **Automatic cleanup** - Built-in function for managing data retention
@@ -90,15 +94,18 @@ await fastify.logActivity(
 ## Getting Started
 
 ### Prerequisites
+
 - PostgreSQL 15+
 - Node.js 18+
 - Angular 19+
 - Fastify 4+
 
 ### Installation
+
 The Activity Tracking System is already integrated into the AegisX platform. No additional installation is required.
 
 ### Configuration
+
 ```typescript
 // Activity logging plugin configuration
 {
@@ -124,6 +131,7 @@ The Activity Tracking System is already integrated into the AegisX platform. No 
 ## Activity Types
 
 ### Authentication Activities
+
 - `login` - Successful user login
 - `logout` - User logout
 - `login_failed` - Failed login attempt
@@ -131,6 +139,7 @@ The Activity Tracking System is already integrated into the AegisX platform. No 
 - `password_reset_complete` - Password reset completed
 
 ### Profile Management Activities
+
 - `profile_view` - Profile page accessed
 - `profile_update` - Profile information updated
 - `password_change` - Password changed
@@ -138,12 +147,14 @@ The Activity Tracking System is already integrated into the AegisX platform. No 
 - `avatar_delete` - Profile avatar removed
 
 ### Preferences Activities
+
 - `preferences_view` - Preferences page accessed
 - `preferences_update` - User preferences updated
 - `theme_change` - UI theme changed
 - `language_change` - Language preference changed
 
 ### Security Activities
+
 - `session_created` - New session established
 - `session_destroyed` - Session terminated
 - `suspicious_activity` - Suspicious behavior detected
@@ -151,6 +162,7 @@ The Activity Tracking System is already integrated into the AegisX platform. No 
 - `account_unlocked` - Account unlocked
 
 ### System Activities
+
 - `api_error` - API endpoint error occurred
 - `validation_error` - Data validation failed
 
@@ -216,6 +228,7 @@ To contribute to the Activity Tracking System:
 ---
 
 **Next Steps:**
+
 - [Read the User Guide](./USER_GUIDE.md) to learn how to use the activity dashboard
 - [Review the Developer Guide](./DEVELOPER_GUIDE.md) to understand the technical implementation
 - [Check the API Reference](./API_REFERENCE.md) for integration details

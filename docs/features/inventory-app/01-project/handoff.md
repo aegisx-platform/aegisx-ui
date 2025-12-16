@@ -146,7 +146,7 @@ Password: invs123
 
 - `docs/systems/` - 8 system guides with API specs
 - `docs/flows/` - Business flow documentation
-- `docs/api/` - API Development Guides
+- `docs/reference/api/` - API Development Guides
 
 ---
 

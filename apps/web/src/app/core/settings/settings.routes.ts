@@ -15,15 +15,33 @@ export const settingsRoutes: Routes = [
   },
   {
     path: 'api-keys',
-    loadComponent: () =>
-      import('../api-keys/pages/api-keys-management.component').then(
-        (m) => m.ApiKeysManagementComponent,
-      ),
-    canActivate: [PermissionGuard],
-    data: {
-      title: 'API Keys Management',
-      description: 'Manage your API keys for programmatic access',
-      permissions: ['api-keys:read', '*:*'], // Admin only
-    },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('../api-keys/pages/api-keys-management.component').then(
+            (m) => m.ApiKeysManagementComponent,
+          ),
+        canActivate: [PermissionGuard],
+        data: {
+          title: 'API Keys Management',
+          description: 'Manage your API keys for programmatic access',
+          permissions: ['api-keys:read', '*:*'], // Admin only
+        },
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('../api-keys/pages/api-keys-detail/api-keys-detail.page').then(
+            (m) => m.ApiKeysDetailPage,
+          ),
+        canActivate: [PermissionGuard],
+        data: {
+          title: 'API Key Details',
+          description: 'View detailed information about an API key',
+          permissions: ['api-keys:read', '*:*'],
+        },
+      },
+    ],
   },
 ];

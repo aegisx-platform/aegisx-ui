@@ -1,0 +1,240 @@
+<ax-card class="profile-info-card">
+  <!-- Display Mode -->
+  @if (!editMode()) {
+    <div class="display-mode">
+      <!-- Header with Title and Edit Button -->
+      <div class="profile-header">
+        <h2 class="profile-title">Profile Information</h2>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="toggleEditMode()"
+          class="edit-button"
+        >
+          <mat-icon>edit</mat-icon>
+          <span>Edit Profile</span>
+        </button>
+      </div>
+
+      <!-- Profile Content Grid -->
+      <div class="profile-grid">
+        <!-- Full Name -->
+        <div class="profile-section">
+          <div class="section-label">Full Name</div>
+          <div class="section-value">{{ userFullName() }}</div>
+        </div>
+
+        <!-- Email -->
+        <div class="profile-section">
+          <div class="section-label">Email</div>
+          <div class="section-value email-value">{{ user().email }}</div>
+        </div>
+
+        <!-- Phone -->
+        <div class="profile-section">
+          @if (user().phone) {
+            <div class="section-label">Phone</div>
+            <div class="section-value">{{ user().phone }}</div>
+          } @else {
+            <div class="section-label">Phone</div>
+            <div class="section-value text-gray-400">Not provided</div>
+          }
+        </div>
+
+        <!-- Department -->
+        <div class="profile-section">
+          @if (user().department_id) {
+            <div class="section-label">Department</div>
+            <div class="section-value">
+              {{ departmentName() || 'Loading...' }}
+            </div>
+          } @else {
+            <div class="section-label">Department</div>
+            <div class="section-value text-gray-400">Not assigned</div>
+          }
+        </div>
+
+        <!-- User Role -->
+        <div class="profile-section">
+          <div class="section-label">Role</div>
+          <div class="section-value role-badge">
+            <mat-icon class="role-icon">security</mat-icon>
+            <span>{{ userRole() }}</span>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="profile-section">
+          <div class="section-label">Status</div>
+          <div class="section-value">
+            @switch (user().status) {
+              @case ('active') {
+                <span class="status-badge status-active">
+                  <mat-icon class="status-icon">check_circle</mat-icon>
+                  Active
+                </span>
+              }
+              @case ('inactive') {
+                <span class="status-badge status-inactive">
+                  <mat-icon class="status-icon">cancel</mat-icon>
+                  Inactive
+                </span>
+              }
+              @case ('suspended') {
+                <span class="status-badge status-suspended">
+                  <mat-icon class="status-icon">block</mat-icon>
+                  Suspended
+                </span>
+              }
+              @case ('pending') {
+                <span class="status-badge status-pending">
+                  <mat-icon class="status-icon">hourglass_empty</mat-icon>
+                  Pending
+                </span>
+              }
+            }
+          </div>
+        </div>
+
+        <!-- Account Created -->
+        <div class="profile-section">
+          <div class="section-label">Member Since</div>
+          <div class="section-value">
+            {{ user().createdAt | date: 'mediumDate' }}
+          </div>
+        </div>
+
+        <!-- Last Login -->
+        <div class="profile-section">
+          <div class="section-label">Last Login</div>
+          <div class="section-value">
+            @if (user().lastLoginAt) {
+              {{ user().lastLoginAt | date: 'short' }}
+            } @else {
+              <span class="text-gray-400">Never</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Mode -->
+  @if (editMode()) {
+    <div class="edit-mode">
+      <!-- Header -->
+      <div class="profile-header">
+        <h2 class="profile-title">Edit Profile</h2>
+      </div>
+
+      <!-- Edit Form -->
+      <form [formGroup]="profileForm" class="edit-form">
+        <div class="form-grid">
+          <!-- First Name -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>First Name</mat-label>
+            <input
+              matInput
+              formControlName="firstName"
+              placeholder="Enter first name"
+              [disabled]="isSaving()"
+            />
+            @if (
+              profileForm.get('firstName')?.invalid &&
+              profileForm.get('firstName')?.touched
+            ) {
+              <mat-error>
+                {{ getErrorMessage('firstName') }}
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Last Name -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Last Name</mat-label>
+            <input
+              matInput
+              formControlName="lastName"
+              placeholder="Enter last name"
+              [disabled]="isSaving()"
+            />
+            @if (
+              profileForm.get('lastName')?.invalid &&
+              profileForm.get('lastName')?.touched
+            ) {
+              <mat-error>
+                {{ getErrorMessage('lastName') }}
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Email (Read-only) -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Email (Read-only)</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              placeholder="Email"
+              readonly
+            />
+            <mat-hint>Email cannot be changed</mat-hint>
+          </mat-form-field>
+
+          <!-- Phone -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Phone</mat-label>
+            <input
+              matInput
+              formControlName="phone"
+              placeholder="Enter phone number"
+              [disabled]="isSaving()"
+            />
+            @if (
+              profileForm.get('phone')?.invalid &&
+              profileForm.get('phone')?.touched
+            ) {
+              <mat-error>
+                {{ getErrorMessage('phone') }}
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Department Selector (Full Width) -->
+          <div class="form-field full-width">
+            <app-department-selector
+              formControlName="department_id"
+              label="Department"
+              [required]="false"
+            />
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button
+            mat-button
+            type="button"
+            (click)="cancelEdit()"
+            [disabled]="isSaving()"
+            class="cancel-button"
+          >
+            Cancel
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="saveChanges()"
+            [disabled]="profileForm.invalid || isSaving()"
+            class="save-button"
+          >
+            @if (isSaving()) {
+              <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+            }
+            {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</ax-card>

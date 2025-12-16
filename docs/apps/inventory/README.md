@@ -128,4 +128,4 @@ pnpm run inventory:import-tmt -- --path=/path/to/tmt
 
 - [Main Project README](../../../README.md)
 - [CRUD Generator](../../crud-generator/README.md)
-- [Multi-Instance Setup](../../infrastructure/multi-instance-setup.md)
+- [Multi-Instance Setup](../../guides/infrastructure/multi-instance-setup.md)

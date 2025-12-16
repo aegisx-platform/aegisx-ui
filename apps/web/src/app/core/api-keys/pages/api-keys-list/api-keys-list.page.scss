@@ -1,0 +1,421 @@
+// API Keys List Page Styles
+
+.api-keys-list {
+  // Stats cards styling
+  mat-card[appearance='outlined'] {
+    border: 1px solid var(--ax-surface-variant);
+    background: var(--ax-surface-container-lowest);
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: var(--ax-primary);
+      background: var(--ax-surface-container);
+    }
+
+    mat-icon {
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover mat-icon {
+      opacity: 0.3 !important;
+    }
+  }
+
+  // Table styling
+  :host ::ng-deep {
+    // Table wrapper
+    .mat-mdc-table {
+      background: transparent;
+      width: 100%;
+    }
+
+    // Table header styling
+    .mat-mdc-header-row {
+      background: var(--ax-surface-variant);
+      border-bottom: 2px solid var(--ax-surface-variant);
+
+      .mat-mdc-header-cell {
+        font-weight: 600;
+        color: var(--ax-on-surface-variant);
+        padding: 12px 16px;
+        font-size: 0.875rem;
+      }
+    }
+
+    // Table row styling
+    .mat-mdc-row {
+      border-bottom: 1px solid var(--ax-surface-variant);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--ax-surface-dim);
+
+        .mat-mdc-cell {
+          background-color: var(--ax-surface-dim);
+        }
+      }
+
+      .mat-mdc-cell {
+        padding: 12px 16px;
+        color: var(--ax-on-surface);
+        transition: background-color 0.2s ease;
+      }
+    }
+
+    // Last row without border
+    .mat-mdc-row:last-child {
+      border-bottom: none;
+    }
+
+    // No data row
+    .mat-row:not(.mat-header-row):not(.mat-footer-row) {
+      &.mat-mdc-row {
+        min-height: 48px;
+      }
+    }
+
+    // Sort header styling
+    .mat-sort-header-button {
+      &:hover {
+        background-color: var(--ax-surface-container-high);
+      }
+    }
+
+    // Table column specifics
+    .mat-mdc-column-name,
+    .mat-mdc-column-preview {
+      flex: 0 0 20%;
+    }
+
+    .mat-mdc-column-status {
+      flex: 0 0 15%;
+    }
+
+    .mat-mdc-column-created_at,
+    .mat-mdc-column-expires_at {
+      flex: 0 0 15%;
+    }
+
+    .mat-mdc-column-actions {
+      flex: 0 0 10%;
+      text-align: right;
+    }
+  }
+
+  // Status badge styling
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    mat-icon {
+      font-size: 0.875rem;
+      width: auto;
+      height: auto;
+    }
+
+    &.status-active {
+      background: var(--ax-success-faint);
+      color: var(--ax-success-emphasis);
+      border: 1px solid var(--ax-success-200);
+
+      mat-icon {
+        color: var(--ax-success-emphasis);
+      }
+    }
+
+    &.status-expired {
+      background: var(--ax-warning-faint);
+      color: var(--ax-warning-emphasis);
+      border: 1px solid var(--ax-warning-200);
+
+      mat-icon {
+        color: var(--ax-warning-emphasis);
+      }
+    }
+
+    &.status-revoked {
+      background: var(--ax-error-faint);
+      color: var(--ax-error-emphasis);
+      border: 1px solid var(--ax-error-200);
+
+      mat-icon {
+        color: var(--ax-error-emphasis);
+      }
+    }
+  }
+
+  // Key display styling
+  code {
+    font-family: 'Monaco', 'Courier New', monospace;
+    background: var(--ax-surface-variant);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+  }
+
+  // Copy button styling
+  .copy-key-button {
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: var(--ax-primary-faint);
+      color: var(--ax-primary);
+    }
+  }
+
+  // Filter panel styling
+  mat-expansion-panel {
+    border: 1px solid var(--ax-surface-variant);
+    background: var(--ax-surface-container-lowest);
+
+    mat-expansion-panel-header {
+      background: var(--ax-surface-container);
+
+      &:hover {
+        background: var(--ax-surface-container-high);
+      }
+    }
+  }
+
+  // Form field styling
+  mat-form-field {
+    &.mat-form-field-appearance-outline {
+      width: 100%;
+    }
+  }
+
+  // Button styling
+  button {
+    &[mat-flat-button][color='primary'] {
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Paginator styling
+  mat-paginator {
+    background: var(--ax-surface-container-lowest);
+    border-top: 1px solid var(--ax-surface-variant);
+
+    :host ::ng-deep {
+      .mat-mdc-paginator-container {
+        padding: 0.5rem 1rem;
+      }
+
+      .mat-mdc-paginator-page-size {
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .mat-mdc-paginator-range-actions {
+        gap: 1rem;
+      }
+    }
+  }
+
+  // Empty state styling
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+
+    mat-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      opacity: 0.3;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: var(--ax-on-surface-variant);
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  // Error state styling
+  .error-state {
+    background: var(--ax-error-faint);
+    border-left: 4px solid var(--ax-error);
+    padding: 1rem;
+    border-radius: 4px;
+
+    p {
+      color: var(--ax-error-emphasis);
+      font-weight: 500;
+    }
+  }
+
+  // Loading state styling
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2rem;
+    min-height: 300px;
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    :host ::ng-deep {
+      .mat-mdc-column-name,
+      .mat-mdc-column-preview {
+        flex: 0 0 30%;
+      }
+
+      .mat-mdc-column-status {
+        flex: 0 0 20%;
+      }
+
+      .mat-mdc-column-created_at,
+      .mat-mdc-column-expires_at {
+        display: none;
+      }
+
+      .mat-mdc-column-actions {
+        flex: 0 0 20%;
+      }
+    }
+
+    // Stack stats cards in 2 columns
+    .grid.grid-cols-1.md\\:grid-cols-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 1rem;
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    // Stack stats cards in 1 column
+    .grid.grid-cols-1.md\\:grid-cols-4 {
+      grid-template-columns: 1fr;
+    }
+
+    // Hide table on very small screens and show cards instead
+    :host ::ng-deep {
+      .mat-mdc-column-preview,
+      .mat-mdc-column-status,
+      .mat-mdc-column-created_at,
+      .mat-mdc-column-expires_at {
+        display: none;
+      }
+
+      .mat-mdc-column-name {
+        flex: 1 1 100%;
+      }
+
+      .mat-mdc-column-actions {
+        flex: 0 0 auto;
+      }
+    }
+  }
+
+  // Dark mode specific styling
+  @media (prefers-color-scheme: dark) {
+    :host ::ng-deep {
+      .mat-mdc-row:hover {
+        background-color: var(--ax-surface-container-high);
+
+        .mat-mdc-cell {
+          background-color: var(--ax-surface-container-high);
+        }
+      }
+    }
+
+    code {
+      background: var(--ax-surface-container-high);
+      color: var(--ax-primary);
+    }
+  }
+}
+
+// Utility classes
+.text-muted {
+  color: var(--ax-on-surface-variant);
+}
+
+.text-primary {
+  color: var(--ax-primary);
+}
+
+.text-success {
+  color: var(--ax-success);
+}
+
+.text-warning {
+  color: var(--ax-warning);
+}
+
+.text-error {
+  color: var(--ax-error);
+}
+
+.opacity-20 {
+  opacity: 0.2;
+}
+
+.opacity-30 {
+  opacity: 0.3;
+}
+
+.transition-shadow {
+  transition: box-shadow 0.3s ease;
+}
+
+.transition-colors {
+  transition: background-color 0.2s ease;
+}
+
+.text-success-emphasis {
+  color: var(--ax-success-emphasis);
+}
+
+.text-warning-emphasis {
+  color: var(--ax-warning-emphasis);
+}
+
+.text-error-emphasis {
+  color: var(--ax-error-emphasis);
+}
+
+.bg-primary-faint {
+  background-color: var(--ax-primary-faint);
+}
+
+.bg-error-faint {
+  background-color: var(--ax-error-faint);
+}
+
+.border-l-4 {
+  border-left-width: 4px;
+}
+
+.border-error {
+  border-color: var(--ax-error);
+}
+
+.border-t {
+  border-top: 1px solid var(--ax-surface-variant);
+}

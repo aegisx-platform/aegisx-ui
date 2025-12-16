@@ -1,0 +1,173 @@
+<div class="profile-activity-container">
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex justify-center items-center py-12">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()">
+    <mat-card appearance="outlined" class="error-card">
+      <mat-card-content class="flex items-center gap-3 p-6">
+        <div class="error-icon">
+          <mat-icon class="text-2xl">error_outline</mat-icon>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-semibold">Error Loading Activity</h3>
+          <p class="text-sm">{{ error() }}</p>
+        </div>
+        <button
+          mat-icon-button
+          (click)="loadActivities()"
+          matTooltip="Retry"
+          class="retry-button"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="isEmpty()">
+    <mat-card appearance="outlined" class="empty-card">
+      <mat-card-content class="flex flex-col items-center gap-4 py-12">
+        <mat-icon class="empty-icon">history</mat-icon>
+        <div class="text-center">
+          <h3 class="text-lg font-semibold mb-1">No Activity Found</h3>
+          <p class="text-sm text-muted">
+            User activity history will appear here
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Timeline View -->
+  <div
+    *ngIf="hasActivities() && !loading() && !error()"
+    class="timeline-container space-y-0"
+  >
+    <!-- Timeline Item -->
+    <div
+      *ngFor="
+        let activity of activities();
+        trackBy: trackByActivityId;
+        let isLast = last
+      "
+      class="timeline-item"
+      [class.is-last]="isLast"
+    >
+      <!-- Timeline Line and Dot -->
+      <div class="timeline-line">
+        <div class="timeline-dot timeline-dot-info" matTooltip="Activity">
+          <mat-icon class="timeline-dot-icon">
+            {{ getActionIcon(activity.action) }}
+          </mat-icon>
+        </div>
+      </div>
+
+      <!-- Activity Card -->
+      <mat-card appearance="outlined" class="timeline-card timeline-card-info">
+        <mat-card-content class="p-4 md:p-6">
+          <!-- Header with timestamp and severity badge -->
+          <div
+            class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-3"
+          >
+            <div class="flex-1">
+              <!-- Action Badge -->
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                <mat-chip class="action-chip">
+                  <mat-icon class="mr-1" matChipAvatar>
+                    {{ getActionIcon(activity.action) }}
+                  </mat-icon>
+                  {{ activity.action }}
+                </mat-chip>
+              </div>
+
+              <!-- Timestamp -->
+              <div class="flex flex-col text-xs text-muted">
+                <span class="font-medium">
+                  {{ formatTimestamp(activity.timestamp).date }} at
+                  {{ formatTimestamp(activity.timestamp).time }}
+                </span>
+                <span class="text-xs">
+                  ({{ formatTimestamp(activity.timestamp).relative }})
+                </span>
+              </div>
+            </div>
+
+            <!-- Activity Badge -->
+            <div class="self-start md:self-center">
+              <span class="severity-badge severity-info">
+                <span
+                  class="size-2 rounded-full severity-dot severity-dot-info"
+                  aria-hidden="true"
+                ></span>
+                Activity
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="text-sm text-on-surface mb-4 leading-relaxed">
+            {{ activity.description }}
+          </p>
+
+          <!-- Metadata Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-4">
+            <!-- IP Address -->
+            <div *ngIf="activity.ipAddress" class="metadata-item">
+              <mat-icon class="metadata-icon">location_on</mat-icon>
+              <div class="metadata-content">
+                <p class="metadata-label">IP Address</p>
+                <p class="metadata-value" [title]="activity.ipAddress">
+                  {{ activity.ipAddress }}
+                </p>
+              </div>
+            </div>
+
+            <!-- User Agent -->
+            <div *ngIf="activity.userAgent" class="metadata-item">
+              <mat-icon class="metadata-icon">devices</mat-icon>
+              <div class="metadata-content">
+                <p class="metadata-label">User Agent</p>
+                <p class="metadata-value" [title]="activity.userAgent">
+                  {{ activity.userAgent.substring(0, 30) }}...
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="viewActivityDetails(activity)"
+              matTooltip="View Details"
+              class="detail-button"
+            >
+              <mat-icon>visibility</mat-icon>
+              <span class="md:hidden ml-2">Details</span>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Paginator -->
+  <div
+    *ngIf="hasActivities() && !loading() && !error()"
+    class="flex justify-center pt-4"
+  >
+    <mat-paginator
+      [length]="totalItems()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+    >
+    </mat-paginator>
+  </div>
+</div>

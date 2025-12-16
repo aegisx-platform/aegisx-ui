@@ -1,0 +1,182 @@
+<div class="profile-preferences-container">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex items-center justify-center min-h-96">
+      <mat-spinner [diameter]="40"></mat-spinner>
+    </div>
+  } @else {
+    <!-- Preferences Form -->
+    <form [formGroup]="preferencesForm" class="space-y-6">
+      <!-- Appearance Section -->
+      <mat-card class="preferences-card">
+        <mat-card-header class="card-header">
+          <div class="header-content">
+            <mat-icon class="section-icon">palette</mat-icon>
+            <div>
+              <mat-card-title class="section-title">Appearance</mat-card-title>
+              <mat-card-subtitle class="section-subtitle"
+                >Customize how the application looks</mat-card-subtitle
+              >
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content class="card-content">
+          <!-- Theme Selection -->
+          <div class="form-section">
+            <label class="form-label">Theme</label>
+            <div class="theme-options">
+              <mat-radio-group formControlName="theme" class="space-y-3">
+                @for (option of themeOptions; track option.value) {
+                  <mat-radio-button [value]="option.value" class="theme-option">
+                    <span class="option-label">{{ option.label }}</span>
+                  </mat-radio-button>
+                }
+              </mat-radio-group>
+            </div>
+          </div>
+
+          <mat-divider class="my-6"></mat-divider>
+
+          <!-- Language Selection -->
+          <div class="form-section">
+            <label class="form-label">Language</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Select Language</mat-label>
+              <mat-select formControlName="language">
+                @for (option of languageOptions; track option.value) {
+                  <mat-option [value]="option.value">
+                    {{ option.label }}
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>language</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Notifications Section -->
+      <mat-card class="preferences-card">
+        <mat-card-header class="card-header">
+          <div class="header-content">
+            <mat-icon class="section-icon">notifications</mat-icon>
+            <div>
+              <mat-card-title class="section-title"
+                >Notifications</mat-card-title
+              >
+              <mat-card-subtitle class="section-subtitle"
+                >Manage how you receive notifications</mat-card-subtitle
+              >
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content class="card-content">
+          <div formGroupName="notifications" class="space-y-4">
+            <!-- Email Notifications -->
+            <div class="notification-option">
+              <mat-checkbox formControlName="email" class="checkbox-item">
+                <span class="option-title">Email Notifications</span>
+                <span class="option-description"
+                  >Receive important updates via email</span
+                >
+              </mat-checkbox>
+            </div>
+
+            <!-- Push Notifications -->
+            <div class="notification-option">
+              <mat-checkbox formControlName="push" class="checkbox-item">
+                <span class="option-title">Push Notifications</span>
+                <span class="option-description"
+                  >Receive real-time notifications in the app</span
+                >
+              </mat-checkbox>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Timezone Section -->
+      <mat-card class="preferences-card">
+        <mat-card-header class="card-header">
+          <div class="header-content">
+            <mat-icon class="section-icon">schedule</mat-icon>
+            <div>
+              <mat-card-title class="section-title">Date & Time</mat-card-title>
+              <mat-card-subtitle class="section-subtitle"
+                >Set your timezone for accurate timestamps</mat-card-subtitle
+              >
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content class="card-content">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Select Timezone</mat-label>
+            <mat-select formControlName="timezone">
+              @for (option of timezoneOptions; track option.value) {
+                <mat-option [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>schedule</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <div class="button-group-left">
+          <button
+            type="button"
+            mat-stroked-button
+            (click)="resetToSaved()"
+            [disabled]="!hasChanges() || isLoading()"
+            class="action-button"
+          >
+            <mat-icon>clear</mat-icon>
+            <span>Discard Changes</span>
+          </button>
+
+          <button
+            type="button"
+            mat-stroked-button
+            (click)="resetDefaults()"
+            [disabled]="isLoading()"
+            class="action-button"
+          >
+            <mat-icon>restore</mat-icon>
+            <span>Reset to Defaults</span>
+          </button>
+        </div>
+
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          (click)="savePreferences()"
+          [disabled]="!canSave()"
+          class="action-button save-button"
+        >
+          @if (saving()) {
+            <mat-spinner [diameter]="20" class="mr-2"></mat-spinner>
+            <span>Saving...</span>
+          } @else {
+            <mat-icon>save</mat-icon>
+            <span>Save Preferences</span>
+          }
+        </button>
+      </div>
+
+      <!-- Change Indicator -->
+      @if (hasChanges()) {
+        <div class="change-indicator">
+          <mat-icon>info</mat-icon>
+          <span>You have unsaved changes</span>
+        </div>
+      }
+    </form>
+  }
+</div>

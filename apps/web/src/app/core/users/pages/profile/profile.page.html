@@ -1,0 +1,148 @@
+<div class="profile-page">
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-overlay">
+    <mat-spinner [diameter]="40"></mat-spinner>
+    <p class="loading-text">Loading profile...</p>
+  </div>
+  }
+
+  <!-- Page Header with Breadcrumbs -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="breadcrumb-section">
+        <button
+          mat-icon-button
+          (click)="goBack()"
+          class="back-button"
+          aria-label="Go back"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/dashboard" class="breadcrumb-link">Dashboard</a>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">My Profile</span>
+        </nav>
+      </div>
+
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="avatar-section">
+          @if (currentUser()?.avatar) {
+          <img
+            [src]="currentUser()!.avatar"
+            [alt]="userFullName()"
+            class="avatar-image"
+          />
+          } @else {
+          <div class="avatar-placeholder">{{ userInitials() }}</div>
+          }
+        </div>
+
+        <div class="header-info">
+          <h1 class="profile-title">{{ userFullName() }}</h1>
+          <p class="profile-email">{{ currentUser()?.email }}</p>
+          @if (currentUser()?.status) {
+          <div class="profile-meta">
+            <span
+              class="status-badge"
+              [attr.data-status]="currentUser()?.status"
+            >
+              {{ currentUser()?.status | titlecase }}
+            </span>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  @if (hasError() && !isLoading()) {
+  <ax-card [variant]="'elevated'" class="error-card">
+    <div class="error-content">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <div class="error-message">
+        <h2>Unable to Load Profile</h2>
+        <p>{{ error() }}</p>
+      </div>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="loadProfile()"
+        class="retry-button"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Try Again</span>
+      </button>
+    </div>
+  </ax-card>
+  }
+
+  <!-- Profile Tabs -->
+  @if (currentUser() && !hasError()) {
+  <div class="profile-tabs-section">
+    <mat-tab-group
+      [(selectedIndex)]="activeTab"
+      class="profile-tab-group"
+      animationDuration="300"
+    >
+      <!-- Profile Information Tab -->
+      <mat-tab label="Profile Information">
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">person</mat-icon>
+          <span class="tab-label">Profile Information</span>
+        </ng-template>
+        <div class="tab-content">
+          <ax-profile-info
+            [user]="currentUser()!"
+            (updateProfile)="handleProfileUpdate($event)"
+          ></ax-profile-info>
+        </div>
+      </mat-tab>
+
+      <!-- Avatar Tab -->
+      <mat-tab label="Avatar">
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">image</mat-icon>
+          <span class="tab-label">Profile Picture</span>
+        </ng-template>
+        <div class="tab-content">
+          <ax-profile-avatar
+            [user]="currentUser()!"
+            (uploadAvatar)="handleAvatarUpload($event)"
+            (deleteAvatar)="handleAvatarDelete()"
+          ></ax-profile-avatar>
+        </div>
+      </mat-tab>
+
+      <!-- Preferences Tab -->
+      <mat-tab label="Preferences">
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">settings</mat-icon>
+          <span class="tab-label">Preferences</span>
+        </ng-template>
+        <div class="tab-content">
+          <ax-profile-preferences
+            (save)="handlePreferencesSave()"
+          ></ax-profile-preferences>
+        </div>
+      </mat-tab>
+
+      <!-- Activity Tab -->
+      <mat-tab label="Activity">
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">history</mat-icon>
+          <span class="tab-label">Activity History</span>
+        </ng-template>
+        <div class="tab-content">
+          <app-profile-activity
+            [userId]="currentUser()!.id"
+          ></app-profile-activity>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  }
+</div>

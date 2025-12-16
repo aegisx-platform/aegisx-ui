@@ -16,6 +16,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '@aegisx/ui';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApiKeyWithPreview } from '../models/api-keys.types';
 import { GenerateKeyDialogComponent } from '../dialogs/generate-key-dialog.component';
+import { ApiKeyWizardComponent } from '../components/api-key-wizard/api-key-wizard.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/components/confirm-dialog.component';
 
 @Component({
@@ -379,6 +380,9 @@ export class ApiKeysManagementComponent implements OnInit {
   }
 
   openGenerateDialog(): void {
+    // Use the new API Key Creation Wizard for enhanced experience
+    // Uncomment to use the wizard instead: this.openWizard();
+
     const dialogRef = this.dialog.open(GenerateKeyDialogComponent, {
       width: '600px',
       disableClose: true,
@@ -389,6 +393,24 @@ export class ApiKeysManagementComponent implements OnInit {
         this.loadKeys();
         this.snackBar.open('API Key generated successfully!', 'Close', {
           duration: 3000,
+        });
+      }
+    });
+  }
+
+  openWizard(): void {
+    const dialogRef = this.dialog.open(ApiKeyWizardComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.generatedKey) {
+        this.loadKeys();
+        this.snackBar.open('API Key created successfully!', 'Close', {
+          duration: 3000,
+          panelClass: ['bg-green-500'],
         });
       }
     });

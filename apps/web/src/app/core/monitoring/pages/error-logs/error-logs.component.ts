@@ -17,7 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ErrorLogDetailDialogComponent } from '../../components/error-log-detail-dialog/error-log-detail-dialog.component';
+import { Router } from '@angular/router';
 import { CleanupDialogComponent } from '../../components/cleanup-dialog/cleanup-dialog.component';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 import { ErrorLog, ErrorLogsQuery } from '../../models/monitoring.types';
@@ -468,6 +468,7 @@ export class ErrorLogsComponent implements OnInit {
   private errorLogsService = inject(ErrorLogsService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   // Breadcrumb items
   breadcrumbItems: BreadcrumbItem[] = [
@@ -580,28 +581,7 @@ export class ErrorLogsComponent implements OnInit {
   }
 
   viewLogDetails(log: ErrorLog): void {
-    const dialogRef = this.dialog.open(ErrorLogDetailDialogComponent, {
-      width: '900px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: log,
-      autoFocus: false,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.snackBar.open(
-          '✓ Details copied to clipboard successfully',
-          'Close',
-          {
-            duration: 3000,
-            panelClass: ['success-snackbar'],
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-          },
-        );
-      }
-    });
+    this.router.navigate(['/monitoring/error-logs', log.id]);
   }
 
   deleteLog(id: string): void {

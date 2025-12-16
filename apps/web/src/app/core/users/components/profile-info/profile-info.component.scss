@@ -1,0 +1,285 @@
+// Profile Info Component Styles
+// ===================================
+
+:host {
+  display: block;
+}
+
+.profile-info-card {
+  width: 100%;
+}
+
+// ===== DISPLAY MODE STYLES =====
+
+.display-mode {
+  padding: 0;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--ax-spacing-lg);
+  padding-bottom: var(--ax-spacing-md);
+  border-bottom: 1px solid var(--ax-border-color);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ax-spacing-md);
+  }
+}
+
+.profile-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ax-text-primary);
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-spacing-sm);
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// Profile Grid Layout
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--ax-spacing-lg);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: var(--ax-spacing-md);
+  }
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-spacing-xs);
+}
+
+.section-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ax-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-value {
+  font-size: 1rem;
+  color: var(--ax-text-primary);
+  word-break: break-word;
+
+  &.email-value {
+    word-break: break-all;
+  }
+}
+
+// Status Badges
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  width: fit-content;
+
+  .status-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &.status-active {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+  }
+
+  &.status-inactive {
+    background-color: rgba(158, 158, 158, 0.1);
+    color: #9e9e9e;
+  }
+
+  &.status-suspended {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+  }
+
+  &.status-pending {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+  }
+}
+
+// Role Badge
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-spacing-xs);
+  padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
+  background-color: rgba(63, 81, 181, 0.1);
+  color: #3f51b5;
+  border-radius: 4px;
+  width: fit-content;
+
+  .role-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.text-gray-400 {
+  color: var(--ax-text-tertiary);
+}
+
+// ===== EDIT MODE STYLES =====
+
+.edit-mode {
+  padding: 0;
+}
+
+.edit-form {
+  display: contents;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--ax-spacing-md);
+  margin-bottom: var(--ax-spacing-lg);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-field {
+  width: 100%;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ax-spacing-md);
+  padding-top: var(--ax-spacing-md);
+  border-top: 1px solid var(--ax-border-color);
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.cancel-button,
+.save-button {
+  min-width: 120px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.save-button {
+  position: relative;
+
+  .spinner-inline {
+    display: inline-block;
+    margin-right: var(--ax-spacing-sm);
+  }
+}
+
+// ===== FORM FIELD STYLES =====
+
+::ng-deep {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    padding-bottom: 0.75rem;
+  }
+
+  .mat-mdc-form-field-error {
+    font-size: 0.75rem;
+  }
+
+  .mat-mdc-form-field-hint {
+    font-size: 0.75rem;
+    color: var(--ax-text-tertiary);
+  }
+}
+
+// ===== RESPONSIVE ADJUSTMENTS =====
+
+@media (max-width: 600px) {
+  .profile-header {
+    margin-bottom: var(--ax-spacing-md);
+  }
+
+  .profile-title {
+    font-size: 1.25rem;
+  }
+
+  .form-grid {
+    gap: var(--ax-spacing-sm);
+  }
+
+  .profile-grid {
+    gap: var(--ax-spacing-sm);
+  }
+}
+
+// ===== DARK MODE SUPPORT =====
+
+@media (prefers-color-scheme: dark) {
+  .section-value {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .status-badge {
+    &.status-active {
+      background-color: rgba(76, 175, 80, 0.15);
+    }
+
+    &.status-inactive {
+      background-color: rgba(158, 158, 158, 0.15);
+    }
+
+    &.status-suspended {
+      background-color: rgba(244, 67, 54, 0.15);
+    }
+
+    &.status-pending {
+      background-color: rgba(255, 152, 0, 0.15);
+    }
+  }
+
+  .role-badge {
+    background-color: rgba(63, 81, 181, 0.15);
+  }
+}

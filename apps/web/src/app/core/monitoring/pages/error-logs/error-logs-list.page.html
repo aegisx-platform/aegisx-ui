@@ -1,0 +1,419 @@
+<div class="error-logs-page p-4 md:p-6 space-y-6">
+  <!-- Breadcrumb -->
+  <ax-breadcrumb [items]="breadcrumbItems"></ax-breadcrumb>
+
+  <!-- Header Section -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+  >
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-on-surface">
+        {{ pageConfig.title }}
+      </h1>
+      <p class="text-muted mt-1">{{ pageConfig.description }}</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <button
+        mat-stroked-button
+        (click)="exportLogs()"
+        [disabled]="loading()"
+        class="border-outline text-on-surface"
+      >
+        <mat-icon>download</mat-icon>
+        Export CSV
+      </button>
+      <button
+        mat-stroked-button
+        (click)="openCleanupDialog()"
+        [disabled]="loading()"
+        class="border-outline text-on-surface"
+      >
+        <mat-icon>delete_sweep</mat-icon>
+        Cleanup Old
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div
+    *ngIf="stats()"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+  >
+    <!-- Total Errors Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-error"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Total Errors</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ stats()?.totalErrors || 0 }}
+        </p>
+        <p class="text-xs text-muted">All recorded error logs</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Error Level Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-error"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Errors</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ stats()?.byLevel?.error || 0 }}
+        </p>
+        <p class="text-xs text-muted">Critical issues</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Warning Level Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-warning"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Warnings</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ stats()?.byLevel?.warn || 0 }}
+        </p>
+        <p class="text-xs text-muted">Potential issues</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Info Level Card -->
+    <mat-card appearance="outlined" class="stat-card">
+      <mat-card-content class="p-4">
+        <div class="flex items-center gap-1.5 mb-2">
+          <span
+            class="size-2.5 shrink-0 rounded-sm bg-primary"
+            aria-hidden="true"
+          ></span>
+          <h3 class="text-sm font-medium text-muted !mb-0">Info</h3>
+        </div>
+        <p
+          class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-1"
+        >
+          {{ stats()?.byLevel?.info || 0 }}
+        </p>
+        <p class="text-xs text-muted">Informational</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filter Panel -->
+  <mat-card appearance="outlined">
+    <mat-card-content class="p-4 md:p-6">
+      <!-- Filter Header -->
+      <div class="flex items-center gap-2 mb-4">
+        <mat-icon class="text-primary">filter_alt</mat-icon>
+        <h3 class="text-base font-semibold text-on-surface !mb-0">
+          Filter Error Logs
+        </h3>
+      </div>
+
+      <!-- Filter Form -->
+      <form [formGroup]="filterForm" class="space-y-4">
+        <!-- First Row: Search and Level -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>Search Message</mat-label>
+            <input
+              matInput
+              placeholder="Search in error messages"
+              formControlName="search"
+            />
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>Level</mat-label>
+            <mat-select formControlName="level">
+              <mat-option [value]="null">All Levels</mat-option>
+              <mat-option value="error">Error</mat-option>
+              <mat-option value="warn">Warning</mat-option>
+              <mat-option value="info">Info</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Second Row: Type and User -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+              <mat-option [value]="null">All Types</mat-option>
+              <mat-option value="javascript">JavaScript</mat-option>
+              <mat-option value="http">HTTP</mat-option>
+              <mat-option value="angular">Angular</mat-option>
+              <mat-option value="custom">Custom</mat-option>
+              <mat-option value="backend">Backend</mat-option>
+              <mat-option value="system">System</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>User ID</mat-label>
+            <input
+              matInput
+              placeholder="Filter by user ID"
+              formControlName="userId"
+            />
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Third Row: Date Range -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>Start Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              formControlName="startDate"
+              placeholder="From"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="startPicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>End Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endPicker"
+              formControlName="endDate"
+              placeholder="To"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="endPicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-2 pt-2">
+          <button
+            type="button"
+            mat-flat-button
+            (click)="applyFilters()"
+            class="bg-primary text-on-primary flex-1 md:flex-none"
+          >
+            <mat-icon>filter_list</mat-icon>
+            Apply Filters
+          </button>
+          <button
+            type="button"
+            mat-stroked-button
+            (click)="clearFilters()"
+            class="border-outline text-on-surface flex-1 md:flex-none"
+          >
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex justify-center items-center py-12">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()">
+    <mat-card
+      appearance="outlined"
+      class="border border-error bg-error-container rounded-xl"
+    >
+      <mat-card-content class="flex items-center gap-3 p-6">
+        <div class="bg-error-container rounded-lg p-3">
+          <mat-icon class="text-error">error</mat-icon>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-semibold text-error">Error Loading Logs</h3>
+          <p class="text-sm text-muted">{{ error() }}</p>
+        </div>
+        <button
+          mat-icon-button
+          (click)="loadErrorLogs()"
+          matTooltip="Retry"
+          class="text-error"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="!loading() && !error()">
+    <mat-card appearance="outlined">
+      <div class="overflow-x-auto">
+        <table mat-table [dataSource]="errorLogs()" class="w-full" matSort>
+          <!-- Timestamp Column -->
+          <ng-container matColumnDef="timestamp">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="min-w-[180px]"
+            >
+              Timestamp
+            </th>
+            <td mat-cell *matCellDef="let log" class="text-sm min-w-[180px]">
+              {{ formatTimestamp(log.timestamp) }}
+            </td>
+          </ng-container>
+
+          <!-- Level Column -->
+          <ng-container matColumnDef="level">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Level</th>
+            <td mat-cell *matCellDef="let log">
+              <span [ngClass]="getLevelBadgeClass(log.level)">
+                <span
+                  [ngClass]="{
+                    'bg-error': log.level === 'error',
+                    'bg-warning': log.level === 'warn',
+                    'bg-primary': log.level === 'info'
+                  }"
+                  class="size-2 rounded-sm"
+                  aria-hidden="true"
+                ></span>
+                {{ log.level | uppercase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let log">
+              <mat-chip class="bg-surface-container text-on-surface">
+                {{ log.type }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Message Column -->
+          <ng-container matColumnDef="message">
+            <th mat-header-cell *matHeaderCellDef>Message</th>
+            <td mat-cell *matCellDef="let log" class="max-w-md">
+              <div class="truncate" [matTooltip]="log.message">
+                {{ truncateMessage(log.message) }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- User ID Column -->
+          <ng-container matColumnDef="userId">
+            <th mat-header-cell *matHeaderCellDef>User</th>
+            <td mat-cell *matCellDef="let log" class="text-sm">
+              {{ log.userId || '-' }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let log">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onRowClick(log)"
+                matTooltip="View Details"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteLog(log.id, $event)"
+                matTooltip="Delete"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            (click)="onRowClick(row)"
+            class="cursor-pointer hover:bg-surface-container"
+          ></tr>
+
+          <!-- No Data Row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td
+              class="mat-cell text-center py-8"
+              [attr.colspan]="displayedColumns.length"
+            >
+              <div class="flex flex-col items-center gap-2 text-muted">
+                <mat-icon class="text-4xl">inbox</mat-icon>
+                <p>No error logs found</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="totalLogs()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageConfig.pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+    </mat-card>
+  </div>
+</div>

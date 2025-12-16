@@ -1,0 +1,105 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.error-logs-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Stat Cards
+.stat-card {
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Table Styling
+table {
+  width: 100%;
+}
+
+::ng-deep {
+  .mat-mdc-header-cell {
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgb(71, 85, 105); /* text-muted */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: rgb(248, 250, 252); /* bg-surface-container */
+    border-bottom: 1px solid rgb(226, 232, 240); /* border-slate-200 */
+  }
+
+  .mat-mdc-cell {
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    color: rgb(51, 65, 85); /* text-on-surface */
+    border-bottom: 1px solid rgb(241, 245, 249); /* border-slate-100 */
+  }
+
+  .mat-mdc-row {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(248, 250, 252);
+    }
+  }
+
+  // Badge styling for error levels
+  .level-badge {
+    &.error {
+      @apply inline-flex items-center whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset gap-2 bg-error-container text-error;
+    }
+
+    &.warn {
+      @apply inline-flex items-center whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset gap-2 bg-warning-container text-warning;
+    }
+
+    &.info {
+      @apply inline-flex items-center whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset gap-2 bg-surface-container text-primary;
+    }
+  }
+
+  // Chip styling
+  mat-chip {
+    font-size: 0.75rem;
+    min-height: 24px;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+}
+
+// Filter form styling
+form {
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .error-logs-page {
+    padding: 1rem;
+  }
+
+  .stat-card {
+    p {
+      font-size: 1.875rem; /* text-3xl */
+    }
+  }
+
+  ::ng-deep {
+    .mat-mdc-cell,
+    .mat-mdc-header-cell {
+      padding: 12px 8px;
+      font-size: 0.8125rem;
+    }
+  }
+}

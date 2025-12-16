@@ -1,0 +1,497 @@
+<div class="api-key-wizard">
+  <!-- Header -->
+  <div class="dialog-header">
+    @if (currentStep() !== 3) {
+      <h2 mat-dialog-title class="text-2xl font-bold">Create API Key</h2>
+    } @else {
+      <h2 mat-dialog-title class="text-2xl font-bold text-success-emphasis">
+        <mat-icon class="align-middle mr-2">check_circle</mat-icon>
+        API Key Created Successfully
+      </h2>
+    }
+  </div>
+
+  <!-- Progress Stepper -->
+  <mat-stepper
+    [selectedIndex]="currentStep()"
+    [linear]="false"
+    class="wizard-stepper"
+  >
+    <!-- Step 1: Details -->
+    <mat-step [editable]="false" [completed]="currentStep() > 0">
+      <ng-template matStepLabel>Details</ng-template>
+      <mat-dialog-content class="step-content">
+        <p class="text-muted mb-6">
+          Provide basic information about your API key.
+        </p>
+
+        <form [formGroup]="detailsForm" class="space-y-4">
+          <!-- Name Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>API Key Name</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              placeholder="e.g., Production Backend"
+              required
+            />
+            <mat-icon matPrefix>label</mat-icon>
+            <mat-hint>A descriptive name for this API key</mat-hint>
+            @if (detailsForm.get('name')?.hasError('required')) {
+              <mat-error>Name is required</mat-error>
+            }
+            @if (detailsForm.get('name')?.hasError('maxlength')) {
+              <mat-error>Name must not exceed 100 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Description Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Description (Optional)</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              placeholder="What will this key be used for?"
+              rows="3"
+            ></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-hint>Help you remember the purpose of this key</mat-hint>
+            @if (detailsForm.get('description')?.hasError('maxlength')) {
+              <mat-error>Description must not exceed 500 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Expiration Option -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Expiration</mat-label>
+            <mat-select formControlName="expiryOption" required>
+              @for (option of expirationOptions; track option.value) {
+                <mat-option [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              }
+              <mat-optgroup label="Custom">
+                <mat-option value="custom">Custom days</mat-option>
+              </mat-optgroup>
+            </mat-select>
+            <mat-icon matPrefix>schedule</mat-icon>
+            <mat-hint>When should this key expire?</mat-hint>
+          </mat-form-field>
+
+          <!-- Custom Expiry Days (if custom selected) -->
+          @if (detailsForm.get('expiryOption')?.value === 'custom') {
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Custom Expiration (Days)</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="customExpireDays"
+                placeholder="e.g., 180"
+                min="1"
+                max="3650"
+              />
+              <mat-hint>1 to 3650 days (max 10 years)</mat-hint>
+              @if (detailsForm.get('customExpireDays')?.hasError('required')) {
+                <mat-error>Number of days is required</mat-error>
+              }
+              @if (detailsForm.get('customExpireDays')?.hasError('min')) {
+                <mat-error>Minimum 1 day</mat-error>
+              }
+              @if (detailsForm.get('customExpireDays')?.hasError('max')) {
+                <mat-error>Maximum 3650 days</mat-error>
+              }
+            </mat-form-field>
+          }
+        </form>
+
+        <!-- Security Warning -->
+        <div
+          class="bg-warning-faint border-l-4 border-warning p-4 mt-6 rounded"
+        >
+          <div class="flex items-start gap-3">
+            <mat-icon class="text-warning-emphasis flex-shrink-0 mt-0.5"
+              >info</mat-icon
+            >
+            <div>
+              <h4 class="text-sm font-semibold text-warning-emphasis mb-1">
+                Security Note
+              </h4>
+              <p class="text-sm text-warning-emphasis">
+                You'll see the full API key <strong>only once</strong> after
+                creation. Make sure to copy and store it securely.
+              </p>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+    </mat-step>
+
+    <!-- Step 2: Permissions -->
+    <mat-step [editable]="false" [completed]="currentStep() > 1">
+      <ng-template matStepLabel>Permissions</ng-template>
+      <mat-dialog-content class="step-content">
+        <p class="text-muted mb-6">
+          Select the permissions this API key should have.
+          @if (selectedPermissions().length === 0) {
+            <span class="text-info"
+              >(No permissions selected - key will have minimal access)</span
+            >
+          }
+        </p>
+
+        <form [formGroup]="permissionsForm" class="space-y-6">
+          @for (group of permissionGroups; track group.name) {
+            <mat-card appearance="outlined" class="permission-group">
+              <mat-card-header class="pb-4">
+                <div class="flex items-center justify-between w-full">
+                  <div class="flex items-center gap-3">
+                    <mat-icon class="text-primary">{{ group.icon }}</mat-icon>
+                    <div>
+                      <h3 class="font-semibold">{{ group.name }}</h3>
+                      <p class="text-sm text-muted">{{ group.description }}</p>
+                    </div>
+                  </div>
+                  <mat-checkbox
+                    [checked]="areAllGroupPermissionsSelected(group)"
+                    (change)="toggleGroupPermissions(group)"
+                    matTooltip="Select all in this group"
+                  ></mat-checkbox>
+                </div>
+              </mat-card-header>
+
+              <mat-divider></mat-divider>
+
+              <mat-card-content class="pt-4">
+                <div class="space-y-2">
+                  @for (permission of group.permissions; track permission.id) {
+                    <div
+                      class="flex items-start gap-3 p-2 rounded hover:bg-surface-hover"
+                    >
+                      <mat-checkbox
+                        [checked]="isPermissionSelected(permission)"
+                        (change)="togglePermission(permission)"
+                        class="mt-1"
+                      ></mat-checkbox>
+                      <div class="flex-grow">
+                        <div class="flex items-center gap-2">
+                          @if (permission.icon) {
+                            <mat-icon class="text-sm text-muted">{{
+                              permission.icon
+                            }}</mat-icon>
+                          }
+                          <label class="font-medium cursor-pointer">
+                            {{ permission.label }}
+                          </label>
+                        </div>
+                        <p class="text-sm text-muted mt-1">
+                          {{ permission.description }}
+                        </p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </form>
+
+        <!-- Permissions Info -->
+        <div class="bg-info-faint border-l-4 border-info p-4 mt-6 rounded">
+          <div class="flex items-start gap-3">
+            <mat-icon class="text-info-emphasis flex-shrink-0 mt-0.5"
+              >help</mat-icon
+            >
+            <div>
+              <h4 class="text-sm font-semibold text-info-emphasis mb-1">
+                Permission Model
+              </h4>
+              <p class="text-sm text-info-emphasis">
+                Permissions control what resources and actions this API key can
+                access. You can modify permissions later without regenerating
+                the key.
+              </p>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+    </mat-step>
+
+    <!-- Step 3: Review -->
+    <mat-step [editable]="false" [completed]="currentStep() > 2">
+      <ng-template matStepLabel>Review</ng-template>
+      <mat-dialog-content class="step-content">
+        <p class="text-muted mb-6">
+          Review your API key configuration before creating.
+        </p>
+
+        <!-- Details Summary -->
+        <mat-card appearance="outlined" class="mb-6">
+          <mat-card-header>
+            <h3 class="font-semibold">Key Details</h3>
+          </mat-card-header>
+          <mat-divider></mat-divider>
+          <mat-card-content class="space-y-3 pt-4">
+            <div class="flex justify-between">
+              <span class="font-medium">Name:</span>
+              <span>{{ detailsForm.get('name')?.value }}</span>
+            </div>
+            @if (detailsForm.get('description')?.value) {
+              <div class="flex justify-between">
+                <span class="font-medium">Description:</span>
+                <span class="text-muted text-right">{{
+                  detailsForm.get('description')?.value
+                }}</span>
+              </div>
+            }
+            <div class="flex justify-between">
+              <span class="font-medium">Expiration:</span>
+              <span>
+                @if (detailsForm.get('expiryOption')?.value === 'custom') {
+                  {{ detailsForm.get('customExpireDays')?.value }} days
+                } @else {
+                  {{ getExpiryLabel(detailsForm.get('expiryOption')?.value) }}
+                }
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Permissions Summary -->
+        <mat-card appearance="outlined" class="mb-6">
+          <mat-card-header>
+            <h3 class="font-semibold">
+              Selected Permissions
+              <span class="text-primary font-normal text-sm">
+                ({{ selectedPermissions().length }} total)
+              </span>
+            </h3>
+          </mat-card-header>
+          <mat-divider></mat-divider>
+          @if (selectedPermissions().length > 0) {
+            <mat-card-content class="pt-4">
+              <div class="space-y-2">
+                @for (
+                  permission of selectedPermissions();
+                  track permission.id
+                ) {
+                  <div
+                    class="flex items-center gap-2 p-2 rounded bg-surface-hover"
+                  >
+                    <mat-icon class="text-success text-sm"
+                      >check_circle</mat-icon
+                    >
+                    <span class="font-medium">{{ permission.label }}</span>
+                    <span class="text-muted text-sm ml-auto">{{
+                      permission.resource
+                    }}</span>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          } @else {
+            <mat-card-content class="pt-4">
+              <p class="text-muted italic">
+                No permissions selected. This key will have minimal access.
+              </p>
+            </mat-card-content>
+          }
+        </mat-card>
+
+        <!-- Confirmation Warning -->
+        <div class="bg-error-faint border-l-4 border-error p-4 rounded">
+          <div class="flex items-start gap-3">
+            <mat-icon class="text-error-emphasis flex-shrink-0 mt-0.5"
+              >warning</mat-icon
+            >
+            <div>
+              <h4 class="text-sm font-semibold text-error-emphasis mb-1">
+                Important: Save Your Key
+              </h4>
+              <p class="text-sm text-error-emphasis">
+                The full API key will be shown <strong>only once</strong> after
+                creation. Make sure to copy and store it in a secure location.
+                You won't be able to see it again!
+              </p>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+    </mat-step>
+  </mat-stepper>
+
+  <!-- Step 4: Success (Outside stepper) -->
+  @if (currentStep() === 3 && wizardData().generatedKey) {
+    <mat-dialog-content class="step-content success-content">
+      <!-- Critical Warning -->
+      <div
+        class="bg-error-faint border-l-4 border-error p-4 mb-6 rounded animate-pulse"
+      >
+        <div class="flex items-start gap-3">
+          <mat-icon class="text-error-emphasis flex-shrink-0 mt-0.5"
+            >error</mat-icon
+          >
+          <div>
+            <h4 class="text-sm font-bold text-error-emphasis mb-2">
+              ⚠️ COPY YOUR API KEY NOW
+            </h4>
+            <p class="text-sm text-error-emphasis font-semibold">
+              This is the <strong>ONLY TIME</strong> you will see the full API
+              key. Copy it now and store it in a secure location. Once you close
+              this dialog, you will NOT be able to retrieve it again!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Key Display -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold mb-2"> Your API Key: </label>
+        <div
+          class="relative bg-surface border-2 border-success rounded-lg p-4 font-mono text-sm break-all"
+        >
+          <code class="text-success-emphasis font-bold select-all pr-12 block">
+            {{ wizardData().generatedKey?.fullKey }}
+          </code>
+          <button
+            mat-icon-button
+            class="absolute top-2 right-2"
+            (click)="copyToClipboard(wizardData().generatedKey!.fullKey)"
+            [matTooltip]="keyCopied() ? 'Copied!' : 'Copy to clipboard'"
+          >
+            <mat-icon class="text-success-emphasis">
+              {{ keyCopied() ? 'check' : 'content_copy' }}
+            </mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <mat-divider class="my-4"></mat-divider>
+
+      <!-- Key Information -->
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between">
+          <span class="font-semibold">Name:</span>
+          <span>{{ wizardData().generatedKey?.name }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold">Preview:</span>
+          <code class="text-muted text-sm">{{
+            wizardData().generatedKey?.preview
+          }}</code>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold">Status:</span>
+          <span class="text-success-emphasis font-semibold">Active</span>
+        </div>
+        @if (wizardData().generatedKey?.expires_at) {
+          <div class="flex justify-between">
+            <span class="font-semibold">Expires:</span>
+            <span>{{ formatDate(wizardData().generatedKey?.expires_at) }}</span>
+          </div>
+        } @else {
+          <div class="flex justify-between">
+            <span class="font-semibold">Expires:</span>
+            <span class="text-muted">Never</span>
+          </div>
+        }
+      </div>
+
+      <!-- Next Steps -->
+      <div class="bg-info-faint border-l-4 border-info p-4 rounded">
+        <div class="flex items-start gap-3">
+          <mat-icon class="text-info-emphasis flex-shrink-0 mt-0.5"
+            >info</mat-icon
+          >
+          <div>
+            <h4 class="text-sm font-semibold text-info-emphasis mb-2">
+              Next Steps:
+            </h4>
+            <ul
+              class="text-sm text-info-emphasis list-disc list-inside space-y-1"
+            >
+              <li>Copy the API key above to a secure password manager</li>
+              <li>Never commit this key to version control (Git, etc.)</li>
+              <li>Use environment variables to store it in your application</li>
+              <li>
+                If compromised, revoke it immediately from the API Keys page
+              </li>
+              <li>Monitor API key usage in the activity logs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+  }
+
+  <!-- Dialog Actions -->
+  <mat-dialog-actions align="end" class="gap-2 p-4 action-buttons">
+    @if (currentStep() !== 3) {
+      <!-- Regular Steps -->
+      <button
+        mat-button
+        (click)="cancel()"
+        [disabled]="creating()"
+        type="button"
+      >
+        Cancel
+      </button>
+
+      @if (currentStep() > 0) {
+        <button
+          mat-button
+          (click)="previousStep()"
+          [disabled]="creating()"
+          type="button"
+        >
+          <mat-icon class="mr-1">arrow_back</mat-icon>
+          Back
+        </button>
+      }
+
+      @if (currentStep() < 2) {
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="nextStep()"
+          [disabled]="(currentStep() === 0 && !detailsForm.valid) || creating()"
+          type="button"
+        >
+          <mat-icon class="mr-1">arrow_forward</mat-icon>
+          Next
+        </button>
+      } @else {
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="createKey()"
+          [disabled]="!detailsForm.valid || creating()"
+          type="button"
+        >
+          @if (creating()) {
+            <mat-spinner diameter="20" class="inline-block mr-2"></mat-spinner>
+            <span>Creating...</span>
+          } @else {
+            <mat-icon class="mr-1">vpn_key</mat-icon>
+            <span>Create API Key</span>
+          }
+        </button>
+      }
+    } @else {
+      <!-- Success Step -->
+      <button
+        mat-button
+        (click)="copyToClipboard(wizardData().generatedKey!.fullKey)"
+        type="button"
+      >
+        <mat-icon class="mr-1">
+          {{ keyCopied() ? 'check' : 'content_copy' }}
+        </mat-icon>
+        {{ keyCopied() ? 'Copied!' : 'Copy Key Again' }}
+      </button>
+      <button mat-flat-button color="primary" (click)="close()" type="button">
+        <mat-icon class="mr-1">check</mat-icon>
+        Done - I've Saved My Key
+      </button>
+    }
+  </mat-dialog-actions>
+</div>

@@ -121,7 +121,9 @@ export class TestUserFactory {
     };
   }
 
-  static createProfile(overrides: Partial<TestUserProfile> = {}): TestUserProfile {
+  static createProfile(
+    overrides: Partial<TestUserProfile> = {},
+  ): TestUserProfile {
     const id = this.counter++;
     return {
       firstName: `Test${id}`,
@@ -233,13 +235,13 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
     email: true,
     push: false,
     desktop: true,
-    sound: true
+    sound: true,
   },
   navigation: {
     collapsed: false,
     type: 'default',
-    position: 'left'
-  }
+    position: 'left',
+  },
 } as const;
 
 /**
@@ -247,69 +249,69 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
  */
 export const TEST_PREFERENCES = {
   default: DEFAULT_USER_PREFERENCES,
-  
+
   darkMode: {
     ...DEFAULT_USER_PREFERENCES,
     theme: 'dark',
     scheme: 'dark',
   } as UserPreferences,
-  
+
   compactLayout: {
     ...DEFAULT_USER_PREFERENCES,
     layout: 'compact',
     navigation: {
       collapsed: true,
       type: 'compact',
-      position: 'left'
-    }
+      position: 'left',
+    },
   } as UserPreferences,
-  
+
   internationalUser: {
     ...DEFAULT_USER_PREFERENCES,
     language: 'th',
     timezone: 'Asia/Bangkok',
     dateFormat: 'DD/MM/YYYY',
-    timeFormat: '24h'
+    timeFormat: '24h',
   } as UserPreferences,
-  
+
   minimalNotifications: {
     ...DEFAULT_USER_PREFERENCES,
     notifications: {
       email: false,
       push: false,
       desktop: false,
-      sound: false
-    }
+      sound: false,
+    },
   } as UserPreferences,
-  
+
   allNotificationsEnabled: {
     ...DEFAULT_USER_PREFERENCES,
     notifications: {
       email: true,
       push: true,
       desktop: true,
-      sound: true
-    }
+      sound: true,
+    },
   } as UserPreferences,
-  
+
   horizontalNavigation: {
     ...DEFAULT_USER_PREFERENCES,
     navigation: {
       collapsed: false,
       type: 'horizontal',
-      position: 'top'
-    }
+      position: 'top',
+    },
   } as UserPreferences,
-  
+
   rightSideNavigation: {
     ...DEFAULT_USER_PREFERENCES,
     navigation: {
       collapsed: false,
       type: 'default',
-      position: 'right'
-    }
+      position: 'right',
+    },
   } as UserPreferences,
-  
+
   enterpriseLayout: {
     ...DEFAULT_USER_PREFERENCES,
     layout: 'enterprise',
@@ -317,8 +319,8 @@ export const TEST_PREFERENCES = {
     navigation: {
       collapsed: false,
       type: 'default',
-      position: 'left'
-    }
+      position: 'left',
+    },
   } as UserPreferences,
 } as const;
 
@@ -340,7 +342,7 @@ export class TestPreferencesFactory {
       navigation: {
         ...DEFAULT_USER_PREFERENCES.navigation,
         ...overrides.navigation,
-      }
+      },
     };
   }
 
@@ -360,15 +362,15 @@ export class TestPreferencesFactory {
       classic: { type: 'default', position: 'left', collapsed: false },
       compact: { type: 'compact', position: 'left', collapsed: true },
       enterprise: { type: 'default', position: 'left', collapsed: false },
-      empty: { type: 'default', position: 'left', collapsed: false }
+      empty: { type: 'default', position: 'left', collapsed: false },
     } as const;
 
     return this.create({
       layout,
       navigation: {
         ...DEFAULT_USER_PREFERENCES.navigation,
-        ...navigationConfig[layout]
-      } as any
+        ...navigationConfig[layout],
+      } as any,
     });
   }
 
@@ -377,43 +379,48 @@ export class TestPreferencesFactory {
    */
   static createForLocale(language: string, timezone: string): UserPreferences {
     const localeConfigs = {
-      'en': { dateFormat: 'MM/DD/YYYY', timeFormat: '12h' },
-      'th': { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
-      'ja': { dateFormat: 'YYYY-MM-DD', timeFormat: '24h' },
-      'de': { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
-      'fr': { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
+      en: { dateFormat: 'MM/DD/YYYY', timeFormat: '12h' },
+      th: { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
+      ja: { dateFormat: 'YYYY-MM-DD', timeFormat: '24h' },
+      de: { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
+      fr: { dateFormat: 'DD/MM/YYYY', timeFormat: '24h' },
     } as const;
 
-    const config = localeConfigs[language as keyof typeof localeConfigs] || localeConfigs.en;
+    const config =
+      localeConfigs[language as keyof typeof localeConfigs] || localeConfigs.en;
 
     return this.create({
       language,
       timezone,
-      ...config
+      ...config,
     });
   }
 
   /**
    * Create preferences for notification testing
    */
-  static createForNotifications(notifications: Partial<UserPreferences['notifications']>): UserPreferences {
+  static createForNotifications(
+    notifications: Partial<UserPreferences['notifications']>,
+  ): UserPreferences {
     return this.create({
       notifications: {
         ...DEFAULT_USER_PREFERENCES.notifications,
-        ...notifications
-      }
+        ...notifications,
+      },
     });
   }
 
   /**
    * Create preferences for navigation testing
    */
-  static createForNavigation(navigation: Partial<UserPreferences['navigation']>): UserPreferences {
+  static createForNavigation(
+    navigation: Partial<UserPreferences['navigation']>,
+  ): UserPreferences {
     return this.create({
       navigation: {
         ...DEFAULT_USER_PREFERENCES.navigation,
-        ...navigation
-      }
+        ...navigation,
+      },
     });
   }
 
@@ -429,3 +436,171 @@ export class TestPreferencesFactory {
     };
   }
 }
+
+/**
+ * Error Log test data interfaces and fixtures
+ */
+export interface TestErrorLog {
+  id?: string;
+  message: string;
+  level: 'critical' | 'error' | 'warning' | 'info';
+  type:
+    | 'validation'
+    | 'database'
+    | 'network'
+    | 'authentication'
+    | 'authorization';
+  stack?: string;
+  context?: Record<string, any>;
+  timestamp?: string;
+}
+
+export const TEST_ERROR_LOGS: TestErrorLog[] = [
+  {
+    message: 'Database connection failed',
+    level: 'critical',
+    type: 'database',
+    stack: 'Error: Connection timeout\n  at Database.connect()',
+    timestamp: new Date().toISOString(),
+  },
+  {
+    message: 'Validation error: Invalid email format',
+    level: 'error',
+    type: 'validation',
+    context: { field: 'email', value: 'invalid-email' },
+    timestamp: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    message: 'Network request timeout',
+    level: 'warning',
+    type: 'network',
+    timestamp: new Date(Date.now() - 7200000).toISOString(),
+  },
+];
+
+/**
+ * Activity Log test data interfaces and fixtures
+ */
+export interface TestActivityLog {
+  id?: string;
+  action: 'create' | 'update' | 'delete' | 'login' | 'logout' | 'view';
+  entity?: string;
+  entityId?: string;
+  userId?: string;
+  username?: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  details?: string;
+  metadata?: Record<string, any>;
+  timestamp?: string;
+}
+
+export const TEST_ACTIVITY_LOGS: TestActivityLog[] = [
+  {
+    action: 'create',
+    entity: 'user',
+    username: 'admin@aegisx.com',
+    severity: 'medium',
+    details: 'Created new user account',
+    timestamp: new Date().toISOString(),
+  },
+  {
+    action: 'update',
+    entity: 'profile',
+    username: 'admin@aegisx.com',
+    severity: 'low',
+    details: 'Updated profile information',
+    timestamp: new Date(Date.now() - 1800000).toISOString(),
+  },
+  {
+    action: 'delete',
+    entity: 'api-key',
+    username: 'admin@aegisx.com',
+    severity: 'high',
+    details: 'Deleted API key',
+    timestamp: new Date(Date.now() - 3600000).toISOString(),
+  },
+];
+
+/**
+ * API Key test data interfaces and fixtures
+ */
+export interface TestApiKey {
+  id?: string;
+  name: string;
+  description?: string;
+  key?: string;
+  status: 'active' | 'revoked' | 'expired';
+  permissions: string[];
+  createdAt?: string;
+  expiresAt?: string;
+  lastUsedAt?: string;
+}
+
+export const TEST_API_KEYS: TestApiKey[] = [
+  {
+    name: 'Production API Key',
+    description: 'Main production API key',
+    status: 'active',
+    permissions: ['read:users', 'write:users', 'read:logs'],
+    createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
+    expiresAt: new Date(Date.now() + 86400000 * 30).toISOString(),
+  },
+  {
+    name: 'Development API Key',
+    description: 'Key for development environment',
+    status: 'active',
+    permissions: ['read:users', 'read:logs'],
+    createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
+    expiresAt: new Date(Date.now() + 86400000 * 90).toISOString(),
+  },
+  {
+    name: 'Revoked API Key',
+    description: 'This key was revoked',
+    status: 'revoked',
+    permissions: ['read:users'],
+    createdAt: new Date(Date.now() - 86400000 * 60).toISOString(),
+  },
+];
+
+/**
+ * Factory for creating test API keys
+ */
+export class TestApiKeyFactory {
+  private static counter = 1;
+
+  static create(overrides: Partial<TestApiKey> = {}): TestApiKey {
+    const id = this.counter++;
+    return {
+      name: `Test API Key ${id}`,
+      description: `Test key for E2E testing ${id}`,
+      status: 'active',
+      permissions: ['read:users'],
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 86400000 * 30).toISOString(),
+      ...overrides,
+    };
+  }
+}
+
+/**
+ * Test permissions for API keys
+ */
+export const TEST_PERMISSIONS = {
+  users: ['read:users', 'write:users', 'delete:users'],
+  logs: ['read:logs', 'write:logs', 'delete:logs'],
+  monitoring: ['read:monitoring', 'write:monitoring'],
+  apiKeys: ['read:api-keys', 'write:api-keys', 'delete:api-keys'],
+  all: [
+    'read:users',
+    'write:users',
+    'delete:users',
+    'read:logs',
+    'write:logs',
+    'delete:logs',
+    'read:monitoring',
+    'write:monitoring',
+    'read:api-keys',
+    'write:api-keys',
+    'delete:api-keys',
+  ],
+} as const;

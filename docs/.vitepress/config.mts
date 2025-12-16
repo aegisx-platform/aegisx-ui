@@ -22,9 +22,8 @@ export default defineConfig({
       { text: 'Reference', link: '/reference/api/api-response-standard' },
       { text: 'Architecture', link: '/architecture/architecture-overview' },
       { text: 'Features', link: '/features/index' },
-      { text: 'Development', link: '/development/claude-detailed-rules' },
-      { text: 'Infrastructure', link: '/infrastructure/CI-CD-SETUP' },
-      { text: 'Testing', link: '/testing/avatar-testing-guide' },
+      { text: 'Development', link: '/guides/development/claude-detailed-rules' },
+      { text: 'Infrastructure', link: '/guides/infrastructure/ci-cd-setup' },
     ],
 
     // Sidebar navigation - will be configured in task 5.2
@@ -38,6 +37,8 @@ export default defineConfig({
               link: '/getting-started/getting-started',
             },
             { text: 'Project Setup', link: '/getting-started/project-setup' },
+            { text: 'Contributing', link: '/getting-started/contributing' },
+            { text: 'SMTP Setup Guide', link: '/getting-started/smtp-setup-guide' },
           ],
         },
       ],
@@ -62,10 +63,6 @@ export default defineConfig({
               text: 'Universal Full-Stack Standard',
               link: '/guides/development/universal-fullstack-standard',
             },
-            {
-              text: 'Claude Detailed Rules',
-              link: '/guides/development/claude-detailed-rules',
-            },
           ],
         },
         {
@@ -82,6 +79,57 @@ export default defineConfig({
             {
               text: 'Git Flow & Release',
               link: '/guides/infrastructure/version-management/git-flow-release-guide',
+            },
+            {
+              text: 'Domain Separated Migrations',
+              link: '/guides/infrastructure/domain-separated-migrations',
+            },
+            {
+              text: 'CI/CD Quick Start',
+              link: '/guides/infrastructure/ci-cd/quick-start',
+            },
+            {
+              text: 'CI/CD Simple Guide',
+              link: '/guides/infrastructure/ci-cd/simple-guide',
+            },
+          ],
+        },
+        {
+          text: 'Database',
+          items: [
+            {
+              text: 'Migration Guide',
+              link: '/guides/database/migration-guide',
+            },
+            {
+              text: 'Schema Migration Guide',
+              link: '/guides/database/schema-migration-guide',
+            },
+          ],
+        },
+        {
+          text: 'Testing',
+          items: [
+            {
+              text: 'Testing Strategy',
+              link: '/guides/testing/testing-strategy',
+            },
+            {
+              text: 'API Testing',
+              link: '/guides/testing/api-testing',
+            },
+            {
+              text: 'Integration Tests',
+              link: '/guides/testing/integration-tests',
+            },
+          ],
+        },
+        {
+          text: 'Migrations',
+          items: [
+            {
+              text: 'User Department Integration',
+              link: '/guides/migrations/user-department-integration',
             },
           ],
         },
@@ -247,15 +295,49 @@ export default defineConfig({
           items: [
             {
               text: 'CI/CD Setup',
-              link: '/infrastructure/CI-CD-SETUP',
+              link: '/infrastructure/ci-cd-setup',
+            },
+            {
+              text: 'CI/CD Summary',
+              link: '/infrastructure/cicd-summary',
+            },
+            {
+              text: 'CI/CD Optimization Guide',
+              link: '/infrastructure/ci-cd-optimization-guide',
+            },
+            {
+              text: 'Deployment Guide',
+              link: '/infrastructure/deployment',
             },
             {
               text: 'GitHub Pages Deployment',
-              link: '/infrastructure/GITHUB-PAGES-DEPLOYMENT',
+              link: '/infrastructure/github-pages-deployment',
             },
+          ],
+        },
+        {
+          text: 'Version Management',
+          items: [
             {
               text: 'Automated Versioning Guide',
-              link: '/infrastructure/AUTOMATED-VERSIONING-GUIDE',
+              link: '/infrastructure/automated-versioning-guide',
+            },
+            {
+              text: 'Semantic Release Recovery',
+              link: '/infrastructure/semantic-release-recovery',
+            },
+            {
+              text: 'Version Management Best Practices',
+              link: '/infrastructure/version-management-best-practices',
+            },
+          ],
+        },
+        {
+          text: 'Docker & Runtime',
+          items: [
+            {
+              text: 'Monorepo Docker Guide',
+              link: '/infrastructure/monorepo-docker-guide',
             },
             {
               text: 'Multi-Instance Docker Workflow',
@@ -264,26 +346,6 @@ export default defineConfig({
             {
               text: 'Runtime Configuration',
               link: '/infrastructure/runtime-config',
-            },
-          ],
-        },
-      ],
-
-      '/testing/': [
-        {
-          text: 'Testing Strategies',
-          items: [
-            {
-              text: 'Avatar Testing Guide',
-              link: '/testing/avatar-testing-guide',
-            },
-            {
-              text: 'Manual Test Commands',
-              link: '/testing/manual-test-commands',
-            },
-            {
-              text: 'Monitoring',
-              link: '/testing/MONITORING',
             },
           ],
         },
@@ -661,7 +723,6 @@ export default defineConfig({
     '**/features/templates/**', // Exclude templates - contain placeholder links
     '**/features/inventory-app/**', // Exclude - has many internal cross-references to fix later
     '**/styling/**',
-    '**/reference/cli/aegisx-cli/**',
     '**/archive/**', // Exclude archived content
     '**/aegisx-cli/**', // Exclude CLI library docs (in libs/)
     '**/sessions/**', // Exclude session templates

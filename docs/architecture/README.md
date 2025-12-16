@@ -4,7 +4,7 @@
 
 ## 📚 คู่มือหลัก
 
-### 1. [DOMAIN_ARCHITECTURE_GUIDE.md](./DOMAIN_ARCHITECTURE_GUIDE.md)
+### 1. [Domain Architecture Guide](./domain-architecture-guide.md)
 
 **คู่มือฉบับเต็ม:** อธิบายหลักการแบ่ง domain อย่างละเอียด
 
@@ -13,7 +13,7 @@
 - ตัวอย่างเฉพาะกรณี (budgets, etc.)
 - Checklist ก่อน generate
 
-### 2. [QUICK_DOMAIN_REFERENCE.md](./QUICK_DOMAIN_REFERENCE.md)
+### 2. [Quick Domain Reference](./quick-domain-reference.md)
 
 **อ้างอิงด่วน:** ใช้เมื่อต้องการคำตอบเร็ว
 
@@ -54,7 +54,7 @@ bash /tmp/check_domain.sh budget_allocations
    ```
 
 3. **อ่าน Quick Reference**
-   - [QUICK_DOMAIN_REFERENCE.md](./QUICK_DOMAIN_REFERENCE.md)
+   - [Quick Domain Reference](./quick-domain-reference.md)
 
 4. **Generate ด้วยคำสั่งที่ถูกต้อง**
    - ใช้ `--domain` ตามคำแนะนำจาก checker

@@ -21,15 +21,15 @@ Guides for feature development, coding standards, and workflows.
 - **[QA Checklist](./development/qa-checklist.md)** - Quality assurance steps before deployment
 - **[Universal Full-Stack Standard](./development/universal-fullstack-standard.md)** - Database-first development workflow
 
-### 🏗️ [Infrastructure](./infrastructure/README.md)
+### 🏗️ [Infrastructure](./infrastructure/)
 
 Deployment, CI/CD, Docker, and DevOps guides.
 
 - **[Multi-Instance Setup](./infrastructure/multi-instance-setup.md)** - Run multiple instances in parallel
 - **[Git Subtree Guide](./infrastructure/git-subtree-guide.md)** - Manage shared libraries
-- **[CI/CD](./infrastructure/ci-cd/README.md)** - Continuous integration and deployment
-- **[Docker](./infrastructure/docker/README.md)** - Container and deployment guides
-- **[Version Management](./infrastructure/version-management/README.md)** - Git flow and semantic releases
+- **[CI/CD](./infrastructure/ci-cd/)** - Continuous integration and deployment
+- **[Docker](./infrastructure/)** - Container and deployment guides
+- **[Version Management](./infrastructure/version-management/)** - Git flow and semantic releases
 
 ### 🗄️ [Database](./database/README.md)
 

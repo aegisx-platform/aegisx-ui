@@ -464,7 +464,7 @@ These will use the services defined here as their data layer.
 
 - See `/docs/features/system-initialization/FRONTEND_SPECIFICATION.md` for complete UI/UX specifications
 - See `/docs/features/system-initialization/BACKEND_API.md` for backend API reference
-- See `/docs/development/API_CALLING_STANDARD.md` for API calling patterns
+- See `/docs/guides/development/api-calling-standard.md` for API calling patterns
 
 ## Dependencies
 

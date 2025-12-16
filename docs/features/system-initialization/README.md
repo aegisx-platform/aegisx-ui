@@ -426,7 +426,7 @@ For questions or issues:
 - [AegisX Platform README](../../../README.md)
 - [Development Guidelines](../../development/)
 - [Architecture Documentation](../../architecture/)
-- [Infrastructure Setup](../../infrastructure/)
+- [Infrastructure Setup](../../guides/infrastructure/)
 
 ---
 

@@ -54,5 +54,5 @@ features/
 For more information, see:
 
 - [CRUD Generator Guide](../../../../../libs/aegisx-cli/docs/README.md)
-- [Feature Development Standard](../../../../../docs/development/feature-development-standard.md)
+- [Feature Development Standard](../../../../../docs/guides/development/feature-development-standard.md)
 - [Angular Frontend Guide](../../../../../docs/architecture/angular-frontend-guide.md)

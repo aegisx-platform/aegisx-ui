@@ -10,7 +10,7 @@ tags: [documentation, index, navigation]
 > **Enterprise-ready full-stack application** with Angular 19+, Fastify 4+, PostgreSQL, and Nx monorepo.
 
 [![Documentation Status](https://img.shields.io/badge/docs-active-brightgreen)](https://github.com/aegisx-platform/aegisx-starter-1)
-[![License](https://img.shields.io/badge/license-MIT-blue)](../LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/aegisx-platform/aegisx-starter-1/blob/main/LICENSE)
 [![Node Version](https://img.shields.io/badge/node-22%2B-success)](https://nodejs.org)
 [![Package Manager](https://img.shields.io/badge/package%20manager-pnpm-yellow)](https://pnpm.io)
 
@@ -67,7 +67,7 @@ This documentation follows the **Diátaxis Framework** with a 5-layer informatio
 - **[Git Subtree Guide](./guides/infrastructure/git-subtree-guide.md)** - Shared library management
 - **[Git Flow & Release](./guides/infrastructure/version-management/git-flow-release-guide.md)** - Branch strategy and releases
 - **[CI/CD Quick Start](./guides/infrastructure/ci-cd/quick-start.md)** - GitHub Actions setup
-- **[CI/CD Best Practices](./guides/infrastructure/ci-cd/best-practices.md)** - Advanced CI/CD patterns
+- **[CI/CD Simple Guide](./guides/infrastructure/ci-cd/simple-guide.md)** - Simple CI/CD setup
 
 ---
 
@@ -102,20 +102,13 @@ This documentation follows the **Diátaxis Framework** with a 5-layer informatio
 
 **System design patterns** and architectural guidelines for understanding the platform.
 
-### Concepts
+### Core Architecture
 
-- **[Module Isolation](./architecture/concepts/module-isolation.md)** - Module independence patterns
-- **[Module Development](./architecture/concepts/module-development.md)** - Module lifecycle
-
-### Patterns
-
-- **[Microservices Adoption Path](./architecture/patterns/microservices-adoption-path.md)** - Monolith to microservices
-- **[Dynamic Architecture](./architecture/patterns/dynamic-architecture.md)** - Adaptive system design
-
-### Domains
-
-- **[Domain Architecture Guide](./architecture/domains/domain-architecture-guide.md)** - Domain-driven design
-- **[Quick Domain Reference](./architecture/domains/quick-domain-reference.md)** - Domain cheat sheet
+- **[Architecture Overview](./architecture/architecture-overview.md)** - High-level system design
+- **[Frontend Architecture](./architecture/frontend-architecture.md)** - Angular patterns and structure
+- **[Backend Architecture](./architecture/backend-architecture.md)** - Fastify patterns and structure
+- **[Domain Architecture Guide](./architecture/domain-architecture-guide.md)** - Domain-driven design
+- **[Quick Domain Reference](./architecture/quick-domain-reference.md)** - Domain cheat sheet
 
 ---
 
@@ -145,7 +138,8 @@ Each feature includes:
 ### Platform Analysis
 
 - **[Fuse Integration Summary](./analysis/platform/fuse-integration-summary.md)** - UI framework evaluation
-- **[UI Components Implementation](./analysis/platform/ui-components-implementation-summary.md)** - Component library analysis
+- **[Fuse Architecture Analysis](./analysis/platform/fuse-architecture-analysis.md)** - Detailed architecture analysis
+- **[Platform Gap Analysis](./analysis/platform/platform-gap-analysis.md)** - Feature gap analysis
 
 ### Migration Analysis
 
@@ -177,8 +171,8 @@ Each feature includes:
 ### 🧪 Testing
 
 1. Check [QA Checklist](./guides/development/qa-checklist.md)
-2. Review [Testing Strategy](./testing/testing-strategy.md)
-3. Run manual tests with [Test Commands](./testing/manual-test-commands.md)
+2. Review [Testing Strategy](./guides/testing/testing-strategy.md)
+3. Run [API Testing Guide](./guides/testing/api-testing.md)
 
 ### 🚀 Deploying
 
