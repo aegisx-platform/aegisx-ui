@@ -372,8 +372,8 @@ show_help() {
     echo "  ./scripts/feature-toolkit.sh dashboard"
     echo
     echo "📚 Documentation:"
-    echo "  - docs/development/feature-development-standard.md"
-    echo "  - docs/development/multi-feature-workflow.md"
+    echo "  - docs/guides/development/feature-development-standard.md"
+    echo "  - docs/guides/development/multi-feature-workflow.md"
     echo "  - docs/features/README.md"
 }
 
