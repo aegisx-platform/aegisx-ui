@@ -3,6 +3,10 @@ import { Static } from '@sinclair/typebox';
 import {
   PaginationQuerySchema,
   ApiSuccessResponseSchema,
+  ValidationErrorResponseSchema,
+  UnauthorizedResponseSchema,
+  UnprocessableEntityResponseSchema,
+  ServerErrorResponseSchema,
 } from '../../../../schemas/base.schemas';
 import {
   ProfileResponseSchema,
@@ -12,9 +16,12 @@ import {
   AvatarUploadResponseSchema,
   ProfileDeleteResponseSchema,
   GetProfileQuerySchema,
+  ChangePasswordSchema,
+  ChangePasswordResponseSchema,
   type UpdateProfile,
   type UpdatePreferences,
   type GetProfileQuery,
+  type ChangePassword,
 } from '../schemas/profile.schemas';
 
 /**
@@ -88,6 +95,35 @@ export async function registerProfileRoutes(
     },
     async (req: FastifyRequest<{ Body: UpdateProfile }>, reply: FastifyReply) =>
       controllers.profile.updateProfile(req, reply),
+  );
+
+  /**
+   * POST /profile/password
+   * Change password
+   */
+  fastify.post(
+    '/password',
+    {
+      preValidation: [fastify.authenticate],
+      schema: {
+        description: 'Change user password',
+        tags: ['User Profile'],
+        summary: 'Change current user password',
+        security: [{ bearerAuth: [] }],
+        body: ChangePasswordSchema,
+        response: {
+          200: ChangePasswordResponseSchema,
+          400: ValidationErrorResponseSchema,
+          401: UnauthorizedResponseSchema,
+          422: UnprocessableEntityResponseSchema,
+          500: ServerErrorResponseSchema,
+        },
+      },
+    },
+    async (
+      req: FastifyRequest<{ Body: ChangePassword }>,
+      reply: FastifyReply,
+    ) => controllers.profile.changePassword(req, reply),
   );
 
   /**

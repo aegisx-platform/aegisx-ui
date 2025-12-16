@@ -97,6 +97,50 @@ export class ProfileRepository {
   }
 
   /**
+   * Get user by ID with password hash
+   *
+   * Retrieves a user including their password hash for verification.
+   * Used for password change operations.
+   *
+   * @param userId - User ID (UUID)
+   * @returns User object with password or null if user not found
+   */
+  async getUserWithPassword(
+    userId: string,
+  ): Promise<{ id: string; password: string } | null> {
+    const user = await this.knex('users')
+      .select('id', 'password')
+      .where('id', userId)
+      .whereNull('deleted_at')
+      .first();
+
+    return user || null;
+  }
+
+  /**
+   * Update user password
+   *
+   * Updates the password hash for a user.
+   *
+   * @param userId - User ID (UUID)
+   * @param passwordHash - New bcrypt password hash
+   * @returns true if password updated successfully
+   */
+  async updatePassword(userId: string, passwordHash: string): Promise<boolean> {
+    const updateData = {
+      password: passwordHash,
+      updated_at: this.knex.fn.now(),
+    };
+
+    const rowsUpdated = await this.knex('users')
+      .where('id', userId)
+      .whereNull('deleted_at')
+      .update(updateData);
+
+    return rowsUpdated > 0;
+  }
+
+  /**
    * Map database row to Profile object
    *
    * Converts snake_case database columns to camelCase API fields

@@ -10,9 +10,9 @@
 
 ### 1. Get User Profile
 
-```http
-GET /api/profile
-```
+**GET** `/api/profile`
+
+**Authentication:** Required
 
 #### Request Example
 
@@ -31,7 +31,7 @@ curl -X GET http://localhost:3333/api/profile \
 }
 ```
 
-#### Response Example
+#### Response Example (200 OK)
 
 ```json
 {
@@ -73,11 +73,52 @@ curl -X GET http://localhost:3333/api/profile \
 }
 ```
 
+#### Error Responses
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**400 Bad Request** - Invalid request:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "Invalid request format",
+    "statusCode": 400
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
+}
+```
+
 ### 2. Update User Profile
 
-```http
-PUT /api/profile
-```
+**PUT** `/api/profile`
+
+**Authentication:** Required
 
 #### Request Schema
 
@@ -92,29 +133,102 @@ PUT /api/profile
 
 #### Request Example
 
+```bash
+curl -X PUT http://localhost:3333/api/profile \
+  -H "Authorization: Bearer <jwt_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "John",
+    "lastName": "Smith",
+    "bio": "Updated bio information"
+  }'
+```
+
+#### Response Example (200 OK)
+
 ```json
 {
-  "firstName": "John",
-  "lastName": "Smith",
-  "bio": "Updated bio information"
+  "success": true,
+  "data": {
+    "id": "user-uuid",
+    "email": "user@example.com",
+    "username": "johndoe",
+    "firstName": "John",
+    "lastName": "Smith",
+    "bio": "Updated bio information",
+    "avatar": "http://localhost:4200/api/uploads/avatars/user-uuid/avatar.jpg",
+    "role": "user",
+    "status": "active",
+    "emailVerified": true,
+    "createdAt": "2025-09-13T10:30:00Z",
+    "updatedAt": "2025-12-16T16:00:00Z",
+    "preferences": {}
+  }
 }
 ```
 
-#### Response Schema
+#### Error Responses
 
-```typescript
+**400 Bad Request** - Validation error:
+
+```json
 {
-  success: boolean;
-  data: UserProfile;
-  message?: string;
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "firstName": ["Must be at most 50 characters"]
+    },
+    "statusCode": 400
+  }
+}
+```
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**422 Unprocessable Entity** - Business rule violation (e.g., username already taken):
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "USERNAME_ALREADY_EXISTS",
+    "message": "Username is already taken",
+    "statusCode": 422
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
 }
 ```
 
 ### 3. Change Password
 
-```http
-POST /api/profile/password
-```
+**POST** `/api/profile/password`
+
+**Authentication:** Required
 
 #### Request Schema
 
@@ -128,35 +242,123 @@ POST /api/profile/password
 
 #### Request Example
 
-```json
-{
-  "currentPassword": "oldPassword123",
-  "newPassword": "newPassword456",
-  "confirmPassword": "newPassword456"
-}
+```bash
+curl -X POST http://localhost:3333/api/profile/password \
+  -H "Authorization: Bearer <jwt_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "currentPassword": "oldPassword123",
+    "newPassword": "newPassword456",
+    "confirmPassword": "newPassword456"
+  }'
 ```
 
-#### Response Schema
+#### Response Example (200 OK)
 
-```typescript
+```json
 {
-  success: boolean;
-  data: {
-    message: string;
+  "success": true,
+  "data": {
+    "message": "Password changed successfully",
+    "changedAt": "2025-12-16T16:00:00Z"
   }
 }
 ```
 
+#### Error Responses
+
+**400 Bad Request** - Current password incorrect:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_CURRENT_PASSWORD",
+    "message": "Current password is incorrect",
+    "statusCode": 400
+  }
+}
+```
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**422 Unprocessable Entity** - Passwords do not match:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "PASSWORDS_DO_NOT_MATCH",
+    "message": "New password and confirm password do not match",
+    "statusCode": 422
+  }
+}
+```
+
+**422 Unprocessable Entity** - Password validation error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Password validation failed",
+    "details": {
+      "newPassword": ["Password must be at least 8 characters long"],
+      "confirmPassword": ["Password must be at least 8 characters long"]
+    },
+    "statusCode": 422
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
+}
+```
+
+#### TypeBox Schema
+
+```typescript
+export const ChangePasswordSchema = Type.Object({
+  currentPassword: Type.String({ minLength: 1 }),
+  newPassword: Type.String({ minLength: 8, maxLength: 128 }),
+  confirmPassword: Type.String({ minLength: 8, maxLength: 128 }),
+});
+```
+
 ### 4. Upload Avatar
 
-```http
-POST /api/profile/avatar
-```
+**POST** `/api/profile/avatar`
+
+**Authentication:** Required
+
+**Content-Type:** `multipart/form-data`
 
 #### Request
 
-- **Content-Type**: `multipart/form-data`
 - **Body**: Form data with `avatar` file field
+- **Max file size**: 5MB
+- **Supported formats**: JPG, PNG, WebP
 
 #### Request Example
 
@@ -166,24 +368,7 @@ curl -X POST http://localhost:3333/api/profile/avatar \
   -F "avatar=@/path/to/image.jpg"
 ```
 
-#### Response Schema
-
-```typescript
-{
-  success: boolean;
-  data: {
-    avatar: string;
-    thumbnails: {
-      small: string;
-      medium: string;
-      large: string;
-    };
-  };
-  message?: string;
-}
-```
-
-#### Response Example
+#### Response Example (200 OK)
 
 ```json
 {
@@ -200,43 +385,225 @@ curl -X POST http://localhost:3333/api/profile/avatar \
 }
 ```
 
-### 5. Delete Avatar
+#### Error Responses
 
-```http
-DELETE /api/profile/avatar
+**400 Bad Request** - Invalid file format or size:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_FILE",
+    "message": "File must be JPG, PNG, or WebP and not exceed 5MB",
+    "statusCode": 400
+  }
+}
 ```
 
-#### Response Schema
+**401 Unauthorized** - Missing or invalid JWT token:
 
-```typescript
+```json
 {
-  success: boolean;
-  data: {
-    message: string;
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**422 Unprocessable Entity** - File upload validation failed:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UPLOAD_ERROR",
+    "message": "Failed to process avatar",
+    "statusCode": 422
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
+}
+```
+
+### 5. Delete Avatar
+
+**DELETE** `/api/profile/avatar`
+
+**Authentication:** Required
+
+#### Request Example
+
+```bash
+curl -X DELETE http://localhost:3333/api/profile/avatar \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+#### Response Example (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Avatar deleted successfully"
+  }
+}
+```
+
+#### Error Responses
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**400 Bad Request** - No avatar to delete:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "NO_AVATAR",
+    "message": "No avatar found to delete",
+    "statusCode": 400
+  }
+}
+```
+
+**422 Unprocessable Entity** - Deletion failed:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "DELETION_ERROR",
+    "message": "Failed to delete avatar",
+    "statusCode": 422
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
   }
 }
 ```
 
 ### 6. Get User Preferences
 
-```http
-GET /api/profile/preferences
+**GET** `/api/profile/preferences`
+
+**Authentication:** Required
+
+#### Request Example
+
+```bash
+curl -X GET http://localhost:3333/api/profile/preferences \
+  -H "Authorization: Bearer <jwt_token>"
 ```
 
-#### Response Schema
+#### Response Example (200 OK)
 
-```typescript
+```json
 {
-  success: boolean;
-  data: UserPreferences;
+  "success": true,
+  "data": {
+    "theme": "dark",
+    "scheme": "dark",
+    "layout": "compact",
+    "language": "en",
+    "timezone": "UTC",
+    "dateFormat": "MM/DD/YYYY",
+    "timeFormat": "24h",
+    "notifications": {
+      "email": true,
+      "push": false,
+      "desktop": true,
+      "sound": false
+    },
+    "navigation": {
+      "collapsed": false,
+      "type": "default",
+      "position": "left"
+    }
+  }
+}
+```
+
+#### Error Responses
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**400 Bad Request** - Invalid request:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "Invalid request format",
+    "statusCode": 400
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
 }
 ```
 
 ### 7. Update User Preferences
 
-```http
-PUT /api/profile/preferences
-```
+**PUT** `/api/profile/preferences`
+
+**Authentication:** Required
 
 #### Request Schema
 
@@ -260,6 +627,272 @@ PUT /api/profile/preferences
     type?: 'default' | 'compact' | 'horizontal';
     position?: 'left' | 'right' | 'top';
   };
+}
+```
+
+#### Request Example
+
+```bash
+curl -X PUT http://localhost:3333/api/profile/preferences \
+  -H "Authorization: Bearer <jwt_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "theme": "light",
+    "layout": "classic",
+    "timeFormat": "12h"
+  }'
+```
+
+#### Response Example (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "theme": "light",
+    "scheme": "light",
+    "layout": "classic",
+    "language": "en",
+    "timezone": "UTC",
+    "dateFormat": "MM/DD/YYYY",
+    "timeFormat": "12h",
+    "notifications": {
+      "email": true,
+      "push": false,
+      "desktop": true,
+      "sound": false
+    },
+    "navigation": {
+      "collapsed": false,
+      "type": "default",
+      "position": "left"
+    }
+  }
+}
+```
+
+#### Error Responses
+
+**400 Bad Request** - Validation error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid preference values",
+    "details": {
+      "theme": ["Invalid theme value"]
+    },
+    "statusCode": 400
+  }
+}
+```
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**422 Unprocessable Entity** - Business rule violation:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_PREFERENCES",
+    "message": "Failed to update preferences",
+    "statusCode": 422
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
+}
+```
+
+### 8. Get User Activity Logs
+
+**GET** `/api/profile/activity`
+
+**Authentication:** Required
+
+#### Query Parameters
+
+- `page` (integer, optional): Page number for pagination (default: 1)
+- `limit` (integer, optional): Number of items per page (default: 20)
+
+#### Request Example
+
+```bash
+curl -X GET "http://localhost:3333/api/profile/activity?page=1&limit=20" \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+#### Response Example (200 OK)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "log-uuid-1",
+      "action": "login",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0...",
+      "timestamp": "2025-12-16T15:30:00Z"
+    },
+    {
+      "id": "log-uuid-2",
+      "action": "profile_update",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0...",
+      "timestamp": "2025-12-16T14:15:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 42,
+    "totalPages": 3
+  }
+}
+```
+
+#### Error Responses
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**400 Bad Request** - Invalid pagination parameters:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_PAGINATION",
+    "message": "Invalid page or limit value",
+    "statusCode": 400
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
+}
+```
+
+### 9. Delete User Account
+
+**DELETE** `/api/profile`
+
+**Authentication:** Required
+
+#### Request Example
+
+```bash
+curl -X DELETE http://localhost:3333/api/profile \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+#### Response Example (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "user-uuid",
+    "message": "Account deleted successfully"
+  }
+}
+```
+
+#### Error Responses
+
+**401 Unauthorized** - Missing or invalid JWT token:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Authentication required",
+    "statusCode": 401
+  }
+}
+```
+
+**400 Bad Request** - Invalid deletion request:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "Cannot delete account at this time",
+    "statusCode": 400
+  }
+}
+```
+
+**422 Unprocessable Entity** - Account has active sessions or pending operations:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ACCOUNT_NOT_DELETABLE",
+    "message": "Account cannot be deleted due to active sessions",
+    "statusCode": 422
+  }
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Internal server error",
+    "statusCode": 500
+  }
 }
 ```
 

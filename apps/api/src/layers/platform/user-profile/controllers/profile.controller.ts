@@ -1,6 +1,10 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { ProfileService } from '../services/profile.service';
-import { Profile, UpdateProfile } from '../schemas/profile.schemas';
+import {
+  Profile,
+  UpdateProfile,
+  ChangePassword,
+} from '../schemas/profile.schemas';
 
 /**
  * ProfileController
@@ -117,6 +121,49 @@ export class ProfileController {
           },
         });
       }
+
+      throw error;
+    }
+  }
+
+  /**
+   * POST /profile/password
+   * Change the authenticated user's password
+   *
+   * Extracts userId from request.user.id (JWT), validates current password,
+   * and updates to new password with bcrypt hashing.
+   *
+   * @param request - FastifyRequest with user context and password change body
+   * @param reply - FastifyReply for sending response
+   * @returns Password change confirmation with timestamp
+   */
+  async changePassword(
+    request: FastifyRequest<{ Body: ChangePassword }>,
+    reply: FastifyReply,
+  ): Promise<void> {
+    try {
+      const userId = request.user.id;
+      const { currentPassword, newPassword, confirmPassword } = request.body;
+
+      request.log.info({ userId }, 'Changing user password');
+
+      const result = await this.profileService.changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      );
+
+      request.log.info({ userId }, 'Password changed successfully');
+      return reply.code(200).send(result);
+    } catch (error: any) {
+      request.log.error(
+        {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          userId: request.user.id,
+        },
+        'Error changing password',
+      );
 
       throw error;
     }

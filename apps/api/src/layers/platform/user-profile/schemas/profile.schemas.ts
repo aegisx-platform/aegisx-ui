@@ -315,6 +315,65 @@ export const GetProfileQuerySchema = Type.Object(
 
 export type GetProfileQuery = Static<typeof GetProfileQuerySchema>;
 
+// ==================== PASSWORD CHANGE SCHEMAS ====================
+
+/**
+ * Change Password Schema
+ *
+ * Schema for changing user password.
+ * Requires current password for verification and new password with confirmation.
+ */
+export const ChangePasswordSchema = Type.Object(
+  {
+    currentPassword: Type.String({
+      minLength: 1,
+      description: 'Current password for verification',
+    }),
+    newPassword: Type.String({
+      minLength: 8,
+      maxLength: 128,
+      description: 'New password (minimum 8 characters, maximum 128)',
+    }),
+    confirmPassword: Type.String({
+      minLength: 8,
+      maxLength: 128,
+      description: 'Confirmation of new password (must match newPassword)',
+    }),
+  },
+  {
+    $id: 'ChangePassword',
+    description: 'Password change request with current password verification',
+  },
+);
+
+export type ChangePassword = Static<typeof ChangePasswordSchema>;
+
+/**
+ * Change Password Response Schema
+ *
+ * Response after successfully changing password.
+ */
+export const ChangePasswordResponseSchema = ApiSuccessResponseSchema(
+  Type.Object(
+    {
+      message: Type.String({
+        description: 'Password change confirmation message',
+      }),
+      changedAt: Type.String({
+        format: 'date-time',
+        description: 'Timestamp when password was changed',
+      }),
+    },
+    {
+      description: 'Password change result',
+    },
+  ),
+);
+
+export type ChangePasswordResponse = Static<
+  typeof ChangePasswordResponseSchema
+>;
+
 // ==================== EXPORT ALL SCHEMAS ====================
 
 /**
@@ -335,6 +394,7 @@ export const profileSchemas = {
   'update-profile-request': UpdateProfileSchema,
   'update-preferences-request': UpdatePreferencesSchema,
   'get-profile-query': GetProfileQuerySchema,
+  'change-password-request': ChangePasswordSchema,
 
   // Response schemas
   'profile-response': ProfileResponseSchema,
@@ -343,4 +403,5 @@ export const profileSchemas = {
   'update-preferences-response': UpdatePreferencesResponseSchema,
   'avatar-upload-response': AvatarUploadResponseSchema,
   'profile-delete-response': ProfileDeleteResponseSchema,
+  'change-password-response': ChangePasswordResponseSchema,
 };
