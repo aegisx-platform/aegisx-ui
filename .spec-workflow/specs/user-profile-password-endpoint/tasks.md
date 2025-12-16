@@ -13,7 +13,7 @@
 
 ### Task 1: Add TypeBox schemas for password change
 
-- [ ] 1. Add TypeBox schemas for password change
+- [x] 1. Add TypeBox schemas for password change
   - **Files to modify:**
     - `apps/api/src/layers/platform/user-profile/schemas/profile.schemas.ts` (add schemas)
   - **Description:** Create TypeBox schemas for password change request/response and add error schemas to existing user profile endpoints
@@ -56,7 +56,7 @@
 
 ### Task 3: Add password change route and controller
 
-- [ ] 3. Add password change route and controller
+- [x] 3. Add password change route and controller
   - **Files to modify:**
     - `apps/api/src/layers/platform/user-profile/routes/profile.routes.ts` (add route)
     - `apps/api/src/layers/platform/user-profile/controllers/profile.controller.ts` (add method)
@@ -76,7 +76,7 @@
 
 ### Task 4: Update API contract documentation
 
-- [ ] 4. Update API contract documentation
+- [x] 4. Update API contract documentation
   - **Files to modify:**
     - `docs/features/user-profile/api-contracts.md` (add sections)
   - **Description:** Document password change endpoint and add missing endpoints to API contract
