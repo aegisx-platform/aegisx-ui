@@ -24,7 +24,7 @@ export const MODULE_ITEMS: LauncherApp[] = [
     id: 'master-data',
     name: 'Master Data',
     description: 'Master data modules',
-    icon: 'database',
+    icon: 'storage',
     route: '/inventory/master-data',
     color: 'mint',
     status: 'active',
@@ -40,6 +40,7 @@ export const MODULE_ITEMS: LauncherApp[] = [
     color: 'blue',
     status: 'active',
     enabled: true,
+    featured: true,
   },
   // CRUD modules will be auto-registered here by the generator
   // === AUTO-GENERATED ENTRIES END ===
