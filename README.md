@@ -217,11 +217,11 @@ pnpm aegisx-crud products --package --force
 
 ### Development Guides
 
-- **[🔄 Development Workflow](./docs/development/development-workflow.md)** - Step-by-step workflows
-- **[🎯 API-First Workflow](./docs/development/api-first-workflow.md)** - Recommended development approach
-- **[📋 Feature Development Standard](./docs/development/feature-development-standard.md)** - **MANDATORY** feature lifecycle
-- **[🤝 Multi-Feature Workflow](./docs/development/multi-feature-workflow.md)** - Parallel development coordination
-- **[🚀 Quick Commands](./docs/development/quick-commands.md)** - Claude command reference
+- **[📋 Feature Development Standard](./docs/guides/development/feature-development-standard.md)** - **MANDATORY** feature lifecycle
+- **[🎯 API Calling Standard](./docs/guides/development/api-calling-standard.md)** - Correct API patterns
+- **[📝 Universal Full-Stack Standard](./docs/guides/development/universal-fullstack-standard.md)** - Database-first workflow
+- **[✅ QA Checklist](./docs/guides/development/qa-checklist.md)** - Quality assurance steps
+- **[🔍 Claude Detailed Rules](./docs/guides/development/claude-detailed-rules.md)** - Development rules
 
 ### Architecture Documentation
 
@@ -232,17 +232,17 @@ pnpm aegisx-crud products --package --force
 ### Feature Documentation
 
 - **[📊 Feature Status Dashboard](./docs/features/README.md)** - Central feature tracking
-- **[📝 Resource Registry](./docs/features/RESOURCE_REGISTRY.md)** - Reserve resources to prevent conflicts
+- **[📝 Resource Registry](./docs/features/resource-registry.md)** - Reserve resources to prevent conflicts
 - **[🔐 RBAC Feature](./docs/features/rbac/)** - Role-based access control documentation
 - **[📎 Attachment System](./docs/features/attachment-system/)** - Config-driven attachments
 - **[🔑 API Keys](./docs/features/api-keys/)** - API key management
 
 ### CI/CD & DevOps
 
-- **[🔄 Git Flow & Release](./docs/infrastructure/git-flow-release-guide.md)** - Branch strategy & release process
-- **[📦 Automated Versioning](./docs/infrastructure/automated-versioning-guide.md)** - Conventional commits & changelog
-- **[🐳 Monorepo Docker Guide](./docs/infrastructure/monorepo-docker-guide.md)** - Docker management for monorepo
-- **[🚀 CI/CD Quick Start](./docs/infrastructure/quick-start-cicd.md)** - GitHub Actions setup & usage
+- **[🔄 Git Flow & Release](./docs/guides/infrastructure/version-management/git-flow-release-guide.md)** - Branch strategy & release process
+- **[🌳 Git Subtree Guide](./docs/guides/infrastructure/git-subtree-guide.md)** - Shared library management
+- **[🐳 Multi-Instance Setup](./docs/guides/infrastructure/multi-instance-setup.md)** - Parallel development setup
+- **[🗄️ Domain-Separated Migrations](./docs/guides/infrastructure/domain-separated-migrations.md)** - Multi-domain migration architecture
 
 ## 🧪 Testing
 
@@ -473,7 +473,7 @@ See `.env.example` for all available environment variables.
 
 - ⚠️ Read [CLAUDE.md](./CLAUDE.md) for development guidelines
 - ⚠️ Use PNPM, not npm or yarn
-- ⚠️ Follow the [Feature Development Standard](./docs/development/feature-development-standard.md)
+- ⚠️ Follow the [Feature Development Standard](./docs/guides/development/feature-development-standard.md)
 
 ## 🏆 Features in Detail
 

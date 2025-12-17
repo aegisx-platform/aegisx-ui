@@ -8,7 +8,7 @@ import {
   UserRole,
   BulkOperationResult,
 } from './users.types';
-import { AppError } from '../../../core/errors/app-error';
+import { AppError } from '../../../shared/errors/app-error';
 import { DepartmentsRepository } from '../departments/departments.repository';
 
 export class UsersService {

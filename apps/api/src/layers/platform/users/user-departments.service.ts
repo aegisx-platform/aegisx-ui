@@ -4,7 +4,7 @@ import {
 } from './user-departments.repository';
 import { UsersRepository } from './users.repository';
 import { DepartmentsRepository } from '../departments/departments.repository';
-import { AppError } from '../../../core/errors/app-error';
+import { AppError } from '../../../shared/errors/app-error';
 
 /**
  * UserDepartmentsService

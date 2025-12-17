@@ -2,7 +2,9 @@
 
 ## 📁 Backend Documentation Structure
 
-### 🔌 [Fastify Plugins & Configuration](./05b1-fastify-plugins.md)
+<!-- Planned Advanced Guides (Coming Soon):
+
+### 🔌 Fastify Plugins & Configuration
 
 Complete plugin setup including:
 
@@ -10,7 +12,7 @@ Complete plugin setup including:
 - Essential plugin configurations
 - Security, caching, file upload, WebSocket
 
-### 🔐 [RBAC & Authentication](./05b2-rbac-auth.md)
+### 🔐 RBAC & Authentication
 
 Advanced authentication patterns:
 
@@ -19,7 +21,7 @@ Advanced authentication patterns:
 - Role-based access control
 - Permission service
 
-### 🗄️ [Knex CRUD Patterns](./05b3-knex-crud.md)
+### 🗄️ Knex CRUD Patterns
 
 Database operations with:
 
@@ -28,7 +30,7 @@ Database operations with:
 - Advanced Knex queries
 - Type transformations
 
-### 📋 [OpenAPI Schemas & Responses](./05b4-schemas-responses.md)
+### 📋 OpenAPI Schemas & Responses
 
 Schema enforcement and standards:
 
@@ -37,7 +39,7 @@ Schema enforcement and standards:
 - Validation patterns
 - Error handling
 
-### 🔍 [Logging Standards](./05b5-logging-standards.md)
+### 🔍 Logging Standards
 
 Enterprise logging patterns:
 
@@ -46,6 +48,8 @@ Enterprise logging patterns:
 - Audit logging for security
 - Performance monitoring
 - Error tracking with correlation
+
+-->
 
 ## Feature Module Pattern
 
@@ -1635,6 +1639,1340 @@ abstract class BaseRepository<T, CreateDto, UpdateDto> {
 }
 ```
 
+### 13.1. UUID Validation in Base Repository
+
+The Base Repository includes comprehensive UUID validation to prevent PostgreSQL casting errors and improve user experience when dealing with UUID-based filters.
+
+#### Why UUID Validation?
+
+PostgreSQL is strict about UUID format validation. When an invalid UUID is passed in a query filter (e.g., `?user_id=invalid`), PostgreSQL will throw an error:
+
+```
+ERROR: invalid input syntax for type uuid: "invalid"
+```
+
+The UUID validation system prevents these errors by:
+
+- **Auto-detecting UUID fields** based on field names and values
+- **Validating UUIDs** before they reach the database
+- **Providing multiple strategies** for handling invalid UUIDs (strict, graceful, warn)
+- **Improving UX** by returning empty results instead of 500 errors
+
+#### UUID Validation Strategies
+
+The system supports three validation strategies:
+
+**1. STRICT Strategy**
+
+- Throws an error immediately when an invalid UUID is detected
+- Best for: API development, debugging, strict validation requirements
+- User Experience: Returns 400 Bad Request with clear error message
+
+```typescript
+// Example error with STRICT strategy
+{
+  "error": "Invalid UUID format for field \"user_id\": \"invalid-uuid\". Expected format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+}
+```
+
+**2. GRACEFUL Strategy (Default)**
+
+- Silently removes invalid UUID from filters
+- Continues processing with remaining valid filters
+- Best for: Production environments, user-facing APIs
+- User Experience: Returns empty results or results matching other valid filters
+
+```typescript
+// Example with GRACEFUL strategy
+// Request: GET /api/items?user_id=invalid&status=active
+// Invalid user_id is removed, query becomes: status=active
+// Returns: Items with status=active (ignoring invalid user_id)
+```
+
+**3. WARN Strategy**
+
+- Logs a warning but continues processing
+- Removes invalid UUID from filters
+- Best for: Monitoring, identifying UUID validation issues
+- User Experience: Same as GRACEFUL but with server-side logging
+
+```typescript
+// Console output with WARN strategy
+// [WARN] Invalid UUID provided for field "user_id": "invalid-uuid"
+```
+
+#### UUID Validation Configuration
+
+**Environment Variables**
+
+Configure default behavior via environment variables:
+
+```bash
+# .env
+UUID_VALIDATION_STRATEGY=graceful  # strict | graceful | warn
+UUID_ALLOW_ANY_VERSION=true        # true = allow any UUID version, false = v4 only
+UUID_LOG_INVALID=true              # true = log invalid attempts, false = silent
+```
+
+**Repository-Level Configuration**
+
+Override validation behavior for specific repositories:
+
+```typescript
+// apps/api/src/modules/user/user.repository.ts
+import { BaseRepository } from '../../shared/repositories/base.repository';
+import { UUIDValidationStrategy } from '../../shared/utils/uuid.utils';
+
+class UserRepository extends BaseRepository<User, CreateUserDto, UpdateUserDto> {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'users',
+      ['users.email', 'users.first_name'], // searchFields
+      ['user_id', 'organization_id'], // explicitUUIDFields
+    );
+
+    // Set strict validation for user repository
+    this.setUUIDValidationConfig({
+      strategy: UUIDValidationStrategy.STRICT,
+      allowAnyVersion: false, // Only allow UUID v4
+      logInvalidAttempts: true,
+    });
+  }
+}
+```
+
+**Dynamic Configuration**
+
+Change validation behavior at runtime:
+
+```typescript
+const userRepository = new UserRepository(knex);
+
+// Enable strict mode for admin operations
+userRepository.setUUIDValidationConfig({
+  strategy: UUIDValidationStrategy.STRICT,
+});
+
+// Add additional UUID fields to validate
+userRepository.addUUIDFields(['department_id', 'manager_id']);
+
+// Or replace all UUID fields
+userRepository.setUUIDFields(['user_id', 'org_id']);
+```
+
+#### Auto-Detection of UUID Fields
+
+The system automatically detects UUID fields based on:
+
+**Field Name Patterns:**
+
+- Fields ending with `_id` (e.g., `user_id`, `organization_id`)
+- Fields named exactly `id`
+- Fields containing `uuid` (e.g., `user_uuid`, `uuid_reference`)
+
+**Value Patterns:**
+
+- Minimum length of 32 characters (UUID without dashes)
+- Contains dashes (`-`)
+- Only hexadecimal characters and dashes
+
+**Explicit Exclusions:**
+
+- Numeric-only values (e.g., `123`, `456`) are excluded
+- This handles integer IDs like `budget_id`, `drug_id` in legacy tables
+
+```typescript
+// Examples of auto-detection
+const filters = {
+  user_id: 'a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8', // ✅ Detected as UUID
+  organization_id: 'invalid-uuid', // ✅ Detected as UUID (then validated)
+  budget_id: '123', // ❌ NOT detected (numeric ID)
+  id: 'f7e8d9c0-b1a2-4f5e-9d8c-7b6a5e4f3d2c', // ✅ Detected as UUID
+  name: 'John Doe', // ❌ NOT detected (not UUID-like)
+};
+```
+
+#### Validation in Action
+
+**Scenario 1: Graceful Handling (Default)**
+
+```typescript
+// Client request with invalid UUID
+GET /api/users?user_id=invalid-uuid&status=active
+
+// BaseRepository.applyCustomFilters() automatically validates
+// Invalid user_id is removed from filters
+// Query executes with: status=active only
+
+// Response: 200 OK with users having status=active
+{
+  "data": [...],
+  "pagination": {...}
+}
+```
+
+**Scenario 2: Strict Validation**
+
+```typescript
+// Repository configured with STRICT strategy
+class AdminUserRepository extends BaseRepository {
+  constructor(knex: Knex) {
+    super(knex, 'users', [], ['user_id']);
+    this.setUUIDValidationConfig({
+      strategy: UUIDValidationStrategy.STRICT,
+    });
+  }
+}
+
+// Client request with invalid UUID
+GET /api/admin/users?user_id=invalid-uuid
+
+// BaseRepository throws error immediately
+// Response: 400 Bad Request
+{
+  "error": "Invalid UUID in query filters: Invalid UUID format for field \"user_id\": \"invalid-uuid\". Expected format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+}
+```
+
+**Scenario 3: Mixed Valid and Invalid UUIDs**
+
+```typescript
+// Client request with one invalid UUID
+GET /api/items?user_id=invalid&category_id=a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8
+
+// With GRACEFUL strategy:
+// - user_id=invalid is removed
+// - category_id remains (valid UUID)
+// Query executes with: category_id=a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8
+
+// Response: 200 OK with items matching category_id
+```
+
+#### Implementation Details
+
+The UUID validation is implemented in `BaseRepository.applyCustomFilters()`:
+
+```typescript
+// apps/api/src/shared/repositories/base.repository.ts
+protected applyCustomFilters(query: Knex.QueryBuilder, filters: any): void {
+  // 🛡️ UUID Validation: Clean filters to prevent PostgreSQL UUID casting errors
+  let validatedFilters = filters;
+  try {
+    validatedFilters = smartValidateUUIDs(
+      filters,
+      this.explicitUUIDFields,
+      this.uuidValidationConfig,
+    );
+  } catch (error) {
+    // If strict validation is enabled and UUID is invalid, re-throw the error
+    if (this.uuidValidationConfig.strategy === UUIDValidationStrategy.STRICT) {
+      throw new Error(`Invalid UUID in query filters: ${error.message}`);
+    }
+    // Otherwise continue with original filters (graceful/warn modes)
+    validatedFilters = filters;
+  }
+
+  // Continue with normal filter processing...
+  Object.keys(validatedFilters).forEach((key) => {
+    if (validatedFilters[key] !== undefined && validatedFilters[key] !== null) {
+      query.where(`${this.tableName}.${key}`, validatedFilters[key]);
+    }
+  });
+}
+```
+
+#### Utility Functions
+
+The validation logic is provided by `uuid.utils.ts`:
+
+**isValidUUID()**
+
+```typescript
+import { isValidUUID, DEFAULT_UUID_CONFIG } from '../../shared/utils/uuid.utils';
+
+// Basic UUID validation
+if (isValidUUID('a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8')) {
+  // Valid UUID
+}
+
+// With custom configuration
+if (
+  isValidUUID('a1b2c3d4-e5f6-1234-a012-b3c4d5e6f7a8', {
+    ...DEFAULT_UUID_CONFIG,
+    allowAnyVersion: false, // Only accept UUID v4
+  })
+) {
+  // Valid UUID v4
+}
+```
+
+**validateUUID()**
+
+```typescript
+import { validateUUID, UUIDValidationStrategy } from '../../shared/utils/uuid.utils';
+
+// Returns validated UUID or null
+const uuid = validateUUID('a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8', 'user_id');
+// Result: 'a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8'
+
+// With invalid UUID (GRACEFUL mode - default)
+const invalidUuid = validateUUID('invalid', 'user_id');
+// Result: null (logged warning to console)
+
+// With invalid UUID (STRICT mode)
+try {
+  const strictUuid = validateUUID('invalid', 'user_id', {
+    strategy: UUIDValidationStrategy.STRICT,
+    allowAnyVersion: true,
+    logInvalidAttempts: true,
+  });
+} catch (error) {
+  // Throws: Invalid UUID format for field "user_id": "invalid". Expected format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+}
+```
+
+**smartValidateUUIDs()**
+
+```typescript
+import { smartValidateUUIDs } from '../../shared/utils/uuid.utils';
+
+// Auto-detect and validate UUIDs in filters
+const filters = {
+  user_id: 'a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8', // Valid
+  org_id: 'invalid-uuid', // Invalid
+  status: 'active', // Not a UUID
+};
+
+const cleanedFilters = smartValidateUUIDs(filters, ['user_id', 'org_id']);
+// Result: { user_id: 'a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8', status: 'active' }
+// Note: org_id was removed (invalid UUID)
+```
+
+**detectUUIDFields()**
+
+```typescript
+import { detectUUIDFields } from '../../shared/utils/uuid.utils';
+
+// Auto-detect UUID-like fields
+const filters = {
+  user_id: 'a1b2c3d4-e5f6-4789-a012-b3c4d5e6f7a8',
+  budget_id: '123', // Numeric - not detected
+  name: 'John Doe',
+  id: 'f7e8d9c0-b1a2-4f5e-9d8c-7b6a5e4f3d2c',
+};
+
+const uuidFields = detectUUIDFields(filters);
+// Result: ['user_id', 'id']
+```
+
+#### Common Errors and Solutions
+
+**Error: PostgreSQL UUID Casting Error**
+
+```bash
+ERROR: invalid input syntax for type uuid: "invalid"
+```
+
+**Solution:**
+Enable UUID validation in your repository or use explicit UUID fields:
+
+```typescript
+class MyRepository extends BaseRepository {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'my_table',
+      ['name'],
+      ['user_id', 'org_id'], // Explicit UUID fields
+    );
+  }
+}
+```
+
+**Error: Valid UUID Rejected**
+
+If a valid UUID is being rejected, check:
+
+1. **UUID Version**: By default, all UUID versions are accepted. If you set `allowAnyVersion: false`, only UUID v4 is accepted.
+
+```typescript
+// Only accepts UUID v4 (4xxx in third group)
+this.setUUIDValidationConfig({
+  allowAnyVersion: false,
+});
+```
+
+2. **Whitespace**: UUIDs are automatically trimmed, but ensure no extra characters.
+
+**Error: Integer IDs Treated as UUIDs**
+
+If numeric IDs are being validated as UUIDs:
+
+```typescript
+// This should NOT happen - numeric values are excluded
+const filters = { budget_id: '123' };
+const detected = detectUUIDFields(filters);
+// Result: [] (numeric values are excluded)
+
+// But if you explicitly mark it as UUID field:
+class BudgetRepository extends BaseRepository {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'budgets',
+      ['name'],
+      ['budget_id'], // ❌ WRONG: budget_id is numeric, not UUID
+    );
+  }
+}
+
+// Solution: Don't include numeric ID fields in explicitUUIDFields
+```
+
+#### Best Practices
+
+1. **Use GRACEFUL in Production**
+   - Provides better user experience
+   - Returns empty results instead of errors
+   - Prevents unnecessary error logs
+
+2. **Use STRICT in Development**
+   - Catches UUID validation issues early
+   - Helps identify frontend bugs sending invalid UUIDs
+   - Provides clear error messages for debugging
+
+3. **Explicit UUID Fields**
+   - Always declare UUID fields explicitly in repository constructor
+   - Don't rely only on auto-detection for critical fields
+   - Prevents false positives and improves performance
+
+4. **Environment-Based Configuration**
+   - Use environment variables for default strategy
+   - Override per repository when needed
+   - Keep production config separate from development
+
+```typescript
+// Example: Environment-based repository configuration
+class UserRepository extends BaseRepository {
+  constructor(knex: Knex) {
+    super(knex, 'users', ['email'], ['user_id', 'org_id']);
+
+    // Strict in development, graceful in production
+    if (process.env.NODE_ENV === 'development') {
+      this.setUUIDValidationConfig({
+        strategy: UUIDValidationStrategy.STRICT,
+      });
+    }
+  }
+}
+```
+
+5. **Logging for Monitoring**
+   - Enable `logInvalidAttempts` in production with WARN strategy
+   - Monitor logs for patterns of invalid UUIDs
+   - Use monitoring tools to alert on high rates of invalid UUIDs
+
+```typescript
+// Production monitoring configuration
+this.setUUIDValidationConfig({
+  strategy: UUIDValidationStrategy.WARN,
+  logInvalidAttempts: true, // Log for monitoring
+});
+```
+
+### 13.2. Field Selection with Security Controls
+
+The BaseRepository supports selective field retrieval through the `fields` query parameter, enabling API clients to request only the data they need. This feature optimizes network bandwidth, reduces response payload size, and improves performance.
+
+#### Basic Field Selection
+
+```typescript
+// Client request - select specific fields only
+GET /api/users?fields=id,email,first_name,last_name
+
+// Repository processes the fields parameter
+async list(query: BaseListQuery): Promise<PaginatedListResult<T>> {
+  const { page = 1, limit = 10, search, sort, fields, ...filters } = query;
+
+  const baseQuery = this.getJoinQuery?.() || this.query();
+
+  // Handle field selection if specified
+  if (fields && Array.isArray(fields) && fields.length > 0) {
+    // Map field names to table columns with proper prefixing
+    const validFields = fields
+      .filter(field =>
+        typeof field === 'string' && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field)
+      )
+      .map(field => `${this.tableName}.${field}`);
+
+    if (validFields.length > 0) {
+      baseQuery.clearSelect().select(validFields);
+    }
+  }
+
+  // ... rest of query building
+}
+```
+
+#### Field Validation Rules
+
+The repository implements strict validation to prevent SQL injection and unauthorized field access:
+
+**Validation Pattern:**
+
+- **Field Name Format**: `^[a-zA-Z_][a-zA-Z0-9_]*$` (alphanumeric + underscore only)
+- **Automatic Prefixing**: Fields prefixed with table name (e.g., `users.email`)
+- **Invalid Fields**: Silently filtered out (no error thrown)
+- **Empty Result**: If all fields invalid, default SELECT is preserved
+
+```typescript
+// ✅ Valid field requests
+?fields=id,email,first_name                    // Standard fields
+?fields=id&fields=email&fields=created_at      // Array format (Fastify)
+?fields[]=id&fields[]=email                    // Alternative array format
+
+// ❌ Invalid field attempts (filtered out)
+?fields=id,email;DELETE FROM users             // SQL injection attempt
+?fields=id,../../sensitive_column              // Path traversal attempt
+?fields=id,users.password_hash                 // Table prefix not allowed
+```
+
+#### Security Implications
+
+**⚠️ CRITICAL SECURITY CONSIDERATIONS:**
+
+1. **Sensitive Field Exposure**: The `fields` parameter does NOT enforce field-level access control. It only validates field name syntax.
+
+```typescript
+// ❌ DANGER: This exposes password hash if not protected
+GET /api/users?fields=id,email,password_hash
+
+// ✅ SOLUTION: Override transformToEntity to exclude sensitive fields
+transformToEntity(dbRow: any): User {
+  return {
+    id: dbRow.id,
+    email: dbRow.email,
+    firstName: dbRow.first_name,
+    lastName: dbRow.last_name,
+    // password_hash is NEVER included in entity transformation
+    // Even if selected via fields parameter, it won't appear in response
+    role: dbRow.role,
+    createdAt: dbRow.created_at,
+    updatedAt: dbRow.updated_at,
+  };
+}
+```
+
+2. **Authorization-Based Filtering**: For multi-tenant or role-based systems, implement field authorization in child repositories:
+
+```typescript
+class UserRepository extends BaseRepository<User, CreateUserDto, UpdateUserDto> {
+  // Override to enforce field-level permissions
+  protected validateFieldAccess(fields: string[], userRole: string): string[] {
+    const publicFields = ['id', 'email', 'first_name', 'last_name', 'created_at'];
+    const adminOnlyFields = ['is_active', 'role_id', 'password_last_changed'];
+
+    if (userRole === 'admin') {
+      return fields; // Admins can access all fields
+    }
+
+    // Non-admins: filter out admin-only fields
+    return fields.filter((field) => publicFields.includes(field) || !adminOnlyFields.includes(field));
+  }
+
+  async list(query: BaseListQuery, userRole: string): Promise<PaginatedListResult<User>> {
+    // Validate fields based on user role before passing to parent
+    if (query.fields) {
+      query.fields = this.validateFieldAccess(query.fields, userRole);
+    }
+
+    return super.list(query);
+  }
+}
+```
+
+#### Performance Optimization
+
+**Use Cases for Field Selection:**
+
+1. **Mobile API Optimization**: Reduce payload size for bandwidth-constrained clients
+2. **List View Optimization**: Load only display fields (exclude large text columns)
+3. **Aggregation Queries**: Select only fields needed for calculations
+4. **Export Operations**: Select specific columns for CSV/Excel exports
+
+```typescript
+// Example: Mobile-optimized user list (minimal data)
+GET /api/users?fields=id,first_name,avatar_url&limit=50
+
+// Example: Admin export (full data)
+GET /api/users?fields=id,email,first_name,last_name,role,created_at,is_active&limit=1000&format=csv
+```
+
+#### Working with Joins
+
+When using `getJoinQuery()` with joined tables, field selection applies to the main table only:
+
+```typescript
+class UserRepository extends BaseRepository<User, CreateUserDto, UpdateUserDto> {
+  getJoinQuery() {
+    return this.knex('users')
+      .leftJoin('roles', 'users.role_id', 'roles.id')
+      .select(
+        'users.id',
+        'users.email',
+        'users.first_name',
+        'users.last_name',
+        this.knex.raw("json_build_object('id', roles.id, 'name', roles.name) as role")
+      );
+  }
+}
+
+// Field selection with joins
+GET /api/users?fields=id,email,first_name
+
+// Resulting query (simplified):
+SELECT users.id, users.email, users.first_name
+FROM users
+LEFT JOIN roles ON users.role_id = roles.id
+
+// ⚠️ NOTE: 'role' field is NOT selected because it's from joined table
+// To include joined fields, they must be part of getJoinQuery() default selection
+```
+
+**Best Practice for Joins:**
+
+```typescript
+// Override field selection to handle joins properly
+protected applyFieldSelection(query: Knex.QueryBuilder, fields: string[]) {
+  const mainTableFields = ['id', 'email', 'first_name', 'last_name'];
+  const joinedFields = ['role']; // Fields from joined tables
+
+  const requestedMainFields = fields.filter(f => mainTableFields.includes(f));
+  const requestedJoinedFields = fields.filter(f => joinedFields.includes(f));
+
+  const selectColumns = [
+    ...requestedMainFields.map(f => `users.${f}`),
+  ];
+
+  // Always include joined object if any joined field requested
+  if (requestedJoinedFields.length > 0 || requestedMainFields.length === 0) {
+    selectColumns.push(
+      this.knex.raw("json_build_object('id', roles.id, 'name', roles.name) as role")
+    );
+  }
+
+  query.clearSelect().select(selectColumns);
+}
+```
+
+### 13.3. Multi-Sort Support
+
+The BaseRepository supports sorting by multiple fields with individual sort directions using the `sort` query parameter. This enables complex sorting scenarios like "sort by status ascending, then by created_at descending".
+
+#### Multi-Sort Syntax
+
+**Format:** `field1:direction1,field2:direction2,field3:direction3`
+
+- **Field**: Column name (validated via `getSortField()`)
+- **Direction**: `asc` or `desc` (defaults to `desc` if omitted)
+- **Separator**: Comma (`,`) between sort pairs
+
+```typescript
+// Sort by single field (legacy support)
+GET /api/users?sort=created_at:desc
+
+// Sort by multiple fields
+GET /api/users?sort=is_active:desc,created_at:desc
+
+// Sort with mixed directions
+GET /api/users?sort=role:asc,last_name:asc,first_name:asc
+
+// Sort with default direction (desc assumed)
+GET /api/users?sort=priority,due_date:asc,created_at
+```
+
+#### Implementation in BaseRepository
+
+```typescript
+// From base.repository.ts
+protected applyMultipleSort(query: any, sort: string): void {
+  if (sort.includes(',')) {
+    // Multiple sort format: field1:desc,field2:asc,field3:desc
+    const sortPairs = sort.split(',');
+    sortPairs.forEach((pair) => {
+      const [field, direction] = pair.split(':');
+      const mappedField = this.getSortField(field.trim());
+      const sortDirection =
+        direction?.trim().toLowerCase() === 'asc' ? 'asc' : 'desc';
+      query.orderBy(mappedField, sortDirection);
+    });
+  } else {
+    // Single sort field (fallback for legacy format)
+    const mappedField = this.getSortField(sort);
+    query.orderBy(mappedField, 'desc');
+  }
+}
+
+// In list() method
+async list(query: BaseListQuery = {}): Promise<PaginatedListResult<T>> {
+  const { page = 1, limit = 10, search, sort, fields, ...filters } = query;
+
+  // ... query building ...
+
+  // Apply sorting (check for multiple sort first)
+  if (sort) {
+    this.applyMultipleSort(baseQuery, sort);
+  } else {
+    baseQuery.orderBy(this.getSortField('created_at'), 'desc');
+  }
+
+  // ... pagination ...
+}
+```
+
+#### Sort Field Mapping
+
+Override `getSortField()` to map sort parameter names to actual database columns:
+
+```typescript
+class UserRepository extends BaseRepository<User, CreateUserDto, UpdateUserDto> {
+  protected getSortField(sortBy: string): string {
+    const sortFields = {
+      created_at: 'users.created_at',
+      updated_at: 'users.updated_at',
+      email: 'users.email',
+      first_name: 'users.first_name',
+      last_name: 'users.last_name',
+      username: 'users.username',
+      role: 'roles.name', // Joined table column
+      status: 'users.is_active', // Mapped to different column name
+    };
+
+    return sortFields[sortBy] || 'users.created_at'; // Fallback to default
+  }
+}
+```
+
+#### Complex Sorting Scenarios
+
+**Scenario 1: Status-Priority Sorting**
+
+```typescript
+// Sort active users first, then by priority (high to low), then by name
+GET /api/tasks?sort=is_active:desc,priority:desc,title:asc
+
+// Resulting SQL:
+SELECT * FROM tasks
+ORDER BY
+  tasks.is_active DESC,     -- Active tasks first
+  tasks.priority DESC,      -- High priority first
+  tasks.title ASC           -- Alphabetical by title
+
+// Result order:
+// 1. Active + High Priority + "AAA Task"
+// 2. Active + High Priority + "BBB Task"
+// 3. Active + Low Priority + "CCC Task"
+// 4. Inactive + High Priority + "DDD Task"
+// 5. Inactive + Low Priority + "EEE Task"
+```
+
+**Scenario 2: Grouped Sorting with Joins**
+
+```typescript
+// Sort by department name, then by employee last name
+GET /api/employees?sort=department:asc,last_name:asc,first_name:asc
+
+class EmployeeRepository extends BaseRepository<Employee, CreateDto, UpdateDto> {
+  getJoinQuery() {
+    return this.knex('employees')
+      .leftJoin('departments', 'employees.department_id', 'departments.id')
+      .select('employees.*', 'departments.name as department_name');
+  }
+
+  protected getSortField(sortBy: string): string {
+    const sortFields = {
+      department: 'departments.name',     // Join-aware mapping
+      last_name: 'employees.last_name',
+      first_name: 'employees.first_name',
+      created_at: 'employees.created_at',
+    };
+    return sortFields[sortBy] || 'employees.created_at';
+  }
+}
+
+// Resulting SQL:
+SELECT employees.*, departments.name as department_name
+FROM employees
+LEFT JOIN departments ON employees.department_id = departments.id
+ORDER BY
+  departments.name ASC,        -- Engineering, Finance, HR, etc.
+  employees.last_name ASC,     -- Anderson, Brown, Chen, etc.
+  employees.first_name ASC     -- Alice, Bob, Charlie, etc.
+```
+
+**Scenario 3: Null Handling in Sorts**
+
+```typescript
+// Sort with null values - PostgreSQL NULLS LAST behavior
+GET /api/projects?sort=due_date:asc,priority:desc
+
+// Override getSortField for null handling
+protected getSortField(sortBy: string): string {
+  const sortFields = {
+    // PostgreSQL: NULL values appear last in ASC, first in DESC
+    due_date: 'projects.due_date',      // NULLs will appear last when ASC
+    priority: 'projects.priority',
+    created_at: 'projects.created_at',
+  };
+
+  return sortFields[sortBy] || 'projects.created_at';
+}
+
+// Advanced: Custom null handling
+protected applyMultipleSort(query: any, sort: string): void {
+  if (sort.includes(',')) {
+    const sortPairs = sort.split(',');
+    sortPairs.forEach((pair) => {
+      const [field, direction] = pair.split(':');
+      const sortDirection = direction?.trim().toLowerCase() === 'asc' ? 'asc' : 'desc';
+
+      // Special handling for nullable date fields
+      if (field === 'due_date') {
+        // Always put nulls last regardless of direction
+        query.orderByRaw(`${this.getSortField(field)} ${sortDirection.toUpperCase()} NULLS LAST`);
+      } else {
+        query.orderBy(this.getSortField(field.trim()), sortDirection);
+      }
+    });
+  } else {
+    super.applyMultipleSort(query, sort);
+  }
+}
+```
+
+#### Performance Considerations
+
+**Database Indexes for Multi-Sort:**
+
+```sql
+-- Single column index (good for single-field sort)
+CREATE INDEX idx_users_created_at ON users(created_at DESC);
+
+-- Composite index (optimal for multi-field sort)
+CREATE INDEX idx_users_active_created ON users(is_active DESC, created_at DESC);
+
+-- Covering index (includes all sorted and selected columns)
+CREATE INDEX idx_users_active_role_created
+ON users(is_active DESC, role_id, created_at DESC)
+INCLUDE (id, email, first_name, last_name);
+```
+
+**Sort Performance Tips:**
+
+1. **Index Order Matters**: Index columns should match sort order and direction
+2. **Limit Sort Fields**: More than 3-4 sort fields can degrade performance
+3. **Monitor Query Plans**: Use `EXPLAIN ANALYZE` to verify index usage
+4. **Consider Materialized Views**: For complex multi-table sorts used frequently
+
+```typescript
+// Check if multi-sort is using indexes
+const result = await this.knex.raw(`
+  EXPLAIN ANALYZE
+  SELECT * FROM users
+  ORDER BY is_active DESC, created_at DESC
+  LIMIT 10
+`);
+
+// Look for "Index Scan" vs "Seq Scan" in output
+console.log(result.rows);
+```
+
+#### Sort Validation and Security
+
+**Prevent Sort Injection:**
+
+```typescript
+class SecureUserRepository extends BaseRepository<User, CreateUserDto, UpdateUserDto> {
+  private readonly allowedSortFields = ['created_at', 'updated_at', 'email', 'first_name', 'last_name', 'role', 'status'];
+
+  protected getSortField(sortBy: string): string {
+    // Validate sort field against whitelist
+    if (!this.allowedSortFields.includes(sortBy)) {
+      // Log potential attack attempt
+      console.warn(`Invalid sort field attempted: ${sortBy}`);
+      return 'users.created_at'; // Fallback to safe default
+    }
+
+    const sortFields = {
+      created_at: 'users.created_at',
+      updated_at: 'users.updated_at',
+      email: 'users.email',
+      first_name: 'users.first_name',
+      last_name: 'users.last_name',
+      role: 'roles.name',
+      status: 'users.is_active',
+    };
+
+    return sortFields[sortBy];
+  }
+}
+```
+
+### 13.4. Audit Fields Configuration
+
+The BaseRepository provides automatic tracking of record creation and modification through configurable audit fields. This feature handles `created_at`, `updated_at`, `created_by`, and `updated_by` fields based on your table structure.
+
+#### RepositoryFieldConfig Interface
+
+```typescript
+// From base.repository.ts
+export interface RepositoryFieldConfig {
+  /** Table has created_at column (auto-managed by DB) */
+  hasCreatedAt?: boolean;
+
+  /** Table has updated_at column (auto-set on UPDATE) */
+  hasUpdatedAt?: boolean;
+
+  /** Table has created_by column (set from request context) */
+  hasCreatedBy?: boolean;
+
+  /** Table has updated_by column (set from request context) */
+  hasUpdatedBy?: boolean;
+
+  /** Custom name for created_at field (default: 'created_at') */
+  createdAtField?: string;
+
+  /** Custom name for updated_at field (default: 'updated_at') */
+  updatedAtField?: string;
+
+  /** Custom name for created_by field (default: 'created_by') */
+  createdByField?: string;
+
+  /** Custom name for updated_by field (default: 'updated_by') */
+  updatedByField?: string;
+}
+```
+
+#### Default Configuration
+
+```typescript
+export abstract class BaseRepository<T, CreateDto = any, UpdateDto = any> {
+  protected fieldConfig: RepositoryFieldConfig;
+
+  constructor(
+    protected knex: Knex,
+    protected tableName: string,
+    protected searchFields: string[] = [],
+    protected explicitUUIDFields: string[] = [],
+    fieldConfig: RepositoryFieldConfig = {},
+  ) {
+    // Default configuration - assume modern tables have timestamp fields
+    this.fieldConfig = {
+      hasCreatedAt: true, // Most tables have created_at
+      hasUpdatedAt: true, // Most tables have updated_at
+      hasCreatedBy: false, // User tracking not enabled by default
+      hasUpdatedBy: false, // User tracking not enabled by default
+      createdAtField: 'created_at',
+      updatedAtField: 'updated_at',
+      createdByField: 'created_by',
+      updatedByField: 'updated_by',
+      ...fieldConfig, // Override with custom config
+    };
+  }
+}
+```
+
+#### Automatic Field Management
+
+**created_at - Database-Managed:**
+
+```sql
+-- Migration: created_at with DEFAULT constraint
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Auto-set by database
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+```typescript
+// Repository does NOT set created_at (database handles it)
+async create(data: CreateDto, userId?: string | number): Promise<T> {
+  const dbData = this.transformToDb ? this.transformToDb(data) : data;
+  const createData: any = { ...dbData };
+
+  // Add created_by if configured
+  if (this.fieldConfig.hasCreatedBy && userId !== undefined) {
+    createData[this.fieldConfig.createdByField!] = userId;
+  }
+
+  // Note: created_at is NOT set here - database DEFAULT handles it
+
+  const [row] = await this.query().insert(createData).returning('*');
+  return this.transformToEntity ? this.transformToEntity(row) : row;
+}
+```
+
+**updated_at - Repository-Managed:**
+
+```typescript
+// Repository sets updated_at on every update
+async update(
+  id: string | number,
+  data: UpdateDto,
+  userId?: string | number,
+): Promise<T | null> {
+  const dbData = this.transformToDb ? this.transformToDb(data) : data;
+  const updateData: any = { ...dbData };
+
+  // Add updated_at if table has this column
+  if (this.fieldConfig.hasUpdatedAt) {
+    updateData[this.fieldConfig.updatedAtField!] = new Date();
+  }
+
+  // Add updated_by if configured
+  if (this.fieldConfig.hasUpdatedBy && userId !== undefined) {
+    updateData[this.fieldConfig.updatedByField!] = userId;
+  }
+
+  const [row] = await this.query()
+    .where({ id })
+    .update(updateData)
+    .returning('*');
+
+  if (!row) return null;
+  return this.transformToEntity ? this.transformToEntity(row) : row;
+}
+```
+
+**created_by / updated_by - User Context:**
+
+```typescript
+// Controller passes userId from authenticated request
+async createUser(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.user.id; // From JWT/session
+  const userData = request.body;
+
+  // userId automatically tracked in created_by
+  const user = await this.userRepository.create(userData, userId);
+
+  return reply.success(user, 'User created successfully');
+}
+
+async updateUser(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.user.id;
+  const { id } = request.params;
+  const userData = request.body;
+
+  // userId automatically tracked in updated_by
+  const user = await this.userRepository.update(id, userData, userId);
+
+  return reply.success(user, 'User updated successfully');
+}
+```
+
+#### Configuration Examples
+
+**Example 1: Modern Table with Full Audit Tracking**
+
+```typescript
+// Migration
+CREATE TABLE departments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  code VARCHAR(50) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_by UUID REFERENCES users(id),
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by UUID REFERENCES users(id)
+);
+
+// Repository with audit tracking enabled
+class DepartmentRepository extends BaseRepository<
+  Department,
+  CreateDepartmentDto,
+  UpdateDepartmentDto
+> {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'departments',
+      ['departments.name', 'departments.code'], // searchFields
+      [], // explicitUUIDFields
+      {
+        // Enable all audit fields
+        hasCreatedAt: true,
+        hasUpdatedAt: true,
+        hasCreatedBy: true,   // ✅ Track who created
+        hasUpdatedBy: true,   // ✅ Track who updated
+      }
+    );
+  }
+}
+
+// Usage in controller
+async createDepartment(request: FastifyRequest, reply: FastifyReply) {
+  const currentUserId = request.user.id;
+  const department = await this.departmentRepository.create(
+    request.body,
+    currentUserId  // Automatically sets created_by
+  );
+  return reply.success(department);
+}
+```
+
+**Example 2: Legacy Table Without Audit Fields**
+
+```typescript
+// Legacy table without timestamp columns
+CREATE TABLE legacy_codes (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(50),
+  description TEXT
+);
+
+// Repository configured for legacy table
+class LegacyCodeRepository extends BaseRepository<
+  LegacyCode,
+  CreateLegacyCodeDto,
+  UpdateLegacyCodeDto
+> {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'legacy_codes',
+      ['legacy_codes.code', 'legacy_codes.description'],
+      [],
+      {
+        // Disable all audit fields for legacy table
+        hasCreatedAt: false,
+        hasUpdatedAt: false,
+        hasCreatedBy: false,
+        hasUpdatedBy: false,
+      }
+    );
+  }
+}
+
+// create() and update() work without timestamp errors
+await legacyCodeRepository.create({ code: 'ABC', description: 'Test' });
+// No updated_at set, no errors thrown
+```
+
+**Example 3: Custom Field Names**
+
+```typescript
+// Table with non-standard field names
+CREATE TABLE audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_type VARCHAR(100),
+  event_data JSONB,
+  recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    -- Non-standard name
+  recorded_by UUID REFERENCES users(id),              -- Non-standard name
+  modified_at TIMESTAMP,                              -- Non-standard name
+  modified_by UUID REFERENCES users(id)               -- Non-standard name
+);
+
+// Repository with custom field name mapping
+class AuditLogRepository extends BaseRepository<
+  AuditLog,
+  CreateAuditLogDto,
+  UpdateAuditLogDto
+> {
+  constructor(knex: Knex) {
+    super(
+      knex,
+      'audit_logs',
+      ['audit_logs.event_type'],
+      [],
+      {
+        hasCreatedAt: true,
+        hasUpdatedAt: true,
+        hasCreatedBy: true,
+        hasUpdatedBy: true,
+        // Map to custom field names
+        createdAtField: 'recorded_at',
+        createdByField: 'recorded_by',
+        updatedAtField: 'modified_at',
+        updatedByField: 'modified_by',
+      }
+    );
+  }
+}
+
+// Usage - same API, different field names
+await auditLogRepository.create(
+  { event_type: 'USER_LOGIN', event_data: {...} },
+  userId  // Sets recorded_by instead of created_by
+);
+
+await auditLogRepository.update(
+  logId,
+  { event_data: {...} },
+  userId  // Sets modified_by and modified_at
+);
+```
+
+#### Bulk Operations with Audit Fields
+
+```typescript
+// createMany - applies created_by to all records
+async createMany(data: CreateDto[], userId?: string | number): Promise<T[]> {
+  let dbData = this.transformToDb
+    ? data.map((item) => this.transformToDb!(item))
+    : data;
+
+  // Add created_by to all records if configured
+  if (this.fieldConfig.hasCreatedBy && userId !== undefined) {
+    dbData = dbData.map((item: any) => ({
+      ...item,
+      [this.fieldConfig.createdByField!]: userId,
+    }));
+  }
+
+  const rows = await this.query().insert(dbData).returning('*');
+
+  return this.transformToEntity
+    ? rows.map((row) => this.transformToEntity!(row))
+    : rows;
+}
+
+// Usage: Bulk import with user tracking
+const importedDepartments = await departmentRepository.createMany(
+  [
+    { name: 'Engineering', code: 'ENG' },
+    { name: 'Finance', code: 'FIN' },
+    { name: 'HR', code: 'HR' },
+  ],
+  request.user.id  // All 3 records track this user as creator
+);
+
+// updateMany - applies updated_by to all records
+async updateMany(
+  ids: (string | number)[],
+  data: UpdateDto,
+  userId?: string | number,
+): Promise<number> {
+  const dbData = this.transformToDb ? this.transformToDb(data) : data;
+  const updateData: any = { ...dbData };
+
+  // Add updated_at if configured
+  if (this.fieldConfig.hasUpdatedAt) {
+    updateData[this.fieldConfig.updatedAtField!] = new Date();
+  }
+
+  // Add updated_by if configured
+  if (this.fieldConfig.hasUpdatedBy && userId !== undefined) {
+    updateData[this.fieldConfig.updatedByField!] = userId;
+  }
+
+  const updatedCount = await this.query().whereIn('id', ids).update(updateData);
+  return updatedCount;
+}
+
+// Usage: Bulk status update with user tracking
+await departmentRepository.updateMany(
+  [dept1Id, dept2Id, dept3Id],
+  { is_active: false },
+  request.user.id  // All 3 records track this user as updater
+);
+```
+
+#### Querying Audit Fields
+
+```typescript
+// Query by creator
+GET /api/departments?created_by=550e8400-e29b-41d4-a716-446655440000
+
+// Query by date range with creator
+GET /api/departments?created_at_min=2025-01-01&created_by=550e8400-e29b-41d4-a716-446655440000
+
+// Custom filter in repository
+protected applyCustomFilters(query: Knex.QueryBuilder, filters: any): void {
+  super.applyCustomFilters(query, filters); // Apply base filters
+
+  // Custom audit field filters
+  if (filters.created_by) {
+    query.where(`${this.tableName}.created_by`, filters.created_by);
+  }
+
+  if (filters.updated_by) {
+    query.where(`${this.tableName}.updated_by`, filters.updated_by);
+  }
+
+  if (filters.created_at_min) {
+    query.where(`${this.tableName}.created_at`, '>=', filters.created_at_min);
+  }
+
+  if (filters.created_at_max) {
+    query.where(`${this.tableName}.created_at`, '<=', filters.created_at_max);
+  }
+}
+```
+
+#### Best Practices
+
+1. **Enable audit fields for all business-critical tables** (departments, users, orders, transactions)
+2. **Use database DEFAULT for created_at** (more reliable than application-level)
+3. **Set updated_at in repository** (allows business logic to override if needed)
+4. **Always pass userId in controllers** (never trust client-provided user IDs)
+5. **Join with users table for audit reports:**
+
+```typescript
+class DepartmentRepository extends BaseRepository<Department, CreateDto, UpdateDto> {
+  async listWithAuditInfo(query: BaseListQuery): Promise<PaginatedListResult<any>> {
+    const baseQuery = this.knex('departments')
+      .leftJoin('users as creator', 'departments.created_by', 'creator.id')
+      .leftJoin('users as updater', 'departments.updated_by', 'updater.id')
+      .select(
+        'departments.*',
+        this.knex.raw(`
+          json_build_object(
+            'id', creator.id,
+            'name', CONCAT(creator.first_name, ' ', creator.last_name),
+            'email', creator.email
+          ) as created_by_user
+        `),
+        this.knex.raw(`
+          json_build_object(
+            'id', updater.id,
+            'name', CONCAT(updater.first_name, ' ', updater.last_name),
+            'email', updater.email
+          ) as updated_by_user
+        `)
+      );
+
+    // Use base list logic with custom query
+    return this.listWithCustomQuery(baseQuery, query);
+  }
+}
+
+// Response includes full user information
+{
+  "data": [
+    {
+      "id": "dept-uuid",
+      "name": "Engineering",
+      "code": "ENG",
+      "created_at": "2025-12-15T10:00:00Z",
+      "created_by_user": {
+        "id": "user-uuid",
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "updated_at": "2025-12-17T14:30:00Z",
+      "updated_by_user": {
+        "id": "admin-uuid",
+        "name": "Admin User",
+        "email": "admin@example.com"
+      }
+    }
+  ]
+}
+```
+
 ### 14. User Repository Implementation
 
 ```typescript
@@ -2613,9 +3951,7 @@ POST   /api/users/admin/:id/reset-password  # Reset password
 
 ## Navigation to Detailed Sections
 
-For comprehensive logging implementation details, see:
-
-- **[🔍 Logging Standards](./05b5-logging-standards.md)** - Complete logging patterns and plugins
+For comprehensive logging implementation details, refer to the Audit Logs Plugin and Error Logs Plugin sections above.
 
 ## Module Structure Guidelines
 

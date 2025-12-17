@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Knex } from 'knex';
 import { randomBytes } from 'crypto';
-import { EmailService } from '../../../../core/email/email.service';
+import { EmailService } from '../../../../shared/services/email.service';
 
 /**
  * Email Verification Service

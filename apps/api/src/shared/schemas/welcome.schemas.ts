@@ -139,17 +139,21 @@ export const WelcomeSchema = Type.Object({
   }),
   endpoints: Type.Object({
     api: Type.String({ description: 'Main API path', example: '/api' }),
-    health: Type.String({
-      description: 'Health check endpoint',
-      example: '/api/health',
+    health: Type.Object({
+      live: Type.String({
+        description: 'Liveness probe - basic server health',
+        example: '/api/health/live',
+      }),
+      ready: Type.String({
+        description: 'Readiness probe - full health check',
+        example: '/api/health/ready',
+      }),
     }),
-    info: Type.String({
-      description: 'API info endpoint',
-      example: '/api/info',
-    }),
-    status: Type.String({
-      description: 'System status endpoint',
-      example: '/api/status',
+    monitoring: Type.Object({
+      metrics: Type.String({
+        description: 'Prometheus metrics endpoint',
+        example: '/api/monitoring/metrics',
+      }),
     }),
     documentation: Type.String({
       description: 'API documentation',

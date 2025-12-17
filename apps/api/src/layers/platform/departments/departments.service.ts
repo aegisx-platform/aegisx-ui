@@ -1,6 +1,6 @@
 import { BaseService } from '../../../shared/services/base.service';
 import { DepartmentsRepository } from './departments.repository';
-import { AppError } from '../../../core/errors/app-error';
+import { AppError } from '../../../shared/errors/app-error';
 import {
   type Departments,
   type CreateDepartments,

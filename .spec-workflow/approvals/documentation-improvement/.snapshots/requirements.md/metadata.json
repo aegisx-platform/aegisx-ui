@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/documentation-improvement/requirements.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T23:40:00.412Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765928400376_fzjrrb9ra",
+      "approvalTitle": "Requirements - Documentation Improvement"
+    }
+  ]
+}

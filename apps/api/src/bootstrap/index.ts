@@ -26,7 +26,7 @@ import {
 } from '../config/security.config';
 
 // Bootstrap imports
-import { WelcomeResponseSchema } from '../core/system/default.schemas';
+import { WelcomeResponseSchema } from '../shared/schemas/welcome.schemas';
 import { loadAllPlugins } from './plugin.loader';
 import {
   createServer,
@@ -239,9 +239,13 @@ export async function bootstrap(): Promise<BootstrapResult> {
           timestamp: new Date().toISOString(),
           endpoints: {
             api: appConfig.api.prefix,
-            health: `${appConfig.api.prefix}/health`,
-            info: `${appConfig.api.prefix}/info`,
-            status: `${appConfig.api.prefix}/status`,
+            health: {
+              live: `${appConfig.api.prefix}/health/live`,
+              ready: `${appConfig.api.prefix}/health/ready`,
+            },
+            monitoring: {
+              metrics: `${appConfig.api.prefix}/monitoring/metrics`,
+            },
             documentation: '/documentation',
           },
           logo: [

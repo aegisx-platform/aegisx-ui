@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/documentation-improvement/design.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-16T23:43:21.963Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765928601946_ptkesex24",
+      "approvalTitle": "Design - Documentation Improvement"
+    }
+  ]
+}
