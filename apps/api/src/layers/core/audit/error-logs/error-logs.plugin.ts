@@ -49,8 +49,13 @@ async function errorLogsPlugin(
   // Initialize controller
   const controller = new ErrorLogsController(service);
 
-  // Register routes
-  await registerErrorLogsRoutes(fastify, controller);
+  // Register routes with /error-logs prefix
+  await fastify.register(
+    async (instance) => {
+      await registerErrorLogsRoutes(instance, controller);
+    },
+    { prefix: '/error-logs' },
+  );
 
   fastify.log.info('Error logs module loaded successfully');
 }

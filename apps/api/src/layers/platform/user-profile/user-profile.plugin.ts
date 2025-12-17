@@ -19,7 +19,6 @@ import { ActivityLogsService } from '../../core/audit/activity-logs/activity-log
  * Dependencies:
  * - knex-plugin: Database connection
  * - redis-plugin: Caching (optional)
- * - file-upload-plugin: File upload handling
  * - schemas-plugin: TypeBox schemas validation
  *
  * Provides:
@@ -91,10 +90,5 @@ async function userProfilePlugin(
  */
 export const userProfileModulePlugin = fp(userProfilePlugin, {
   name: 'user-profile-module',
-  dependencies: [
-    'knex-plugin',
-    'redis-plugin',
-    'file-upload-plugin',
-    'schemas-plugin',
-  ],
+  dependencies: ['knex-plugin', 'redis-plugin', 'schemas-plugin'],
 });

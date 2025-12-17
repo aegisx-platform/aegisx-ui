@@ -49,8 +49,13 @@ async function activityLogsPlugin(
   // Initialize controller
   const controller = new ActivityLogsController(service);
 
-  // Register routes
-  await registerActivityLogsRoutes(fastify, controller);
+  // Register routes with /activity-logs prefix
+  await fastify.register(
+    async (instance) => {
+      await registerActivityLogsRoutes(instance, controller);
+    },
+    { prefix: '/activity-logs' },
+  );
 
   fastify.log.info('Activity logs module loaded successfully');
 }
