@@ -3,8 +3,9 @@ import type { Knex } from 'knex';
 /**
  * UserDepartment Entity
  *
- * Represents a user's assignment to a department with permissions and temporal validity.
- * Supports multi-department users, granular permissions per department, and soft deletes.
+ * Represents a user's assignment to a department with temporal validity.
+ * Supports multi-department users and soft deletes.
+ * Permissions are managed through the RBAC system - see RbacService.
  */
 export interface UserDepartment {
   id: string;
@@ -13,11 +14,6 @@ export interface UserDepartment {
   hospitalId: number | null;
   isPrimary: boolean;
   assignedRole: string | null;
-  canCreateRequests: boolean;
-  canEditRequests: boolean;
-  canSubmitRequests: boolean;
-  canApproveRequests: boolean;
-  canViewReports: boolean;
   validFrom: Date | null;
   validUntil: Date | null;
   assignedBy: string | null;
@@ -36,13 +32,6 @@ export interface AssignUserToDepartmentData {
   hospitalId?: number | null;
   isPrimary?: boolean;
   assignedRole?: string | null;
-  permissions?: {
-    canCreateRequests?: boolean;
-    canEditRequests?: boolean;
-    canSubmitRequests?: boolean;
-    canApproveRequests?: boolean;
-    canViewReports?: boolean;
-  };
   validFrom?: Date | null;
   validUntil?: Date | null;
   assignedBy?: string | null;
@@ -55,11 +44,11 @@ export interface AssignUserToDepartmentData {
  * Manages user-department relationships with support for:
  * - Multi-department users
  * - Temporal assignments (valid_from/until)
- * - Granular permissions per department
  * - Soft deletes via valid_until date
  * - Audit trail (assigned_by, assigned_at)
  *
- * Week 1 Database Layer Implementation
+ * Permissions are managed through the RBAC system (roles and permissions tables).
+ * This repository handles organizational structure only.
  */
 export class UserDepartmentsRepository {
   constructor(private db: Knex) {}
@@ -153,6 +142,8 @@ export class UserDepartmentsRepository {
    * If isPrimary is true, automatically unsets other departments as primary for this user.
    * Returns the newly created assignment record.
    *
+   * Note: Permissions are managed through RBAC system, not department assignments.
+   *
    * Throws error if assignment already exists (handled at service level for business validation).
    *
    * @param data - Assignment data
@@ -174,11 +165,6 @@ export class UserDepartmentsRepository {
       hospital_id: data.hospitalId ?? null,
       is_primary: data.isPrimary ?? false,
       assigned_role: data.assignedRole ?? null,
-      can_create_requests: data.permissions?.canCreateRequests ?? true,
-      can_edit_requests: data.permissions?.canEditRequests ?? true,
-      can_submit_requests: data.permissions?.canSubmitRequests ?? true,
-      can_approve_requests: data.permissions?.canApproveRequests ?? false,
-      can_view_reports: data.permissions?.canViewReports ?? true,
       valid_from: data.validFrom ?? null,
       valid_until: data.validUntil ?? null,
       assigned_by: data.assignedBy ?? null,
@@ -211,56 +197,6 @@ export class UserDepartmentsRepository {
     await this.db('user_departments')
       .where({ user_id: userId, department_id: departmentId })
       .update({ valid_until: this.db.fn.now() });
-  }
-
-  /**
-   * Check if a user has a specific permission in a department
-   *
-   * Only checks currently active assignments (respects valid_from/until dates).
-   * Returns false if assignment is expired or doesn't exist.
-   *
-   * Use case: Authorization checks before allowing operations like creating or approving requests
-   *
-   * Example:
-   * ```
-   * const canApprove = await repo.hasPermissionInDepartment(
-   *   userId,
-   *   departmentId,
-   *   'canApproveRequests'
-   * );
-   * if (!canApprove) {
-   *   throw new UnauthorizedException('User cannot approve in this department');
-   * }
-   * ```
-   *
-   * @param userId - UUID of the user
-   * @param departmentId - ID of the department
-   * @param permission - Permission field name to check (e.g., 'canApproveRequests')
-   * @returns true if user has the permission and assignment is active, false otherwise
-   */
-  async hasPermissionInDepartment(
-    userId: string,
-    departmentId: number,
-    permission: keyof Pick<
-      UserDepartment,
-      | 'canCreateRequests'
-      | 'canEditRequests'
-      | 'canSubmitRequests'
-      | 'canApproveRequests'
-      | 'canViewReports'
-    >,
-  ): Promise<boolean> {
-    // Map camelCase property to snake_case column
-    const permissionColumn = this.permissionToColumn(permission);
-
-    const result = await this.db('user_departments')
-      .where({ user_id: userId, department_id: departmentId })
-      .where(permissionColumn, true)
-      .whereRaw('(valid_from IS NULL OR valid_from <= NOW()::date)')
-      .whereRaw('(valid_until IS NULL OR valid_until >= NOW()::date)')
-      .first();
-
-    return !!result;
   }
 
   /**
@@ -308,6 +244,8 @@ export class UserDepartmentsRepository {
    *
    * If updating isPrimary to true, automatically unsets other departments as primary.
    *
+   * Note: Permissions are managed through RBAC system, not department assignments.
+   *
    * @param userId - UUID of the user
    * @param departmentId - ID of the department
    * @param updates - Fields to update (partial UserDepartment)
@@ -335,21 +273,6 @@ export class UserDepartmentsRepository {
       dbUpdates.is_primary = updates.isPrimary;
     if (updates.assignedRole !== undefined)
       dbUpdates.assigned_role = updates.assignedRole;
-    if (updates.permissions?.canCreateRequests !== undefined) {
-      dbUpdates.can_create_requests = updates.permissions.canCreateRequests;
-    }
-    if (updates.permissions?.canEditRequests !== undefined) {
-      dbUpdates.can_edit_requests = updates.permissions.canEditRequests;
-    }
-    if (updates.permissions?.canSubmitRequests !== undefined) {
-      dbUpdates.can_submit_requests = updates.permissions.canSubmitRequests;
-    }
-    if (updates.permissions?.canApproveRequests !== undefined) {
-      dbUpdates.can_approve_requests = updates.permissions.canApproveRequests;
-    }
-    if (updates.permissions?.canViewReports !== undefined) {
-      dbUpdates.can_view_reports = updates.permissions.canViewReports;
-    }
     if (updates.validFrom !== undefined)
       dbUpdates.valid_from = updates.validFrom;
     if (updates.validUntil !== undefined)
@@ -417,11 +340,6 @@ export class UserDepartmentsRepository {
       hospitalId: row.hospital_id,
       isPrimary: row.is_primary,
       assignedRole: row.assigned_role,
-      canCreateRequests: row.can_create_requests,
-      canEditRequests: row.can_edit_requests,
-      canSubmitRequests: row.can_submit_requests,
-      canApproveRequests: row.can_approve_requests,
-      canViewReports: row.can_view_reports,
       validFrom: row.valid_from,
       validUntil: row.valid_until,
       assignedBy: row.assigned_by,
@@ -430,29 +348,5 @@ export class UserDepartmentsRepository {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
-  }
-
-  /**
-   * Map camelCase permission property name to snake_case column name
-   */
-  private permissionToColumn(
-    permission: keyof Pick<
-      UserDepartment,
-      | 'canCreateRequests'
-      | 'canEditRequests'
-      | 'canSubmitRequests'
-      | 'canApproveRequests'
-      | 'canViewReports'
-    >,
-  ): string {
-    const permissionMap: Record<string, string> = {
-      canCreateRequests: 'can_create_requests',
-      canEditRequests: 'can_edit_requests',
-      canSubmitRequests: 'can_submit_requests',
-      canApproveRequests: 'can_approve_requests',
-      canViewReports: 'can_view_reports',
-    };
-
-    return permissionMap[permission] || permission;
   }
 }

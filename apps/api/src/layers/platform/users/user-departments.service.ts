@@ -28,6 +28,8 @@ export class UserDepartmentsService {
    * Validates that both user and department exist, checks for duplicate assignments,
    * and applies business rules before assignment.
    *
+   * Note: Permissions are managed through RBAC system, not department assignments.
+   *
    * Use case:
    * - Onboarding: Assign a new user to their primary department
    * - Transfers: Assign a user to an additional department
@@ -35,7 +37,7 @@ export class UserDepartmentsService {
    *
    * @param userId - UUID of the user to assign
    * @param departmentId - ID of the department to assign to
-   * @param options - Additional assignment options (role, permissions, validity dates, etc.)
+   * @param options - Additional assignment options (role, validity dates, etc.)
    * @returns The created UserDepartment assignment
    * @throws AppError if validation fails
    */
@@ -45,13 +47,6 @@ export class UserDepartmentsService {
     options: {
       isPrimary?: boolean;
       assignedRole?: string | null;
-      permissions?: {
-        canCreateRequests?: boolean;
-        canEditRequests?: boolean;
-        canSubmitRequests?: boolean;
-        canApproveRequests?: boolean;
-        canViewReports?: boolean;
-      };
       validFrom?: Date | null;
       validUntil?: Date | null;
       assignedBy?: string | null;
@@ -113,7 +108,6 @@ export class UserDepartmentsService {
       departmentId,
       isPrimary: options.isPrimary ?? false,
       assignedRole: options.assignedRole ?? null,
-      permissions: options.permissions,
       validFrom: options.validFrom ?? null,
       validUntil: options.validUntil ?? null,
       assignedBy: options.assignedBy ?? null,
@@ -343,48 +337,6 @@ export class UserDepartmentsService {
     }
 
     return updated;
-  }
-
-  /**
-   * 6. Check if user has a specific permission in a department
-   *
-   * Validates that the user has the required permission in the specified department.
-   * Respects temporal validity (valid_from/until dates).
-   *
-   * Use case:
-   * - Authorization checks before operations
-   * - Permission gates in API endpoints
-   * - Role-based access control (RBAC) integration
-   *
-   * Example permissions:
-   * - canCreateRequests: User can create budget requests in this department
-   * - canApproveRequests: User can approve requests from this department
-   * - canViewReports: User can view department reports
-   *
-   * @param userId - UUID of the user
-   * @param departmentId - ID of the department
-   * @param permission - Permission to check (camelCase, e.g., 'canApproveRequests')
-   * @returns true if user has the permission, false otherwise
-   */
-  async hasPermissionInDepartment(
-    userId: string,
-    departmentId: number,
-    permission: keyof Pick<
-      UserDepartment,
-      | 'canCreateRequests'
-      | 'canEditRequests'
-      | 'canSubmitRequests'
-      | 'canApproveRequests'
-      | 'canViewReports'
-    >,
-  ): Promise<boolean> {
-    // Note: No explicit validation here - method returns false for non-existent users/assignments
-    // This is intentional for authorization checks (fail-safe: deny if not found)
-    return this.userDepartmentsRepository.hasPermissionInDepartment(
-      userId,
-      departmentId,
-      permission,
-    );
   }
 
   // ========================================================================

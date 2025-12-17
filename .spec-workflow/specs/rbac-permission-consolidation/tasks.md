@@ -105,7 +105,7 @@
 
 ## Phase 4: Backend Repository Updates
 
-- [ ] 9. Update UserDepartmentsRepository - remove permission methods
+- [x] 9. Update UserDepartmentsRepository - remove permission methods
   - File: `apps/api/src/layers/platform/users/user-departments.repository.ts`
   - Remove methods: `setDepartmentPermissions()`, `getDepartmentPermissions()`, `hasPermissionInDepartment()` if they exist
   - Remove any permission-related query logic
@@ -114,7 +114,7 @@
   - _Requirements: 3, 5_
   - _Prompt: Role: Backend Developer with expertise in repository pattern and Knex.js | Task: Refactor UserDepartmentsRepository following requirements 3, 5 and Component 2 design. Remove any methods that manage permission flags. If methods like setDepartmentPermissions, getDepartmentPermissions, or hasPermissionInDepartment exist, delete them entirely. Search for any other permission-related logic and remove. | Restrictions: Must not remove organizational methods (assign, remove, query departments), must maintain existing query patterns for non-permission fields | Success: All permission management code removed from repository, only organizational membership methods remain, code compiles without errors_
 
-- [ ] 10. Update UserDepartmentsRepository - remove permission fields from queries
+- [x] 10. Update UserDepartmentsRepository - remove permission fields from queries
   - File: `apps/api/src/layers/platform/users/user-departments.repository.ts` (continue from Task 9)
   - Update `getActiveDepartments()` to remove permission fields from SELECT
   - Update `getUserDepartments()` to remove permission fields from SELECT
