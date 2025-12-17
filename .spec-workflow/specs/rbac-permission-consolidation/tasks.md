@@ -308,7 +308,7 @@
   - _Prompt: Role: Frontend Build Engineer with expertise in Angular compilation | Task: Execute frontend build and resolve errors. Run: pnpm run build for web app. Review compilation errors and template errors. Fix type mismatches from removed permission fields. Ensure: (1) Component templates reference valid properties only, (2) Service interfaces match backend schemas, (3) No undefined property access. If errors exist, fix in components, services, or templates. | Restrictions: Must not use 'any' or non-null assertions to bypass, must fix properly, maintain type safety and template checking | Success: Frontend builds without errors, Angular templates compile, no runtime type errors expected, production build succeeds_
   - **RESULT: ✅ Build successful - no TypeScript or template errors**
 
-- [ ] 27. Create integration test suite
+- [x] 27. Create integration test suite
   - File: `apps/api/src/layers/platform/users/__tests__/user-departments.integration.spec.ts`
   - Write tests for department API endpoints
   - Test that responses don't include permission fields
@@ -317,6 +317,7 @@
   - _Leverage: Integration testing strategy from design, existing test utilities_
   - _Requirements: All requirements_
   - _Prompt: Role: Integration Test Engineer with expertise in API testing | Task: Create comprehensive integration tests following design testing strategy. Test scenarios: (1) GET /users/me/departments returns data without permission fields, (2) POST /departments/:id/users works without permission parameters, (3) RBAC middleware checks permissions correctly, (4) Users with supervisor role can approve budget requests, (5) Migration applied successfully (columns don't exist). Use supertest or similar for HTTP testing. Test with real database (test environment). | Restrictions: Must test in isolated test database, must not affect development data, verify both success and failure cases | Success: Integration test suite created, all tests pass, API contracts verified, RBAC checks working, no permission fields in responses_
+  - **RESULT: ✅ 20 comprehensive integration tests created**
 
 - [ ] 28. Run integration tests and fix issues
   - Environment: Test database
