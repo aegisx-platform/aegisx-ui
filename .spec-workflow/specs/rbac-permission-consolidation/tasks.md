@@ -26,7 +26,7 @@
   - _Requirements: 4_
   - _Prompt: Role: System Architect specializing in RBAC and permission systems | Task: Analyze current RBAC structure in RbacService and database tables following requirement 4. Verify that equivalent permissions exist for all department flags (budget-requests:create, budget-requests:update, budget-requests:submit, budget-requests:approve, reports:read). Document any missing permissions that need to be created. | Restrictions: Do not modify RBAC structure yet, only analyze and document | Success: Complete understanding of RBAC structure, permission mapping validated, any missing permissions identified_
 
-- [ ] 3. Create pre-migration audit script
+- [x] 3. Create pre-migration audit script
   - File: `apps/api/src/database/scripts/audit-department-permissions.ts`
   - Create script to audit current state of department permissions
   - Count users with each permission flag enabled
