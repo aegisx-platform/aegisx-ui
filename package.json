@@ -105,7 +105,12 @@
     "inventory:import-tmt": "node --loader ts-node/esm apps/api/src/database/scripts/inventory-import-tmt.ts",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "docs:generate:feature": "npx ts-node scripts/generate-feature-docs.ts",
+    "docs:generate:changelog": "npx ts-node scripts/generate-changelog.ts",
+    "docs:generate:api": "npx ts-node scripts/generate-api-version-docs.ts",
+    "docs:generate:api:compare": "npx ts-node scripts/generate-api-version-docs.ts --compare",
+    "docs:generate:all": "pnpm run docs:generate:changelog && pnpm run docs:generate:api"
   },
   "private": true,
   "dependencies": {
