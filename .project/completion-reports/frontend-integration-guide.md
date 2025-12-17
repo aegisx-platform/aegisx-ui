@@ -46,15 +46,17 @@ frontend-integration-guide/
 ├── README.md             (637 lines)   - User documentation
 ├── REFERENCE.md          (618 lines)   - Quick lookup guide
 ├── INDEX.md              (412 lines)   - Navigation & overview
+├── scripts/              (1 script)
+│   └── generate.sh       (209 lines)   - Helper script for manual template copying
 └── templates/            (5 templates)
-    ├── service.template.ts            (462 lines) - Data service pattern
-    ├── list.component.template.ts     (313 lines) - List component
-    ├── list.component.template.html   (225 lines) - List HTML
-    ├── form-dialog.component.template.ts (395 lines) - Dialog component
-    └── types.template.ts              (306 lines) - TypeScript types
+    ├── service.template             (462 lines) - Data service pattern
+    ├── list.component.template      (313 lines) - List component
+    ├── list.component.template.html (225 lines) - List HTML
+    ├── form-dialog.component.template (395 lines) - Dialog component
+    └── types.template               (306 lines) - TypeScript types
 ```
 
-**Total:** 4,493 lines of comprehensive frontend guidance
+**Total:** 4,702 lines of comprehensive frontend guidance (including helper script)
 
 ---
 
@@ -134,7 +136,42 @@ Claude will automatically suggest this skill when:
 - File locations (your feature vs. study existing)
 - Statistics and status
 
-### 5. Templates (1,701 lines total)
+### 5. Helper Script (209 lines)
+
+#### scripts/generate.sh
+
+Quick component generation helper:
+
+- Shows available templates
+- Provides manual copy instructions
+- Recommends using Claude for intelligent generation
+- Supports dry-run mode
+- Color-coded output
+- Examples for each component type
+
+**Usage:**
+
+```bash
+# Show help
+./.claude/skills/frontend-integration-guide/scripts/generate.sh
+
+# Dry run (preview)
+./.claude/skills/frontend-integration-guide/scripts/generate.sh products --dry-run
+
+# Show instructions for service only
+./.claude/skills/frontend-integration-guide/scripts/generate.sh products --service-only
+
+# Show instructions for all components
+./.claude/skills/frontend-integration-guide/scripts/generate.sh products
+```
+
+**Note:** Script recommends using Claude for intelligent generation instead of manual copying, as Claude can:
+- Analyze backend API automatically
+- Generate proper types from API schema
+- Add validation and error handling
+- Integrate AegisX UI correctly
+
+### 6. Templates (1,701 lines total)
 
 #### service.template.ts (462 lines)
 
@@ -401,22 +438,26 @@ Claude will:
 
 ## Files Created
 
-### Documentation (3 files, 2.6 KB)
+### Documentation (4 files, 72 KB)
 
 - `.claude/skills/frontend-integration-guide/SKILL.md` (30 KB)
 - `.claude/skills/frontend-integration-guide/README.md` (15 KB)
 - `.claude/skills/frontend-integration-guide/REFERENCE.md` (12 KB)
 - `.claude/skills/frontend-integration-guide/INDEX.md` (13 KB)
 
+### Scripts (1 file, 5.6 KB)
+
+- `.claude/skills/frontend-integration-guide/scripts/generate.sh` (5.6 KB)
+
 ### Templates (5 files, 47 KB)
 
-- `.claude/skills/frontend-integration-guide/templates/service.template.ts` (12 KB)
-- `.claude/skills/frontend-integration-guide/templates/list.component.template.ts` (8.8 KB)
+- `.claude/skills/frontend-integration-guide/templates/service.template` (12 KB)
+- `.claude/skills/frontend-integration-guide/templates/list.component.template` (8.8 KB)
 - `.claude/skills/frontend-integration-guide/templates/list.component.template.html` (7.4 KB)
-- `.claude/skills/frontend-integration-guide/templates/form-dialog.component.template.ts` (12 KB)
-- `.claude/skills/frontend-integration-guide/templates/types.template.ts` (7.1 KB)
+- `.claude/skills/frontend-integration-guide/templates/form-dialog.component.template` (12 KB)
+- `.claude/skills/frontend-integration-guide/templates/types.template` (7.1 KB)
 
-**Total: 9 files, 70 KB, 4,493 lines**
+**Total: 10 files, 77.6 KB, 4,702 lines**
 
 ---
 
