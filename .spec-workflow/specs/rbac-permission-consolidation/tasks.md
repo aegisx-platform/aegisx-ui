@@ -88,7 +88,7 @@
   - _Requirements: 1, 8_
   - _Prompt: Role: Database Migration Specialist with expertise in Knex.js and PostgreSQL | Task: Create reversible migration following requirements 1, 8 and Component 1 design. up() method must drop columns: can_create_requests, can_edit_requests, can_submit_requests, can_approve_requests, can_view_reports. down() method must restore with proper types and defaults. Wrap in Knex transaction. Add try-catch with detailed error logging. Follow existing migration file structure from 20251213074350_create_user_departments.ts. | Restrictions: Must be fully reversible, must use transactions, must not drop other columns, must handle errors gracefully | Success: Migration file created with proper timestamp, up/down methods work correctly, transaction ensures atomicity, can be applied and rolled back safely_
 
-- [ ] 8. Test migration in development environment
+- [x] 8. Test migration in development environment
   - Environment: Local development database
   - Apply migration using `npx knex migrate:up`
   - Verify columns are dropped from `user_departments` table
@@ -98,7 +98,8 @@
   - Purpose: Validate migration works correctly before production use
   - _Leverage: Knex CLI, PostgreSQL \d command_
   - _Requirements: 8_
-  - _Prompt: Role: Database Administrator with expertise in migration testing | Task: Execute and validate database migration in development environment following requirement 8. Steps: (1) Backup development database, (2) Run migrate:up and verify schema changes with \d user_departments, (3) Verify data integrity (count rows, check relationships), (4) Test queries without permission columns, (5) Run migrate:down and verify rollback, (6) Document timing and any issues. | Restrictions: Must test in isolated environment, must verify both up and down migrations, must check foreign key constraints remain intact | Success: Migration executes successfully in less than 5 seconds, schema changes correct, data preserved, rollback works, no constraint violations_
+  - \_Prompt: Role: Database Administrator with expertise in migration testing | Task: Execute and validate database migration in development environment following requirement 8. Steps: (1) Backup development database, (2) Run migrate:up and verify schema changes with \d user_departments, (3) Verify data integrity (count rows, check relationships), (4) Test queries without permission columns, (5) Run migrate:down and verify rollback, (6) Document timing and any issues. | Restrictions: Must test in isolated environment, must verify both up and down migrations, must check foreign key constraints remain intact | Success: Migration executes successfully in less than 5 seconds, schema changes correct, data preserved, rollback works, no constraint violations
+  - **COMPLETED:** Test report: `/spec-workflow/specs/rbac-permission-consolidation/task-8-migration-test-report.md`\_
 
 ---
 
