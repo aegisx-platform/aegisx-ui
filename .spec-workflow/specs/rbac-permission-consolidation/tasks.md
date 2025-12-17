@@ -125,7 +125,7 @@
   - _Requirements: 1, 3, 5_
   - _Prompt: Role: Backend Developer with expertise in SQL query optimization | Task: Update all query methods in UserDepartmentsRepository following Component 2 example from design. For each method: (1) Remove permission fields from .select() clauses, (2) Remove permission parameters from method signatures, (3) Update return types to not include permission properties. Methods to update: getActiveDepartments, getUserDepartments, getUserPrimaryDepartment, assignUserToDepartment. Preserve all organizational fields (id, user_id, department_id, is_primary, assigned_role, valid_from, valid_until, etc.). | Restrictions: Must not remove organizational fields, must maintain JOIN logic with departments table, must preserve WHERE clauses for valid_until filtering | Success: All queries updated without permission fields, method signatures simplified, no references to removed columns, queries return only organizational data_
 
-- [ ] 11. Create unit tests for updated UserDepartmentsRepository
+- [x] 11. Create unit tests for updated UserDepartmentsRepository
   - File: `apps/api/src/layers/platform/users/user-departments.repository.spec.ts`
   - Update existing tests to remove permission assertions
   - Add tests to verify permission fields are NOT returned
