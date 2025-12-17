@@ -41,7 +41,7 @@
 
 ## Phase 2: Permission Mapping and Data Migration
 
-- [ ] 4. Create RBAC permission mapping script
+- [x] 4. Create RBAC permission mapping script
   - File: `apps/api/src/database/scripts/map-department-permissions-to-rbac.ts`
   - Implement logic to map old department flags to RBAC permissions
   - Assign appropriate roles based on permission combinations

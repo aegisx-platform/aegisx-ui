@@ -52,6 +52,105 @@ can_view_reports          → reports:view
 
 ---
 
+### map-department-permissions-to-rbac.ts
+
+**Purpose:** Maps existing department permission flags to RBAC role assignments.
+
+**Part of:** RBAC Permission Consolidation (Spec: `.spec-workflow/specs/rbac-permission-consolidation/`)
+
+**Description:**
+Assigns RBAC roles to users based on their department permission flags to ensure no access loss during migration:
+
+- Analyzes permission combinations and assigns appropriate roles
+- Idempotent: Safe to run multiple times (skips existing assignments)
+- Uses transactions for atomicity
+- Logs all assignments for audit trail
+- Identifies edge cases requiring manual review
+
+**Role Assignment Logic:**
+
+```
+Permission Combination                → Assigned Role
+──────────────────────────────────────────────────────────
+All 5 permissions (incl. approve)     → admin or supervisor
+Including approve permission          → supervisor
+Basic permissions (create/edit/submit) → staff
+Minimal permissions                   → user
+Custom combinations                   → edge case (manual review)
+```
+
+**Usage:**
+
+```bash
+# Preview assignments (dry-run mode - DEFAULT)
+npx ts-node apps/api/src/database/scripts/map-department-permissions-to-rbac.ts
+npx ts-node apps/api/src/database/scripts/map-department-permissions-to-rbac.ts --dry-run
+
+# Execute assignments (writes to database)
+npx ts-node apps/api/src/database/scripts/map-department-permissions-to-rbac.ts --force
+
+# Show help
+npx ts-node apps/api/src/database/scripts/map-department-permissions-to-rbac.ts --help
+```
+
+**Output:**
+
+- Console: Formatted report with statistics, assignments, and edge cases
+- JSON log (always): `/tmp/rbac-permission-mapping-log.json`
+
+**Safety Features:**
+
+- **Dry-run by default:** Must use `--force` to write to database
+- **Idempotent:** Checks existing role assignments before inserting
+- **Transactional:** All assignments use database transactions
+- **Audit log:** Complete log of all assignments in JSON format
+
+**Recommended Workflow:**
+
+1. Run audit script to understand current state:
+
+   ```bash
+   npx ts-node apps/api/src/database/scripts/audit-department-permissions.ts
+   ```
+
+2. Preview role assignments (dry-run):
+
+   ```bash
+   npx ts-node apps/api/src/database/scripts/map-department-permissions-to-rbac.ts --dry-run
+   ```
+
+3. Review the preview output and JSON log
+
+4. Execute assignments:
+
+   ```bash
+   npx ts-node apps/api/src/database/scripts/map-department-permissions-to-rbac.ts --force
+   ```
+
+5. Run audit script again to verify no users at risk:
+
+   ```bash
+   npx ts-node apps/api/src/database/scripts/audit-department-permissions.ts
+   ```
+
+6. Handle edge cases manually via RBAC admin interface
+
+7. Proceed to Phase 3 (database migration)
+
+**Permission Mapping Reference:**
+
+```
+Department Flag           → RBAC Permission
+─────────────────────────────────────────────
+can_create_requests       → budget-requests:create
+can_edit_requests         → budget-requests:update
+can_submit_requests       → budget-requests:submit
+can_approve_requests      → budget-requests:approve
+can_view_reports          → reports:view
+```
+
+---
+
 ### inventory-import-tmt.ts
 
 **Purpose:** Import Thai Medical Terminology (TMT) data into inventory schema.
