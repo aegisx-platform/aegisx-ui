@@ -1,0 +1,649 @@
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/aegisx-cli/internal/contributing.md !
+  [✖] ./docs/README.md → Status: 400
+  [✖] ./docs/TEMPLATE_development_GUIDE.md → Status: 400
+  [✖] ./docs/migration-guide.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/aegisx-cli/internal/development.md !
+  [✖] https://github.com/aegisx-platform/aegisx-starter → Status: 404
+  [✖] https://www.npmjs.com/package/@aegisx/crud-generator → Status: 403
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/analysis/platform/fuse-architecture-analysis.md !
+  [✖] #1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1 → Status: 404
+  [✖] #2-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B9%80%E0%B8%88%E0%B8%84 → Status: 404
+  [✖] #10-%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2 → Status: 404
+  [✖] #11-migration-%E0%B8%88%E0%B8%B2%E0%B8%81-rxjs-%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99-signals → Status: 404
+
+  ERROR: 5 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/api-migration-2025/README.md !
+  [✖] ./MIGRATION_COMPLETE.md → Status: 400
+  [✖] ../../architecture/api-standards/03-plugin-pattern-specification.md → Status: 400
+  [✖] ../../architecture/api-standards/04-url-routing-specification.md → Status: 400
+  [✖] ../../architecture/api-standards/05-crud-generator-specification.md → Status: 400
+  [✖] ../../architecture/api-standards/06-migration-guide.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/api-migration-2025/09-old-routes-cutover-guide.md !
+  [✖] https://docs.aegisx.com/api/migration-guide → Status: 0
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/api-migration-2025/08-plugin-migration-guide.md !
+  [✖] ./02-architecture-specification.md → Status: 400
+  [✖] ../../../.spec-workflow/specs/api-architecture-standardization/BATCH_2_test-results.md → Status: 400
+  [✖] ./smoke-test-procedures.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/2025-Q1-cleanup/specs/inventory-routes-refactoring.md !
+  [✖] ../architecture/layer-based-routing.md → Status: 400
+  [✖] ../architecture/backend-architecture.md → Status: 400
+  [✖] ../guides/development/api-calling-standard.md → Status: 400
+  [✖] ../architecture/domain-architecture-guide.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/2024-Q4/sessions-archive.md !
+  [✖] ../../PROJECT_STATUS.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/2024-Q4/session-59-dashboard-widgets.md !
+  [✖] ../../PROJECT_STATUS.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/README.md !
+  [✖] ../../sessions/ → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/archive/2025-Q1/sessions-archive.md !
+  [✖] ../../PROJECT_STATUS.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/pdf-templates/README.md !
+  [✖] ./PDF_TEMPLATES_GUIDE.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/advanced/todo-pessimistic-locking.md !
+  [✖] https://redis.io/docs/manual/patterns/distributed-locks/ → Status: 404
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/settings/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+  [✖] ../feature-1/README.md → Status: 400
+  [✖] ../feature-2/README.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/websocket/realtime-testing-guide.md !
+  [✖] http://localhost:3383 → Status: 0
+  [✖] http://localhost:4249/realtime-demo → Status: 404
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/websocket/realtime-test-results.md !
+  [✖] http://localhost:3333 → Status: 0
+  [✖] http://localhost:4249/realtime-demo → Status: 404
+  [✖] http://localhost:4249/login → Status: 404
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/user-departments/user-departments-api.md !
+  [✖] ./DEPARTMENT_MANAGEMENT_DESIGN.md → Status: 400
+  [✖] ../../../development/api-calling-standard.md → Status: 400
+  [✖] ../../../development/universal-fullstack-standard.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/user-departments/user-departments-usage-examples.md !
+  [✖] ./DEPARTMENT_MANAGEMENT_DESIGN.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/user-departments/user-departments-service.md !
+  [✖] ./DEPARTMENT_MANAGEMENT_DESIGN.md → Status: 400
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/user-departments/department-management-design.md !
+  [✖] ./auto-discovery-import-system.md → Status: 400
+  [✖] ../budget-request-submission-v2/implementation-PLAN.md → Status: 400
+  [✖] ../../../development/universal-fullstack-standard.md → Status: 400
+
+  ERROR: 7 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/attachment-system/README.md !
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./CONFIGURATION_GUIDE.md → Status: 400
+  [✖] ./EXAMPLES.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md#migration-guide → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+
+  ERROR: 5 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/navigation/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/drug-management/README.md !
+  [✖] ../inventory-app/README.md → Status: 400
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/drug-management/spec.md !
+  [✖] #architecture-overview → Status: 404
+  [✖] #database-schema → Status: 404
+  [✖] #existing-implementation → Status: 404
+  [✖] #proposed-solution → Status: 404
+  [✖] #component-integration → Status: 404
+  [✖] #implementation-plan → Status: 404
+  [✖] ../inventory-app/README.md → Status: 400
+  [✖] ../../../development/api-calling-standard.md → Status: 400
+
+  ERROR: 7 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/drug-management/ui-mockup.md !
+  [✖] #page-overview → Status: 404
+  [✖] #tab-1-all-drugs → Status: 404
+  [✖] #tab-2-generics → Status: 404
+  [✖] #tab-3-focus-lists → Status: 404
+  [✖] #tab-4-pack-ratios → Status: 404
+  [✖] #dialogs--modals → Status: 404
+  [✖] #components-reference → Status: 404
+
+  ERROR: 6 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/api-keys/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+
+  ERROR: 7 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/monitoring-audit/README.md !
+  [✖] http://localhost:4200/monitoring/error-logs → Status: 0
+  [✖] http://localhost:4200/monitoring/activity-logs → Status: 0
+  [✖] http://localhost:4200/profile → Status: 0
+  [✖] http://localhost:4200/settings/api-keys → Status: 0
+  [✖] https://github.com/aegisx-platform/aegisx-starter/issues → Status: 404
+  [✖] https://aegisx-platform.github.io/aegisx-starter-1/ → Status: 404
+  [✖] mailto:support@aegisx.io → Status: 400
+
+  ERROR: 16 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/README.md !
+  [✖] ./feature-documentation-standard.md → Status: 400
+  [✖] ./templates/user-guide.md → Status: 400
+  [✖] ./templates/developer-guide.md → Status: 400
+  [✖] ./templates/api-reference.md → Status: 400
+  [✖] ./templates/architecture.md → Status: 400
+  [✖] ./templates/deployment-guide.md → Status: 400
+  [✖] ./templates/troubleshooting.md → Status: 400
+  [✖] ./templates/documentation-index.md → Status: 400
+  [✖] ./activity-tracking/ → Status: 400
+  [✖] ../development/feature-development-standard.md → Status: 400
+  [✖] ./RESOURCE_REGISTRY.md → Status: 400
+  [✖] ../development/multi-feature-workflow.md → Status: 400
+  [✖] ../development/qa-checklist.md → Status: 400
+  [✖] ../development/universal-fullstack-standard.md → Status: 400
+  [✖] ../development/api-first-workflow.md → Status: 400
+  [✖] ../crud-generator/ → Status: 400
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/08-additional-docs/system-architecture.md !
+  [✖] #system-overview → Status: 404
+  [✖] #8-core-systems → Status: 404
+  [✖] #system-architecture-diagram → Status: 404
+  [✖] #integration-points → Status: 404
+  [✖] #data-flow-summary → Status: 404
+  [✖] #technology-stack → Status: 404
+  [✖] DATABASE_STRUCTURE.md → Status: 400
+  [✖] END_TO_END_WORKFLOWS.md → Status: 400
+
+  ERROR: 7 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/08-additional-docs/project-plan.md !
+  [✖] BRD.md → Status: 400
+  [✖] TRD.md → Status: 400
+  [✖] USE_CASE_DOCUMENT.md → Status: 400
+  [✖] TEST_PLAN.md → Status: 400
+  [✖] DATABASE_DESIGN.md → Status: 400
+  [✖] ../README.md → Status: 400
+  [✖] ../PROJECT_STATUS.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/08-additional-docs/use-case-document.md !
+  [✖] BRD.md → Status: 400
+  [✖] TRD.md → Status: 400
+  [✖] TEST_PLAN.md → Status: 400
+  [✖] systems/ → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/08-additional-docs/data-flow-diagram.md !
+  [✖] #6-process-specifications → Status: 404
+  [✖] #7-data-store-specifications → Status: 404
+
+  ERROR: 6 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/08-additional-docs/test-plan.md !
+  [✖] BRD.md → Status: 400
+  [✖] TRD.md → Status: 400
+  [✖] USE_CASE_DOCUMENT.md → Status: 400
+  [✖] DATABASE_DESIGN.md → Status: 400
+  [✖] ../prisma/schema.prisma → Status: 400
+  [✖] http://localhost:5556 → Status: 0
+
+  ERROR: 13 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/08-additional-docs/system-setup-guide.md !
+  [✖] ./docs/flows/quick-start-guide.md → Status: 400
+  [✖] ./docs/flows/data-flow-complete-guide.md → Status: 400
+  [✖] ./docs/mysql-import-guide.md → Status: 400
+  [✖] ./docs/script-cleanup-guide.md → Status: 400
+  [✖] ./docs/flows/flow-01_Master_Data_Setup.md → Status: 400
+  [✖] ./docs/flows/flow-02_Budget_Management.md → Status: 400
+  [✖] ./docs/flows/flow-03_Procurement_Part1_PR.md → Status: 400
+  [✖] ./docs/flows/flow-08_Frontend_Purchase_Request.md → Status: 400
+  [✖] ./prisma/schema.prisma → Status: 400
+  [✖] ./prisma/functions.sql → Status: 400
+  [✖] ./prisma/views.sql → Status: 400
+  [✖] ./docs/business-rules.md → Status: 400
+  [✖] http://localhost:5555 → Status: 0
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/07-api-readme/01-master-data-API-README.md !
+  [✖] http://127.0.0.1:3383/documentation/json → Status: 0
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/05-distribution-README.md !
+  [✖] SCHEMA.md → Status: 400
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] ../04-inventory/README.md → Status: 400
+  [✖] ../01-master-data/README.md → Status: 400
+  [✖] ../02-budget-management/README.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/01-master-data-schema.md !
+  [✖] README.md → Status: 400
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/03-procurement-README.md !
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] ../02-budget-management/README.md → Status: 400
+  [✖] ../04-inventory/README.md → Status: 400
+  [✖] ../01-master-data/README.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 10 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/08-hpp-README.md !
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] ../01-master-data/README.md → Status: 400
+  [✖] ../04-inventory/README.md → Status: 400
+  [✖] ../05-distribution/README.md → Status: 400
+  [✖] ../07-tmt-integration/README.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/02-budget-schema.md !
+  [✖] README.md → Status: 400
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+
+  ERROR: 6 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/01-master-data-README.md !
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/03-procurement-schema.md !
+  [✖] #6-procurement-master-data → Status: 404
+  [✖] README.md → Status: 400
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+
+  ERROR: 6 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/02-budget-README.md !
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/04-inventory-README.md !
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] ../03-procurement/README.md → Status: 400
+  [✖] ../05-distribution/README.md → Status: 400
+  [✖] ../01-master-data/README.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/06-return-README.md !
+  [✖] SCHEMA.md → Status: 400
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] ../05-distribution/README.md → Status: 400
+  [✖] ../04-inventory/README.md → Status: 400
+  [✖] ../01-master-data/README.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/04-api-guides/07-tmt-README.md !
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../system-architecture.md → Status: 400
+  [✖] ../../database-structure.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+  [✖] ../01-master-data/README.md → Status: 400
+  [✖] ../05-distribution/README.md → Status: 400
+  [✖] http://127.0.0.1:3383/documentation → Status: 0
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/05-workflows/02-budget-workflows.md !
+  [✖] README.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/05-workflows/03-procurement-workflows.md !
+  [✖] README.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/05-workflows/03-procurement-state-diagrams.md !
+  [✖] README.md → Status: 400
+  [✖] WORKFLOWS.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/05-workflows/01-master-data-workflows.md !
+  [✖] README.md → Status: 400
+  [✖] SCHEMA.md → Status: 400
+  [✖] ../../end-to-end-workflows.md → Status: 400
+
+  ERROR: 12 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/03-business/brd.md !
+  [✖] #1-executive-summary--%E0%B8%9A%E0%B8%97%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%A3 → Status: 404
+  [✖] #2-project-information--%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3 → Status: 404
+  [✖] #3-business-overview--%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%98%E0%B8%B8%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88 → Status: 404
+  [✖] #4-problems-and-requirements--%E0%B8%9B%E0%B8%B1%E0%B8%8D%E0%B8%AB%E0%B8%B2%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3 → Status: 404
+  [✖] #6-functional-requirements--%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99 → Status: 404
+  [✖] #7-business-rules--%E0%B8%81%E0%B8%8E%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%98%E0%B8%B8%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88 → Status: 404
+  [✖] #8-compliance-requirements--%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%81%E0%B8%B3%E0%B8%AB%E0%B8%99%E0%B8%94%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%8E%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%9A%E0%B8%B5%E0%B8%A2%E0%B8%9A → Status: 404
+  [✖] #9-user-roles-and-permissions--%E0%B8%9A%E0%B8%97%E0%B8%9A%E0%B8%B2%E0%B8%97%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B8%B4%E0%B9%8C%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89 → Status: 404
+  [✖] #10-success-criteria--%E0%B9%80%E0%B8%81%E0%B8%93%E0%B8%91%E0%B9%8C%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%A3%E0%B9%87%E0%B8%88 → Status: 404
+  [✖] #11-assumptions-and-constraints--%E0%B8%AA%E0%B8%A1%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%90%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94 → Status: 404
+  [✖] #12-risks-and-mitigation--%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%AA%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%87%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3 → Status: 404
+  [✖] mailto:invs-modern@hospital.go.th → Status: 400
+
+  ERROR: 5 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/budget-request-submission/README.md !
+  [✖] ./API-ENDPOINTS.md → Status: 400
+  [✖] ./DATABASE-CHANGES.md → Status: 400
+  [✖] ./implementation-PLAN.md → Status: 400
+  [✖] ../04-api-guides/02-budget-API.md → Status: 400
+  [✖] ../../../system-architecture.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/01-project/claude.md !
+  [✖] http://localhost:5555 → Status: 0
+  [✖] mailto:admin@invs.com → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/09-development-plan/budget-workflow-analysis.md !
+  [✖] ../04-api-guides/02-budget-API.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/09-development-plan/phases/phase-1-database.md !
+  [✖] ./phase-2_DATA_MIGRATION.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/09-development-plan/phases/phase-3-backend.md !
+  [✖] ./phase-4_FRONTEND.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/09-development-plan/phases/phase-0-setup.md !
+  [✖] ./phase-1_DATABASE.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/inventory-app/09-development-plan/phases/phase-2-data-migration.md !
+  [✖] ./phase-3_BACKEND.md → Status: 400
+
+  ERROR: 7 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/system/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/password-reset/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+  [✖] ../email/ → Status: 400
+
+  ERROR: 7 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/audit/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/index.md !
+  [✖] ./feature-documentation-standard.md → Status: 400
+  [✖] ./templates/user-guide.md → Status: 400
+  [✖] ./templates/developer-guide.md → Status: 400
+  [✖] ./templates/api-reference.md → Status: 400
+  [✖] ./templates/architecture.md → Status: 400
+  [✖] ./templates/deployment-guide.md → Status: 400
+  [✖] ./templates/troubleshooting.md → Status: 400
+  [✖] ./templates/documentation-index.md → Status: 400
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/users/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+  [✖] ../feature-1/README.md → Status: 400
+  [✖] ../feature-2/README.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/file-upload/file-upload-system-review.md !
+  [✖] https://www.npmjs.com/package/angular-cropper → Status: 403
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/file-upload/multiple-upload-analysis.md !
+  [✖] https://min.io/docs/minio/linux/developers/javascript/API.html → Status: 404
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/template-developer-guide.md !
+  [✖] ./architecture.md → Status: 400
+  [✖] ./api-reference.md → Status: 400
+  [✖] ./troubleshooting.md → Status: 400
+
+  ERROR: 5 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/template-troubleshooting.md !
+  [✖] ./api-reference.md → Status: 400
+  [✖] https://github.com/aegisx-platform/aegisx-starter-1/issues → Status: 404
+  [✖] ./developer-guide.md → Status: 400
+  [✖] ./architecture.md → Status: 400
+  [✖] https://github.com/aegisx-platform/aegisx-starter-1/issues/new → Status: 404
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/template-deployment-guide.md !
+  [✖] ./architecture.md → Status: 400
+  [✖] ./troubleshooting.md → Status: 400
+  [✖] ../../guides/infrastructure/ci-cd/README.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/template-architecture.md !
+  [✖] ./api-reference.md → Status: 400
+  [✖] ./developer-guide.md → Status: 400
+  [✖] ../../architecture/backend/README.md → Status: 400
+  [✖] ../../architecture/frontend/README.md → Status: 400
+
+  ERROR: 11 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/template-readme.md !
+  [✖] ./api-reference.md → Status: 400
+  [✖] ./architecture.md → Status: 400
+  [✖] ./developer-guide.md → Status: 400
+  [✖] ./user-guide.md → Status: 400
+  [✖] ./troubleshooting.md → Status: 400
+  [✖] ./deployment-guide.md → Status: 400
+  [✖] ../feature-1/README.md → Status: 400
+  [✖] ../feature-2/README.md → Status: 400
+  [✖] ../../reference/api/README.md → Status: 400
+  [✖] ../../architecture/overview.md → Status: 400
+  [✖] https://github.com/aegisx-platform/aegisx-starter-1/issues → Status: 404
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/template-api-reference.md !
+  [✖] ./architecture.md → Status: 400
+  [✖] ./developer-guide.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/templates/README.md !
+  [✖] ../authentication/ARCHITECTURE.md → Status: 400
+  [✖] ../../development/feature-development-standard.md → Status: 400
+
+  ERROR: 9 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/pdf-export/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+  [✖] ../feature-1/README.md → Status: 400
+  [✖] ../feature-2/README.md → Status: 400
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/core-departments/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./system-init-integration.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/core-departments/api-reference.md !
+  [✖] ./system-init-integration.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/monitoring/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/monitoring/prometheus-grafana-setup.md !
+  [✖] http://localhost:3050 → Status: 0
+  [✖] http://localhost:9140 → Status: 0
+  [✖] http://localhost:9140/targets → Status: 0
+  [✖] http://localhost:3383/metrics → Status: 0
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/widget-framework/README.md !
+  [✖] ./USAGE_GUIDE.md → Status: 400
+  [✖] ./CUSTOM_WIDGETS.md → Status: 400
+
+  ERROR: 19 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/system-initialization/README.md !
+  [✖] ./SYSTEM_INIT_COMPLETE_GUIDE.md → Status: 400
+  [✖] ./BATCH_TRACKING_QUICK_REFERENCE.md → Status: 400
+  [✖] ./FRONTEND_SPECIFICATION.md → Status: 400
+  [✖] ./IMPORT_HISTORY_TIMELINE_COMPONENT.md → Status: 400
+  [✖] ./IMPORT_DISCOVERY_SERVICE_implementation.md → Status: 400
+  [✖] ./BATCH_TRACKING_MIGRATION.md → Status: 400
+  [✖] ./SYSTEM_INIT_COMPLETE_GUIDE.md#4-how-to-add-new-moduletable → Status: 400
+  [✖] ./TESTING_GUIDE.md → Status: 400
+  [✖] ./TEST_COVERAGE_SUMMARY.md → Status: 400
+  [✖] ./implementation_SUMMARY.md → Status: 400
+  [✖] ./implementation_COMPLETE.md → Status: 400
+  [✖] ./CRITICAL_FIXES_SUMMARY.md → Status: 400
+  [✖] ./DEPARTMENT_MANAGEMENT_DESIGN.md → Status: 400
+  [✖] ./FIXES_SPECIFICATION.md → Status: 400
+  [✖] ./SYSTEM_INIT_COMPLETE_GUIDE.md#6-api-endpoints → Status: 400
+  [✖] ./SYSTEM_INIT_COMPLETE_GUIDE.md#8-database-schema → Status: 400
+  [✖] ./SYSTEM_INIT_COMPLETE_GUIDE.md#11-troubleshooting → Status: 400
+  [✖] ./user-departments-service.md → Status: 400
+  [✖] ../../development/ → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/system-initialization/batch-tracking-quick-reference.md !
+  [✖] ./BATCH_TRACKING_MIGRATION.md → Status: 400
+  [✖] ./FIXES_SPECIFICATION.md#fix-4-time-based-rollback-high-priority → Status: 400
+
+  ERROR: 3 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/system-initialization/auto-discovery-import-system.md !
+  [✖] ./DEPARTMENT_MANAGEMENT_DESIGN.md → Status: 400
+  [✖] ../budget-request-submission-v2/implementation-PLAN.md → Status: 400
+  [✖] ../../../development/universal-fullstack-standard.md → Status: 400
+
+  ERROR: 12 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/README.md !
+  [✖] ./USER_GUIDE.md → Status: 400
+  [✖] ./DEVELOPER_GUIDE.md → Status: 400
+  [✖] ./DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ./TROUBLESHOOTING.md → Status: 400
+  [✖] ./API_REFERENCE.md → Status: 400
+  [✖] ./ARCHITECTURE.md → Status: 400
+  [✖] ./implementations/REFRESH_TOKEN_implementation.md → Status: 400
+  [✖] ./implementations/RATE_LIMITING_implementation.md → Status: 400
+  [✖] ./implementations/account-lockout_implementation.md → Status: 400
+  [✖] ./DOCUMENTATION_INDEX.md → Status: 400
+  [✖] ../rbac/README.md → Status: 400
+  [✖] ../user-profile/README.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/implementations/password-reset-implementation.md !
+  [✖] ../../getting-started/SMTP_SETUP_GUIDE.md → Status: 400
+  [✖] #troubleshooting-guide → Status: 404
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/implementations/registration-implementation.md !
+  [✖] ../../rbac/implementation.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/implementations/login-implementation.md !
+  [✖] ../../rbac/implementation.md → Status: 400
+  [✖] ../guides/account-lockout.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/implementations/email-verification-implementation.md !
+  [✖] ../../getting-started/SMTP_SETUP_GUIDE.md → Status: 400
+  [✖] ../../api/email-service.md → Status: 400
+
+  ERROR: 13 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/implementations/README.md !
+  [✖] #architecture-overview → Status: 404
+  [✖] #complete-feature-list → Status: 404
+  [✖] #system-flows → Status: 404
+  [✖] #implementation-details → Status: 404
+  [✖] #database-schema → Status: 404
+  [✖] ./REFRESH_TOKEN_implementation.md → Status: 400
+  [✖] ./RATE_LIMITING_implementation.md → Status: 400
+  [✖] ./account-lockout_implementation.md → Status: 400
+  [✖] ../API_REFERENCE.md → Status: 400
+  [✖] ../USER_GUIDE.md → Status: 400
+  [✖] ../DEVELOPER_GUIDE.md → Status: 400
+  [✖] ../DEPLOYMENT_GUIDE.md → Status: 400
+  [✖] ../TROUBLESHOOTING.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/features/authentication/implementations/refresh-token-implementation.md !
+  [✖] http://localhost → Status: 0
+  [✖] ../../session-management/ → Status: 400
+  [✖] ../guides/jwt-authentication.md → Status: 400
+  [✖] ../../rbac/implementation.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/business/business-strategy.md !
+  [✖] https://www.npmjs.com/package/@aegisx/ui → Status: 403
+
+  ERROR: 8 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/README.md !
+  [✖] https://github.com/aegisx-platform/aegisx-starter-1 → Status: 404
+  [✖] https://github.com/aegisx-platform/aegisx-starter-1/blob/main/LICENSE → Status: 404
+  [✖] #%EF%B8%8F-guides → Status: 404
+  [✖] #%EF%B8%8F-architecture → Status: 404
+  [✖] ./infrastructure/deployment.md → Status: 400
+  [✖] ./REDIRECT_MAP.md → Status: 400
+  [✖] https://github.com/aegisx-platform/aegisx-starter-1/issues → Status: 404
+  [✖] ../.spec-workflow/specs/docs-restructure/ → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/quick-domain-reference.md !
+  [✖] ./DOMAIN_ARCHITECTURE_GUIDE.md → Status: 400
+
+  ERROR: 6 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/02-architecture-specification.md !
+  [✖] ./07-migration-patterns.md → Status: 400
+  [✖] ./08-plugin-migration-guide.md → Status: 400
+  [✖] ./03-plugin-pattern-specification.md → Status: 400
+  [✖] ./04-url-routing-specification.md → Status: 400
+  [✖] ./05-module-categorization-specification.md → Status: 400
+  [✖] ../../../.spec-workflow/specs/api-architecture-standardization/BATCH_2_test-results.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/deployment-checklist.md !
+  [✖] ./06-migration-guide.md → Status: 400
+  [✖] ./04-url-routing-specification.md → Status: 400
+
+  ERROR: 1 dead link found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/smoke-test-procedures.md !
+  [✖] ./06-migration-guide.md → Status: 400
+
+  ERROR: 4 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/testing/staging-qa-procedures.md !
+  [✖] ../04-url-routing-specification.md → Status: 400
+  [✖] ../06-migration-guide.md → Status: 400
+  [✖] ../../../../apps/api/src/config/route-aliases.ts → Status: 400
+  [✖] ../../../../apps/api/src/__tests__/integration/route-aliasing.test.ts → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/testing/test-results-summary.md !
+  [✖] ../../../../apps/api/src/__tests__/integration/route-aliasing.test.ts → Status: 400
+  [✖] ../../../../apps/api/src/config/route-aliases.ts → Status: 400
+
+  ERROR: 6 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/testing/production-monitoring-checklist.md !
+  [✖] https://prometheus.example.com → Status: 0
+  [✖] https://grafana.example.com/d/route-aliasing → Status: 0
+  [✖] https://logs.example.com → Status: 0
+  [✖] https://apm.example.com → Status: 0
+  [✖] ../06-migration-guide.md → Status: 400
+  [✖] ../04-url-routing-specification.md → Status: 400
+
+  ERROR: 2 dead links found in /Users/sathitseethaphon/projects/aegisx-platform/aegisx-starter-1/docs/architecture/api-standards/test-results.md !
+  [✖] .spec-workflow/specs/api-architecture-standardization/design.md → Status: 400
+  [✖] ./06-migration-guide.md → Status: 400
