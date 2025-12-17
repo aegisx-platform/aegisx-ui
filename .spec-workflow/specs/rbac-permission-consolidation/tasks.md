@@ -52,7 +52,7 @@
   - _Requirements: 4, 10_
   - _Prompt: Role: Backend Developer with expertise in data migration and RBAC systems | Task: Implement permission mapping script following requirement 4 permission mapping table. For each user-department record: (1) Read current permission flags, (2) Determine appropriate RBAC role (admin=all permissions, supervisor=including approve, staff=basic), (3) Assign role via RbacService if not exists, (4) Log all assignments with timestamp and reason. Handle edge cases like partial permissions. Use transactions for atomicity. | Restrictions: Must be idempotent (safe to run multiple times), must preserve existing RBAC assignments, must log all changes for audit | Success: All users receive appropriate RBAC permissions, no access loss, complete audit log created, script is idempotent and safe to re-run_
 
-- [ ] 5. Create missing RBAC permissions if needed
+- [x] 5. Create missing RBAC permissions if needed
   - File: `apps/api/src/database/seeds/add-missing-rbac-permissions.ts`
   - Based on audit from Task 2, create any missing RBAC permissions
   - Insert new permissions into `permissions` table
