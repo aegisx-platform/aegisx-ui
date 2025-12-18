@@ -10,7 +10,14 @@ export const BudgetRequestsSchema = Type.Object({
   id: Type.Number(),
   request_number: Type.String(),
   fiscal_year: Type.Integer(),
-  department_id: Type.Integer(),
+  department_id: Type.Union([
+    Type.Integer({
+      description: 'Department identifier for department-specific requests',
+    }),
+    Type.Null({
+      description: 'null for central/hospital-wide budget requests',
+    }),
+  ]),
   status: Type.Any(),
   total_requested_amount: Type.Number(),
   justification: Type.Optional(Type.String()),
@@ -33,13 +40,45 @@ export const BudgetRequestsSchema = Type.Object({
 });
 
 // Create Schema (without auto-generated fields)
-// Note: request_number, status, total_requested_amount, department_id are auto-filled by service
+// Note: request_number, status, total_requested_amount are auto-filled by service
+// Note: department_id can be null for central/hospital-wide requests
 export const CreateBudgetRequestsSchema = Type.Object({
-  request_number: Type.Optional(Type.String()),
-  fiscal_year: Type.Integer(),
-  department_id: Type.Optional(Type.Union([Type.Integer(), Type.Null()])),
-  status: Type.Optional(Type.Any()),
-  total_requested_amount: Type.Optional(Type.Number()),
+  request_number: Type.Optional(
+    Type.String({
+      description:
+        'Auto-generated request identifier (optional - generated if not provided)',
+    }),
+  ),
+  fiscal_year: Type.Integer({
+    description: 'Fiscal year for the budget request',
+  }),
+  department_id: Type.Optional(
+    Type.Union(
+      [
+        Type.Integer({
+          description: 'Department identifier for department-specific requests',
+        }),
+        Type.Null({
+          description:
+            'null for central/hospital-wide budget requests (no specific department)',
+        }),
+      ],
+      {
+        description:
+          'Department ID (optional, can be null for central requests)',
+      },
+    ),
+  ),
+  status: Type.Optional(
+    Type.Any({
+      description: 'Budget request status (auto-set to DRAFT on creation)',
+    }),
+  ),
+  total_requested_amount: Type.Optional(
+    Type.Number({
+      description: 'Total amount requested (auto-calculated from items)',
+    }),
+  ),
   justification: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   submitted_by: Type.Optional(
     Type.Union([Type.String({ format: 'uuid' }), Type.Null()]),
@@ -83,7 +122,7 @@ export const UpdateBudgetRequestsSchema = Type.Partial(
   Type.Object({
     request_number: Type.String(),
     fiscal_year: Type.Integer(),
-    department_id: Type.Integer(),
+    department_id: Type.Union([Type.Integer(), Type.Null()]),
     status: Type.Any(),
     total_requested_amount: Type.Number(),
     justification: Type.Optional(Type.String()),

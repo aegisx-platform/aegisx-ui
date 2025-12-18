@@ -80,9 +80,58 @@ export class BudgetRequestsService extends BaseService<
   }
 
   /**
-   * Create new budgetRequests
-   * Auto-generates: request_number, status=DRAFT, total_requested_amount=0
-   * Auto-populates department_id from user's primary department if not provided
+   * Create new budget request
+   *
+   * Supports both central (hospital-wide) and department-specific budget requests.
+   * Central requests have department_id = null and are used when a budget request covers
+   * the entire hospital across multiple departments. The request goes through a collaborative
+   * approval workflow where multiple users from different departments can edit items.
+   *
+   * Auto-generates:
+   * - request_number (format: BR-{fiscal_year}-{sequence}, e.g., BR-2568-001)
+   * - status = DRAFT (initial state)
+   * - total_requested_amount = 0 (calculated from items)
+   *
+   * Department Handling:
+   * - If department_id is provided in request: Uses that value directly
+   * - If department_id is null: Creates central budget request (hospital-wide)
+   * - If department_id is 0 (TypeBox coercion): Converts to null for central requests
+   * - Does NOT auto-populate from user.department_id (allows any user to create central requests)
+   *
+   * Central Request Audit:
+   * - Logs info message when department_id = null for audit trail
+   * - Contains userId, fiscalYear, and requestNumber for traceability
+   *
+   * @param {CreateBudgetRequests} data - Budget request data including optional department_id
+   *   - fiscal_year (required): Fiscal year for the budget (e.g., 2568)
+   *   - department_id (optional): Department ID or null for central requests
+   *   - justification (optional): Business reason for the request
+   *   - status (optional): Initial status (defaults to DRAFT)
+   *   - total_requested_amount (optional): Defaults to 0
+   *   - request_number (optional): If provided, uses this; otherwise auto-generates
+   * @param {string} [userId] - ID of user creating the request (used for audit logging)
+   *
+   * @returns {Promise<BudgetRequests>} Created budget request with auto-generated fields
+   *
+   * @throws {Error} If budget_requests table insert fails
+   *
+   * @example
+   * // Create central (hospital-wide) budget request
+   * const centralRequest = await service.create({
+   *   fiscal_year: 2568,
+   *   department_id: null,  // Central request
+   *   justification: "Hospital-wide drug budget planning"
+   * }, 'finance-user-123');
+   * // Result: { id: 1, request_number: 'BR-2568-001', department_id: null, status: 'DRAFT' }
+   *
+   * @example
+   * // Create department-specific budget request
+   * const deptRequest = await service.create({
+   *   fiscal_year: 2568,
+   *   department_id: 5,  // Pharmacy department
+   *   justification: "Pharmacy drug budget"
+   * }, 'pharmacy-head-456');
+   * // Result: { id: 2, request_number: 'BR-2568-002', department_id: 5, status: 'DRAFT' }
    */
   async create(
     data: CreateBudgetRequests,
@@ -93,53 +142,29 @@ export class BudgetRequestsService extends BaseService<
       data.request_number ||
       (await this.generateRequestNumber(data.fiscal_year));
 
-    // Auto-populate department_id from user if not provided
+    // Use department_id from request data directly (allow null for central requests)
     let departmentId = data.department_id;
 
-    // If department_id is not provided (null or 0), try to get from user's department
-    if ((!departmentId || departmentId === 0) && userId) {
-      const user = await this.usersRepository.findById(userId);
+    // Convert 0 to null (TypeBox may coerce null to 0 for Integer type)
+    if (departmentId === 0) {
+      departmentId = null;
+    }
 
-      if (!user) {
-        const error = new Error(
-          'User not found. Cannot auto-populate department.',
-        ) as any;
-        error.statusCode = 404;
-        error.code = 'USER_NOT_FOUND';
-        throw error;
-      }
-
-      if (!user.department_id) {
-        const error = new Error(
-          'USER_NO_DEPARTMENT: You are not assigned to a department. ' +
-            'Please contact your administrator to assign you to a department before creating budget requests, ' +
-            'or select a department manually.',
-        ) as any;
-        error.statusCode = 422;
-        error.code = 'USER_NO_DEPARTMENT';
-        throw error;
-      }
-
-      departmentId = user.department_id;
+    // Log for audit trail when creating central budget request
+    if (departmentId === null) {
       this.logger.info(
-        {
-          userId,
-          departmentId,
-          userDepartment: user.department_id,
-        },
-        'Auto-populated department_id from user profile',
+        { userId, fiscalYear: data.fiscal_year, requestNumber },
+        'Creating central budget request (department_id = null)',
       );
     }
 
     // Build create data with defaults
-    // Handle department_id: 0 → null (TypeBox may coerce null to 0 for Integer type)
-    // null means "all departments" per business logic
     const createData: CreateBudgetRequests = {
       ...data,
       request_number: requestNumber,
       status: data.status || 'DRAFT',
       total_requested_amount: data.total_requested_amount ?? 0,
-      department_id: departmentId === 0 ? null : departmentId,
+      department_id: departmentId,
     };
 
     const budgetRequests = await super.create(createData);
@@ -563,8 +588,62 @@ export class BudgetRequestsService extends BaseService<
 
   /**
    * Approve budget request by finance manager
-   * Status: DEPT_APPROVED → FINANCE_APPROVED
-   * This will also create budget_allocations from approved items
+   *
+   * Transitions budget request from DEPT_APPROVED to FINANCE_APPROVED status.
+   * This is the final approval stage in the budget request workflow.
+   *
+   * Allocation Creation Behavior:
+   * - Department-specific requests (department_id ≠ null):
+   *   Creates or updates budget_allocations records for each item
+   *   Allocations track budget availability per department and fiscal year
+   *   Uses UPSERT logic to accumulate allocations if multiple requests approved
+   * - Central requests (department_id = null):
+   *   Skips budget_allocations creation entirely
+   *   Log info message "Skipping budget_allocations creation for central budget request..."
+   *   Allocations will be created later at PO/PR stage when items distributed to departments
+   *   Allows finance approval to complete successfully without department assignment
+   *
+   * Transaction Management:
+   * - Uses database transaction (BEGIN...COMMIT/ROLLBACK)
+   * - Ensures atomicity: If any operation fails, entire approval is rolled back
+   * - Updates budget request status, audit log, and allocations in single transaction
+   *
+   * Audit Trail:
+   * - Records workflow change: DEPT_APPROVED → FINANCE_APPROVED
+   * - Captures reviewer (userId), timestamp, and optional comments
+   * - Logs allocation skipping for central requests (traceability)
+   *
+   * @param {string|number} id - Budget request ID to approve
+   * @param {string} userId - ID of finance manager approving the request (for audit trail)
+   * @param {string} [comments] - Optional approval comments or notes
+   *
+   * @returns {Promise<BudgetRequests|null>} Updated budget request with FINANCE_APPROVED status,
+   *   or null if request not found or update failed
+   *
+   * @throws {Error} If request not found ("Budget request not found")
+   * @throws {Error} If status not DEPT_APPROVED
+   *   ("Cannot approve budget request with status: X. Must be DEPT_APPROVED.")
+   * @throws {Error} If database transaction fails (rolled back automatically)
+   *
+   * @example
+   * // Approve department-specific request (creates allocations)
+   * const approved = await service.approveFinance(
+   *   123,
+   *   'finance-user-456',
+   *   'Approved with budget adjustment'
+   * );
+   * // Result: { status: 'FINANCE_APPROVED', finance_reviewed_by: 'finance-user-456' }
+   * // Side effect: budget_allocations created for each request item
+   *
+   * @example
+   * // Approve central request (skips allocations)
+   * const centralApproved = await service.approveFinance(
+   *   456,
+   *   'finance-manager-789'
+   * );
+   * // Result: { status: 'FINANCE_APPROVED', department_id: null }
+   * // Side effect: Log message "Skipping budget_allocations..." (no allocations created)
+   * // Allocations will be created later at PO/PR stage
    */
   async approveFinance(
     id: string | number,
@@ -614,17 +693,19 @@ export class BudgetRequestsService extends BaseService<
 
       // Step 3: Create or update budget_allocations for each item
       for (const item of requestItems) {
-        // Validate required fields
+        // Skip allocation creation for central requests (department_id = null)
+        // Allocations will be created later at PO/PR stage when items are distributed
         if (!request.department_id) {
-          const error = new Error(
-            'BUDGET_REQUEST_NO_DEPARTMENT: Cannot approve budget request without a department assignment. ' +
-              'This budget request was created without a department. ' +
-              'Please update the budget request with a valid department_id before approval, ' +
-              'or ensure the requesting user is assigned to a department.',
-          ) as any;
-          error.statusCode = 400;
-          error.code = 'BUDGET_REQUEST_NO_DEPARTMENT';
-          throw error;
+          this.logger.info(
+            {
+              budgetRequestId: id,
+              fiscalYear: request.fiscal_year,
+              itemCount: requestItems.length,
+            },
+            'Skipping budget_allocations creation for central budget request ' +
+              '(department_id = null). Allocations will be created at PO/PR stage.',
+          );
+          continue; // Skip to next item
         }
 
         // Calculate amounts from quantities and unit price

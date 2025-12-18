@@ -42,7 +42,7 @@ export interface BudgetRequestsEntity {
   id: number;
   request_number: string;
   fiscal_year: number;
-  department_id: number;
+  department_id: number | null;
   status: any;
   total_requested_amount: number;
   justification: string | null;

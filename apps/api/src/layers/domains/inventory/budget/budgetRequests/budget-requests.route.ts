@@ -41,8 +41,31 @@ export async function budgetRequestsRoutes(
     schema: {
       tags: ['Inventory: Budget Requests'],
       summary: 'Create a new budgetRequests',
-      description: 'Create a new budgetRequests with the provided data',
-      body: CreateBudgetRequestsSchema,
+      description:
+        'Create a new budgetRequests with the provided data. Supports both department-specific requests (with department_id) and central/hospital-wide requests (with department_id = null). For central requests, no budget allocations are created until items are distributed to departments at the PO/PR stage.',
+      body: {
+        ...CreateBudgetRequestsSchema,
+        examples: [
+          {
+            summary: 'Department-specific budget request',
+            value: {
+              fiscal_year: 2568,
+              department_id: 5,
+              justification: 'Annual budget request for pharmacy department',
+            },
+          },
+          {
+            summary:
+              'Central hospital-wide budget request (department_id = null)',
+            value: {
+              fiscal_year: 2568,
+              department_id: null,
+              justification:
+                'Central budget request covering all hospital departments',
+            },
+          },
+        ],
+      },
       response: {
         201: BudgetRequestsResponseSchema,
         400: SchemaRefs.ValidationError,
@@ -289,7 +312,7 @@ export async function budgetRequestsRoutes(
       tags: ['Inventory: Budget Requests'],
       summary: 'Approve budget request by finance manager',
       description:
-        'Approve a budget request as finance manager (DEPT_APPROVED → FINANCE_APPROVED)',
+        'Approve a budget request as finance manager (DEPT_APPROVED → FINANCE_APPROVED). For central requests (department_id = null), budget allocations are skipped and will be created at the PO/PR stage when items are distributed to specific departments.',
       params: BudgetRequestsIdParamSchema,
       body: Type.Object({
         comments: Type.Optional(Type.String()),
