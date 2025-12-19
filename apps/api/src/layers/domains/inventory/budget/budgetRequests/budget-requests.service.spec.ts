@@ -387,4 +387,103 @@ describe('BudgetRequestsService - Central Budget Request Support', () => {
       );
     });
   });
+
+  describe('getCurrentQuarter', () => {
+    it('should return Q1 for October (month 10)', () => {
+      const date = new Date('2024-10-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(1);
+    });
+
+    it('should return Q1 for November (month 11)', () => {
+      const date = new Date('2024-11-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(1);
+    });
+
+    it('should return Q1 for December (month 12)', () => {
+      const date = new Date('2024-12-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(1);
+    });
+
+    it('should return Q2 for January (month 1)', () => {
+      const date = new Date('2024-01-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(2);
+    });
+
+    it('should return Q2 for February (month 2)', () => {
+      const date = new Date('2024-02-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(2);
+    });
+
+    it('should return Q2 for March (month 3)', () => {
+      const date = new Date('2024-03-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(2);
+    });
+
+    it('should return Q3 for April (month 4)', () => {
+      const date = new Date('2024-04-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(3);
+    });
+
+    it('should return Q3 for May (month 5)', () => {
+      const date = new Date('2024-05-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(3);
+    });
+
+    it('should return Q3 for June (month 6)', () => {
+      const date = new Date('2024-06-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(3);
+    });
+
+    it('should return Q4 for July (month 7)', () => {
+      const date = new Date('2024-07-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(4);
+    });
+
+    it('should return Q4 for August (month 8)', () => {
+      const date = new Date('2024-08-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(4);
+    });
+
+    it('should return Q4 for September (month 9)', () => {
+      const date = new Date('2024-09-15');
+      const result = service.getCurrentQuarter(date);
+      expect(result).toBe(4);
+    });
+
+    it('should use current date when no parameter provided', () => {
+      const result = service.getCurrentQuarter();
+      expect(result).toBeGreaterThanOrEqual(1);
+      expect(result).toBeLessThanOrEqual(4);
+    });
+
+    it('should handle Thai fiscal year boundaries correctly', () => {
+      // End of Q1 (Dec 31)
+      expect(service.getCurrentQuarter(new Date('2024-12-31'))).toBe(1);
+      // Start of Q2 (Jan 1)
+      expect(service.getCurrentQuarter(new Date('2024-01-01'))).toBe(2);
+      // End of Q2 (Mar 31)
+      expect(service.getCurrentQuarter(new Date('2024-03-31'))).toBe(2);
+      // Start of Q3 (Apr 1)
+      expect(service.getCurrentQuarter(new Date('2024-04-01'))).toBe(3);
+      // End of Q3 (Jun 30)
+      expect(service.getCurrentQuarter(new Date('2024-06-30'))).toBe(3);
+      // Start of Q4 (Jul 1)
+      expect(service.getCurrentQuarter(new Date('2024-07-01'))).toBe(4);
+      // End of Q4 (Sep 30)
+      expect(service.getCurrentQuarter(new Date('2024-09-30'))).toBe(4);
+      // Start of Q1 (Oct 1)
+      expect(service.getCurrentQuarter(new Date('2024-10-01'))).toBe(1);
+    });
+  });
 });

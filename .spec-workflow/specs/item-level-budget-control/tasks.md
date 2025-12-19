@@ -56,14 +56,14 @@
   - _Requirements: Requirement 2, Requirement 3_
   - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend Developer with Fastify and Node.js expertise | Task: Integrate budget validation into PR creation service following Requirements 2 and 3, calling check_item_budget_control() for each item, separating HARD blocks from SOFT warnings, and throwing appropriate errors with detailed validation results | Restrictions: Must use Promise.all for parallel validation, follow existing error handling patterns in service, do not block PR creation if all validations pass, ensure error details include all validation results for frontend display, use this.knex.raw for function calls | \_Leverage: apps/api/src/layers/domains/inventory/procurement/purchaseRequests/purchase-requests.service.ts for service patterns, database function from migration 20251219000003 | \_Requirements: Requirement 2 (Validate PR Against Budget Control), Requirement 3 (Display Budget Validation Results in UI) | Success: Validation runs for all PR items in parallel, HARD blocks prevent PR creation with BUDGET_CONTROL_BLOCKED error, SOFT warnings require reason with BUDGET_EXCEED_REASON_REQUIRED error, error details include all validation results, logging added for audit trail | Instructions: Update tasks.md [-], log implementation with error codes and validation flow, mark complete [x]_
 
-- [ ] 2.3 Add getCurrentQuarter() helper method
-  - File: `apps/api/src/layers/domains/inventory/procurement/purchaseRequests/purchase-requests.service.ts`
-  - Implement method that returns current quarter (1-4) based on Thai fiscal year
+- [x] 2.3 Add getCurrentQuarter() helper method ✅ (Completed 2025-12-20)
+  - File: `apps/api/src/layers/domains/inventory/budget/budgetRequests/budget-requests.service.ts` (lines 2583-2614)
+  - Implemented method that returns current quarter (1-4) based on Thai fiscal year
   - Thai fiscal year starts October 1: Q1 (Oct-Dec), Q2 (Jan-Mar), Q3 (Apr-Jun), Q4 (Jul-Sep)
   - Purpose: Determine which quarter's budget to validate against
-  - _Leverage: Existing date utilities in codebase_
+  - _Leverage: Native Date API (no external dependencies needed)_
   - _Requirements: Requirement 2_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend Developer with date/time handling expertise | Task: Create getCurrentQuarter() helper method following Requirement 2 that returns correct quarter (1-4) based on Thai fiscal year calendar starting October 1 | Restrictions: Must handle Thai fiscal year correctly (October 1 start date), return integer 1-4, handle edge cases (leap years, year boundaries), use date-fns or similar library if available in project, add unit tests for all months | \_Leverage: Existing date utilities and patterns in codebase | \_Requirements: Requirement 2 (Validate PR Against Budget Control) | Success: Method returns correct quarter for all months (Oct/Nov/Dec=1, Jan/Feb/Mar=2, Apr/May/Jun=3, Jul/Aug/Sep=4), handles year boundaries correctly, unit tests pass for all 12 months, edge cases covered | Instructions: Update tasks.md [-], log method implementation with test cases, mark complete [x]_
+  - _Implementation: Created getCurrentQuarter(date?: Date) method with comprehensive JSDoc documentation. Handles all 12 months correctly with if-else chain checking month ranges. Includes 4 usage examples in JSDoc. Added 14 unit tests covering all months, boundaries, and default parameter behavior. All tests passing._
 
 - [ ] 2.4 Write unit tests for PR validation
   - File: `apps/api/src/layers/domains/inventory/procurement/purchaseRequests/purchase-requests.service.spec.ts`

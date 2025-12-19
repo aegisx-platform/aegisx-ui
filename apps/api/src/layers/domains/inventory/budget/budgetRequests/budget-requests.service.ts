@@ -693,8 +693,10 @@ export class BudgetRequestsService extends BaseService<
 
       // Step 3: Create or update budget_allocations for each item
       for (const item of requestItems) {
-        // Skip allocation creation for central requests (department_id = null)
-        // Allocations will be created later at PO/PR stage when items are distributed
+        // For central budget requests (department_id = null), use department_id = 1 (คลังกลาง/งบรวม)
+        // This represents the centralized budget pool that all departments can draw from
+        const targetDepartmentId = request.department_id || 1;
+
         if (!request.department_id) {
           this.logger.info(
             {
@@ -702,10 +704,9 @@ export class BudgetRequestsService extends BaseService<
               fiscalYear: request.fiscal_year,
               itemCount: requestItems.length,
             },
-            'Skipping budget_allocations creation for central budget request ' +
-              '(department_id = null). Allocations will be created at PO/PR stage.',
+            'Creating budget_allocations for central budget request using department_id=1 (คลังกลาง/งบรวม). ' +
+              'Individual departments will reserve from this central pool when creating PR/PO.',
           );
-          continue; // Skip to next item
         }
 
         // Calculate amounts from quantities and unit price
@@ -725,7 +726,7 @@ export class BudgetRequestsService extends BaseService<
         const allocationData = {
           fiscal_year: request.fiscal_year,
           budget_id: item.budget_type_id || 1, // Use budget_type_id (defaults to 1 = main budget)
-          department_id: request.department_id,
+          department_id: targetDepartmentId, // Use central pool (id=1) for central requests
           total_budget: totalAmount,
           q1_budget: q1Amount,
           q2_budget: q2Amount,
@@ -2577,5 +2578,38 @@ export class BudgetRequestsService extends BaseService<
     });
 
     return { deletedCount };
+  }
+
+  /**
+   * Get current fiscal quarter based on Thai fiscal year
+   *
+   * Thai Fiscal Year: October 1 - September 30
+   * - Q1: October, November, December (months 10, 11, 12)
+   * - Q2: January, February, March (months 1, 2, 3)
+   * - Q3: April, May, June (months 4, 5, 6)
+   * - Q4: July, August, September (months 7, 8, 9)
+   *
+   * @param date - Optional date to check (defaults to current date)
+   * @returns Quarter number (1-4)
+   *
+   * @example
+   * getCurrentQuarter() // Current quarter
+   * getCurrentQuarter(new Date('2024-10-15')) // Returns 1 (Q1)
+   * getCurrentQuarter(new Date('2024-01-15')) // Returns 2 (Q2)
+   * getCurrentQuarter(new Date('2024-04-15')) // Returns 3 (Q3)
+   * getCurrentQuarter(new Date('2024-07-15')) // Returns 4 (Q4)
+   */
+  getCurrentQuarter(date: Date = new Date()): number {
+    const month = date.getMonth() + 1; // getMonth() returns 0-11, convert to 1-12
+
+    if (month >= 10 && month <= 12) {
+      return 1; // Q1: Oct, Nov, Dec
+    } else if (month >= 1 && month <= 3) {
+      return 2; // Q2: Jan, Feb, Mar
+    } else if (month >= 4 && month <= 6) {
+      return 3; // Q3: Apr, May, Jun
+    } else {
+      return 4; // Q4: Jul, Aug, Sep (months 7, 8, 9)
+    }
   }
 }
