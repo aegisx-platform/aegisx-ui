@@ -75,11 +75,18 @@
                 mat-icon-button
                 disabled
                 class="ax-location-picker__tree-toggle"
-              ></button>
+                aria-label="Toggle node (disabled)"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
 
               <div
                 class="ax-location-picker__tree-content"
                 (click)="selectLocation(node)"
+                (keyup.enter)="selectLocation(node)"
+                (keyup.space)="selectLocation(node)"
+                tabindex="0"
+                role="button"
               >
                 <!-- Location Icon -->
                 <mat-icon
@@ -167,6 +174,10 @@
               <div
                 class="ax-location-picker__tree-content"
                 (click)="selectLocation(node)"
+                (keyup.enter)="selectLocation(node)"
+                (keyup.space)="selectLocation(node)"
+                tabindex="0"
+                role="button"
               >
                 <!-- Location Icon -->
                 <mat-icon
@@ -271,6 +282,10 @@
                     isSelected(recent.location)
                   "
                   (click)="selectLocation(recent.location)"
+                  (keyup.enter)="selectLocation(recent.location)"
+                  (keyup.space)="selectLocation(recent.location)"
+                  tabindex="0"
+                  role="button"
                 >
                   <mat-icon class="ax-location-picker__list-icon">
                     {{ getLocationIcon(recent.location.type) }}
@@ -347,6 +362,10 @@
                     isSelected(favorite.location)
                   "
                   (click)="selectLocation(favorite.location)"
+                  (keyup.enter)="selectLocation(favorite.location)"
+                  (keyup.space)="selectLocation(favorite.location)"
+                  tabindex="0"
+                  role="button"
                 >
                   <mat-icon class="ax-location-picker__list-icon">
                     {{ getLocationIcon(favorite.location.type) }}

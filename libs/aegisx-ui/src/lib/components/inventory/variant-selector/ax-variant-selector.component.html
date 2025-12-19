@@ -466,8 +466,19 @@
 
   <!-- Quick View Modal -->
   @if (quickViewData()) {
-    <div class="ax-variant-quickview-overlay" (click)="closeQuickView()">
-      <div class="ax-variant-quickview" (click)="$event.stopPropagation()">
+    <div
+      class="ax-variant-quickview-overlay"
+      (click)="closeQuickView()"
+      (keyup.escape)="closeQuickView()"
+      tabindex="0"
+      role="button"
+    >
+      <div
+        class="ax-variant-quickview"
+        (click)="$event.stopPropagation()"
+        (keyup)="$event.stopPropagation()"
+        role="dialog"
+      >
         <div class="ax-variant-quickview__header">
           <h2>Variant Details</h2>
           <button mat-icon-button (click)="closeQuickView()">

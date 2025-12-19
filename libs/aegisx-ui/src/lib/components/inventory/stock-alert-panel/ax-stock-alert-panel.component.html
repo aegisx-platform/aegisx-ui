@@ -222,6 +222,9 @@
                         matListItemMeta
                         class="alert-actions"
                         (click)="$event.stopPropagation()"
+                        (keyup)="$event.stopPropagation()"
+                        tabindex="0"
+                        role="presentation"
                       >
                         <!-- Action menu -->
                         <button
