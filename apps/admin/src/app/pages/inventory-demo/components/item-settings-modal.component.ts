@@ -71,7 +71,7 @@ interface RecommendedSetting {
     AxBadgeComponent,
   ],
   template: `
-    <ax-drawer [isOpen]="isOpen()" [title]="'Item Budget Control Settings'">
+    <ax-drawer [open]="isOpen()" [title]="'Item Budget Control Settings'">
       <div class="modal-content">
         <!-- Form Section -->
         <div class="form-section">
@@ -252,22 +252,22 @@ interface RecommendedSetting {
                     </td>
                     <td class="control-cell">
                       <ax-badge
-                        [label]="
+                        [content]="
                           rec.quantityControl +
                           ' ±' +
                           rec.quantityVariance +
                           '%'
                         "
-                        [variant]="getBadgeVariant(rec.quantityControl)"
+                        [type]="getBadgeVariant(rec.quantityControl)"
                         size="sm"
                       />
                     </td>
                     <td class="control-cell">
                       <ax-badge
-                        [label]="
+                        [content]="
                           rec.priceControl + ' ±' + rec.priceVariance + '%'
                         "
-                        [variant]="getBadgeVariant(rec.priceControl)"
+                        [type]="getBadgeVariant(rec.priceControl)"
                         size="sm"
                       />
                     </td>
@@ -849,14 +849,12 @@ export class ItemSettingsModalComponent implements OnInit {
     this.isOpen.set(true);
   }
 
-  getBadgeVariant(
-    controlType: string,
-  ): 'success' | 'warning' | 'error' | 'info' {
+  getBadgeVariant(controlType: string): 'success' | 'warn' | 'danger' | 'info' {
     switch (controlType) {
       case 'HARD':
-        return 'error';
+        return 'danger';
       case 'SOFT':
-        return 'warning';
+        return 'warn';
       case 'NONE':
         return 'info';
       default:

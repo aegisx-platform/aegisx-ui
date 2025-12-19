@@ -877,7 +877,7 @@ export class StockMovementTimelineDocComponent {
       user: { id: 'user-1', name: 'John Doe' },
       location: 'Warehouse A',
       batchNumber: 'BATCH-001',
-      referenceDocument: { type: 'PO', number: 'PO-2024-001' },
+      referenceDocument: { type: 'PO' as const, number: 'PO-2024-001' },
     },
     {
       id: '2',
@@ -888,7 +888,7 @@ export class StockMovementTimelineDocComponent {
       unit: 'pieces',
       user: { id: 'user-2', name: 'Jane Smith' },
       location: 'Store Front',
-      referenceDocument: { type: 'SO', number: 'SO-2024-042' },
+      referenceDocument: { type: 'SO' as const, number: 'SO-2024-042' },
     },
     {
       id: '3',
