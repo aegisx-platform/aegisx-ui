@@ -369,6 +369,83 @@ const FEEDBACK_ITEMS: AxNavigationItem[] = [
 ];
 
 // ============================================================
+// COMPONENTS - INVENTORY
+// ============================================================
+
+const INVENTORY_ITEMS: AxNavigationItem[] = [
+  {
+    id: 'stock-level',
+    title: 'Stock Level',
+    type: 'item',
+    icon: 'trending_up',
+    link: '/docs/components/aegisx/inventory/stock-level',
+  },
+  {
+    id: 'stock-alert-panel',
+    title: 'Stock Alert Panel',
+    type: 'item',
+    icon: 'notifications_active',
+    link: '/docs/components/aegisx/inventory/stock-alert-panel',
+  },
+  {
+    id: 'location-picker',
+    title: 'Location Picker',
+    type: 'item',
+    icon: 'place',
+    link: '/docs/components/aegisx/inventory/location-picker',
+  },
+  {
+    id: 'quantity-input',
+    title: 'Quantity Input',
+    type: 'item',
+    icon: 'pin',
+    link: '/docs/components/aegisx/inventory/quantity-input',
+  },
+  {
+    id: 'barcode-scanner',
+    title: 'Barcode Scanner',
+    type: 'item',
+    icon: 'qr_code_scanner',
+    link: '/docs/components/aegisx/inventory/barcode-scanner',
+  },
+  {
+    id: 'batch-selector',
+    title: 'Batch Selector',
+    type: 'item',
+    icon: 'label',
+    link: '/docs/components/aegisx/inventory/batch-selector',
+  },
+  {
+    id: 'expiry-badge',
+    title: 'Expiry Badge',
+    type: 'item',
+    icon: 'schedule',
+    link: '/docs/components/aegisx/inventory/expiry-badge',
+  },
+  {
+    id: 'stock-movement-timeline',
+    title: 'Stock Movement Timeline',
+    type: 'item',
+    icon: 'timeline',
+    link: '/docs/components/aegisx/inventory/stock-movement-timeline',
+  },
+  {
+    id: 'transfer-wizard',
+    title: 'Transfer Wizard',
+    type: 'item',
+    icon: 'swap_horiz',
+    link: '/docs/components/aegisx/inventory/transfer-wizard',
+  },
+  {
+    id: 'variant-selector',
+    title: 'Variant Selector',
+    type: 'item',
+    icon: 'grid_view',
+    link: '/docs/components/aegisx/inventory/variant-selector',
+  },
+];
+
+// ============================================================
 // COMPONENTS - NAVIGATION
 // ============================================================
 
@@ -1437,6 +1514,15 @@ export const DOCS_NAVIGATION: AxNavigationItem[] = [
         id: 'feedback',
         title: 'Feedback',
         children: FEEDBACK_ITEMS.map((item) => ({
+          id: item.id,
+          title: item.title,
+          link: item.link,
+        })),
+      },
+      {
+        id: 'inventory',
+        title: 'Inventory',
+        children: INVENTORY_ITEMS.map((item) => ({
           id: item.id,
           title: item.title,
           link: item.link,

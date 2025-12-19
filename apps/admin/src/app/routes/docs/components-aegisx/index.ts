@@ -13,6 +13,7 @@ import { Route } from '@angular/router';
 import { DATA_DISPLAY_ROUTES, CHARTS_ROUTES } from './data-display.routes';
 import { FORMS_ROUTES } from './forms.routes';
 import { FEEDBACK_ROUTES } from './feedback.routes';
+import { INVENTORY_ROUTES } from './inventory.routes';
 import { NAVIGATION_ROUTES } from './navigation.routes';
 import { LAYOUT_ROUTES } from './layout.routes';
 import { UTILITIES_ROUTES, DASHBOARD_ROUTES } from './utilities.routes';
@@ -43,6 +44,7 @@ export const COMPONENTS_AEGISX_ROUTES: Route[] = [
   ...CHARTS_ROUTES,
   ...FORMS_ROUTES,
   ...FEEDBACK_ROUTES,
+  ...INVENTORY_ROUTES,
   ...NAVIGATION_ROUTES,
   ...LAYOUT_ROUTES,
   ...UTILITIES_ROUTES,
@@ -57,6 +59,7 @@ export {
   CHARTS_ROUTES,
   FORMS_ROUTES,
   FEEDBACK_ROUTES,
+  INVENTORY_ROUTES,
   NAVIGATION_ROUTES,
   LAYOUT_ROUTES,
   UTILITIES_ROUTES,
