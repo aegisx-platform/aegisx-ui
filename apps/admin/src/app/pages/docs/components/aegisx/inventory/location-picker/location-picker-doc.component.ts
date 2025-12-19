@@ -159,7 +159,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   <h4>Single Selection (Default)</h4>
                   <ax-location-picker
                     [locations]="warehouseLocations"
-                    [selectionMode]="'single'"
+                    [selectionMode]="SelectionMode.Single"
                     [allowedTypes]="[LocationType.Bin]"
                   />
                 </div>
@@ -168,7 +168,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   <h4>Multiple Selection</h4>
                   <ax-location-picker
                     [locations]="warehouseLocations"
-                    [selectionMode]="'multiple'"
+                    [selectionMode]="SelectionMode.Multiple"
                     [allowedTypes]="[LocationType.Shelf, LocationType.Bin]"
                   />
                 </div>
@@ -840,6 +840,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
 })
 export class LocationPickerDocComponent {
   LocationType = LocationType;
+  SelectionMode = SelectionMode;
 
   basicUsageCode = [
     {

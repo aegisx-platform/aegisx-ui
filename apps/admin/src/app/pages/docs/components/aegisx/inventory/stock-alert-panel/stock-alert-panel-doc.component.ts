@@ -11,7 +11,10 @@ import {
   ComponentTokensComponent,
 } from '../../../../../../components/docs';
 import { ComponentToken } from '../../../../../../types/docs.types';
-import type { StockAlert, AlertActionEvent } from '@aegisx/ui';
+import type {
+  StockAlert,
+  AlertActionEvent,
+} from '@aegisx/ui/lib/components/inventory/stock-alert-panel';
 
 @Component({
   selector: 'ax-stock-alert-panel-doc',
@@ -1093,7 +1096,10 @@ export class StockAlertPanelDocComponent {
       language: 'typescript' as const,
       code: `import { Component } from '@angular/core';
 import { AxStockAlertPanelComponent } from '@aegisx/ui';
-import type { StockAlert, AlertActionEvent } from '@aegisx/ui';
+import type {
+  StockAlert,
+  AlertActionEvent,
+} from '@aegisx/ui/lib/components/inventory/stock-alert-panel';
 
 @Component({
   selector: 'app-alert-dashboard',
@@ -1211,7 +1217,7 @@ export class AlertDashboardComponent {
       language: 'typescript' as const,
       code: `import { Component } from '@angular/core';
 import { AxStockAlertPanelComponent } from '@aegisx/ui';
-import type { StockAlert } from '@aegisx/ui';
+import type { StockAlert } from '@aegisx/ui/lib/components/inventory/stock-alert-panel';
 
 @Component({
   selector: 'app-realtime-alerts',

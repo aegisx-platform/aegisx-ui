@@ -22,11 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import {
-  AxDrawerComponent,
-  AxBadgeComponent,
-  AxButtonComponent,
-} from '@aegisx/ui';
+import { AxDrawerComponent, AxBadgeComponent } from '@aegisx/ui';
 
 interface BudgetRequestItem {
   id: string;
@@ -73,7 +69,6 @@ interface RecommendedSetting {
     MatTabsModule,
     AxDrawerComponent,
     AxBadgeComponent,
-    AxButtonComponent,
   ],
   template: `
     <ax-drawer [isOpen]="isOpen()" [title]="'Item Budget Control Settings'">

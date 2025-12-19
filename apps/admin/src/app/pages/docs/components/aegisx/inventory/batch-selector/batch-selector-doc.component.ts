@@ -1098,6 +1098,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date('2025-06-15'),
       manufacturingDate: new Date('2024-06-15'),
       availableQuantity: 150,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1106,6 +1107,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date('2025-03-20'),
       manufacturingDate: new Date('2024-09-20'),
       availableQuantity: 200,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1114,6 +1116,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date('2025-08-10'),
       manufacturingDate: new Date('2024-11-10'),
       availableQuantity: 100,
+      unit: 'tablets',
       status: 'available' as const,
     },
   ];
@@ -1125,6 +1128,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
       manufacturingDate: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
       availableQuantity: 200,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1132,6 +1136,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000), // 20 days
       manufacturingDate: new Date(Date.now() - 250 * 24 * 60 * 60 * 1000),
       availableQuantity: 150,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1139,6 +1144,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
       manufacturingDate: new Date(Date.now() - 340 * 24 * 60 * 60 * 1000),
       availableQuantity: 100,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1146,6 +1152,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // -10 days (expired)
       manufacturingDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
       availableQuantity: 50,
+      unit: 'tablets',
       status: 'available' as const,
     },
   ];
@@ -1159,6 +1166,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date('2025-05-01'),
       manufacturingDate: new Date('2024-08-01'),
       availableQuantity: 120,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1167,6 +1175,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date('2025-07-15'),
       manufacturingDate: new Date('2024-10-15'),
       availableQuantity: 180,
+      unit: 'tablets',
       status: 'available' as const,
     },
     {
@@ -1175,6 +1184,7 @@ export class BatchSelectorDocComponent {
       expiryDate: new Date('2025-04-20'),
       manufacturingDate: new Date('2024-07-20'),
       availableQuantity: 90,
+      unit: 'tablets',
       status: 'available' as const,
     },
   ];

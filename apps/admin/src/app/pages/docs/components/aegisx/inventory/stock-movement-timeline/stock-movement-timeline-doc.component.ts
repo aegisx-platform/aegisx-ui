@@ -201,7 +201,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     <mat-icon>arrow_downward</mat-icon>
                     <span>Inbound (Green)</span>
                   </div>
-                  <p>Purchase Order, Transfer In, Return to Stock</p>
+                  <p>Receive, Transfer In, Adjust In</p>
                 </div>
 
                 <div class="stock-movement-timeline-doc__type-demo">
@@ -209,7 +209,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     <mat-icon>arrow_upward</mat-icon>
                     <span>Outbound (Red)</span>
                   </div>
-                  <p>Sale, Transfer Out, Disposal</p>
+                  <p>Issue, Transfer Out, Adjust Out</p>
                 </div>
 
                 <div class="stock-movement-timeline-doc__type-demo">
@@ -217,7 +217,7 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     <mat-icon>tune</mat-icon>
                     <span>Adjustment (Blue)</span>
                   </div>
-                  <p>Stock Count, Correction, Damage</p>
+                  <p>Adjust In, Adjust Out (Stock Count, Correction)</p>
                 </div>
               </ax-live-preview>
             </section>
@@ -446,15 +446,12 @@ import { ComponentToken } from '../../../../../../types/docs.types';
 
               <h3>MovementType</h3>
               <pre><code>type MovementType =
-  | 'purchase'      // Inbound (green)
-  | 'transfer-in'   // Inbound (green)
-  | 'return'        // Inbound (green)
-  | 'sale'          // Outbound (red)
-  | 'transfer-out'  // Outbound (red)
-  | 'disposal'      // Outbound (red)
-  | 'adjustment'    // Adjustment (blue)
-  | 'count'         // Adjustment (blue)
-  | 'damage';       // Adjustment (blue)</code></pre>
+  | 'receive'       // Receiving stock (inbound - green)
+  | 'issue'         // Issuing stock (outbound - red)
+  | 'transfer-in'   // Transfer in (inbound - green)
+  | 'transfer-out'  // Transfer out (outbound - red)
+  | 'adjust-in'     // Adjustment increase (adjustment - blue)
+  | 'adjust-out';   // Adjustment decrease (adjustment - blue)</code></pre>
             </section>
           </div>
         </mat-tab>
@@ -873,7 +870,7 @@ export class StockMovementTimelineDocComponent {
     {
       id: '1',
       timestamp: new Date('2024-01-15T10:30:00'),
-      type: 'purchase' as const,
+      type: 'receive' as const,
       quantity: 100,
       balanceAfter: 100,
       unit: 'pieces',
@@ -885,7 +882,7 @@ export class StockMovementTimelineDocComponent {
     {
       id: '2',
       timestamp: new Date('2024-01-14T14:20:00'),
-      type: 'sale' as const,
+      type: 'issue' as const,
       quantity: 25,
       balanceAfter: 75,
       unit: 'pieces',
@@ -896,7 +893,7 @@ export class StockMovementTimelineDocComponent {
     {
       id: '3',
       timestamp: new Date('2024-01-13T09:15:00'),
-      type: 'adjustment' as const,
+      type: 'adjust-in' as const,
       quantity: 5,
       balanceAfter: 100,
       unit: 'pieces',
@@ -964,17 +961,17 @@ export class ProductHistoryComponent {
     },
     {
       label: 'Notes',
-      language: 'markdown' as const,
-      code: `# Chart.js Integration
-
-The component automatically integrates Chart.js to display
-a running balance line chart:
-
-- **Time Scale**: Uses chartjs-adapter-date-fns for time axis
-- **Responsive**: Chart adjusts to container width
-- **Interactive**: Hover tooltips show balance and timestamp
-- **Reactive**: Updates automatically when filters change
-- **Lazy Loaded**: Chart.js is dynamically imported (80KB)`,
+      language: 'typescript' as const,
+      code: `// Chart.js Integration
+//
+// The component automatically integrates Chart.js to display
+// a running balance line chart:
+//
+// - Time Scale: Uses chartjs-adapter-date-fns for time axis
+// - Responsive: Chart adjusts to container width
+// - Interactive: Hover tooltips show balance and timestamp
+// - Reactive: Updates automatically when filters change
+// - Lazy Loaded: Chart.js is dynamically imported (80KB)`,
     },
   ];
 
@@ -1180,17 +1177,17 @@ export class DateFilteredMovementsComponent {
     {
       category: 'Colors',
       cssVar: '--ax-success-default',
-      usage: 'Inbound movement color (purchase, transfer-in, return)',
+      usage: 'Inbound movement color (receive, transfer-in, adjust-in)',
     },
     {
       category: 'Colors',
       cssVar: '--ax-error-default',
-      usage: 'Outbound movement color (sale, transfer-out, disposal)',
+      usage: 'Outbound movement color (issue, transfer-out, adjust-out)',
     },
     {
       category: 'Colors',
       cssVar: '--ax-info-default',
-      usage: 'Adjustment movement color (count, adjustment, damage)',
+      usage: 'Adjustment movement color (adjust-in, adjust-out)',
     },
     {
       category: 'Colors',

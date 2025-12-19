@@ -1128,7 +1128,7 @@ const TOOLS_ITEMS: AxNavigationItem[] = [
     type: 'item',
     icon: 'terminal',
     link: '/tools/crud-generator',
-    badge: { content: 'PRO', type: 'warning' },
+    badge: { content: 'PRO', type: 'warn' },
   },
 ];
 
@@ -1384,7 +1384,7 @@ export const COMPACT_NAVIGATION: AxNavigationItem[] = [
     title: 'CLI Reference',
     type: 'collapsible',
     icon: 'terminal',
-    badge: { content: 'PRO', type: 'warning' },
+    badge: { content: 'PRO', type: 'warn' },
     children: CLI_ITEMS,
   },
   {
@@ -1673,7 +1673,7 @@ export const DOCS_NAVIGATION: AxNavigationItem[] = [
   {
     id: 'cli',
     title: 'CLI Reference',
-    badge: { content: 'PRO', type: 'warning' },
+    badge: { content: 'PRO', type: 'warn' },
     children: CLI_ITEMS.map((item) => ({
       id: item.id,
       title: item.title,

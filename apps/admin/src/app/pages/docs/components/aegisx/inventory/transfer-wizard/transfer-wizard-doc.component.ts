@@ -44,17 +44,21 @@ import { ComponentToken } from '../../../../../../types/docs.types';
         importStatement="import { AxTransferWizardComponent } from '@aegisx/ui';"
       ></ax-doc-header>
 
-      <mat-tab-group class="transfer-wizard-doc__tabs" animationDuration="150ms">
+      <mat-tab-group
+        class="transfer-wizard-doc__tabs"
+        animationDuration="150ms"
+      >
         <!-- Overview Tab -->
         <mat-tab label="Overview">
           <div class="transfer-wizard-doc__tab-content">
             <section class="transfer-wizard-doc__section">
               <h2>Basic Usage</h2>
               <p>
-                The Transfer Wizard component provides a complete 5-step workflow
-                for creating inventory transfers: Source Selection → Destination
-                Selection → Items Selection → Quantity Input → Review & Submit.
-                Each step includes validation and users can navigate between steps.
+                The Transfer Wizard component provides a complete 5-step
+                workflow for creating inventory transfers: Source Selection →
+                Destination Selection → Items Selection → Quantity Input →
+                Review & Submit. Each step includes validation and users can
+                navigate between steps.
               </p>
 
               <ax-live-preview variant="bordered">
@@ -85,7 +89,10 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   <div class="workflow-step__number">1</div>
                   <div class="workflow-step__content">
                     <h4>Select Source</h4>
-                    <p>Choose the source location using the location picker component</p>
+                    <p>
+                      Choose the source location using the location picker
+                      component
+                    </p>
                   </div>
                 </div>
 
@@ -93,7 +100,10 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   <div class="workflow-step__number">2</div>
                   <div class="workflow-step__content">
                     <h4>Select Destination</h4>
-                    <p>Choose destination location (must be different from source)</p>
+                    <p>
+                      Choose destination location (must be different from
+                      source)
+                    </p>
                   </div>
                 </div>
 
@@ -109,7 +119,10 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   <div class="workflow-step__number">4</div>
                   <div class="workflow-step__content">
                     <h4>Confirm Quantities</h4>
-                    <p>Enter transfer quantities with validation against available stock</p>
+                    <p>
+                      Enter transfer quantities with validation against
+                      available stock
+                    </p>
                   </div>
                 </div>
 
@@ -117,7 +130,9 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   <div class="workflow-step__number">5</div>
                   <div class="workflow-step__content">
                     <h4>Review & Submit</h4>
-                    <p>Review all details, add notes, and submit the transfer</p>
+                    <p>
+                      Review all details, add notes, and submit the transfer
+                    </p>
                   </div>
                 </div>
               </div>
@@ -126,9 +141,9 @@ import { ComponentToken } from '../../../../../../types/docs.types';
             <section class="transfer-wizard-doc__section">
               <h2>Progress Indicator</h2>
               <p>
-                The wizard displays a visual progress indicator showing the current
-                step, completed steps, and remaining steps. Users can jump to
-                previously completed steps.
+                The wizard displays a visual progress indicator showing the
+                current step, completed steps, and remaining steps. Users can
+                jump to previously completed steps.
               </p>
 
               <ax-code-tabs [tabs]="progressIndicatorCode"></ax-code-tabs>
@@ -142,10 +157,21 @@ import { ComponentToken } from '../../../../../../types/docs.types';
 
               <ul class="transfer-wizard-doc__validation-list">
                 <li><strong>Source:</strong> Location must be selected</li>
-                <li><strong>Destination:</strong> Must be different from source location</li>
-                <li><strong>Items:</strong> At least one product must be added</li>
-                <li><strong>Quantities:</strong> Must be greater than 0 and not exceed available stock</li>
-                <li><strong>Review:</strong> Final validation of all data before submission</li>
+                <li>
+                  <strong>Destination:</strong> Must be different from source
+                  location
+                </li>
+                <li>
+                  <strong>Items:</strong> At least one product must be added
+                </li>
+                <li>
+                  <strong>Quantities:</strong> Must be greater than 0 and not
+                  exceed available stock
+                </li>
+                <li>
+                  <strong>Review:</strong> Final validation of all data before
+                  submission
+                </li>
               </ul>
             </section>
           </div>
@@ -174,7 +200,8 @@ import { ComponentToken } from '../../../../../../types/docs.types';
             <section class="transfer-wizard-doc__section">
               <h2>With Approval Required</h2>
               <p>
-                Enable approval workflow for transfers requiring manager authorization.
+                Enable approval workflow for transfers requiring manager
+                authorization.
               </p>
 
               <ax-code-tabs [tabs]="approvalRequiredCode"></ax-code-tabs>
@@ -194,7 +221,8 @@ import { ComponentToken } from '../../../../../../types/docs.types';
             <section class="transfer-wizard-doc__section">
               <h2>Step Change Tracking</h2>
               <p>
-                Track wizard step changes for analytics or additional validation.
+                Track wizard step changes for analytics or additional
+                validation.
               </p>
 
               <ax-code-tabs [tabs]="stepChangeCode"></ax-code-tabs>
@@ -233,7 +261,9 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     <tr>
                       <td><code>config</code></td>
                       <td><code>Partial&lt;TransferWizardConfig&gt;</code></td>
-                      <td><code>{}</code></td>
+                      <td>
+                        <code>{{ '{}' }}</code>
+                      </td>
                       <td>Configuration options for wizard behavior</td>
                     </tr>
                     <tr>
@@ -264,11 +294,18 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                       <td><code>availableLocations</code></td>
                       <td><code>any[]</code></td>
                       <td><code>[]</code></td>
-                      <td>Available locations for source/destination selection</td>
+                      <td>
+                        Available locations for source/destination selection
+                      </td>
                     </tr>
                     <tr>
                       <td><code>productSearchFn</code></td>
-                      <td><code>(term: string) =&gt; Promise&lt;ProductSearchResult[]&gt;</code></td>
+                      <td>
+                        <code
+                          >(term: string) =&gt;
+                          Promise&lt;ProductSearchResult[]&gt;</code
+                        >
+                      </td>
                       <td><code>undefined</code></td>
                       <td>Product search function for autocomplete</td>
                     </tr>
@@ -301,7 +338,9 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                     </tr>
                     <tr>
                       <td><code>stepChange</code></td>
-                      <td><code>{{ '{' }} step: number; data: any {{ '}' }}</code></td>
+                      <td>
+                        <code>{{ '{' }} step: number; data: any {{ '}' }}</code>
+                      </td>
                       <td>Emitted when step changes</td>
                     </tr>
                     <tr>
@@ -384,19 +423,30 @@ import { ComponentToken } from '../../../../../../types/docs.types';
               <h2>Do's and Don'ts</h2>
 
               <div class="transfer-wizard-doc__guidelines">
-                <div class="transfer-wizard-doc__guideline transfer-wizard-doc__guideline--do">
+                <div
+                  class="transfer-wizard-doc__guideline transfer-wizard-doc__guideline--do"
+                >
                   <h4><mat-icon>check_circle</mat-icon> Do</h4>
                   <ul>
-                    <li>Provide clear product search functionality with autocomplete</li>
-                    <li>Validate quantities against available stock at each step</li>
+                    <li>
+                      Provide clear product search functionality with
+                      autocomplete
+                    </li>
+                    <li>
+                      Validate quantities against available stock at each step
+                    </li>
                     <li>Enable draft save for long or complex transfers</li>
                     <li>Show clear progress indicators and step navigation</li>
                     <li>Include comprehensive review step before submission</li>
-                    <li>Handle errors gracefully with user-friendly messages</li>
+                    <li>
+                      Handle errors gracefully with user-friendly messages
+                    </li>
                   </ul>
                 </div>
 
-                <div class="transfer-wizard-doc__guideline transfer-wizard-doc__guideline--dont">
+                <div
+                  class="transfer-wizard-doc__guideline transfer-wizard-doc__guideline--dont"
+                >
                   <h4><mat-icon>cancel</mat-icon> Don't</h4>
                   <ul>
                     <li>Allow destination to be same as source location</li>
@@ -421,17 +471,15 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   All form inputs have associated labels and error messages
                 </li>
                 <li>
-                  Keyboard navigation works throughout all wizard steps (Tab, Enter, Escape)
+                  Keyboard navigation works throughout all wizard steps (Tab,
+                  Enter, Escape)
                 </li>
+                <li>Progress indicator is announced to screen readers</li>
                 <li>
-                  Progress indicator is announced to screen readers
+                  Validation errors are clearly communicated with ARIA live
+                  regions
                 </li>
-                <li>
-                  Validation errors are clearly communicated with ARIA live regions
-                </li>
-                <li>
-                  Buttons have clear focus indicators and disabled states
-                </li>
+                <li>Buttons have clear focus indicators and disabled states</li>
               </ul>
             </section>
 
@@ -439,9 +487,9 @@ import { ComponentToken } from '../../../../../../types/docs.types';
               <h2>Best Practices</h2>
               <ul class="transfer-wizard-doc__best-practices">
                 <li>
-                  <strong>Source Pre-selection:</strong> Pre-fill source location
-                  when creating transfers from a specific location view to reduce
-                  user steps
+                  <strong>Source Pre-selection:</strong> Pre-fill source
+                  location when creating transfers from a specific location view
+                  to reduce user steps
                 </li>
                 <li>
                   <strong>Product Search:</strong> Implement efficient product
@@ -449,8 +497,8 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   requirement
                 </li>
                 <li>
-                  <strong>Draft Auto-save:</strong> Enable draft save with 2-second
-                  debounce to avoid excessive localStorage writes
+                  <strong>Draft Auto-save:</strong> Enable draft save with
+                  2-second debounce to avoid excessive localStorage writes
                 </li>
                 <li>
                   <strong>Approval Workflow:</strong> Enable requireApproval for
@@ -461,16 +509,16 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   allowing navigation to prevent incomplete data
                 </li>
                 <li>
-                  <strong>Error Handling:</strong> Show specific validation errors
-                  with suggestions for resolution
+                  <strong>Error Handling:</strong> Show specific validation
+                  errors with suggestions for resolution
                 </li>
                 <li>
                   <strong>Review Step:</strong> Always include a review step to
                   allow users to verify all details before submission
                 </li>
                 <li>
-                  <strong>Loading States:</strong> Show loading indicators during
-                  product search and form submission
+                  <strong>Loading States:</strong> Show loading indicators
+                  during product search and form submission
                 </li>
               </ul>
             </section>
@@ -491,8 +539,8 @@ import { ComponentToken } from '../../../../../../types/docs.types';
                   transfer quantities with validation
                 </li>
                 <li>
-                  <strong>Batch Selector:</strong> Optional integration for batch
-                  tracking when enableBatchTracking is true
+                  <strong>Batch Selector:</strong> Optional integration for
+                  batch tracking when enableBatchTracking is true
                 </li>
                 <li>
                   <strong>Stock Movement Timeline:</strong> Can display transfer
