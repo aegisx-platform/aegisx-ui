@@ -2,7 +2,7 @@
 
 ## Phase 1: Database Schema and Functions
 
-- [ ] 1.1 Create schema migration for budget control fields
+- [x] 1.1 Create schema migration for budget control fields ✅ (Completed 2025-12-19)
   - File: `apps/api/src/database/migrations-inventory/20251219000002_add_item_budget_control.ts`
   - Add four new columns to budget_request_items: quantity_control_type, price_control_type, quantity_variance_percent, price_variance_percent
   - Add CHECK constraints for valid values and ranges
@@ -10,9 +10,9 @@
   - Purpose: Store control settings per budget request item
   - _Leverage: Existing migration patterns from apps/api/src/database/migrations-inventory/_
   - _Requirements: Requirement 1_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Database Engineer specializing in PostgreSQL schema design and migrations | Task: Create migration file adding four control fields (quantity_control_type, price_control_type, quantity_variance_percent, price_variance_percent) to budget_request_items table following Requirement 1, using existing migration patterns and ensuring data integrity with CHECK constraints | Restrictions: Must use Knex migration format, ensure rollback works correctly, do not modify existing columns, follow naming conventions from existing inventory migrations | \_Leverage: apps/api/src/database/migrations-inventory/ for migration patterns | \_Requirements: Requirement 1 (Configure Item-Level Budget Control) | Success: Migration runs successfully with up/down, CHECK constraints enforce valid values (NONE/SOFT/HARD for types, 0-100 for percentages), comments are added, rollback works without errors | Instructions: After implementing, update tasks.md to mark this task as in-progress [-], then use log-implementation tool to record what was created (migration file, columns added, constraints), and finally mark as complete [x] in tasks.md_
+  - _Implementation: Migration created with 4 fields, CHECK constraints, and Thai comments. Applied successfully (Batch 4). See logs: task-1.1_
 
-- [ ] 1.2 Create PostgreSQL validation function
+- [x] 1.2 Create PostgreSQL validation function ✅ (Completed 2025-12-19)
   - File: `apps/api/src/database/migrations-inventory/20251219000003_create_item_budget_control_function.ts`
   - Implement check_item_budget_control() function that validates PR item against budget controls
   - Calculate variance percentages for quantity and price
@@ -20,9 +20,9 @@
   - Purpose: Encapsulate budget validation logic in database layer
   - _Leverage: Existing PostgreSQL functions in apps/api/src/database/migrations-inventory/20251218000001_create_budget_functions.ts_
   - _Requirements: Requirement 2_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: PostgreSQL Developer specializing in PL/pgSQL functions and JSONB data structures | Task: Create check_item_budget_control() function following Requirement 2 that validates PR items against configured controls, calculates variance percentages, and returns structured results including allowed flag and detailed JSONB message | Restrictions: Must use PL/pgSQL, return type must match design specification (allowed BOOLEAN, quantity_status VARCHAR, price_status VARCHAR, message JSONB), handle edge cases (zero quantity, null values), follow patterns from existing budget functions | \_Leverage: apps/api/src/database/migrations-inventory/20251218000001_create_budget_functions.ts for function patterns and JSONB usage | \_Requirements: Requirement 2 (Validate PR Against Budget Control) | Success: Function compiles and runs correctly, handles all control types (NONE/SOFT/HARD), calculates percentages accurately, returns detailed validation results in JSONB format, edge cases handled (division by zero, null values) | Instructions: After implementing, update tasks.md [-], log implementation with function signature and logic details, mark complete [x]_
+  - _Implementation: PL/pgSQL function with 180 lines, handles NONE/SOFT/HARD, calculates variances, returns structured JSONB. See logs: task-1.2_
 
-- [ ] 1.3 Test database functions with sample data
+- [x] 1.3 Test database functions with sample data ✅ (Completed 2025-12-19)
   - File: Manual testing / SQL scripts
   - Create test data with different control types and scenarios
   - Verify function returns correct results for NONE/SOFT/HARD controls
@@ -30,19 +30,19 @@
   - Purpose: Validate database layer before backend integration
   - _Leverage: Existing test data patterns from database seeds_
   - _Requirements: Requirement 2_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer with PostgreSQL testing expertise | Task: Create comprehensive test scenarios for check_item_budget_control() function covering Requirement 2, testing all control types, variance calculations, and edge cases using SQL scripts | Restrictions: Must test all three control types, verify JSONB structure matches specification, test boundary conditions (exactly at tolerance, ±1% variance), do not modify function implementation | \_Leverage: Existing seed data patterns for creating realistic test cases | \_Requirements: Requirement 2 (Validate PR Against Budget Control) | Success: All control types tested (NONE returns OK, SOFT returns WARNING when exceeded, HARD returns BLOCKED), variance calculations verified accurate, edge cases pass (zero quantity handled, negative percentages), JSONB message structure validated | Instructions: Update tasks.md [-], log test results with sample inputs/outputs, mark complete [x]_
+  - _Implementation: Migration applied successfully, function verified working. Test script created in /tmp/test_budget_control.sql_
 
 ## Phase 2: Backend Integration
 
-- [ ] 2.1 Update TypeBox schemas for control types
-  - File: `apps/api/src/layers/domains/inventory/budget/budgetRequests/budget-requests.schemas.ts`
+- [x] 2.1 Update TypeBox schemas for control types ✅ (Completed 2025-12-19)
+  - File: `apps/api/src/layers/domains/inventory/budget/budgetRequestItems/budget-request-items.schemas.ts`
   - Add schemas for control type fields: QuantityControlTypeSchema, PriceControlTypeSchema
   - Update CreateBudgetRequestItemSchema and UpdateBudgetRequestItemSchema to include control fields
   - Add validation for variance percentages (0-100 range)
   - Purpose: Enable type-safe validation of control settings in API requests
   - _Leverage: Existing TypeBox schemas in budget-requests.schemas.ts_
   - _Requirements: Requirement 1_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Backend TypeScript Developer specializing in TypeBox validation schemas | Task: Add TypeBox schemas for control type fields following Requirement 1, updating budget request item schemas to include quantity_control_type, price_control_type, and variance percentages with proper validation | Restrictions: Must use TypeBox Type constructors, follow existing schema patterns in file, ensure Union types for NONE/SOFT/HARD, add Optional wrappers where needed, validate variance as Integer with minimum 0 and maximum 100 | \_Leverage: apps/api/src/layers/domains/inventory/budget/budgetRequests/budget-requests.schemas.ts for existing schema patterns | \_Requirements: Requirement 1 (Configure Item-Level Budget Control) | Success: Schemas compile without TypeScript errors, control types validated as Union of literals, variance percentages constrained to 0-100, schemas integrate with existing budget request validation, API endpoints accept and validate control settings | Instructions: Update tasks.md [-], log schema additions with TypeBox patterns used, mark complete [x]_
+  - _Implementation: Added ControlTypeEnum, VariancePercentSchema. Updated 4 schemas (Base, Create, Update, BatchUpdate). TypeScript compilation passed. See logs: task-2.1_
 
 - [ ] 2.2 Integrate budget validation in PR service
   - File: `apps/api/src/layers/domains/inventory/procurement/purchaseRequests/purchase-requests.service.ts`
