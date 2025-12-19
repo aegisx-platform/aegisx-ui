@@ -1,0 +1,227 @@
+<ax-drawer
+  [open]="isOpen()"
+  [title]="'Budget Control Settings' + (itemName ? ' - ' + itemName : '')"
+  [size]="'lg'"
+  (openChange)="onOpenChange($event)"
+>
+  <div class="p-6">
+    <form [formGroup]="settingsForm" class="space-y-6">
+      <!-- Quantity Control Section -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <h3 class="text-lg font-semibold text-gray-900">Quantity Control</h3>
+          <span
+            [class]="
+              getControlTypeColor(
+                settingsForm.get('quantity_control_type')?.value
+              )
+            "
+          >
+            {{
+              getControlTypeIcon(
+                settingsForm.get('quantity_control_type')?.value
+              )
+            }}
+          </span>
+        </div>
+
+        <!-- Quantity Control Type -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Control Type</mat-label>
+          <mat-select formControlName="quantity_control_type">
+            @for (option of controlTypeOptions; track option.value) {
+              <mat-option [value]="option.value">
+                <span [class]="option.color">{{ option.icon }}</span>
+                {{ option.label }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-hint>Select how to control quantity variance</mat-hint>
+        </mat-form-field>
+
+        <!-- Quantity Variance Percent (conditional) -->
+        @if (showQuantityVariance()) {
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Variance Tolerance (%)</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="quantity_variance_percent"
+              min="0"
+              max="100"
+              placeholder="e.g., 10"
+            />
+            <mat-hint>Allowed variance percentage (0-100)</mat-hint>
+            @if (
+              settingsForm
+                .get('quantity_variance_percent')
+                ?.hasError('required')
+            ) {
+              <mat-error>Variance percentage is required</mat-error>
+            }
+            @if (
+              settingsForm.get('quantity_variance_percent')?.hasError('min')
+            ) {
+              <mat-error>Minimum value is 0</mat-error>
+            }
+            @if (
+              settingsForm.get('quantity_variance_percent')?.hasError('max')
+            ) {
+              <mat-error>Maximum value is 100</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Explanation -->
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <mat-icon class="text-blue-400">info</mat-icon>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                  @if (
+                    settingsForm.get('quantity_control_type')?.value === 'SOFT'
+                  ) {
+                    <strong>Soft Warning:</strong> Purchasers will see a warning
+                    when exceeding the budget by more than
+                    {{
+                      settingsForm.get('quantity_variance_percent')?.value || 0
+                    }}% and must provide a reason to proceed.
+                  } @else if (
+                    settingsForm.get('quantity_control_type')?.value === 'HARD'
+                  ) {
+                    <strong>Hard Block:</strong> Purchase requests will be
+                    rejected if quantity exceeds the budget by more than
+                    {{
+                      settingsForm.get('quantity_variance_percent')?.value || 0
+                    }}%.
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="border-t border-gray-200"></div>
+
+      <!-- Price Control Section -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <h3 class="text-lg font-semibold text-gray-900">Price Control</h3>
+          <span
+            [class]="
+              getControlTypeColor(settingsForm.get('price_control_type')?.value)
+            "
+          >
+            {{
+              getControlTypeIcon(settingsForm.get('price_control_type')?.value)
+            }}
+          </span>
+        </div>
+
+        <!-- Price Control Type -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Control Type</mat-label>
+          <mat-select formControlName="price_control_type">
+            @for (option of controlTypeOptions; track option.value) {
+              <mat-option [value]="option.value">
+                <span [class]="option.color">{{ option.icon }}</span>
+                {{ option.label }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-hint>Select how to control price variance</mat-hint>
+        </mat-form-field>
+
+        <!-- Price Variance Percent (conditional) -->
+        @if (showPriceVariance()) {
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Variance Tolerance (%)</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="price_variance_percent"
+              min="0"
+              max="100"
+              placeholder="e.g., 15"
+            />
+            <mat-hint>Allowed variance percentage (0-100)</mat-hint>
+            @if (
+              settingsForm.get('price_variance_percent')?.hasError('required')
+            ) {
+              <mat-error>Variance percentage is required</mat-error>
+            }
+            @if (settingsForm.get('price_variance_percent')?.hasError('min')) {
+              <mat-error>Minimum value is 0</mat-error>
+            }
+            @if (settingsForm.get('price_variance_percent')?.hasError('max')) {
+              <mat-error>Maximum value is 100</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Explanation -->
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <mat-icon class="text-blue-400">info</mat-icon>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                  @if (
+                    settingsForm.get('price_control_type')?.value === 'SOFT'
+                  ) {
+                    <strong>Soft Warning:</strong> Purchasers will see a warning
+                    when unit price exceeds the budget by more than
+                    {{
+                      settingsForm.get('price_variance_percent')?.value || 0
+                    }}% and must provide a reason to proceed.
+                  } @else if (
+                    settingsForm.get('price_control_type')?.value === 'HARD'
+                  ) {
+                    <strong>Hard Block:</strong> Purchase requests will be
+                    rejected if unit price exceeds the budget by more than
+                    {{
+                      settingsForm.get('price_variance_percent')?.value || 0
+                    }}%.
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="close()"
+          [disabled]="isSaving()"
+        >
+          Cancel
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="onSave()"
+          [disabled]="isSaving() || settingsForm.invalid"
+        >
+          @if (isSaving()) {
+            <span class="flex items-center">
+              <mat-icon class="animate-spin mr-2">refresh</mat-icon>
+              Saving...
+            </span>
+          } @else {
+            <span class="flex items-center">
+              <mat-icon class="mr-2">save</mat-icon>
+              Save Settings
+            </span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</ax-drawer>

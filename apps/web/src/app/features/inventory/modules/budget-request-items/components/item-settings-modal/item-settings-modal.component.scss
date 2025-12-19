@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+// Ensure mat-form-field takes full width
+mat-form-field {
+  width: 100%;
+}
+
+// Smooth transitions for conditional elements
+.space-y-4 > * {
+  transition: all 0.3s ease-in-out;
+}
+
+// Icon animations
+mat-icon.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Ensure consistent spacing
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-x-2 > * + * {
+  margin-left: 0.5rem;
+}
+
+.space-x-3 > * + * {
+  margin-left: 0.75rem;
+}

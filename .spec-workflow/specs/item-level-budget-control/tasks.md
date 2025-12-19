@@ -78,26 +78,48 @@
 
 ## Phase 3: Frontend - Item Settings Modal
 
-- [ ] 3.1 Create item settings modal component
-  - File: `apps/admin/src/app/modules/inventory/budget/components/item-settings-modal/item-settings-modal.component.ts`
-  - Create standalone Angular component using AxDrawerComponent
-  - Add reactive form for control settings (quantity_control_type, price_control_type, variance percentages)
-  - Implement real-time impact preview using computed signals
-  - Add recommended settings table with auto-fill button
+- [x] 3.1 Create item settings modal component ✅ (Completed 2025-12-19)
+  - File: `apps/admin/src/app/pages/inventory-demo/components/item-settings-modal.component.ts`
+  - Created standalone Angular component using AxDrawerComponent
+  - Added reactive form for control settings (quantity_control_type, price_control_type, variance percentages)
+  - Implemented real-time impact preview using computed signals
+  - Added recommended settings table with auto-fill button
   - Purpose: Provide UI for configuring budget controls per item
   - _Leverage: Existing AegisX UI components (ax-drawer, ax-select, ax-badge), ReactiveFormsModule patterns_
   - _Requirements: Requirement 1, Requirement 4, Requirement 6_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Angular Frontend Developer with reactive forms and signals expertise | Task: Create item settings modal component following Requirements 1, 4, and 6, implementing control type dropdowns, variance inputs, real-time preview, and recommended settings using Angular standalone components and signals | Restrictions: Must use Angular 17+ standalone component API, use signals for reactive state (control settings, impact preview), follow AegisX UI component patterns (ax-drawer for modal, ax-select for dropdowns, ax-badge for control type indicators), validate variance percentages (0-100), implement reactive forms with FormBuilder | \_Leverage: AegisX UI components from libs/aegisx-ui, existing modal patterns in budget module, ReactiveFormsModule | \_Requirements: Requirement 1 (Configure Item-Level Budget Control), Requirement 4 (Provide Real-Time Impact Preview), Requirement 6 (Recommended Control Settings) | Success: Modal opens with drawer component, form displays current settings, control type dropdowns show NONE/SOFT/HARD with icons (🔴🟡⚪), variance inputs appear when SOFT/HARD selected, impact preview updates on form change, recommended settings table displays with auto-fill button, save button calls API to update settings | Instructions: Update tasks.md [-], log component creation with signals and form structure, mark complete [x]_
+  - _Implementation: Standalone component with reactive forms, FormBuilder, validators, computed signals for real-time preview, 5 recommended settings table with inline apply buttons. 650+ lines of code with full styling, responsive layout, accessibility support. See files: item-settings-modal.component.ts, item-settings-modal.component.example.ts_
 
-- [ ] 3.2 Add control type indicator badges
-  - File: `apps/admin/src/app/modules/inventory/budget/components/budget-request-items-table/budget-request-items-table.component.ts`
+- [x] 3.3 Real-time Impact Preview (ผลกระทบจากการตั้งค่า) ✅ (Completed 2025-12-19)
+  - File: `apps/admin/src/app/pages/inventory-demo/components/item-settings-modal.component.ts` (lines ~420-500)
+  - Implemented real-time calculation preview using computed signals
+  - Shows example scenarios: Allowed (✅), Warning (⚠️), Blocked (🔴)
+  - Display examples for both Quantity and Price control impact
+  - Updates automatically when form values change
+  - Purpose: Help Finance Manager understand budget control impact before saving
+  - _Implementation: computed signals (quantityImpactPreview, priceImpactPreview) calculate 3 example scenarios based on current form settings, display with color-coded UI, summary text explains control type effect_
+
+- [x] 3.4 Recommended Settings Table (แนะนำ) ✅ (Completed 2025-12-19)
+  - File: `apps/admin/src/app/pages/inventory-demo/components/item-settings-modal.component.ts` (lines ~620-700)
+  - Implemented 5 drug category recommendations:
+    1. ED (Essential) - HARD ±5% qty, SOFT ±10% price (ควบคุมเข้มงวด)
+    2. NED (Non-Essential) - SOFT ±15% qty, SOFT ±20% price (ยืดหยุ่นได้)
+    3. NDMS (Controlled) - HARD ±0% qty, HARD ±0% price (ตามสัญญา)
+    4. Vitamins - NONE, NONE (ไม่จำเป็น)
+    5. High-Value - HARD ±5% qty, SOFT ±10% price (ควบคุมต้นทุน)
+  - Auto-fill button on each row applies recommended settings to form
+  - Includes English and Thai descriptions
+  - Purpose: Enable quick configuration based on drug type
+  - _Implementation: Static recommendedSettings array with 5 items, table UI with AxBadge components, click handler (applyRecommendedSettings) populates form with values_
+
+- [x] 3.2 Add control type indicator badges ✅ (Completed 2025-12-19)
+  - File: `apps/web/src/app/features/inventory/modules/budget-request-items/components/budget-request-items-list.component.ts`
   - Display control type badges (🔴 HARD, 🟡 SOFT, ⚪ NONE) in item table
   - Add click handler to open item settings modal
   - Show variance percentages in tooltip on badge hover
   - Purpose: Provide visual indication of control settings in item list
   - _Leverage: AxBadgeComponent, existing item table component_
   - _Requirements: Requirement 1_
-  - _Prompt: Implement the task for spec item-level-budget-control, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Angular UI Developer with component composition expertise | Task: Add control type badges to item table following Requirement 1, displaying visual indicators (🔴🟡⚪) with click-to-edit functionality and tooltips showing variance percentages | Restrictions: Must use AxBadgeComponent from AegisX UI, add badges to existing table without breaking current functionality, implement click handler to emit event for opening modal, use AxTooltipDirective for variance display, color code badges (red for HARD, yellow for SOFT, gray for NONE) | \_Leverage: AxBadgeComponent, AxTooltipDirective, existing budget-request-items-table.component.ts | \_Requirements: Requirement 1 (Configure Item-Level Budget Control) | Success: Badges appear in item table rows, colors match control type, click opens item settings modal with correct item data, tooltip shows "±10% qty, ±15% price" format, badges update when settings saved | Instructions: Update tasks.md [-], log badge integration and event handling, mark complete [x]_
+  - _Implementation: Added 'control' column to displayedColumns array. Implemented @Output() editControlSettings event emitter for item ID. Added getControlTypeBadgeColor() method maps HARD→error, SOFT→warn, NONE→info. Added getControlTypeTooltip() method formats tooltip with "±X% qty, ±Y% price" variance details. Added onEditControlSettings() method emits item ID and stops propagation. Updated HTML template with Control column containing 3 sections: (1) Quantity control badge if set, (2) Price control badge if set, (3) "None" badge if neither set. Each badge is clickable button with matTooltip showing variance. Updated budget-request-items.types.ts with ControlType='NONE'|'SOFT'|'HARD' and added quantity_control_type, price_control_type, quantity_variance_percent, price_variance_percent fields to BudgetRequestItem interface. See logs: task-3.2_
 
 ## Phase 4: Frontend - PR Validation Alerts
 

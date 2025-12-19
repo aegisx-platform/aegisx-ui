@@ -8,6 +8,8 @@ import {
   inject,
   signal,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -46,6 +48,7 @@ import {
   AxEmptyStateComponent,
   AxErrorStateComponent,
   AxDialogService,
+  AxBadgeComponent,
   BreadcrumbComponent,
   BreadcrumbItem,
 } from '@aegisx/ui';
@@ -95,6 +98,7 @@ import { BudgetRequestItemsListHeaderComponent } from './budget-request-items-li
     AxCardComponent,
     AxEmptyStateComponent,
     AxErrorStateComponent,
+    AxBadgeComponent,
   ],
   templateUrl: './budget-request-items-list.component.html',
   styleUrl: './budget-request-items-list.component.scss',
@@ -115,6 +119,9 @@ export class BudgetRequestItemsListComponent {
   private dialog = inject(MatDialog);
   private axDialog = inject(AxDialogService);
   private cdr = inject(ChangeDetectorRef);
+
+  // Event emitted when user clicks on control type badge to edit settings
+  @Output() editControlSettings = new EventEmitter<number>();
 
   // Breadcrumb configuration
   breadcrumbItems: BreadcrumbItem[] = [
@@ -144,6 +151,7 @@ export class BudgetRequestItemsListComponent {
     'q1_qty',
     'q2_qty',
     'q3_qty',
+    'control',
     'actions',
   ];
   dataSource = new MatTableDataSource<BudgetRequestItem>([]);
@@ -891,5 +899,47 @@ export class BudgetRequestItemsListComponent {
 
   isRowExpanded(budgetRequestItem: BudgetRequestItem): boolean {
     return this.expandedBudgetRequestItem()?.id === budgetRequestItem.id;
+  }
+
+  // Helper method to get badge color based on control type
+  getControlTypeBadgeColor(
+    controlType?: string | null,
+  ): 'error' | 'warning' | 'info' {
+    switch (controlType) {
+      case 'HARD':
+        return 'error';
+      case 'SOFT':
+        return 'warning';
+      default:
+        return 'info';
+    }
+  }
+
+  // Helper method to build tooltip text for variance percentages
+  getControlTypeTooltip(
+    controlType?: string | null,
+    quantityVariance?: number | null,
+    priceVariance?: number | null,
+  ): string {
+    if (!controlType || controlType === 'NONE') {
+      return 'No control configured';
+    }
+
+    const qtyText =
+      quantityVariance !== null && quantityVariance !== undefined
+        ? `±${quantityVariance}% qty`
+        : 'qty not set';
+    const priceText =
+      priceVariance !== null && priceVariance !== undefined
+        ? `±${priceVariance}% price`
+        : 'price not set';
+
+    return `${qtyText}, ${priceText}`;
+  }
+
+  // Method to handle control settings edit
+  onEditControlSettings(itemId: number, event: Event): void {
+    event.stopPropagation();
+    this.editControlSettings.emit(itemId);
   }
 }

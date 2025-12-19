@@ -1,5 +1,7 @@
 // ===== CORE ENTITY TYPES =====
 
+export type ControlType = 'NONE' | 'SOFT' | 'HARD';
+
 export interface BudgetRequestItem {
   id: number;
   budget_request_id: number;
@@ -28,6 +30,10 @@ export interface BudgetRequestItem {
   budget_type_id?: number | null;
   budget_category_id?: number | null;
   historical_usage?: Record<string, any> | null;
+  quantity_control_type?: ControlType | null;
+  price_control_type?: ControlType | null;
+  quantity_variance_percent?: number | null;
+  price_variance_percent?: number | null;
 }
 
 export interface CreateBudgetRequestItemRequest {
@@ -82,6 +88,11 @@ export interface UpdateBudgetRequestItemRequest {
   budget_type_id?: number | null;
   budget_category_id?: number | null;
   historical_usage?: Record<string, any> | null;
+  // Budget Control Fields
+  quantity_control_type?: ControlType | null;
+  price_control_type?: ControlType | null;
+  quantity_variance_percent?: number | null;
+  price_variance_percent?: number | null;
 }
 
 // ===== QUERY TYPES =====
