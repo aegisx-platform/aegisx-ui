@@ -5,7 +5,6 @@ import {
   effect,
   inject,
   input,
-  OnDestroy,
   OnInit,
   output,
   signal,
@@ -102,7 +101,7 @@ import {
   templateUrl: './ax-transfer-wizard.component.html',
   styleUrl: './ax-transfer-wizard.component.scss',
 })
-export class AxTransferWizardComponent implements OnInit, OnDestroy {
+export class AxTransferWizardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
 
@@ -147,7 +146,7 @@ export class AxTransferWizardComponent implements OnInit, OnDestroy {
   complete = output<StockTransfer>();
 
   /** Emitted when wizard is cancelled */
-  cancel = output<void>();
+  wizardCancel = output<void>();
 
   /** Emitted when step changes */
   stepChange = output<{ step: number; data: any }>();
@@ -392,10 +391,6 @@ export class AxTransferWizardComponent implements OnInit, OnDestroy {
 
     // Try to load draft from local storage
     this.loadDraftFromStorage();
-  }
-
-  ngOnDestroy(): void {
-    // Cleanup if needed
   }
 
   // ============================================================
@@ -729,7 +724,7 @@ export class AxTransferWizardComponent implements OnInit, OnDestroy {
         'Are you sure you want to cancel this transfer? Unsaved changes will be lost.',
       )
     ) {
-      this.cancel.emit();
+      this.wizardCancel.emit();
       this.resetWizard();
     }
   }

@@ -84,7 +84,7 @@ import {
   templateUrl: './ax-location-picker.component.html',
   styleUrl: './ax-location-picker.component.scss',
 })
-export class AxLocationPickerComponent implements OnInit, OnDestroy {
+export class AxLocationPickerComponent implements OnInit {
   // =============================================================================
   // INPUTS
   // =============================================================================
@@ -288,10 +288,6 @@ export class AxLocationPickerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadRecentLocations();
     this.loadFavoriteLocations();
-  }
-
-  ngOnDestroy(): void {
-    // Cleanup if needed
   }
 
   // =============================================================================

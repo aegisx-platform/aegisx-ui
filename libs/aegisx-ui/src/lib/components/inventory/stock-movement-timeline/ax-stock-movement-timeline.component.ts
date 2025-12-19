@@ -152,7 +152,7 @@ export class AxStockMovementTimelineComponent
   movementClick = output<MovementRecord>();
 
   /** Emitted on export */
-  export = output<ExportEventData>();
+  dataExport = output<ExportEventData>();
 
   /** Emitted when filters change */
   filterChange = output<MovementFilter>();
@@ -161,7 +161,7 @@ export class AxStockMovementTimelineComponent
   movementsLoad = output<MovementRecord[]>();
 
   /** Emitted on errors */
-  error = output<string>();
+  loadError = output<string>();
 
   // =============================================================================
   // INTERNAL STATE
@@ -350,7 +350,7 @@ export class AxStockMovementTimelineComponent
   private async loadMovements() {
     const productId = this.productId();
     if (!productId) {
-      this.error.emit('Product ID is required to load movements');
+      this.loadError.emit('Product ID is required to load movements');
       return;
     }
 
@@ -388,7 +388,7 @@ export class AxStockMovementTimelineComponent
       this.currentBalance.set(response.currentBalance);
       this.movementsLoad.emit(movements);
     } catch (error: any) {
-      this.error.emit(
+      this.loadError.emit(
         `Failed to load movements: ${error.message || 'Unknown error'}`,
       );
       this.internalMovements.set([]);
@@ -710,7 +710,7 @@ export class AxStockMovementTimelineComponent
    */
   async exportData(format: ExportFormat) {
     const data = this.filteredMovements();
-    this.export.emit({ format, data });
+    this.dataExport.emit({ format, data });
 
     if (format === 'excel') {
       await this.exportToExcel(data);
@@ -747,7 +747,7 @@ export class AxStockMovementTimelineComponent
         `movements-${this.productId()}-${Date.now()}.xlsx`,
       );
     } catch (error: any) {
-      this.error.emit(`Failed to export to Excel: ${error.message}`);
+      this.loadError.emit(`Failed to export to Excel: ${error.message}`);
     }
   }
 
@@ -809,7 +809,7 @@ export class AxStockMovementTimelineComponent
 
       doc.save(`movements-${this.productId()}-${Date.now()}.pdf`);
     } catch (error: any) {
-      this.error.emit(`Failed to export to PDF: ${error.message}`);
+      this.loadError.emit(`Failed to export to PDF: ${error.message}`);
     }
   }
 

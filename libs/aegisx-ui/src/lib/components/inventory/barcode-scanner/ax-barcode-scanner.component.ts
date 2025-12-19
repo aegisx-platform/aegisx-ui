@@ -80,7 +80,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
 
   // Outputs
   scan = output<ScanResult>();
-  error = output<ScanError>();
+  scanError = output<ScanError>();
   modeChange = output<'camera' | 'manual'>();
 
   // Internal state
@@ -142,7 +142,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
       await this.startScanning();
     } catch (error: any) {
       this.hasPermission.set(false);
-      this.error.emit({
+      this.scanError.emit({
         type: 'permission-denied',
         message: error.message || 'Camera permission denied',
       });
@@ -158,7 +158,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
     const videoElement = this.videoRef?.nativeElement;
 
     if (!videoElement) {
-      this.error.emit({
+      this.scanError.emit({
         type: 'camera-error',
         message: 'Video element not found',
       });
@@ -179,7 +179,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
       );
     } catch (error: any) {
       this.isScanning.set(false);
-      this.error.emit({
+      this.scanError.emit({
         type: 'camera-error',
         message: error.message || 'Camera error occurred',
       });
@@ -288,7 +288,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
    */
   protected async switchToCameraMode() {
     if (!this.canUseCamera()) {
-      this.error.emit({
+      this.scanError.emit({
         type: 'camera-error',
         message: 'Camera not supported on this device',
       });
@@ -335,7 +335,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
     const format = this.detectFormat(code);
 
     if (!format) {
-      this.error.emit({
+      this.scanError.emit({
         type: 'invalid-format',
         message: 'Unrecognized barcode format',
       });
@@ -343,7 +343,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
     }
 
     if (!this.formats().includes(format)) {
-      this.error.emit({
+      this.scanError.emit({
         type: 'invalid-format',
         message: `Format ${format} not allowed`,
       });
@@ -380,7 +380,7 @@ export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
     const capabilities = track.getCapabilities() as any;
 
     if (!capabilities.torch) {
-      this.error.emit({
+      this.scanError.emit({
         type: 'camera-error',
         message: 'Flashlight not supported on this device',
       });

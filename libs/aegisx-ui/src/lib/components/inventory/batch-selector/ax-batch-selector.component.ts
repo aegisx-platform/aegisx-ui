@@ -115,13 +115,13 @@ export class AxBatchSelectorComponent implements OnInit {
   // =============================================================================
 
   /** Emitted when batch selection changes */
-  select = output<BatchSelection>();
+  batchSelect = output<BatchSelection>();
 
   /** Emitted when batches are loaded from API */
   batchesLoad = output<BatchInfo[]>();
 
   /** Emitted on errors */
-  error = output<string>();
+  loadError = output<string>();
 
   // =============================================================================
   // INTERNAL STATE
@@ -251,7 +251,7 @@ export class AxBatchSelectorComponent implements OnInit {
   private async loadBatches() {
     const productId = this.productId();
     if (!productId) {
-      this.error.emit('Product ID is required to load batches');
+      this.loadError.emit('Product ID is required to load batches');
       return;
     }
 
@@ -277,7 +277,7 @@ export class AxBatchSelectorComponent implements OnInit {
         this.strategy.set(response.strategy);
       }
     } catch (error: any) {
-      this.error.emit(
+      this.loadError.emit(
         `Failed to load batches: ${error.message || 'Unknown error'}`,
       );
       this.internalBatches.set([]);
@@ -360,7 +360,7 @@ export class AxBatchSelectorComponent implements OnInit {
    */
   selectBatch(batch: BatchInfo, quantity?: number) {
     if (!this.canSelectBatch(batch)) {
-      this.error.emit(
+      this.loadError.emit(
         `Cannot select batch ${batch.batchNumber}: ${batch.status}`,
       );
       return;
@@ -468,7 +468,7 @@ export class AxBatchSelectorComponent implements OnInit {
       totalQuantity: this.totalSelectedQuantity(),
       strategy: this.strategy(),
     };
-    this.select.emit(selection);
+    this.batchSelect.emit(selection);
   }
 
   // =============================================================================
