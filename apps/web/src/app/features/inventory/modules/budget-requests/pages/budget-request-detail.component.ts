@@ -5,6 +5,8 @@ import {
   signal,
   computed,
   HostListener,
+  ViewChild,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -31,6 +33,8 @@ import {
   AxErrorStateComponent,
   AxStatsCardComponent,
   AxAlertComponent,
+  AxBadgeComponent,
+  BadgeType,
 } from '@aegisx/ui';
 import { AxTmtBadgeComponent } from '../../../../../shared/ui/components/tmt';
 import { AddDrugDialogComponent } from '../components/add-drug-dialog.component';
@@ -39,6 +43,7 @@ import {
   AdjustPriceDialogComponent,
   AdjustPriceResult,
 } from '../components/adjust-price-dialog.component';
+import { ItemSettingsModalComponent } from '../../budget-request-items/components/item-settings-modal/item-settings-modal.component';
 
 interface BudgetRequest {
   id: number;
@@ -81,6 +86,11 @@ interface BudgetRequestItem {
   // TMT GPU code from drug_generics JOIN
   tmt_gpu_code?: string;
   working_code?: string;
+  // Budget Control fields
+  quantity_control_type?: 'NONE' | 'SOFT' | 'HARD' | null;
+  price_control_type?: 'NONE' | 'SOFT' | 'HARD' | null;
+  quantity_variance_percent?: number | null;
+  price_variance_percent?: number | null;
 }
 
 @Component({
@@ -109,6 +119,8 @@ interface BudgetRequestItem {
     AxStatsCardComponent,
     AxAlertComponent,
     AxTmtBadgeComponent,
+    AxBadgeComponent,
+    ItemSettingsModalComponent,
   ],
   template: `
     <div class="min-h-screen bg-[var(--ax-background-subtle)] p-6">
@@ -1048,6 +1060,105 @@ interface BudgetRequestItem {
                     </td>
                   </ng-container>
 
+                  <!-- Control Column -->
+                  <ng-container matColumnDef="control">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      class="!text-center !w-32"
+                    >
+                      การควบคุม
+                    </th>
+                    <td mat-cell *matCellDef="let item" class="!text-center">
+                      <div class="flex items-center justify-center gap-2">
+                        @if (
+                          item.quantity_control_type &&
+                          item.quantity_control_type !== 'NONE'
+                        ) {
+                          <button
+                            type="button"
+                            (click)="
+                              openControlSettings(item);
+                              $event.stopPropagation()
+                            "
+                            [matTooltip]="
+                              'Qty: ' +
+                              item.quantity_control_type +
+                              ' ±' +
+                              (item.quantity_variance_percent || 0) +
+                              '%'
+                            "
+                            class="p-0 border-0 bg-transparent cursor-pointer"
+                          >
+                            <ax-badge
+                              [type]="
+                                getControlTypeBadgeColor(
+                                  item.quantity_control_type
+                                )
+                              "
+                              variant="soft"
+                              size="sm"
+                            >
+                              Q:{{ item.quantity_control_type }}
+                            </ax-badge>
+                          </button>
+                        }
+                        @if (
+                          item.price_control_type &&
+                          item.price_control_type !== 'NONE'
+                        ) {
+                          <button
+                            type="button"
+                            (click)="
+                              openControlSettings(item);
+                              $event.stopPropagation()
+                            "
+                            [matTooltip]="
+                              'Price: ' +
+                              item.price_control_type +
+                              ' ±' +
+                              (item.price_variance_percent || 0) +
+                              '%'
+                            "
+                            class="p-0 border-0 bg-transparent cursor-pointer"
+                          >
+                            <ax-badge
+                              [type]="
+                                getControlTypeBadgeColor(
+                                  item.price_control_type
+                                )
+                              "
+                              variant="soft"
+                              size="sm"
+                            >
+                              P:{{ item.price_control_type }}
+                            </ax-badge>
+                          </button>
+                        }
+                        @if (
+                          (!item.quantity_control_type &&
+                            !item.price_control_type) ||
+                          (item.quantity_control_type === 'NONE' &&
+                            item.price_control_type === 'NONE')
+                        ) {
+                          <button
+                            type="button"
+                            (click)="
+                              openControlSettings(item);
+                              $event.stopPropagation()
+                            "
+                            matTooltip="คลิกเพื่อตั้งค่าการควบคุมงบประมาณ"
+                            class="p-0 border-0 bg-transparent cursor-pointer"
+                          >
+                            <ax-badge type="info" variant="soft" size="sm">
+                              ตั้งค่า
+                            </ax-badge>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </ng-container>
+
                   <!-- Actions Column -->
                   <ng-container matColumnDef="actions">
                     <th
@@ -1193,6 +1304,26 @@ interface BudgetRequestItem {
           }
         }
       </div>
+
+      <!-- Item Settings Modal -->
+      @if (selectedItemForSettings()) {
+        <app-item-settings-modal
+          [itemId]="selectedItemForSettings()!.id"
+          [itemName]="selectedItemForSettings()!.generic_name || ''"
+          [currentSettings]="{
+            quantity_control_type:
+              selectedItemForSettings()!.quantity_control_type ?? null,
+            price_control_type:
+              selectedItemForSettings()!.price_control_type ?? null,
+            quantity_variance_percent:
+              selectedItemForSettings()!.quantity_variance_percent ?? null,
+            price_variance_percent:
+              selectedItemForSettings()!.price_variance_percent ?? null,
+          }"
+          (saved)="onSettingsSaved()"
+          (closed)="onSettingsClosed()"
+        />
+      }
     </div>
   `,
   styles: [
@@ -1364,6 +1495,23 @@ export class BudgetRequestDetailComponent implements OnInit {
   // Selection for bulk operations
   selectedItemIds = signal<Set<number>>(new Set());
 
+  // Item Settings Modal
+  selectedItemForSettings = signal<BudgetRequestItem | null>(null);
+  @ViewChild(ItemSettingsModalComponent)
+  itemSettingsModal?: ItemSettingsModalComponent;
+
+  constructor() {
+    // Effect to auto-open modal when item is selected
+    effect(() => {
+      const item = this.selectedItemForSettings();
+      if (item && this.itemSettingsModal) {
+        setTimeout(() => {
+          this.itemSettingsModal?.open();
+        }, 0);
+      }
+    });
+  }
+
   // Search
   searchTerm = '';
   searchField = 'all';
@@ -1398,6 +1546,7 @@ export class BudgetRequestDetailComponent implements OnInit {
     'q3_qty',
     'q4_qty',
     'requested_amount',
+    'control',
     'actions',
   ];
 
@@ -2495,5 +2644,43 @@ export class BudgetRequestDetailComponent implements OnInit {
     } finally {
       this.actionLoading.set(false);
     }
+  }
+
+  // ============================================================================
+  // Item Budget Control Settings Methods
+  // ============================================================================
+
+  getControlTypeBadgeColor(
+    controlType?: 'NONE' | 'SOFT' | 'HARD' | null,
+  ): BadgeType {
+    switch (controlType) {
+      case 'HARD':
+        return 'error';
+      case 'SOFT':
+        return 'warning';
+      case 'NONE':
+        return 'info';
+      default:
+        return 'info';
+    }
+  }
+
+  openControlSettings(item: BudgetRequestItem): void {
+    this.selectedItemForSettings.set(item);
+    // Modal will auto-open via effect when selectedItemForSettings changes
+  }
+
+  async onSettingsSaved(): Promise<void> {
+    // Clear selection
+    this.selectedItemForSettings.set(null);
+    // Reload items to get updated control settings
+    await this.loadItems();
+    this.snackBar.open('บันทึกการตั้งค่าควบคุมงบประมาณเรียบร้อย', 'ปิด', {
+      duration: 3000,
+    });
+  }
+
+  onSettingsClosed(): void {
+    this.selectedItemForSettings.set(null);
   }
 }
