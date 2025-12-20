@@ -252,24 +252,19 @@ interface RecommendedSetting {
                     </td>
                     <td class="control-cell">
                       <ax-badge
-                        [content]="
-                          rec.quantityControl +
-                          ' ±' +
-                          rec.quantityVariance +
-                          '%'
-                        "
                         [type]="getBadgeVariant(rec.quantityControl)"
                         size="sm"
-                      />
+                      >
+                        {{ rec.quantityControl }} ±{{ rec.quantityVariance }}%
+                      </ax-badge>
                     </td>
                     <td class="control-cell">
                       <ax-badge
-                        [content]="
-                          rec.priceControl + ' ±' + rec.priceVariance + '%'
-                        "
                         [type]="getBadgeVariant(rec.priceControl)"
                         size="sm"
-                      />
+                      >
+                        {{ rec.priceControl }} ±{{ rec.priceVariance }}%
+                      </ax-badge>
                     </td>
                     <td class="reason-cell">
                       <span class="reason-primary">{{ rec.reasonTh }}</span>
@@ -849,12 +844,14 @@ export class ItemSettingsModalComponent implements OnInit {
     this.isOpen.set(true);
   }
 
-  getBadgeVariant(controlType: string): 'success' | 'warn' | 'danger' | 'info' {
+  getBadgeVariant(
+    controlType: string,
+  ): 'success' | 'warning' | 'error' | 'info' {
     switch (controlType) {
       case 'HARD':
-        return 'danger';
+        return 'error';
       case 'SOFT':
-        return 'warn';
+        return 'warning';
       case 'NONE':
         return 'info';
       default:

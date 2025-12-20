@@ -13,27 +13,39 @@ import {
 import { ComponentToken } from '../../../../../../types/docs.types';
 
 // Type definitions (matching component interface)
+type AlertType =
+  | 'low-stock'
+  | 'out-of-stock'
+  | 'expiring'
+  | 'expired'
+  | 'overstock'
+  | 'reorder';
+type AlertSeverity = 'critical' | 'warning' | 'info';
+
 interface StockAlert {
   id: string;
-  type:
-    | 'out-of-stock'
-    | 'low-stock'
-    | 'expiring-soon'
-    | 'expired'
-    | 'reorder-point';
-  severity: 'critical' | 'warning' | 'info';
+  type: AlertType;
+  severity: AlertSeverity;
   product: {
     id: string;
     name: string;
     sku: string;
+    imageUrl?: string;
   };
   message: string;
-  currentStock?: number;
-  minStock?: number;
-  expiryDate?: Date;
   createdAt: Date;
-  read: boolean;
-  resolved: boolean;
+  metadata?: {
+    currentStock?: number;
+    minimumStock?: number;
+    maximumStock?: number;
+    expiryDate?: Date;
+    batchNumber?: string;
+    locationId?: string;
+    locationName?: string;
+  };
+  suggestedActions?: string[];
+  read?: boolean;
+  resolved?: boolean;
 }
 
 interface AlertActionEvent {
@@ -920,8 +932,11 @@ export class StockAlertPanelDocComponent {
         sku: 'PAR-650',
       },
       message: 'Product has expired',
-      expiryDate: new Date(Date.now() - 432000000),
       createdAt: new Date(Date.now() - 3600000),
+      metadata: {
+        expiryDate: new Date(Date.now() - 432000000),
+        batchNumber: 'BATCH-2023-099',
+      },
       read: false,
       resolved: false,
     },
@@ -939,15 +954,17 @@ export class StockAlertPanelDocComponent {
         sku: 'MASK-001',
       },
       message: 'Stock level below minimum threshold',
-      currentStock: 25,
-      minStock: 50,
       createdAt: new Date(Date.now() - 5400000),
+      metadata: {
+        currentStock: 25,
+        minimumStock: 50,
+      },
       read: false,
       resolved: false,
     },
     {
       id: '6',
-      type: 'expiring-soon',
+      type: 'expiring',
       severity: 'warning',
       product: {
         id: 'prod-006',
@@ -955,8 +972,11 @@ export class StockAlertPanelDocComponent {
         sku: 'ABX-001',
       },
       message: 'Product expiring in 7 days',
-      expiryDate: new Date(Date.now() + 604800000),
       createdAt: new Date(Date.now() - 7200000),
+      metadata: {
+        expiryDate: new Date(Date.now() + 604800000),
+        batchNumber: 'BATCH-2024-042',
+      },
       read: false,
       resolved: false,
     },
@@ -974,15 +994,17 @@ export class StockAlertPanelDocComponent {
         sku: 'SAN-500',
       },
       message: 'Stock level exceeds maximum capacity',
-      currentStock: 1200,
-      minStock: 1000,
       createdAt: new Date(Date.now() - 9000000),
+      metadata: {
+        currentStock: 1200,
+        maximumStock: 1000,
+      },
       read: false,
       resolved: false,
     },
     {
       id: '8',
-      type: 'reorder-point',
+      type: 'reorder',
       severity: 'info',
       product: {
         id: 'prod-008',
@@ -1052,7 +1074,7 @@ export class StockAlertPanelDocComponent {
     },
     {
       id: '12',
-      type: 'expiring-soon',
+      type: 'expiring',
       severity: 'warning',
       product: {
         id: 'prod-012',
@@ -1080,7 +1102,7 @@ export class StockAlertPanelDocComponent {
     },
     {
       id: '14',
-      type: 'reorder-point',
+      type: 'reorder',
       severity: 'info',
       product: {
         id: 'prod-014',

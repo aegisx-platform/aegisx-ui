@@ -1,0 +1,332 @@
+<div class="budget-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">Dashboard งบประมาณ</h2>
+    <div class="dashboard-meta">
+      <span class="fiscal-year">ปีงบประมาณ {{ fiscalYear() }}</span>
+      <mat-chip>ไตรมาส {{ currentQuarter() }}</mat-chip>
+    </div>
+  </div>
+
+  @if (summary()) {
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <mat-card class="summary-card total-card">
+        <mat-card-header>
+          <mat-icon>account_balance_wallet</mat-icon>
+          <mat-card-title>งบประมาณทั้งหมด</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="value">
+            {{ formatCurrency(summary()!.total_planned_amount) }}
+          </div>
+          <div class="subtitle">{{ summary()!.total_items }} รายการ</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card used-card">
+        <mat-card-header>
+          <mat-icon>trending_up</mat-icon>
+          <mat-card-title>ใช้ไปแล้ว</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="value">
+            {{ formatCurrency(summary()!.total_used_amount) }}
+          </div>
+          <div class="subtitle">
+            {{ formatPercent(summary()!.overall_usage_percent) }} ของทั้งหมด
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card remaining-card">
+        <mat-card-header>
+          <mat-icon>savings</mat-icon>
+          <mat-card-title>คงเหลือ</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="value">
+            {{ formatCurrency(summary()!.total_remaining_amount) }}
+          </div>
+          <div
+            class="subtitle"
+            [class.warning]="summary()!.overall_usage_percent >= 80"
+          >
+            {{ formatPercent(100 - summary()!.overall_usage_percent) }} พร้อมใช้
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card usage-card">
+        <mat-card-header>
+          <mat-icon>show_chart</mat-icon>
+          <mat-card-title>การใช้งาน</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="value">
+            {{ formatPercent(summary()!.overall_usage_percent) }}
+          </div>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="summary()!.overall_usage_percent"
+            [color]="
+              summary()!.overall_usage_percent >= 100
+                ? 'warn'
+                : summary()!.overall_usage_percent >= 80
+                  ? 'accent'
+                  : 'primary'
+            "
+          ></mat-progress-bar>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Control Type & Status Breakdown -->
+    <div class="breakdown-grid">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>ระดับการควบคุม</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="breakdown-items">
+            <div class="breakdown-item hard">
+              <mat-chip color="warn">HARD</mat-chip>
+              <span class="count">{{ controlTypeBreakdown().HARD }}</span>
+              <span class="label">ควบคุมเข้มงวด</span>
+            </div>
+            <div class="breakdown-item soft">
+              <mat-chip color="accent">SOFT</mat-chip>
+              <span class="count">{{ controlTypeBreakdown().SOFT }}</span>
+              <span class="label">เตือนเท่านั้น</span>
+            </div>
+            <div class="breakdown-item none">
+              <mat-chip>NONE</mat-chip>
+              <span class="count">{{ controlTypeBreakdown().NONE }}</span>
+              <span class="label">ไม่ควบคุม</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>สถานะงบประมาณ</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="breakdown-items">
+            <div class="breakdown-item normal">
+              <mat-icon color="primary">check_circle</mat-icon>
+              <span class="count">{{ statusBreakdown().normal }}</span>
+              <span class="label">ปกติ (&lt;80%)</span>
+            </div>
+            <div class="breakdown-item warning">
+              <mat-icon color="accent">warning</mat-icon>
+              <span class="count">{{ statusBreakdown().warning }}</span>
+              <span class="label">เตือน (80-99%)</span>
+            </div>
+            <div class="breakdown-item exceeded">
+              <mat-icon color="warn">error</mat-icon>
+              <span class="count">{{ statusBreakdown().exceeded }}</span>
+              <span class="label">เกิน (≥100%)</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Filters -->
+    <mat-card class="filters-card">
+      <mat-card-content>
+        <div class="filters-row">
+          <mat-form-field appearance="outline">
+            <mat-label>ระดับการควบคุม</mat-label>
+            <mat-select [(ngModel)]="controlTypeFilter">
+              <mat-option [value]="null">ทั้งหมด</mat-option>
+              <mat-option value="HARD">HARD</mat-option>
+              <mat-option value="SOFT">SOFT</mat-option>
+              <mat-option value="NONE">NONE</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>สถานะ</mat-label>
+            <mat-select [(ngModel)]="statusFilter">
+              <mat-option [value]="null">ทั้งหมด</mat-option>
+              <mat-option value="normal">ปกติ</mat-option>
+              <mat-option value="warning">เตือน</mat-option>
+              <mat-option value="exceeded">เกิน</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>ค้นหายา</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              [(ngModel)]="searchQuery"
+              placeholder="ชื่อยา, รหัส, ชื่อสามัญ..."
+            />
+          </mat-form-field>
+
+          <div class="filter-actions">
+            <button mat-stroked-button (click)="resetFilters()">
+              <mat-icon>filter_list_off</mat-icon>
+              ล้างตัวกรอง
+            </button>
+            <button mat-raised-button color="primary" (click)="exportToCSV()">
+              <mat-icon>download</mat-icon>
+              Export CSV
+            </button>
+          </div>
+        </div>
+        <div class="filter-results">
+          แสดง {{ filteredItems().length }} จาก {{ allItems().length }} รายการ
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Items Table -->
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>รายละเอียดรายการ</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-container">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>ยา</th>
+                <th>การควบคุม</th>
+                <th>ปริมาณ</th>
+                <th>งบประมาณ</th>
+                <th>สถานะ</th>
+                <th>PR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredItems(); track item.item_id) {
+                <tr [class]="'status-' + item.status">
+                  <td class="drug-cell">
+                    <div class="drug-name">{{ item.drug_name }}</div>
+                    @if (item.drug_code) {
+                      <div class="drug-code">{{ item.drug_code }}</div>
+                    }
+                    @if (item.generic_name) {
+                      <div class="generic-name">{{ item.generic_name }}</div>
+                    }
+                  </td>
+
+                  <td class="control-cell">
+                    @if (item.quantity_control_type !== 'NONE') {
+                      <mat-chip
+                        [color]="
+                          getControlTypeColor(item.quantity_control_type)
+                        "
+                        [matTooltip]="
+                          'ปริมาณ: ' +
+                          item.quantity_control_type +
+                          ' ±' +
+                          item.quantity_variance_percent +
+                          '%'
+                        "
+                      >
+                        Q:{{ item.quantity_control_type }}
+                      </mat-chip>
+                    }
+                    @if (item.price_control_type !== 'NONE') {
+                      <mat-chip
+                        [color]="getControlTypeColor(item.price_control_type)"
+                        [matTooltip]="
+                          'ราคา: ' +
+                          item.price_control_type +
+                          ' ±' +
+                          item.price_variance_percent +
+                          '%'
+                        "
+                      >
+                        P:{{ item.price_control_type }}
+                      </mat-chip>
+                    }
+                  </td>
+
+                  <td class="usage-cell">
+                    <div class="usage-text">
+                      {{ formatNumber(item.purchased_quantity) }} /
+                      {{ formatNumber(item.planned_quantity) }}
+                      <span class="usage-percent">{{
+                        formatPercent(item.quantity_usage_percent)
+                      }}</span>
+                    </div>
+                    <mat-progress-bar
+                      mode="determinate"
+                      [value]="item.quantity_usage_percent"
+                      [ngStyle]="{
+                        '--progress-color': getProgressColor(
+                          item.quantity_usage_percent
+                        ),
+                      }"
+                    ></mat-progress-bar>
+                  </td>
+
+                  <td class="usage-cell">
+                    <div class="usage-text">
+                      {{ formatCurrency(item.used_amount) }} /
+                      {{ formatCurrency(item.planned_amount) }}
+                      <span class="usage-percent">{{
+                        formatPercent(item.amount_usage_percent)
+                      }}</span>
+                    </div>
+                    <mat-progress-bar
+                      mode="determinate"
+                      [value]="item.amount_usage_percent"
+                      [ngStyle]="{
+                        '--progress-color': getProgressColor(
+                          item.amount_usage_percent
+                        ),
+                      }"
+                    ></mat-progress-bar>
+                  </td>
+
+                  <td class="status-cell">
+                    <mat-chip [color]="getStatusColor(item.status)">
+                      {{
+                        item.status === 'normal'
+                          ? 'ปกติ'
+                          : item.status === 'warning'
+                            ? 'เตือน'
+                            : 'เกิน'
+                      }}
+                    </mat-chip>
+                  </td>
+
+                  <td class="actions-cell">
+                    @if (item.related_pr_ids.length > 0) {
+                      <button
+                        mat-button
+                        color="primary"
+                        (click)="viewRelatedPR(item.related_pr_ids[0])"
+                      >
+                        PR ({{ item.related_pr_ids.length }})
+                      </button>
+                    } @else {
+                      <span class="no-prs">-</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr class="empty-row">
+                  <td colspan="6">
+                    <div class="empty-message">
+                      <mat-icon>inbox</mat-icon>
+                      <p>ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

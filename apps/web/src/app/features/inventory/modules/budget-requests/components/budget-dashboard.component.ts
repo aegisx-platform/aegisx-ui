@@ -4,14 +4,16 @@ import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 
-// AegisX UI Components
-import { AxCardComponent } from '@aegisx-starter-1/aegisx-ui';
-import { AxTableComponent } from '@aegisx-starter-1/aegisx-ui';
-import { AxProgressComponent } from '@aegisx-starter-1/aegisx-ui';
-import { AxBadgeComponent } from '@aegisx-starter-1/aegisx-ui';
-import { AxButtonComponent } from '@aegisx-starter-1/aegisx-ui';
-import { AxSelectComponent } from '@aegisx-starter-1/aegisx-ui';
-import { AxInputComponent } from '@aegisx-starter-1/aegisx-ui';
+// Angular Material
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 /**
  * Control type for budget items
@@ -81,20 +83,12 @@ interface BudgetItemsStatusResponse {
  * - Control type breakdown (HARD/SOFT/NONE item counts)
  * - Status breakdown (normal/warning/exceeded item counts)
  * - Filterable item table with dual progress bars
- * - Color-coded status badges
+ * - Color-coded status indicators
  *
  * @example
  * ```html
  * <app-budget-dashboard [budgetRequestId]="123" />
  * ```
- *
- * Features:
- * - Real-time filtering by control type and status
- * - Search by drug name
- * - Dual progress bars (quantity + amount)
- * - Color transitions based on usage (green → yellow → red)
- * - Virtual scrolling for performance with 1000+ items
- * - Responsive layout
  */
 @Component({
   selector: 'app-budget-dashboard',
@@ -102,13 +96,15 @@ interface BudgetItemsStatusResponse {
   imports: [
     CommonModule,
     FormsModule,
-    AxCardComponent,
-    AxTableComponent,
-    AxProgressComponent,
-    AxBadgeComponent,
-    AxButtonComponent,
-    AxSelectComponent,
-    AxInputComponent,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatInputModule,
+    MatTooltipModule,
   ],
   templateUrl: './budget-dashboard.component.html',
   styleUrls: ['./budget-dashboard.component.scss'],
@@ -117,118 +113,59 @@ export class BudgetDashboardComponent {
   private readonly http = inject(HttpClient);
 
   // === INPUTS ===
-
-  /**
-   * Budget request ID to display dashboard for
-   */
   readonly budgetRequestId = input.required<number>();
 
   // === SIGNALS ===
-
-  /**
-   * Control type filter (all types shown if null)
-   */
   readonly controlTypeFilter = signal<ControlType | null>(null);
-
-  /**
-   * Status filter (all statuses shown if null)
-   */
   readonly statusFilter = signal<ItemStatus | null>(null);
-
-  /**
-   * Search query for drug name filtering
-   */
   readonly searchQuery = signal<string>('');
-
-  /**
-   * Loading state
-   */
   readonly isLoading = signal<boolean>(true);
-
-  /**
-   * Error message if API call fails
-   */
   readonly errorMessage = signal<string | null>(null);
 
   // === DATA SIGNALS ===
-
-  /**
-   * Budget status data from API (reactive signal from HTTP observable)
-   */
-  readonly budgetData = toSignal<BudgetItemsStatusResponse | null>(
+  readonly budgetData = toSignal(
     this.http.get<{ success: boolean; data: BudgetItemsStatusResponse }>(
       `/api/inventory/budget/budget-requests/${this.budgetRequestId()}/items-status`,
     ),
-    {
-      initialValue: null,
-    },
+    { initialValue: null },
   );
 
-  /**
-   * All budget items (unwrapped from API response)
-   */
   readonly allItems = computed<BudgetItemStatus[]>(() => {
     const data = this.budgetData();
-    if (!data || !data.success) {
-      return [];
-    }
+    if (!data || !data.success) return [];
     return data.data.items;
   });
 
-  /**
-   * Budget summary statistics
-   */
   readonly summary = computed<BudgetSummary | null>(() => {
     const data = this.budgetData();
-    if (!data || !data.success) {
-      return null;
-    }
+    if (!data || !data.success) return null;
     return data.data.summary;
   });
 
-  /**
-   * Fiscal year
-   */
   readonly fiscalYear = computed<number>(() => {
     const data = this.budgetData();
-    if (!data || !data.success) {
-      return 0;
-    }
-    return data.data.fiscal_year;
+    return data?.data?.fiscal_year || 0;
   });
 
-  /**
-   * Current quarter (1-4)
-   */
   readonly currentQuarter = computed<number>(() => {
     const data = this.budgetData();
-    if (!data || !data.success) {
-      return 0;
-    }
-    return data.data.current_quarter;
+    return data?.data?.current_quarter || 0;
   });
 
-  // === COMPUTED SIGNALS (FILTERING & CALCULATIONS) ===
-
-  /**
-   * Filtered items based on control type, status, and search query
-   */
+  // === COMPUTED SIGNALS ===
   readonly filteredItems = computed<BudgetItemStatus[]>(() => {
     let items = this.allItems();
 
-    // Filter by control type
     const controlType = this.controlTypeFilter();
     if (controlType) {
       items = items.filter((item) => item.control_type === controlType);
     }
 
-    // Filter by status
     const status = this.statusFilter();
     if (status) {
       items = items.filter((item) => item.status === status);
     }
 
-    // Filter by search query (drug name or code)
     const query = this.searchQuery().toLowerCase().trim();
     if (query) {
       items = items.filter(
@@ -243,9 +180,6 @@ export class BudgetDashboardComponent {
     return items;
   });
 
-  /**
-   * Control type breakdown (HARD/SOFT/NONE item counts)
-   */
   readonly controlTypeBreakdown = computed(() => {
     const items = this.allItems();
     return {
@@ -255,9 +189,6 @@ export class BudgetDashboardComponent {
     };
   });
 
-  /**
-   * Status breakdown (normal/warning/exceeded item counts)
-   */
   readonly statusBreakdown = computed(() => {
     const items = this.allItems();
     return {
@@ -268,99 +199,56 @@ export class BudgetDashboardComponent {
   });
 
   // === METHODS ===
-
-  /**
-   * Get badge color for control type
-   */
-  getControlTypeBadgeColor(
-    controlType: ControlType,
-  ): 'error' | 'warning' | 'info' {
-    switch (controlType) {
-      case 'HARD':
-        return 'error';
-      case 'SOFT':
-        return 'warning';
-      case 'NONE':
-        return 'info';
-    }
+  getControlTypeColor(controlType: ControlType): string {
+    return controlType === 'HARD'
+      ? 'warn'
+      : controlType === 'SOFT'
+        ? 'accent'
+        : 'primary';
   }
 
-  /**
-   * Get badge color for status
-   */
-  getStatusBadgeColor(status: ItemStatus): 'error' | 'warning' | 'success' {
-    switch (status) {
-      case 'exceeded':
-        return 'error';
-      case 'warning':
-        return 'warning';
-      case 'normal':
-        return 'success';
-    }
+  getStatusColor(status: ItemStatus): string {
+    return status === 'exceeded'
+      ? 'warn'
+      : status === 'warning'
+        ? 'accent'
+        : 'primary';
   }
 
-  /**
-   * Get progress bar color based on usage percentage
-   * - Green: < 80%
-   * - Yellow: 80-99%
-   * - Red: >= 100%
-   */
   getProgressColor(usagePercent: number): string {
-    if (usagePercent >= 100) {
-      return '#ef4444'; // Red
-    } else if (usagePercent >= 80) {
-      return '#f59e0b'; // Yellow
-    } else {
-      return '#10b981'; // Green
-    }
+    if (usagePercent >= 100) return '#ef4444';
+    else if (usagePercent >= 80) return '#f59e0b';
+    else return '#10b981';
   }
 
-  /**
-   * Format number with thousand separators and 2 decimal places
-   */
   formatNumber(value: number): string {
-    return value.toLocaleString('en-US', {
+    return value.toLocaleString('th-TH', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
   }
 
-  /**
-   * Format currency (THB)
-   */
   formatCurrency(value: number): string {
     return `฿${this.formatNumber(value)}`;
   }
 
-  /**
-   * Format percentage with 2 decimal places
-   */
   formatPercent(value: number): string {
     return `${value.toFixed(2)}%`;
   }
 
-  /**
-   * Reset all filters
-   */
   resetFilters(): void {
     this.controlTypeFilter.set(null);
     this.statusFilter.set(null);
     this.searchQuery.set('');
   }
 
-  /**
-   * Export filtered data to CSV (placeholder)
-   */
   exportToCSV(): void {
+    // TODO: Implement CSV export
     console.log('Export to CSV:', this.filteredItems());
-    // TODO: Implement CSV export functionality
   }
 
-  /**
-   * Navigate to related PR (placeholder)
-   */
   viewRelatedPR(prId: number): void {
+    // TODO: Navigate to PR detail
     console.log('View PR:', prId);
-    // TODO: Implement navigation to PR detail page
   }
 }
