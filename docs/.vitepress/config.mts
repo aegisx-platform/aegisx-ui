@@ -193,11 +193,36 @@ export default defineConfig({
           ],
         },
         {
+          text: 'Reports',
+          items: [
+            {
+              text: 'Reports Overview',
+              link: '/guides/reports/README',
+            },
+            {
+              text: 'PDF Charts Quick Start',
+              link: '/guides/reports/pdf-charts-quick-start',
+            },
+            {
+              text: 'PDF Charts Guide',
+              link: '/guides/reports/pdf-charts-guide',
+            },
+            {
+              text: 'PDF Template Charts Integration',
+              link: '/guides/reports/pdf-template-charts-integration',
+            },
+          ],
+        },
+        {
           text: 'Migrations',
           items: [
             {
               text: 'User Department Integration',
               link: '/guides/migrations/user-department-integration',
+            },
+            {
+              text: 'PDF Templates Migration',
+              link: '/migrations/pdf-templates-migration-improvement',
             },
           ],
         },

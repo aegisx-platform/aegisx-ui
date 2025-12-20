@@ -11,6 +11,20 @@ Comprehensive guides for generating reports, exporting data, and creating visual
 
 ## Available Guides
 
+### ⚡ [PDF Charts Quick Start](./pdf-charts-quick-start.md)
+
+Get started with PDF charts in 5 minutes! Perfect for developers who want to quickly add charts to their reports.
+
+- 3-step quick start guide
+- All chart types with examples
+- Basic configuration
+- Common use cases
+- Quick troubleshooting
+
+**Recommended for**: First-time users, quick reference
+
+---
+
 ### 📊 [PDF Charts Guide](./pdf-charts-guide.md)
 
 Complete guide for adding visual analytics to PDF reports using charts. Learn how to:
@@ -28,6 +42,22 @@ Complete guide for adding visual analytics to PDF reports using charts. Learn ho
 - Inventory-specific examples
 - Performance optimization
 - Troubleshooting common issues
+
+**Recommended for**: In-depth understanding, best practices
+
+---
+
+### 🔧 [PDF Template Charts Integration](./pdf-template-charts-integration.md)
+
+Comprehensive integration guide for using charts within the PDF template system.
+
+- Architecture and data flow
+- Direct PDFMakeService approach
+- Template System approach
+- Multiple chart examples
+- Best practices and patterns
+
+**Recommended for**: Template customization, advanced integration
 
 ## Common Use Cases
 
@@ -94,9 +124,20 @@ const alertReport = await pdfService.generatePdf({
 
 ## Quick Links
 
+### Guides
+
+- **[PDF Charts Quick Start](./pdf-charts-quick-start.md)** - 5-minute quick start
 - **[PDF Charts Guide](./pdf-charts-guide.md)** - Comprehensive chart usage guide
-- **[Chart Generation API](../../reference/api/chart-generation-api.md)** - API reference (if exists)
-- **[PDF Export API](../../reference/api/pdf-export-api.md)** - API reference (if exists)
+- **[PDF Template Charts Integration](./pdf-template-charts-integration.md)** - Template integration guide
+
+### API Reference
+
+- **[Chart Generation API](../../reference/api/chart-generation-api.md)** - Chart service API
+- **[PDF Export API](../../reference/api/pdf-export-api.md)** - PDF export API
+
+### Migration & Setup
+
+- **[PDF Templates Migration](../../migrations/pdf-templates-migration-improvement.md)** - Template migration guide
 
 ## Related Documentation
 

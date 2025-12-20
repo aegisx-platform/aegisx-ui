@@ -40,9 +40,36 @@ export { AxVariantSelectorComponent } from './variant-selector';
 
 // Stock Alert Panel Component
 export { AxStockAlertPanelComponent } from './stock-alert-panel';
+// NOTE: Stock Alert Panel types are NOT re-exported here to avoid conflicts
+// with shared inventory.types (StockAlert interface). Import them directly from:
+// '@aegisx/ui/lib/components/inventory/stock-alert-panel'
 
 // Transfer Wizard Component
 export { AxTransferWizardComponent } from './transfer-wizard';
 
 // Location Picker Component
 export { AxLocationPickerComponent } from './location-picker';
+// Re-export Location Picker types to resolve naming conflicts with inventory.types
+// These override the shared types when imported from this module
+export type {
+  LocationNode,
+  FlatLocationNode,
+  LocationSelection,
+  LocationFilter,
+  LocationSearchMatch,
+  LocationSelectionState,
+  RecentLocation,
+  FavoriteLocation,
+  LocationPickerConfig,
+  LocationSelectEvent,
+  FavoriteToggleEvent,
+  NodeExpandEvent,
+  LocationTreeStats,
+  LocationBreadcrumbItem,
+} from './location-picker';
+export {
+  LocationType,
+  LocationStatus,
+  SelectionMode,
+  DEFAULT_LOCATION_PICKER_CONFIG,
+} from './location-picker';

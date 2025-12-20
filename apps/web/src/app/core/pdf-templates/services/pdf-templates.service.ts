@@ -23,7 +23,7 @@ const API_BASE_URL = '';
 })
 export class PdfTemplateService {
   private http = inject(HttpClient);
-  private baseUrl = `${API_BASE_URL}/pdf-templates`; // Plural to match backend
+  private baseUrl = `${API_BASE_URL}/v1/platform/pdf/templates`;
 
   // ===== SIGNALS FOR STATE MANAGEMENT =====
 

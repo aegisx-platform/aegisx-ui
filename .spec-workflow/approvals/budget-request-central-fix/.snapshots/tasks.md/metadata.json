@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/budget-request-central-fix/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-17T16:22:21.568Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765988541488_unuh5xqf4",
+      "approvalTitle": "Budget Request Central Fix - Tasks Document (Reformatted)"
+    }
+  ]
+}

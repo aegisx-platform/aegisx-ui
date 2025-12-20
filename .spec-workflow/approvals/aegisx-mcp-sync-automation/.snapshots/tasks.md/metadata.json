@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/aegisx-mcp-sync-automation/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-19T15:21:13.097Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766157672786_cxo1wq8ha",
+      "approvalTitle": "Tasks: AegisX MCP Sync Automation"
+    }
+  ]
+}

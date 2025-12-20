@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/item-level-budget-control/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-19T04:16:36.666Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766117796592_nbkl5djbv",
+      "approvalTitle": "Tasks - Item-Level Budget Control"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/inventory-ui-components-p2/design.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-18T23:40:12.419Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766101212343_vsfup8bzp",
+      "approvalTitle": "Design Document - Inventory UI Components (Priority 2)"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+// Smooth transitions for card interactions
+ax-card {
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Delete button styling
+.text-red-600 {
+  color: #dc2626;
+
+  &:hover {
+    background-color: rgba(220, 38, 38, 0.1);
+  }
+}
+
+// Dark mode support for delete button
+:host-context(.dark) {
+  .text-red-600 {
+    color: #f87171;
+  }
+}

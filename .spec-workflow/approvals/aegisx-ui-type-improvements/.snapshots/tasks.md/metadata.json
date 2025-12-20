@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/aegisx-ui-type-improvements/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-17T15:47:22.640Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765986442626_83vy8e4k2",
+      "approvalTitle": "AegisX UI Type System Implementation Tasks"
+    }
+  ]
+}

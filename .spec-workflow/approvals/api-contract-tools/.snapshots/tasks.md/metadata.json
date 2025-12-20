@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/api-contract-tools/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-20T01:40:12.661Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766194812166_n62k0fez0",
+      "approvalTitle": "Tasks Document - API Contract Tools"
+    }
+  ]
+}

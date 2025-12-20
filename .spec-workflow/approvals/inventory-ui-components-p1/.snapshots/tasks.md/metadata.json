@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/inventory-ui-components-p1/tasks.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-18T16:53:07.556Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766076787511_cty0rh3u7",
+      "approvalTitle": "Tasks Document - Inventory UI Components (Priority 1)"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ export type {
   FavoriteToggleEvent,
   NodeExpandEvent,
   LocationTreeStats,
-  BreadcrumbItem,
+  BreadcrumbItem as LocationBreadcrumbItem,
 } from './ax-location-picker.component.types';
 
 // Enums

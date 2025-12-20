@@ -1,0 +1,789 @@
+<div class="pdf-templates-list-container">
+  <!-- Header -->
+  <mat-toolbar color="primary" class="page-header">
+    <h1 class="page-title">Pdf Templates</h1>
+    <span class="spacer"></span>
+  </mat-toolbar>
+
+  <!-- Permission Error Banner -->
+  @if (pdfTemplatesService.permissionError()) {
+    <div
+      class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg"
+    >
+      <div class="flex items-start">
+        <mat-icon class="text-red-500 text-4xl mr-4 flex-shrink-0"
+          >lock</mat-icon
+        >
+        <div class="flex-1 min-w-0">
+          <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-1">
+            Access Denied
+          </h3>
+          <p class="text-sm text-red-700 dark:text-red-300">
+            You don't have permission to access or modify PDF Templates.
+            @if (pdfTemplatesService.lastErrorStatus() === 403) {
+              <span class="block mt-1 text-red-600 dark:text-red-400">
+                Please contact your administrator to request the necessary
+                permissions.
+              </span>
+            }
+          </p>
+        </div>
+        <button
+          mat-icon-button
+          (click)="pdfTemplatesService.clearPermissionError()"
+          class="flex-shrink-0"
+          matTooltip="Dismiss"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Search & Filters Section -->
+  <mat-card appearance="outlined" class="search-filters-card">
+    <mat-card-content>
+      <div class="search-filters-wrapper">
+        <!-- Search Field -->
+        <mat-form-field
+          subscriptSizing="dynamic"
+          appearance="outline"
+          class="search-field"
+        >
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearch($event)"
+            placeholder="Search by name, display name, category..."
+          />
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchTerm) {
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="clearSearch()"
+              matTooltip="Clear search"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <!-- Category Filter -->
+        <mat-form-field
+          subscriptSizing="dynamic"
+          appearance="outline"
+          class="filter-field"
+        >
+          <mat-label>Category</mat-label>
+          <mat-select
+            [(ngModel)]="selectedCategory"
+            (ngModelChange)="onCategoryFilterChange($event)"
+          >
+            <mat-option [value]="''">All Categories</mat-option>
+            <mat-option value="invoice">Invoice</mat-option>
+            <mat-option value="receipt">Receipt</mat-option>
+            <mat-option value="report">Report</mat-option>
+            <mat-option value="letter">Letter</mat-option>
+            <mat-option value="certificate">Certificate</mat-option>
+            <mat-option value="other">Other</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field
+          subscriptSizing="dynamic"
+          appearance="outline"
+          class="filter-field"
+        >
+          <mat-label>Status</mat-label>
+          <mat-select
+            [(ngModel)]="quickFilter"
+            (ngModelChange)="setQuickFilter($event)"
+          >
+            <mat-option value="all">All Status</mat-option>
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="inactive">Inactive</mat-option>
+            <mat-option value="starters">Template Starters</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button
+            mat-stroked-button
+            (click)="clearAllFilters()"
+            class="reset-btn"
+          >
+            <mat-icon>clear</mat-icon>
+            <span>Reset</span>
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="openCreateDialog()"
+            [disabled]="
+              pdfTemplatesService.loading() ||
+              pdfTemplatesService.permissionError()
+            "
+            [matTooltip]="
+              pdfTemplatesService.permissionError()
+                ? 'You do not have permission to create Pdf Templates'
+                : ''
+            "
+            class="add-btn"
+          >
+            <mat-icon>add</mat-icon>
+            Add Pdf Templates
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Active Filters -->
+  @if (getActiveFilterChips().length > 0) {
+    <div class="active-filters">
+      <span class="active-filters-label">Active Filters:</span>
+      <div class="filter-chips">
+        <mat-chip
+          *ngFor="let chip of getActiveFilterChips()"
+          (removed)="removeFilter(chip.key)"
+          class="filter-chip"
+          removable
+        >
+          <strong>{{ chip.label }}:</strong> {{ chip.value }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </div>
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="clearAllFilters()"
+        class="clear-all-btn"
+      >
+        <mat-icon>clear_all</mat-icon>
+        Clear All
+      </button>
+    </div>
+  }
+
+  <!-- Summary Dashboard -->
+  <mat-card appearance="outlined" class="summary-dashboard-card">
+    <mat-card-header>
+      <mat-card-title class="flex items-center gap-2">
+        <mat-icon>analytics</mat-icon>
+        <span>Template Statistics</span>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <!-- Total Templates -->
+        <ax-kpi-card
+          variant="accent"
+          size="md"
+          label="Total Templates"
+          [value]="pdfTemplatesService.totalPdfTemplate()"
+          accentColor="primary"
+          accentPosition="left"
+          [flat]="true"
+        ></ax-kpi-card>
+
+        <!-- Active Templates -->
+        <ax-kpi-card
+          variant="accent"
+          size="md"
+          label="Active Templates"
+          [value]="getActiveCount()"
+          accentColor="success"
+          accentPosition="left"
+          [hoverable]="true"
+          [clickable]="true"
+          [flat]="true"
+          (click)="setQuickFilter('active')"
+        ></ax-kpi-card>
+
+        <!-- Template Starters -->
+        <ax-kpi-card
+          variant="accent"
+          size="md"
+          label="Starter Templates"
+          [value]="getTemplateStartersCount()"
+          accentColor="warning"
+          accentPosition="left"
+          [hoverable]="true"
+          [clickable]="true"
+          [flat]="true"
+          (click)="setQuickFilter('starters')"
+        ></ax-kpi-card>
+
+        <!-- Total Usage -->
+        <ax-kpi-card
+          variant="accent"
+          size="md"
+          label="Total Usage"
+          [value]="getTotalUsageCount()"
+          accentColor="info"
+          accentPosition="left"
+          [flat]="true"
+        ></ax-kpi-card>
+      </div>
+
+      <!-- Additional Statistics -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Templates by Category -->
+        <ax-card variant="outlined" size="sm" [hoverable]="false">
+          <div class="flex items-center gap-2 mb-3">
+            <mat-icon color="primary">category</mat-icon>
+            <h3 class="text-base font-semibold m-0">By Category</h3>
+          </div>
+          <div class="flex flex-col gap-2">
+            @for (cat of getCategoryBreakdown(); track cat.category) {
+              <div
+                class="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                (click)="onCategoryFilterChange(cat.category)"
+              >
+                <span class="text-sm">{{ cat.label }}</span>
+                <ax-badge variant="soft" type="info" size="sm">
+                  {{ cat.count }}
+                </ax-badge>
+              </div>
+            }
+          </div>
+        </ax-card>
+
+        <!-- Most Used Template -->
+        <ax-card variant="outlined" size="sm" [hoverable]="false">
+          <div class="flex items-center gap-2 mb-3">
+            <mat-icon class="text-green-600">emoji_events</mat-icon>
+            <h3 class="text-base font-semibold m-0">Most Used</h3>
+          </div>
+          @if (getMostUsedTemplate(); as template) {
+            <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded">
+              <div class="font-semibold text-sm mb-1">
+                {{ template.display_name }}
+              </div>
+              <div class="text-xs text-gray-600 dark:text-gray-400">
+                {{ template.usage_count }} uses
+              </div>
+            </div>
+          } @else {
+            <div
+              class="text-center p-4 text-gray-500 dark:text-gray-400 text-sm"
+            >
+              No usage data
+            </div>
+          }
+        </ax-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  @if (pdfTemplatesService.loading()) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="60"
+        color="primary"
+      ></mat-progress-spinner>
+      <p class="mt-4 text-gray-600 dark:text-gray-400 text-lg">
+        Loading templates...
+      </p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (pdfTemplatesService.error()) {
+    <mat-card appearance="outlined" class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ pdfTemplatesService.error() }}</p>
+          <button mat-button color="primary" (click)="retry()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Data View (Table or Grid) -->
+  @if (!pdfTemplatesService.loading() && !pdfTemplatesService.error()) {
+    <mat-card appearance="outlined" class="table-card">
+      <mat-card-content>
+        <!-- View Toggle & Bulk Actions Header -->
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4"
+        >
+          <!-- View Toggle -->
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >View:</span
+            >
+            <div
+              class="flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden"
+            >
+              <button
+                [class.bg-primary-500]="viewMode() === 'grid'"
+                [class.text-white]="viewMode() === 'grid'"
+                [class.bg-white]="viewMode() !== 'grid'"
+                [class.dark:bg-gray-800]="viewMode() !== 'grid'"
+                class="px-3 py-1.5 flex items-center gap-1 transition-colors"
+                (click)="viewMode.set('grid')"
+                matTooltip="Grid View"
+              >
+                <mat-icon class="text-sm">grid_view</mat-icon>
+                <span class="text-sm">Grid</span>
+              </button>
+              <button
+                [class.bg-primary-500]="viewMode() === 'table'"
+                [class.text-white]="viewMode() === 'table'"
+                [class.bg-white]="viewMode() !== 'table'"
+                [class.dark:bg-gray-800]="viewMode() !== 'table'"
+                class="px-3 py-1.5 flex items-center gap-1 transition-colors border-l border-gray-300 dark:border-gray-600"
+                (click)="viewMode.set('table')"
+                matTooltip="Table View"
+              >
+                <mat-icon class="text-sm">view_list</mat-icon>
+                <span class="text-sm">Table</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Selection Info -->
+          @if (hasSelected()) {
+            <span
+              class="text-sm text-primary-600 dark:text-primary-400 font-medium"
+            >
+              {{ selectedItems().length }} template(s) selected
+            </span>
+          }
+        </div>
+
+        <!-- Bulk Actions -->
+        @if (hasSelected()) {
+          <div class="bulk-actions">
+            <span class="selection-info"
+              >{{ selectedItems().length }} selected</span
+            >
+            <div class="bulk-buttons">
+              <!-- Bulk Delete -->
+              <button
+                mat-stroked-button
+                color="warn"
+                (click)="bulkDelete()"
+                [disabled]="pdfTemplatesService.loading()"
+                matTooltip="Delete selected items"
+              >
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+
+              <!-- Bulk Status Update -->
+              <button
+                mat-stroked-button
+                [matMenuTriggerFor]="bulkStatusMenu"
+                [disabled]="pdfTemplatesService.loading()"
+                matTooltip="Update status for selected items"
+              >
+                <mat-icon>edit</mat-icon>
+                Update Status
+              </button>
+              <mat-menu #bulkStatusMenu="matMenu">
+                <button mat-menu-item (click)="bulkUpdateStatus('active')">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Set Active</span>
+                </button>
+                <button mat-menu-item (click)="bulkUpdateStatus('inactive')">
+                  <mat-icon>cancel</mat-icon>
+                  <span>Set Inactive</span>
+                </button>
+                <button mat-menu-item (click)="bulkUpdateStatus('published')">
+                  <mat-icon>publish</mat-icon>
+                  <span>Publish</span>
+                </button>
+                <button mat-menu-item (click)="bulkUpdateStatus('draft')">
+                  <mat-icon>draft</mat-icon>
+                  <span>Set Draft</span>
+                </button>
+              </mat-menu>
+
+              <!-- Clear Selection -->
+              <button mat-stroked-button (click)="clearSelection()">
+                <mat-icon>clear</mat-icon>
+                Clear Selection
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Card Grid View -->
+        @if (viewMode() === 'grid') {
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"
+          >
+            @for (
+              template of pdfTemplatesService.pdfTemplatesList();
+              track template.id
+            ) {
+              <app-template-card
+                [template]="template"
+                [selected]="isSelected(template.id)"
+                [disabled]="pdfTemplatesService.loading()"
+                (preview)="openPreviewDialog($event)"
+                (edit)="openEditDialog($event)"
+                (duplicate)="openDuplicateDialog($event)"
+                (delete)="deletePdfTemplate($event)"
+                (selectionChange)="toggleSelect(template.id)"
+              ></app-template-card>
+            }
+          </div>
+        }
+
+        <!-- Table View -->
+        @if (viewMode() === 'table') {
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="pdfTemplatesService.pdfTemplatesList()"
+              class="pdf-templates-table"
+            >
+              <!-- Selection Column -->
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox
+                    [checked]="isAllSelected()"
+                    [indeterminate]="hasSelected() && !isAllSelected()"
+                    (change)="toggleSelectAll()"
+                  ></mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <mat-checkbox
+                    [checked]="isSelected(pdfTemplates.id)"
+                    (change)="toggleSelect(pdfTemplates.id)"
+                  ></mat-checkbox>
+                </td>
+              </ng-container>
+
+              <!-- name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{ pdfTemplates.name || '-' }}</span>
+                </td>
+              </ng-container>
+
+              <!-- display_name Column -->
+              <ng-container matColumnDef="display_name">
+                <th mat-header-cell *matHeaderCellDef>Display_name</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <span class="text-cell">{{
+                      pdfTemplates.display_name || '-'
+                    }}</span>
+                    @if (pdfTemplates.is_template_starter) {
+                      <mat-icon
+                        class="template-starter-icon"
+                        matTooltip="Template Starter"
+                        color="accent"
+                      >
+                        stars
+                      </mat-icon>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- category Column -->
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef>Category</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.category || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- type Column -->
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{ pdfTemplates.type || '-' }}</span>
+                </td>
+              </ng-container>
+
+              <!-- template_data Column -->
+              <ng-container matColumnDef="template_data">
+                <th mat-header-cell *matHeaderCellDef>Template_data</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.template_data || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- sample_data Column -->
+              <ng-container matColumnDef="sample_data">
+                <th mat-header-cell *matHeaderCellDef>Sample_data</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.sample_data || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- schema Column -->
+              <ng-container matColumnDef="schema">
+                <th mat-header-cell *matHeaderCellDef>Schema</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.schema || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- page_size Column -->
+              <ng-container matColumnDef="page_size">
+                <th mat-header-cell *matHeaderCellDef>Page_size</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.page_size || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- orientation Column -->
+              <ng-container matColumnDef="orientation">
+                <th mat-header-cell *matHeaderCellDef>Orientation</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.orientation || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- styles Column -->
+              <ng-container matColumnDef="styles">
+                <th mat-header-cell *matHeaderCellDef>Styles</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.styles || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- fonts Column -->
+              <ng-container matColumnDef="fonts">
+                <th mat-header-cell *matHeaderCellDef>Fonts</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{ pdfTemplates.fonts || '-' }}</span>
+                </td>
+              </ng-container>
+
+              <!-- version Column -->
+              <ng-container matColumnDef="version">
+                <th mat-header-cell *matHeaderCellDef>Version</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.version || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- is_active Column -->
+              <ng-container matColumnDef="is_active">
+                <th mat-header-cell *matHeaderCellDef>Is_active</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <mat-icon
+                    [color]="pdfTemplates.is_active ? 'primary' : 'warn'"
+                    class="status-icon"
+                  >
+                    {{ pdfTemplates.is_active ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- is_default Column -->
+              <ng-container matColumnDef="is_default">
+                <th mat-header-cell *matHeaderCellDef>Is_default</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <mat-icon
+                    [color]="pdfTemplates.is_default ? 'primary' : 'warn'"
+                    class="status-icon"
+                  >
+                    {{ pdfTemplates.is_default ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- usage_count Column -->
+              <ng-container matColumnDef="usage_count">
+                <th mat-header-cell *matHeaderCellDef>Usage_count</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.usage_count || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- assets Column -->
+              <ng-container matColumnDef="assets">
+                <th mat-header-cell *matHeaderCellDef>Assets</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.assets || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- permissions Column -->
+              <ng-container matColumnDef="permissions">
+                <th mat-header-cell *matHeaderCellDef>Permissions</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.permissions || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- created_by Column -->
+              <ng-container matColumnDef="created_by">
+                <th mat-header-cell *matHeaderCellDef>Created_by</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.created_by || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- updated_by Column -->
+              <ng-container matColumnDef="updated_by">
+                <th mat-header-cell *matHeaderCellDef>Updated_by</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <span class="text-cell">{{
+                    pdfTemplates.updated_by || '-'
+                  }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Created Date Column -->
+              <ng-container matColumnDef="created_at">
+                <th mat-header-cell *matHeaderCellDef>Created</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  {{ pdfTemplates.created_at | date: 'short' }}
+                </td>
+              </ng-container>
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let pdfTemplates">
+                  <div class="action-buttons">
+                    <!-- Primary Action: Preview -->
+                    <button
+                      mat-icon-button
+                      (click)="openPreviewDialog(pdfTemplates)"
+                      matTooltip="Preview PDF"
+                      color="primary"
+                    >
+                      <mat-icon>preview</mat-icon>
+                    </button>
+
+                    <!-- More Actions Menu -->
+                    <button
+                      mat-icon-button
+                      [matMenuTriggerFor]="actionMenu"
+                      matTooltip="More Actions"
+                    >
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #actionMenu="matMenu">
+                      <button
+                        mat-menu-item
+                        (click)="openViewDialog(pdfTemplates)"
+                      >
+                        <mat-icon>visibility</mat-icon>
+                        <span>View Details</span>
+                      </button>
+                      <button
+                        mat-menu-item
+                        (click)="openEditDialog(pdfTemplates)"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        mat-menu-item
+                        (click)="openDuplicateDialog(pdfTemplates)"
+                      >
+                        <mat-icon>content_copy</mat-icon>
+                        <span>Duplicate</span>
+                      </button>
+                      <mat-divider></mat-divider>
+                      <button
+                        mat-menu-item
+                        (click)="deletePdfTemplate(pdfTemplates)"
+                        [disabled]="pdfTemplatesService.loading()"
+                        class="delete-action"
+                      >
+                        <mat-icon color="warn">delete</mat-icon>
+                        <span>Delete</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+
+        <!-- Empty State -->
+        @if (pdfTemplatesService.pdfTemplatesList().length === 0) {
+          <ax-empty-state
+            icon="description"
+            title="No Templates Found"
+            message="Get started by creating your first PDF template or choose from our starter templates."
+            [compact]="false"
+          >
+            <div class="flex flex-col sm:flex-row gap-3 mt-6 justify-center">
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="openCreateDialog()"
+                class="flex-1 sm:flex-initial"
+              >
+                <mat-icon>add</mat-icon>
+                Create New Template
+              </button>
+              <button
+                mat-stroked-button
+                (click)="setQuickFilter('starters')"
+                class="flex-1 sm:flex-initial"
+              >
+                <mat-icon>stars</mat-icon>
+                Browse Starter Templates
+              </button>
+            </div>
+          </ax-empty-state>
+        }
+
+        <!-- Pagination -->
+        @if (pdfTemplatesService.pdfTemplatesList().length > 0) {
+          <mat-paginator
+            [length]="pdfTemplatesService.totalPdfTemplate()"
+            [pageSize]="pdfTemplatesService.pageSize()"
+            [pageSizeOptions]="[5, 10, 25, 50, 100]"
+            [pageIndex]="pdfTemplatesService.currentPage() - 1"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+          ></mat-paginator>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

@@ -179,45 +179,47 @@ export interface StockAlert {
 }
 
 /**
- * Location type enum
- * Categorizes different types of storage locations
+ * @deprecated Use types from '@aegisx/ui/components/inventory/location-picker' instead
+ * Location type enum is now defined in location-picker component types
+ * with extended values: Warehouse, Zone, Aisle, Shelf, Bin
  */
-export enum LocationType {
-  Warehouse = 'warehouse',
-  Section = 'section',
-  Shelf = 'shelf',
-  Bin = 'bin',
-}
+// export enum LocationType {
+//   Warehouse = 'warehouse',
+//   Section = 'section',
+//   Shelf = 'shelf',
+//   Bin = 'bin',
+// }
 
 /**
- * Location node interface
- * Used by AxLocationPickerComponent for hierarchical location selection
+ * @deprecated Use types from '@aegisx/ui/components/inventory/location-picker' instead
+ * LocationNode is now defined in location-picker component types
+ * with additional properties: code, status, stockCount, etc.
  */
-export interface LocationNode {
-  /** Unique location identifier */
-  id: string;
-
-  /** Location name */
-  name: string;
-
-  /** Location type */
-  type: LocationType;
-
-  /** Parent location ID */
-  parentId?: string;
-
-  /** Child locations */
-  children?: LocationNode[];
-
-  /** Location capacity */
-  capacity?: number;
-
-  /** Current utilization */
-  utilization?: number;
-
-  /** Whether location is active */
-  isActive?: boolean;
-}
+// export interface LocationNode {
+//   /** Unique location identifier */
+//   id: string;
+//
+//   /** Location name */
+//   name: string;
+//
+//   /** Location type */
+//   type: LocationType;
+//
+//   /** Parent location ID */
+//   parentId?: string;
+//
+//   /** Child locations */
+//   children?: LocationNode[];
+//
+//   /** Location capacity */
+//   capacity?: number;
+//
+//   /** Current utilization */
+//   utilization?: number;
+//
+//   /** Whether location is active */
+//   isActive?: boolean;
+// }
 
 /**
  * Transfer item for stock transfers
@@ -329,24 +331,26 @@ export interface AlertPanelState {
 }
 
 /**
- * Location selection state
+ * @deprecated Use types from '@aegisx/ui/components/inventory/location-picker' instead
+ * LocationSelectionState is now defined in location-picker component types
  */
-export interface LocationSelectionState {
-  selectedLocation: LocationNode | null;
-  expandedLocations: string[];
-  availableLocations: LocationNode[];
-}
+// export interface LocationSelectionState {
+//   selectedLocation: LocationNode | null;
+//   expandedLocations: string[];
+//   availableLocations: LocationNode[];
+// }
 
 /**
- * Transfer wizard state
+ * @deprecated Use types from '@aegisx/ui/components/inventory/transfer-wizard' instead
+ * TransferWizardState is now defined in transfer-wizard component types
  */
-export interface TransferWizardState {
-  currentStep: number;
-  fromLocation: LocationNode | null;
-  toLocation: LocationNode | null;
-  selectedItems: TransferItem[];
-  isProcessing: boolean;
-}
+// export interface TransferWizardState {
+//   currentStep: number;
+//   fromLocation: LocationNode | null;
+//   toLocation: LocationNode | null;
+//   selectedItems: TransferItem[];
+//   isProcessing: boolean;
+// }
 
 // =============================================================================
 // EVENT TYPES

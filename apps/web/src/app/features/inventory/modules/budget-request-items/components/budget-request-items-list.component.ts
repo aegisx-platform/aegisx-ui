@@ -49,6 +49,7 @@ import {
   AxErrorStateComponent,
   AxDialogService,
   AxBadgeComponent,
+  BadgeType,
   BreadcrumbComponent,
   BreadcrumbItem,
 } from '@aegisx/ui';
@@ -902,9 +903,7 @@ export class BudgetRequestItemsListComponent {
   }
 
   // Helper method to get badge color based on control type
-  getControlTypeBadgeColor(
-    controlType?: string | null,
-  ): 'error' | 'warning' | 'info' {
+  getControlTypeBadgeColor(controlType?: string | null): BadgeType {
     switch (controlType) {
       case 'HARD':
         return 'error';

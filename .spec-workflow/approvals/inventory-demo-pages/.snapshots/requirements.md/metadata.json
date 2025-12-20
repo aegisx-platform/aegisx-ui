@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/inventory-demo-pages/requirements.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-19T13:34:44.421Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766151284292_h40p04oja",
+      "approvalTitle": "Requirements: Inventory Components Documentation Pages"
+    }
+  ]
+}
