@@ -12,7 +12,7 @@ import {
 } from '../../../../../../components/docs';
 import { ComponentToken } from '../../../../../../types/docs.types';
 
-// Type definitions (matching component interface)
+// Local type definitions matching @aegisx/ui stock-alert-panel types
 type AlertType =
   | 'low-stock'
   | 'out-of-stock'
@@ -20,6 +20,7 @@ type AlertType =
   | 'expired'
   | 'overstock'
   | 'reorder';
+
 type AlertSeverity = 'critical' | 'warning' | 'info';
 
 interface StockAlert {
@@ -50,7 +51,16 @@ interface StockAlert {
 
 interface AlertActionEvent {
   alert: StockAlert;
-  action: 'view' | 'resolve' | 'dismiss';
+  action:
+    | 'create-po'
+    | 'adjust-stock'
+    | 'view-product'
+    | 'dispose'
+    | 'reorder'
+    | 'dismiss'
+    | 'resolve'
+    | 'custom';
+  data?: any;
 }
 
 @Component({
