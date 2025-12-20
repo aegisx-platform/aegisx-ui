@@ -2,7 +2,7 @@
 
 ## Implementation Tasks
 
-- [-] 1. Create API contract parser types and interfaces
+- [x] 1. Create API contract parser types and interfaces
   - File: `libs/aegisx-mcp/src/data/api-contracts-parser.ts`
   - Define TypeScript interfaces for ApiEndpoint, ApiContract, ErrorResponse, and ValidationReport
   - Purpose: Establish type-safe data structures for API contract parsing
@@ -41,7 +41,7 @@
     - After completion: Use `log-implementation` tool to record implementation with detailed artifacts (interfaces created, file paths, code statistics)
     - After logging: Edit `.spec-workflow/specs/api-contract-tools/tasks.md` and change task 1 status from `[-]` to `[x]`
 
-- [ ] 2. Implement contract file discovery and reading
+- [x] 2. Implement contract file discovery and reading
   - File: `libs/aegisx-mcp/src/data/api-contracts-parser.ts` (continue)
   - Implement functions to find and read all api-contracts.md files from docs/features/
   - Add file caching to avoid re-reading on every request
@@ -81,7 +81,7 @@
     - After completion: Use `log-implementation` tool with detailed artifacts (functions created, caching strategy, file paths)
     - After logging: Edit `.spec-workflow/specs/api-contract-tools/tasks.md` and change task 2 status from `[-]` to `[x]`
 
-- [ ] 3. Implement markdown parsing for API contracts
+- [x] 3. Implement markdown parsing for API contracts
   - File: `libs/aegisx-mcp/src/data/api-contracts-parser.ts` (continue)
   - Parse markdown structure to extract endpoints, methods, paths, schemas, examples
   - Handle malformed markdown gracefully with fallback extraction
@@ -123,7 +123,7 @@
     - After completion: Use `log-implementation` tool with detailed artifacts (parsing functions, regex patterns used, edge cases handled)
     - After logging: Edit `.spec-workflow/specs/api-contract-tools/tasks.md` and change task 3 status from `[-]` to `[x]`
 
-- [ ] 4. Implement search and filter utilities
+- [x] 4. Implement search and filter utilities
   - File: `libs/aegisx-mcp/src/data/api-contracts-parser.ts` (continue)
   - Create functions for searching endpoints by query string
   - Add filtering by feature, method, path pattern
@@ -131,6 +131,7 @@
   - Purpose: Enable fast endpoint discovery for MCP tools
   - _Leverage: Array methods (filter, find, map), string matching_
   - _Requirements: 1.1, 1.2, 1.3_
+  - _Status: Completed - searchEndpoints(), filterByFeature(), and findEndpoint() implemented with case-insensitive search and relevance ranking_
   - \_Prompt: **Implement the task for spec api-contract-tools, first run spec-workflow-guide to get the workflow guide then implement the task:**
 
     **Role:** Backend Developer with expertise in search algorithms and data filtering
@@ -165,7 +166,7 @@
     - After completion: Use `log-implementation` tool with detailed artifacts (utility functions created, search algorithm details)
     - After logging: Edit `.spec-workflow/specs/api-contract-tools/tasks.md` and change task 4 status from `[-]` to `[x]`
 
-- [ ] 5. Create MCP tool handler with formatting functions
+- [x] 5. Create MCP tool handler with formatting functions
   - File: `libs/aegisx-mcp/src/tools/api-contracts.tool.ts` (new file)
   - Implement handleApiContractTool function with switch-case for each tool
   - Add formatting functions for brief/detail output
@@ -206,7 +207,7 @@
     - After completion: Use `log-implementation` tool with detailed artifacts (handler functions, formatting logic, integration with parser)
     - After logging: Edit `.spec-workflow/specs/api-contract-tools/tasks.md` and change task 5 status from `[-]` to `[x]`
 
-- [ ] 6. Implement validation logic for comparing docs vs code
+- [x] 6. Implement validation logic for comparing docs vs code
   - File: `libs/aegisx-mcp/src/data/api-contracts-parser.ts` (continue)
   - Add function to scan route files for implemented endpoints
   - Compare documented vs implemented endpoints
