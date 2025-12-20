@@ -7,6 +7,7 @@ import {
   HostListener,
   ViewChild,
   effect,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -1504,10 +1505,18 @@ export class BudgetRequestDetailComponent implements OnInit {
     // Effect to auto-open modal when item is selected
     effect(() => {
       const item = this.selectedItemForSettings();
-      if (item && this.itemSettingsModal) {
-        setTimeout(() => {
-          this.itemSettingsModal?.open();
-        }, 0);
+      if (item) {
+        // Use longer timeout to ensure ViewChild is ready
+        // and retry if not available
+        const tryOpen = (attempts = 0) => {
+          if (this.itemSettingsModal) {
+            this.itemSettingsModal.open();
+          } else if (attempts < 10) {
+            // Retry up to 10 times with 50ms intervals
+            setTimeout(() => tryOpen(attempts + 1), 50);
+          }
+        };
+        setTimeout(() => tryOpen(), 100);
       }
     });
   }
