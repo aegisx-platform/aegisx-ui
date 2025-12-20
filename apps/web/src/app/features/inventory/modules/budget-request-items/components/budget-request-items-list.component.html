@@ -516,4 +516,25 @@
       </mat-card>
     }
   </div>
+
+  <!-- Item Settings Modal -->
+  @if (selectedItemForSettings()) {
+    <app-item-settings-modal
+      [itemId]="selectedItemForSettings()!.id"
+      [itemName]="
+        selectedItemForSettings()!.drug_name ||
+        selectedItemForSettings()!.generic_name
+      "
+      [currentSettings]="{
+        quantity_control_type: selectedItemForSettings()!.quantity_control_type,
+        price_control_type: selectedItemForSettings()!.price_control_type,
+        quantity_variance_percent:
+          selectedItemForSettings()!.quantity_variance_percent,
+        price_variance_percent:
+          selectedItemForSettings()!.price_variance_percent,
+      }"
+      (saved)="onSettingsSaved()"
+      (closed)="onSettingsClosed()"
+    />
+  }
 </div>

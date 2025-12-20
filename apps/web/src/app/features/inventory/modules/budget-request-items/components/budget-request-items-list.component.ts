@@ -73,6 +73,7 @@ import {
 // Import child components
 import { BudgetRequestItemsListFiltersComponent } from './budget-request-items-list-filters.component';
 import { BudgetRequestItemsListHeaderComponent } from './budget-request-items-list-header.component';
+import { ItemSettingsModalComponent } from './item-settings-modal/item-settings-modal.component';
 
 @Component({
   selector: 'app-budget-request-items-list',
@@ -95,6 +96,7 @@ import { BudgetRequestItemsListHeaderComponent } from './budget-request-items-li
     // Child components
     BudgetRequestItemsListHeaderComponent,
     BudgetRequestItemsListFiltersComponent,
+    ItemSettingsModalComponent,
     // AegisX UI components
     AxCardComponent,
     AxEmptyStateComponent,
@@ -123,6 +125,10 @@ export class BudgetRequestItemsListComponent {
 
   // Event emitted when user clicks on control type badge to edit settings
   @Output() editControlSettings = new EventEmitter<number>();
+
+  // ViewChild for Item Settings Modal
+  @ViewChild(ItemSettingsModalComponent)
+  itemSettingsModal?: ItemSettingsModalComponent;
 
   // Breadcrumb configuration
   breadcrumbItems: BreadcrumbItem[] = [
@@ -165,6 +171,9 @@ export class BudgetRequestItemsListComponent {
       .budgetRequestItemsList()
       .filter((item) => this.selectedIdsSignal().has(item.id)),
   );
+
+  // Item Settings Modal signals
+  selectedItemForSettings = signal<BudgetRequestItem | null>(null);
 
   // --- Signals for sort, page, search ---
   sortState = signal<{ active: string; direction: SortDirection }>({
@@ -545,6 +554,17 @@ export class BudgetRequestItemsListComponent {
       if (this.paginator) {
         this.paginator.length =
           this.budgetRequestItemsService.totalBudgetRequestItem();
+      }
+    });
+
+    // Effect to automatically open modal when item is selected
+    effect(() => {
+      const item = this.selectedItemForSettings();
+      if (item && this.itemSettingsModal) {
+        // Delay to ensure modal is rendered
+        setTimeout(() => {
+          this.itemSettingsModal?.open();
+        }, 0);
       }
     });
   }
@@ -939,6 +959,33 @@ export class BudgetRequestItemsListComponent {
   // Method to handle control settings edit
   onEditControlSettings(itemId: number, event: Event): void {
     event.stopPropagation();
-    this.editControlSettings.emit(itemId);
+
+    // Find the item in the current list
+    const item = this.budgetRequestItemsService
+      .budgetRequestItemsList()
+      .find((i) => i.id === itemId);
+
+    if (item) {
+      this.selectedItemForSettings.set(item);
+    }
+  }
+
+  // Handle modal saved event
+  onSettingsSaved(): void {
+    // Clear selection and trigger reload
+    this.selectedItemForSettings.set(null);
+    this.reloadTrigger.update((n) => n + 1);
+    this.snackBar.open(
+      'Budget control settings updated successfully',
+      'Close',
+      {
+        duration: 3000,
+      },
+    );
+  }
+
+  // Handle modal closed event
+  onSettingsClosed(): void {
+    this.selectedItemForSettings.set(null);
   }
 }
