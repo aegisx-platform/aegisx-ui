@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkui_docs=self.webpackChunkui_docs||[]).push([[1655],{71655:(E,t,n)=>{n.r(t),n.d(t,{THEME_GENERATOR_ROUTES:()=>e});const e=[{path:"",loadComponent:()=>n.e(891).then(n.bind(n,60891)).then(o=>o.ThemeGeneratorPageComponent),title:"Theme Generator - AegisX"}]}}]);
