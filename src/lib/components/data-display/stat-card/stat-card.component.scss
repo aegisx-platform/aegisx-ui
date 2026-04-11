@@ -1,18 +1,21 @@
 // ============================================================================
 // Stat Card Component — Untitled UI Style
 // ============================================================================
-// Clean metric card: white bg, subtle border, colored dot indicator.
+// Clean metric card: white bg, subtle border, minimal indicator (dot or icon).
 // Ref: Untitled UI metric cards (untitledui.com)
 //
-// Design:
-//   - White bg, 1px border (zinc-200), rounded-xl (12px)
-//   - Header: label (left) + colored dot (right)
+// Layout (identical regardless of icon):
+//   - Header: label (left) + indicator (right) — indicator is dot OR icon-badge
 //   - Value: 24px semibold, tracking-tight
 //   - Subtitle: 12px muted
-//   - Active: brand border + brand-faint bg
-//   - Hover: border darkens slightly, subtle shadow
+//
+// Indicator variants:
+//   - No icon → colored dot (8px) — original minimal style
+//   - With icon → small icon badge (28px square) replacing the dot
+//
+// Active state (clickable + active): brand border + brand-faint bg + 1px ring
 
-// Color map — dot + active states
+// Color map — dot/badge + active states
 $colors: (
   'primary': (
     dot: var(--ax-brand-default, #6366f1),
@@ -72,7 +75,7 @@ $colors: (
 }
 
 // ----------------------------------------------------------------------------
-// Header (label + dot)
+// Header (label + indicator)
 // ----------------------------------------------------------------------------
 
 .ax-stat-card__header {
@@ -80,6 +83,8 @@ $colors: (
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  gap: 8px;
+  min-height: 28px; // reserves space so dot variant matches icon variant height
 }
 
 .ax-stat-card__label {
@@ -89,12 +94,37 @@ $colors: (
   letter-spacing: 0.01em;
 }
 
-// Colored dot indicator
+// Colored dot indicator (no-icon variant)
 .ax-stat-card__dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+// Icon badge indicator (icon variant) — 28px square, neutral by default
+.ax-stat-card__icon-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ax-background-muted, #fafafa);
+  border: 1px solid var(--ax-border-default, #e4e4e7);
+  color: var(--ax-text-subtle, #a1a1aa);
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -120,14 +150,23 @@ $colors: (
 // ----------------------------------------------------------------------------
 
 @each $name, $tokens in $colors {
+  // Dot is always colored
   .ax-stat-card__dot[data-color='#{$name}'] {
     background-color: map-get($tokens, dot);
   }
 
+  // Active card: brand border + tinted bg + 1px ring
   .ax-stat-card--active[data-color='#{$name}'] {
     border-color: map-get($tokens, active-border);
     background-color: map-get($tokens, active-bg);
     box-shadow: 0 0 0 1px map-get($tokens, active-border);
+  }
+
+  // Active card → tint icon badge
+  .ax-stat-card--active[data-color='#{$name}'] .ax-stat-card__icon-badge {
+    background-color: var(--ax-background-default, #ffffff);
+    border-color: map-get($tokens, active-border);
+    color: map-get($tokens, dot);
   }
 }
 

@@ -12,7 +12,13 @@
     @if (label) {
       <span class="ax-stat-card__label">{{ label }}</span>
     }
-    <span class="ax-stat-card__dot" [attr.data-color]="color"></span>
+    @if (icon) {
+      <div class="ax-stat-card__icon-badge" [attr.data-color]="color">
+        <mat-icon>{{ icon }}</mat-icon>
+      </div>
+    } @else {
+      <span class="ax-stat-card__dot" [attr.data-color]="color"></span>
+    }
   </div>
   <div class="ax-stat-card__value">{{ value }}</div>
   @if (subtitle) {
