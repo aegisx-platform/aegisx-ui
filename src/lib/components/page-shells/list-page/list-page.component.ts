@@ -4,58 +4,55 @@ import {
   computed,
   input,
 } from '@angular/core';
+import { AxPageShellComponent } from '../../layout/page-shell/page-shell.component';
 import { AxPageHeaderComponent } from '../../layout/page-header/page-header.component';
+import { BreadcrumbItem } from '../../navigation/breadcrumb/breadcrumb.types';
 
 /**
  * AxListPage — Standard list page shell (L1 archetype).
  *
  * Canonical layout for all CRUD list pages. Composes:
- * - Optional breadcrumb slot
- * - Header with title + subtitle + actions slot
- * - Optional stats strip slot (for KPI cards)
+ * - `<ax-page-shell>` as the base wrapper (min-h-screen + max-width +
+ *   consistent gap, matches every other page in the app)
+ * - `<ax-page-header>` for title + subtitle + action buttons
+ * - Optional stats strip slot for KPI cards
  * - Bordered surface containing:
  *   - Optional toolbar slot (search + filters)
  *   - Content area (default slot) with loading / error / empty states
  *   - Optional footer slot (pagination)
  *
  * Projection contracts (select by attribute):
- *   [ax-list-breadcrumb] — above the header
- *   [ax-list-actions]    — top-right action buttons (inside header)
+ *   [ax-list-actions]    — action buttons (top-right inside the header)
  *   [ax-list-stats]      — KPI strip (between header and surface)
  *   [ax-list-toolbar]    — search + filter bar (inside surface, top)
- *   [ax-list-loading]    — custom loading content (shown when loading=true)
- *   [ax-list-error]      — custom error content (shown when error=true)
- *   [ax-list-empty]      — custom empty content (shown when empty=true)
+ *   [ax-list-loading]    — custom loading content
+ *   [ax-list-error]      — custom error content
+ *   [ax-list-empty]      — custom empty content
  *   [ax-list-pagination] — pagination (inside surface, bottom)
  *   (default)            — the table / grid content
  *
  * @example
  * <ax-list-page
+ *   [breadcrumb]="breadcrumbItems"
  *   title="หมวดหมู่งบประมาณ"
  *   subtitle="จัดการหมวดหมู่งบประมาณของโรงพยาบาล"
  *   [loading]="loading()"
  *   [empty]="items().length === 0">
  *
- *   <ax-breadcrumb ax-list-breadcrumb [items]="crumbs" />
- *
- *   <div ax-list-actions>
+ *   <div ax-list-actions class="flex items-center gap-2">
  *     <button mat-stroked-button>Export</button>
  *     <button mat-flat-button color="primary">+ สร้างใหม่</button>
  *   </div>
  *
  *   <div ax-list-stats class="grid grid-cols-4 gap-4">
  *     <ax-stat-card ... />
- *     <ax-stat-card ... />
  *   </div>
  *
  *   <div ax-list-toolbar>
  *     <mat-form-field><input matInput placeholder="ค้นหา..." /></mat-form-field>
- *     <button mat-stroked-button>Filter</button>
  *   </div>
  *
  *   <table mat-table [dataSource]="dataSource">...</table>
- *
- *   <ax-empty-state ax-list-empty title="ยังไม่มีข้อมูล" />
  *
  *   <mat-paginator ax-list-pagination />
  * </ax-list-page>
@@ -64,25 +61,22 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
   selector: 'ax-list-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AxPageHeaderComponent],
+  imports: [AxPageShellComponent, AxPageHeaderComponent],
   template: `
-    <div class="ax-list-page">
-      <!-- Breadcrumb (optional slot, no wrapper) -->
-      <ng-content select="[ax-list-breadcrumb]"></ng-content>
+    <ax-page-shell [breadcrumb]="breadcrumb()">
+      <!-- Header slot: page header + optional stats strip -->
+      <div header>
+        @if (title()) {
+          <ax-page-header [title]="title()" [subtitle]="subtitle()">
+            <ng-content select="[ax-list-actions]"></ng-content>
+          </ax-page-header>
+        }
+        <ng-content select="[ax-list-stats]"></ng-content>
+      </div>
 
-      <!-- Header: compose ax-page-header (title + subtitle + actions) -->
-      @if (title()) {
-        <ax-page-header [title]="title()" [subtitle]="subtitle()">
-          <ng-content select="[ax-list-actions]"></ng-content>
-        </ax-page-header>
-      }
-
-      <!-- Stats strip (optional slot, no wrapper) -->
-      <ng-content select="[ax-list-stats]"></ng-content>
-
-      <!-- Main bordered surface -->
+      <!-- Main bordered surface (table card) -->
       <section class="ax-list-page__surface">
-        <!-- Toolbar (hidden if nothing projected) -->
+        <!-- Toolbar (auto-hide if nothing projected) -->
         <div class="ax-list-page__toolbar">
           <ng-content select="[ax-list-toolbar]"></ng-content>
         </div>
@@ -93,15 +87,15 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
           [class.ax-list-page__body--has-state]="showState()"
         >
           @if (loading()) {
-            <div class="ax-list-page__state ax-list-page__state--loading">
+            <div class="ax-list-page__state">
               <ng-content select="[ax-list-loading]"></ng-content>
             </div>
           } @else if (error()) {
-            <div class="ax-list-page__state ax-list-page__state--error">
+            <div class="ax-list-page__state">
               <ng-content select="[ax-list-error]"></ng-content>
             </div>
           } @else if (empty()) {
-            <div class="ax-list-page__state ax-list-page__state--empty">
+            <div class="ax-list-page__state">
               <ng-content select="[ax-list-empty]"></ng-content>
             </div>
           } @else {
@@ -109,12 +103,12 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
           }
         </div>
 
-        <!-- Footer / pagination (hidden if nothing projected) -->
+        <!-- Footer / pagination (auto-hide if nothing projected) -->
         <div class="ax-list-page__footer">
           <ng-content select="[ax-list-pagination]"></ng-content>
         </div>
       </section>
-    </div>
+    </ax-page-shell>
   `,
   styles: [
     `
@@ -122,16 +116,7 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
         display: block;
       }
 
-      .ax-list-page {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        padding: 24px;
-        max-width: 1600px;
-        margin: 0 auto;
-      }
-
-      /* Surface — bordered card, subtle (no shadow, relies on border) */
+      /* Surface — bordered card, subtle (no shadow, 1px border only) */
       .ax-list-page__surface {
         background: var(--ax-background-default, #ffffff);
         border: 1px solid var(--ax-border-default, #e4e4e7);
@@ -141,7 +126,7 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
         flex-direction: column;
       }
 
-      /* Toolbar ------------------------------------------------------ */
+      /* Toolbar */
       .ax-list-page__toolbar {
         padding: 14px 20px;
         border-bottom: 1px solid var(--ax-border-default, #e4e4e7);
@@ -157,15 +142,13 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
         display: none;
       }
 
-      /* Body --------------------------------------------------------- */
+      /* Body */
       .ax-list-page__body {
         position: relative;
         flex: 1 1 auto;
         min-width: 0;
       }
 
-      /* When a state (loading/empty/error) is visible, give the body
-         a min-height so the state is well-centered */
       .ax-list-page__body--has-state {
         min-height: 320px;
         display: flex;
@@ -184,7 +167,7 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
         font-size: 14px;
       }
 
-      /* Footer ------------------------------------------------------- */
+      /* Footer */
       .ax-list-page__footer {
         border-top: 1px solid var(--ax-border-default, #e4e4e7);
         background: var(--ax-background-default, #ffffff);
@@ -193,18 +176,13 @@ import { AxPageHeaderComponent } from '../../layout/page-header/page-header.comp
       .ax-list-page__footer:not(:has(*)) {
         display: none;
       }
-
-      /* Responsive --------------------------------------------------- */
-      @media (max-width: 768px) {
-        .ax-list-page {
-          padding: 16px;
-          gap: 16px;
-        }
-      }
     `,
   ],
 })
 export class AxListPageComponent {
+  /** Breadcrumb items — first item should be home icon only. */
+  readonly breadcrumb = input<BreadcrumbItem[]>([]);
+
   /** Page title shown in the header. */
   readonly title = input<string>('');
 
