@@ -49,6 +49,7 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
+        margin-bottom: 16px; /* space between page header and the next element (e.g., stat cards) */
       }
       .ax-page-header-title {
         font-size: 24px; /* text-2xl */
