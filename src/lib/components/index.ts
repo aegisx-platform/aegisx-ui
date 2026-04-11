@@ -17,9 +17,6 @@ export * from './navigation';
 // Layout Module
 export * from './layout';
 
-// Page Shells Module (L1-L7 page-level templates)
-export * from './page-shells';
-
 // =============================================================================
 // EXISTING COMPONENTS (Legacy - kept for backward compatibility)
 // =============================================================================
