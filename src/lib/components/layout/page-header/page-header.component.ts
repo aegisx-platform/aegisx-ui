@@ -49,20 +49,18 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        margin-bottom: 20px;
       }
       .ax-page-header-title {
-        font-size: 22px;
-        font-weight: 800;
+        font-size: 24px; /* text-2xl */
+        font-weight: 600; /* semibold */
         color: var(--ax-text-heading, #0f172a);
         margin: 0;
-        letter-spacing: -0.02em;
         line-height: 1.3;
       }
       .ax-page-header-subtitle {
-        font-size: 13px;
+        font-size: 14px; /* text-sm */
         color: var(--ax-text-secondary, #64748b);
-        margin: 2px 0 0;
+        margin: 4px 0 0;
         line-height: 1.4;
       }
       .ax-page-header-actions {
