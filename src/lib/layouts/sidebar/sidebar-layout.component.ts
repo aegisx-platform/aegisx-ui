@@ -69,12 +69,11 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
     AxLoadingBarComponent,
   ],
   template: `
+    <ax-loading-bar variant="primary" />
     <div
       class="ax-sidebar-layout"
       [class.ax-sidebar-layout--collapsed]="collapsed()"
     >
-      <ax-loading-bar variant="primary" />
-
       <!-- Sidebar -->
       <aside class="ax-sidebar" [attr.aria-label]="appName + ' navigation'">
         <!-- Brand -->
