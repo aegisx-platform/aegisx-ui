@@ -2,6 +2,7 @@
 export { AxCompactLayoutComponent } from './ax-compact/ax-compact-layout.component';
 export { EmptyLayoutComponent as AxEmptyLayoutComponent } from './empty/empty-layout.component';
 export { EnterpriseLayoutComponent as AxEnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
+export { AxSidebarLayoutComponent } from './sidebar/sidebar-layout.component';
 
 // Docs Layout (Shadcn/ui style)
 export * from './docs';
@@ -10,6 +11,7 @@ export * from './docs';
 export * from './ax-compact/ax-compact-layout.component';
 export * from './empty/empty-layout.component';
 export { EnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
+export * from './sidebar';
 
 // Enterprise Layout Theme Types
 export type {
