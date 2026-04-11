@@ -68,6 +68,19 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
         display: flex;
         gap: 8px;
         flex-shrink: 0;
+        align-items: center;
+      }
+      /* When a wrapper div is projected (e.g. ax-list-actions slot from
+         ax-list-page), propagate flex layout so buttons inside the
+         wrapper still get proper 8px spacing. Uses ::ng-deep to pierce
+         Angular's emulated view encapsulation since projected content
+         retains the originating component's attribute.
+         Target only DIVs — never buttons, to avoid breaking button
+         internal layout (icon + text). */
+      :host ::ng-deep .ax-page-header-actions > div {
+        display: flex;
+        gap: 8px;
+        align-items: center;
       }
     `,
   ],

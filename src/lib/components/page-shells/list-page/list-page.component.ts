@@ -4,6 +4,7 @@ import {
   computed,
   input,
 } from '@angular/core';
+import { AxPageHeaderComponent } from '../../layout/page-header/page-header.component';
 
 /**
  * AxListPage — Standard list page shell (L1 archetype).
@@ -63,25 +64,18 @@ import {
   selector: 'ax-list-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AxPageHeaderComponent],
   template: `
     <div class="ax-list-page">
       <!-- Breadcrumb (optional slot, no wrapper) -->
       <ng-content select="[ax-list-breadcrumb]"></ng-content>
 
-      <!-- Header: title + subtitle + actions -->
-      <header class="ax-list-page__header">
-        <div class="ax-list-page__header-text">
-          @if (title()) {
-            <h1 class="ax-list-page__title">{{ title() }}</h1>
-          }
-          @if (subtitle()) {
-            <p class="ax-list-page__subtitle">{{ subtitle() }}</p>
-          }
-        </div>
-        <div class="ax-list-page__header-actions">
+      <!-- Header: compose ax-page-header (title + subtitle + actions) -->
+      @if (title()) {
+        <ax-page-header [title]="title()" [subtitle]="subtitle()">
           <ng-content select="[ax-list-actions]"></ng-content>
-        </div>
-      </header>
+        </ax-page-header>
+      }
 
       <!-- Stats strip (optional slot, no wrapper) -->
       <ng-content select="[ax-list-stats]"></ng-content>
@@ -137,47 +131,7 @@ import {
         margin: 0 auto;
       }
 
-      /* Header ------------------------------------------------------- */
-      .ax-list-page__header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 16px;
-      }
-
-      .ax-list-page__header-text {
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-
-      .ax-list-page__title {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--ax-text-heading, #09090b);
-        margin: 0;
-        letter-spacing: -0.02em;
-        line-height: 1.3;
-      }
-
-      .ax-list-page__subtitle {
-        font-size: 13px;
-        color: var(--ax-text-secondary, #71717a);
-        margin: 4px 0 0;
-        line-height: 1.4;
-      }
-
-      .ax-list-page__header-actions {
-        display: flex;
-        gap: 8px;
-        flex-shrink: 0;
-        align-items: center;
-      }
-
-      .ax-list-page__header-actions:not(:has(*)) {
-        display: none;
-      }
-
-      /* Surface ------------------------------------------------------ */
+      /* Surface — bordered card, subtle (no shadow, relies on border) */
       .ax-list-page__surface {
         background: var(--ax-background-default, #ffffff);
         border: 1px solid var(--ax-border-default, #e4e4e7);
@@ -185,7 +139,6 @@ import {
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        box-shadow: var(--ax-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
       }
 
       /* Toolbar ------------------------------------------------------ */
@@ -246,19 +199,6 @@ import {
         .ax-list-page {
           padding: 16px;
           gap: 16px;
-        }
-
-        .ax-list-page__header {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .ax-list-page__header-actions {
-          flex-wrap: wrap;
-        }
-
-        .ax-list-page__title {
-          font-size: 20px;
         }
       }
     `,
