@@ -68,3 +68,20 @@ export * from './code-tabs/code-tabs.component';
 
 // Auth Components (Login, Register, Forgot Password, etc.)
 export * from './auth';
+
+// Loading Button Component (Material 3 with shimmer effect)
+export * from './loading-button';
+
+// =============================================================================
+// DOMAIN FEATURE COMPONENTS
+// These are domain-specific components bundled in @aegisx/ui for convenience.
+// They may be extracted to dedicated packages in a future major version.
+// =============================================================================
+
+// Inventory Components (pharmaceutical stock tracking, batch management, transfers)
+// Contains both generic (AxBarcodeScannerComponent, AxQuantityInputComponent,
+// AxExpiryBadgeComponent, AxLocationPickerComponent) and domain-specific
+// (AxTransferWizardComponent, AxStockAlertPanelComponent, AxBatchSelectorComponent,
+// AxVariantSelectorComponent, AxStockMovementTimelineComponent) components.
+// See libs/aegisx-ui/src/lib/components/inventory/index.ts for classification.
+export * from './inventory';

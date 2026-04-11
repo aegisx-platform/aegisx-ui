@@ -116,7 +116,7 @@
   margin-right: 0.75rem;
   color: currentColor;
   opacity: 0.7;
-  transition: all 150ms ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   svg {
     width: 100%;

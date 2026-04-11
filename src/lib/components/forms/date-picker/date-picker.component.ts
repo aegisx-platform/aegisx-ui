@@ -11,6 +11,7 @@ import {
   OnInit,
   SimpleChanges,
   ChangeDetectorRef,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -21,33 +22,20 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
-
-export type DatePickerSize = 'sm' | 'md';
-export type DatePickerLocale = 'en' | 'th';
-export type DatePickerCalendar = 'gregorian' | 'buddhist';
-export type DatePickerMonthFormat = 'full' | 'short';
-export type DatePickerDisplayMode = 'input' | 'inline';
-export type DatePickerMode = 'single' | 'range';
-
-/** Date range value for range mode */
-export interface DateRange {
-  start: Date | null;
-  end: Date | null;
-}
-
-interface CalendarDay {
-  date: Date;
-  day: number;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  isSelected: boolean;
-  isDisabled: boolean;
-  isFocused: boolean;
-  // Range mode properties
-  isRangeStart: boolean;
-  isRangeEnd: boolean;
-  isInRange: boolean;
-}
+import { A11yModule } from '@angular/cdk/a11y';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
+import type {
+  DatePickerSize,
+  DatePickerLocale,
+  DatePickerCalendar,
+  DatePickerMonthFormat,
+  DatePickerDisplayMode,
+  DatePickerMode,
+  DateRange,
+} from './date-picker.types';
+import { CalendarHeaderComponent } from './calendar-header.component';
+import { CalendarGridComponent } from './calendar-grid.component';
+import type { CalendarDay } from './calendar-grid.component';
 
 const THAI_MONTHS = [
   'มกราคม',
@@ -114,7 +102,7 @@ const ENGLISH_MONTHS_SHORT = [
 @Component({
   selector: 'ax-date-picker',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, A11yModule, CalendarHeaderComponent, CalendarGridComponent],
   templateUrl: './date-picker.component.html',
   styleUrls: ['./date-picker.component.scss'],
   providers: [
@@ -133,6 +121,9 @@ const ENGLISH_MONTHS_SHORT = [
 export class AxDatePickerComponent
   implements ControlValueAccessor, Validator, OnChanges, OnInit
 {
+  private static nextId = 0;
+  readonly messageId = `ax-date-picker-msg-${AxDatePickerComponent.nextId++}`;
+
   @Input() label = '';
   @Input() placeholder = 'Select date';
   @Input() disabled = false;
@@ -225,7 +216,12 @@ export class AxDatePickerComponent
     }
   }
 
+  /** Reference to the CdkTrapFocus directive on the dropdown */
+  @ViewChild(CdkTrapFocus) focusTrap?: CdkTrapFocus;
+
   private elementRef = inject(ElementRef);
+  /** Element that triggered the dropdown open, used to return focus on close */
+  private triggerElement: HTMLElement | null = null;
 
   private onChange = (_value: unknown) => {}; // eslint-disable-line @typescript-eslint/no-empty-function
   private onTouched = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
@@ -359,6 +355,8 @@ export class AxDatePickerComponent
     this.isOpen = !this.isOpen;
 
     if (this.isOpen) {
+      // Save trigger element for focus return on close
+      this.triggerElement = document.activeElement as HTMLElement;
       this.focused = true;
 
       // Initialize focused date for keyboard navigation
@@ -373,9 +371,10 @@ export class AxDatePickerComponent
 
       this.generateCalendar();
     } else if (wasOpen) {
-      // Closing dropdown - mark as touched
+      // Closing dropdown - mark as touched and return focus to trigger
       this.focused = false;
       this.onTouched();
+      this.returnFocusToTrigger();
     }
   }
 
@@ -398,6 +397,7 @@ export class AxDatePickerComponent
     if (this.displayMode !== 'inline') {
       this.isOpen = false;
       this.focused = false;
+      this.returnFocusToTrigger();
     }
 
     this.generateCalendar();
@@ -427,6 +427,7 @@ export class AxDatePickerComponent
       if (this.displayMode !== 'inline') {
         this.isOpen = false;
         this.focused = false;
+        this.returnFocusToTrigger();
       }
     }
 
@@ -474,6 +475,24 @@ export class AxDatePickerComponent
     this.generateCalendar();
   }
 
+  /** Dispatches header prev click to the correct handler based on viewMode */
+  onHeaderPrev(): void {
+    if (this.viewMode === 'year') {
+      this.previousYearRange();
+    } else {
+      this.previousMonth();
+    }
+  }
+
+  /** Dispatches header next click to the correct handler based on viewMode */
+  onHeaderNext(): void {
+    if (this.viewMode === 'year') {
+      this.nextYearRange();
+    } else {
+      this.nextMonth();
+    }
+  }
+
   clearValue(): void {
     if (this.mode === 'range') {
       this.rangeValue = { start: null, end: null };
@@ -507,6 +526,7 @@ export class AxDatePickerComponent
     if (this.displayMode !== 'inline') {
       this.isOpen = false;
       this.focused = false;
+      this.returnFocusToTrigger();
     }
 
     this.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -524,6 +544,7 @@ export class AxDatePickerComponent
       this.isOpen = false;
       this.focused = false;
       this.onTouched(); // Mark as touched when closing with Escape
+      this.returnFocusToTrigger();
     } else if (event.key === 'ArrowDown' && !this.isOpen) {
       event.preventDefault();
       this.toggleDropdown();
@@ -542,6 +563,7 @@ export class AxDatePickerComponent
       this.isOpen = false;
       this.focused = false;
       this.onTouched(); // Mark as touched when closing with Escape
+      this.returnFocusToTrigger();
       return;
     }
 
@@ -968,25 +990,6 @@ export class AxDatePickerComponent
     );
   }
 
-  getDateAriaLabel(date: Date): string {
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-
-    if (this.locale === 'th') {
-      const displayYear = this.calendar === 'buddhist' ? year + 543 : year;
-      const monthName = THAI_MONTHS[month];
-      return `${day} ${monthName} ${displayYear}`;
-    }
-
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event): void {
     // In inline mode, don't close on outside click
@@ -1000,6 +1003,8 @@ export class AxDatePickerComponent
       // Mark as touched when dropdown closes due to outside click
       if (wasOpen) {
         this.onTouched();
+        // Don't return focus on outside click - user clicked elsewhere intentionally
+        this.triggerElement = null;
       }
     }
   }
@@ -1087,6 +1092,14 @@ export class AxDatePickerComponent
     }
 
     return Object.keys(errors).length > 0 ? errors : null;
+  }
+
+  /** Return focus to the element that opened the dropdown */
+  private returnFocusToTrigger(): void {
+    if (this.triggerElement) {
+      this.triggerElement.focus();
+      this.triggerElement = null;
+    }
   }
 
   registerOnValidatorChange(fn: () => void): void {

@@ -28,12 +28,12 @@
 }
 
 .ax-sparkline__area {
-  transition: opacity 0.3s ease;
+  transition: opacity var(--ax-duration-normal, 250ms) var(--ax-easing-standard, ease);
 }
 
 .ax-sparkline__dot {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   &--visible {
     opacity: 1;

@@ -29,6 +29,7 @@ export interface LayoutOption {
       mat-icon-button
       [matMenuTriggerFor]="layoutMenu"
       [matTooltip]="'Switch Layout: ' + currentLayoutLabel()"
+      [attr.aria-label]="'Switch Layout: ' + currentLayoutLabel()"
     >
       <mat-icon>{{ currentLayoutIcon() }}</mat-icon>
     </button>

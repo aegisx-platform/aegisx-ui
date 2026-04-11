@@ -10,7 +10,7 @@ import {
   HostBinding,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -90,7 +90,6 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
     RouterLink,
     RouterLinkActive,
     MatToolbarModule,
@@ -144,11 +143,15 @@ import {
                       }"
                       class="ax-enterprise-nav-link"
                       [class.disabled]="item.disabled"
+                      [class.icon-only]="!item.title"
+                      [matTooltip]="!item.title ? item.tooltip || '' : ''"
                     >
                       @if (item.icon) {
                         <mat-icon>{{ item.icon }}</mat-icon>
                       }
-                      <span>{{ item.title }}</span>
+                      @if (item.title) {
+                        <span>{{ item.title }}</span>
+                      }
                       @if (item.badge) {
                         <span
                           class="ax-enterprise-badge"
@@ -164,11 +167,15 @@ import {
                       [matMenuTriggerFor]="navMenu"
                       class="ax-enterprise-nav-link"
                       [class.disabled]="item.disabled"
+                      [class.icon-only]="!item.title"
+                      [matTooltip]="!item.title ? item.tooltip || '' : ''"
                     >
                       @if (item.icon) {
                         <mat-icon>{{ item.icon }}</mat-icon>
                       }
-                      <span>{{ item.title }}</span>
+                      @if (item.title) {
+                        <span>{{ item.title }}</span>
+                      }
                       <mat-icon class="dropdown-arrow"
                         >arrow_drop_down</mat-icon
                       >
@@ -223,14 +230,16 @@ import {
                 <mat-icon>account_circle</mat-icon>
               </button>
               <mat-menu #defaultUserMenu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item (click)="profileClicked.emit()">
                   <mat-icon>person</mat-icon>
                   <span>Profile</span>
                 </button>
-                <button mat-menu-item>
-                  <mat-icon>settings</mat-icon>
-                  <span>Settings</span>
-                </button>
+                @if (showSettingsMenuItem) {
+                  <button mat-menu-item (click)="settingsClicked.emit()">
+                    <mat-icon>settings</mat-icon>
+                    <span>Settings</span>
+                  </button>
+                }
                 <mat-divider></mat-divider>
                 <button mat-menu-item (click)="logoutClicked.emit()">
                   <mat-icon>logout</mat-icon>
@@ -414,6 +423,19 @@ import {
           &.active {
             color: white;
             background: rgba(255, 255, 255, 0.15);
+            font-weight: 600;
+            position: relative;
+
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: -2px;
+              left: 0.5rem;
+              right: 0.5rem;
+              height: 2px;
+              background: var(--ax-brand-default, #6366f1);
+              border-radius: 1px;
+            }
           }
 
           .dropdown-arrow {
@@ -488,6 +510,19 @@ import {
           &.active {
             color: var(--ax-enterprise-header-text-hover);
             background: var(--ax-enterprise-header-active-bg);
+            font-weight: 600;
+            position: relative;
+
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: -2px;
+              left: 0.5rem;
+              right: 0.5rem;
+              height: 2px;
+              background: var(--ax-enterprise-primary, currentColor);
+              border-radius: 1px;
+            }
           }
 
           .dropdown-arrow {
@@ -607,6 +642,15 @@ import {
         }
       }
 
+      .ax-enterprise-nav-link.icon-only {
+        padding: 0.5rem;
+        min-width: unset;
+
+        mat-icon {
+          margin: 0;
+        }
+      }
+
       .ax-enterprise-nav-link {
         display: flex;
         align-items: center;
@@ -630,6 +674,19 @@ import {
         &.active {
           color: var(--ax-brand-default);
           background: var(--ax-brand-faint);
+          font-weight: 600;
+          position: relative;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0.5rem;
+            right: 0.5rem;
+            height: 2px;
+            background: var(--ax-brand-default);
+            border-radius: 1px;
+          }
         }
 
         &.disabled {
@@ -718,19 +775,17 @@ import {
         }
       }
 
-      /* Main Content */
+      /* Main Content — white like Tremor */
       .ax-enterprise-main {
         flex: 1;
         overflow-y: auto;
-        background: var(--ax-background-default);
-
-        &.bg-gray {
-          background: var(--ax-background-subtle);
-        }
+        background: #fff;
       }
 
       .ax-enterprise-content {
-        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
 
         &.contained {
           max-width: 1600px;
@@ -745,6 +800,22 @@ import {
         &.full-width {
           width: 100%;
           padding: 0;
+        }
+
+        // Utility: child pages can use .ax-full-bleed on :host to break out of contained padding
+        // Usage: :host { @extend .ax-full-bleed; } or add class="ax-full-bleed" to host element
+        ::ng-deep .ax-full-bleed {
+          margin-left: -1.5rem;
+          margin-right: -1.5rem;
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+
+          @media (min-width: 768px) {
+            margin-left: -2rem;
+            margin-right: -2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+          }
         }
       }
 
@@ -778,6 +849,7 @@ export class EnterpriseLayoutComponent {
   @Input() fullWidth = false;
   @Input() showSearch = true;
   @Input() showDefaultUserMenu = true;
+  @Input() showSettingsMenuItem = true;
   @Input() headerTheme: 'light' | 'dark' = 'light';
   @Input() contentBackground: 'white' | 'gray' = 'white';
 
@@ -796,6 +868,8 @@ export class EnterpriseLayoutComponent {
 
   // Events
   @Output() searchClicked = new EventEmitter<void>();
+  @Output() profileClicked = new EventEmitter<void>();
+  @Output() settingsClicked = new EventEmitter<void>();
   @Output() logoutClicked = new EventEmitter<void>();
 
   // Content Projections

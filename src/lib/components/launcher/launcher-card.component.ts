@@ -1,5 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -22,7 +22,6 @@ import {
     MatMenuModule,
     MatTooltipModule,
     MatDividerModule,
-    TitleCasePipe,
   ],
   template: `
     <div
@@ -56,28 +55,32 @@ import {
           "
         >
           <!-- Pin Button -->
-          <button
-            mat-icon-button
-            class="launcher-card__action-btn"
-            [class.launcher-card__action-btn--active]="isPinned()"
-            (click)="onPinClick($event)"
-            [matTooltip]="isPinned() ? 'Unpin' : 'Pin to top'"
-          >
-            <mat-icon>{{ isPinned() ? 'push_pin' : 'push_pin' }}</mat-icon>
-          </button>
+          @if (showPinButton()) {
+            <button
+              mat-icon-button
+              class="launcher-card__action-btn"
+              [class.launcher-card__action-btn--active]="isPinned()"
+              (click)="onPinClick($event)"
+              [matTooltip]="isPinned() ? 'Unpin' : 'Pin to top'"
+            >
+              <mat-icon>{{ isPinned() ? 'push_pin' : 'push_pin' }}</mat-icon>
+            </button>
+          }
 
           <!-- Favorite Button -->
-          <button
-            mat-icon-button
-            class="launcher-card__action-btn"
-            [class.launcher-card__action-btn--active]="isFavorite()"
-            (click)="onFavoriteClick($event)"
-            [matTooltip]="
-              isFavorite() ? 'Remove from favorites' : 'Add to favorites'
-            "
-          >
-            <mat-icon>{{ isFavorite() ? 'star' : 'star_border' }}</mat-icon>
-          </button>
+          @if (showFavoriteButton()) {
+            <button
+              mat-icon-button
+              class="launcher-card__action-btn"
+              [class.launcher-card__action-btn--active]="isFavorite()"
+              (click)="onFavoriteClick($event)"
+              [matTooltip]="
+                isFavorite() ? 'Remove from favorites' : 'Add to favorites'
+              "
+            >
+              <mat-icon>{{ isFavorite() ? 'star' : 'star_border' }}</mat-icon>
+            </button>
+          }
 
           <!-- Menu Button -->
           @if (menuActions().length > 0 && !isDisabled()) {
@@ -113,7 +116,7 @@ import {
       </div>
 
       <!-- Pinned Indicator -->
-      @if (isPinned()) {
+      @if (isPinned() && showPinButton()) {
         <span class="launcher-card__pinned-indicator" matTooltip="Pinned">
           <mat-icon>push_pin</mat-icon>
         </span>
@@ -165,17 +168,19 @@ import {
       flex-direction: column;
       padding: 1.25rem;
       border-radius: var(--ax-radius-xl, 16px);
-      min-height: 160px;
+      min-height: var(--launcher-card-min-height, 160px);
+      height: var(--launcher-card-height, auto);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
+      box-sizing: border-box;
     }
 
     .launcher-card:hover:not(.launcher-card--disabled):not(
         .launcher-card--maintenance
       ):not(.launcher-card--coming-soon) {
-      transform: translateY(-4px);
-      box-shadow: var(--ax-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+      transform: translateY(-2px);
+      box-shadow: var(--ax-shadow-lg, 0 12px 20px -4px rgba(0, 0, 0, 0.08));
     }
 
     .launcher-card:focus-visible {
@@ -205,7 +210,7 @@ import {
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
       .launcher-card__icon {
         background: #fbcfe8;
-        color: #be185d;
+        color: var(--ax-error-emphasis, #be185d);
       }
     }
 
@@ -217,7 +222,7 @@ import {
         0 1px 2px -1px rgba(0, 0, 0, 0.05);
       .launcher-card__icon {
         background: #fed7aa;
-        color: #c2410c;
+        color: var(--ax-warning-emphasis, #c2410c);
       }
     }
 
@@ -817,6 +822,14 @@ import {
       height: 100%;
     }
 
+    /* When inside gridster, fill the container */
+    :host-context(.gridster-item) {
+      .launcher-card {
+        height: 100%;
+        min-height: 100%;
+      }
+    }
+
     /* Edit Mode */
     .launcher-card--edit-mode {
       cursor: move;
@@ -835,6 +848,10 @@ export class AxLauncherCardComponent {
   isFavorite = input<boolean>(false);
   /** Whether app is pinned */
   isPinned = input<boolean>(false);
+  /** Whether to show pin button */
+  showPinButton = input<boolean>(true);
+  /** Whether to show favorite button */
+  showFavoriteButton = input<boolean>(true);
   /** Whether edit mode is active (for draggable grid) */
   isEditMode = input<boolean>(false);
 

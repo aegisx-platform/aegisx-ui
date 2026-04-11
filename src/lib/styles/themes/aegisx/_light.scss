@@ -1,3 +1,5 @@
+@use '../component-tokens' as ct;
+
 /* ============================================================
    AegisX Theme - Light Mode
    Zinc/Indigo color scheme inspired by Tailwind
@@ -124,4 +126,9 @@
   --ax-nav-hover: #{$aegisx-zinc-100};
   --ax-nav-active: #{$aegisx-indigo-50};
   --ax-nav-border: #{$aegisx-zinc-200};
+
+  // ===========================================
+  // COMPONENT TOKENS (Layer 3)
+  // ===========================================
+  @include ct.component-tokens-light;
 }

@@ -9,24 +9,22 @@
 // ===== Cards - Tremor Style (minimal elevation, subtle borders) =====
 @include mat.card-overrides(
   (
-    // Elevated/Raised card (default) - Has shadow, no border
+    // Elevated/Raised card (default) - Soft shadow, rounded
     elevated-container-color: var(--ax-background-default),
-    elevated-container-shape: var(--ax-radius-md),
-    elevated-container-elevation: var(--ax-shadow-md),
-    // มี shadow
+    elevated-container-shape: var(--ax-radius-lg),
+    elevated-container-elevation: var(--ax-shadow-xs),
+
     // Outlined card - Has border, NO shadow
     outlined-container-color: var(--ax-background-default),
-    outlined-container-shape: var(--ax-radius-md),
+    outlined-container-shape: var(--ax-radius-lg),
     outlined-outline-color: var(--ax-border-default),
     outlined-outline-width: 1px,
     outlined-container-elevation: none,
 
-    // ไม่มี shadow!
-    // Filled card - Has background fill, subtle shadow
+    // Filled card - Has background fill, minimal shadow
     filled-container-color: var(--ax-background-subtle),
-    // สีแตกต่าง
-    filled-container-shape: var(--ax-radius-md),
-    filled-container-elevation: var(--ax-shadow-sm)
+    filled-container-shape: var(--ax-radius-lg),
+    filled-container-elevation: var(--ax-shadow-xs)
   )
 );
 
@@ -56,11 +54,11 @@
 @include mat.button-overrides(
   (
     // Shape - Apply consistent border radius for all button types (subtle rounding)
-    filled-container-shape: var(--ax-radius-sm),
-    outlined-container-shape: var(--ax-radius-sm),
-    text-container-shape: var(--ax-radius-sm),
-    tonal-container-shape: var(--ax-radius-sm),
-    protected-container-shape: var(--ax-radius-sm)
+    filled-container-shape: var(--ax-radius-md),
+    outlined-container-shape: var(--ax-radius-md),
+    text-container-shape: var(--ax-radius-md),
+    tonal-container-shape: var(--ax-radius-md),
+    protected-container-shape: var(--ax-radius-md)
   )
 );
 
@@ -95,41 +93,54 @@
   )
 );
 
-// ===== Form Fields - Tremor Style (clean borders) =====
+// ===== Form Fields - Filled Appearance (AegisX Standard) =====
+@include mat.form-field-overrides(
+  (
+    // filled-container-color: uses M3 default (surface-container-highest) — adapts to page bg
+    filled-active-indicator-color: var(--ax-border-default, #e4e4e7),
+    filled-hover-active-indicator-color: var(--ax-border-emphasis, #a1a1aa),
+    filled-focus-active-indicator-color: var(--ax-brand-default),
+    filled-focus-active-indicator-height: 2px,
+    filled-error-active-indicator-color: var(--ax-error-default, #ef4444),
+    filled-error-focus-active-indicator-color: var(--ax-error-default, #ef4444),
+    filled-input-text-color: var(--ax-text-strong, #27272a),
+    filled-input-text-placeholder-color: var(--ax-text-subtle, #a1a1aa),
+    filled-label-text-color: var(--ax-text-subtle, #71717a),
+    filled-focus-label-text-color: var(--ax-brand-default),
+    filled-error-label-text-color: var(--ax-error-default, #ef4444),
+  )
+);
+
+// Outlined form fields — Tremor-style border color + 6px radius
 .mat-mdc-form-field {
-  // Outlined style
-  .mat-mdc-text-field-wrapper {
-    .mat-mdc-form-field-flex {
-      .mdc-notched-outline {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--ax-border-default) !important;
-        }
-      }
+  .mdc-notched-outline__leading {
+    border-radius: 6px 0 0 6px !important;
+  }
+  .mdc-notched-outline__trailing {
+    border-radius: 0 6px 6px 0 !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #d1d5db !important;
+    border-width: 1px !important;
+  }
+
+  &:hover:not(.mat-focused):not(.mat-form-field-disabled) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #9ca3af !important;
     }
   }
 
-  // Focus state
   &.mat-focused {
-    .mdc-notched-outline {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: var(--ax-brand-default) !important;
-        border-width: 2px !important;
-      }
-    }
-  }
-
-  // Error state
-  &.mat-form-field-invalid {
-    .mdc-notched-outline {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: var(--md-sys-color-error) !important;
-      }
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--ax-brand-default) !important;
+      border-width: 2px !important;
     }
   }
 }
@@ -148,90 +159,87 @@
   }
 }
 
-// ===== Tables - Minimal Clean Style =====
+// ===== Tables - Single Source of Truth =====
+// All mat-table styling lives HERE. Component SCSS should NOT override table styles.
+// Design standard:
+//   - Header: muted bg, 1px bottom border (emphasis), sticky
+//   - Rows: transparent bg, subtle hover, no zebra striping
+//   - Cells: comfortable padding, no vertical borders
+//   - Paginator: default bg, top border
+
 @include mat.table-overrides(
   (
-    // Background - Pure white/default (no gray backgrounds)
     background-color: transparent,
-    // Borders - Use theme variables
     row-item-outline-color: var(--ax-border-default),
     row-item-outline-width: 1px,
-    // Text colors - Use theme variables
     header-headline-color: var(--ax-text-strong),
     row-item-label-text-color: var(--ax-text-body)
   )
 );
 
-// Force override Material table CSS variables
 :root {
   --mat-table-row-item-outline-color: var(--ax-border-default) !important;
   --mat-table-background-color: transparent !important;
   --mat-table-row-item-outline-width: 1px !important;
 }
 
-// Additional table styling - Minimal Material Design (subtle hierarchy)
 .mat-mdc-table {
-  border-radius: 0;
-  overflow: auto;
+  border-radius: inherit;
+  overflow: hidden;
   border: none;
-  background: transparent !important;
-  box-shadow: none !important; // Remove elevation shadow
+  background: var(--ax-background-default, #ffffff) !important;
+  box-shadow: none !important;
 
-  // Header - Pure white with subtle border
+  // ---- Header (Untitled UI: muted text, subtle border) ----
   .mat-mdc-header-row {
-    background: transparent !important;
-    border-bottom: 1px solid var(--ax-border-default);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ax-background-muted, #fafafa) !important;
 
     .mat-mdc-header-cell {
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--ax-text-strong);
-      padding: 0.875rem 1rem;
+      font-weight: 500;
+      font-size: 0.75rem; // 12px — Untitled UI uses text-xs for table headers
+      color: var(--ax-text-secondary, #71717a); // muted, NOT dark
+      padding: 0.625rem 1rem; // slightly tighter
       text-align: left;
       background: transparent !important;
+      letter-spacing: 0.03em;
+      text-transform: none;
+      border-bottom: 1px solid var(--ax-border-default, #e4e4e7) !important; // subtle, not emphasis
+      border-right: none;
+      border-left: none;
     }
   }
 
-  // Rows - Pure white, NO backgrounds, NO hover
+  // ---- Rows (Untitled UI: clean, subtle dividers) ----
   .mat-mdc-row {
     background: transparent !important;
-    background-color: transparent !important;
-
-    // Force remove zebra striping
-    &:nth-child(odd),
-    &:nth-child(even) {
-      background: transparent !important;
-      background-color: transparent !important;
-    }
-
-    // Remove hover effect
-    &:hover {
-      background: transparent !important;
-      background-color: transparent !important;
-    }
-
-    .mat-mdc-cell {
-      padding: 1rem; // p-4
-      font-size: 0.875rem; // text-sm
-      color: var(--ax-text-body);
-      background: transparent !important;
-      background-color: transparent !important;
-    }
-  }
-
-  // Remove ALL vertical borders (Tremor uses divide-y only)
-  .mat-mdc-cell,
-  .mat-mdc-header-cell {
-    border-right: none;
-    border-left: none;
-  }
-
-  // Horizontal dividers between rows - Use theme variable
-  .mat-mdc-row {
+    transition: background-color 0.15s ease;
     border-bottom: 1px solid var(--ax-border-default);
 
     &:last-child {
       border-bottom: none;
+    }
+
+    // No zebra striping
+    &:nth-child(odd),
+    &:nth-child(even) {
+      background: transparent !important;
+    }
+
+    &:hover {
+      background-color: var(--ax-background-muted, #fafafa) !important;
+    }
+
+    .mat-mdc-cell {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem; // 14px — body text
+      color: var(--ax-text-default, #3f3f46);
+      background: transparent !important;
+      border-bottom: 1px solid var(--ax-border-default);
+      border-right: none;
+      border-left: none;
     }
   }
 }
@@ -242,7 +250,33 @@
   box-shadow: none !important;
 }
 
-// Paginator styling - Use theme background
+// Sort header — Untitled UI: smaller arrow, muted color
+.mat-sort-header-arrow {
+  color: var(--ax-text-subtle, #a1a1aa) !important;
+  transform: scale(0.85);
+}
+
+// Checkbox — Untitled UI: subtle border, rounded, lighter unchecked
+.mat-mdc-checkbox {
+  .mdc-checkbox {
+    // Unchecked: light gray border like Untitled UI
+    .mdc-checkbox__background {
+      border-color: var(--ax-border-emphasis, #d4d4d8) !important;
+      border-width: 1.5px !important;
+      border-radius: 4px !important;
+    }
+  }
+
+  // Checked state keeps brand color (handled by theme)
+
+  // Reduce ripple intensity
+  .mat-mdc-checkbox-ripple,
+  .mdc-checkbox__ripple {
+    opacity: 0.05;
+  }
+}
+
+// Paginator
 .mat-mdc-paginator {
   background-color: var(--ax-background-default) !important;
   border-top: 1px solid var(--ax-border-default);
@@ -299,7 +333,7 @@
 // ===== Tabs - Tremor Style =====
 .mat-mdc-tab-group {
   .mat-mdc-tab-header {
-    border-bottom: 1px solid var(--ax-border-default);
+    // Divider handled by CSS variable at theme level — no border here
   }
 
   .mat-mdc-tab {
@@ -315,7 +349,6 @@
 
 // Tab nav bar (standalone tabs like in docs)
 .mat-mdc-tab-nav-bar {
-  border-bottom: 1px solid var(--ax-border-default);
 
   .mat-mdc-tab-link {
     // Default (inactive) tab label - use secondary text color

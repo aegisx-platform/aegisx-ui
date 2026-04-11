@@ -11,7 +11,7 @@
   cursor: pointer;
   padding: var(--ax-spacing-xs) var(--ax-spacing-sm);
   border-radius: var(--ax-radius-sm);
-  transition: background-color 0.15s ease;
+  transition: background-color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   min-height: 32px;
 
   &:hover {
@@ -37,7 +37,7 @@
   height: 16px;
   color: var(--ax-text-subtle);
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 }
 
 // ----------------------------------------------------------------------------
@@ -52,7 +52,7 @@
   padding: var(--ax-spacing-md);
   min-width: 240px;
   max-width: 400px;
-  animation: ax-popup-edit-slide-in 0.15s ease-out;
+  animation: ax-popup-edit-slide-in var(--ax-duration-fast, 150ms) var(--ax-easing-easeOut, cubic-bezier(0, 0, 0.2, 1));
 }
 
 @keyframes ax-popup-edit-slide-in {
@@ -96,4 +96,15 @@
 
 .ax-popup-edit-backdrop {
   background-color: transparent;
+}
+
+// Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  .ax-popup-edit,
+  .ax-popup-edit__icon,
+  .ax-popup-edit__panel {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

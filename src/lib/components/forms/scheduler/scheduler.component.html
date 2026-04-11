@@ -1,4 +1,4 @@
-<div [class]="layoutClasses">
+<div [class]="layoutClasses" [attr.aria-describedby]="displayMessage ? messageId : null">
   <!-- Main Label -->
   @if (label) {
     <label class="ax-scheduler-label">
@@ -79,8 +79,10 @@
   <!-- Helper Text / Error Message -->
   @if (displayMessage) {
     <div
+      [id]="messageId"
       class="ax-scheduler-message"
       [class.ax-scheduler-message-error]="errorMessage"
+      [attr.role]="errorMessage ? 'alert' : null"
     >
       {{ displayMessage }}
     </div>

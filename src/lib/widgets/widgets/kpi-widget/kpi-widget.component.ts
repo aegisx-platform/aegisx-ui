@@ -1,10 +1,5 @@
 import { Component, computed } from '@angular/core';
-import {
-  CommonModule,
-  DecimalPipe,
-  CurrencyPipe,
-  PercentPipe,
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -18,14 +13,7 @@ import {
 @Component({
   selector: 'ax-kpi-widget',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    DecimalPipe,
-    CurrencyPipe,
-    PercentPipe,
-  ],
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
   template: `
     <div
       class="ax-kpi-widget"

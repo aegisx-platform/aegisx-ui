@@ -66,7 +66,7 @@
 // Individual Segment
 .ax-segmented-progress__segment {
   height: 100%;
-  transition: all 0.3s ease;
+  transition: all var(--ax-duration-normal, 250ms) var(--ax-easing-standard, ease);
 
   &:last-child {
     margin-right: 0 !important;

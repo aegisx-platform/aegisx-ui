@@ -321,17 +321,18 @@
 // Shared mixin for solid color variants
 @mixin navbar-solid-color($bg-color) {
   background-color: $bg-color;
-  --ax-navbar-text-color: #ffffff;
+  --ax-navbar-text-color: var(--ax-text-inverted, #ffffff);
   --ax-navbar-text-muted: rgba(255, 255, 255, 0.85);
   --ax-navbar-border-color: transparent;
   --ax-navbar-hover-bg: rgba(255, 255, 255, 0.15);
   --ax-navbar-active-bg: rgba(255, 255, 255, 0.25);
-  --ax-navbar-active-color: #ffffff;
+  --ax-navbar-active-color: var(--ax-text-inverted, #ffffff);
 }
 
 // =============================================================================
 // COLOR VARIANTS - Semantic Color Palette
 // Professional colors with semantic meaning for different use cases
+// Uses SCSS color variables from _colors.scss for consistency
 // =============================================================================
 
 // Primary color (uses theme brand color)
@@ -341,43 +342,42 @@
 
 // Charcoal - Ultra dark, premium feel (Zinc 900)
 .ax-navbar--color-charcoal {
-  @include navbar-solid-color(#18181b);
+  @include navbar-solid-color(var(--ax-gray-900, #18181b));
 }
 
 // Slate Palette - Professional, neutral tones
 .ax-navbar--color-slate {
-  @include navbar-solid-color(#334155); // Slate 700 - Modern neutral
+  @include navbar-solid-color(var(--ax-gray-700, #334155));
 }
 
 .ax-navbar--color-slate-dark {
-  @include navbar-solid-color(#1e293b); // Slate 800 - Corporate dark
+  @include navbar-solid-color(var(--ax-gray-800, #1e293b));
 }
 
 // Ocean Palette - Trust, reliability, corporate (Blue tones)
 .ax-navbar--color-ocean {
-  @include navbar-solid-color(#0369a1); // Sky 700 - Trust blue
+  @include navbar-solid-color(var(--ax-info-emphasis, #0369a1));
 }
 
 .ax-navbar--color-ocean-dark {
-  @include navbar-solid-color(#0c4a6e); // Sky 900 - Deep corporate blue
+  @include navbar-solid-color(var(--ax-info-900, #0c4a6e));
 }
 
 // Royal Palette - Creative, premium, modern (Purple tones)
 .ax-navbar--color-royal {
-  @include navbar-solid-color(#7c3aed); // Violet 600 - Creative purple
+  @include navbar-solid-color(var(--ax-purple-emphasis, #7c3aed));
 }
 
 .ax-navbar--color-royal-dark {
-  @include navbar-solid-color(#5b21b6); // Violet 800 - Premium dark purple
+  @include navbar-solid-color(var(--ax-purple-800, #5b21b6));
 }
 
 // Forest - Growth, success, eco-friendly (Green tones)
 .ax-navbar--color-forest {
-  @include navbar-solid-color(#15803d); // Green 700 - Success green
+  @include navbar-solid-color(var(--ax-success-emphasis, #15803d));
 }
 
 // Amber - Energy, attention, warmth (Orange tones)
-// Using darker amber for better contrast with white text
 .ax-navbar--color-amber {
-  @include navbar-solid-color(#92400e); // Amber 800 - Better contrast
+  @include navbar-solid-color(var(--ax-warning-800, #92400e));
 }

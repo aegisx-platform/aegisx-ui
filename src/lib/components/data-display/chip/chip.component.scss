@@ -1,0 +1,118 @@
+// ============================================================================
+// Chip Component — Untitled UI "Tags" style
+// ============================================================================
+// Compact inline labels. Smaller than badges.
+// Ref: Untitled UI Tags — rounded-md, border, h-5/h-6/h-7
+
+.ax-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+// Sizes — Untitled UI tag sizes
+.ax-chip--sm {
+  height: 20px; // h-5
+  padding: 0 6px;
+  gap: 3px;
+  font-size: 0.6875rem; // 11px
+}
+
+.ax-chip--md {
+  height: 24px; // h-6
+  padding: 0 8px;
+  gap: 4px;
+  font-size: 0.75rem; // 12px
+}
+
+.ax-chip--lg {
+  height: 28px; // h-7
+  padding: 0 10px;
+  gap: 4px;
+  font-size: 0.8125rem; // 13px
+}
+
+// Colors — subtle bg + text + ring
+.ax-chip--neutral {
+  color: var(--ax-text-secondary, #71717a);
+  background: var(--ax-background-subtle, #f4f4f5);
+  box-shadow: inset 0 0 0 1px var(--ax-border-default, #e4e4e7);
+}
+
+.ax-chip--info {
+  color: var(--ax-info-emphasis, #1e40af);
+  background: var(--ax-info-faint, #eff6ff);
+  box-shadow: inset 0 0 0 1px var(--ax-info-muted, #bfdbfe);
+}
+
+.ax-chip--success {
+  color: var(--ax-success-emphasis, #166534);
+  background: var(--ax-success-faint, #f0fdf4);
+  box-shadow: inset 0 0 0 1px var(--ax-success-muted, #bbf7d0);
+}
+
+.ax-chip--warning {
+  color: var(--ax-warning-emphasis, #92400e);
+  background: var(--ax-warning-faint, #fffbeb);
+  box-shadow: inset 0 0 0 1px var(--ax-warning-muted, #fde68a);
+}
+
+.ax-chip--error {
+  color: var(--ax-error-emphasis, #991b1b);
+  background: var(--ax-error-faint, #fef2f2);
+  box-shadow: inset 0 0 0 1px var(--ax-error-muted, #fecaca);
+}
+
+.ax-chip--brand {
+  color: #4338ca;
+  background: var(--ax-brand-faint, #eef2ff);
+  box-shadow: inset 0 0 0 1px #c7d2fe;
+}
+
+// Dot indicator
+.ax-chip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &[data-color='neutral']  { background: var(--ax-text-subtle, #a1a1aa); }
+  &[data-color='info']     { background: var(--ax-info-default, #3b82f6); }
+  &[data-color='success']  { background: var(--ax-success-default, #22c55e); }
+  &[data-color='warning']  { background: var(--ax-warning-default, #f59e0b); }
+  &[data-color='error']    { background: var(--ax-error-default, #ef4444); }
+  &[data-color='brand']    { background: var(--ax-brand-default, #6366f1); }
+}
+
+// Label
+.ax-chip__label {
+  line-height: 1;
+}
+
+// Remove button
+.ax-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-left: 1px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: currentColor;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+
+  mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}

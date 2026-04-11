@@ -17,7 +17,7 @@
     font-weight: 600;
     text-align: center;
     caret-color: transparent;
-    transition: all 0.15s ease;
+    transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
     &:focus {
       outline: none;

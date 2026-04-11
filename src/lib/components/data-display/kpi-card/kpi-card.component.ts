@@ -1,29 +1,13 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export type KpiCardVariant =
-  | 'simple'
-  | 'badge'
-  | 'compact'
-  | 'accent'
-  | 'visual-indicator'
-  | 'progress'
-  | 'segmented';
-export type KpiCardSize = 'sm' | 'md' | 'lg';
-export type KpiCardTrend = 'up' | 'down' | 'neutral';
-export type KpiCardBadgeType =
-  | 'success'
-  | 'error'
-  | 'warning'
-  | 'info'
-  | 'neutral';
-export type KpiCardAccentPosition = 'left' | 'right' | 'top' | 'bottom';
-export type KpiCardAccentColor =
-  | 'primary'
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'error';
+import {
+  KpiCardVariant,
+  KpiCardSize,
+  KpiCardTrend,
+  KpiCardBadgeType,
+  KpiCardAccentPosition,
+  KpiCardAccentColor,
+} from './kpi-card.types';
 
 /**
  * KPI Card Component
@@ -101,8 +85,19 @@ export class AxKpiCardComponent {
   /** Badge type/color */
   @Input() badgeType: KpiCardBadgeType = 'neutral';
 
-  /** Accent bar color */
+  /**
+   * Accent bar color.
+   * @deprecated Use `color` instead. Will be removed in a future major version.
+   */
   @Input() accentColor?: KpiCardAccentColor;
+
+  /**
+   * Accent bar color (standardized alias for `accentColor`).
+   * Preferred over `accentColor` for consistency across @aegisx/ui components.
+   */
+  @Input() set color(value: KpiCardAccentColor) {
+    this.accentColor = value;
+  }
 
   /** Accent bar position */
   @Input() accentPosition: KpiCardAccentPosition = 'left';

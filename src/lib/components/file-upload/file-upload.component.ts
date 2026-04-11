@@ -82,6 +82,7 @@ export interface FileItem {
       role="button"
       tabindex="0"
       [attr.aria-label]="label || 'Upload files'"
+      [attr.aria-describedby]="hint ? hintId : null"
     >
       <!-- Hidden file input -->
       <input
@@ -106,7 +107,7 @@ export interface FileItem {
           </span>
         </div>
         @if (hint) {
-          <span class="ax-file-upload-hint">{{ hint }}</span>
+          <span [id]="hintId" class="ax-file-upload-hint">{{ hint }}</span>
         }
       </div>
     </div>
@@ -141,7 +142,7 @@ export interface FileItem {
                 ></mat-progress-bar>
               }
               @if (item.error) {
-                <span class="ax-file-upload-error">{{ item.error }}</span>
+                <span class="ax-file-upload-error" role="alert">{{ item.error }}</span>
               }
             </div>
 
@@ -161,6 +162,7 @@ export interface FileItem {
                 class="ax-file-upload-remove"
                 (click)="removeFile(item); $event.stopPropagation()"
                 [disabled]="disabled"
+                aria-label="Remove file"
               >
                 <mat-icon>close</mat-icon>
               </button>
@@ -369,30 +371,33 @@ export interface FileItem {
   ],
 })
 export class AxFileUploadComponent implements ControlValueAccessor {
+  private static nextId = 0;
+  readonly hintId = `ax-file-upload-hint-${AxFileUploadComponent.nextId++}`;
+
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   /**
    * Accepted file types (same as HTML input accept)
    */
-  @Input() accept = '*';
+  @Input() accept: string = '*';
 
   /**
    * Allow multiple files
    * @default false
    */
-  @Input() multiple = false;
+  @Input() multiple: boolean = false;
 
   /**
    * Maximum number of files (when multiple=true)
    * @default 10
    */
-  @Input() maxFiles = 10;
+  @Input() maxFiles: number = 10;
 
   /**
    * Maximum file size in bytes
    * @default 10MB
    */
-  @Input() maxSize = 10 * 1024 * 1024;
+  @Input() maxSize: number = 10 * 1024 * 1024;
 
   /**
    * Custom drag text
@@ -412,7 +417,7 @@ export class AxFileUploadComponent implements ControlValueAccessor {
   /**
    * Disabled state
    */
-  @Input() disabled = false;
+  @Input() disabled: boolean = false;
 
   /**
    * Emits when files change

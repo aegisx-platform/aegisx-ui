@@ -29,6 +29,9 @@ export * from './motion/easing-tokens';
 // Breakpoint Tokens
 export * from './breakpoints/breakpoint-tokens';
 
+// Component Tokens (Layer 3)
+export * from './components/component-tokens';
+
 /**
  * Re-export commonly used types
  */
@@ -88,6 +91,23 @@ export type {
   BreakpointKey,
 } from './breakpoints/breakpoint-tokens';
 
+export type {
+  ComponentTokens,
+  ButtonTokens,
+  ButtonVariantTokens,
+  InputTokens,
+  CardTokens,
+  CardSectionTokens,
+  BadgeTokens,
+  BadgeVariantTokens,
+  DialogTokens,
+  DialogSectionTokens,
+  SizeTokens,
+  ComponentSize,
+  ButtonVariant,
+  BadgeVariant,
+} from './components/component-tokens';
+
 /**
  * Re-export token values
  */
@@ -124,3 +144,13 @@ export {
   containerTokens,
   breakpointUtils,
 } from './breakpoints/breakpoint-tokens';
+
+export {
+  componentTokens,
+  buttonTokens,
+  inputTokens,
+  cardTokens,
+  badgeTokens,
+  dialogTokens,
+  generateComponentCSSVariables,
+} from './components/component-tokens';

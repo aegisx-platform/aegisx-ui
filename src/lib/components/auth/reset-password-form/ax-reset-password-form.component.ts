@@ -20,7 +20,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AxLoadingButtonComponent } from '../../loading-button/ax-loading-button.component';
 
 export interface ResetPasswordFormData {
   password: string;
@@ -63,23 +63,21 @@ export interface ResetPasswordFormConfig {
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
+    AxLoadingButtonComponent,
   ],
   template: `
-    <mat-card appearance="outlined" class="reset-password-card">
+    <mat-card appearance="outlined">
       @if (!success) {
         <!-- Reset Form -->
-        <mat-card-header class="card-header">
-          <div class="header-icon">
+        <mat-card-header class="centered-header">
+          <div class="header-icon brand-bg">
             <mat-icon>lock</mat-icon>
           </div>
-          <mat-card-title class="card-title">{{ config.title }}</mat-card-title>
-          <mat-card-subtitle class="card-subtitle">
-            {{ config.subtitle }}
-          </mat-card-subtitle>
+          <mat-card-title>{{ config.title }}</mat-card-title>
+          <mat-card-subtitle>{{ config.subtitle }}</mat-card-subtitle>
         </mat-card-header>
 
-        <mat-card-content class="card-content">
+        <mat-card-content>
           <form [formGroup]="resetPasswordForm" (ngSubmit)="onSubmit()">
             <!-- New Password Field -->
             <mat-form-field appearance="outline" class="full-width">
@@ -97,6 +95,8 @@ export interface ResetPasswordFormConfig {
                 matSuffix
                 type="button"
                 (click)="togglePasswordVisibility()"
+                [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+                [attr.aria-pressed]="!hidePassword()"
               >
                 <mat-icon>{{
                   hidePassword() ? 'visibility_off' : 'visibility'
@@ -133,6 +133,8 @@ export interface ResetPasswordFormConfig {
                 matSuffix
                 type="button"
                 (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="hideConfirmPassword() ? 'Show confirm password' : 'Hide confirm password'"
+                [attr.aria-pressed]="!hideConfirmPassword()"
               >
                 <mat-icon>{{
                   hideConfirmPassword() ? 'visibility_off' : 'visibility'
@@ -157,60 +159,46 @@ export interface ResetPasswordFormConfig {
             </mat-form-field>
 
             <!-- Submit Button -->
-            <button
-              mat-raised-button
-              color="primary"
+            <ax-loading-button
               type="submit"
-              class="submit-button full-width"
-              [disabled]="loading"
+              [loading]="loading"
+              loadingText="Resetting..."
+              icon="check"
+              iconPosition="end"
+              [fullWidth]="true"
+              (buttonClick)="onSubmit()"
             >
-              @if (loading) {
-                <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
-                <span>Resetting...</span>
-              } @else {
-                <span>{{ config.submitButtonText }}</span>
-                <mat-icon>check</mat-icon>
-              }
-            </button>
+              {{ config.submitButtonText }}
+            </ax-loading-button>
           </form>
         </mat-card-content>
       } @else {
         <!-- Success State -->
-        <mat-card-header class="card-header success-header">
-          <div class="header-icon success-icon">
+        <mat-card-header class="centered-header">
+          <div class="header-icon success-bg">
             <mat-icon>check_circle</mat-icon>
           </div>
-          <mat-card-title class="card-title">{{
-            config.successTitle
-          }}</mat-card-title>
-          <mat-card-subtitle class="card-subtitle success-message">
-            {{ config.successMessage }}
-          </mat-card-subtitle>
+          <mat-card-title>{{ config.successTitle }}</mat-card-title>
+          <mat-card-subtitle>{{ config.successMessage }}</mat-card-subtitle>
         </mat-card-header>
 
-        <mat-card-content class="card-content">
-          <button
-            mat-raised-button
-            color="primary"
-            type="button"
-            class="submit-button full-width"
-            (click)="onBackToLoginClick()"
+        <mat-card-content>
+          <ax-loading-button
+            [loading]="false"
+            icon="login"
+            iconPosition="end"
+            [fullWidth]="true"
+            (buttonClick)="onBackToLoginClick()"
           >
-            <span>{{ config.successButtonText }}</span>
-            <mat-icon>login</mat-icon>
-          </button>
+            {{ config.successButtonText }}
+          </ax-loading-button>
         </mat-card-content>
       }
 
       <!-- Footer (only show when not success) -->
       @if (!success) {
-        <mat-card-footer class="card-footer">
-          <button
-            mat-button
-            type="button"
-            class="back-button"
-            (click)="onBackToLoginClick()"
-          >
+        <mat-card-footer>
+          <button mat-button type="button" (click)="onBackToLoginClick()">
             <mat-icon>arrow_back</mat-icon>
             <span>{{ config.backToLoginText }}</span>
           </button>
@@ -220,27 +208,7 @@ export interface ResetPasswordFormConfig {
   `,
   styles: [
     `
-      .reset-password-card {
-        width: 100%;
-        max-width: 440px;
-        box-shadow: var(--ax-shadow-sm) !important;
-        animation: fadeIn 0.4s ease-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .card-header {
-        padding: 2rem 2rem 0 !important;
-        margin-bottom: 0 !important;
+      .centered-header {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -251,15 +219,10 @@ export interface ResetPasswordFormConfig {
         width: 64px;
         height: 64px;
         border-radius: 50%;
-        background: linear-gradient(
-          135deg,
-          var(--ax-brand-default, #4f46e5) 0%,
-          var(--ax-brand-emphasis, #6366f1) 100%
-        );
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
 
         mat-icon {
           font-size: 32px;
@@ -269,38 +232,12 @@ export interface ResetPasswordFormConfig {
         }
       }
 
-      .success-icon {
-        background: linear-gradient(
-          135deg,
-          var(--ax-success-default, #10b981) 0%,
-          var(--ax-success-emphasis, #059669) 100%
-        );
+      .brand-bg {
+        background: var(--ax-brand-default);
       }
 
-      .card-title {
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-        color: var(--ax-text-strong) !important;
-        margin-bottom: 0.5rem !important;
-      }
-
-      .card-subtitle {
-        font-size: 0.875rem !important;
-        color: var(--ax-text-subtle) !important;
-        max-width: 320px;
-        line-height: 1.5;
-      }
-
-      .success-message {
-        color: var(--ax-success-default) !important;
-      }
-
-      .card-content {
-        padding: 2rem !important;
-
-        @media (max-width: 960px) {
-          padding: 1.5rem !important;
-        }
+      .success-bg {
+        background: var(--ax-success-default);
       }
 
       form {
@@ -313,54 +250,10 @@ export interface ResetPasswordFormConfig {
         width: 100%;
       }
 
-      mat-form-field {
-        mat-icon[matPrefix] {
-          margin-right: 0.75rem;
-          color: var(--ax-text-subtle);
-        }
-      }
-
-      .submit-button {
-        height: 48px !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-      }
-
-      .button-spinner {
-        margin-right: 0.5rem;
-
-        ::ng-deep circle {
-          stroke: currentColor !important;
-        }
-      }
-
-      .card-footer {
-        padding: 1.5rem 2rem !important;
-        border-top: 1px solid var(--ax-border-default);
+      mat-card-footer {
         display: flex;
         justify-content: center;
-      }
-
-      .back-button {
-        color: var(--ax-text-body);
-
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-          margin-right: 0.5rem;
-        }
+        padding: 1rem;
       }
     `,
   ],

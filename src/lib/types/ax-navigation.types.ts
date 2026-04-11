@@ -55,7 +55,7 @@ export interface AxNavigationItem {
   children?: AxNavigationItem[];
 
   /** Badge configuration */
-  badge?: AxNavigationBadge | { content: string; type?: string };
+  badge?: AxNavigationBadge;
 
   /** Hide item - static or dynamic */
   hidden?: boolean | (() => boolean);
@@ -83,6 +83,9 @@ export interface AxNavigationItem {
 
   /** RBAC permissions required (OR logic) */
   permissions?: string[];
+
+  /** RBAC roles required (OR logic, exact match) */
+  roles?: string[];
 
   /** CSS classes for custom styling */
   classes?: string;

@@ -76,6 +76,7 @@ export interface CodeTab {
               mat-icon-button
               class="code-tabs__copy-btn"
               matTooltip="Copy code"
+              aria-label="Copy code"
               (click)="copyCode(tabs[0].code)"
             >
               <mat-icon>content_copy</mat-icon>
@@ -110,6 +111,7 @@ export interface CodeTab {
               mat-icon-button
               class="code-tabs__copy-btn"
               matTooltip="Copy code"
+              aria-label="Copy code"
               (click)="copyCode(tabs[activeTabIndex].code)"
             >
               <mat-icon>content_copy</mat-icon>
@@ -330,7 +332,7 @@ export class AxCodeTabsComponent implements AfterViewInit, OnChanges {
   @ViewChildren('codeBlock') codeBlocks!: QueryList<ElementRef>;
 
   @Input() tabs: CodeTab[] = [];
-  @Input() showLineNumbers = false;
+  @Input() showLineNumbers: boolean = false;
 
   activeTabIndex = 0;
 

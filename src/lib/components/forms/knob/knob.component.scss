@@ -73,7 +73,7 @@
 
 .ax-knob__progress {
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.1s ease-out;
+  transition: stroke-dashoffset var(--ax-duration-instant, 75ms) var(--ax-easing-easeOut, cubic-bezier(0, 0, 0.2, 1));
 
   // Color variants
   &--primary {

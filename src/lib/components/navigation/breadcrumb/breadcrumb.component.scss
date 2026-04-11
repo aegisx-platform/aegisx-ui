@@ -74,7 +74,7 @@
   gap: var(--ax-spacing-xs);
   color: var(--ax-text-secondary);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   &:hover {
     color: var(--ax-brand-default);

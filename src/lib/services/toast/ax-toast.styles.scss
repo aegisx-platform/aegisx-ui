@@ -12,7 +12,7 @@
 // Base toast styles
 .toast-container {
   .ngx-toastr {
-    font-family: var(--ax-font-family-sans, 'Inter', system-ui, sans-serif);
+    font-family: var(--ax-font-sans);
     border-radius: var(--ax-radius-lg, 0.75rem);
     box-shadow: var(--ax-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
     padding: 0.875rem 1rem;
@@ -109,7 +109,7 @@
 .ax-snackbar {
   &.mat-mdc-snack-bar-container {
     .mdc-snackbar__surface {
-      font-family: var(--ax-font-family-sans, 'Inter', system-ui, sans-serif);
+      font-family: var(--ax-font-sans);
       border-radius: var(--ax-radius-lg, 0.75rem) !important;
       box-shadow: var(
         --ax-shadow-lg,

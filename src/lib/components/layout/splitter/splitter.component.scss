@@ -99,7 +99,7 @@
   align-items: center;
   justify-content: center;
   background-color: transparent;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   z-index: 10;
 
   &:hover {
@@ -130,7 +130,7 @@
 .ax-splitter__separator-icon {
   border-radius: var(--ax-radius-full);
   background-color: var(--ax-border-emphasis);
-  transition: background-color 0.15s ease;
+  transition: background-color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 }
 
 // ----------------------------------------------------------------------------

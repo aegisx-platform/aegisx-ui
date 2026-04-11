@@ -479,6 +479,13 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-spacing-3xl: #{$aegisx-light-spacing-3xl};
     --ax-spacing-4xl: #{$aegisx-light-spacing-4xl};
 
+    /* Form Layout Tokens — 3 density levels (4px base unit) */
+    --ax-form-gap-dense: 0.75rem;    /* 12px — high-volume entry (drug form, PO) */
+    --ax-form-gap-default: 1rem;     /* 16px — standard CRUD forms */
+    --ax-form-gap-relaxed: 1rem;     /* 16px — wizard, onboarding */
+    --ax-form-section-gap: 2.5rem;    /* 40px — between form sections */
+    --ax-form-card-padding: 0.75rem; /* 12px — padding inside form cards */
+
     /* Success Colors - Levels (50-900) */
     --ax-success-50: #f0fdf4;
     --ax-success-100: #dcfce7;
@@ -987,9 +994,11 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
 
     /* Font Family (sans-serif stack) */
     --ax-font-family:
-      'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --ax-font-sans:
-      'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    /* Font Family (monospace stack for code) */
+    --ax-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Font Size Aliases (font-size-* → text-*) */
     --ax-font-size-xs: var(--ax-text-xs);
@@ -1043,6 +1052,13 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-spacing-2xl: #{$aegisx-dark-spacing-2xl};
     --ax-spacing-3xl: #{$aegisx-dark-spacing-3xl};
     --ax-spacing-4xl: #{$aegisx-dark-spacing-4xl};
+
+    /* Form Layout Tokens — same as light theme */
+    --ax-form-gap-dense: 0.5rem;
+    --ax-form-gap-default: 0.75rem;
+    --ax-form-gap-relaxed: 1rem;
+    --ax-form-section-gap: 1.5rem;
+    --ax-form-card-padding: 0.75rem;
 
     /* Success Colors */
     --ax-success-faint: #{$aegisx-dark-success-faint};
@@ -1387,9 +1403,11 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
 
     /* Font Family (sans-serif stack) */
     --ax-font-family:
-      'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --ax-font-sans:
-      'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    /* Font Family (monospace stack for code) */
+    --ax-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Font Size Aliases (font-size-* → text-*) */
     --ax-font-size-xs: var(--ax-text-xs);

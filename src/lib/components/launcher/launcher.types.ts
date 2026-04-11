@@ -217,8 +217,14 @@ export interface LauncherDefaultMenuActions {
   settings?: boolean;
 }
 
+/** Display mode options */
+export type LauncherDisplayMode = 'tabs' | 'flat';
+
 /** Launcher component configuration */
 export interface LauncherConfig {
+  /** Display mode: 'tabs' shows category tabs, 'flat' shows all apps without grouping sorted by order */
+  displayMode?: LauncherDisplayMode;
+
   /** Show search input */
   showSearch?: boolean;
 
@@ -245,6 +251,12 @@ export interface LauncherConfig {
 
   /** Enable favorites (stored in localStorage) */
   enableFavorites?: boolean;
+
+  /** Enable pinned apps */
+  enablePinned?: boolean;
+
+  /** Enable featured apps tab */
+  enableFeatured?: boolean;
 
   /** Enable recent apps tracking */
   enableRecent?: boolean;

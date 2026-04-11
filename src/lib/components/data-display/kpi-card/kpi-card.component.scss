@@ -18,13 +18,14 @@
   border: 1px solid var(--ax-border-emphasis);
   border-radius: var(--ax-radius-lg);
   overflow: hidden;
-  transition: all 0.2s ease;
-  box-shadow: var(--ax-shadow-sm);
+  transition: all var(--ax-duration-normal, 200ms) var(--ax-easing-standard, ease);
+  box-shadow: var(--ax-shadow-xs);
 
   // Hoverable effect
   &--hoverable:hover {
-    border-color: var(--ax-text-secondary);
-    box-shadow: var(--ax-shadow-sm);
+    border-color: var(--ax-border-emphasis);
+    box-shadow: var(--ax-shadow-md);
+    transform: translateY(-1px);
   }
 
   // Clickable cursor
@@ -369,7 +370,7 @@
   width: 4px;
   height: 24px;
   border-radius: var(--ax-radius-sm);
-  transition: background-color 0.2s ease;
+  transition: background-color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   &--filled {
     // Color set via inline style from component
@@ -412,7 +413,7 @@
 .ax-kpi-card__progress-fill {
   height: 100%;
   border-radius: var(--ax-radius-full);
-  transition: width 0.3s ease;
+  transition: width var(--ax-duration-normal, 250ms) var(--ax-easing-standard, ease);
 }
 
 .ax-kpi-card__progress-info {
@@ -450,7 +451,7 @@
 
 .ax-kpi-card__segment {
   height: 100%;
-  transition: width 0.3s ease;
+  transition: width var(--ax-duration-normal, 250ms) var(--ax-easing-standard, ease);
 }
 
 .ax-kpi-card__segmented-legend {

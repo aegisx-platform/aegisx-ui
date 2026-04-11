@@ -21,8 +21,11 @@
    <body class="theme-verus">       <!-- Verus Light -->
    ============================================================ */
 
-// Import all theme definitions (using @import to ensure CSS output)
-@import './aegisx/light';
-@import './aegisx/dark';
-@import './verus/light';
-@import './verus/dark';
+// Component tokens (Layer 3) - imported by theme files via @use
+// @use './component-tokens'; // Already consumed by individual theme files
+
+// Import all theme definitions (as * since these only output CSS rules)
+@use './aegisx/light' as *;
+@use './aegisx/dark' as aegisx-dark;
+@use './verus/light' as verus-light;
+@use './verus/dark' as verus-dark;

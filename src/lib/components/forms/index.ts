@@ -9,5 +9,6 @@ export * from './date-picker';
 export * from './input-otp';
 export * from './knob';
 export * from './popup-edit';
+export * from './protected-field';
 export * from './time-slots';
 export * from './scheduler';

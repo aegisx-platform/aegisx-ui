@@ -230,21 +230,21 @@ export const typographyTokens: TypographyTokens = {
     // Display - Largest text on screen, reserved for short, important text
     display: {
       large: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '3.5625rem', // 57px
         fontWeight: 400,
         lineHeight: '4rem', // 64px
         letterSpacing: '-0.25px',
       },
       medium: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '2.8125rem', // 45px
         fontWeight: 400,
         lineHeight: '3.25rem', // 52px
         letterSpacing: '0',
       },
       small: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '2.25rem', // 36px
         fontWeight: 400,
         lineHeight: '2.75rem', // 44px
@@ -255,21 +255,21 @@ export const typographyTokens: TypographyTokens = {
     // Headline - High-emphasis text for important areas
     headline: {
       large: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '2rem', // 32px
         fontWeight: 400,
         lineHeight: '2.5rem', // 40px
         letterSpacing: '0',
       },
       medium: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '1.75rem', // 28px
         fontWeight: 400,
         lineHeight: '2.25rem', // 36px
         letterSpacing: '0',
       },
       small: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '1.5rem', // 24px
         fontWeight: 400,
         lineHeight: '2rem', // 32px
@@ -280,21 +280,21 @@ export const typographyTokens: TypographyTokens = {
     // Title - Medium-emphasis text for section titles
     title: {
       large: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '1.375rem', // 22px
         fontWeight: 400,
         lineHeight: '1.75rem', // 28px
         letterSpacing: '0',
       },
       medium: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '1rem', // 16px
         fontWeight: 500,
         lineHeight: '1.5rem', // 24px
         letterSpacing: '0.15px',
       },
       small: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '0.875rem', // 14px
         fontWeight: 500,
         lineHeight: '1.25rem', // 20px
@@ -305,21 +305,21 @@ export const typographyTokens: TypographyTokens = {
     // Body - Default text for paragraphs and content
     body: {
       large: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '1rem', // 16px
         fontWeight: 400,
         lineHeight: '1.5rem', // 24px
         letterSpacing: '0.5px',
       },
       medium: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '0.875rem', // 14px
         fontWeight: 400,
         lineHeight: '1.25rem', // 20px
         letterSpacing: '0.25px',
       },
       small: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '0.75rem', // 12px
         fontWeight: 400,
         lineHeight: '1rem', // 16px
@@ -330,21 +330,21 @@ export const typographyTokens: TypographyTokens = {
     // Label - Text for buttons, tabs, labels
     label: {
       large: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '0.875rem', // 14px
         fontWeight: 500,
         lineHeight: '1.25rem', // 20px
         letterSpacing: '0.1px',
       },
       medium: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '0.75rem', // 12px
         fontWeight: 500,
         lineHeight: '1rem', // 16px
         letterSpacing: '0.5px',
       },
       small: {
-        fontFamily: systemFontStack,
+        fontFamily: primaryFontStack,
         fontSize: '0.6875rem', // 11px
         fontWeight: 500,
         lineHeight: '1rem', // 16px

@@ -32,6 +32,7 @@ import { AxThemeService } from '../../services/theme/ax-theme.service';
       mat-icon-button
       [matMenuTriggerFor]="themeMenu"
       matTooltip="Change theme"
+      aria-label="Change theme"
       class="theme-switcher-button"
     >
       <mat-icon>palette</mat-icon>

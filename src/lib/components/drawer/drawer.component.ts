@@ -13,16 +13,8 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { animate, style, transition, trigger } from '@angular/animations';
-
-/**
- * Drawer position
- */
-export type DrawerPosition = 'left' | 'right' | 'top' | 'bottom';
-
-/**
- * Drawer size preset
- */
-export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+import { A11yModule } from '@angular/cdk/a11y';
+import { DrawerPosition, DrawerSize } from './drawer.types';
 
 /**
  * AegisX Drawer/Sheet Component
@@ -54,7 +46,7 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 @Component({
   selector: 'ax-drawer',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, A11yModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('backdrop', [
@@ -151,6 +143,8 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
         [class.ax-drawer-xl]="size === 'xl'"
         [class.ax-drawer-full]="size === 'full'"
         [@slidePanel]="position"
+        cdkTrapFocus
+        [cdkTrapFocusAutoCapture]="true"
       >
         <!-- Header -->
         @if (showHeader) {
@@ -387,6 +381,17 @@ export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
           border-color: var(--ax-border-default);
         }
       }
+
+      // Reduced Motion - disable slide/fade animations
+      @media (prefers-reduced-motion: reduce) {
+        :host {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+      }
     `,
   ],
 })
@@ -438,31 +443,31 @@ export class AxDrawerComponent {
    * Show header section
    * @default true
    */
-  @Input() showHeader = true;
+  @Input() showHeader: boolean = true;
 
   /**
    * Show close button
    * @default true
    */
-  @Input() showCloseButton = true;
+  @Input() showCloseButton: boolean = true;
 
   /**
    * Show backdrop
    * @default true
    */
-  @Input() hasBackdrop = true;
+  @Input() hasBackdrop: boolean = true;
 
   /**
    * Close on backdrop click
    * @default true
    */
-  @Input() closeOnBackdropClick = true;
+  @Input() closeOnBackdropClick: boolean = true;
 
   /**
    * Close on Escape key
    * @default true
    */
-  @Input() closeOnEscape = true;
+  @Input() closeOnEscape: boolean = true;
 
   /**
    * Footer template

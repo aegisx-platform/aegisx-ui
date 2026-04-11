@@ -231,7 +231,7 @@ import {
         padding-bottom: 2px;
 
         &.light-text {
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--ax-text-inverted, rgba(255, 255, 255, 0.7));
         }
       }
 
@@ -272,6 +272,13 @@ import {
         .color-palette-editor {
           background: var(--ax-background-default);
           border-color: var(--ax-border-default);
+        }
+      }
+
+      /* Reduced Motion */
+      @media (prefers-reduced-motion: reduce) {
+        .shade-item {
+          transition-duration: 0.01ms !important;
         }
       }
     `,

@@ -16,7 +16,7 @@
   background-color: rgba(255, 255, 255, 0.85);
   z-index: 100;
   backdrop-filter: blur(2px);
-  animation: ax-inner-loading-fade-in 0.2s ease-out;
+  animation: ax-inner-loading-fade-in var(--ax-duration-fast, 150ms) var(--ax-easing-easeOut, cubic-bezier(0, 0, 0.2, 1));
 
   &--dark {
     background-color: rgba(0, 0, 0, 0.7);
@@ -85,7 +85,7 @@
   }
 
   &--light .ax-inner-loading__circle {
-    stroke: #ffffff;
+    stroke: var(--ax-text-inverted, #ffffff);
   }
 }
 

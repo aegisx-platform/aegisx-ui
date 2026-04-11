@@ -20,7 +20,7 @@
 }
 
 .ax-circular-progress__progress {
-  transition: stroke-dashoffset 0.6s ease;
+  transition: stroke-dashoffset var(--ax-duration-slower, 500ms) var(--ax-easing-standard, ease);
 }
 
 .ax-circular-progress__label {

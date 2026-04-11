@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   gap: var(--ax-spacing-md);
-  transition: background-color 0.2s ease;
+  transition: background-color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 }
 
 .ax-list-sm .ax-list-item {

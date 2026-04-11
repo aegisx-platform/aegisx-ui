@@ -798,7 +798,7 @@ interface ColorCategory {
       .shade-label {
         font-size: 0.5rem;
         font-weight: 600;
-        color: rgba(0, 0, 0, 0.4);
+        color: var(--ax-text-subtle, rgba(0, 0, 0, 0.4));
         padding-bottom: 2px;
       }
 
@@ -890,7 +890,16 @@ interface ColorCategory {
         }
 
         .shade-label {
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ax-text-inverted, rgba(255, 255, 255, 0.5));
+        }
+      }
+
+      /* Reduced Motion */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
       }
     `,

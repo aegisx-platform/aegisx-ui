@@ -7,6 +7,8 @@
   overflow: hidden;
   background-color: var(--ax-background-muted);
   color: var(--ax-text-secondary);
+  // Untitled UI: subtle contrast ring around avatars
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ax-border-default) 80%, transparent);
 }
 
 .ax-avatar-circle {

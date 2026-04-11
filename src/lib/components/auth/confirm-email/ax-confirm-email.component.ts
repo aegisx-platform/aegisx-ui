@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AxLoadingButtonComponent } from '../../loading-button/ax-loading-button.component';
 
 export type ConfirmEmailStatus =
   | 'pending'
@@ -56,10 +57,11 @@ export interface ConfirmEmailConfig {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    AxLoadingButtonComponent,
   ],
   template: `
-    <mat-card appearance="outlined" class="confirm-email-card">
-      <mat-card-header class="card-header">
+    <mat-card appearance="outlined">
+      <mat-card-header class="centered-header">
         <!-- Icon based on status -->
         <div class="header-icon" [ngClass]="getIconClass()">
           @switch (status) {
@@ -67,10 +69,7 @@ export interface ConfirmEmailConfig {
               <mat-icon>mark_email_unread</mat-icon>
             }
             @case ('verifying') {
-              <mat-spinner
-                diameter="32"
-                class="verifying-spinner"
-              ></mat-spinner>
+              <mat-spinner diameter="32"></mat-spinner>
             }
             @case ('success') {
               <mat-icon>verified</mat-icon>
@@ -84,95 +83,77 @@ export interface ConfirmEmailConfig {
           }
         </div>
 
-        <mat-card-title class="card-title">{{ getTitle() }}</mat-card-title>
-        <mat-card-subtitle class="card-subtitle" [ngClass]="getSubtitleClass()">
-          {{ getMessage() }}
-        </mat-card-subtitle>
+        <mat-card-title>{{ getTitle() }}</mat-card-title>
+        <mat-card-subtitle>{{ getMessage() }}</mat-card-subtitle>
       </mat-card-header>
 
-      <mat-card-content class="card-content">
+      <mat-card-content>
         @switch (status) {
           @case ('pending') {
             <div class="email-display">
               @if (email) {
-                <span class="email-text">{{ email }}</span>
+                <span>{{ email }}</span>
               }
             </div>
 
-            <button
-              mat-stroked-button
-              type="button"
-              class="action-button full-width"
-              (click)="onResendClick()"
-              [disabled]="resendLoading"
+            <ax-loading-button
+              [loading]="resendLoading"
+              loadingText="Sending..."
+              icon="refresh"
+              iconPosition="start"
+              [fullWidth]="true"
+              (buttonClick)="onResendClick()"
             >
-              @if (resendLoading) {
-                <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
-              } @else {
-                <mat-icon>refresh</mat-icon>
-              }
-              <span>{{ config.resendButtonText }}</span>
-            </button>
+              {{ config.resendButtonText }}
+            </ax-loading-button>
           }
 
           @case ('verifying') {
-            <p class="status-text">Please wait while we verify your email...</p>
+            <p class="note-text">Please wait while we verify your email...</p>
           }
 
           @case ('success') {
-            <button
-              mat-raised-button
-              color="primary"
-              type="button"
-              class="action-button full-width"
-              (click)="onContinueClick()"
+            <ax-loading-button
+              [loading]="false"
+              icon="arrow_forward"
+              iconPosition="end"
+              [fullWidth]="true"
+              (buttonClick)="onContinueClick()"
             >
-              <span>{{ config.continueButtonText }}</span>
-              <mat-icon>arrow_forward</mat-icon>
-            </button>
+              {{ config.continueButtonText }}
+            </ax-loading-button>
           }
 
           @case ('error') {
-            <button
-              mat-raised-button
-              color="primary"
-              type="button"
-              class="action-button full-width"
-              (click)="onTryAgainClick()"
+            <ax-loading-button
+              [loading]="false"
+              icon="refresh"
+              iconPosition="start"
+              [fullWidth]="true"
+              (buttonClick)="onTryAgainClick()"
             >
-              <mat-icon>refresh</mat-icon>
-              <span>{{ config.tryAgainButtonText }}</span>
-            </button>
+              {{ config.tryAgainButtonText }}
+            </ax-loading-button>
           }
 
           @case ('expired') {
-            <button
-              mat-raised-button
-              color="primary"
-              type="button"
-              class="action-button full-width"
-              (click)="onResendClick()"
-              [disabled]="resendLoading"
+            <ax-loading-button
+              [loading]="resendLoading"
+              loadingText="Sending..."
+              icon="send"
+              iconPosition="start"
+              [fullWidth]="true"
+              (buttonClick)="onResendClick()"
             >
-              @if (resendLoading) {
-                <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
-              } @else {
-                <mat-icon>send</mat-icon>
-              }
-              <span>{{ config.resendButtonText }}</span>
-            </button>
+              {{ config.resendButtonText }}
+            </ax-loading-button>
           }
         }
       </mat-card-content>
 
       @if (status !== 'verifying') {
-        <mat-card-footer class="card-footer">
-          <button
-            mat-button
-            type="button"
-            class="back-button"
-            (click)="onBackToLoginClick()"
-          >
+        <mat-card-footer>
+          <button mat-button type="button" (click)="onBackToLoginClick()">
             <mat-icon>arrow_back</mat-icon>
             <span>Back to login</span>
           </button>
@@ -182,27 +163,7 @@ export interface ConfirmEmailConfig {
   `,
   styles: [
     `
-      .confirm-email-card {
-        width: 100%;
-        max-width: 440px;
-        box-shadow: var(--ax-shadow-sm) !important;
-        animation: fadeIn 0.4s ease-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .card-header {
-        padding: 2rem 2rem 0 !important;
-        margin-bottom: 0 !important;
+      .centered-header {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -216,7 +177,7 @@ export interface ConfirmEmailConfig {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
 
         mat-icon {
           font-size: 40px;
@@ -227,144 +188,44 @@ export interface ConfirmEmailConfig {
       }
 
       .icon-pending {
-        background: linear-gradient(
-          135deg,
-          var(--ax-brand-default, #4f46e5) 0%,
-          var(--ax-brand-emphasis, #6366f1) 100%
-        );
+        background: var(--ax-brand-default);
       }
 
       .icon-verifying {
         background: var(--ax-background-muted);
-
-        .verifying-spinner {
-          ::ng-deep circle {
-            stroke: var(--ax-brand-default) !important;
-          }
-        }
       }
 
       .icon-success {
-        background: linear-gradient(
-          135deg,
-          var(--ax-success-default, #10b981) 0%,
-          var(--ax-success-emphasis, #059669) 100%
-        );
+        background: var(--ax-success-default);
       }
 
       .icon-error {
-        background: linear-gradient(
-          135deg,
-          var(--ax-danger-default, #ef4444) 0%,
-          var(--ax-danger-emphasis, #dc2626) 100%
-        );
+        background: var(--ax-error-default);
       }
 
       .icon-expired {
-        background: linear-gradient(
-          135deg,
-          var(--ax-warning-default, #f59e0b) 0%,
-          var(--ax-warning-emphasis, #d97706) 100%
-        );
-      }
-
-      .card-title {
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-        color: var(--ax-text-strong) !important;
-        margin-bottom: 0.5rem !important;
-      }
-
-      .card-subtitle {
-        font-size: 0.875rem !important;
-        color: var(--ax-text-subtle) !important;
-        max-width: 320px;
-        line-height: 1.5;
-      }
-
-      .subtitle-success {
-        color: var(--ax-success-default) !important;
-      }
-
-      .subtitle-error {
-        color: var(--ax-danger-default) !important;
-      }
-
-      .subtitle-expired {
-        color: var(--ax-warning-default) !important;
-      }
-
-      .card-content {
-        padding: 2rem !important;
-
-        @media (max-width: 960px) {
-          padding: 1.5rem !important;
-        }
+        background: var(--ax-warning-default);
       }
 
       .email-display {
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         padding: 1rem;
         background: var(--ax-background-muted);
         border-radius: 8px;
-      }
-
-      .email-text {
         font-weight: 500;
-        color: var(--ax-text-strong);
       }
 
-      .status-text {
+      .note-text {
         text-align: center;
         color: var(--ax-text-subtle);
         font-size: 0.875rem;
       }
 
-      .full-width {
-        width: 100%;
-      }
-
-      .action-button {
-        height: 48px !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-      }
-
-      .button-spinner {
-        margin-right: 0.5rem;
-
-        ::ng-deep circle {
-          stroke: currentColor !important;
-        }
-      }
-
-      .card-footer {
-        padding: 1.5rem 2rem !important;
-        border-top: 1px solid var(--ax-border-default);
+      mat-card-footer {
         display: flex;
         justify-content: center;
-      }
-
-      .back-button {
-        color: var(--ax-text-body);
-
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-          margin-right: 0.5rem;
-        }
+        padding: 1rem;
       }
     `,
   ],

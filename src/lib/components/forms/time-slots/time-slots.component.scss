@@ -83,7 +83,7 @@
   color: var(--ax-text-primary);
   font-weight: var(--ax-font-weight-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   text-align: center;
   white-space: nowrap;
 

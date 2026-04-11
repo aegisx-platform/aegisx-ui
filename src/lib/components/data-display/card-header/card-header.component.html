@@ -1,0 +1,48 @@
+<div
+  class="ax-card-header"
+  [class.ax-card-header--divider]="divider"
+  [class.ax-card-header--center]="align === 'center'"
+  [attr.data-size]="size"
+>
+  <!-- Top row: leading | content | actions -->
+  <div class="ax-card-header__row">
+    <!-- Leading slot: built-in featured icon OR custom projected content -->
+    @if (featuredIcon) {
+      <div
+        class="ax-card-header__featured-icon"
+        [attr.data-color]="featuredIconColor"
+      >
+        <mat-icon>{{ featuredIcon }}</mat-icon>
+      </div>
+    } @else {
+      <div class="ax-card-header__leading">
+        <ng-content select="[leading]"></ng-content>
+      </div>
+    }
+
+    <!-- Text content: title (+ inline badge) + description -->
+    <div class="ax-card-header__content">
+      <div class="ax-card-header__title-row">
+        @if (title) {
+          <h3 class="ax-card-header__title">{{ title }}</h3>
+        }
+        <span class="ax-card-header__title-badge">
+          <ng-content select="[title-badge]"></ng-content>
+        </span>
+      </div>
+      @if (description) {
+        <p class="ax-card-header__description">{{ description }}</p>
+      }
+    </div>
+
+    <!-- Right-side actions slot (buttons, menus, icons) -->
+    <div class="ax-card-header__actions">
+      <ng-content select="[actions]"></ng-content>
+    </div>
+  </div>
+
+  <!-- Extra row slot: tabs / filters / search placed below the header row -->
+  <div class="ax-card-header__extra">
+    <ng-content></ng-content>
+  </div>
+</div>

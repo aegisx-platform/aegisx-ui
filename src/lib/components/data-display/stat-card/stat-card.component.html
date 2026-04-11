@@ -1,0 +1,21 @@
+<div
+  class="ax-stat-card"
+  [class.ax-stat-card--active]="active && clickable"
+  [class.ax-stat-card--clickable]="clickable"
+  [attr.data-color]="color"
+  [attr.role]="clickable ? 'button' : null"
+  [attr.tabindex]="clickable ? 0 : null"
+  (click)="onClick()"
+  (keyup.enter)="onClick()"
+>
+  <div class="ax-stat-card__header">
+    @if (label) {
+      <span class="ax-stat-card__label">{{ label }}</span>
+    }
+    <span class="ax-stat-card__dot" [attr.data-color]="color"></span>
+  </div>
+  <div class="ax-stat-card__value">{{ value }}</div>
+  @if (subtitle) {
+    <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
+  }
+</div>

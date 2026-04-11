@@ -162,6 +162,42 @@
 }
 
 /* ==========================================================================
+   Form Grid Gaps — 3 density levels
+   Usage: <div class="form-grid-dense"> or <div class="form-grid-default">
+   Uses CSS variables from --ax-form-gap-* tokens
+   ========================================================================== */
+
+/* Dense — high-volume entry (drug form, PO, receipts) */
+.form-grid-dense {
+  display: grid;
+  gap: var(--ax-form-gap-dense) var(--ax-form-gap-default);
+  /* 8px vertical, 12px horizontal */
+}
+
+/* Default — standard CRUD forms */
+.form-grid-default {
+  display: grid;
+  gap: var(--ax-form-gap-default);
+  /* 12px both directions */
+}
+
+/* Relaxed — wizard, onboarding, settings */
+.form-grid-relaxed {
+  display: grid;
+  gap: var(--ax-form-gap-relaxed);
+  /* 16px both directions */
+}
+
+/* Common form grid utilities */
+.form-grid-dense,
+.form-grid-default,
+.form-grid-relaxed {
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
    Responsive Adjustments
    ========================================================================== */
 @media (max-width: 768px) {

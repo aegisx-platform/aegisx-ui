@@ -17,15 +17,7 @@ import {
   NG_VALUE_ACCESSOR,
   FormsModule,
 } from '@angular/forms';
-
-export type OtpLength = 4 | 5 | 6 | 7 | 8;
-export type OtpPattern = 'digits' | 'alphanumeric' | 'alpha';
-export type OtpSize = 'sm' | 'md' | 'lg';
-
-export interface OtpSeparatorConfig {
-  position: number;
-  character?: string;
-}
+import type { OtpLength, OtpPattern, OtpSize } from './input-otp.types';
 
 /**
  * AegisX Input OTP Component
@@ -42,7 +34,7 @@ export interface OtpSeparatorConfig {
  *   [(value)]="code"
  *   [length]="6"
  *   [separatorAfter]="3"
- *   pattern="alphanumeric"
+ *   allowedPattern="alphanumeric"
  *   (completed)="onOtpComplete($event)"
  * />
  *
@@ -79,7 +71,7 @@ export interface OtpSeparatorConfig {
         }
         <input
           #slotInput
-          type="text"
+          [type]="mask ? 'password' : 'text'"
           [attr.inputmode]="inputMode"
           [attr.aria-label]="'Digit ' + (i + 1) + ' of ' + length"
           [attr.maxlength]="1"
@@ -111,8 +103,8 @@ export class AxInputOtpComponent
   /** Number of OTP digits (4-8) */
   @Input() length: OtpLength = 6;
 
-  /** Input pattern restriction */
-  @Input() pattern: OtpPattern = 'digits';
+  /** Input pattern restriction (named allowedPattern to avoid conflict with Angular's PatternValidator) */
+  @Input() allowedPattern: OtpPattern = 'digits';
 
   /** Component size */
   @Input() size: OtpSize = 'md';
@@ -121,25 +113,28 @@ export class AxInputOtpComponent
   @Input() separatorAfter?: number;
 
   /** Separator character */
-  @Input() separatorChar = '-';
+  @Input() separatorChar: string = '-';
 
   /** Disabled state */
-  @Input() disabled = false;
+  @Input() disabled: boolean = false;
 
   /** Readonly state */
-  @Input() readonly = false;
+  @Input() readonly: boolean = false;
 
   /** Error state */
-  @Input() error = false;
+  @Input() error: boolean = false;
+
+  /** Mask input values (show dots instead of characters, for PIN/password) */
+  @Input() mask: boolean = false;
 
   /** Auto-focus first input on init */
-  @Input() autoFocus = false;
+  @Input() autoFocus: boolean = false;
 
   /** Auto-submit when complete */
-  @Input() autoSubmit = true;
+  @Input() autoSubmit: boolean = true;
 
   /** Aria label for the group */
-  @Input() ariaLabel = 'One-time password input';
+  @Input() ariaLabel: string = 'One-time password input';
 
   /** Emits the current OTP value */
   @Output() valueChange = new EventEmitter<string>();
@@ -173,12 +168,12 @@ export class AxInputOtpComponent
 
   // Input mode based on pattern
   get inputMode(): string {
-    return this.pattern === 'digits' ? 'numeric' : 'text';
+    return this.allowedPattern === 'digits' ? 'numeric' : 'text';
   }
 
   // Pattern regex
   private get patternRegex(): RegExp {
-    switch (this.pattern) {
+    switch (this.allowedPattern) {
       case 'digits':
         return /^[0-9]$/;
       case 'alpha':
@@ -233,7 +228,13 @@ export class AxInputOtpComponent
     const input = event.target as HTMLInputElement;
     const char = input.value.slice(-1); // Get last character
 
-    if (char && !this.patternRegex.test(char)) {
+    // If empty (e.g. after preventDefault in onKeyDown), don't overwrite existing value
+    if (!char) {
+      input.value = this.values()[index] || '';
+      return;
+    }
+
+    if (!this.patternRegex.test(char)) {
       input.value = this.values()[index] || '';
       return;
     }
@@ -245,7 +246,7 @@ export class AxInputOtpComponent
     this.emitChange();
 
     // Move to next slot if filled
-    if (char && index < this.length - 1) {
+    if (index < this.length - 1) {
       this.focusSlot(index + 1);
     }
 

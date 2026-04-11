@@ -1,4 +1,4 @@
-<nav [class]="breadcrumbClasses" aria-label="Breadcrumb">
+<nav [class]="breadcrumbClasses" [ngStyle]="hostStyles" aria-label="Breadcrumb">
   <ol class="ax-breadcrumb-list">
     @for (item of items; track trackByIndex($index)) {
       <li class="ax-breadcrumb-item">

@@ -40,7 +40,7 @@
   border-radius: var(--ax-radius-md);
   background-color: var(--ax-background-default);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   &:hover:not(.ax-date-picker-wrapper-disabled) {
     border-color: var(--ax-brand-100);
@@ -150,7 +150,7 @@
   background: transparent;
   color: var(--ax-text-secondary);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   flex-shrink: 0;
 
   svg {
@@ -184,7 +184,7 @@
   border: 1px solid var(--ax-border-default);
   border-radius: var(--ax-radius-md);
   box-shadow: var(--ax-shadow-lg);
-  animation: slideDown 0.2s ease-out;
+  animation: slideDown var(--ax-duration-fast, 150ms) var(--ax-easing-easeOut, cubic-bezier(0, 0, 0.2, 1));
 }
 
 // Inline mode dropdown - static positioning
@@ -230,7 +230,7 @@
   background: transparent;
   color: var(--ax-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   flex-shrink: 0;
 
   svg {
@@ -261,7 +261,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   &:hover {
     color: var(--ax-brand-default);
@@ -309,7 +309,7 @@
   font-size: 14px;
   color: var(--ax-text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   font-weight: 500;
 
   &:hover:not(.ax-date-picker-day-disabled):not(.ax-date-picker-day-selected) {
@@ -350,7 +350,7 @@
   }
 
   &.ax-date-picker-day-today::after {
-    background-color: white;
+    background-color: var(--ax-background-default, #fff);
   }
 }
 
@@ -401,7 +401,7 @@
   }
 
   &.ax-date-picker-day-today::after {
-    background-color: white;
+    background-color: var(--ax-background-default, #fff);
   }
 }
 
@@ -418,7 +418,7 @@
   }
 
   &.ax-date-picker-day-today::after {
-    background-color: white;
+    background-color: var(--ax-background-default, #fff);
   }
 }
 
@@ -489,7 +489,7 @@
   font-size: 14px;
   color: var(--ax-text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   font-weight: 500;
 
   &:hover {
@@ -527,7 +527,7 @@
   font-size: 14px;
   color: var(--ax-text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
   font-weight: 500;
 
   &:hover {
@@ -562,7 +562,7 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
 
   &:focus {
     outline: 2px solid var(--ax-brand-default);

@@ -1,0 +1,235 @@
+/* ============================================================
+   Component Design Tokens (Layer 3)
+
+   Component-level CSS custom properties that reference
+   semantic tokens (Layer 2: --ax-* variables).
+
+   These tokens provide a stable API for component styling
+   while allowing full theme customization through the
+   semantic layer.
+
+   Token hierarchy:
+     Layer 1 (Primitive) -> Layer 2 (Semantic) -> Layer 3 (Component)
+
+   Usage:
+     background: var(--ax-button-primary-bg);
+     color: var(--ax-card-header-bg);
+   ============================================================ */
+
+/* ============================================================
+   BUTTON TOKENS
+   ============================================================ */
+
+// Light theme button tokens (default)
+@mixin button-tokens-light {
+  // Primary variant
+  --ax-button-primary-bg: var(--ax-primary);
+  --ax-button-primary-text: var(--ax-primary-contrast);
+  --ax-button-primary-border: var(--ax-primary);
+  --ax-button-primary-hover-bg: var(--ax-primary-dark);
+  --ax-button-primary-active-bg: var(--ax-brand-emphasis);
+  --ax-button-primary-disabled-bg: var(--ax-gray-200);
+  --ax-button-primary-disabled-text: var(--ax-text-disabled);
+
+  // Secondary variant
+  --ax-button-secondary-bg: var(--ax-background-default);
+  --ax-button-secondary-text: var(--ax-text-primary);
+  --ax-button-secondary-border: var(--ax-border-default);
+  --ax-button-secondary-hover-bg: var(--ax-background-subtle);
+  --ax-button-secondary-active-bg: var(--ax-background-muted);
+
+  // Ghost variant
+  --ax-button-ghost-bg: transparent;
+  --ax-button-ghost-text: var(--ax-text-primary);
+  --ax-button-ghost-hover-bg: var(--ax-background-subtle);
+
+  // Size: sm
+  --ax-button-sm-height: 2rem;
+  --ax-button-sm-padding-x: 0.75rem;
+  --ax-button-sm-font-size: 0.75rem;
+
+  // Size: md
+  --ax-button-md-height: 2.5rem;
+  --ax-button-md-padding-x: 1rem;
+  --ax-button-md-font-size: 0.875rem;
+
+  // Size: lg
+  --ax-button-lg-height: 3rem;
+  --ax-button-lg-padding-x: 1.5rem;
+  --ax-button-lg-font-size: 1rem;
+}
+
+// Dark theme button overrides
+@mixin button-tokens-dark {
+  --ax-button-primary-disabled-bg: var(--ax-gray-700);
+  --ax-button-secondary-bg: var(--ax-background-emphasis);
+  --ax-button-secondary-border: var(--ax-border-emphasis);
+  --ax-button-secondary-hover-bg: var(--ax-gray-700);
+  --ax-button-secondary-active-bg: var(--ax-gray-600);
+  --ax-button-ghost-hover-bg: var(--ax-gray-800);
+}
+
+/* ============================================================
+   INPUT / FORM TOKENS
+   ============================================================ */
+
+@mixin input-tokens-light {
+  --ax-input-bg: var(--ax-background-default);
+  --ax-input-text: var(--ax-text-primary);
+  --ax-input-placeholder: var(--ax-text-subtle);
+  --ax-input-border: var(--ax-border-default);
+  --ax-input-focus-border: var(--ax-primary);
+  --ax-input-focus-ring: var(--ax-brand-faint);
+  --ax-input-error-border: var(--ax-error-default);
+  --ax-input-error-text: var(--ax-error-default);
+  --ax-input-disabled-bg: var(--ax-background-muted);
+  --ax-input-disabled-text: var(--ax-text-disabled);
+
+  // Size: sm
+  --ax-input-sm-height: 2rem;
+  --ax-input-sm-padding-x: 0.5rem;
+  --ax-input-sm-font-size: 0.75rem;
+
+  // Size: md
+  --ax-input-md-height: 2.5rem;
+  --ax-input-md-padding-x: 0.75rem;
+  --ax-input-md-font-size: 0.875rem;
+}
+
+@mixin input-tokens-dark {
+  --ax-input-bg: var(--ax-gray-800);
+  --ax-input-disabled-bg: var(--ax-gray-900);
+  --ax-input-focus-ring: var(--ax-brand-emphasis);
+}
+
+/* ============================================================
+   CARD TOKENS
+   ============================================================ */
+
+@mixin card-tokens-light {
+  --ax-card-bg: var(--ax-background-default);
+  --ax-card-border: var(--ax-border-default);
+  --ax-card-shadow: var(--ax-shadow-xs);
+  --ax-card-hover-shadow: var(--ax-shadow-md);
+  --ax-card-radius: var(--ax-radius-lg);
+
+  // Header
+  --ax-card-header-bg: var(--ax-background-muted);
+  --ax-card-header-border-bottom: var(--ax-border-default);
+  --ax-card-header-padding: 1rem 1.5rem;
+
+  // Body
+  --ax-card-body-padding: 1.5rem;
+
+  // Footer
+  --ax-card-footer-bg: var(--ax-background-muted);
+  --ax-card-footer-border-top: var(--ax-border-default);
+  --ax-card-footer-padding: 1rem 1.5rem;
+}
+
+@mixin card-tokens-dark {
+  --ax-card-bg: var(--ax-gray-800);
+  --ax-card-border: var(--ax-gray-700);
+  --ax-card-header-bg: var(--ax-gray-900);
+  --ax-card-footer-bg: var(--ax-gray-900);
+  --ax-card-header-border-bottom: var(--ax-gray-700);
+  --ax-card-footer-border-top: var(--ax-gray-700);
+}
+
+/* ============================================================
+   BADGE TOKENS
+   ============================================================ */
+
+@mixin badge-tokens-light {
+  --ax-badge-font-size: 0.75rem;
+  --ax-badge-font-weight: 500;
+  --ax-badge-border-radius: 9999px;
+
+  // Success
+  --ax-badge-success-bg: var(--ax-success-faint);
+  --ax-badge-success-text: var(--ax-success-emphasis);
+  --ax-badge-success-border: var(--ax-success-border);
+
+  // Warning
+  --ax-badge-warning-bg: var(--ax-warning-faint);
+  --ax-badge-warning-text: var(--ax-warning-emphasis);
+  --ax-badge-warning-border: var(--ax-warning-border);
+
+  // Error
+  --ax-badge-error-bg: var(--ax-error-faint);
+  --ax-badge-error-text: var(--ax-error-emphasis);
+  --ax-badge-error-border: var(--ax-error-border);
+
+  // Info
+  --ax-badge-info-bg: var(--ax-info-faint);
+  --ax-badge-info-text: var(--ax-info-emphasis);
+  --ax-badge-info-border: var(--ax-info-border);
+
+  // Neutral
+  --ax-badge-neutral-bg: var(--ax-background-subtle);
+  --ax-badge-neutral-text: var(--ax-text-secondary);
+  --ax-badge-neutral-border: var(--ax-border-default);
+}
+
+@mixin badge-tokens-dark {
+  // Dark mode: use surface colors for badge backgrounds
+  --ax-badge-success-bg: var(--ax-success-surface);
+  --ax-badge-warning-bg: var(--ax-warning-surface);
+  --ax-badge-error-bg: var(--ax-error-surface);
+  --ax-badge-info-bg: var(--ax-info-surface);
+  --ax-badge-neutral-bg: var(--ax-gray-800);
+  --ax-badge-neutral-text: var(--ax-gray-300);
+  --ax-badge-neutral-border: var(--ax-gray-600);
+}
+
+/* ============================================================
+   DIALOG / MODAL TOKENS
+   ============================================================ */
+
+@mixin dialog-tokens-light {
+  --ax-dialog-bg: var(--ax-background-default);
+  --ax-dialog-border: var(--ax-border-default);
+  --ax-dialog-shadow: var(--ax-shadow-lg);
+  --ax-dialog-radius: var(--ax-radius-xl);
+  --ax-dialog-overlay-bg: rgba(0, 0, 0, 0.5);
+
+  // Header
+  --ax-dialog-header-font-size: 1.25rem;
+  --ax-dialog-header-font-weight: 600;
+  --ax-dialog-header-padding: 1.5rem;
+
+  // Body
+  --ax-dialog-body-padding: 0 1.5rem 1.5rem;
+
+  // Footer
+  --ax-dialog-footer-padding: 1rem 1.5rem;
+  --ax-dialog-footer-border-top: var(--ax-border-default);
+}
+
+@mixin dialog-tokens-dark {
+  --ax-dialog-bg: var(--ax-gray-800);
+  --ax-dialog-border: var(--ax-gray-700);
+  --ax-dialog-overlay-bg: rgba(0, 0, 0, 0.7);
+  --ax-dialog-footer-border-top: var(--ax-gray-700);
+}
+
+/* ============================================================
+   AGGREGATE MIXINS
+   Apply all component tokens at once
+   ============================================================ */
+
+@mixin component-tokens-light {
+  @include button-tokens-light;
+  @include input-tokens-light;
+  @include card-tokens-light;
+  @include badge-tokens-light;
+  @include dialog-tokens-light;
+}
+
+@mixin component-tokens-dark {
+  @include button-tokens-dark;
+  @include input-tokens-dark;
+  @include card-tokens-dark;
+  @include badge-tokens-dark;
+  @include dialog-tokens-dark;
+}

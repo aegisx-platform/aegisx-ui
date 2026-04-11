@@ -10,7 +10,7 @@
 
 .ax-loading-bar-progress {
   height: 100%;
-  transition: width 0.3s ease;
+  transition: width var(--ax-duration-normal, 250ms) var(--ax-easing-standard, ease);
   animation: shimmer 1.5s infinite;
 }
 
@@ -44,4 +44,13 @@
 
 .ax-loading-bar-info .ax-loading-bar-progress {
   background-color: var(--ax-info-default);
+}
+
+// Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  .ax-loading-bar-progress {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

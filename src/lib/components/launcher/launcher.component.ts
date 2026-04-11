@@ -37,6 +37,7 @@ import {
   LauncherUserContext,
   LauncherConfig,
   LauncherViewMode,
+  LauncherDisplayMode,
   LauncherGroupBy,
   LauncherGroupedApps,
   LauncherAppClickEvent,
@@ -49,6 +50,7 @@ import {
 
 /** Default configuration */
 const DEFAULT_CONFIG: LauncherConfig = {
+  displayMode: 'tabs',
   showSearch: true,
   showCategoryTabs: true,
   showStatusFilter: false,
@@ -58,6 +60,8 @@ const DEFAULT_CONFIG: LauncherConfig = {
   emptyMessage: 'No applications available',
   noResultsMessage: 'No applications found',
   enableFavorites: true,
+  enablePinned: true,
+  enableFeatured: true,
   enableRecent: true,
   maxRecentApps: 5,
   storageKeyPrefix: 'ax-launcher',
@@ -172,293 +176,40 @@ const DEFAULT_CONFIG: LauncherConfig = {
         </div>
       </div>
 
-      <!-- Category Tabs -->
-      @if (mergedConfig().showCategoryTabs && categoriesWithAll().length > 1) {
-        <mat-tab-group
-          class="ax-launcher__tabs"
-          [selectedIndex]="selectedCategoryIndex()"
-          (selectedIndexChange)="onCategoryChange($event)"
-          animationDuration="200ms"
-        >
-          <!-- Pinned Tab -->
-          @if (pinnedApps().length > 0) {
-            <mat-tab>
-              <ng-template mat-tab-label>
-                <mat-icon class="tab-icon tab-icon--pinned">push_pin</mat-icon>
-                <span>Pinned</span>
-                <span class="tab-count tab-count--pinned">{{
-                  pinnedApps().length
-                }}</span>
-              </ng-template>
-            </mat-tab>
-          }
-          <!-- Recently Used Tab -->
-          @if (mergedConfig().enableRecent && recentAppsData().length > 0) {
-            <mat-tab>
-              <ng-template mat-tab-label>
-                <mat-icon class="tab-icon">history</mat-icon>
-                <span>Recent</span>
-                <span class="tab-count">{{ recentAppsData().length }}</span>
-              </ng-template>
-            </mat-tab>
-          }
-          <!-- Featured Tab (Bento Grid) -->
-          @if (hasFeaturedApps()) {
-            <mat-tab>
-              <ng-template mat-tab-label>
-                <mat-icon class="tab-icon">star</mat-icon>
-                <span>Featured</span>
-                <span class="tab-count">{{ featuredApps().length }}</span>
-              </ng-template>
-            </mat-tab>
-          }
-          @for (cat of categoriesWithAll(); track cat.id) {
-            <mat-tab>
-              <ng-template mat-tab-label>
-                @if (cat.icon) {
-                  <mat-icon class="tab-icon">{{ cat.icon }}</mat-icon>
-                }
-                <span>{{ cat.name }}</span>
-                <span class="tab-count">{{ getCategoryCount(cat.id) }}</span>
-              </ng-template>
-            </mat-tab>
-          }
-        </mat-tab-group>
-      }
-
-      <!-- Quick Filters -->
-      @if (mergedConfig().enableFavorites || mergedConfig().enableRecent) {
-        <div class="ax-launcher__filters">
-          @if (mergedConfig().enableFavorites && favorites().length > 0) {
-            <mat-chip-listbox>
-              <mat-chip-option
-                [selected]="showFavoritesOnly()"
-                (selectionChange)="showFavoritesOnly.set($event.selected)"
-              >
-                <mat-icon matChipAvatar>star</mat-icon>
-                Favorites ({{ favorites().length }})
-              </mat-chip-option>
-            </mat-chip-listbox>
-          }
-        </div>
-      }
-
-      <!-- Apps Grid/List -->
-      <div class="ax-launcher__content">
-        @if (showPinnedView()) {
-          <!-- Pinned Apps Grid -->
-          <div class="ax-launcher__section">
-            <div class="ax-launcher__section-header">
-              <mat-icon class="section-icon section-icon--pinned"
-                >push_pin</mat-icon
-              >
-              <h3>Pinned Apps</h3>
-              <span class="section-hint"
-                >Your pinned apps for quick access</span
-              >
+      @if (isFlatMode()) {
+        <!-- Flat Display Mode: all apps without grouping, sorted by order -->
+        <div class="ax-launcher__content">
+          @if (flatApps().length === 0) {
+            <div class="ax-launcher__empty">
+              <mat-icon>apps</mat-icon>
+              <p>
+                {{
+                  searchQuery()
+                    ? mergedConfig().noResultsMessage
+                    : mergedConfig().emptyMessage
+                }}
+              </p>
+              @if (searchQuery()) {
+                <button mat-stroked-button (click)="clearSearch()">
+                  Clear Search
+                </button>
+              }
             </div>
-
-            <!-- Draggable Grid (Gridster2) for Pinned -->
-            @if (mergedConfig().enableDraggable) {
-              <gridster
-                [options]="gridsterOptions()"
-                class="ax-launcher__gridster"
-                [class.ax-launcher__gridster--editing]="isEditMode()"
-              >
-                @for (app of pinnedGridsterItems(); track app.id) {
-                  <gridster-item [item]="app">
-                    <ax-launcher-card
-                      [app]="app"
-                      [isAdmin]="userContext().isAdmin || false"
-                      [isFavorite]="isFavorite(app.id)"
-                      [isPinned]="true"
-                      [isEditMode]="isEditMode()"
-                      (cardClick)="onAppClick($event)"
-                      (menuAction)="onMenuAction($event)"
-                      (favoriteToggle)="toggleFavorite($event)"
-                      (pinToggle)="togglePin($event)"
-                    />
-                  </gridster-item>
-                }
-              </gridster>
-            } @else {
-              <div
-                class="ax-launcher__grid"
-                [style.--card-min-width.px]="mergedConfig().cardMinWidth"
-                [style.--card-gap.px]="mergedConfig().cardGap"
-              >
-                @for (app of pinnedAppsData(); track app.id) {
-                  <ax-launcher-card
-                    [app]="app"
-                    [isAdmin]="userContext().isAdmin || false"
-                    [isFavorite]="isFavorite(app.id)"
-                    [isPinned]="true"
-                    (cardClick)="onAppClick($event)"
-                    (menuAction)="onMenuAction($event)"
-                    (favoriteToggle)="toggleFavorite($event)"
-                    (pinToggle)="togglePin($event)"
-                  />
-                }
-              </div>
-            }
-          </div>
-        } @else if (showRecentView()) {
-          <!-- Recently Used Apps Grid -->
-          <div class="ax-launcher__section">
-            <div class="ax-launcher__section-header">
-              <mat-icon class="section-icon">history</mat-icon>
-              <h3>Recently Used</h3>
-              <span class="section-hint">Apps you've used recently</span>
-            </div>
-
-            <!-- Draggable Grid (Gridster2) for Recent -->
-            @if (mergedConfig().enableDraggable) {
-              <gridster
-                [options]="gridsterOptions()"
-                class="ax-launcher__gridster"
-                [class.ax-launcher__gridster--editing]="isEditMode()"
-              >
-                @for (app of recentGridsterItems(); track app.id) {
-                  <gridster-item [item]="app">
-                    <ax-launcher-card
-                      [app]="app"
-                      [isAdmin]="userContext().isAdmin || false"
-                      [isFavorite]="isFavorite(app.id)"
-                      [isPinned]="isPinned(app.id)"
-                      [isEditMode]="isEditMode()"
-                      (cardClick)="onAppClick($event)"
-                      (menuAction)="onMenuAction($event)"
-                      (favoriteToggle)="toggleFavorite($event)"
-                      (pinToggle)="togglePin($event)"
-                    />
-                  </gridster-item>
-                }
-              </gridster>
-            } @else {
-              <div
-                class="ax-launcher__grid"
-                [style.--card-min-width.px]="mergedConfig().cardMinWidth"
-                [style.--card-gap.px]="mergedConfig().cardGap"
-              >
-                @for (app of recentAppsData(); track app.id) {
-                  <ax-launcher-card
-                    [app]="app"
-                    [isAdmin]="userContext().isAdmin || false"
-                    [isFavorite]="isFavorite(app.id)"
-                    [isPinned]="isPinned(app.id)"
-                    (cardClick)="onAppClick($event)"
-                    (menuAction)="onMenuAction($event)"
-                    (favoriteToggle)="toggleFavorite($event)"
-                    (pinToggle)="togglePin($event)"
-                  />
-                }
-              </div>
-            }
-          </div>
-        } @else if (showFeaturedView()) {
-          <!-- Featured Apps Grid View -->
-          <div class="ax-launcher__section">
-            <div class="ax-launcher__section-header">
-              <mat-icon class="section-icon section-icon--featured"
-                >star</mat-icon
-              >
-              <h3>Featured Apps</h3>
-              <span class="section-hint"
-                >Popular and recommended applications</span
-              >
-            </div>
-
-            <!-- Draggable Grid (Gridster2) -->
-            @if (mergedConfig().enableDraggable) {
-              <gridster
-                [options]="gridsterOptions()"
-                class="ax-launcher__gridster"
-                [class.ax-launcher__gridster--editing]="isEditMode()"
-              >
-                @for (app of gridsterItems(); track app.id) {
-                  <gridster-item [item]="app">
-                    <ax-launcher-card
-                      [app]="app"
-                      [isAdmin]="userContext().isAdmin || false"
-                      [isFavorite]="isFavorite(app.id)"
-                      [isPinned]="isPinned(app.id)"
-                      [isEditMode]="isEditMode()"
-                      (cardClick)="onAppClick($event)"
-                      (menuAction)="onMenuAction($event)"
-                      (favoriteToggle)="toggleFavorite($event)"
-                      (pinToggle)="togglePin($event)"
-                    />
-                  </gridster-item>
-                }
-              </gridster>
-            } @else {
-              <!-- Normal Grid -->
-              <div class="ax-launcher__grid">
-                @for (app of featuredApps(); track app.id) {
-                  <ax-launcher-card
-                    [app]="app"
-                    [isAdmin]="userContext().isAdmin || false"
-                    [isFavorite]="isFavorite(app.id)"
-                    [isPinned]="isPinned(app.id)"
-                    (cardClick)="onAppClick($event)"
-                    (menuAction)="onMenuAction($event)"
-                    (favoriteToggle)="toggleFavorite($event)"
-                    (pinToggle)="togglePin($event)"
-                  />
-                }
-              </div>
-            }
-          </div>
-        } @else if (groupedApps().length === 0) {
-          <!-- Empty State -->
-          <div class="ax-launcher__empty">
-            <mat-icon>apps</mat-icon>
-            <p>
-              {{
-                searchQuery()
-                  ? mergedConfig().noResultsMessage
-                  : mergedConfig().emptyMessage
-              }}
-            </p>
-            @if (searchQuery()) {
-              <button mat-stroked-button (click)="clearSearch()">
-                Clear Search
-              </button>
-            }
-          </div>
-        } @else {
-          @for (
-            group of groupedApps();
-            track group.category?.id || 'uncategorized'
-          ) {
-            <!-- Category Header (if grouped) -->
-            @if (
-              mergedConfig().defaultGroupBy === 'category' &&
-              group.category &&
-              !selectedCategory()
-            ) {
-              <div class="ax-launcher__group-header">
-                @if (group.category.icon) {
-                  <mat-icon>{{ group.category.icon }}</mat-icon>
-                }
-                <h3>{{ group.category.name }}</h3>
-                <span class="group-count">{{ group.apps.length }}</span>
-              </div>
-            }
-
-            <!-- Apps Grid -->
+          } @else {
             <div
               class="ax-launcher__grid"
               [style.--card-min-width.px]="mergedConfig().cardMinWidth"
               [style.--card-max-width.px]="mergedConfig().cardMaxWidth"
               [style.--card-gap.px]="mergedConfig().cardGap"
             >
-              @for (app of group.apps; track app.id) {
+              @for (app of flatApps(); track app.id) {
                 <ax-launcher-card
                   [app]="app"
                   [isAdmin]="userContext().isAdmin || false"
                   [isFavorite]="isFavorite(app.id)"
                   [isPinned]="isPinned(app.id)"
+                  [showPinButton]="mergedConfig().enablePinned ?? true"
+                  [showFavoriteButton]="mergedConfig().enableFavorites ?? true"
                   (cardClick)="onAppClick($event)"
                   (menuAction)="onMenuAction($event)"
                   (favoriteToggle)="toggleFavorite($event)"
@@ -467,8 +218,340 @@ const DEFAULT_CONFIG: LauncherConfig = {
               }
             </div>
           }
+        </div>
+      } @else {
+        <!-- Tabs Display Mode (default): category tabs with grouped apps -->
+
+        <!-- Category Tabs -->
+        @if (
+          mergedConfig().showCategoryTabs && categoriesWithAll().length > 1
+        ) {
+          <mat-tab-group
+            class="ax-launcher__tabs"
+            [selectedIndex]="selectedCategoryIndex()"
+            (selectedIndexChange)="onCategoryChange($event)"
+            animationDuration="200ms"
+          >
+            <!-- Pinned Tab -->
+            @if (mergedConfig().enablePinned && pinnedApps().length > 0) {
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="tab-icon tab-icon--pinned"
+                    >push_pin</mat-icon
+                  >
+                  <span>Pinned</span>
+                  <span class="tab-count tab-count--pinned">{{
+                    pinnedApps().length
+                  }}</span>
+                </ng-template>
+              </mat-tab>
+            }
+            <!-- Recently Used Tab -->
+            @if (mergedConfig().enableRecent && recentAppsData().length > 0) {
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="tab-icon">history</mat-icon>
+                  <span>Recent</span>
+                  <span class="tab-count">{{ recentAppsData().length }}</span>
+                </ng-template>
+              </mat-tab>
+            }
+            <!-- Featured Tab (Bento Grid) -->
+            @if (hasFeaturedApps()) {
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="tab-icon">star</mat-icon>
+                  <span>Featured</span>
+                  <span class="tab-count">{{ featuredApps().length }}</span>
+                </ng-template>
+              </mat-tab>
+            }
+            @for (cat of categoriesWithAll(); track cat.id) {
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  @if (cat.icon) {
+                    <mat-icon class="tab-icon">{{ cat.icon }}</mat-icon>
+                  }
+                  <span>{{ cat.name }}</span>
+                  <span class="tab-count">{{ getCategoryCount(cat.id) }}</span>
+                </ng-template>
+              </mat-tab>
+            }
+          </mat-tab-group>
         }
-      </div>
+
+        <!-- Quick Filters -->
+        @if (mergedConfig().enableFavorites || mergedConfig().enableRecent) {
+          <div class="ax-launcher__filters">
+            @if (mergedConfig().enableFavorites && favorites().length > 0) {
+              <mat-chip-listbox>
+                <mat-chip-option
+                  [selected]="showFavoritesOnly()"
+                  (selectionChange)="showFavoritesOnly.set($event.selected)"
+                >
+                  <mat-icon matChipAvatar>star</mat-icon>
+                  Favorites ({{ favorites().length }})
+                </mat-chip-option>
+              </mat-chip-listbox>
+            }
+          </div>
+        }
+
+        <!-- Apps Grid/List -->
+        <div class="ax-launcher__content">
+          @if (showPinnedView()) {
+            <!-- Pinned Apps Grid -->
+            <div class="ax-launcher__section">
+              <div class="ax-launcher__section-header">
+                <mat-icon class="section-icon section-icon--pinned"
+                  >push_pin</mat-icon
+                >
+                <h3>Pinned Apps</h3>
+                <span class="section-hint"
+                  >Your pinned apps for quick access</span
+                >
+              </div>
+
+              <!-- Draggable Grid (Gridster2) for Pinned -->
+              @if (mergedConfig().enableDraggable) {
+                <gridster
+                  [options]="gridsterOptions()"
+                  class="ax-launcher__gridster"
+                  [class.ax-launcher__gridster--editing]="isEditMode()"
+                >
+                  @for (app of pinnedGridsterItems(); track app.id) {
+                    <gridster-item [item]="app">
+                      <ax-launcher-card
+                        [app]="app"
+                        [isAdmin]="userContext().isAdmin || false"
+                        [isFavorite]="isFavorite(app.id)"
+                        [isPinned]="true"
+                        [showPinButton]="mergedConfig().enablePinned ?? true"
+                        [showFavoriteButton]="
+                          mergedConfig().enableFavorites ?? true
+                        "
+                        [isEditMode]="isEditMode()"
+                        (cardClick)="onAppClick($event)"
+                        (menuAction)="onMenuAction($event)"
+                        (favoriteToggle)="toggleFavorite($event)"
+                        (pinToggle)="togglePin($event)"
+                      />
+                    </gridster-item>
+                  }
+                </gridster>
+              } @else {
+                <div
+                  class="ax-launcher__grid"
+                  [style.--card-min-width.px]="mergedConfig().cardMinWidth"
+                  [style.--card-gap.px]="mergedConfig().cardGap"
+                >
+                  @for (app of pinnedAppsData(); track app.id) {
+                    <ax-launcher-card
+                      [app]="app"
+                      [isAdmin]="userContext().isAdmin || false"
+                      [isFavorite]="isFavorite(app.id)"
+                      [isPinned]="true"
+                      [showPinButton]="mergedConfig().enablePinned ?? true"
+                      [showFavoriteButton]="
+                        mergedConfig().enableFavorites ?? true
+                      "
+                      (cardClick)="onAppClick($event)"
+                      (menuAction)="onMenuAction($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  }
+                </div>
+              }
+            </div>
+          } @else if (showRecentView()) {
+            <!-- Recently Used Apps Grid -->
+            <div class="ax-launcher__section">
+              <div class="ax-launcher__section-header">
+                <mat-icon class="section-icon">history</mat-icon>
+                <h3>Recently Used</h3>
+                <span class="section-hint">Apps you've used recently</span>
+              </div>
+
+              <!-- Draggable Grid (Gridster2) for Recent -->
+              @if (mergedConfig().enableDraggable) {
+                <gridster
+                  [options]="gridsterOptions()"
+                  class="ax-launcher__gridster"
+                  [class.ax-launcher__gridster--editing]="isEditMode()"
+                >
+                  @for (app of recentGridsterItems(); track app.id) {
+                    <gridster-item [item]="app">
+                      <ax-launcher-card
+                        [app]="app"
+                        [isAdmin]="userContext().isAdmin || false"
+                        [isFavorite]="isFavorite(app.id)"
+                        [isPinned]="isPinned(app.id)"
+                        [showPinButton]="mergedConfig().enablePinned ?? true"
+                        [showFavoriteButton]="
+                          mergedConfig().enableFavorites ?? true
+                        "
+                        [isEditMode]="isEditMode()"
+                        (cardClick)="onAppClick($event)"
+                        (menuAction)="onMenuAction($event)"
+                        (favoriteToggle)="toggleFavorite($event)"
+                        (pinToggle)="togglePin($event)"
+                      />
+                    </gridster-item>
+                  }
+                </gridster>
+              } @else {
+                <div
+                  class="ax-launcher__grid"
+                  [style.--card-min-width.px]="mergedConfig().cardMinWidth"
+                  [style.--card-gap.px]="mergedConfig().cardGap"
+                >
+                  @for (app of recentAppsData(); track app.id) {
+                    <ax-launcher-card
+                      [app]="app"
+                      [isAdmin]="userContext().isAdmin || false"
+                      [isFavorite]="isFavorite(app.id)"
+                      [isPinned]="isPinned(app.id)"
+                      [showPinButton]="mergedConfig().enablePinned ?? true"
+                      [showFavoriteButton]="
+                        mergedConfig().enableFavorites ?? true
+                      "
+                      (cardClick)="onAppClick($event)"
+                      (menuAction)="onMenuAction($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  }
+                </div>
+              }
+            </div>
+          } @else if (showFeaturedView()) {
+            <!-- Featured Apps Grid View -->
+            <div class="ax-launcher__section">
+              <div class="ax-launcher__section-header">
+                <mat-icon class="section-icon section-icon--featured"
+                  >star</mat-icon
+                >
+                <h3>Featured Apps</h3>
+                <span class="section-hint"
+                  >Popular and recommended applications</span
+                >
+              </div>
+
+              <!-- Draggable Grid (Gridster2) -->
+              @if (mergedConfig().enableDraggable) {
+                <gridster
+                  [options]="gridsterOptions()"
+                  class="ax-launcher__gridster"
+                  [class.ax-launcher__gridster--editing]="isEditMode()"
+                >
+                  @for (app of gridsterItems(); track app.id) {
+                    <gridster-item [item]="app">
+                      <ax-launcher-card
+                        [app]="app"
+                        [isAdmin]="userContext().isAdmin || false"
+                        [isFavorite]="isFavorite(app.id)"
+                        [isPinned]="isPinned(app.id)"
+                        [showPinButton]="mergedConfig().enablePinned ?? true"
+                        [showFavoriteButton]="
+                          mergedConfig().enableFavorites ?? true
+                        "
+                        [isEditMode]="isEditMode()"
+                        (cardClick)="onAppClick($event)"
+                        (menuAction)="onMenuAction($event)"
+                        (favoriteToggle)="toggleFavorite($event)"
+                        (pinToggle)="togglePin($event)"
+                      />
+                    </gridster-item>
+                  }
+                </gridster>
+              } @else {
+                <!-- Normal Grid -->
+                <div class="ax-launcher__grid">
+                  @for (app of featuredApps(); track app.id) {
+                    <ax-launcher-card
+                      [app]="app"
+                      [isAdmin]="userContext().isAdmin || false"
+                      [isFavorite]="isFavorite(app.id)"
+                      [isPinned]="isPinned(app.id)"
+                      [showPinButton]="mergedConfig().enablePinned ?? true"
+                      [showFavoriteButton]="
+                        mergedConfig().enableFavorites ?? true
+                      "
+                      (cardClick)="onAppClick($event)"
+                      (menuAction)="onMenuAction($event)"
+                      (favoriteToggle)="toggleFavorite($event)"
+                      (pinToggle)="togglePin($event)"
+                    />
+                  }
+                </div>
+              }
+            </div>
+          } @else if (groupedApps().length === 0) {
+            <!-- Empty State -->
+            <div class="ax-launcher__empty">
+              <mat-icon>apps</mat-icon>
+              <p>
+                {{
+                  searchQuery()
+                    ? mergedConfig().noResultsMessage
+                    : mergedConfig().emptyMessage
+                }}
+              </p>
+              @if (searchQuery()) {
+                <button mat-stroked-button (click)="clearSearch()">
+                  Clear Search
+                </button>
+              }
+            </div>
+          } @else {
+            @for (
+              group of groupedApps();
+              track group.category?.id || 'uncategorized'
+            ) {
+              <!-- Category Header (if grouped) -->
+              @if (
+                mergedConfig().defaultGroupBy === 'category' &&
+                group.category &&
+                !selectedCategory()
+              ) {
+                <div class="ax-launcher__group-header">
+                  @if (group.category.icon) {
+                    <mat-icon>{{ group.category.icon }}</mat-icon>
+                  }
+                  <h3>{{ group.category.name }}</h3>
+                  <span class="group-count">{{ group.apps.length }}</span>
+                </div>
+              }
+
+              <!-- Apps Grid -->
+              <div
+                class="ax-launcher__grid"
+                [style.--card-min-width.px]="mergedConfig().cardMinWidth"
+                [style.--card-max-width.px]="mergedConfig().cardMaxWidth"
+                [style.--card-gap.px]="mergedConfig().cardGap"
+              >
+                @for (app of group.apps; track app.id) {
+                  <ax-launcher-card
+                    [app]="app"
+                    [isAdmin]="userContext().isAdmin || false"
+                    [isFavorite]="isFavorite(app.id)"
+                    [isPinned]="isPinned(app.id)"
+                    [showPinButton]="mergedConfig().enablePinned ?? true"
+                    [showFavoriteButton]="
+                      mergedConfig().enableFavorites ?? true
+                    "
+                    (cardClick)="onAppClick($event)"
+                    (menuAction)="onMenuAction($event)"
+                    (favoriteToggle)="toggleFavorite($event)"
+                    (pinToggle)="togglePin($event)"
+                  />
+                }
+              </div>
+            }
+          }
+        </div>
+      }
 
       <!-- Footer (optional slot) -->
       <ng-content select="[launcherFooter]"></ng-content>
@@ -478,7 +561,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
     .ax-launcher {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1rem;
     }
 
     /* Header */
@@ -525,6 +608,14 @@ const DEFAULT_CONFIG: LauncherConfig = {
         .mat-mdc-text-field-wrapper {
           background: var(--ax-background-default, #fff);
         }
+
+        /* Prefix search icon — match input size */
+        .mat-mdc-form-field-icon-prefix mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: var(--ax-text-tertiary, #9ca3af);
+        }
       }
     }
 
@@ -558,14 +649,15 @@ const DEFAULT_CONFIG: LauncherConfig = {
     .ax-launcher__search-hint {
       display: inline-flex;
       align-items: center;
-      padding: 0.125rem 0.5rem;
-      margin-right: 0.25rem;
-      font-size: 0.75rem;
+      padding: 0.125rem 0.375rem;
+      margin-right: 0.5rem;
+      font-size: 0.6875rem;
       font-weight: 500;
       color: var(--ax-text-muted, #9ca3af);
       background: var(--ax-background-subtle, #f3f4f6);
-      border-radius: var(--ax-radius-sm, 4px);
+      border-radius: 4px;
       border: 1px solid var(--ax-border-default, #e5e7eb);
+      line-height: 1.2;
     }
 
     /* Tabs */
@@ -756,8 +848,8 @@ const DEFAULT_CONFIG: LauncherConfig = {
 
     /* Gridster Container */
     .ax-launcher__gridster {
-      min-height: 600px;
-      background: var(--ax-background-subtle, #f9fafb);
+      height: 400px;
+      background: transparent;
       border-radius: var(--ax-radius-lg, 12px);
 
       ::ng-deep {
@@ -768,25 +860,19 @@ const DEFAULT_CONFIG: LauncherConfig = {
         .gridster-item {
           border-radius: var(--ax-radius-lg, 12px);
           overflow: hidden;
-          background: transparent;
+          background: transparent !important;
         }
 
         .gridster-item-content {
           height: 100% !important;
           width: 100% !important;
-          display: flex;
+          display: block;
+          background: transparent !important;
 
-          /* Make launcher-card fill the gridster item */
           ax-launcher-card {
             width: 100%;
             height: 100%;
             display: block;
-
-            .launcher-card {
-              width: 100%;
-              height: 100%;
-              min-height: unset;
-            }
           }
         }
 
@@ -810,14 +896,9 @@ const DEFAULT_CONFIG: LauncherConfig = {
     }
 
     .ax-launcher__gridster--editing {
-      background: repeating-linear-gradient(
-        45deg,
-        var(--ax-background-subtle, #f9fafb),
-        var(--ax-background-subtle, #f9fafb) 10px,
-        rgba(99, 102, 241, 0.03) 10px,
-        rgba(99, 102, 241, 0.03) 20px
-      );
+      background: var(--ax-background-subtle, #f9fafb);
       border: 2px dashed var(--ax-brand-default, #6366f1);
+      padding: 0.5rem;
 
       ::ng-deep {
         .gridster-item-resizable-handler {
@@ -960,17 +1041,11 @@ const DEFAULT_CONFIG: LauncherConfig = {
       }
 
       .ax-launcher__gridster {
-        background: #1f2937;
+        background: transparent;
       }
 
       .ax-launcher__gridster--editing {
-        background: repeating-linear-gradient(
-          45deg,
-          #1f2937,
-          #1f2937 10px,
-          rgba(99, 102, 241, 0.1) 10px,
-          rgba(99, 102, 241, 0.1) 20px
-        );
+        background: #1f2937;
       }
 
       .ax-launcher__edit-btn--active {
@@ -1087,7 +1162,6 @@ export class AxLauncherComponent {
   featuredApps = computed(() => {
     const allApps = this.apps();
     const user = this.userContext();
-    const recent = this.recentApps();
     const pinned = this.pinnedApps();
 
     // Get apps that are featured or pinned
@@ -1098,7 +1172,7 @@ export class AxLauncherComponent {
       return app.featured;
     });
 
-    // Sort by: pinned first, then recent usage, then by order
+    // Keep featured order stable: pinned first, then configured order
     return featured.sort((a, b) => {
       // Pinned apps always come first
       const pinnedA = pinned.includes(a.id);
@@ -1111,20 +1185,17 @@ export class AxLauncherComponent {
         return pinned.indexOf(a.id) - pinned.indexOf(b.id);
       }
 
-      // Then by recent usage
-      const recentA = recent.indexOf(a.id);
-      const recentB = recent.indexOf(b.id);
-      if (recentA !== -1 && recentB !== -1) return recentA - recentB;
-      if (recentA !== -1) return -1;
-      if (recentB !== -1) return 1;
-
       // Then by order
       return (a.order || 0) - (b.order || 0);
     });
   });
 
-  /** Check if there are any featured apps */
-  hasFeaturedApps = computed(() => this.featuredApps().length > 0);
+  /** Check if there are any featured apps (respects enableFeatured config) */
+  hasFeaturedApps = computed(
+    () =>
+      (this.mergedConfig().enableFeatured ?? true) &&
+      this.featuredApps().length > 0,
+  );
 
   /** Total notification count across all apps */
   totalNotifications = computed(() => {
@@ -1196,20 +1267,20 @@ export class AxLauncherComponent {
     const isEditing = this.isEditMode();
 
     return {
-      gridType: GridType.ScrollVertical,
-      compactType: CompactType.CompactUp,
+      gridType: GridType.Fit,
+      compactType: CompactType.None,
       displayGrid: isEditing ? DisplayGrid.Always : DisplayGrid.None,
       pushItems: true,
-      swap: true,
-      margin: gridConfig.margin ?? 12,
+      swap: false,
+      margin: gridConfig.margin ?? 16,
       outerMargin: true,
-      outerMarginTop: 12,
-      outerMarginRight: 12,
-      outerMarginBottom: 12,
-      outerMarginLeft: 12,
+      outerMarginTop: 0,
+      outerMarginRight: 0,
+      outerMarginBottom: 0,
+      outerMarginLeft: 0,
       minCols: gridConfig.columns ?? 4,
       maxCols: gridConfig.columns ?? 4,
-      minRows: 4,
+      minRows: 2,
       maxRows: 100,
       defaultItemCols: 1,
       defaultItemRows: 1,
@@ -1217,8 +1288,7 @@ export class AxLauncherComponent {
       maxItemCols: 2,
       minItemRows: 1,
       maxItemRows: 2,
-      fixedColWidth: 280,
-      fixedRowHeight: gridConfig.rowHeight ?? 160,
+      fixedRowHeight: gridConfig.rowHeight ?? 180,
       draggable: {
         enabled: isEditing,
       },
@@ -1330,9 +1400,11 @@ export class AxLauncherComponent {
   /** Selected category index for tabs (adjusted for special tabs: Pinned, Recent, Featured) */
   selectedCategoryIndex = computed(() => {
     const active = this.activeView();
-    const hasPinned = this.pinnedApps().length > 0;
+    const config = this.mergedConfig();
+    const hasPinned =
+      (config.enablePinned ?? true) && this.pinnedApps().length > 0;
     const hasRecent =
-      this.mergedConfig().enableRecent && this.recentAppsData().length > 0;
+      (config.enableRecent ?? true) && this.recentAppsData().length > 0;
     const hasFeatured = this.hasFeaturedApps();
 
     // Calculate indices dynamically
@@ -1369,12 +1441,13 @@ export class AxLauncherComponent {
     return 0;
   });
 
-  /** Filtered apps based on RBAC and search */
-  filteredApps = computed(() => {
+  /** Visible apps based on RBAC, search, and favorites (no category filter)
+   * Used for category count calculations to show total apps in each category
+   */
+  visibleApps = computed(() => {
     const allApps = this.apps();
     const user = this.userContext();
     const search = this.searchQuery().toLowerCase().trim();
-    const selectedCat = this.selectedCategory();
     const favoritesOnly = this.showFavoritesOnly();
     const favs = this.favorites();
 
@@ -1393,18 +1466,30 @@ export class AxLauncherComponent {
         if (!matchesSearch) return false;
       }
 
-      // 3. Category filter
-      if (selectedCat && selectedCat !== 'all') {
-        if (app.categoryId !== selectedCat) return false;
-      }
+      // NOTE: Category filter is intentionally excluded from this computed
+      // so that category counts always reflect total apps in each category
+      // regardless of the currently selected category tab
 
-      // 4. Favorites filter
+      // 3. Favorites filter
       if (favoritesOnly) {
         if (!favs.includes(app.id)) return false;
       }
 
       return true;
     });
+  });
+
+  /** Filtered apps based on RBAC, search, favorites, and selected category */
+  filteredApps = computed(() => {
+    const apps = this.visibleApps();
+    const selectedCat = this.selectedCategory();
+
+    // Apply category filter only if a specific category is selected
+    if (selectedCat && selectedCat !== 'all') {
+      return apps.filter((app) => app.categoryId === selectedCat);
+    }
+
+    return apps;
   });
 
   /** Grouped apps for display */
@@ -1452,6 +1537,16 @@ export class AxLauncherComponent {
     }
 
     return result;
+  });
+
+  /** Whether flat display mode is active */
+  isFlatMode = computed(() => this.mergedConfig().displayMode === 'flat');
+
+  /** All visible apps sorted by order (for flat display mode) */
+  flatApps = computed<LauncherApp[]>(() => {
+    return [...this.visibleApps()].sort(
+      (a, b) => (a.order ?? 0) - (b.order ?? 0),
+    );
   });
 
   // ============================================
@@ -1529,6 +1624,23 @@ export class AxLauncherComponent {
       { allowSignalWrites: true },
     );
 
+    // Fallback activeView when configured view is disabled
+    effect(
+      () => {
+        const config = this.mergedConfig();
+        const active = this.activeView();
+        if (
+          (active === 'featured' && !(config.enableFeatured ?? true)) ||
+          (active === 'pinned' && !(config.enablePinned ?? true)) ||
+          (active === 'recent' && !(config.enableRecent ?? true))
+        ) {
+          this.activeView.set('category');
+          this.selectedCategory.set(null); // "All Apps"
+        }
+      },
+      { allowSignalWrites: true },
+    );
+
     // Load layout from localStorage (for draggable mode)
     effect(
       () => {
@@ -1571,7 +1683,7 @@ export class AxLauncherComponent {
       // Check permissions (OR logic)
       if (viewPermissions && viewPermissions.length > 0) {
         const hasPermission = viewPermissions.some((perm) =>
-          user.permissions.includes(perm),
+          this.hasPermission(user.permissions, perm),
         );
         if (!hasPermission && !user.isAdmin) {
           return false;
@@ -1590,6 +1702,114 @@ export class AxLauncherComponent {
     return true;
   }
 
+  private hasPermission(
+    userPermissions: string[],
+    requiredPermission: string,
+  ): boolean {
+    const normalizedRequiredPermission =
+      this.normalizePermission(requiredPermission);
+    const requiredParts = this.splitPermission(normalizedRequiredPermission);
+
+    if (!requiredParts) {
+      return false;
+    }
+
+    return userPermissions.some((permission) => {
+      const normalizedUserPermission = this.normalizePermission(permission);
+
+      if (normalizedUserPermission === normalizedRequiredPermission) {
+        return true;
+      }
+
+      if (normalizedUserPermission === '*:*') {
+        return true;
+      }
+
+      if (
+        this.matchesInventoryDomainPermission(
+          normalizedUserPermission,
+          normalizedRequiredPermission,
+        )
+      ) {
+        return true;
+      }
+
+      const userParts = this.splitPermission(normalizedUserPermission);
+      if (!userParts) {
+        return false;
+      }
+
+      if (
+        userParts.resource === requiredParts.resource &&
+        userParts.action === '*'
+      ) {
+        return true;
+      }
+
+      if (
+        userParts.resource === '*' &&
+        userParts.action === requiredParts.action
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+  }
+
+  private normalizePermission(permission: string): string {
+    const normalized = permission.replace(/\./g, ':').trim();
+    if (normalized === 'inventory:inventory:*') {
+      return 'inventory:*';
+    }
+
+    return normalized;
+  }
+
+  private splitPermission(
+    permission: string,
+  ): { resource: string; action: string } | null {
+    const separatorIndex = permission.indexOf(':');
+    if (separatorIndex <= 0 || separatorIndex >= permission.length - 1) {
+      return null;
+    }
+
+    return {
+      resource: permission.slice(0, separatorIndex),
+      action: permission.slice(separatorIndex + 1),
+    };
+  }
+
+  private matchesInventoryDomainPermission(
+    normalizedUserPermission: string,
+    normalizedRequiredPermission: string,
+  ): boolean {
+    if (!normalizedRequiredPermission.startsWith('inventory:')) {
+      return false;
+    }
+    if (!normalizedUserPermission.startsWith('inventory:inventory:')) {
+      return false;
+    }
+
+    const inventoryAction = normalizedUserPermission.slice(
+      'inventory:inventory:'.length,
+    );
+
+    if (inventoryAction === '*') {
+      return true;
+    }
+
+    const requiredParts = this.splitPermission(normalizedRequiredPermission);
+    if (!requiredParts) {
+      return false;
+    }
+
+    return (
+      requiredParts.action === inventoryAction ||
+      requiredParts.action.endsWith(`:${inventoryAction}`)
+    );
+  }
+
   // ============================================
   // EVENT HANDLERS
   // ============================================
@@ -1603,9 +1823,11 @@ export class AxLauncherComponent {
   }
 
   onCategoryChange(index: number): void {
-    const hasPinned = this.pinnedApps().length > 0;
+    const config = this.mergedConfig();
+    const hasPinned =
+      (config.enablePinned ?? true) && this.pinnedApps().length > 0;
     const hasRecent =
-      this.mergedConfig().enableRecent && this.recentAppsData().length > 0;
+      (config.enableRecent ?? true) && this.recentAppsData().length > 0;
     const hasFeatured = this.hasFeaturedApps();
 
     let currentIndex = 0;
@@ -1650,11 +1872,11 @@ export class AxLauncherComponent {
   }
 
   getCategoryCount(categoryId: string): number {
+    const visible = this.visibleApps();
     if (categoryId === 'all') {
-      return this.filteredApps().length;
+      return visible.length;
     }
-    return this.filteredApps().filter((app) => app.categoryId === categoryId)
-      .length;
+    return visible.filter((app) => app.categoryId === categoryId).length;
   }
 
   onAppClick(event: LauncherAppClickEvent): void {

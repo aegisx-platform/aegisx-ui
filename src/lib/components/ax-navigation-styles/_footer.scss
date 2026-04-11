@@ -54,7 +54,7 @@
   .nav-footer-arrows {
     flex-shrink: 0;
     opacity: 0.6;
-    transition: opacity 150ms ease;
+    transition: opacity var(--ax-duration-fast, 150ms) var(--ax-easing-standard, ease);
     margin-left: auto;
   }
 

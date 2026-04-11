@@ -23,6 +23,7 @@
       [attr.aria-expanded]="isOpen"
       aria-haspopup="dialog"
       aria-controls="datepicker-dropdown"
+      [attr.aria-describedby]="displayMessage ? messageId : null"
     >
       <!-- Display Value -->
       <div class="ax-date-picker-display">
@@ -90,219 +91,37 @@
       [attr.aria-modal]="displayMode === 'inline' ? null : true"
       [attr.aria-label]="'Choose date' + (label ? ' for ' + label : '')"
       [attr.tabindex]="displayMode === 'inline' ? 0 : -1"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="displayMode !== 'inline'"
     >
       <!-- Header -->
-      <div
-        class="ax-date-picker-header"
-        role="toolbar"
-        aria-label="Calendar navigation"
-      >
-        @if (viewMode === 'year') {
-          <button
-            type="button"
-            class="ax-date-picker-nav-btn"
-            (click)="previousYearRange(); $event.stopPropagation()"
-            aria-label="Previous 12 years"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M12.5 15L7.5 10L12.5 5"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-        } @else {
-          <button
-            type="button"
-            class="ax-date-picker-nav-btn"
-            (click)="previousMonth(); $event.stopPropagation()"
-            aria-label="Previous month"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M12.5 15L7.5 10L12.5 5"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-        }
+      <ax-calendar-header
+        [viewMode]="viewMode"
+        [currentMonthYear]="currentMonthYear"
+        [yearRangeStart]="years[0]"
+        [yearRangeEnd]="years[11]"
+        (prevClick)="onHeaderPrev()"
+        (nextClick)="onHeaderNext()"
+        (viewModeToggle)="toggleViewMode()"
+      />
 
-        <button
-          type="button"
-          class="ax-date-picker-month-year"
-          (click)="toggleViewMode(); $event.stopPropagation()"
-          [attr.aria-label]="
-            viewMode === 'year' ? 'Switch to month view' : 'Switch to year view'
-          "
-        >
-          @if (viewMode === 'year') {
-            <span>{{ years[0] }} - {{ years[11] }}</span>
-          } @else {
-            <span>{{ currentMonthYear }}</span>
-          }
-        </button>
-
-        @if (viewMode === 'year') {
-          <button
-            type="button"
-            class="ax-date-picker-nav-btn"
-            (click)="nextYearRange(); $event.stopPropagation()"
-            aria-label="Next 12 years"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M7.5 5L12.5 10L7.5 15"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-        } @else {
-          <button
-            type="button"
-            class="ax-date-picker-nav-btn"
-            (click)="nextMonth(); $event.stopPropagation()"
-            aria-label="Next month"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M7.5 5L12.5 10L7.5 15"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-        }
-      </div>
-
-      <!-- Day View -->
-      @if (viewMode === 'day') {
-        <!-- Week Days -->
-        <div class="ax-date-picker-weekdays">
-          @for (day of weekDays; track day) {
-            <div class="ax-date-picker-weekday">{{ day }}</div>
-          }
-        </div>
-
-        <!-- Calendar Grid -->
-        <div
-          class="ax-date-picker-days"
-          role="grid"
-          aria-label="Calendar dates"
-          (mouseleave)="onCalendarMouseLeave()"
-        >
-          @for (day of calendarDays; track day.date.getTime()) {
-            <button
-              type="button"
-              class="ax-date-picker-day"
-              role="gridcell"
-              [class.ax-date-picker-day-other-month]="!day.isCurrentMonth"
-              [class.ax-date-picker-day-today]="day.isToday"
-              [class.ax-date-picker-day-selected]="day.isSelected"
-              [class.ax-date-picker-day-focused]="day.isFocused"
-              [class.ax-date-picker-day-disabled]="day.isDisabled"
-              [class.ax-date-picker-day-range-start]="day.isRangeStart"
-              [class.ax-date-picker-day-range-end]="day.isRangeEnd"
-              [class.ax-date-picker-day-in-range]="day.isInRange"
-              [disabled]="day.isDisabled"
-              [attr.aria-label]="getDateAriaLabel(day.date)"
-              [attr.aria-selected]="day.isSelected"
-              [attr.aria-disabled]="day.isDisabled"
-              [attr.aria-current]="day.isToday ? 'date' : null"
-              (click)="selectDate(day); $event.stopPropagation()"
-              (mouseenter)="onDayHover(day)"
-            >
-              {{ day.day }}
-            </button>
-          }
-        </div>
-      }
-
-      <!-- Month View -->
-      @if (viewMode === 'month') {
-        <div
-          class="ax-date-picker-months"
-          role="grid"
-          aria-label="Select month"
-        >
-          @for (month of months; track $index) {
-            <button
-              type="button"
-              class="ax-date-picker-month"
-              role="gridcell"
-              [class.ax-date-picker-month-selected]="
-                currentMonth.getMonth() === $index
-              "
-              [attr.aria-label]="month"
-              [attr.aria-selected]="currentMonth.getMonth() === $index"
-              (click)="selectMonth($index); $event.stopPropagation()"
-            >
-              {{ month }}
-            </button>
-          }
-        </div>
-      }
-
-      <!-- Year View -->
-      @if (viewMode === 'year') {
-        <div class="ax-date-picker-years" role="grid" aria-label="Select year">
-          @for (year of years; track year) {
-            <button
-              type="button"
-              class="ax-date-picker-year"
-              role="gridcell"
-              [class.ax-date-picker-year-selected]="
-                currentMonth.getFullYear() === year
-              "
-              [attr.aria-label]="
-                calendar === 'buddhist' && locale === 'th'
-                  ? (year + 543).toString()
-                  : year.toString()
-              "
-              [attr.aria-selected]="currentMonth.getFullYear() === year"
-              (click)="selectYear(year); $event.stopPropagation()"
-            >
-              {{
-                calendar === 'buddhist' && locale === 'th' ? year + 543 : year
-              }}
-            </button>
-          }
-        </div>
-      }
+      <!-- Calendar Grid (Day / Month / Year views) -->
+      <ax-calendar-grid
+        [viewMode]="viewMode"
+        [calendarDays]="calendarDays"
+        [weekDays]="weekDays"
+        [months]="months"
+        [years]="years"
+        [selectedMonth]="currentMonth.getMonth()"
+        [selectedYear]="currentMonth.getFullYear()"
+        [locale]="locale"
+        [calendar]="calendar"
+        (dateSelect)="selectDate($event)"
+        (dateHover)="onDayHover($event)"
+        (calendarMouseLeave)="onCalendarMouseLeave()"
+        (monthSelect)="selectMonth($event)"
+        (yearSelect)="selectYear($event)"
+      />
 
       <!-- Action Buttons Footer -->
       @if (showActionButtons) {
@@ -330,7 +149,7 @@
 
   <!-- Helper Text / Error Message -->
   @if (displayMessage) {
-    <div class="ax-date-picker-message">
+    <div [id]="messageId" class="ax-date-picker-message" [attr.role]="errorMessage ? 'alert' : null">
       {{ displayMessage }}
     </div>
   }

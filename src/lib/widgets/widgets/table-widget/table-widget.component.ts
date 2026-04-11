@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -14,13 +14,7 @@ import {
 @Component({
   selector: 'ax-table-widget',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    DatePipe,
-    CurrencyPipe,
-  ],
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
   template: `
     <div
       class="ax-table-widget"

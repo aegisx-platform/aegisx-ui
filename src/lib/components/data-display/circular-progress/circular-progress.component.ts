@@ -1,15 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-/**
- * Circular Progress Variant
- */
-export type CircularProgressVariant = 'ring' | 'donut' | 'gauge';
-
-/**
- * Circular Progress Size
- */
-export type CircularProgressSize = 'sm' | 'md' | 'lg' | 'xl';
+import {
+  CircularProgressVariant,
+  CircularProgressSize,
+  CircularProgressColor,
+} from './circular-progress.types';
 
 /**
  * AxCircularProgressComponent
@@ -34,9 +29,9 @@ export type CircularProgressSize = 'sm' | 'md' | 'lg' | 'xl';
   templateUrl: './circular-progress.component.html',
   styleUrls: ['./circular-progress.component.scss'],
 })
-export class AxCircularProgressComponent implements OnInit {
+export class AxCircularProgressComponent implements OnInit, OnChanges {
   /** Progress value (0-100) */
-  @Input() value = 0;
+  @Input() value: number = 0;
 
   /** Circle variant */
   @Input() variant: CircularProgressVariant = 'ring';
@@ -44,29 +39,33 @@ export class AxCircularProgressComponent implements OnInit {
   /** Circle size */
   @Input() size: CircularProgressSize = 'md';
 
-  /** Progress color (design token or CSS color) */
-  @Input() color?: string;
+  /**
+   * Progress color.
+   * Accepts a semantic color name ('primary' | 'info' | 'success' | 'warning' | 'error')
+   * or any valid CSS color string for custom colors.
+   */
+  @Input() color?: CircularProgressColor | string;
 
   /** Show percentage label in center */
-  @Input() showLabel = true;
+  @Input() showLabel: boolean = true;
 
   /** Custom label text (overrides percentage) */
   @Input() label?: string;
 
   /** Track color (background circle) */
-  @Input() trackColor = 'var(--ax-border-default)';
+  @Input() trackColor: string = 'var(--ax-border-default)';
 
   /** Stroke width (auto-calculated based on size if not provided) */
   @Input() strokeWidth?: number;
 
   /** Automatic color based on value thresholds */
-  @Input() autoColor = false;
+  @Input() autoColor: boolean = false;
 
   /** Success threshold (green above this) */
-  @Input() successThreshold = 80;
+  @Input() successThreshold: number = 80;
 
   /** Warning threshold (yellow below this) */
-  @Input() warningThreshold = 50;
+  @Input() warningThreshold: number = 50;
 
   // SVG properties (calculated)
   svgSize = 0;
@@ -121,12 +120,22 @@ export class AxCircularProgressComponent implements OnInit {
       this.circumference - (clampedValue / 100) * this.circumference;
   }
 
+  /** Map semantic color names to CSS custom properties */
+  private static readonly COLOR_MAP: Record<string, string> = {
+    primary: 'var(--ax-primary-default)',
+    info: 'var(--ax-info-default)',
+    success: 'var(--ax-success-default)',
+    warning: 'var(--ax-warning-default)',
+    error: 'var(--ax-error)',
+  };
+
   /**
-   * Get progress color based on value
+   * Get progress color based on value.
+   * Resolves semantic color names to CSS variables, passes through raw CSS colors.
    */
   getProgressColor(): string {
     if (this.color) {
-      return this.color;
+      return AxCircularProgressComponent.COLOR_MAP[this.color] ?? this.color;
     }
 
     if (this.autoColor) {

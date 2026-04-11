@@ -1,4 +1,4 @@
-<span [class]="badgeClasses">
+<span [class]="badgeClasses" [style]="customStyles">
   <!-- Dot indicator -->
   @if (dot) {
     <span class="dot"></span>
@@ -9,19 +9,26 @@
     <span class="square"></span>
   }
 
-  <!-- Icon -->
-  @if (icon) {
+  <!-- Icon leading -->
+  @if (icon && iconPosition === 'leading') {
     <mat-icon>{{ icon }}</mat-icon>
   }
 
-  <!-- Label content -->
-  <span class="badge-label">
-    <ng-content></ng-content>
-  </span>
+  <!-- Label content (hidden in icon-only mode) -->
+  @if (!iconOnly) {
+    <span class="badge-label">
+      <ng-content></ng-content>
+    </span>
+  }
 
   <!-- Counter -->
   @if (counter !== undefined) {
     <span class="badge-count">{{ counter }}</span>
+  }
+
+  <!-- Icon trailing -->
+  @if (icon && iconPosition === 'trailing') {
+    <mat-icon>{{ icon }}</mat-icon>
   }
 
   <!-- Remove button -->

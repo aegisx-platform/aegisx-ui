@@ -1,0 +1,20 @@
+<div
+  class="ax-master-detail"
+  [class.ax-master-detail--right]="masterPosition === 'right'"
+  [class.ax-master-detail--no-divider]="!showDivider"
+>
+  <div
+    class="ax-master-detail__master"
+    [style.width.px]="masterWidth"
+    [style.min-width.px]="masterWidth"
+  >
+    <ng-content select="[master]"></ng-content>
+  </div>
+
+  <div
+    class="ax-master-detail__detail"
+    [class.ax-master-detail__detail--hidden]="!showDetail"
+  >
+    <ng-content select="[detail]"></ng-content>
+  </div>
+</div>

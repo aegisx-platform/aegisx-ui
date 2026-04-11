@@ -7,23 +7,23 @@
   background-color: var(--ax-background-default);
   border-radius: var(--ax-radius-lg);
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all var(--ax-duration-normal, 200ms) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // Variants
 .ax-card-default {
-  border: 1px solid var(--ax-border-emphasis);
-  box-shadow: var(--ax-shadow-sm);
+  border: 1px solid var(--ax-border-default);
+  box-shadow: var(--ax-shadow-xs);
 }
 
 .ax-card-outlined {
-  border: 1px solid var(--ax-border-emphasis);
-  box-shadow: var(--ax-shadow-sm);
+  border: 1px solid var(--ax-border-default);
+  box-shadow: none;
 }
 
 .ax-card-elevated {
   border: none;
-  box-shadow: var(--ax-shadow-md);
+  box-shadow: var(--ax-shadow-sm);
 }
 
 // Color Variants
@@ -209,7 +209,7 @@
 // States
 .ax-card-hoverable:hover {
   transform: translateY(-2px);
-  box-shadow: var(--ax-shadow-lg);
+  box-shadow: var(--ax-shadow-md);
 }
 
 .ax-card-clickable {
@@ -405,5 +405,18 @@
 
   &:empty {
     display: none;
+  }
+}
+
+// Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  .ax-card,
+  .ax-card-hoverable,
+  .ax-card-clickable,
+  .ax-card-spinner,
+  .ax-card-spinner-circle {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

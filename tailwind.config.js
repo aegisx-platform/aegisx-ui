@@ -18,72 +18,134 @@ module.exports = {
   theme: {
     extend: {
       // ============================================
-      // COLORS (mapped from design tokens)
+      // COLORS (CSS custom properties for runtime theming)
       // ============================================
       colors: {
-        // Brand/Primary (Indigo)
-        primary: {
-          50: '#eef2ff', // indigo-50
-          100: '#e0e7ff', // indigo-100
-          200: '#c7d2fe', // indigo-200
-          300: '#a5b4fc', // indigo-300
-          400: '#818cf8', // indigo-400
-          500: '#6366f1', // indigo-500
-          600: '#4f46e5', // indigo-600
-          700: '#4338ca', // indigo-700
-          800: '#3730a3', // indigo-800
-          900: '#312e81', // indigo-900
-          DEFAULT: '#6366f1',
+        // Brand/Primary Colors
+        brand: {
+          faint: 'var(--ax-brand-faint)',
+          muted: 'var(--ax-brand-muted)',
+          subtle: 'var(--ax-brand-subtle)',
+          DEFAULT: 'var(--ax-brand-default)',
+          emphasis: 'var(--ax-brand-emphasis)',
+          strong: 'var(--ax-brand-strong)',
+          inverted: 'var(--ax-brand-inverted)',
         },
 
-        // Success (Green)
+        // Success Colors
         success: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          300: '#86efac',
-          500: '#22c55e',
-          600: '#16a34a',
-          DEFAULT: '#22c55e',
+          faint: 'var(--ax-success-faint)',
+          muted: 'var(--ax-success-muted)',
+          subtle: 'var(--ax-success-subtle)',
+          DEFAULT: 'var(--ax-success-default)',
+          emphasis: 'var(--ax-success-emphasis)',
+          inverted: 'var(--ax-success-inverted)',
         },
 
-        // Warning (Amber)
+        // Warning Colors
         warning: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          300: '#fcd34d',
-          500: '#f59e0b',
-          600: '#d97706',
-          DEFAULT: '#f59e0b',
+          faint: 'var(--ax-warning-faint)',
+          muted: 'var(--ax-warning-muted)',
+          subtle: 'var(--ax-warning-subtle)',
+          DEFAULT: 'var(--ax-warning-default)',
+          emphasis: 'var(--ax-warning-emphasis)',
+          inverted: 'var(--ax-warning-inverted)',
         },
 
-        // Error (Red)
+        // Error/Danger Colors
         error: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          300: '#fca5a5',
-          500: '#ef4444',
-          600: '#dc2626',
-          DEFAULT: '#ef4444',
+          faint: 'var(--ax-error-faint)',
+          muted: 'var(--ax-error-muted)',
+          subtle: 'var(--ax-error-subtle)',
+          DEFAULT: 'var(--ax-error-default)',
+          emphasis: 'var(--ax-error-emphasis)',
+          inverted: 'var(--ax-error-inverted)',
         },
 
-        // Info (Blue)
+        // Info Colors
         info: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          300: '#93c5fd',
-          500: '#3b82f6',
-          600: '#2563eb',
-          DEFAULT: '#3b82f6',
+          faint: 'var(--ax-info-faint)',
+          muted: 'var(--ax-info-muted)',
+          subtle: 'var(--ax-info-subtle)',
+          DEFAULT: 'var(--ax-info-default)',
+          emphasis: 'var(--ax-info-emphasis)',
+          inverted: 'var(--ax-info-inverted)',
         },
 
-        // Backward compatibility
+        // Cyan Colors
+        cyan: {
+          faint: 'var(--ax-cyan-faint)',
+          muted: 'var(--ax-cyan-muted)',
+          subtle: 'var(--ax-cyan-subtle)',
+          DEFAULT: 'var(--ax-cyan-default)',
+          emphasis: 'var(--ax-cyan-emphasis)',
+          inverted: 'var(--ax-cyan-inverted)',
+        },
+
+        // Purple Colors
+        purple: {
+          faint: 'var(--ax-purple-faint)',
+          muted: 'var(--ax-purple-muted)',
+          subtle: 'var(--ax-purple-subtle)',
+          DEFAULT: 'var(--ax-purple-default)',
+          emphasis: 'var(--ax-purple-emphasis)',
+          inverted: 'var(--ax-purple-inverted)',
+        },
+
+        // Indigo Colors
+        indigo: {
+          faint: 'var(--ax-indigo-faint)',
+          muted: 'var(--ax-indigo-muted)',
+          subtle: 'var(--ax-indigo-subtle)',
+          DEFAULT: 'var(--ax-indigo-default)',
+          emphasis: 'var(--ax-indigo-emphasis)',
+          inverted: 'var(--ax-indigo-inverted)',
+        },
+
+        // Pink Colors
+        pink: {
+          faint: 'var(--ax-pink-faint)',
+          muted: 'var(--ax-pink-muted)',
+          subtle: 'var(--ax-pink-subtle)',
+          DEFAULT: 'var(--ax-pink-default)',
+          emphasis: 'var(--ax-pink-emphasis)',
+          inverted: 'var(--ax-pink-inverted)',
+        },
+
+        // Background Colors
+        background: {
+          muted: 'var(--ax-background-muted)',
+          subtle: 'var(--ax-background-subtle)',
+          DEFAULT: 'var(--ax-background-default)',
+          emphasis: 'var(--ax-background-emphasis)',
+        },
+
+        // Text Colors
+        text: {
+          disabled: 'var(--ax-text-disabled)',
+          subtle: 'var(--ax-text-subtle)',
+          secondary: 'var(--ax-text-secondary)',
+          primary: 'var(--ax-text-primary)',
+          heading: 'var(--ax-text-heading)',
+          inverted: 'var(--ax-text-inverted)',
+        },
+
+        // Border Colors
+        border: {
+          muted: 'var(--ax-border-muted)',
+          DEFAULT: 'var(--ax-border-default)',
+          emphasis: 'var(--ax-border-emphasis)',
+        },
+
+        // Backward compatibility (using CSS variables)
+        primary: {
+          DEFAULT: 'var(--ax-brand-default)',
+        },
         accent: {
-          500: '#a855f7', // purple-500
-          DEFAULT: '#a855f7',
+          DEFAULT: 'var(--ax-purple-default)',
         },
         warn: {
-          500: '#ef4444', // red-500
-          DEFAULT: '#ef4444',
+          DEFAULT: 'var(--ax-error-default)',
         },
       },
 
@@ -130,14 +192,21 @@ module.exports = {
       },
 
       fontSize: {
-        xs: '0.75rem', // 12px
-        sm: '0.875rem', // 14px
-        base: '1rem', // 16px
-        lg: '1.125rem', // 18px
-        xl: '1.25rem', // 20px
-        '2xl': '1.5rem', // 24px
-        '3xl': '1.875rem', // 30px
-        '4xl': '2.25rem', // 36px
+        xs: '0.625rem', // 10px
+        sm: '0.75rem', // 12px
+        md: '0.8125rem', // 13px
+        base: '0.875rem', // 14px
+        lg: '1rem', // 16px
+        xl: '1.125rem', // 18px
+        '2xl': '1.25rem', // 20px
+        '3xl': '1.5rem', // 24px
+        '4xl': '2rem', // 32px
+        '5xl': '2.25rem', // 36px
+        '6xl': '2.5rem', // 40px
+        '7xl': '3rem', // 48px
+        '8xl': '4rem', // 64px
+        '9xl': '6rem', // 96px
+        '10xl': '8rem', // 128px
       },
 
       // ============================================

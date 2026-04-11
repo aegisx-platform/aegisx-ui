@@ -1,0 +1,146 @@
+// ============================================================================
+// Stat Card Component — Untitled UI Style
+// ============================================================================
+// Clean metric card: white bg, subtle border, colored dot indicator.
+// Ref: Untitled UI metric cards (untitledui.com)
+//
+// Design:
+//   - White bg, 1px border (zinc-200), rounded-xl (12px)
+//   - Header: label (left) + colored dot (right)
+//   - Value: 24px semibold, tracking-tight
+//   - Subtitle: 12px muted
+//   - Active: brand border + brand-faint bg
+//   - Hover: border darkens slightly, subtle shadow
+
+// Color map — dot + active states
+$colors: (
+  'primary': (
+    dot: var(--ax-brand-default, #6366f1),
+    active-border: var(--ax-brand-default, #6366f1),
+    active-bg: var(--ax-brand-faint, #eef2ff),
+  ),
+  'info': (
+    dot: var(--ax-info-default, #3b82f6),
+    active-border: var(--ax-info-default, #3b82f6),
+    active-bg: var(--ax-info-faint, #eff6ff),
+  ),
+  'success': (
+    dot: var(--ax-success-default, #22c55e),
+    active-border: var(--ax-success-default, #22c55e),
+    active-bg: var(--ax-success-faint, #f0fdf4),
+  ),
+  'warning': (
+    dot: var(--ax-warning-default, #f59e0b),
+    active-border: var(--ax-warning-default, #f59e0b),
+    active-bg: var(--ax-warning-faint, #fffbeb),
+  ),
+  'error': (
+    dot: var(--ax-error-default, #ef4444),
+    active-border: var(--ax-error-default, #ef4444),
+    active-bg: var(--ax-error-faint, #fef2f2),
+  ),
+);
+
+// ----------------------------------------------------------------------------
+// Base Card
+// ----------------------------------------------------------------------------
+
+.ax-stat-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background-color: var(--ax-background-default, #ffffff);
+  border: 1px solid var(--ax-border-default, #e4e4e7);
+  border-radius: 12px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--ax-border-emphasis, #d4d4d8);
+      box-shadow: var(--ax-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    }
+
+    &:active {
+      box-shadow: none;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Header (label + dot)
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ax-stat-card__label {
+  font-size: 0.75rem; // 12px
+  font-weight: 500;
+  color: var(--ax-text-secondary, #71717a);
+  letter-spacing: 0.01em;
+}
+
+// Colored dot indicator
+.ax-stat-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+// ----------------------------------------------------------------------------
+// Value + Subtitle
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__value {
+  font-size: 1.5rem; // 24px
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--ax-text-heading, #09090b);
+}
+
+.ax-stat-card__subtitle {
+  font-size: 0.75rem; // 12px
+  color: var(--ax-text-subtle, #a1a1aa);
+  margin-top: 4px;
+}
+
+// ----------------------------------------------------------------------------
+// Color Variants (dot + active state)
+// ----------------------------------------------------------------------------
+
+@each $name, $tokens in $colors {
+  .ax-stat-card__dot[data-color='#{$name}'] {
+    background-color: map-get($tokens, dot);
+  }
+
+  .ax-stat-card--active[data-color='#{$name}'] {
+    border-color: map-get($tokens, active-border);
+    background-color: map-get($tokens, active-bg);
+    box-shadow: 0 0 0 1px map-get($tokens, active-border);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Responsive
+// ----------------------------------------------------------------------------
+
+@media (max-width: 640px) {
+  .ax-stat-card {
+    padding: 12px;
+  }
+
+  .ax-stat-card__value {
+    font-size: 1.25rem; // 20px on mobile
+  }
+}

@@ -1264,7 +1264,7 @@ import { ThemeBuilderService } from './theme-builder.service';
       }
 
       .surface-item.surface-emphasis .surface-label {
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--ax-text-inverted, rgba(255, 255, 255, 0.7));
       }
 
       /* Border Colors */
@@ -1291,6 +1291,15 @@ import { ThemeBuilderService } from './theme-builder.service';
         }
         &.border-emphasis {
           border: 2px solid var(--ax-border-emphasis, #71717a);
+        }
+      }
+
+      /* Reduced Motion */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
       }
     `,
