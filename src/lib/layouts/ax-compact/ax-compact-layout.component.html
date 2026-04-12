@@ -9,7 +9,8 @@
 <!-- Navigation Overlay for mobile -->
 @if (isScreenSmall && isNavigationExpanded()) {
   <div
-    class="fixed inset-0 bg-black bg-opacity-50 z-40"
+    class="fixed inset-0 z-40"
+    style="background: rgba(0, 0, 0, 0.3)"
     (click)="toggleNavigation('mainNavigation')"
     (keydown.escape)="toggleNavigation('mainNavigation')"
     tabindex="0"
@@ -21,7 +22,8 @@
 <!-- Navigation -->
 <ax-navigation
   [class.dark]="isDarkMode"
-  class="bg-gray-900 print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
+  class="print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
+  style="background: var(--ax-background-emphasis, #18181b)"
   [class.w-16]="!isNavigationExpanded() && !isScreenSmall"
   [class.w-64]="isNavigationExpanded()"
   [class.-translate-x-full]="!isNavigationExpanded() && isScreenSmall"
@@ -37,11 +39,25 @@
   <!-- Navigation header from parent -->
   <div navigation-header class="flex h-20 items-center justify-center px-4">
     @if (navigationHeader) {
-      <ng-container *ngTemplateOutlet="navigationHeader"></ng-container>
+      <ng-container [ngTemplateOutlet]="navigationHeader" />
     } @else {
-      <span class="text-2xl font-bold">{{ appName.split(' ')[0] }}</span>
+      @if (logoUrl) {
+        <img [src]="logoUrl" [alt]="appName" class="w-8 h-8 rounded" />
+      }
+      <span
+        class="text-2xl font-bold"
+        style="color: var(--ax-text-inverse, #ffffff)"
+      >
+        {{ appName.split(' ')[0] }}
+      </span>
       @if (appVersion) {
-        <span class="ml-2 text-xs px-2 py-1 bg-primary-600 rounded">
+        <span
+          class="ml-2 text-xs px-2 py-1 rounded"
+          style="
+            background: var(--ax-primary, #6366f1);
+            color: var(--ax-text-inverse, #fff);
+          "
+        >
           {{ appVersion }}
         </span>
       }
@@ -51,7 +67,7 @@
   <!-- Navigation footer from parent -->
   @if (navigationFooter) {
     <div navigation-footer>
-      <ng-container *ngTemplateOutlet="navigationFooter"></ng-container>
+      <ng-container [ngTemplateOutlet]="navigationFooter" />
     </div>
   }
 </ax-navigation>
@@ -66,7 +82,8 @@
 >
   <!-- Header/Toolbar -->
   <div
-    class="bg-card relative flex h-16 flex-0 items-center px-4 md:px-6 print:hidden shadow-md"
+    class="relative flex h-16 flex-0 items-center px-4 md:px-6 print:hidden shadow-md"
+    style="background: var(--ax-background-default)"
   >
     <!-- Navigation toggle button -->
     <button
@@ -80,16 +97,44 @@
     <!-- Toolbar Title -->
     <div class="flex items-center">
       @if (toolbarTitle) {
-        <ng-container *ngTemplateOutlet="toolbarTitle"></ng-container>
+        <ng-container [ngTemplateOutlet]="toolbarTitle" />
       }
     </div>
 
-    <!-- Toolbar Actions -->
+    <!-- Header Actions -->
     <div class="ml-auto flex items-center">
-      @if (toolbarActions) {
-        <ng-container *ngTemplateOutlet="toolbarActions"></ng-container>
+      @if (headerActions) {
+        <ng-container [ngTemplateOutlet]="headerActions" />
       }
     </div>
+
+    <!-- User Menu -->
+    @if (showDefaultUserMenu) {
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="userMenuRef"
+        matTooltip="Account"
+      >
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenuRef="matMenu">
+        <button mat-menu-item (click)="profileClicked.emit()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        @if (showSettingsMenuItem) {
+          <button mat-menu-item (click)="settingsClicked.emit()">
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+          </button>
+        }
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logoutClicked.emit()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign out</span>
+        </button>
+      </mat-menu>
+    }
   </div>
 
   <!-- Main Content Area -->
@@ -100,12 +145,13 @@
   <!-- Footer -->
   @if (showFooter) {
     <div
-      class="bg-card relative flex h-14 flex-0 items-center justify-start px-4 md:px-6 print:hidden border-t"
+      class="relative flex h-14 flex-0 items-center justify-start px-4 md:px-6 print:hidden border-t"
+      style="background: var(--ax-background-default)"
     >
       @if (footerContent) {
-        <ng-container *ngTemplateOutlet="footerContent"></ng-container>
+        <ng-container [ngTemplateOutlet]="footerContent" />
       } @else {
-        <span class="text-secondary font-medium">
+        <span style="color: var(--ax-text-secondary)" class="font-medium">
           {{ appName }} &copy; {{ currentYear }}
         </span>
       }

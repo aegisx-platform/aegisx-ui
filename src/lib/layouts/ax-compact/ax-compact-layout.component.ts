@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ContentChild,
   EventEmitter,
@@ -10,10 +11,13 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 import { AxNavigationComponent } from '../../components/ax-navigation.component';
 import {
   AxNavigationItem,
@@ -31,11 +35,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'ax-compact-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    NgTemplateOutlet,
     RouterOutlet,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatDividerModule,
     AxNavigationComponent,
     AxLoadingBarComponent,
   ],
@@ -55,10 +63,16 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
   @Input() appName = 'AegisX Platform';
   @Input() appVersion = 'v2.0';
   @Input() isDarkMode = false;
+  @Input() logoUrl?: string;
+  @Input() showDefaultUserMenu = true;
+  @Input() showSettingsMenuItem = true;
   @Output() navigationToggled = new EventEmitter<void>();
+  @Output() profileClicked = new EventEmitter<void>();
+  @Output() settingsClicked = new EventEmitter<void>();
+  @Output() logoutClicked = new EventEmitter<void>();
 
   @ContentChild('toolbarTitle') toolbarTitle!: TemplateRef<unknown>;
-  @ContentChild('toolbarActions') toolbarActions!: TemplateRef<unknown>;
+  @ContentChild('headerActions') headerActions!: TemplateRef<unknown>;
   @ContentChild('navigationHeader') navigationHeader!: TemplateRef<unknown>;
   @ContentChild('navigationFooter') navigationFooter!: TemplateRef<unknown>;
   @ContentChild('footerContent') footerContent!: TemplateRef<unknown>;
@@ -166,9 +180,6 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
   }
 
   onNavigationItemClick(item: AxNavigationItem): void {
-    // Handle navigation item click if needed
-    console.log('Navigation item clicked:', item);
-
     // Close navigation on mobile after clicking an item
     if (this.isScreenSmall && item.type === 'item' && item.link) {
       this.isNavigationExpanded.set(false);
