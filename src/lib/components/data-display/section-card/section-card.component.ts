@@ -122,7 +122,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         gap: 8px;
       }
 
-      .ax-section-card__header-actions:empty {
+      .ax-section-card__header-actions:not(:has(*)) {
         display: none;
       }
 
@@ -146,7 +146,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         gap: 12px;
       }
 
-      .ax-section-card__footer:empty {
+      .ax-section-card__footer:not(:has(*)) {
         display: none;
       }
 
@@ -166,6 +166,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         .ax-section-card__header {
           flex-direction: column;
           align-items: stretch;
+        }
+
+        .ax-section-card__header-actions {
+          align-self: flex-start;
         }
       }
     `,

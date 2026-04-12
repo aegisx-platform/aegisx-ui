@@ -70,9 +70,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       }
 
       /* First row inside a section-card has no top border (header
-         already provides the divider). The :first-of-type pseudo
-         matches the first ax-info-row among its sibling ax-info-rows. */
-      :host:first-of-type {
+         already provides the divider). Uses :first-child rather than
+         :first-of-type so it stays correct even when non-info-row
+         elements are inserted before the first row. */
+      :host:first-child {
         border-top: none;
       }
 
@@ -116,7 +117,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         gap: 8px;
       }
 
-      .ax-info-row__actions:empty {
+      .ax-info-row__actions:not(:has(*)) {
         display: none;
       }
 
