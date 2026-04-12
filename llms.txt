@@ -47,11 +47,6 @@ import {
 
 ## Layouts
 
-### AxCompactLayoutComponent
-- Selector: `ax-compact-layout`
-- Purpose: Sidebar navigation with compact toolbar
-- Features: Collapsible sidebar, responsive, theme-aware
-
 ### AxEmptyLayoutComponent
 - Selector: `ax-empty-layout`
 - Purpose: Minimal layout with centered content
@@ -348,7 +343,6 @@ libs/aegisx-ui/src/lib/
 │   ├── gridster/        # Grid layout
 │   └── launcher/        # App launcher
 ├── layouts/             # Application layouts
-│   ├── ax-compact/      # Compact layout
 │   ├── empty/           # Empty layout
 │   ├── enterprise/      # Enterprise layout
 │   └── docs/            # Documentation layout
@@ -369,11 +363,11 @@ libs/aegisx-ui/src/lib/
 ```typescript
 @Component({
   template: `
-    <ax-compact-layout>
+    <ax-sidebar-layout>
       <router-outlet />
-    </ax-compact-layout>
+    </ax-sidebar-layout>
   `,
-  imports: [AxCompactLayoutComponent, RouterOutlet],
+  imports: [AxSidebarLayoutComponent, RouterOutlet],
 })
 ```
 

@@ -1,6 +1,6 @@
 /**
  * AegisX Navigation System Types
- * Unified navigation types for all layouts (Compact, Enterprise, Docs)
+ * Unified navigation types for all layouts (Enterprise, Sidebar, Docs)
  */
 
 /**
@@ -18,7 +18,7 @@ export interface AxNavigationBadge {
 }
 
 /** Available layout types for app shell configuration. */
-export type AxLayoutType = 'enterprise' | 'sidebar' | 'compact';
+export type AxLayoutType = 'enterprise' | 'sidebar';
 
 /**
  * Unified Navigation Item Interface
