@@ -382,6 +382,7 @@ import {
         class="ax-enterprise-mobile-drawer"
         [class.ax-enterprise-mobile-drawer--open]="mobileOpen()"
         [attr.aria-label]="appName + ' mobile navigation'"
+        tabindex="-1"
         (keydown.escape)="closeMobileMenu()"
       >
         <div class="ax-enterprise-mobile-drawer__header">

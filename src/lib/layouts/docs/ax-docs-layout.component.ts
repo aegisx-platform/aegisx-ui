@@ -13,7 +13,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AxDocsSidebarComponent } from './components/ax-docs-sidebar.component';
 import { AxNavigationItem } from '../../types/ax-navigation.types';
@@ -52,7 +52,6 @@ import {
     MatIconModule,
     MatButtonModule,
     RouterLink,
-    RouterModule,
     AxDocsSidebarComponent,
     AxDocsTocComponent,
     AxLoadingBarComponent,
