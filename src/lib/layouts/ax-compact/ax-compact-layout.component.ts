@@ -13,24 +13,25 @@ import {
   signal,
 } from '@angular/core';
 import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { AxNavigationComponent } from '../../components/ax-navigation.component';
-import {
-  AxNavigationItem,
-  AxNavigationConfig,
-} from '../../types/ax-navigation.types';
-import { AxLoadingBarComponent } from '../../components/ax-loading-bar.component';
-import { AegisxMediaWatcherService } from '../../services/media-watcher/media-watcher.service';
-import {
-  LoadingBarService,
-  LoadingBarState,
-} from '../../components/feedback/loading-bar/loading-bar.service';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { AxIconDirective } from '../../components/navigation/icon/ax-icon.directive';
+import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loading-bar.component';
+import { AxNavigationItem } from '../../types/ax-navigation.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+
+const COLLAPSED_STORAGE_KEY = 'ax-compact-layout:collapsed';
 
 @Component({
   selector: 'ax-compact-layout',
@@ -39,12 +40,14 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
   imports: [
     NgTemplateOutlet,
     RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
     MatTooltipModule,
     MatDividerModule,
-    AxNavigationComponent,
+    AxIconDirective,
     AxLoadingBarComponent,
   ],
   templateUrl: './ax-compact-layout.component.html',
@@ -79,106 +82,53 @@ export class AxCompactLayoutComponent implements OnInit {
 
   currentYear = new Date().getFullYear();
   isScreenSmall = signal(false);
-  isNavigationExpanded = signal(false); // Start collapsed, will be set correctly in ngOnInit
-  navigationConfig = signal<Partial<AxNavigationConfig>>({
-    state: 'collapsed', // Start collapsed
-    mode: 'side',
-    position: 'left',
-    showToggleButton: true,
-    autoCollapse: true,
-    breakpoint: 'lg',
-  });
+  isNavigationExpanded = signal(false);
+
+  /** Mobile drawer open state (separate from desktop collapsed). */
+  readonly mobileOpen = signal(false);
 
   private readonly _platformId = inject(PLATFORM_ID);
+  private readonly _router = inject(Router);
   private readonly _destroyRef = inject(DestroyRef);
-  private _mediaWatcher = inject(AegisxMediaWatcherService);
-  private _loadingBarService = inject(LoadingBarService);
-
-  // Expose loading bar state as a signal for reactive template binding
-  protected readonly loadingBarState = toSignal(
-    this._loadingBarService.state$,
-    {
-      initialValue: {
-        visible: false,
-        mode: 'indeterminate' as const,
-        progress: 0,
-        color: 'primary' as const,
-        message: undefined,
-      },
-    },
-  );
 
   ngOnInit(): void {
-    // Check initial screen size immediately (SSR-safe)
+    // Check initial screen size (SSR-safe)
     if (isPlatformBrowser(this._platformId)) {
       const isMobile = window.innerWidth < 768;
       this.isScreenSmall.set(isMobile);
 
-      if (isMobile) {
-        this.isNavigationExpanded.set(false);
-        this.navigationConfig.update((config) => ({
-          ...config,
-          state: 'collapsed',
-        }));
-      } else {
-        this.isNavigationExpanded.set(true);
-        this.navigationConfig.update((config) => ({
-          ...config,
-          state: 'expanded',
-        }));
+      if (!isMobile) {
+        // Restore collapsed state from localStorage
+        const stored = localStorage.getItem(COLLAPSED_STORAGE_KEY);
+        this.isNavigationExpanded.set(stored !== 'true');
       }
     }
 
-    // Then subscribe to media changes
-    this._mediaWatcher.onMediaChange$
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((result) => {
-        const wasScreenSmall = this.isScreenSmall();
-        this.isScreenSmall.set(result.matches); // matches = true when on mobile/tablet
-
-        // If transitioning to small screen, collapse navigation
-        if (!wasScreenSmall && this.isScreenSmall()) {
-          this.isNavigationExpanded.set(false);
-          this.navigationConfig.update((config) => ({
-            ...config,
-            state: 'collapsed',
-          }));
-        }
-        // If transitioning to large screen, expand navigation
-        else if (wasScreenSmall && !this.isScreenSmall()) {
-          this.isNavigationExpanded.set(true);
-          this.navigationConfig.update((config) => ({
-            ...config,
-            state: 'expanded',
-          }));
-        }
-      });
+    // Auto-close mobile drawer on route navigation
+    this._router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe(() => this.closeMobileMenu());
   }
 
-  toggleNavigation(_navigationId: string): void {
+  toggleNavigation(): void {
     this.navigationToggled.emit();
-    const currentState = this.isNavigationExpanded();
-    this.isNavigationExpanded.set(!currentState);
-
-    // Update navigation config
-    this.navigationConfig.update((config) => ({
-      ...config,
-      state: !currentState ? 'expanded' : 'collapsed',
-    }));
-  }
-
-  onNavigationStateChange(state: 'collapsed' | 'expanded'): void {
-    this.isNavigationExpanded.set(state === 'expanded');
-  }
-
-  onNavigationItemClick(item: AxNavigationItem): void {
-    // Close navigation on mobile after clicking an item
-    if (this.isScreenSmall() && item.type === 'item' && item.link) {
-      this.isNavigationExpanded.set(false);
-      this.navigationConfig.update((config) => ({
-        ...config,
-        state: 'collapsed',
-      }));
+    const next = !this.isNavigationExpanded();
+    this.isNavigationExpanded.set(next);
+    if (isPlatformBrowser(this._platformId)) {
+      localStorage.setItem(COLLAPSED_STORAGE_KEY, String(!next));
     }
+  }
+
+  /** Open/close the mobile drawer overlay. */
+  toggleMobileMenu(): void {
+    this.mobileOpen.set(!this.mobileOpen());
+  }
+
+  /** Close the mobile drawer (e.g., when backdrop is clicked). */
+  closeMobileMenu(): void {
+    this.mobileOpen.set(false);
   }
 }

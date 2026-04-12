@@ -1,160 +1,253 @@
-<!-- Loading bar - Connected to LoadingBarService -->
-<ax-loading-bar
-  [visible]="loadingBarState().visible"
-  [mode]="loadingBarState().mode"
-  [progress]="loadingBarState().progress"
-  [color]="loadingBarState().color"
-></ax-loading-bar>
+<!-- Loading bar -->
+<ax-loading-bar variant="primary" />
 
-<!-- Navigation Overlay for mobile -->
-@if (isScreenSmall() && isNavigationExpanded()) {
-  <div
-    class="fixed inset-0 z-40"
-    style="background: rgba(0, 0, 0, 0.3)"
-    (click)="toggleNavigation('mainNavigation')"
-    (keydown.escape)="toggleNavigation('mainNavigation')"
-    tabindex="0"
-    role="button"
-    aria-label="Close navigation overlay"
-  ></div>
-}
-
-<!-- Navigation -->
-<ax-navigation
-  class="print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
-  style="background: var(--ax-background-emphasis, #18181b)"
-  [class.w-16]="!isNavigationExpanded() && !isScreenSmall()"
-  [class.w-64]="isNavigationExpanded()"
-  [class.-translate-x-full]="!isNavigationExpanded() && isScreenSmall()"
-  [class.pointer-events-none]="!isNavigationExpanded() && isScreenSmall()"
-  [class.pointer-events-auto]="isNavigationExpanded() || !isScreenSmall()"
-  [items]="axNavigation"
-  [config]="navigationConfig()"
-  [showHeader]="true"
-  [showFooter]="true"
-  (stateChange)="onNavigationStateChange($event)"
-  (itemClick)="onNavigationItemClick($event)"
->
-  <!-- Navigation header from parent -->
-  <div navigation-header class="flex h-20 items-center justify-center px-4">
-    @if (navigationHeader) {
-      <ng-container [ngTemplateOutlet]="navigationHeader" />
-    } @else {
-      @if (logoUrl) {
-        <img [src]="logoUrl" [alt]="appName" class="w-8 h-8 rounded" />
-      }
-      <span
-        class="text-2xl font-bold"
-        style="color: var(--ax-text-inverse, #ffffff)"
-      >
-        {{ appName.split(' ')[0] }}
-      </span>
-      @if (appVersion) {
-        <span
-          class="ml-2 text-xs px-2 py-1 rounded"
-          style="
-            background: var(--ax-primary, #6366f1);
-            color: var(--ax-text-inverse, #fff);
-          "
-        >
-          {{ appVersion }}
-        </span>
-      }
-    }
-  </div>
-
-  <!-- Navigation footer from parent -->
-  @if (navigationFooter) {
-    <div navigation-footer>
-      <ng-container [ngTemplateOutlet]="navigationFooter" />
-    </div>
-  }
-</ax-navigation>
-
-<!-- Main Content Wrapper -->
 <div
-  class="flex min-w-0 flex-auto flex-col transition-all duration-300 ease-in-out h-screen"
-  [class.ml-0]="isScreenSmall()"
-  [class.ml-16]="!isScreenSmall() && !isNavigationExpanded()"
-  [class.ml-64]="!isScreenSmall() && isNavigationExpanded()"
+  class="ax-compact"
+  [class.ax-compact--collapsed]="!isNavigationExpanded()"
+  [class.ax-compact--mobile-open]="mobileOpen()"
 >
-  <!-- Header/Toolbar -->
-  <div
-    class="relative flex h-16 flex-0 items-center px-4 md:px-6 print:hidden shadow-md"
-    style="background: var(--ax-background-default)"
+  <!-- Sidebar -->
+  <aside
+    class="ax-compact__sidebar"
+    [attr.aria-label]="appName + ' navigation'"
   >
-    <!-- Navigation toggle button -->
-    <button
-      mat-icon-button
-      (click)="toggleNavigation('mainNavigation')"
-      class="mr-2"
-    >
-      <mat-icon>{{ isNavigationExpanded() ? 'menu_open' : 'menu' }}</mat-icon>
-    </button>
-
-    <!-- Toolbar Title -->
-    <div class="flex items-center">
-      @if (toolbarTitle) {
-        <ng-container [ngTemplateOutlet]="toolbarTitle" />
-      }
-    </div>
-
-    <!-- Header Actions -->
-    <div class="ml-auto flex items-center">
-      @if (headerActions) {
-        <ng-container [ngTemplateOutlet]="headerActions" />
-      }
-    </div>
-
-    <!-- User Menu -->
-    @if (userMenu) {
-      <ng-container [ngTemplateOutlet]="userMenu" />
-    } @else if (showDefaultUserMenu) {
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="userMenuRef"
-        matTooltip="Account"
-      >
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #userMenuRef="matMenu">
-        <button mat-menu-item (click)="profileClicked.emit()">
-          <mat-icon>person</mat-icon>
-          <span>Profile</span>
-        </button>
-        @if (showSettingsMenuItem) {
-          <button mat-menu-item (click)="settingsClicked.emit()">
-            <mat-icon>settings</mat-icon>
-            <span>Settings</span>
-          </button>
-        }
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logoutClicked.emit()">
-          <mat-icon>logout</mat-icon>
-          <span>Sign out</span>
-        </button>
-      </mat-menu>
-    }
-  </div>
-
-  <!-- Main Content Area -->
-  <div class="flex-1 overflow-y-auto overflow-x-hidden">
-    <router-outlet></router-outlet>
-  </div>
-
-  <!-- Footer -->
-  @if (showFooter) {
-    <div
-      class="relative flex h-14 flex-0 items-center justify-start px-4 md:px-6 print:hidden border-t"
-      style="background: var(--ax-background-default)"
-    >
-      @if (footerContent) {
-        <ng-container [ngTemplateOutlet]="footerContent" />
+    <!-- Brand -->
+    <div class="ax-compact__brand">
+      @if (logoUrl) {
+        <img [src]="logoUrl" [alt]="appName" class="ax-compact__logo" />
       } @else {
-        <span style="color: var(--ax-text-secondary)" class="font-medium">
-          {{ appName }} &copy; {{ currentYear }}
-        </span>
+        <div class="ax-compact__logo-placeholder">
+          <mat-icon>widgets</mat-icon>
+        </div>
+      }
+      @if (isNavigationExpanded()) {
+        <span class="ax-compact__brand-text">{{ appName }}</span>
+        @if (appVersion) {
+          <span class="ax-compact__version-badge">{{ appVersion }}</span>
+        }
       }
     </div>
+
+    <!-- Navigation Header (projected) -->
+    @if (navigationHeader && isNavigationExpanded()) {
+      <div class="ax-compact__nav-header">
+        <ng-container [ngTemplateOutlet]="navigationHeader" />
+      </div>
+    }
+
+    <!-- Navigation -->
+    @if (axNavigation.length > 0) {
+      <nav class="ax-compact__nav">
+        @for (item of axNavigation; track item.id) {
+          @if (!item.children || item.children.length === 0) {
+            <a
+              [routerLink]="item.link"
+              routerLinkActive="ax-compact__nav-link--active"
+              [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
+              class="ax-compact__nav-link"
+              [class.ax-compact__nav-link--disabled]="item.disabled"
+              [matTooltip]="!isNavigationExpanded() ? item.title : ''"
+              matTooltipPosition="right"
+            >
+              @if (item.icon) {
+                <mat-icon
+                  class="ax-compact__nav-icon"
+                  [axIcon]="item.icon!"
+                ></mat-icon>
+              }
+              @if (isNavigationExpanded()) {
+                <span class="ax-compact__nav-label">{{ item.title }}</span>
+              }
+              @if (isNavigationExpanded() && item.badge) {
+                <span
+                  class="ax-compact__badge"
+                  [class]="'badge-' + (item.badge.type || 'primary')"
+                >
+                  {{ item.badge.content || item.badge.title }}
+                </span>
+              }
+            </a>
+          } @else {
+            <!-- Parent with children -->
+            @if (isNavigationExpanded()) {
+              <div class="ax-compact__nav-group">
+                <div class="ax-compact__nav-group-label">
+                  @if (item.icon) {
+                    <mat-icon
+                      class="ax-compact__nav-icon"
+                      [axIcon]="item.icon!"
+                    ></mat-icon>
+                  }
+                  <span>{{ item.title }}</span>
+                </div>
+                @for (child of item.children; track child.id) {
+                  <a
+                    [routerLink]="child.link"
+                    routerLinkActive="ax-compact__nav-link--active"
+                    [routerLinkActiveOptions]="{
+                      exact: child.exactMatch ?? false,
+                    }"
+                    class="ax-compact__nav-link ax-compact__nav-link--child"
+                  >
+                    @if (child.icon) {
+                      <mat-icon
+                        class="ax-compact__nav-icon"
+                        [axIcon]="child.icon!"
+                      ></mat-icon>
+                    }
+                    <span class="ax-compact__nav-label">{{ child.title }}</span>
+                  </a>
+                }
+              </div>
+            } @else {
+              <!-- Collapsed: icon opens menu -->
+              <button
+                type="button"
+                class="ax-compact__nav-link"
+                [matMenuTriggerFor]="childMenu"
+                [matTooltip]="item.title"
+                matTooltipPosition="right"
+              >
+                @if (item.icon) {
+                  <mat-icon
+                    class="ax-compact__nav-icon"
+                    [axIcon]="item.icon!"
+                  ></mat-icon>
+                }
+              </button>
+              <mat-menu #childMenu="matMenu">
+                @for (child of item.children; track child.id) {
+                  <a mat-menu-item [routerLink]="child.link">
+                    @if (child.icon) {
+                      <mat-icon [axIcon]="child.icon!"></mat-icon>
+                    }
+                    <span>{{ child.title }}</span>
+                  </a>
+                }
+              </mat-menu>
+            }
+          }
+        }
+      </nav>
+    }
+
+    <!-- Navigation Footer (projected) -->
+    @if (navigationFooter && isNavigationExpanded()) {
+      <div class="ax-compact__nav-projected-footer">
+        <ng-container [ngTemplateOutlet]="navigationFooter" />
+      </div>
+    }
+
+    <!-- Sidebar Footer: user menu + collapse toggle -->
+    <div class="ax-compact__sidebar-footer">
+      @if (userMenu) {
+        <ng-container [ngTemplateOutlet]="userMenu" />
+      } @else if (showDefaultUserMenu) {
+        <button
+          type="button"
+          class="ax-compact__user-btn"
+          [matMenuTriggerFor]="defaultUserMenu"
+          [matTooltip]="!isNavigationExpanded() ? 'Account' : ''"
+          matTooltipPosition="right"
+        >
+          <mat-icon class="ax-compact__nav-icon">account_circle</mat-icon>
+          @if (isNavigationExpanded()) {
+            <span class="ax-compact__nav-label">Account</span>
+          }
+        </button>
+        <mat-menu #defaultUserMenu="matMenu">
+          <button mat-menu-item (click)="profileClicked.emit()">
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </button>
+          @if (showSettingsMenuItem) {
+            <button mat-menu-item (click)="settingsClicked.emit()">
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
+            </button>
+          }
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logoutClicked.emit()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign out</span>
+          </button>
+        </mat-menu>
+      }
+
+      <button
+        type="button"
+        class="ax-compact__collapse-btn"
+        (click)="toggleNavigation()"
+        [matTooltip]="isNavigationExpanded() ? 'Collapse' : 'Expand'"
+        matTooltipPosition="right"
+      >
+        <mat-icon>{{
+          isNavigationExpanded() ? 'chevron_left' : 'chevron_right'
+        }}</mat-icon>
+        @if (isNavigationExpanded()) {
+          <span class="ax-compact__collapse-label">Collapse</span>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile backdrop -->
+  @if (mobileOpen()) {
+    <div
+      class="ax-compact__backdrop"
+      role="button"
+      tabindex="-1"
+      aria-label="Close navigation menu"
+      (click)="closeMobileMenu()"
+      (keydown.escape)="closeMobileMenu()"
+    ></div>
   }
+
+  <!-- Main area -->
+  <main class="ax-compact__main">
+    <!-- Header/Toolbar -->
+    <header class="ax-compact__header">
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="ax-compact__mobile-toggle"
+        (click)="toggleMobileMenu()"
+        aria-label="Open navigation menu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Toolbar Title -->
+      <div class="ax-compact__header-title">
+        @if (toolbarTitle) {
+          <ng-container [ngTemplateOutlet]="toolbarTitle" />
+        }
+      </div>
+
+      <!-- Header Actions -->
+      <div class="ax-compact__header-actions">
+        @if (headerActions) {
+          <ng-container [ngTemplateOutlet]="headerActions" />
+        }
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="ax-compact__content">
+      <router-outlet></router-outlet>
+    </div>
+
+    <!-- Footer -->
+    @if (showFooter) {
+      <footer class="ax-compact__footer">
+        @if (footerContent) {
+          <ng-container [ngTemplateOutlet]="footerContent" />
+        } @else {
+          <span class="ax-compact__footer-text">
+            {{ appName }} &copy; {{ currentYear }}
+          </span>
+        }
+      </footer>
+    }
+  </main>
 </div>
