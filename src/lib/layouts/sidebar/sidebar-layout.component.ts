@@ -26,7 +26,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { AxIconDirective } from '../../components/navigation/icon/ax-icon.directive';
 import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loading-bar.component';
 import { AxNavigationItem } from '../../types/ax-navigation.types';
 
@@ -77,7 +76,6 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
     MatMenuModule,
     MatTooltipModule,
     MatDividerModule,
-    AxIconDirective,
     AxLoadingBarComponent,
   ],
   template: `
@@ -119,8 +117,10 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                   [matTooltip]="collapsed() ? item.title : ''"
                   matTooltipPosition="right"
                 >
-                  @if (item.icon) {
-                    <mat-icon class="ax-sidebar__nav-icon" [axIcon]="item.icon!"></mat-icon>
+                  @if (item.svgIcon) {
+                    <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                  } @else if (item.icon) {
+                    <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
                   }
                   @if (!collapsed()) {
                     <span class="ax-sidebar__nav-label">{{ item.title }}</span>
@@ -139,8 +139,10 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                 @if (!collapsed()) {
                   <div class="ax-sidebar__nav-group">
                     <div class="ax-sidebar__nav-group-label">
-                      @if (item.icon) {
-                        <mat-icon class="ax-sidebar__nav-icon" [axIcon]="item.icon!"></mat-icon>
+                      @if (item.svgIcon) {
+                        <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                      } @else if (item.icon) {
+                        <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
                       }
                       <span>{{ item.title }}</span>
                     </div>
@@ -153,8 +155,10 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                         }"
                         class="ax-sidebar__nav-link ax-sidebar__nav-link--child"
                       >
-                        @if (child.icon) {
-                          <mat-icon class="ax-sidebar__nav-icon" [axIcon]="child.icon!"></mat-icon>
+                        @if (child.svgIcon) {
+                          <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="child.svgIcon"></mat-icon>
+                        } @else if (child.icon) {
+                          <mat-icon class="ax-sidebar__nav-icon">{{ child.icon }}</mat-icon>
                         }
                         <span class="ax-sidebar__nav-label">
                           {{ child.title }}
@@ -171,15 +175,19 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                     [matTooltip]="item.title"
                     matTooltipPosition="right"
                   >
-                    @if (item.icon) {
-                      <mat-icon class="ax-sidebar__nav-icon" [axIcon]="item.icon!"></mat-icon>
+                    @if (item.svgIcon) {
+                      <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                    } @else if (item.icon) {
+                      <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
                     }
                   </button>
                   <mat-menu #childMenu="matMenu">
                     @for (child of item.children; track child.id) {
                       <a mat-menu-item [routerLink]="child.link">
-                        @if (child.icon) {
-                          <mat-icon [axIcon]="child.icon!"></mat-icon>
+                        @if (child.svgIcon) {
+                          <mat-icon [svgIcon]="child.svgIcon"></mat-icon>
+                        } @else if (child.icon) {
+                          <mat-icon>{{ child.icon }}</mat-icon>
                         }
                         <span>{{ child.title }}</span>
                       </a>

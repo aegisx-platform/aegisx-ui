@@ -13,7 +13,6 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { AxIconDirective } from '../../components/navigation/icon/ax-icon.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -103,7 +102,6 @@ import {
     MatTooltipModule,
     MatDividerModule,
     AxLoadingBarComponent,
-    AxIconDirective,
   ],
   template: `
     <div class="ax-enterprise-layout" [class.has-app-theme]="hasAppTheme()">
@@ -153,8 +151,10 @@ import {
                       [class.icon-only]="!item.title"
                       [matTooltip]="!item.title ? item.tooltip || '' : ''"
                     >
-                      @if (item.icon) {
-                        <mat-icon [axIcon]="item.icon!"></mat-icon>
+                      @if (item.svgIcon) {
+                        <mat-icon [svgIcon]="item.svgIcon"></mat-icon>
+                      } @else if (item.icon) {
+                        <mat-icon>{{ item.icon }}</mat-icon>
                       }
                       @if (item.title) {
                         <span>{{ item.title }}</span>
@@ -177,8 +177,10 @@ import {
                       [class.icon-only]="!item.title"
                       [matTooltip]="!item.title ? item.tooltip || '' : ''"
                     >
-                      @if (item.icon) {
-                        <mat-icon [axIcon]="item.icon!"></mat-icon>
+                      @if (item.svgIcon) {
+                        <mat-icon [svgIcon]="item.svgIcon"></mat-icon>
+                      } @else if (item.icon) {
+                        <mat-icon>{{ item.icon }}</mat-icon>
                       }
                       @if (item.title) {
                         <span>{{ item.title }}</span>
@@ -190,8 +192,10 @@ import {
                     <mat-menu #navMenu="matMenu">
                       @for (child of item.children; track child.id) {
                         <a mat-menu-item [routerLink]="child.link">
-                          @if (child.icon) {
-                            <mat-icon [axIcon]="child.icon!"></mat-icon>
+                          @if (child.svgIcon) {
+                            <mat-icon [svgIcon]="child.svgIcon"></mat-icon>
+                          } @else if (child.icon) {
+                            <mat-icon>{{ child.icon }}</mat-icon>
                           }
                           <span>{{ child.title }}</span>
                         </a>
@@ -279,8 +283,10 @@ import {
                     [active]="rla.isActive"
                     [disabled]="item.disabled || false"
                   >
-                    @if (item.icon) {
-                      <mat-icon class="tab-icon" [axIcon]="item.icon!"></mat-icon>
+                    @if (item.svgIcon) {
+                      <mat-icon class="tab-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                    } @else if (item.icon) {
+                      <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
                     }
                     {{ item.title }}
                     @if (item.badge) {
@@ -317,8 +323,10 @@ import {
                     [active]="rla.isActive"
                     [disabled]="item.disabled || false"
                   >
-                    @if (item.icon) {
-                      <mat-icon class="tab-icon" [axIcon]="item.icon!"></mat-icon>
+                    @if (item.svgIcon) {
+                      <mat-icon class="tab-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                    } @else if (item.icon) {
+                      <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
                     }
                     {{ item.title }}
                     @if (item.badge) {

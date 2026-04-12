@@ -123,8 +123,13 @@ export interface LauncherApp {
   /** Short description */
   description?: string;
 
-  /** Material icon name */
+  /** Material icon name (font ligature fallback) */
   icon: string;
+
+  /** SVG icon name registered via MatIconRegistry (e.g. 'ax:app-inventory').
+   *  When set, renders <mat-icon [svgIcon]="svgIcon"> instead of font icon.
+   *  Takes precedence over `icon` field. */
+  svgIcon?: string;
 
   /** Internal route path (e.g., '/dashboard') */
   route?: string;

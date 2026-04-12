@@ -25,7 +25,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { AxIconDirective } from '../../components/navigation/icon/ax-icon.directive';
 import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loading-bar.component';
 import { AxNavigationItem } from '../../types/ax-navigation.types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -47,7 +46,6 @@ const COLLAPSED_STORAGE_KEY = 'ax-compact-layout:collapsed';
     MatMenuModule,
     MatTooltipModule,
     MatDividerModule,
-    AxIconDirective,
     AxLoadingBarComponent,
   ],
   templateUrl: './ax-compact-layout.component.html',

@@ -49,11 +49,15 @@
               [matTooltip]="!isNavigationExpanded() ? item.title : ''"
               matTooltipPosition="right"
             >
-              @if (item.icon) {
+              @if (item.svgIcon) {
                 <mat-icon
                   class="ax-compact__nav-icon"
-                  [axIcon]="item.icon!"
+                  [svgIcon]="item.svgIcon"
                 ></mat-icon>
+              } @else if (item.icon) {
+                <mat-icon
+                  class="ax-compact__nav-icon"
+                >{{ item.icon }}</mat-icon>
               }
               @if (isNavigationExpanded()) {
                 <span class="ax-compact__nav-label">{{ item.title }}</span>
@@ -72,11 +76,15 @@
             @if (isNavigationExpanded()) {
               <div class="ax-compact__nav-group">
                 <div class="ax-compact__nav-group-label">
-                  @if (item.icon) {
+                  @if (item.svgIcon) {
                     <mat-icon
                       class="ax-compact__nav-icon"
-                      [axIcon]="item.icon!"
+                      [svgIcon]="item.svgIcon"
                     ></mat-icon>
+                  } @else if (item.icon) {
+                    <mat-icon
+                      class="ax-compact__nav-icon"
+                    >{{ item.icon }}</mat-icon>
                   }
                   <span>{{ item.title }}</span>
                 </div>
@@ -89,11 +97,15 @@
                     }"
                     class="ax-compact__nav-link ax-compact__nav-link--child"
                   >
-                    @if (child.icon) {
+                    @if (child.svgIcon) {
                       <mat-icon
                         class="ax-compact__nav-icon"
-                        [axIcon]="child.icon!"
+                        [svgIcon]="child.svgIcon"
                       ></mat-icon>
+                    } @else if (child.icon) {
+                      <mat-icon
+                        class="ax-compact__nav-icon"
+                      >{{ child.icon }}</mat-icon>
                     }
                     <span class="ax-compact__nav-label">{{ child.title }}</span>
                   </a>
@@ -108,18 +120,24 @@
                 [matTooltip]="item.title"
                 matTooltipPosition="right"
               >
-                @if (item.icon) {
+                @if (item.svgIcon) {
                   <mat-icon
                     class="ax-compact__nav-icon"
-                    [axIcon]="item.icon!"
+                    [svgIcon]="item.svgIcon"
                   ></mat-icon>
+                } @else if (item.icon) {
+                  <mat-icon
+                    class="ax-compact__nav-icon"
+                  >{{ item.icon }}</mat-icon>
                 }
               </button>
               <mat-menu #childMenu="matMenu">
                 @for (child of item.children; track child.id) {
                   <a mat-menu-item [routerLink]="child.link">
-                    @if (child.icon) {
-                      <mat-icon [axIcon]="child.icon!"></mat-icon>
+                    @if (child.svgIcon) {
+                      <mat-icon [svgIcon]="child.svgIcon"></mat-icon>
+                    } @else if (child.icon) {
+                      <mat-icon>{{ child.icon }}</mat-icon>
                     }
                     <span>{{ child.title }}</span>
                   </a>

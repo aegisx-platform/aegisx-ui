@@ -5,7 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { AxIconDirective } from '../navigation/icon/ax-icon.directive';
 import {
   LauncherApp,
   LauncherMenuAction,
@@ -23,7 +22,6 @@ import {
     MatMenuModule,
     MatTooltipModule,
     MatDividerModule,
-    AxIconDirective,
   ],
   template: `
     <div
@@ -42,7 +40,11 @@ import {
       <div class="launcher-card__header">
         <div class="launcher-card__icon-wrapper">
           <div class="launcher-card__icon">
-            <mat-icon [axIcon]="app().icon"></mat-icon>
+            @if (app().svgIcon) {
+              <mat-icon [svgIcon]="app().svgIcon!"></mat-icon>
+            } @else {
+              <mat-icon>{{ app().icon }}</mat-icon>
+            }
           </div>
           @if ((app().notificationCount ?? 0) > 0) {
             <span class="launcher-card__badge">{{ displayBadgeCount() }}</span>
@@ -107,7 +109,7 @@ import {
                   (click)="onMenuAction(action)"
                 >
                   @if (action.icon) {
-                    <mat-icon [axIcon]="action.icon!"></mat-icon>
+                    <mat-icon>{{ action.icon }}</mat-icon>
                   }
                   <span>{{ action.label }}</span>
                 </button>

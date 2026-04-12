@@ -48,8 +48,13 @@ export interface AxNavigationItem {
     | 'divider'
     | 'spacer';
 
-  /** Material icon name */
+  /** Material icon name (font ligature, e.g. 'home', 'settings') */
   icon?: string;
+
+  /** SVG icon name registered via MatIconRegistry (e.g. 'ax:pharmacy').
+   *  When set, renders <mat-icon [svgIcon]="svgIcon"> instead of font icon.
+   *  Takes precedence over `icon` field. */
+  svgIcon?: string;
 
   /** Router link (string or array for complex routes) */
   link?: string | string[];

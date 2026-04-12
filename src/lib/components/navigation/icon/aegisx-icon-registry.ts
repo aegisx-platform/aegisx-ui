@@ -32,25 +32,18 @@ export class AegisxIconRegistry {
   private registered = false;
 
   /**
-   * Register ALL AegisX icons (60 icons). Idempotent.
-   * No HTTP — uses addSvgIconLiteral() with inline SVG strings.
+   * Register all AegisX icons in namespace 'ax'.
+   * Usage: <mat-icon svgIcon="ax:budget-ledger"></mat-icon>
    */
   registerAll(): void {
     if (this.registered) return;
-    this.register(AEGISX_ICON_DATA);
-    this.registered = true;
-  }
-
-  /**
-   * Register a subset of icons (tree-shake friendly).
-   * @param icons Record of kebab-case name → SVG string
-   */
-  register(icons: Record<string, string>): void {
-    for (const [name, svg] of Object.entries(icons)) {
-      this.iconRegistry.addSvgIconLiteral(
+    for (const [name, svg] of Object.entries(AEGISX_ICON_DATA)) {
+      this.iconRegistry.addSvgIconLiteralInNamespace(
+        'ax',
         name,
         this.sanitizer.bypassSecurityTrustHtml(svg),
       );
     }
+    this.registered = true;
   }
 }
