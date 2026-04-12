@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   Output,
@@ -9,7 +10,7 @@ import {
   signal,
   HostBinding,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -88,8 +89,9 @@ import {
 @Component({
   selector: 'ax-enterprise-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    NgTemplateOutlet,
     RouterLink,
     RouterLinkActive,
     MatToolbarModule,
@@ -395,7 +397,7 @@ import {
 
       /* Dark Header Theme */
       .ax-enterprise-header.dark-header {
-        background: #0b1622;
+        background: var(--ax-background-emphasis, #0b1622);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
         .ax-enterprise-header-primary {
@@ -405,11 +407,11 @@ import {
 
         .ax-enterprise-logo-placeholder {
           background: rgba(255, 255, 255, 0.15);
-          color: white;
+          color: var(--ax-text-inverse, #ffffff);
         }
 
         .ax-enterprise-brand-text {
-          color: white;
+          color: var(--ax-text-inverse, #ffffff);
         }
 
         .ax-enterprise-nav-link {
@@ -463,7 +465,7 @@ import {
         }
 
         .ax-enterprise-subnav {
-          background: #0b1622;
+          background: var(--ax-background-emphasis, #0b1622);
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
           .mat-mdc-tab-link {
@@ -611,7 +613,7 @@ import {
         justify-content: center;
         background: var(--ax-brand-default);
         border-radius: var(--ax-radius-sm);
-        color: white;
+        color: var(--ax-text-inverse, #ffffff);
 
         mat-icon {
           font-size: 20px;
@@ -779,7 +781,7 @@ import {
       .ax-enterprise-main {
         flex: 1;
         overflow-y: auto;
-        background: #fff;
+        background: var(--ax-background-default, #ffffff);
       }
 
       .ax-enterprise-content {
