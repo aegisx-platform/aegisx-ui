@@ -4,7 +4,7 @@ import {
   Input,
   booleanAttribute,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+// CommonModule not needed — template uses @if control flow, no NgIf/NgFor
 import { AxBreadcrumbComponent } from '../../navigation/breadcrumb/breadcrumb.component';
 import { BreadcrumbItem } from '../../navigation/breadcrumb/breadcrumb.types';
 
@@ -48,7 +48,7 @@ import { BreadcrumbItem } from '../../navigation/breadcrumb/breadcrumb.types';
   selector: 'ax-page-shell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AxBreadcrumbComponent],
+  imports: [AxBreadcrumbComponent],
   template: `
     <div class="ax-page-shell">
       <div class="ax-page-shell-inner">

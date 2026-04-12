@@ -11,8 +11,8 @@ export interface AxNavigationBadge {
   content?: string;
   /** Legacy: Badge title (same as content) */
   title?: string;
-  /** Badge color type */
-  type?: 'primary' | 'accent' | 'warn' | 'success' | 'info';
+  /** Badge color type ('accent' is deprecated — use 'error' instead) */
+  type?: 'primary' | 'accent' | 'warn' | 'error' | 'success' | 'info';
   /** Legacy: CSS classes for custom styling */
   classes?: string;
 }

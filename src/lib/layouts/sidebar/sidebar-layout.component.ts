@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   Output,
@@ -10,7 +11,7 @@ import {
   inject,
   PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -57,8 +58,9 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
 @Component({
   selector: 'ax-sidebar-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    NgTemplateOutlet,
     RouterLink,
     RouterLinkActive,
     MatIconModule,
@@ -73,6 +75,7 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
     <div
       class="ax-sidebar-layout"
       [class.ax-sidebar-layout--collapsed]="collapsed()"
+      [class.ax-sidebar-layout--mobile-open]="mobileOpen()"
     >
       <!-- Sidebar -->
       <aside class="ax-sidebar" [attr.aria-label]="appName + ' navigation'">
@@ -239,13 +242,33 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         </div>
       </aside>
 
+      <!-- Mobile backdrop -->
+      @if (mobileOpen()) {
+        <div
+          class="ax-sidebar__backdrop"
+          role="button"
+          tabindex="-1"
+          aria-label="Close navigation menu"
+          (click)="closeMobileMenu()"
+          (keydown.escape)="closeMobileMenu()"
+        ></div>
+      }
+
       <!-- Main area -->
       <main class="ax-sidebar-main">
-        @if (headerActions) {
-          <header class="ax-sidebar-main__header">
+        <header class="ax-sidebar-main__header">
+          <button
+            type="button"
+            class="ax-sidebar__mobile-toggle"
+            (click)="toggleMobileMenu()"
+            aria-label="Open navigation menu"
+          >
+            <mat-icon>menu</mat-icon>
+          </button>
+          @if (headerActions) {
             <ng-container [ngTemplateOutlet]="headerActions" />
-          </header>
-        }
+          }
+        </header>
         <div class="ax-sidebar-main__content">
           <ng-content></ng-content>
         </div>
@@ -425,6 +448,7 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         color: var(--ax-warning-default, #f59e0b);
       }
 
+      .ax-sidebar__badge.badge-error,
       .ax-sidebar__badge.badge-accent {
         background: var(--ax-error-faint, #fef2f2);
         color: var(--ax-error-default, #ef4444);
@@ -540,10 +564,36 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         min-width: 0;
       }
 
+      /* Mobile hamburger button — hidden on desktop */
+      .ax-sidebar__mobile-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--ax-text-default, #18181b);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+      }
+
+      .ax-sidebar__mobile-toggle:hover {
+        background: var(--ax-background-subtle, #f4f4f5);
+      }
+
+      /* Mobile backdrop overlay */
+      .ax-sidebar__backdrop {
+        display: none;
+      }
+
       /* Mobile: slide-in drawer (below 900px) */
       @media (max-width: 900px) {
         .ax-sidebar-layout {
           grid-template-columns: 1fr;
+        }
+
+        .ax-sidebar__mobile-toggle {
+          display: flex;
         }
 
         .ax-sidebar {
@@ -554,11 +604,29 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
           z-index: 200;
           transform: translateX(-100%);
           transition: transform 0.2s ease;
-          box-shadow: 2px 0 16px -4px rgba(0, 0, 0, 0.08);
         }
 
-        .ax-sidebar-layout--collapsed .ax-sidebar {
+        .ax-sidebar-layout--mobile-open .ax-sidebar {
           transform: translateX(0);
+          box-shadow: 2px 0 16px -4px rgba(0, 0, 0, 0.12);
+        }
+
+        .ax-sidebar__backdrop {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 199;
+          background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* On mobile, hide the desktop collapse button */
+        .ax-sidebar__collapse-btn {
+          display: none;
+        }
+
+        /* Always show full sidebar (not icon-only) on mobile */
+        .ax-sidebar-layout--collapsed {
+          grid-template-columns: 1fr;
         }
       }
     `,
@@ -600,8 +668,11 @@ export class AxSidebarLayoutComponent implements OnInit {
   /** Emitted whenever the sidebar collapsed state changes. */
   @Output() collapsedChange = new EventEmitter<boolean>();
 
-  /** Current collapsed state (icon-only mode). */
+  /** Current collapsed state (icon-only mode, desktop only). */
   readonly collapsed = signal(false);
+
+  /** Mobile drawer open state (separate from desktop collapsed). */
+  readonly mobileOpen = signal(false);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -620,5 +691,15 @@ export class AxSidebarLayoutComponent implements OnInit {
       localStorage.setItem(COLLAPSED_STORAGE_KEY, String(next));
     }
     this.collapsedChange.emit(next);
+  }
+
+  /** Open/close the mobile drawer overlay. */
+  toggleMobileMenu(): void {
+    this.mobileOpen.set(!this.mobileOpen());
+  }
+
+  /** Close the mobile drawer (e.g., when backdrop is clicked). */
+  closeMobileMenu(): void {
+    this.mobileOpen.set(false);
   }
 }
