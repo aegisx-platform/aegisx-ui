@@ -441,6 +441,11 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         font-size: 20px;
         width: 20px;
         height: 20px;
+        overflow: visible;
+      }
+      .ax-sidebar__nav-icon svg {
+        width: 20px;
+        height: 20px;
       }
 
       .ax-sidebar__nav-label {

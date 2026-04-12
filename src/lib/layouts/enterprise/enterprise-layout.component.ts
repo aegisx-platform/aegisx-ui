@@ -694,6 +694,21 @@ import {
         border: none;
         cursor: pointer;
 
+        /* Ensure both Material font icons AND SVG custom icons
+           render at consistent 20×20 size without clipping */
+        mat-icon {
+          flex-shrink: 0;
+          width: 20px;
+          height: 20px;
+          font-size: 20px;
+          line-height: 20px;
+          overflow: visible;
+        }
+        mat-icon svg {
+          width: 20px;
+          height: 20px;
+        }
+
         &:hover {
           color: var(--ax-text-heading);
           background: var(--ax-background-muted);
@@ -792,10 +807,16 @@ import {
         border-bottom: none !important;
 
         .tab-icon {
+          flex-shrink: 0;
           font-size: 18px;
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
+          overflow: visible;
+        }
+        .tab-icon svg {
+          width: 18px;
+          height: 18px;
         }
 
         .tab-badge {
