@@ -280,6 +280,17 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         <div class="ax-sidebar-main__content">
           <ng-content></ng-content>
         </div>
+        @if (showFooter) {
+          <footer class="ax-sidebar-main__footer">
+            @if (footerContent) {
+              <ng-container [ngTemplateOutlet]="footerContent" />
+            } @else {
+              <span class="ax-sidebar-main__footer-text">
+                &copy; {{ currentYear }} {{ appName }}
+              </span>
+            }
+          </footer>
+        }
       </main>
     </div>
   `,
@@ -572,6 +583,20 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         min-width: 0;
       }
 
+      /* Footer -------------------------------------------------------------- */
+      .ax-sidebar-main__footer {
+        flex-shrink: 0;
+        padding: 12px 24px;
+        border-top: 1px solid var(--ax-border-default, #e4e4e7);
+        font-size: 13px;
+        color: var(--ax-text-secondary, #71717a);
+        background: var(--ax-background-default, #ffffff);
+      }
+
+      .ax-sidebar-main__footer-text {
+        color: var(--ax-text-subtle, #a1a1aa);
+      }
+
       /* Mobile hamburger button — hidden on desktop */
       .ax-sidebar__mobile-toggle {
         display: none;
@@ -660,11 +685,19 @@ export class AxSidebarLayoutComponent implements OnInit {
   /** Include the Settings item in the default user menu. */
   @Input() showSettingsMenuItem = true;
 
+  /** Show the footer bar below the main content area. */
+  @Input() showFooter = true;
+
   /** Optional header actions template, projected into the main area header. */
   @ContentChild('headerActions') headerActions?: TemplateRef<unknown>;
 
   /** Optional user menu template, replaces the default user menu button. */
   @ContentChild('userMenu') userMenu?: TemplateRef<unknown>;
+
+  /** Optional footer content template. */
+  @ContentChild('footerContent') footerContent?: TemplateRef<unknown>;
+
+  readonly currentYear = new Date().getFullYear();
 
   /** Emitted when the default user menu's profile item is clicked. */
   @Output() profileClicked = new EventEmitter<void>();
