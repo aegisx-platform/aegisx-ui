@@ -28,10 +28,6 @@ export * from './layout';
 export * from './empty-state';
 export * from './error-state';
 
-// Additional Components
-// Note: AxLoadingBarComponent is now exported from feedback module
-export * from './ax-navigation.component';
-
 // Dialog Components
 export * from './dialogs';
 
