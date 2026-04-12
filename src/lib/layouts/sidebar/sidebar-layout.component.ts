@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   Output,
   EventEmitter,
@@ -12,7 +13,14 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -633,7 +641,9 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
   ],
 })
 export class AxSidebarLayoutComponent implements OnInit {
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Logo image URL (optional). Falls back to a placeholder icon. */
   @Input() logoUrl?: string;
@@ -681,6 +691,14 @@ export class AxSidebarLayoutComponent implements OnInit {
         this.collapsed.set(true);
       }
     }
+
+    // Auto-close mobile drawer on route navigation
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.closeMobileMenu());
   }
 
   /** Toggle the sidebar between expanded (256px) and collapsed (64px). */
