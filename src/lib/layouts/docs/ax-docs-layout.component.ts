@@ -1,19 +1,20 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   ContentChild,
   TemplateRef,
   signal,
   inject,
   OnInit,
-  OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AxDocsSidebarComponent } from './components/ax-docs-sidebar.component';
 import { AxNavigationItem } from '../../types/ax-navigation.types';
 import {
@@ -26,7 +27,6 @@ import {
   LoadingBarService,
   LoadingBarState,
 } from '../../components/feedback/loading-bar/loading-bar.service';
-import { Subject, takeUntil } from 'rxjs';
 
 /**
  * Documentation Layout Component
@@ -45,12 +45,13 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'ax-docs-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [
-    CommonModule,
+    NgTemplateOutlet,
     MatIconModule,
     MatButtonModule,
-    RouterModule,
+    RouterLink,
     AxDocsSidebarComponent,
     AxDocsTocComponent,
     AxLoadingBarComponent,
@@ -87,7 +88,7 @@ import { Subject, takeUntil } from 'rxjs';
         <!-- Right: Actions -->
         <div class="ax-docs-header__actions">
           @if (headerActions) {
-            <ng-container *ngTemplateOutlet="headerActions"></ng-container>
+            <ng-container [ngTemplateOutlet]="headerActions" />
           } @else {
             <button mat-icon-button aria-label="Search">
               <mat-icon>search</mat-icon>
@@ -132,7 +133,7 @@ import { Subject, takeUntil } from 'rxjs';
         <!-- Sidebar Header (optional) -->
         @if (sidebarHeader) {
           <div class="ax-docs-layout__sidebar-header">
-            <ng-container *ngTemplateOutlet="sidebarHeader"></ng-container>
+            <ng-container [ngTemplateOutlet]="sidebarHeader" />
           </div>
         }
 
@@ -141,7 +142,7 @@ import { Subject, takeUntil } from 'rxjs';
         <!-- Sidebar Footer (optional) -->
         @if (sidebarFooter) {
           <div class="ax-docs-layout__sidebar-footer">
-            <ng-container *ngTemplateOutlet="sidebarFooter"></ng-container>
+            <ng-container [ngTemplateOutlet]="sidebarFooter" />
           </div>
         }
       </aside>
@@ -363,7 +364,7 @@ import { Subject, takeUntil } from 'rxjs';
     `,
   ],
 })
-export class AxDocsLayoutComponent implements OnInit, OnDestroy {
+export class AxDocsLayoutComponent implements OnInit {
   /** Navigation items for sidebar */
   @Input() navigation: AxNavigationItem[] = [];
 
@@ -405,7 +406,7 @@ export class AxDocsLayoutComponent implements OnInit, OnDestroy {
 
   private _mediaWatcher = inject(AegisxMediaWatcherService);
   private _loadingBarService = inject(LoadingBarService);
-  private _destroy$ = new Subject<void>();
+  private _destroyRef = inject(DestroyRef);
 
   // Expose loading bar state as a signal for reactive template binding
   protected readonly loadingBarState = toSignal(
@@ -430,15 +431,10 @@ export class AxDocsLayoutComponent implements OnInit, OnDestroy {
 
     // Watch for screen size changes
     this._mediaWatcher.onMediaChange$
-      .pipe(takeUntil(this._destroy$))
+      .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe(() => {
         this.checkScreenSize();
       });
-  }
-
-  ngOnDestroy(): void {
-    this._destroy$.next();
-    this._destroy$.complete();
   }
 
   private checkScreenSize(): void {
