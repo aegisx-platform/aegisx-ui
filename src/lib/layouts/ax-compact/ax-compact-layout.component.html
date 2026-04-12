@@ -21,7 +21,6 @@
 
 <!-- Navigation -->
 <ax-navigation
-  [class.dark]="isDarkMode"
   class="print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
   style="background: var(--ax-background-emphasis, #18181b)"
   [class.w-16]="!isNavigationExpanded() && !isScreenSmall"
@@ -78,7 +77,6 @@
   [class.ml-0]="isScreenSmall"
   [class.ml-16]="!isScreenSmall && !isNavigationExpanded()"
   [class.ml-64]="!isScreenSmall && isNavigationExpanded()"
-  [class.dark]="isDarkMode"
 >
   <!-- Header/Toolbar -->
   <div
@@ -109,7 +107,9 @@
     </div>
 
     <!-- User Menu -->
-    @if (showDefaultUserMenu) {
+    @if (userMenu) {
+      <ng-container [ngTemplateOutlet]="userMenu" />
+    } @else if (showDefaultUserMenu) {
       <button
         mat-icon-button
         [matMenuTriggerFor]="userMenuRef"

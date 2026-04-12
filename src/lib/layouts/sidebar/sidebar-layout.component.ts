@@ -352,7 +352,7 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
 
       .ax-sidebar__logo-placeholder {
         background: var(--ax-primary, #6366f1);
-        color: #ffffff;
+        color: var(--ax-text-inverse, #ffffff);
       }
 
       .ax-sidebar__logo-placeholder mat-icon {

@@ -1,16 +1,8 @@
 :host {
   display: block;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-// Main layout wrapper
-ax-fuse-compact-layout {
-  display: block;
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow: hidden;
 
   // AegisX Navigation styles
@@ -132,8 +124,7 @@ ax-fuse-compact-layout {
   }
 
   // Dark mode styles
-  &.dark,
-  :host-context(.dark) & {
+  :host-context([data-theme='dark']) & {
     > .flex {
       background-color: var(--ax-background-muted, #111827);
 

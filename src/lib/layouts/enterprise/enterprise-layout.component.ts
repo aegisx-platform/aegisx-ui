@@ -134,7 +134,10 @@ import {
 
             <!-- Primary Navigation (Desktop) -->
             @if (navigation.length > 0 && !showSubNavAsTabs) {
-              <nav class="ax-enterprise-primary-nav">
+              <nav
+                class="ax-enterprise-primary-nav"
+                [attr.aria-label]="appName + ' navigation'"
+              >
                 @for (item of navigation; track item.id) {
                   @if (!item.children || item.children.length === 0) {
                     <a
@@ -236,6 +239,7 @@ import {
                 mat-icon-button
                 [matMenuTriggerFor]="defaultUserMenu"
                 [matTooltip]="'Account'"
+                aria-label="Account"
               >
                 <mat-icon>account_circle</mat-icon>
               </button>

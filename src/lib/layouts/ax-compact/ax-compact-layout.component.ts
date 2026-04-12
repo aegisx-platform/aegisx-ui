@@ -2,16 +2,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
+  DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
+  PLATFORM_ID,
   TemplateRef,
   inject,
   signal,
 } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,8 +30,7 @@ import {
   LoadingBarService,
   LoadingBarState,
 } from '../../components/feedback/loading-bar/loading-bar.service';
-import { Subject, takeUntil } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ax-compact-layout',
@@ -50,7 +50,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './ax-compact-layout.component.html',
   styleUrls: ['./ax-compact-layout.component.scss'],
 })
-export class AxCompactLayoutComponent implements OnInit, OnDestroy {
+export class AxCompactLayoutComponent implements OnInit {
   @Input() set navigation(value: AxNavigationItem[]) {
     this._axNavigation.set(value);
   }
@@ -62,7 +62,6 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
   @Input() showFooter = true;
   @Input() appName = 'AegisX Platform';
   @Input() appVersion = 'v2.0';
-  @Input() isDarkMode = false;
   @Input() logoUrl?: string;
   @Input() showDefaultUserMenu = true;
   @Input() showSettingsMenuItem = true;
@@ -73,6 +72,7 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
 
   @ContentChild('toolbarTitle') toolbarTitle!: TemplateRef<unknown>;
   @ContentChild('headerActions') headerActions!: TemplateRef<unknown>;
+  @ContentChild('userMenu') userMenu?: TemplateRef<unknown>;
   @ContentChild('navigationHeader') navigationHeader!: TemplateRef<unknown>;
   @ContentChild('navigationFooter') navigationFooter!: TemplateRef<unknown>;
   @ContentChild('footerContent') footerContent!: TemplateRef<unknown>;
@@ -89,7 +89,8 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
     breakpoint: 'lg',
   });
 
-  private _unsubscribeAll = new Subject<void>();
+  private readonly _platformId = inject(PLATFORM_ID);
+  private readonly _destroyRef = inject(DestroyRef);
   private _mediaWatcher = inject(AegisxMediaWatcherService);
   private _loadingBarService = inject(LoadingBarService);
 
@@ -108,9 +109,8 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit(): void {
-    // Check initial screen size immediately
-    const checkInitialSize = () => {
-      // Check if window width is less than 768px (md breakpoint)
+    // Check initial screen size immediately (SSR-safe)
+    if (isPlatformBrowser(this._platformId)) {
       const isMobile = window.innerWidth < 768;
       this.isScreenSmall = isMobile;
 
@@ -127,14 +127,11 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
           state: 'expanded',
         }));
       }
-    };
-
-    // Set initial state
-    checkInitialSize();
+    }
 
     // Then subscribe to media changes
     this._mediaWatcher.onMediaChange$
-      .pipe(takeUntil(this._unsubscribeAll))
+      .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((result) => {
         const wasScreenSmall = this.isScreenSmall;
         this.isScreenSmall = result.matches; // matches = true when on mobile/tablet
@@ -156,11 +153,6 @@ export class AxCompactLayoutComponent implements OnInit, OnDestroy {
           }));
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
   }
 
   toggleNavigation(_navigationId: string): void {
