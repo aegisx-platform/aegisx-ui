@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatDialogModule,
@@ -35,7 +34,8 @@ import { AxConfirmDialogData } from './ax-confirm-dialog.types';
 @Component({
   selector: 'ax-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatButtonModule, MatDialogModule],
   template: `
     <!-- Dialog Title -->
     <h2 mat-dialog-title>{{ title }}</h2>

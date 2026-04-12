@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnInit,
@@ -57,7 +57,6 @@ import {
   selector: 'ax-barcode-scanner',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatIconModule,
@@ -66,6 +65,7 @@ import {
   ],
   templateUrl: './ax-barcode-scanner.component.html',
   styleUrls: ['./ax-barcode-scanner.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxBarcodeScannerComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement') videoRef?: ElementRef<HTMLVideoElement>;

@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -13,7 +12,8 @@ export interface ErrorStateAction {
 @Component({
   selector: 'ax-error-state',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatButtonModule],
   template: `
     <div
       class="ax-error-state"

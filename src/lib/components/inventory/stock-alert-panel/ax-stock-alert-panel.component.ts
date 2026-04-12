@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -9,6 +9,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { TitleCasePipe, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -66,7 +67,8 @@ import {
   selector: 'ax-stock-alert-panel',
   standalone: true,
   imports: [
-    CommonModule,
+    TitleCasePipe,
+    DatePipe,
     MatCardModule,
     MatIconModule,
     MatListModule,
@@ -82,6 +84,7 @@ import {
   ],
   templateUrl: './ax-stock-alert-panel.component.html',
   styleUrls: ['./ax-stock-alert-panel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxStockAlertPanelComponent implements OnInit, OnDestroy {
   // =============================================================================

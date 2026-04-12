@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   Output,
@@ -122,6 +123,7 @@ export type AxCalendarView =
 @Component({
   selector: 'ax-calendar',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FullCalendarModule],
   template: `
     <div class="ax-calendar" [class.ax-calendar--loading]="_loading()">

@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -10,6 +10,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import {
   FormArray,
   FormBuilder,
@@ -81,7 +82,6 @@ import {
   selector: 'ax-transfer-wizard',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatButtonModule,
@@ -97,9 +97,11 @@ import {
     MatTooltipModule,
     AxLocationPickerComponent,
     AxQuantityInputComponent,
+    DatePipe,
   ],
   templateUrl: './ax-transfer-wizard.component.html',
   styleUrl: './ax-transfer-wizard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxTransferWizardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

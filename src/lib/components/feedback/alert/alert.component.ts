@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -6,16 +7,16 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertVariant } from './alert.types';
 
 @Component({
   selector: 'ax-alert',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxAlertComponent implements OnInit, OnDestroy {
   @Input() variant: AlertVariant = 'default';

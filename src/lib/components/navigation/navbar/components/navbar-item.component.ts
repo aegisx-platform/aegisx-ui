@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   Output,
@@ -7,7 +8,7 @@ import {
   ElementRef,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -52,8 +53,10 @@ export interface NavbarMenuItem {
 @Component({
   selector: 'ax-nav-item',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    NgIf,
+    NgFor,
     RouterModule,
     MatIconModule,
     MatMenuModule,

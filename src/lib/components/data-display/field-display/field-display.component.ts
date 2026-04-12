@@ -1,5 +1,10 @@
-import { Component, Input, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  HostBinding,
+} from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
 import { AxFieldFormatPipe } from './field-format.pipe';
 import {
   FieldType,
@@ -46,9 +51,10 @@ import {
 @Component({
   selector: 'ax-field-display',
   standalone: true,
-  imports: [CommonModule, AxFieldFormatPipe],
+  imports: [NgClass, NgStyle, AxFieldFormatPipe],
   templateUrl: './field-display.component.html',
   styleUrls: ['./field-display.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxFieldDisplayComponent {
   /** Label text for the field */

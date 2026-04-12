@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   forwardRef,
@@ -58,7 +58,6 @@ import {
   selector: 'ax-quantity-input',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -69,6 +68,7 @@ import {
   ],
   templateUrl: './ax-quantity-input.component.html',
   styleUrl: './ax-quantity-input.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   EventEmitter,
@@ -22,8 +22,8 @@ import {
 @Component({
   selector: 'ax-color-palette-editor',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatIconModule,

@@ -12,7 +12,7 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   GridsterComponent as Gridster,
   GridsterItemComponent,
@@ -74,7 +74,7 @@ import {
 @Component({
   selector: 'ax-gridster',
   standalone: true,
-  imports: [CommonModule, Gridster, GridsterItemComponent],
+  imports: [NgTemplateOutlet, Gridster, GridsterItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="ax-gridster-container" [class.ax-gridster-edit-mode]="editMode">

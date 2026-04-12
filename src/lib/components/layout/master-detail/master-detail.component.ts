@@ -1,5 +1,9 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MasterPosition } from './master-detail.types';
 
 /**
@@ -28,7 +32,8 @@ import { MasterPosition } from './master-detail.types';
 @Component({
   selector: 'ax-master-detail',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
   templateUrl: './master-detail.component.html',
   styleUrls: ['./master-detail.component.scss'],
   encapsulation: ViewEncapsulation.None,

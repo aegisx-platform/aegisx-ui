@@ -1,5 +1,10 @@
-import { Component, computed, ElementRef, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  viewChild,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -14,7 +19,8 @@ import {
 @Component({
   selector: 'ax-chart-widget',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatProgressSpinnerModule],
   template: `
     <div class="ax-chart-widget">
       <!-- Header -->

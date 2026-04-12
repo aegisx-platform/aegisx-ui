@@ -7,8 +7,8 @@ import {
   ViewChild,
   HostListener,
   forwardRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { KnobSize, KnobColor } from './knob.types';
 
@@ -39,7 +39,8 @@ import type { KnobSize, KnobColor } from './knob.types';
 @Component({
   selector: 'ax-knob',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

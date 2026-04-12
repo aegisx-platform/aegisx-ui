@@ -1,5 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -27,13 +32,8 @@ export type IconButtonSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'ax-navbar-icon-button',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatBadgeModule,
-    MatTooltipModule,
-  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatButtonModule, MatBadgeModule, MatTooltipModule],
   template: `
     <button
       mat-icon-button

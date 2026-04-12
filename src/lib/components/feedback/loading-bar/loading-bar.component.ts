@@ -1,5 +1,11 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, NgStyle } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoadingBarService } from './loading-bar.service';
 import { LoadingBarVariant } from './loading-bar.types';
@@ -7,9 +13,10 @@ import { LoadingBarVariant } from './loading-bar.types';
 @Component({
   selector: 'ax-loading-bar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [AsyncPipe, NgStyle],
   templateUrl: './loading-bar.component.html',
   styleUrls: ['./loading-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxLoadingBarComponent implements OnInit {
   @Input() variant: LoadingBarVariant = 'primary';

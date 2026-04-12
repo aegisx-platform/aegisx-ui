@@ -1,5 +1,12 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+} from '@angular/core';
+import { NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { BreadcrumbItem, BreadcrumbSize } from './breadcrumb.types';
@@ -7,7 +14,8 @@ import { BreadcrumbItem, BreadcrumbSize } from './breadcrumb.types';
 @Component({
   selector: 'ax-breadcrumb',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [NgStyle, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
 })

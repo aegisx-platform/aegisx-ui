@@ -1,5 +1,11 @@
-import { Component, Input, TemplateRef, ContentChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChild,
+  Input,
+  TemplateRef,
+} from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 /**
@@ -23,7 +29,8 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'ax-auth-layout',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgTemplateOutlet, MatIconModule],
   template: `
     <div class="auth-container">
       <!-- Left Side - Branding -->

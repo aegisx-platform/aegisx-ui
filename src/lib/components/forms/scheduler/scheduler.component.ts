@@ -7,8 +7,8 @@ import {
   OnInit,
   OnChanges,
   SimpleChanges,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   ControlValueAccessor,
@@ -38,14 +38,10 @@ import type {
 @Component({
   selector: 'ax-scheduler',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AxDatePickerComponent,
-    AxTimeSlotsComponent,
-  ],
+  imports: [FormsModule, AxDatePickerComponent, AxTimeSlotsComponent],
   templateUrl: './scheduler.component.html',
   styleUrls: ['./scheduler.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

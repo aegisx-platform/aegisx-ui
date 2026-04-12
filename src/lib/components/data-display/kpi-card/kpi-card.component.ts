@@ -1,5 +1,9 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  Input,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import {
   KpiCardVariant,
   KpiCardSize,
@@ -49,7 +53,8 @@ import {
 @Component({
   selector: 'ax-kpi-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './kpi-card.component.html',
   styleUrls: ['./kpi-card.component.scss'],
   encapsulation: ViewEncapsulation.None,

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -9,7 +10,6 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -23,12 +23,8 @@ import { WidgetHostComponent } from '../widget-host/widget-host.component';
 @Component({
   selector: 'ax-dashboard-viewer',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    WidgetHostComponent,
-  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatProgressSpinnerModule, WidgetHostComponent],
   template: `
     <div class="ax-dashboard-viewer">
       <!-- Loading -->

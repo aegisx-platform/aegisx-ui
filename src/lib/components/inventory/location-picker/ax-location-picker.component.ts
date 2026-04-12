@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   output,
@@ -9,6 +9,7 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
@@ -69,7 +70,7 @@ import {
   selector: 'ax-location-picker',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
     FormsModule,
     MatTreeModule,
     MatButtonModule,
@@ -83,6 +84,7 @@ import {
   ],
   templateUrl: './ax-location-picker.component.html',
   styleUrl: './ax-location-picker.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxLocationPickerComponent implements OnInit {
   // =============================================================================

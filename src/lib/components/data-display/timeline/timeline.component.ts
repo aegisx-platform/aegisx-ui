@@ -4,8 +4,9 @@ import {
   ContentChild,
   TemplateRef,
   HostBinding,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {
   TimelineLayout,
@@ -18,7 +19,8 @@ import {
 @Component({
   selector: 'ax-timeline',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [NgTemplateOutlet, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
 })

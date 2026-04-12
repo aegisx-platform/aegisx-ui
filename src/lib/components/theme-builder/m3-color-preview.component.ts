@@ -5,8 +5,14 @@
  * Shows Primary, Secondary, Tertiary palettes with large color blocks
  * and full-width tonal palette strips.
  */
-import { Component, computed, input, signal, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  signal,
+  output,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -31,8 +37,8 @@ type SchemeMode = 'light' | 'dark';
 @Component({
   selector: 'ax-m3-color-preview',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -838,7 +844,9 @@ type SchemeMode = 'light' | 'dark';
 
       /* Reduced Motion */
       @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
           animation-duration: 0.01ms !important;
           animation-iteration-count: 1 !important;
           transition-duration: 0.01ms !important;

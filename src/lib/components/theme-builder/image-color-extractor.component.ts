@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,6 +6,7 @@ import {
   Output,
   signal,
 } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -63,7 +63,7 @@ interface ColorCategory {
   selector: 'ax-image-color-extractor',
   standalone: true,
   imports: [
-    CommonModule,
+    TitleCasePipe,
     FormsModule,
     AxFileUploadComponent,
     MatButtonModule,
@@ -896,7 +896,9 @@ interface ColorCategory {
 
       /* Reduced Motion */
       @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
           animation-duration: 0.01ms !important;
           animation-iteration-count: 1 !important;
           transition-duration: 0.01ms !important;

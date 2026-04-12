@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { NgStyle } from '@angular/common';
 import {
   CardVariant,
   CardSize,
@@ -11,9 +11,10 @@ import {
 @Component({
   selector: 'ax-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgStyle],
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxCardComponent {
   @Input() variant: CardVariant = 'default';

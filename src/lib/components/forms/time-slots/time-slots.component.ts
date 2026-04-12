@@ -7,8 +7,9 @@ import {
   OnInit,
   OnChanges,
   SimpleChanges,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -30,9 +31,10 @@ import type {
 @Component({
   selector: 'ax-time-slots',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgStyle],
   templateUrl: './time-slots.component.html',
   styleUrls: ['./time-slots.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

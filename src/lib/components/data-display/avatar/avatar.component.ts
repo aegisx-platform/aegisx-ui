@@ -1,13 +1,13 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { AvatarSize, AvatarShape } from './avatar.types';
 
 @Component({
   selector: 'ax-avatar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './avatar.component.html',
   styleUrls: ['./avatar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxAvatarComponent {
   @Input() src: string = '';

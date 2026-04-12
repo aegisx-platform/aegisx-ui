@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -7,6 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -61,7 +62,7 @@ import {
   selector: 'ax-variant-selector',
   standalone: true,
   imports: [
-    CommonModule,
+    NgClass,
     FormsModule,
     MatButtonModule,
     MatCardModule,
@@ -79,6 +80,7 @@ import {
   ],
   templateUrl: './ax-variant-selector.component.html',
   styleUrls: ['./ax-variant-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxVariantSelectorComponent {
   // Expose Math for template use

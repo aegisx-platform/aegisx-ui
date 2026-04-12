@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   inject,
@@ -6,7 +7,6 @@ import {
   Output,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormBuilder,
@@ -68,8 +68,8 @@ export interface RegisterFormConfig {
 @Component({
   selector: 'ax-register-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -167,7 +167,9 @@ export interface RegisterFormConfig {
               matSuffix
               type="button"
               (click)="togglePasswordVisibility()"
-              [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+              [attr.aria-label]="
+                hidePassword() ? 'Show password' : 'Hide password'
+              "
               [attr.aria-pressed]="!hidePassword()"
             >
               <mat-icon>{{
@@ -205,7 +207,11 @@ export interface RegisterFormConfig {
               matSuffix
               type="button"
               (click)="toggleConfirmPasswordVisibility()"
-              [attr.aria-label]="hideConfirmPassword() ? 'Show confirm password' : 'Hide confirm password'"
+              [attr.aria-label]="
+                hideConfirmPassword()
+                  ? 'Show confirm password'
+                  : 'Hide confirm password'
+              "
               [attr.aria-pressed]="!hideConfirmPassword()"
             >
               <mat-icon>{{

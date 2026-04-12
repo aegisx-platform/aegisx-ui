@@ -2,6 +2,7 @@
 // @ts-nocheck
 // TODO: Fix TypeScript errors in widget system
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -12,7 +13,6 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,8 +50,8 @@ interface GridsterWidgetItem extends GridsterItem {
 @Component({
   selector: 'ax-dashboard-builder',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     MatIconModule,
     MatButtonModule,

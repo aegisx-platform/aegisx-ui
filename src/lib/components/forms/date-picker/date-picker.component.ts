@@ -11,9 +11,9 @@ import {
   OnInit,
   SimpleChanges,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -102,9 +102,10 @@ const ENGLISH_MONTHS_SHORT = [
 @Component({
   selector: 'ax-date-picker',
   standalone: true,
-  imports: [CommonModule, A11yModule, CalendarHeaderComponent, CalendarGridComponent],
+  imports: [A11yModule, CalendarHeaderComponent, CalendarGridComponent],
   templateUrl: './date-picker.component.html',
   styleUrls: ['./date-picker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

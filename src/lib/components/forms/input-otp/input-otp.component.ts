@@ -10,8 +10,8 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -45,7 +45,8 @@ import type { OtpLength, OtpPattern, OtpSize } from './input-otp.types';
 @Component({
   selector: 'ax-input-otp',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

@@ -1,5 +1,11 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { NgIf, NgFor } from '@angular/common';
 import { SparklineVariant, SparklineSize } from './sparkline.types';
 
 /**
@@ -20,7 +26,8 @@ import { SparklineVariant, SparklineSize } from './sparkline.types';
 @Component({
   selector: 'ax-sparkline',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgIf, NgFor],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sparkline.component.html',
   styleUrls: ['./sparkline.component.scss'],
 })

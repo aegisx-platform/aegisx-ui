@@ -1,15 +1,15 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
-  EventEmitter,
   ElementRef,
-  ViewChild,
-  OnInit,
-  OnDestroy,
+  EventEmitter,
   HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 export type SplitterOrientation = 'horizontal' | 'vertical';
 export type SplitterUnit = 'percent' | 'pixel';
@@ -52,7 +52,8 @@ export type SplitterStateStorage = 'local' | 'session';
 @Component({
   selector: 'ax-splitter',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
   template: `
     <div
       #container

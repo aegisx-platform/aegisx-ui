@@ -1,5 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -57,8 +58,10 @@ import {
 @Component({
   selector: 'ax-theme-builder',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    DatePipe,
+    UpperCasePipe,
     FormsModule,
     MatButtonModule,
     MatIconModule,
@@ -1947,7 +1950,9 @@ import {
 
       /* Reduced Motion */
       @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
           animation-duration: 0.01ms !important;
           animation-iteration-count: 1 !important;
           transition-duration: 0.01ms !important;
@@ -2679,8 +2684,8 @@ export class AxThemeBuilderComponent {
 @Component({
   selector: 'ax-sample-json-dialog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,

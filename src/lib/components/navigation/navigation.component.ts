@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AxNavigationItem } from '../../types/ax-navigation.types';
@@ -9,8 +8,9 @@ import { expandCollapse } from '../../animations';
 @Component({
   selector: 'ax-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, MatIconModule],
+  imports: [RouterLink, RouterLinkActive, MatIconModule],
   animations: [expandCollapse],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="ax-navigation" [class]="'ax-navigation-' + appearance">
       @for (item of navigation; track item.id) {

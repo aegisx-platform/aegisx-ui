@@ -1,5 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
+import { NgIf } from '@angular/common';
 import {
   trigger,
   state,
@@ -20,7 +25,8 @@ export type LoadingBarPosition = 'top' | 'bottom';
 @Component({
   selector: 'ax-loading-bar',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgIf],
   template: `
     <div
       class="ax-loading-bar-container"

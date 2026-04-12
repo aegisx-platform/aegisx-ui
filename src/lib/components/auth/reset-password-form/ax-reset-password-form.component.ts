@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   inject,
@@ -6,7 +7,6 @@ import {
   Output,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormBuilder,
@@ -55,8 +55,8 @@ export interface ResetPasswordFormConfig {
 @Component({
   selector: 'ax-reset-password-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -95,7 +95,9 @@ export interface ResetPasswordFormConfig {
                 matSuffix
                 type="button"
                 (click)="togglePasswordVisibility()"
-                [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+                [attr.aria-label]="
+                  hidePassword() ? 'Show password' : 'Hide password'
+                "
                 [attr.aria-pressed]="!hidePassword()"
               >
                 <mat-icon>{{
@@ -133,7 +135,11 @@ export interface ResetPasswordFormConfig {
                 matSuffix
                 type="button"
                 (click)="toggleConfirmPasswordVisibility()"
-                [attr.aria-label]="hideConfirmPassword() ? 'Show confirm password' : 'Hide confirm password'"
+                [attr.aria-label]="
+                  hideConfirmPassword()
+                    ? 'Show confirm password'
+                    : 'Hide confirm password'
+                "
                 [attr.aria-pressed]="!hideConfirmPassword()"
               >
                 <mat-icon>{{

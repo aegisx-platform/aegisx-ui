@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   inject,
@@ -6,7 +7,6 @@ import {
   effect,
   ElementRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -29,8 +29,8 @@ import { ThemeBuilderService } from './theme-builder.service';
 @Component({
   selector: 'ax-theme-preview-panel',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
@@ -1296,7 +1296,9 @@ import { ThemeBuilderService } from './theme-builder.service';
 
       /* Reduced Motion */
       @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
           animation-duration: 0.01ms !important;
           animation-iteration-count: 1 !important;
           transition-duration: 0.01ms !important;

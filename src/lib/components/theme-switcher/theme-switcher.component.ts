@@ -6,7 +6,7 @@
  * and different color themes.
  */
 
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 // CommonModule not needed — template uses @if/@for control flow
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +18,7 @@ import { AxThemeService } from '../../services/theme/ax-theme.service';
 @Component({
   selector: 'ax-theme-switcher',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
     MatIconModule,

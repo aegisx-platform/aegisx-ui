@@ -11,8 +11,9 @@ import {
   HostListener,
   ElementRef,
   inject,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgIf } from '@angular/common';
 import {
   NavbarVariant,
   NavbarPosition,
@@ -60,7 +61,8 @@ import {
 @Component({
   selector: 'ax-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgIf],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <nav
       class="ax-navbar"

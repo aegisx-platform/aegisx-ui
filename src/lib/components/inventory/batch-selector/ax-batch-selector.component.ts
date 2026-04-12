@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit,
   computed,
@@ -56,7 +56,6 @@ import {
   selector: 'ax-batch-selector',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -69,6 +68,7 @@ import {
   ],
   templateUrl: './ax-batch-selector.component.html',
   styleUrls: ['./ax-batch-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxBatchSelectorComponent implements OnInit {
   private readonly http = inject(HttpClient);

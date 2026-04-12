@@ -1,5 +1,9 @@
-import { Component, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  signal,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -14,7 +18,8 @@ import {
 @Component({
   selector: 'ax-table-widget',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatProgressSpinnerModule],
   template: `
     <div
       class="ax-table-widget"

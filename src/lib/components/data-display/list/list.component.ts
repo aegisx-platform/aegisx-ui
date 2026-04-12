@@ -1,11 +1,11 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ListItem, ListSize } from './list.types';
 
 @Component({
   selector: 'ax-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
 })

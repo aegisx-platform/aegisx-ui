@@ -1,5 +1,4 @@
-import { Component, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -13,7 +12,8 @@ import {
 @Component({
   selector: 'ax-kpi-widget',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatProgressSpinnerModule],
   template: `
     <div
       class="ax-kpi-widget"

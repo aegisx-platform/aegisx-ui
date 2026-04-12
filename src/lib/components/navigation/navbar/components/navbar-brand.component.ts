@@ -1,5 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+import { NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -36,7 +42,8 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'ax-navbar-brand',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [NgIf, RouterModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a
       class="ax-navbar-brand"

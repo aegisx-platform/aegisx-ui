@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -43,7 +42,7 @@ import {
 @Component({
   selector: 'ax-stock-level',
   standalone: true,
-  imports: [CommonModule, MatTooltipModule, AxBadgeComponent],
+  imports: [MatTooltipModule, AxBadgeComponent],
   templateUrl: './ax-stock-level.component.html',
   styleUrl: './ax-stock-level.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

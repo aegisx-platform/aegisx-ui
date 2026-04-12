@@ -2,6 +2,7 @@
 // @ts-nocheck
 // TODO: Fix TypeScript errors in widget system
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -12,7 +13,6 @@ import {
   effect,
   ComponentRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,7 +30,8 @@ import { BaseWidgetComponent } from '../../core/base-widget.component';
 @Component({
   selector: 'ax-widget-host',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatMenuModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatMenuModule, MatButtonModule],
   template: `
     <div
       class="ax-widget-host"

@@ -1,13 +1,18 @@
-import { Component, Input, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  HostBinding,
+} from '@angular/core';
 import { DividerLayout, DividerType, DividerAlign } from './divider.types';
 
 @Component({
   selector: 'ax-divider',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './divider.component.html',
   styleUrls: ['./divider.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxDividerComponent {
   /** Layout direction: horizontal (default) or vertical */

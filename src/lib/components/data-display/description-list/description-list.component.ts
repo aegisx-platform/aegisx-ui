@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
 import {
   DescriptionListLayout,
   DescriptionListColumns,
@@ -38,9 +38,10 @@ import {
 @Component({
   selector: 'ax-description-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgClass, NgStyle],
   templateUrl: './description-list.component.html',
   styleUrls: ['./description-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxDescriptionListComponent {
   /** Layout mode for the description list */

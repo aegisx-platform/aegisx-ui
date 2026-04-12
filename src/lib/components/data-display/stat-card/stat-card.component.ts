@@ -4,8 +4,8 @@ import {
   Input,
   Output,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { StatCardColor } from './stat-card.types';
 
@@ -51,7 +51,8 @@ import { StatCardColor } from './stat-card.types';
 @Component({
   selector: 'ax-stat-card',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './stat-card.component.html',
   styleUrls: ['./stat-card.component.scss'],
   encapsulation: ViewEncapsulation.None,

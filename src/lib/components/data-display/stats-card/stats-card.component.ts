@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { StatsCardTrend } from './stats-card.types';
 
 @Component({
   selector: 'ax-stats-card',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './stats-card.component.html',
   styleUrls: ['./stats-card.component.scss'],
 })

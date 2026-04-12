@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { InnerLoadingSize, InnerLoadingColor } from './inner-loading.types';
 
 /**
@@ -29,7 +28,8 @@ import { InnerLoadingSize, InnerLoadingColor } from './inner-loading.types';
 @Component({
   selector: 'ax-inner-loading',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (showing) {
       <div

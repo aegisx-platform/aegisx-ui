@@ -5,8 +5,8 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -54,7 +54,6 @@ import type { PopupEditInputType } from './popup-edit.types';
   selector: 'ax-popup-edit',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatInputModule,
     MatButtonModule,
@@ -62,6 +61,7 @@ import type { PopupEditInputType } from './popup-edit.types';
     MatIconModule,
     OverlayModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
       class="ax-popup-edit"

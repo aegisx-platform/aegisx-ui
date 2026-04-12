@@ -1,5 +1,9 @@
-import { Component, Input, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  HostBinding,
+} from '@angular/core';
 
 /**
  * Navbar Navigation Container
@@ -17,7 +21,8 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'ax-navbar-nav',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <nav class="ax-navbar-nav" role="navigation" [attr.aria-label]="ariaLabel">
       <ul class="ax-navbar-nav__list">

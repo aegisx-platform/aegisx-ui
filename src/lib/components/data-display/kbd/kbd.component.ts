@@ -1,5 +1,11 @@
-import { Component, Input, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  Input,
+  inject,
+  PLATFORM_ID,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { KbdVariant, KbdSize } from './kbd.types';
 
 /**
@@ -32,7 +38,8 @@ import { KbdVariant, KbdSize } from './kbd.types';
 @Component({
   selector: 'ax-kbd',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <span class="kbd-wrapper" [class]="wrapperClasses">
       @for (key of displayKeys; track $index; let last = $last) {

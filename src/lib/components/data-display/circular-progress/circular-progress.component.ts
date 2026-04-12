@@ -1,5 +1,11 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+} from '@angular/core';
+import { NgIf } from '@angular/common';
 import {
   CircularProgressVariant,
   CircularProgressSize,
@@ -25,9 +31,10 @@ import {
 @Component({
   selector: 'ax-circular-progress',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgIf],
   templateUrl: './circular-progress.component.html',
   styleUrls: ['./circular-progress.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxCircularProgressComponent implements OnInit, OnChanges {
   /** Progress value (0-100) */

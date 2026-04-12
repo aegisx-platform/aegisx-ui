@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit,
   OnDestroy,
@@ -14,6 +14,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { NgClass, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -80,7 +81,8 @@ Chart.register(...registerables);
   selector: 'ax-stock-movement-timeline',
   standalone: true,
   imports: [
-    CommonModule,
+    NgClass,
+    DatePipe,
     FormsModule,
     MatButtonModule,
     MatCardModule,
@@ -99,6 +101,7 @@ Chart.register(...registerables);
   ],
   templateUrl: './ax-stock-movement-timeline.component.html',
   styleUrl: './ax-stock-movement-timeline.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxStockMovementTimelineComponent
   implements OnInit, AfterViewInit, OnDestroy

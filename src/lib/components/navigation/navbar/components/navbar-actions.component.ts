@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Navbar Actions Container
@@ -16,7 +15,8 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'ax-navbar-actions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="ax-navbar-actions">
       <ng-content></ng-content>

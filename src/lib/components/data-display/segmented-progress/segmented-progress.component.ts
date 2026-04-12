@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { NgIf, NgFor, NgClass, NgStyle } from '@angular/common';
 import {
   ProgressSegment,
   SegmentedProgressSize,
@@ -23,7 +23,8 @@ import {
 @Component({
   selector: 'ax-segmented-progress',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgIf, NgFor, NgClass, NgStyle],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './segmented-progress.component.html',
   styleUrls: ['./segmented-progress.component.scss'],
 })

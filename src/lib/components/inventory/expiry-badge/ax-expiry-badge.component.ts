@@ -1,5 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExpiryInfo, ExpiryStatus } from './ax-expiry-badge.component.types';
@@ -55,9 +61,10 @@ import { ExpiryInfo, ExpiryStatus } from './ax-expiry-badge.component.types';
 @Component({
   selector: 'ax-expiry-badge',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatTooltipModule],
+  imports: [MatIconModule, MatTooltipModule],
   templateUrl: './ax-expiry-badge.component.html',
   styleUrl: './ax-expiry-badge.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxExpiryBadgeComponent {
   /**

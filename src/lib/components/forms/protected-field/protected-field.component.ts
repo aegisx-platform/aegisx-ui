@@ -7,6 +7,7 @@ import {
   OnInit,
   ElementRef,
   ViewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -65,6 +66,7 @@ import type { AxProtectedFieldConfig } from './protected-field.types';
     MatButtonModule,
     MatTooltipModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
