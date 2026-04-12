@@ -7,7 +7,7 @@
  */
 
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+// CommonModule not needed — template uses @if/@for control flow
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -19,7 +19,6 @@ import { AxThemeService } from '../../services/theme/ax-theme.service';
   selector: 'ax-theme-switcher',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,

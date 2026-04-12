@@ -241,7 +241,7 @@ export class AxThemeService {
       root.classList.add('light');
     }
 
-    console.log(`[AxThemeService] Applied theme: data-theme="${dataTheme}"`);
+    // Debug log removed — theme applied via data-theme attribute
   }
 
   /**
