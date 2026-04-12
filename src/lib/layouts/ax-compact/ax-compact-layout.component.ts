@@ -61,7 +61,7 @@ export class AxCompactLayoutComponent implements OnInit {
   }
   @Input() showFooter = true;
   @Input() appName = 'AegisX Platform';
-  @Input() appVersion = 'v2.0';
+  @Input() appVersion = '';
   @Input() logoUrl?: string;
   @Input() showDefaultUserMenu = true;
   @Input() showSettingsMenuItem = true;
@@ -78,7 +78,7 @@ export class AxCompactLayoutComponent implements OnInit {
   @ContentChild('footerContent') footerContent!: TemplateRef<unknown>;
 
   currentYear = new Date().getFullYear();
-  isScreenSmall = false;
+  isScreenSmall = signal(false);
   isNavigationExpanded = signal(false); // Start collapsed, will be set correctly in ngOnInit
   navigationConfig = signal<Partial<AxNavigationConfig>>({
     state: 'collapsed', // Start collapsed
@@ -112,7 +112,7 @@ export class AxCompactLayoutComponent implements OnInit {
     // Check initial screen size immediately (SSR-safe)
     if (isPlatformBrowser(this._platformId)) {
       const isMobile = window.innerWidth < 768;
-      this.isScreenSmall = isMobile;
+      this.isScreenSmall.set(isMobile);
 
       if (isMobile) {
         this.isNavigationExpanded.set(false);
@@ -133,11 +133,11 @@ export class AxCompactLayoutComponent implements OnInit {
     this._mediaWatcher.onMediaChange$
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((result) => {
-        const wasScreenSmall = this.isScreenSmall;
-        this.isScreenSmall = result.matches; // matches = true when on mobile/tablet
+        const wasScreenSmall = this.isScreenSmall();
+        this.isScreenSmall.set(result.matches); // matches = true when on mobile/tablet
 
         // If transitioning to small screen, collapse navigation
-        if (!wasScreenSmall && this.isScreenSmall) {
+        if (!wasScreenSmall && this.isScreenSmall()) {
           this.isNavigationExpanded.set(false);
           this.navigationConfig.update((config) => ({
             ...config,
@@ -145,7 +145,7 @@ export class AxCompactLayoutComponent implements OnInit {
           }));
         }
         // If transitioning to large screen, expand navigation
-        else if (wasScreenSmall && !this.isScreenSmall) {
+        else if (wasScreenSmall && !this.isScreenSmall()) {
           this.isNavigationExpanded.set(true);
           this.navigationConfig.update((config) => ({
             ...config,
@@ -173,7 +173,7 @@ export class AxCompactLayoutComponent implements OnInit {
 
   onNavigationItemClick(item: AxNavigationItem): void {
     // Close navigation on mobile after clicking an item
-    if (this.isScreenSmall && item.type === 'item' && item.link) {
+    if (this.isScreenSmall() && item.type === 'item' && item.link) {
       this.isNavigationExpanded.set(false);
       this.navigationConfig.update((config) => ({
         ...config,

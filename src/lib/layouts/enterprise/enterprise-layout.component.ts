@@ -287,7 +287,10 @@ import {
                   >
                     @if (item.icon) {
                       @if (item.icon!.includes('-')) {
-                        <mat-icon class="tab-icon" [svgIcon]="item.icon!"></mat-icon>
+                        <mat-icon
+                          class="tab-icon"
+                          [svgIcon]="item.icon!"
+                        ></mat-icon>
                       } @else {
                         <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
                       }
@@ -329,7 +332,10 @@ import {
                   >
                     @if (item.icon) {
                       @if (item.icon!.includes('-')) {
-                        <mat-icon class="tab-icon" [svgIcon]="item.icon!"></mat-icon>
+                        <mat-icon
+                          class="tab-icon"
+                          [svgIcon]="item.icon!"
+                        ></mat-icon>
                       } @else {
                         <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
                       }
@@ -866,7 +872,7 @@ import {
 export class EnterpriseLayoutComponent {
   // App Configuration
   @Input() appName = 'Enterprise App';
-  @Input() logoUrl: string | null = null;
+  @Input() logoUrl?: string;
   @Input() showFooter = true;
   @Input() fullWidth = false;
   @Input() showSearch = true;

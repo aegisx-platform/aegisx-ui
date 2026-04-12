@@ -7,7 +7,7 @@
 ></ax-loading-bar>
 
 <!-- Navigation Overlay for mobile -->
-@if (isScreenSmall && isNavigationExpanded()) {
+@if (isScreenSmall() && isNavigationExpanded()) {
   <div
     class="fixed inset-0 z-40"
     style="background: rgba(0, 0, 0, 0.3)"
@@ -23,11 +23,11 @@
 <ax-navigation
   class="print:hidden transition-all duration-300 ease-in-out fixed top-0 left-0 h-full z-50"
   style="background: var(--ax-background-emphasis, #18181b)"
-  [class.w-16]="!isNavigationExpanded() && !isScreenSmall"
+  [class.w-16]="!isNavigationExpanded() && !isScreenSmall()"
   [class.w-64]="isNavigationExpanded()"
-  [class.-translate-x-full]="!isNavigationExpanded() && isScreenSmall"
-  [class.pointer-events-none]="!isNavigationExpanded() && isScreenSmall"
-  [class.pointer-events-auto]="isNavigationExpanded() || !isScreenSmall"
+  [class.-translate-x-full]="!isNavigationExpanded() && isScreenSmall()"
+  [class.pointer-events-none]="!isNavigationExpanded() && isScreenSmall()"
+  [class.pointer-events-auto]="isNavigationExpanded() || !isScreenSmall()"
   [items]="axNavigation"
   [config]="navigationConfig()"
   [showHeader]="true"
@@ -74,9 +74,9 @@
 <!-- Main Content Wrapper -->
 <div
   class="flex min-w-0 flex-auto flex-col transition-all duration-300 ease-in-out h-screen"
-  [class.ml-0]="isScreenSmall"
-  [class.ml-16]="!isScreenSmall && !isNavigationExpanded()"
-  [class.ml-64]="!isScreenSmall && isNavigationExpanded()"
+  [class.ml-0]="isScreenSmall()"
+  [class.ml-16]="!isScreenSmall() && !isNavigationExpanded()"
+  [class.ml-64]="!isScreenSmall() && isNavigationExpanded()"
 >
   <!-- Header/Toolbar -->
   <div
