@@ -1,16 +1,18 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   signal,
   inject,
   OnInit,
-  OnDestroy,
   AfterViewInit,
   NgZone,
 } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { Subject, fromEvent, takeUntil, throttleTime, filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent, throttleTime, filter } from 'rxjs';
 
 /**
  * Table of Contents item interface
@@ -34,7 +36,8 @@ export interface TocItem {
 @Component({
   selector: 'ax-docs-toc',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
   template: `
     @if (items().length > 0) {
       <nav class="docs-toc" aria-label="Table of contents">
@@ -140,7 +143,7 @@ export interface TocItem {
     `,
   ],
 })
-export class AxDocsTocComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AxDocsTocComponent implements OnInit, AfterViewInit {
   /**
    * Content container selector to scan for headings
    * Default: '.docs-content' or can be passed a specific selector
@@ -165,7 +168,7 @@ export class AxDocsTocComponent implements OnInit, OnDestroy, AfterViewInit {
   private _document = inject(DOCUMENT);
   private _ngZone = inject(NgZone);
   private _router = inject(Router);
-  private _destroy$ = new Subject<void>();
+  private _destroyRef = inject(DestroyRef);
   private _useManualItems = false;
 
   items = signal<TocItem[]>([]);
@@ -175,7 +178,7 @@ export class AxDocsTocComponent implements OnInit, OnDestroy, AfterViewInit {
     // Setup scroll spy
     this._ngZone.runOutsideAngular(() => {
       fromEvent(window, 'scroll')
-        .pipe(throttleTime(100), takeUntil(this._destroy$))
+        .pipe(throttleTime(100), takeUntilDestroyed(this._destroyRef))
         .subscribe(() => {
           this._ngZone.run(() => {
             this.updateActiveSection();
@@ -187,7 +190,7 @@ export class AxDocsTocComponent implements OnInit, OnDestroy, AfterViewInit {
     this._router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        takeUntil(this._destroy$),
+        takeUntilDestroyed(this._destroyRef),
       )
       .subscribe(() => {
         if (!this._useManualItems) {
@@ -209,11 +212,6 @@ export class AxDocsTocComponent implements OnInit, OnDestroy, AfterViewInit {
         this.generateTocFromHeadings();
       }, 200);
     }
-  }
-
-  ngOnDestroy(): void {
-    this._destroy$.next();
-    this._destroy$.complete();
   }
 
   /**

@@ -1,16 +1,21 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   signal,
-  computed,
   inject,
   OnInit,
-  OnDestroy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import {
+  RouterLink,
+  RouterLinkActive,
+  Router,
+  NavigationEnd,
+} from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import { AxNavigationItem } from '../../../types/ax-navigation.types';
 
 /**
@@ -26,7 +31,8 @@ import { AxNavigationItem } from '../../../types/ax-navigation.types';
 @Component({
   selector: 'ax-docs-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink, RouterLinkActive, MatIconModule],
   template: `
     <nav class="docs-sidebar">
       <!-- Navigation Groups -->
@@ -319,11 +325,11 @@ import { AxNavigationItem } from '../../../types/ax-navigation.types';
     `,
   ],
 })
-export class AxDocsSidebarComponent implements OnInit, OnDestroy {
+export class AxDocsSidebarComponent implements OnInit {
   @Input() navigation: AxNavigationItem[] = [];
 
   private _router = inject(Router);
-  private _destroy$ = new Subject<void>();
+  private _destroyRef = inject(DestroyRef);
 
   // Track open/closed state of groups
   private _openGroups = signal<Set<string>>(new Set());
@@ -336,16 +342,11 @@ export class AxDocsSidebarComponent implements OnInit, OnDestroy {
     this._router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        takeUntil(this._destroy$),
+        takeUntilDestroyed(this._destroyRef),
       )
       .subscribe(() => {
         this.expandGroupsForCurrentRoute();
       });
-  }
-
-  ngOnDestroy(): void {
-    this._destroy$.next();
-    this._destroy$.complete();
   }
 
   private initializeOpenGroups(): void {
