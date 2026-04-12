@@ -115,8 +115,10 @@ import { PreviewImage } from './image-preview.types';
           </div>
 
           <!-- Caption -->
-          @if (currentImage()?.caption) {
-            <div class="ax-preview-caption">{{ currentImage()!.caption }}</div>
+          @if (currentImage(); as img) {
+            @if (img.caption) {
+              <div class="ax-preview-caption">{{ img.caption }}</div>
+            }
           }
         </div>
       </div>
