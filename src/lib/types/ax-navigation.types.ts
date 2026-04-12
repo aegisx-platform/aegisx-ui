@@ -17,6 +17,9 @@ export interface AxNavigationBadge {
   classes?: string;
 }
 
+/** Available layout types for app shell configuration. */
+export type AxLayoutType = 'enterprise' | 'sidebar' | 'compact';
+
 /**
  * Unified Navigation Item Interface
  *
