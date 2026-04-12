@@ -89,7 +89,9 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
       <aside class="ax-sidebar" [attr.aria-label]="appName + ' navigation'">
         <!-- Brand -->
         <div class="ax-sidebar__brand">
-          @if (logoUrl) {
+          @if (logoSvgIcon) {
+            <mat-icon [svgIcon]="logoSvgIcon" class="ax-sidebar__logo-icon"></mat-icon>
+          } @else if (logoUrl) {
             <img [src]="logoUrl" [alt]="appName" class="ax-sidebar__logo" />
           } @else {
             <div class="ax-sidebar__logo-placeholder">
@@ -359,6 +361,12 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         font-size: 20px;
         width: 20px;
         height: 20px;
+      }
+
+      .ax-sidebar__logo-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
       }
 
       .ax-sidebar__brand-text {
@@ -679,6 +687,9 @@ export class AxSidebarLayoutComponent implements OnInit {
 
   /** Logo image URL (optional). Falls back to a placeholder icon. */
   @Input() logoUrl?: string;
+
+  /** SVG icon name registered via MatIconRegistry (e.g. 'axd:inv-warehouse'). Takes precedence over logoUrl. */
+  @Input() logoSvgIcon?: string;
 
   /** App name shown next to the logo. */
   @Input() appName = 'App';

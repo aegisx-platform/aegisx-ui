@@ -118,7 +118,9 @@ import {
           <div class="ax-enterprise-header-container">
             <!-- Brand -->
             <div class="ax-enterprise-brand">
-              @if (logoUrl) {
+              @if (logoSvgIcon) {
+                <mat-icon [svgIcon]="logoSvgIcon" class="ax-enterprise-logo-icon"></mat-icon>
+              } @else if (logoUrl) {
                 <img
                   [src]="logoUrl"
                   [alt]="appName"
@@ -619,6 +621,12 @@ import {
         object-fit: contain;
       }
 
+      .ax-enterprise-logo-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+      }
+
       .ax-enterprise-logo-placeholder {
         width: 32px;
         height: 32px;
@@ -882,6 +890,7 @@ export class EnterpriseLayoutComponent {
   // App Configuration
   @Input() appName = 'Enterprise App';
   @Input() logoUrl?: string;
+  @Input() logoSvgIcon?: string;
   @Input() showFooter = true;
   @Input() fullWidth = false;
   @Input() showSearch = true;
