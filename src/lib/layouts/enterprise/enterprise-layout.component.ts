@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   Output,
   EventEmitter,
@@ -9,9 +10,18 @@ import {
   computed,
   signal,
   HostBinding,
+  OnInit,
+  inject,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AxIconDirective } from '../../components/navigation/icon/ax-icon.directive';
 import { MatButtonModule } from '@angular/material/button';
@@ -118,6 +128,19 @@ import {
       >
         <div class="ax-enterprise-header-primary">
           <div class="ax-enterprise-header-container">
+            <!-- Mobile Hamburger (visible at <=1024px) -->
+            <button
+              type="button"
+              class="ax-enterprise-mobile-toggle"
+              (click)="toggleMobileMenu()"
+              [attr.aria-label]="
+                mobileOpen() ? 'Close navigation menu' : 'Open navigation menu'
+              "
+              [attr.aria-expanded]="mobileOpen()"
+            >
+              <mat-icon>{{ mobileOpen() ? 'close' : 'menu' }}</mat-icon>
+            </button>
+
             <!-- Brand -->
             <div class="ax-enterprise-brand">
               @if (logoUrl) {
@@ -280,7 +303,10 @@ import {
                     [disabled]="item.disabled || false"
                   >
                     @if (item.icon) {
-                      <mat-icon class="tab-icon" [axIcon]="item.icon!"></mat-icon>
+                      <mat-icon
+                        class="tab-icon"
+                        [axIcon]="item.icon!"
+                      ></mat-icon>
                     }
                     {{ item.title }}
                     @if (item.badge) {
@@ -318,7 +344,10 @@ import {
                     [disabled]="item.disabled || false"
                   >
                     @if (item.icon) {
-                      <mat-icon class="tab-icon" [axIcon]="item.icon!"></mat-icon>
+                      <mat-icon
+                        class="tab-icon"
+                        [axIcon]="item.icon!"
+                      ></mat-icon>
                     }
                     {{ item.title }}
                     @if (item.badge) {
@@ -337,6 +366,79 @@ import {
         }
         <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
       </header>
+
+      <!-- Mobile Navigation Drawer (visible at <=1024px) -->
+      @if (mobileOpen()) {
+        <div
+          class="ax-enterprise-mobile-backdrop"
+          role="button"
+          tabindex="-1"
+          aria-label="Close navigation menu"
+          (click)="closeMobileMenu()"
+          (keydown.escape)="closeMobileMenu()"
+        ></div>
+      }
+      <nav
+        class="ax-enterprise-mobile-drawer"
+        [class.ax-enterprise-mobile-drawer--open]="mobileOpen()"
+        [attr.aria-label]="appName + ' mobile navigation'"
+        (keydown.escape)="closeMobileMenu()"
+      >
+        <div class="ax-enterprise-mobile-drawer__header">
+          @if (logoUrl) {
+            <img
+              [src]="logoUrl"
+              [alt]="appName"
+              class="ax-enterprise-mobile-drawer__logo"
+            />
+          } @else {
+            <div class="ax-enterprise-mobile-drawer__logo-placeholder">
+              <mat-icon>widgets</mat-icon>
+            </div>
+          }
+          <span class="ax-enterprise-mobile-drawer__title">{{ appName }}</span>
+        </div>
+        <div class="ax-enterprise-mobile-drawer__nav">
+          @for (item of navigation; track item.id) {
+            @if (!item.children || item.children.length === 0) {
+              <a
+                [routerLink]="item.link"
+                routerLinkActive="ax-enterprise-mobile-drawer__link--active"
+                [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
+                class="ax-enterprise-mobile-drawer__link"
+                [class.disabled]="item.disabled"
+              >
+                @if (item.icon) {
+                  <mat-icon [axIcon]="item.icon!"></mat-icon>
+                }
+                <span>{{ item.title }}</span>
+              </a>
+            } @else {
+              <span class="ax-enterprise-mobile-drawer__group-label">
+                @if (item.icon) {
+                  <mat-icon [axIcon]="item.icon!"></mat-icon>
+                }
+                <span>{{ item.title }}</span>
+              </span>
+              @for (child of item.children; track child.id) {
+                <a
+                  [routerLink]="child.link"
+                  routerLinkActive="ax-enterprise-mobile-drawer__link--active"
+                  [routerLinkActiveOptions]="{
+                    exact: child.exactMatch ?? false,
+                  }"
+                  class="ax-enterprise-mobile-drawer__link ax-enterprise-mobile-drawer__link--child"
+                >
+                  @if (child.icon) {
+                    <mat-icon [axIcon]="child.icon!"></mat-icon>
+                  }
+                  <span>{{ child.title }}</span>
+                </a>
+              }
+            }
+          }
+        </div>
+      </nav>
 
       <!-- Main Content -->
       <main
@@ -867,10 +969,206 @@ import {
         font-size: 0.875rem;
         color: var(--ax-text-subtle);
       }
+
+      /* Mobile hamburger button — hidden on desktop */
+      .ax-enterprise-mobile-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--ax-text-default, #18181b);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        flex-shrink: 0;
+      }
+
+      .ax-enterprise-mobile-toggle:hover {
+        background: var(--ax-background-subtle, #f4f4f5);
+      }
+
+      /* Themed/dark header: override toggle colors */
+      .dark-header .ax-enterprise-mobile-toggle,
+      .themed-header .ax-enterprise-mobile-toggle {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .dark-header .ax-enterprise-mobile-toggle:hover,
+      .themed-header .ax-enterprise-mobile-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+
+      /* Mobile backdrop overlay */
+      .ax-enterprise-mobile-backdrop {
+        display: none;
+      }
+
+      /* Mobile drawer */
+      .ax-enterprise-mobile-drawer {
+        display: none;
+      }
+
+      @media (max-width: 1024px) {
+        .ax-enterprise-mobile-toggle {
+          display: flex;
+        }
+
+        .ax-enterprise-mobile-backdrop {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 199;
+          background: rgba(0, 0, 0, 0.3);
+        }
+
+        .ax-enterprise-mobile-drawer {
+          display: flex;
+          flex-direction: column;
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 280px;
+          z-index: 200;
+          background: var(--ax-background-default, #ffffff);
+          border-right: 1px solid var(--ax-border-default, #e4e4e7);
+          transform: translateX(-100%);
+          transition: transform 0.2s ease;
+          overflow-y: auto;
+        }
+
+        .ax-enterprise-mobile-drawer--open {
+          transform: translateX(0);
+          box-shadow: 2px 0 16px -4px rgba(0, 0, 0, 0.12);
+        }
+
+        .ax-enterprise-mobile-drawer__header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--ax-border-default, #e4e4e7);
+          flex-shrink: 0;
+          height: 64px;
+        }
+
+        .ax-enterprise-mobile-drawer__logo {
+          width: 32px;
+          height: 32px;
+          object-fit: contain;
+          flex-shrink: 0;
+        }
+
+        .ax-enterprise-mobile-drawer__logo-placeholder {
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--ax-brand-default, #6366f1);
+          border-radius: 8px;
+          color: var(--ax-text-inverse, #ffffff);
+          flex-shrink: 0;
+        }
+
+        .ax-enterprise-mobile-drawer__logo-placeholder mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        .ax-enterprise-mobile-drawer__title {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--ax-text-heading, #09090b);
+          letter-spacing: -0.01em;
+        }
+
+        .ax-enterprise-mobile-drawer__nav {
+          padding: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .ax-enterprise-mobile-drawer__link {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          color: var(--ax-text-secondary, #52525b);
+          font-size: 14px;
+          font-weight: 500;
+          text-decoration: none;
+          transition:
+            background 0.15s,
+            color 0.15s;
+        }
+
+        .ax-enterprise-mobile-drawer__link:hover {
+          background: var(--ax-background-subtle, #f4f4f5);
+          color: var(--ax-text-default, #18181b);
+        }
+
+        .ax-enterprise-mobile-drawer__link--active,
+        .ax-enterprise-mobile-drawer__link--active:hover {
+          background: var(--ax-primary-faint, #eef2ff);
+          color: var(--ax-primary, #6366f1);
+          font-weight: 600;
+        }
+
+        .ax-enterprise-mobile-drawer__link--child {
+          padding-left: 32px;
+          font-size: 13px;
+        }
+
+        .ax-enterprise-mobile-drawer__link.disabled {
+          opacity: 0.4;
+          pointer-events: none;
+        }
+
+        .ax-enterprise-mobile-drawer__link mat-icon {
+          flex-shrink: 0;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          overflow: visible;
+        }
+
+        .ax-enterprise-mobile-drawer__link mat-icon svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .ax-enterprise-mobile-drawer__group-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 4px 12px;
+          margin-top: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--ax-text-subtle, #a1a1aa);
+        }
+
+        .ax-enterprise-mobile-drawer__group-label mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
     `,
   ],
 })
-export class EnterpriseLayoutComponent {
+export class EnterpriseLayoutComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
   // App Configuration
   @Input() appName = 'Enterprise App';
   @Input() logoUrl?: string;
@@ -908,6 +1206,9 @@ export class EnterpriseLayoutComponent {
 
   currentYear = new Date().getFullYear();
 
+  /** Mobile drawer open state. */
+  readonly mobileOpen = signal(false);
+
   // Theme signals
   private readonly _appTheme = signal<EnterpriseAppThemeInput | undefined>(
     undefined,
@@ -940,5 +1241,25 @@ export class EnterpriseLayoutComponent {
   @HostBinding('style')
   get hostStyles(): string {
     return this.themeStyles();
+  }
+
+  ngOnInit(): void {
+    // Auto-close mobile drawer on route navigation
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.closeMobileMenu());
+  }
+
+  /** Open/close the mobile drawer overlay. */
+  toggleMobileMenu(): void {
+    this.mobileOpen.set(!this.mobileOpen());
+  }
+
+  /** Close the mobile drawer. */
+  closeMobileMenu(): void {
+    this.mobileOpen.set(false);
   }
 }
