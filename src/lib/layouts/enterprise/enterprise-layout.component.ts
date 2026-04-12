@@ -149,7 +149,11 @@ import {
                       [matTooltip]="!item.title ? item.tooltip || '' : ''"
                     >
                       @if (item.icon) {
-                        <mat-icon>{{ item.icon }}</mat-icon>
+                        @if (item.icon!.includes('-')) {
+                          <mat-icon [svgIcon]="item.icon!"></mat-icon>
+                        } @else {
+                          <mat-icon>{{ item.icon }}</mat-icon>
+                        }
                       }
                       @if (item.title) {
                         <span>{{ item.title }}</span>
@@ -173,7 +177,11 @@ import {
                       [matTooltip]="!item.title ? item.tooltip || '' : ''"
                     >
                       @if (item.icon) {
-                        <mat-icon>{{ item.icon }}</mat-icon>
+                        @if (item.icon!.includes('-')) {
+                          <mat-icon [svgIcon]="item.icon!"></mat-icon>
+                        } @else {
+                          <mat-icon>{{ item.icon }}</mat-icon>
+                        }
                       }
                       @if (item.title) {
                         <span>{{ item.title }}</span>
@@ -274,7 +282,11 @@ import {
                     [disabled]="item.disabled || false"
                   >
                     @if (item.icon) {
-                      <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
+                      @if (item.icon!.includes('-')) {
+                        <mat-icon class="tab-icon" [svgIcon]="item.icon!"></mat-icon>
+                      } @else {
+                        <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
+                      }
                     }
                     {{ item.title }}
                     @if (item.badge) {
@@ -312,7 +324,11 @@ import {
                     [disabled]="item.disabled || false"
                   >
                     @if (item.icon) {
-                      <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
+                      @if (item.icon!.includes('-')) {
+                        <mat-icon class="tab-icon" [svgIcon]="item.icon!"></mat-icon>
+                      } @else {
+                        <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
+                      }
                     }
                     {{ item.title }}
                     @if (item.badge) {

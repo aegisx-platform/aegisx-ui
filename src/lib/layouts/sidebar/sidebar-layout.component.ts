@@ -118,9 +118,11 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                   matTooltipPosition="right"
                 >
                   @if (item.icon) {
-                    <mat-icon class="ax-sidebar__nav-icon">
-                      {{ item.icon }}
-                    </mat-icon>
+                    @if (item.icon!.includes('-')) {
+                      <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.icon!"></mat-icon>
+                    } @else {
+                      <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
+                    }
                   }
                   @if (!collapsed()) {
                     <span class="ax-sidebar__nav-label">{{ item.title }}</span>
