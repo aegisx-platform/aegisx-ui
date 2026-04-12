@@ -21,6 +21,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { AxIconDirective } from './navigation/icon/ax-icon.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 
@@ -33,6 +34,7 @@ import { filter } from 'rxjs/operators';
     MatIconModule,
     MatSidenavModule,
     MatListModule,
+    AxIconDirective,
   ],
   template: `
     <aside
@@ -112,9 +114,7 @@ import { filter } from 'rxjs/operators';
               (click)="toggleCollapsible(item)"
             >
               @if (item.icon) {
-                <mat-icon class="ax-navigation__item-icon">{{
-                  item.icon
-                }}</mat-icon>
+                <mat-icon class="ax-navigation__item-icon" [axIcon]="item.icon!"></mat-icon>
               }
               <span class="ax-navigation__item-title">{{ item.title }}</span>
               @if (item.badge) {
@@ -158,9 +158,7 @@ import { filter } from 'rxjs/operators';
               (click)="onItemClick(item)"
             >
               @if (item.icon) {
-                <mat-icon class="ax-navigation__item-icon">{{
-                  item.icon
-                }}</mat-icon>
+                <mat-icon class="ax-navigation__item-icon" [axIcon]="item.icon!"></mat-icon>
               }
               <span class="ax-navigation__item-title">{{ item.title }}</span>
               @if (item.badge) {

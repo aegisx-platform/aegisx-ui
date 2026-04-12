@@ -19,3 +19,6 @@ export * from './command-palette';
 
 // Tab Pills
 export * from './tab-pills';
+
+// Icon Directive (auto-detect font vs SVG)
+export * from './icon';

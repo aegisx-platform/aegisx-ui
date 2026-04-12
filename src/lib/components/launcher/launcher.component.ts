@@ -31,6 +31,7 @@ import {
   DisplayGrid,
 } from 'angular-gridster2';
 import { AxLauncherCardComponent } from './launcher-card.component';
+import { AxIconDirective } from '../navigation/icon/ax-icon.directive';
 import {
   LauncherApp,
   LauncherCategory,
@@ -89,6 +90,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
     GridsterComponent,
     GridsterItemComponent,
     AxLauncherCardComponent,
+    AxIconDirective,
   ],
   template: `
     <div class="ax-launcher" [class.ax-launcher--list]="viewMode() === 'list'">
@@ -270,7 +272,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
               <mat-tab>
                 <ng-template mat-tab-label>
                   @if (cat.icon) {
-                    <mat-icon class="tab-icon">{{ cat.icon }}</mat-icon>
+                    <mat-icon class="tab-icon" [axIcon]="cat.icon!"></mat-icon>
                   }
                   <span>{{ cat.name }}</span>
                   <span class="tab-count">{{ getCategoryCount(cat.id) }}</span>
@@ -517,7 +519,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
               ) {
                 <div class="ax-launcher__group-header">
                   @if (group.category.icon) {
-                    <mat-icon>{{ group.category.icon }}</mat-icon>
+                    <mat-icon [axIcon]="group.category.icon!"></mat-icon>
                   }
                   <h3>{{ group.category.name }}</h3>
                   <span class="group-count">{{ group.apps.length }}</span>
