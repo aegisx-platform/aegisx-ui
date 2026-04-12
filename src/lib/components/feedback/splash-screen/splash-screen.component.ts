@@ -122,13 +122,13 @@ interface WaveColorPalette {
             </div>
           }
 
-          <!-- App Name -->
-          <h1 class="ax-splash-screen__title">{{ displayAppName() }}</h1>
+          <!-- App Name (hidden — logo already contains brand text) -->
+          <!-- <h1 class="ax-splash-screen__title">{{ displayAppName() }}</h1> -->
 
-          <!-- Tagline -->
-          @if (displayTagline()) {
+          <!-- Tagline (hidden — keep splash minimal, logo-only) -->
+          <!-- @if (displayTagline()) {
             <p class="ax-splash-screen__tagline">{{ displayTagline() }}</p>
-          }
+          } -->
 
           <!-- Progress Section -->
           <div class="ax-splash-screen__progress-section">
