@@ -150,6 +150,12 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         display: none;
       }
 
+      /* Projected [footer] wrapper should be transparent to flex layout
+         so buttons inside get the gap spacing directly. */
+      .ax-section-card__footer ::ng-deep > * {
+        display: contents;
+      }
+
       /* Mobile ------------------------------------------------------- */
       @media (max-width: 720px) {
         .ax-section-card__header,
