@@ -32,4 +32,5 @@ export * from './image-preview';
 // Clean Clinical SaaS Components
 export * from './code-tag';
 export * from './section-label';
+export * from './section-card';
 export * from './select-card';
