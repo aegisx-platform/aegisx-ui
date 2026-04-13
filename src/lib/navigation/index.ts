@@ -43,6 +43,7 @@ export { AxNavShellComponent } from './shell/ax-nav-shell.component';
 // Layouts
 export { AxNavRailComponent } from './layouts/ax-nav-rail.component';
 export { AxNavExpandedComponent } from './layouts/ax-nav-expanded.component';
+export { AxNavTopbarComponent } from './layouts/ax-nav-topbar.component';
 
 // Features
 export { AxAppSwitcherComponent } from './features/ax-app-switcher.component';
