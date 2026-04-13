@@ -28,6 +28,7 @@ export type {
 
 // Services
 export { AxNavService } from './services/ax-nav.service';
+export { AxNavShortcutsService } from './services/ax-nav-shortcuts.service';
 
 // Animations
 export {

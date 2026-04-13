@@ -5,8 +5,10 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { AxNavService } from '../services/ax-nav.service';
+import { AxNavShortcutsService } from '../services/ax-nav-shortcuts.service';
 import { AxNavRailComponent } from '../layouts/ax-nav-rail.component';
 import { AxNavExpandedComponent } from '../layouts/ax-nav-expanded.component';
 import { AxNavTopbarComponent } from '../layouts/ax-nav-topbar.component';
@@ -17,11 +19,13 @@ import {
   ContextOption,
 } from '../features/ax-nav-context-switcher.component';
 import { AxNavConfigPopoverComponent } from '../features/ax-nav-config-popover.component';
+import { AxNotificationPanelComponent } from '../features/ax-notification-panel.component';
 import {
   AxAppSwitcherComponent,
   AppSwitcherData,
 } from '../features/ax-app-switcher.component';
-import { NavMode } from '../models/ax-nav.model';
+import { AxCommandPaletteService } from '../../components/navigation/command-palette/command-palette.service';
+import { NavMode, NavNotification } from '../models/ax-nav.model';
 
 @Component({
   selector: 'ax-nav-shell',
@@ -35,6 +39,7 @@ import { NavMode } from '../models/ax-nav.model';
     AxNavUserMenuComponent,
     AxNavContextSwitcherComponent,
     AxNavConfigPopoverComponent,
+    AxNotificationPanelComponent,
   ],
   template: `
     <ax-loading-bar variant="primary" />
@@ -129,6 +134,15 @@ import { NavMode } from '../models/ax-nav.model';
         }
       </div>
 
+      @if (notifPanelOpen()) {
+        <ax-notification-panel
+          [notifications]="navService.notifications()"
+          (notificationClick)="onNotifClick($event)"
+          (markAllRead)="onMarkAllRead()"
+          (closed)="notifPanelOpen.set(false)"
+        />
+      }
+
       <main class="ax-nav-shell__main">
         <ng-content></ng-content>
       </main>
@@ -213,13 +227,23 @@ import { NavMode } from '../models/ax-nav.model';
 })
 export class AxNavShellComponent {
   private readonly dialog = inject(Dialog);
+  private readonly router = inject(Router);
+  private readonly shortcuts = inject(AxNavShortcutsService);
+  private readonly commandPalette = inject(AxCommandPaletteService);
   readonly navService = inject(AxNavService);
 
   // Overlay state
   readonly userMenuOpen = signal(false);
   readonly hospitalOpen = signal(false);
   readonly configOpen = signal(false);
+  readonly notifPanelOpen = signal(false);
   private readonly _appSwitcherOpen = signal(false);
+
+  constructor() {
+    this.shortcuts.initialize();
+    this.shortcuts.onCommandPalette = () => this.onSearch();
+    this.shortcuts.onEscape = () => this.closeAllOverlays();
+  }
 
   // Map hospitals to ContextOption for generic switcher
   readonly hospitalOptions = computed(() =>
@@ -253,7 +277,7 @@ export class AxNavShellComponent {
 
   onSearch(): void {
     this.closeAllOverlays();
-    // Phase 4: Wire to AxCommandPaletteService
+    this.commandPalette.open();
   }
 
   onHospital(): void {
@@ -263,7 +287,7 @@ export class AxNavShellComponent {
 
   onNotification(): void {
     this.closeAllOverlays();
-    // Phase 4: Open notification panel
+    this.notifPanelOpen.set(true);
   }
 
   onSettings(): void {
@@ -296,9 +320,22 @@ export class AxNavShellComponent {
     this.hospitalOpen.set(false);
   }
 
+  onNotifClick(notification: NavNotification): void {
+    this.navService.markNotificationRead(notification.id);
+    this.notifPanelOpen.set(false);
+    if (notification.route) {
+      this.router.navigate([notification.route]);
+    }
+  }
+
+  onMarkAllRead(): void {
+    this.navService.markAllNotificationsRead();
+  }
+
   private closeAllOverlays(): void {
     this.userMenuOpen.set(false);
     this.hospitalOpen.set(false);
     this.configOpen.set(false);
+    this.notifPanelOpen.set(false);
   }
 }
