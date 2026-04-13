@@ -13,6 +13,14 @@ import {
 } from './error-message.model';
 import { resolveErrorConfig } from './resolve-error-config';
 
+/** Legacy action interface (v1 backward compat) */
+export interface ErrorStateAction {
+  label: string;
+  icon?: string;
+  primary?: boolean;
+  callback: () => void;
+}
+
 /**
  * Error State Component
  *
@@ -60,34 +68,57 @@ import { resolveErrorConfig } from './resolve-error-config';
       <!-- Description -->
       <p class="ax-error-state__desc">{{ config().description }}</p>
 
-      <!-- Actions -->
+      <!-- Actions (v2 config-based OR v1 legacy callback-based) -->
       @if (!hideActions()) {
-        <div class="ax-error-state__actions">
-          @if (config().primaryAction; as action) {
-            <button
-              type="button"
-              class="ax-error-state__btn ax-error-state__btn--primary"
-              (click)="onAction(action.type, action.route)"
-            >
-              @if (action.type === 'retry') {
-                <mat-icon
-                  class="ax-error-state__btn-icon"
-                  svgIcon="ax:err-rotate-ccw"
-                ></mat-icon>
-              }
-              {{ action.label }}
-            </button>
-          }
-          @if (config().secondaryAction; as action) {
-            <button
-              type="button"
-              class="ax-error-state__btn ax-error-state__btn--secondary"
-              (click)="onAction(action.type, action.route)"
-            >
-              {{ action.label }}
-            </button>
-          }
-        </div>
+        @if (hasLegacyActions()) {
+          <!-- Legacy v1 actions -->
+          <div class="ax-error-state__actions">
+            @for (action of actions(); track action.label) {
+              <button
+                type="button"
+                class="ax-error-state__btn"
+                [class.ax-error-state__btn--primary]="action.primary"
+                [class.ax-error-state__btn--secondary]="!action.primary"
+                (click)="action.callback()"
+              >
+                @if (action.icon) {
+                  <mat-icon class="ax-error-state__btn-icon">{{
+                    action.icon
+                  }}</mat-icon>
+                }
+                {{ action.label }}
+              </button>
+            }
+          </div>
+        } @else {
+          <!-- v2 config-based actions -->
+          <div class="ax-error-state__actions">
+            @if (config().primaryAction; as action) {
+              <button
+                type="button"
+                class="ax-error-state__btn ax-error-state__btn--primary"
+                (click)="onAction(action.type, action.route)"
+              >
+                @if (action.type === 'retry') {
+                  <mat-icon
+                    class="ax-error-state__btn-icon"
+                    svgIcon="ax:err-rotate-ccw"
+                  ></mat-icon>
+                }
+                {{ action.label }}
+              </button>
+            }
+            @if (config().secondaryAction; as action) {
+              <button
+                type="button"
+                class="ax-error-state__btn ax-error-state__btn--secondary"
+                (click)="onAction(action.type, action.route)"
+              >
+                {{ action.label }}
+              </button>
+            }
+          </div>
+        }
       }
 
       <!-- Technical code -->
@@ -225,7 +256,7 @@ import { resolveErrorConfig } from './resolve-error-config';
   ],
 })
 export class AxErrorStateComponent {
-  // Inputs (signal-based)
+  // ── New API (v2 signal-based) ─────────────────────────
   readonly code = input<number | string>();
   readonly severity = input<ErrorSeverity>();
   readonly title = input<string>();
@@ -235,22 +266,47 @@ export class AxErrorStateComponent {
   readonly technicalDetails = input<string>();
   readonly hideActions = input(false);
 
+  // ── Legacy API (v1 backward compat — deprecated) ──────
+  /** @deprecated Use `code` instead */
+  readonly statusCode = input<number | null>();
+  /** @deprecated Use `description` instead */
+  readonly message = input<string>();
+  /** @deprecated Use retry/navigate outputs instead */
+  readonly actions = input<ErrorStateAction[]>([]);
+  /** @deprecated Use `severity` instead */
+  readonly type = input<'error' | 'warning' | 'info'>('error');
+  /** @deprecated */
+  readonly compact = input(false);
+  /** @deprecated Use `showTechnicalCode` + `technicalDetails` instead */
+  readonly showDetails = input(false);
+  /** @deprecated Use `technicalDetails` instead */
+  readonly errorDetails = input<string>();
+
   // Outputs
   readonly retry = output<void>();
   readonly navigate = output<string>();
   readonly login = output<void>();
 
+  // Resolved code: prefer new `code`, fall back to legacy `statusCode`
+  private readonly resolvedCode = computed(
+    () => this.code() ?? this.statusCode() ?? undefined,
+  );
+
   // Resolved config from code + overrides
   readonly config = computed<ErrorMessageConfig>(() =>
-    resolveErrorConfig(this.code(), {
-      severity: this.severity(),
+    resolveErrorConfig(this.resolvedCode(), {
+      severity:
+        this.severity() ?? (this.type() !== 'error' ? this.type() : undefined),
       title: this.title(),
-      description: this.description(),
+      description: this.description() ?? this.message(),
       featuredIcon: this.icon(),
     }),
   );
 
   readonly resolvedIcon = computed(() => this.config().featuredIcon);
+
+  /** Whether to use legacy callback-based actions */
+  readonly hasLegacyActions = computed(() => this.actions().length > 0);
 
   onAction(type: ErrorAction['type'], route?: string): void {
     switch (type) {
