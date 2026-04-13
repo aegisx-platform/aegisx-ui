@@ -152,3 +152,11 @@ export const aegisxAnimations = [
   routerTransition,
   shake,
 ];
+
+// Navigation Shell Animations
+export {
+  navSlideIn,
+  navSlideRight,
+  navPopIn,
+  navActiveBar,
+} from '../navigation/animations/ax-nav.animations';
