@@ -46,6 +46,7 @@ export { AxNavRailComponent } from './layouts/ax-nav-rail.component';
 // Features
 export { AxAppSwitcherComponent } from './features/ax-app-switcher.component';
 export type { AppSwitcherData } from './features/ax-app-switcher.component';
+export { AxNavUserMenuComponent } from './features/ax-nav-user-menu.component';
 
 // Shared (AxNavItemComponent renamed to avoid conflict with navbar AxNavItemComponent)
 export { AxNavLogoComponent } from './shared/ax-nav-logo.component';
