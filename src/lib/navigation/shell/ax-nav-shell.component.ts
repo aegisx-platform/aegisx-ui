@@ -267,7 +267,8 @@ export class AxNavShellComponent {
         apps: this.navService.visibleApps(),
         activeAppId: this.navService.activeAppId(),
       } satisfies AppSwitcherData,
-      backdropClass: 'ax-nav-backdrop',
+      hasBackdrop: true,
+      backdropClass: 'ax-app-switcher-backdrop',
     });
     dialogRef.closed.subscribe((app) => {
       this._appSwitcherOpen.set(false);

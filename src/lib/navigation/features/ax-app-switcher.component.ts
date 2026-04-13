@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { AppGroup } from '../models/ax-nav.model';
@@ -12,6 +17,7 @@ export interface AppSwitcherData {
   selector: 'ax-app-switcher',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   imports: [MatIconModule],
   template: `
     <div class="ax-app-switcher" role="dialog" aria-label="Switch App">
@@ -176,6 +182,11 @@ export interface AppSwitcherData {
           opacity: 1;
           transform: scale(1);
         }
+      }
+
+      /* Global backdrop style (ViewEncapsulation.None) */
+      .ax-app-switcher-backdrop {
+        background: rgba(0, 0, 0, 0.4) !important;
       }
     `,
   ],
