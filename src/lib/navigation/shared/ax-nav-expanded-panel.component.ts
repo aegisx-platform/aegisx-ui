@@ -147,6 +147,13 @@ import { navSlideIn } from '../animations/ax-nav.animations';
         font-size: 16px;
         width: 16px;
         height: 16px;
+        overflow: visible;
+      }
+
+      .ax-nav-panel__app-icon mat-icon svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
       }
 
       .ax-nav-panel__app-name {
@@ -232,11 +239,20 @@ import { navSlideIn } from '../animations/ax-nav.animations';
 
       .ax-nav-panel__module-icon {
         display: flex;
+        flex-shrink: 0;
         width: 18px;
         height: 18px;
         font-size: 18px;
+        overflow: visible;
         color: var(--ax-nav-panel-icon-muted, #94a3b8);
       }
+
+      .ax-nav-panel__module-icon svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
       .ax-nav-panel__module-icon--active {
         color: var(--ax-nav-panel-icon-active, #3b82f6);
       }
@@ -245,6 +261,7 @@ import { navSlideIn } from '../animations/ax-nav.animations';
         width: 28px;
         height: 28px;
         font-size: 28px;
+        overflow: visible;
         color: initial;
       }
 

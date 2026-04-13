@@ -68,9 +68,9 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       }
 
       .ax-nav-item {
-        width: var(--ax-nav-btn-size, 54px);
-        height: var(--ax-nav-btn-size, 54px);
-        border-radius: var(--ax-nav-btn-radius, 16px);
+        width: var(--ax-nav-btn-size, 46px);
+        height: var(--ax-nav-btn-size, 46px);
+        border-radius: var(--ax-nav-btn-radius, 14px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -79,37 +79,37 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         cursor: pointer;
         position: relative;
         background: transparent;
-        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.4));
+        color: var(--ax-nav-icon-default, #94a3b8);
         transition: all 0.15s ease;
       }
 
       .ax-nav-item:hover {
-        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.06));
-        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
+        background: var(--ax-nav-btn-hover, rgba(148, 163, 184, 0.12));
+        color: var(--ax-nav-icon-hover, #cbd5e1);
       }
 
       /* Rail active */
       .ax-nav-item--active-rail {
-        background: var(--ax-nav-btn-active, rgba(59, 130, 246, 0.15));
-        color: var(--ax-nav-icon-active, #60a5fa);
+        background: var(--ax-nav-btn-active, rgba(59, 130, 246, 0.2));
+        color: var(--ax-nav-icon-active, #3b82f6);
       }
       .ax-nav-item--active-rail:hover {
-        background: var(--ax-nav-btn-active, rgba(59, 130, 246, 0.2));
-        color: var(--ax-nav-icon-active, #60a5fa);
+        background: var(--ax-nav-btn-active, rgba(59, 130, 246, 0.25));
+        color: var(--ax-nav-icon-active, #3b82f6);
       }
 
       /* Dock variant */
       .ax-nav-item--dock {
-        background: var(--ax-nav-dock-btn-bg, rgba(255, 255, 255, 0.04));
+        background: var(--ax-nav-dock-btn-bg, rgba(148, 163, 184, 0.08));
       }
       .ax-nav-item--dock:hover {
-        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.08));
+        background: var(--ax-nav-btn-hover, rgba(148, 163, 184, 0.15));
         color: #fff;
         transform: scale(1.06);
       }
       .ax-nav-item--active-dock {
         background: var(--ax-nav-dock-btn-active, #fff);
-        color: var(--ax-nav-bg, #1a1d23);
+        color: var(--ax-nav-bg, #0f172a);
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
       }
       .ax-nav-item--active-dock:hover {
@@ -148,13 +148,21 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         font-size: 22px;
         width: 22px;
         height: 22px;
+        overflow: visible;
+      }
+
+      /* Ensure the inner SVG fills the mat-icon host element */
+      .ax-nav-item__icon svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
       }
 
       .ax-nav-item__icon--diamond {
         width: 32px;
         height: 32px;
         font-size: 32px;
-        color: initial;
+        /* Do not reset color — let it inherit from the button */
       }
 
       .ax-nav-item--topbar .ax-nav-item__icon--diamond {

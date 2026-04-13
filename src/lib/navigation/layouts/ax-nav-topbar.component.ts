@@ -119,7 +119,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
     `
       .ax-nav-topbar {
         width: 100%;
-        height: var(--ax-nav-topbar-h, 56px);
+        height: var(--ax-nav-topbar-h, 64px);
         background: var(--ax-nav-topbar, #0f172a);
         display: flex;
         align-items: center;
@@ -127,6 +127,10 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         gap: 4px;
         flex-shrink: 0;
         z-index: 30;
+        overflow: hidden;
+        min-width: 0;
+        max-width: 100vw;
+        box-sizing: border-box;
       }
 
       .ax-nav-topbar__brand {
@@ -208,6 +212,8 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         display: flex;
         align-items: center;
         gap: 2px;
+        flex-shrink: 0;
+        margin-left: auto;
       }
 
       .ax-nav-topbar__icon-btn {

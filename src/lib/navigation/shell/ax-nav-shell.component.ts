@@ -155,11 +155,13 @@ import { NavMode, NavNotification } from '../models/ax-nav.model';
         width: 100%;
         height: 100%;
         min-height: 100vh;
+        overflow: hidden;
       }
 
       .ax-nav-shell {
         display: flex;
-        min-height: 100vh;
+        height: 100vh;
+        height: 100dvh;
         background: var(--ax-content-bg, #eef1f5);
         font-family:
           'IBM Plex Sans',

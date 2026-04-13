@@ -118,9 +118,9 @@
   --ax-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
 
   // ===========================================
-  // NAVIGATION (Light sidebar)
+  // NAVIGATION (Dark sidebar rail — matches nav-shell design)
   // ===========================================
-  --ax-nav-bg: #ffffff;
+  --ax-nav-bg: #0f172a;
   --ax-nav-text: #{$aegisx-zinc-600};
   --ax-nav-text-active: #{$aegisx-indigo-600};
   --ax-nav-hover: #{$aegisx-zinc-100};

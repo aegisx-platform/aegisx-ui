@@ -110,8 +110,6 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
 
       <!-- Bottom section -->
       <div class="ax-nav-rail__bottom">
-        <div class="ax-nav-rail__divider"></div>
-
         <!-- Notifications -->
         <button
           type="button"
@@ -141,11 +139,11 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         <div class="ax-nav-rail__avatar-wrap">
           @if (navService.user(); as user) {
             <ax-nav-avatar
-              [size]="42"
+              [size]="38"
               [initials]="user.initials"
               [avatarUrl]="user.avatarUrl"
               [online]="user.online"
-              [borderColor]="dock ? 'rgba(26,29,35,0.95)' : '#1a1d23'"
+              [borderColor]="dock ? 'rgba(15,23,42,0.95)' : '#0f172a'"
               (avatarClick)="userMenuClick.emit()"
             />
           }
@@ -155,15 +153,24 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        height: 100vh;
+        height: 100dvh;
+        flex-shrink: 0;
+      }
+
       .ax-nav-rail {
         width: 80px;
         min-width: 80px;
-        height: 100vh;
-        background: var(--ax-nav-bg, #1a1d23);
+        height: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background: var(--ax-nav-bg, #0f172a);
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 14px 0;
+        padding: 16px 0 16px;
         flex-shrink: 0;
         z-index: 30;
       }
@@ -177,19 +184,20 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         width: 80px;
         min-width: 80px;
         height: auto;
-        background: rgba(26, 29, 35, 0.95);
+        background: rgba(15, 23, 42, 0.95);
         backdrop-filter: blur(20px) saturate(1.4);
         border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(148, 163, 184, 0.1);
         box-shadow:
           0 8px 40px rgba(0, 0, 0, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.06);
+          inset 0 1px 0 rgba(148, 163, 184, 0.08);
         z-index: 50;
       }
 
       .ax-nav-rail__logo {
         cursor: pointer;
         margin-bottom: 2px;
+        flex-shrink: 0;
       }
 
       .ax-nav-rail__hospital {
@@ -197,7 +205,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         align-items: center;
         gap: 2px;
         font-size: 9px;
-        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.3));
+        color: var(--ax-nav-icon-default, #64748b);
         background: none;
         border: none;
         cursor: pointer;
@@ -208,7 +216,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         transition: all 0.15s;
       }
       .ax-nav-rail__hospital:hover {
-        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.6));
+        color: var(--ax-nav-icon-hover, #94a3b8);
       }
       .ax-nav-rail__hospital-chevron {
         font-size: 14px;
@@ -217,38 +225,39 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
       }
 
       .ax-nav-rail__divider {
-        width: var(--ax-nav-btn-size, 54px);
+        width: var(--ax-nav-btn-size, 46px);
         height: 1px;
-        background: var(--ax-nav-divider, rgba(255, 255, 255, 0.08));
-        margin: 8px 0 6px;
+        background: var(--ax-nav-divider, rgba(148, 163, 184, 0.15));
+        margin: 4px 0 2px;
       }
       .ax-nav-rail__divider--thin {
-        background: var(--ax-nav-divider, rgba(255, 255, 255, 0.06));
-        margin: 2px 0 4px;
+        background: var(--ax-nav-divider, rgba(148, 163, 184, 0.1));
+        margin: 2px 0 2px;
       }
 
       .ax-nav-rail__app-switcher {
         position: relative;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
+        flex-shrink: 0;
       }
 
       .ax-nav-rail__btn {
-        width: var(--ax-nav-btn-size, 54px);
-        height: var(--ax-nav-btn-size, 54px);
-        border-radius: var(--ax-nav-btn-radius, 16px);
+        width: var(--ax-nav-btn-size, 46px);
+        height: var(--ax-nav-btn-size, 46px);
+        border-radius: var(--ax-nav-btn-radius, 14px);
         display: flex;
         align-items: center;
         justify-content: center;
         border: none;
         cursor: pointer;
-        background: var(--ax-nav-dock-btn-bg, rgba(255, 255, 255, 0.04));
-        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.5));
+        background: transparent;
+        color: var(--ax-nav-icon-default, #94a3b8);
         transition: all 0.15s;
         position: relative;
       }
       .ax-nav-rail__btn:hover {
-        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.08));
-        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
+        background: var(--ax-nav-btn-hover, rgba(148, 163, 184, 0.12));
+        color: var(--ax-nav-icon-hover, #cbd5e1);
       }
 
       .ax-nav-rail__app-icon {
@@ -266,22 +275,23 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
       }
 
       .ax-nav-rail__search {
-        width: 54px;
-        height: 38px;
+        width: 46px;
+        height: 34px;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.02);
-        color: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        background: rgba(148, 163, 184, 0.05);
+        color: var(--ax-nav-icon-default, #94a3b8);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.15s;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
+        flex-shrink: 0;
       }
       .ax-nav-rail__search:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: rgba(255, 255, 255, 0.5);
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--ax-nav-icon-hover, #cbd5e1);
       }
       .ax-nav-rail__search mat-icon {
         font-size: 18px;
@@ -291,6 +301,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
 
       .ax-nav-rail__nav {
         flex: 1;
+        min-height: 0; /* prevent flex child from overflowing — allows scroll to work */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -309,10 +320,12 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         align-items: center;
         gap: 2px;
         width: 100%;
+        flex-shrink: 0;
+        margin-top: auto;
       }
 
       .ax-nav-rail__avatar-wrap {
-        margin-top: 4px;
+        margin-top: 0;
       }
     `,
   ],

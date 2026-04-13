@@ -30,7 +30,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         height: 8px;
         border-radius: 50%;
         background: var(--ax-nav-badge-bg, #ef4444);
-        border: 2px solid var(--ax-nav-bg, #1a1d23);
+        border: 2px solid var(--ax-nav-bg, #0f172a);
         z-index: 2;
       }
 
@@ -48,5 +48,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class AxNavBadgeComponent {
   @Input() count?: number;
   @Input() dot = false;
-  @Input() borderColor = '#1a1d23';
+  @Input() borderColor = '#0f172a';
 }

@@ -64,7 +64,7 @@ import {
         height: 10px;
         border-radius: 50%;
         background: #22c55e;
-        border: 2px solid var(--ax-nav-avatar-dot-border, #1a1d23);
+        border: 2px solid var(--ax-nav-avatar-dot-border, #0f172a);
       }
     `,
   ],
@@ -74,6 +74,6 @@ export class AxNavAvatarComponent {
   @Input() initials = '';
   @Input() avatarUrl?: string;
   @Input() online = true;
-  @Input() borderColor = '#1a1d23';
+  @Input() borderColor = '#0f172a';
   @Output() avatarClick = new EventEmitter<void>();
 }

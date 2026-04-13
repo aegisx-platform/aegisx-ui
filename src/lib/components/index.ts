@@ -27,6 +27,7 @@ export * from './layout';
 // State Components (restored for CRUD Generator compatibility)
 export * from './empty-state';
 export * from './error-state';
+export * from './loading-state';
 
 // Dialog Components
 export * from './dialogs';
