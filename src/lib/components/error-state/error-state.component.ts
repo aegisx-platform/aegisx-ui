@@ -1,292 +1,264 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { ErrorMessageConfig, ErrorSeverity } from './error-message.model';
+import { resolveErrorConfig } from './resolve-error-config';
 
-export interface ErrorStateAction {
-  label: string;
-  icon?: string;
-  primary?: boolean;
-  callback: () => void;
-}
-
+/**
+ * Error State Component
+ *
+ * Full-page or section-level error display with:
+ * - Featured icon (60px, `axf:err-*` double-ring SVG)
+ * - Thai title + description (auto-resolved from HTTP code)
+ * - Primary + secondary action buttons
+ * - Technical error code (monospace, for IT staff)
+ * - Optional expandable technical details
+ *
+ * @example Basic — just pass HTTP code
+ * ```html
+ * <ax-error-state [code]="504" (retry)="loadData()" />
+ * ```
+ *
+ * @example Override messages
+ * ```html
+ * <ax-error-state
+ *   [code]="500"
+ *   title="ไม่สามารถบันทึกข้อมูลได้"
+ *   description="ระบบพบปัญหาขณะบันทึกใบสั่งซื้อ"
+ *   (retry)="savePO()"
+ * />
+ * ```
+ */
 @Component({
   selector: 'ax-error-state',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule],
   template: `
-    <div
-      class="ax-error-state"
-      [class.ax-error-state-compact]="compact"
-      [class.ax-error-state-warning]="type === 'warning'"
-      [class.ax-error-state-info]="type === 'info'"
-    >
-      <div class="ax-error-state-content">
-        <!-- Icon -->
-        @if (icon || defaultIcon) {
-          <mat-icon
-            class="ax-error-state-icon"
-            [class.ax-error-state-icon-lg]="!compact"
-            [class.ax-error-state-icon-md]="compact"
-          >
-            {{ icon || defaultIcon }}
-          </mat-icon>
+    <div class="ax-error-state" role="alert" aria-live="polite">
+      <!-- Featured icon -->
+      <div class="ax-error-state__icon">
+        @if (resolvedIcon().includes(':')) {
+          <mat-icon [svgIcon]="resolvedIcon()"></mat-icon>
+        } @else {
+          <mat-icon>{{ resolvedIcon() }}</mat-icon>
         }
-
-        <!-- Title -->
-        @if (displayTitle) {
-          <h3 class="ax-error-state-title">{{ displayTitle }}</h3>
-        }
-
-        <!-- Message -->
-        @if (message) {
-          <p class="ax-error-state-message">{{ message }}</p>
-        }
-
-        <!-- Error Details (collapsible) -->
-        @if (errorDetails && showDetails) {
-          <details class="ax-error-state-details">
-            <summary class="ax-error-state-details-toggle">
-              Show technical details
-            </summary>
-            <pre class="ax-error-state-details-content">{{ errorDetails }}</pre>
-          </details>
-        }
-
-        <!-- Custom Content Slot -->
-        <div class="ax-error-state-body">
-          <ng-content></ng-content>
-        </div>
-
-        <!-- Actions -->
-        @if (actions.length > 0) {
-          <div class="ax-error-state-actions">
-            @for (action of actions; track action.label) {
-              <button
-                mat-button
-                [color]="action.primary ? 'primary' : undefined"
-                [class.mat-raised-button]="action.primary"
-                (click)="action.callback()"
-                class="ax-error-state-action"
-              >
-                @if (action.icon) {
-                  <mat-icon>{{ action.icon }}</mat-icon>
-                }
-                {{ action.label }}
-              </button>
-            }
-          </div>
-        }
-
-        <!-- Action Slot (for custom buttons) -->
-        <div class="ax-error-state-custom-actions">
-          <ng-content select="[error-state-actions]"></ng-content>
-        </div>
       </div>
+
+      <!-- Title -->
+      <h2 class="ax-error-state__title">{{ config().title }}</h2>
+
+      <!-- Description -->
+      <p class="ax-error-state__desc">{{ config().description }}</p>
+
+      <!-- Actions -->
+      @if (!hideActions()) {
+        <div class="ax-error-state__actions">
+          @if (config().primaryAction; as action) {
+            <button
+              type="button"
+              class="ax-error-state__btn ax-error-state__btn--primary"
+              (click)="onAction(action.type, action.route)"
+            >
+              @if (action.type === 'retry') {
+                <mat-icon
+                  class="ax-error-state__btn-icon"
+                  svgIcon="ax:err-rotate-ccw"
+                ></mat-icon>
+              }
+              {{ action.label }}
+            </button>
+          }
+          @if (config().secondaryAction; as action) {
+            <button
+              type="button"
+              class="ax-error-state__btn ax-error-state__btn--secondary"
+              (click)="onAction(action.type, action.route)"
+            >
+              {{ action.label }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Technical code -->
+      @if (showTechnicalCode()) {
+        <div class="ax-error-state__tech-code">
+          {{ config().technicalLabel }}
+        </div>
+      }
+
+      <!-- Expandable technical details -->
+      @if (technicalDetails()) {
+        <details class="ax-error-state__details">
+          <summary class="ax-error-state__details-toggle">
+            รายละเอียดทางเทคนิค
+          </summary>
+          <div class="ax-error-state__details-content">
+            {{ technicalDetails() }}
+          </div>
+        </details>
+      }
     </div>
   `,
   styles: [
     `
-      :host {
-        display: block;
-      }
-
       .ax-error-state {
-        background-color: var(--ax-background-default);
-        border-radius: var(--ax-radius-lg);
-        border: 1px solid var(--ax-border-default);
-        padding: var(--ax-spacing-3xl);
-        text-align: center;
-
-        &.ax-error-state-compact {
-          padding: var(--ax-spacing-2xl);
-        }
-
-        /* Warning variant */
-        &.ax-error-state-warning {
-          background-color: var(--ax-warning-faint);
-          border-color: var(--ax-warning-muted);
-
-          .ax-error-state-icon {
-            color: var(--ax-warning-emphasis);
-          }
-
-          .ax-error-state-title {
-            color: var(--ax-warning-emphasis);
-          }
-
-          .ax-error-state-message {
-            color: var(--ax-warning-default);
-          }
-        }
-
-        /* Info variant */
-        &.ax-error-state-info {
-          background-color: var(--ax-info-faint);
-          border-color: var(--ax-info-muted);
-
-          .ax-error-state-icon {
-            color: var(--ax-info-emphasis);
-          }
-
-          .ax-error-state-title {
-            color: var(--ax-info-emphasis);
-          }
-
-          .ax-error-state-message {
-            color: var(--ax-info-default);
-          }
-        }
-      }
-
-      .ax-error-state-content {
-        max-width: 28rem;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .ax-error-state-icon {
-        color: var(--ax-error-default);
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
-
-        &.ax-error-state-icon-lg {
-          font-size: 48px;
-          width: 48px;
-          height: 48px;
-        }
-
-        &.ax-error-state-icon-md {
-          font-size: 36px;
-          width: 36px;
-          height: 36px;
-        }
-      }
-
-      .ax-error-state-title {
-        font-size: var(--ax-text-lg);
-        font-weight: var(--ax-font-medium);
-        color: var(--ax-text-heading);
-        margin-top: var(--ax-spacing-md);
-        margin-bottom: 0;
-      }
-
-      .ax-error-state-message {
-        font-size: var(--ax-text-sm);
-        color: var(--ax-text-secondary);
-        margin-top: var(--ax-spacing-sm);
-        margin-bottom: 0;
-        line-height: var(--ax-leading-relaxed);
-      }
-
-      .ax-error-state-details {
-        margin-top: var(--ax-spacing-md);
-        text-align: left;
-      }
-
-      .ax-error-state-details-toggle {
-        font-size: var(--ax-text-xs);
-        color: var(--ax-text-subtle);
-        cursor: pointer;
-        transition: color var(--ax-transition-fast);
-      }
-
-      .ax-error-state-details-toggle:hover {
-        color: var(--ax-text-primary);
-      }
-
-      .ax-error-state-details-content {
-        margin-top: var(--ax-spacing-sm);
-        padding: var(--ax-spacing-sm);
-        background-color: var(--ax-background-subtle);
-        border-radius: var(--ax-radius-md);
-        font-size: var(--ax-text-xs);
-        color: var(--ax-text-primary);
-        overflow-x: auto;
-        font-family: var(--ax-font-mono);
-      }
-
-      .ax-error-state-body {
-        margin-top: var(--ax-spacing-sm);
-      }
-
-      .ax-error-state-actions {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: var(--ax-spacing-sm);
-        margin-top: var(--ax-spacing-md);
+        text-align: center;
+        padding: 48px 24px;
+        min-height: 320px;
       }
 
-      .ax-error-state-custom-actions {
-        margin-top: var(--ax-spacing-md);
+      .ax-error-state__icon mat-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 60px;
       }
 
-      .ax-error-state-action {
+      .ax-error-state__title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ax-text-primary, #101828);
+        margin: 20px 0 0;
+      }
+
+      .ax-error-state__desc {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--ax-text-secondary, #667085);
+        margin: 6px 0 0;
+        max-width: 400px;
+        line-height: 1.6;
+      }
+
+      .ax-error-state__actions {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+      }
+
+      .ax-error-state__btn {
         display: inline-flex;
         align-items: center;
-        gap: var(--ax-spacing-sm);
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+      }
+
+      .ax-error-state__btn--primary {
+        background: var(--ax-brand-600, #1570ef);
+        color: #fff;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+      }
+      .ax-error-state__btn--primary:hover {
+        background: var(--ax-brand-700, #175cd3);
+      }
+
+      .ax-error-state__btn--secondary {
+        background: var(--ax-surface, #fff);
+        color: var(--ax-text-secondary, #344054);
+        border: 1px solid var(--ax-border, #d0d5dd);
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+      }
+      .ax-error-state__btn--secondary:hover {
+        background: var(--ax-surface-hover, #f9fafb);
+      }
+
+      .ax-error-state__btn-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+      }
+
+      .ax-error-state__tech-code {
+        margin-top: 16px;
+        font-size: 12px;
+        font-family: 'IBM Plex Mono', monospace;
+        color: var(--ax-text-muted, #98a2b3);
+      }
+
+      .ax-error-state__details {
+        margin-top: 12px;
+        max-width: 420px;
+        width: 100%;
+      }
+
+      .ax-error-state__details-toggle {
+        font-size: 12px;
+        color: var(--ax-text-muted, #98a2b3);
+        cursor: pointer;
+        user-select: none;
+      }
+      .ax-error-state__details-toggle:hover {
+        color: var(--ax-text-secondary, #667085);
+      }
+
+      .ax-error-state__details-content {
+        margin-top: 8px;
+        background: var(--ax-surface-subtle, #f9fafb);
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 12px;
+        font-family: 'IBM Plex Mono', monospace;
+        color: var(--ax-text-secondary, #667085);
+        text-align: left;
+        word-break: break-all;
       }
     `,
   ],
 })
 export class AxErrorStateComponent {
-  @Input() icon?: string;
-  @Input() title?: string;
-  @Input() message?: string;
-  @Input() errorDetails?: string;
-  @Input() compact: boolean = false;
-  @Input() type: 'error' | 'warning' | 'info' = 'error';
-  @Input() showDetails: boolean = false;
-  @Input() actions: ErrorStateAction[] = [];
-  @Input() statusCode?: number | null; // HTTP status code for automatic title generation
+  // Inputs (signal-based)
+  readonly code = input<number | string>();
+  readonly severity = input<ErrorSeverity>();
+  readonly title = input<string>();
+  readonly description = input<string>();
+  readonly icon = input<string>();
+  readonly showTechnicalCode = input(true);
+  readonly technicalDetails = input<string>();
+  readonly hideActions = input(false);
 
-  get defaultIcon(): string {
-    const iconMap = {
-      error: 'error_outline',
-      warning: 'warning',
-      info: 'info',
-    };
-    return iconMap[this.type];
-  }
+  // Outputs
+  readonly retry = output<void>();
+  readonly navigate = output<string>();
+  readonly login = output<void>();
 
-  get displayTitle(): string {
-    // If title is provided, use it directly
-    if (this.title) {
-      return this.title;
+  // Resolved config from code + overrides
+  readonly config = computed<ErrorMessageConfig>(() =>
+    resolveErrorConfig(this.code(), {
+      severity: this.severity(),
+      title: this.title(),
+      description: this.description(),
+      featuredIcon: this.icon(),
+    }),
+  );
+
+  readonly resolvedIcon = computed(() => this.config().featuredIcon);
+
+  onAction(type: string, route?: string): void {
+    switch (type) {
+      case 'retry':
+        this.retry.emit();
+        break;
+      case 'navigate':
+        this.navigate.emit(route ?? '/');
+        break;
+      case 'login':
+        this.login.emit();
+        break;
     }
-
-    // If statusCode is provided, generate title with status code
-    if (this.statusCode) {
-      return this.getErrorTitleFromStatusCode(this.statusCode);
-    }
-
-    // Default fallback titles
-    const defaultTitles = {
-      error: 'Error',
-      warning: 'Warning',
-      info: 'Information',
-    };
-    return defaultTitles[this.type];
-  }
-
-  private getErrorTitleFromStatusCode(status: number): string {
-    // Map common HTTP status codes to user-friendly titles
-    const statusTitles: Record<number, string> = {
-      400: 'Bad Request',
-      401: 'Unauthorized',
-      403: 'Access Forbidden',
-      404: 'Not Found',
-      408: 'Request Timeout',
-      429: 'Too Many Requests',
-      500: 'Server Error',
-      502: 'Bad Gateway',
-      503: 'Service Unavailable',
-      504: 'Gateway Timeout',
-    };
-
-    const statusText = statusTitles[status] || 'Error';
-    return `Error ${status}: ${statusText}`;
   }
 }
