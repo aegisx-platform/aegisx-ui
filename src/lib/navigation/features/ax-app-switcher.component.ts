@@ -42,7 +42,9 @@ export interface AppSwitcherData {
               app.id === data.activeAppId ? app.color : 'transparent'
             "
             [style.background]="
-              app.id === data.activeAppId ? app.color + '14' : '#f8fafc'
+              app.id === data.activeAppId
+                ? app.color + '14'
+                : 'var(--ax-surface-subtle, #f8fafc)'
             "
             (click)="selectApp(app)"
           >
@@ -68,7 +70,7 @@ export interface AppSwitcherData {
 
       .ax-app-switcher {
         width: 480px;
-        background: #fff;
+        background: var(--ax-surface, #fff);
         border-radius: 20px;
         padding: 28px 28px 20px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
@@ -85,12 +87,12 @@ export interface AppSwitcherData {
       .ax-app-switcher__title {
         font-size: 18px;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--ax-text-primary, #0f172a);
       }
 
       .ax-app-switcher__subtitle {
         font-size: 13px;
-        color: #94a3b8;
+        color: var(--ax-text-muted, #94a3b8);
         margin-top: 2px;
       }
 
@@ -99,16 +101,16 @@ export interface AppSwitcherData {
         height: 32px;
         border-radius: 8px;
         border: none;
-        background: #f1f5f9;
+        background: var(--ax-surface-hover, #f1f5f9);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #64748b;
+        color: var(--ax-text-secondary, #64748b);
       }
 
       .ax-app-switcher__close:hover {
-        background: #e2e8f0;
+        background: var(--ax-surface-active, #e2e8f0);
       }
 
       .ax-app-switcher__close mat-icon {
@@ -156,12 +158,12 @@ export interface AppSwitcherData {
       .ax-app-switcher__label {
         font-size: 14px;
         font-weight: 600;
-        color: #0f172a;
+        color: var(--ax-text-primary, #0f172a);
       }
 
       .ax-app-switcher__label-th {
         font-size: 11px;
-        color: #94a3b8;
+        color: var(--ax-text-muted, #94a3b8);
         margin-top: 2px;
       }
 

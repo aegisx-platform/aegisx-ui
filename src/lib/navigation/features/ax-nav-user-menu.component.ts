@@ -69,6 +69,7 @@ import {
               [class.ax-nav-user-menu__layout-btn--active]="
                 opt.id === currentMode
               "
+              [attr.aria-label]="'Switch to ' + opt.label + ' layout'"
               (click)="modeChange.emit(opt.id)"
             >
               {{ opt.label }}
@@ -102,7 +103,7 @@ import {
 
       .ax-nav-user-menu {
         width: 240px;
-        background: #fff;
+        background: var(--ax-surface, #fff);
         border-radius: 14px;
         box-shadow:
           0 8px 30px rgba(0, 0, 0, 0.12),
@@ -118,23 +119,23 @@ import {
       .ax-nav-user-menu__name {
         font-size: 14px;
         font-weight: 600;
-        color: #0f172a;
+        color: var(--ax-text-primary, #0f172a);
       }
 
       .ax-nav-user-menu__role {
         font-size: 12px;
-        color: #94a3b8;
+        color: var(--ax-text-muted, #94a3b8);
       }
 
       .ax-nav-user-menu__hospital {
         font-size: 11px;
-        color: #cbd5e1;
+        color: var(--ax-text-disabled, #cbd5e1);
         margin-top: 2px;
       }
 
       .ax-nav-user-menu__divider {
         height: 1px;
-        background: #f1f5f9;
+        background: var(--ax-border-subtle, #f1f5f9);
       }
 
       .ax-nav-user-menu__item {
@@ -147,29 +148,29 @@ import {
         cursor: pointer;
         background: transparent;
         font-size: 13px;
-        color: #475569;
+        color: var(--ax-text-secondary, #475569);
         text-align: left;
         transition: background 0.1s;
       }
       .ax-nav-user-menu__item:hover {
-        background: #f8fafc;
+        background: var(--ax-surface-hover, #f8fafc);
       }
 
       .ax-nav-user-menu__item--danger {
-        color: #ef4444;
+        color: var(--ax-error, #ef4444);
       }
       .ax-nav-user-menu__item--danger:hover {
-        background: #fef2f2;
+        background: var(--ax-error-subtle, #fef2f2);
       }
 
       .ax-nav-user-menu__item-icon {
-        color: #94a3b8;
+        color: var(--ax-text-muted, #94a3b8);
         font-size: 18px;
         width: 18px;
         height: 18px;
       }
       .ax-nav-user-menu__item--danger .ax-nav-user-menu__item-icon {
-        color: #ef4444;
+        color: var(--ax-error, #ef4444);
       }
 
       .ax-nav-user-menu__layout-section {
@@ -179,7 +180,7 @@ import {
       .ax-nav-user-menu__layout-label {
         font-size: 11px;
         font-weight: 600;
-        color: #94a3b8;
+        color: var(--ax-text-muted, #94a3b8);
         margin-bottom: 6px;
         letter-spacing: 0.05em;
       }
@@ -193,21 +194,21 @@ import {
         flex: 1;
         padding: 5px 0;
         border-radius: 6px;
-        border: 1.5px solid #e5e7eb;
-        background: #fff;
+        border: 1.5px solid var(--ax-border, #e5e7eb);
+        background: var(--ax-surface, #fff);
         cursor: pointer;
         font-size: 10px;
         font-weight: 600;
-        color: #64748b;
+        color: var(--ax-text-secondary, #64748b);
         transition: all 0.15s;
       }
       .ax-nav-user-menu__layout-btn:hover {
-        border-color: #cbd5e1;
+        border-color: var(--ax-border-hover, #cbd5e1);
       }
       .ax-nav-user-menu__layout-btn--active {
-        border-color: #3b82f6;
-        background: #eff6ff;
-        color: #2563eb;
+        border-color: var(--ax-primary, #3b82f6);
+        background: var(--ax-primary-subtle, #eff6ff);
+        color: var(--ax-primary-dark, #2563eb);
       }
 
       @keyframes popIn {

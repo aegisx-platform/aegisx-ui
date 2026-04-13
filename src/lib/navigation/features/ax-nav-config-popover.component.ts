@@ -30,6 +30,7 @@ import { NavMode, LAYOUT_OPTIONS } from '../models/ax-nav.model';
             type="button"
             class="ax-nav-config__option"
             [class.ax-nav-config__option--active]="opt.id === currentMode"
+            [attr.aria-label]="'Switch to ' + opt.label + ' layout'"
             (click)="selectMode(opt.id)"
           >
             <div class="ax-nav-config__option-label">{{ opt.label }}</div>

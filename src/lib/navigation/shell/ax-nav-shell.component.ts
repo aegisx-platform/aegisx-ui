@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -211,17 +212,21 @@ export class AxNavShellComponent {
   readonly userMenuOpen = signal(false);
   readonly hospitalOpen = signal(false);
   readonly configOpen = signal(false);
+  private readonly _appSwitcherOpen = signal(false);
 
   // Map hospitals to ContextOption for generic switcher
-  readonly hospitalOptions = () =>
+  readonly hospitalOptions = computed(() =>
     this.navService.hospitals().map((h) => ({
       id: h.id,
       label: h.label,
       code: h.code,
-    }));
+    })),
+  );
 
   onAppSwitcher(): void {
+    if (this._appSwitcherOpen()) return;
     this.closeAllOverlays();
+    this._appSwitcherOpen.set(true);
     const dialogRef = this.dialog.open<
       import('../models/ax-nav.model').AppGroup | undefined
     >(AxAppSwitcherComponent, {
@@ -232,6 +237,7 @@ export class AxNavShellComponent {
       backdropClass: 'ax-nav-backdrop',
     });
     dialogRef.closed.subscribe((app) => {
+      this._appSwitcherOpen.set(false);
       if (app) {
         this.navService.setActiveApp(app.id);
       }
