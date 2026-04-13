@@ -52,6 +52,7 @@ export { AxNavContextSwitcherComponent } from './features/ax-nav-context-switche
 export type { ContextOption } from './features/ax-nav-context-switcher.component';
 export { AxNavUserMenuComponent } from './features/ax-nav-user-menu.component';
 export { AxNavConfigPopoverComponent } from './features/ax-nav-config-popover.component';
+export { AxNotificationPanelComponent } from './features/ax-notification-panel.component';
 
 // Shared (AxNavItemComponent renamed to avoid conflict with navbar AxNavItemComponent)
 export { AxNavLogoComponent } from './shared/ax-nav-logo.component';
