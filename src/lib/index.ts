@@ -12,6 +12,9 @@ export * from './core';
 export * from './layouts';
 export * from './components';
 
+// Navigation Shell (Next-gen layout system)
+export * from './navigation';
+
 // =============================================================================
 // PROVIDER FUNCTIONS (Modern Angular)
 // =============================================================================
