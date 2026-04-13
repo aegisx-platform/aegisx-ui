@@ -6,6 +6,7 @@ import {
   AEGISX_DIAMOND_DARK_DATA,
   AEGISX_DIAMOND_LIGHT_DATA,
 } from './aegisx-icon-diamond-data';
+import { AEGISX_FEATURED_DATA } from './aegisx-icon-featured-data';
 
 /**
  * AegisX Icon Registry
@@ -14,10 +15,11 @@ import {
  * MatIconRegistry. Icons are bundled as TS string constants — no HTTP
  * requests, no asset paths, no angular.json config.
  *
- * Three namespaces:
- * - `ax:`   — Mono icons (currentColor, 92 icons)
+ * Four namespaces:
+ * - `ax:`   — Mono icons (currentColor, 103 icons)
  * - `axd:`  — Diamond dark (colored bg, light stroke, 67 icons)
  * - `axdl:` — Diamond light (light bg, dark stroke, 67 icons)
+ * - `axf:`  — Featured icons (60x60, double-ring with severity colors, 10 icons)
  *
  * @example
  * ```typescript
@@ -31,6 +33,7 @@ import {
  * <mat-icon svgIcon="ax:pharmacy"></mat-icon>          // mono
  * <mat-icon svgIcon="axd:pharmacy"></mat-icon>         // diamond dark
  * <mat-icon svgIcon="axdl:pharmacy"></mat-icon>        // diamond light
+ * <mat-icon svgIcon="axf:err-ban"></mat-icon>          // featured error
  * ```
  */
 @Injectable({ providedIn: 'root' })
@@ -40,13 +43,14 @@ export class AegisxIconRegistry {
   private registered = false;
 
   /**
-   * Register all AegisX icons in namespaces 'ax', 'axd', 'axdl'.
+   * Register all AegisX icons in namespaces 'ax', 'axd', 'axdl', 'axf'.
    */
   registerAll(): void {
     if (this.registered) return;
     this.registerNamespace('ax', AEGISX_ICON_DATA);
     this.registerNamespace('axd', AEGISX_DIAMOND_DARK_DATA);
     this.registerNamespace('axdl', AEGISX_DIAMOND_LIGHT_DATA);
+    this.registerNamespace('axf', AEGISX_FEATURED_DATA);
     this.registered = true;
   }
 
