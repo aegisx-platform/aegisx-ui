@@ -64,9 +64,9 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       }
 
       .ax-nav-item {
-        width: 54px;
-        height: 54px;
-        border-radius: 16px;
+        width: var(--ax-nav-btn-size, 54px);
+        height: var(--ax-nav-btn-size, 54px);
+        border-radius: var(--ax-nav-btn-radius, 16px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -75,42 +75,42 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         cursor: pointer;
         position: relative;
         background: transparent;
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.4));
         transition: all 0.15s ease;
       }
 
       .ax-nav-item:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: rgba(255, 255, 255, 0.8);
+        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.06));
+        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
       }
 
       /* Rail active */
       .ax-nav-item--active-rail {
-        background: rgba(59, 130, 246, 0.15);
-        color: #60a5fa;
+        background: var(--ax-nav-btn-active, rgba(59, 130, 246, 0.15));
+        color: var(--ax-nav-icon-active, #60a5fa);
       }
       .ax-nav-item--active-rail:hover {
-        background: rgba(59, 130, 246, 0.2);
-        color: #60a5fa;
+        background: var(--ax-nav-btn-active, rgba(59, 130, 246, 0.2));
+        color: var(--ax-nav-icon-active, #60a5fa);
       }
 
       /* Dock variant */
       .ax-nav-item--dock {
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--ax-nav-dock-btn-bg, rgba(255, 255, 255, 0.04));
       }
       .ax-nav-item--dock:hover {
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.08));
         color: #fff;
         transform: scale(1.06);
       }
       .ax-nav-item--active-dock {
-        background: #fff;
-        color: #1a1d23;
+        background: var(--ax-nav-dock-btn-active, #fff);
+        color: var(--ax-nav-bg, #1a1d23);
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
       }
       .ax-nav-item--active-dock:hover {
-        background: #fff;
-        color: #1a1d23;
+        background: var(--ax-nav-dock-btn-active, #fff);
+        color: var(--ax-nav-bg, #1a1d23);
         transform: scale(1);
       }
 
@@ -123,12 +123,12 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         gap: 5px;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.5));
         white-space: nowrap;
       }
       .ax-nav-item--topbar:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.8);
+        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.05));
+        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
       }
       .ax-nav-item--active-topbar {
         background: rgba(255, 255, 255, 0.12);

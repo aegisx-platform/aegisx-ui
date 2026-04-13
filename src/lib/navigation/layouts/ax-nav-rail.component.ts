@@ -192,7 +192,7 @@ import { NavModule } from '../models/ax-nav.model';
         align-items: center;
         gap: 2px;
         font-size: 9px;
-        color: rgba(255, 255, 255, 0.3);
+        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.3));
         background: none;
         border: none;
         cursor: pointer;
@@ -203,7 +203,7 @@ import { NavModule } from '../models/ax-nav.model';
         transition: all 0.15s;
       }
       .ax-nav-rail__hospital:hover {
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.6));
       }
       .ax-nav-rail__hospital-chevron {
         font-size: 14px;
@@ -212,13 +212,13 @@ import { NavModule } from '../models/ax-nav.model';
       }
 
       .ax-nav-rail__divider {
-        width: 54px;
+        width: var(--ax-nav-btn-size, 54px);
         height: 1px;
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--ax-nav-divider, rgba(255, 255, 255, 0.08));
         margin: 8px 0 6px;
       }
       .ax-nav-rail__divider--thin {
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--ax-nav-divider, rgba(255, 255, 255, 0.06));
         margin: 2px 0 4px;
       }
 
@@ -228,22 +228,22 @@ import { NavModule } from '../models/ax-nav.model';
       }
 
       .ax-nav-rail__btn {
-        width: 54px;
-        height: 54px;
-        border-radius: 16px;
+        width: var(--ax-nav-btn-size, 54px);
+        height: var(--ax-nav-btn-size, 54px);
+        border-radius: var(--ax-nav-btn-radius, 16px);
         display: flex;
         align-items: center;
         justify-content: center;
         border: none;
         cursor: pointer;
-        background: rgba(255, 255, 255, 0.04);
-        color: rgba(255, 255, 255, 0.5);
+        background: var(--ax-nav-dock-btn-bg, rgba(255, 255, 255, 0.04));
+        color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.5));
         transition: all 0.15s;
         position: relative;
       }
       .ax-nav-rail__btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: rgba(255, 255, 255, 0.8);
+        background: var(--ax-nav-btn-hover, rgba(255, 255, 255, 0.08));
+        color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
       }
 
       .ax-nav-rail__app-icon {

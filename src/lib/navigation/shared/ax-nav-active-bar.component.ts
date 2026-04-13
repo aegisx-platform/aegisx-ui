@@ -17,7 +17,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         top: 50%;
         transform: translateY(-50%);
         width: 3px;
-        height: 24px;
+        height: var(--ax-nav-active-bar-h, 28px);
         border-radius: 0 6px 6px 0;
         background: var(--ax-nav-active-bar, #3b82f6);
         transition: all 0.2s ease;

@@ -5,6 +5,7 @@ import {
   computed,
   PLATFORM_ID,
   Signal,
+  DestroyRef,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
@@ -32,6 +33,7 @@ const STORAGE_PREFIX = 'ax-nav-state';
 export class AxNavService {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ── Configuration (set by consumer) ───────────────────
   private _appGroups = signal<AppGroup[]>([]);
@@ -177,19 +179,28 @@ export class AxNavService {
   }
 
   // ── Router Sync ───────────────────────────────────────
+  private _routerSynced = false;
+
   syncWithRouter(): void {
+    if (this._routerSynced) return;
+    this._routerSynced = true;
+
     this.router.events
       .pipe(
         filter((e) => e instanceof NavigationEnd),
         map((e) => (e as NavigationEnd).urlAfterRedirects),
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((url) => {
         const segments = url.split('/').filter(Boolean);
         const app = this._appGroups().find((a) => a.route === segments[0]);
         if (app) {
           this._activeAppId.set(app.id);
-          const mod = app.modules.find((m) => url.includes(m.route));
+          const modSegments = segments.slice(1);
+          const mod = app.modules.find((m) => {
+            const routeParts = m.route.split('/').filter(Boolean);
+            return routeParts.every((part) => modSegments.includes(part));
+          });
           if (mod) this._activeModuleId.set(mod.id);
         }
       });
