@@ -14,7 +14,7 @@ export interface AppSwitcherData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIconModule],
   template: `
-    <div class="ax-app-switcher" (click)="$event.stopPropagation()">
+    <div class="ax-app-switcher" role="dialog" aria-label="Switch App">
       <!-- Header -->
       <div class="ax-app-switcher__header">
         <div>

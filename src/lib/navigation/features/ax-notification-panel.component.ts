@@ -16,12 +16,21 @@ import { navSlideRight } from '../animations/ax-nav.animations';
   imports: [MatIconModule],
   animations: [navSlideRight],
   template: `
-    <div class="ax-notif-backdrop" (click)="closed.emit()">
+    <div
+      class="ax-notif-backdrop"
+      role="button"
+      tabindex="-1"
+      aria-label="Close notifications"
+      (click)="closed.emit()"
+      (keydown.escape)="closed.emit()"
+    >
       <aside
         class="ax-notif-panel"
         @navSlideRight
-        (click)="$event.stopPropagation()"
+        role="dialog"
         aria-label="Notifications"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="$event.stopPropagation()"
       >
         <!-- Header -->
         <div class="ax-notif-panel__header">
