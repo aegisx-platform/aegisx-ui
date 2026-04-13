@@ -263,7 +263,7 @@ export class AxNavShellComponent {
 
   onNotification(): void {
     this.closeAllOverlays();
-    // Phase 3: Open notification panel
+    // Phase 4: Open notification panel
   }
 
   onSettings(): void {

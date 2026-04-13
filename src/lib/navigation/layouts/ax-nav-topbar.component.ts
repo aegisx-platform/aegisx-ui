@@ -135,7 +135,7 @@ import { NavModule } from '../models/ax-nav.model';
       .ax-nav-topbar__brand-text {
         font-size: 15px;
         font-weight: 700;
-        color: #fff;
+        color: var(--ax-nav-text-on-dark, #fff);
       }
 
       /* App pill */
@@ -149,7 +149,7 @@ import { NavModule } from '../models/ax-nav.model';
         background: rgba(255, 255, 255, 0.05);
         cursor: pointer;
         margin-right: 8px;
-        color: #fff;
+        color: var(--ax-nav-text-on-dark, #fff);
         font-size: 12.5px;
         font-weight: 600;
         transition: all 0.15s;
