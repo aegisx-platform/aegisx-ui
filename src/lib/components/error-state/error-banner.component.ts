@@ -64,7 +64,7 @@ import { resolveErrorConfig } from './resolve-error-config';
               class="ax-error-banner__link"
               (click)="retry.emit()"
             >
-              ลองใหม่อีกครั้ง
+              {{ config().primaryAction.label }}
             </button>
           </div>
         }

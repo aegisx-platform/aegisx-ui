@@ -6,7 +6,11 @@ import {
   output,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ErrorMessageConfig, ErrorSeverity } from './error-message.model';
+import {
+  ErrorAction,
+  ErrorMessageConfig,
+  ErrorSeverity,
+} from './error-message.model';
 import { resolveErrorConfig } from './resolve-error-config';
 
 /**
@@ -248,7 +252,7 @@ export class AxErrorStateComponent {
 
   readonly resolvedIcon = computed(() => this.config().featuredIcon);
 
-  onAction(type: string, route?: string): void {
+  onAction(type: ErrorAction['type'], route?: string): void {
     switch (type) {
       case 'retry':
         this.retry.emit();
