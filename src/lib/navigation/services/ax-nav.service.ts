@@ -51,6 +51,7 @@ export class AxNavService {
   );
   private _notifications = signal<NavNotification[]>([]);
   private _user = signal<NavUser | null>(null);
+  private _iconStyle = signal<'mono' | 'diamond'>('mono');
 
   // ── Public Readonly ───────────────────────────────────
   readonly mode = this._mode.asReadonly();
@@ -62,6 +63,7 @@ export class AxNavService {
   readonly user = this._user.asReadonly();
   readonly appGroups = this._appGroups.asReadonly();
   readonly hospitals = this._hospitals.asReadonly();
+  readonly iconStyle = this._iconStyle.asReadonly();
 
   // ── Computed ──────────────────────────────────────────
   readonly activeApp: Signal<AppGroup | undefined> = computed(() =>
@@ -95,11 +97,13 @@ export class AxNavService {
     hospitals?: Hospital[];
     defaultAppId?: string;
     user?: NavUser;
+    iconStyle?: 'mono' | 'diamond';
   }): void {
     this._appGroups.set(config.appGroups);
     if (config.hospitals) this._hospitals.set(config.hospitals);
     if (config.defaultAppId) this._activeAppId.set(config.defaultAppId);
     if (config.user) this._user.set(config.user);
+    if (config.iconStyle) this._iconStyle.set(config.iconStyle);
   }
 
   // ── Actions ───────────────────────────────────────────
@@ -160,6 +164,10 @@ export class AxNavService {
 
   setUser(user: NavUser): void {
     this._user.set(user);
+  }
+
+  setIconStyle(style: 'mono' | 'diamond'): void {
+    this._iconStyle.set(style);
   }
 
   setNotifications(notifications: NavNotification[]): void {

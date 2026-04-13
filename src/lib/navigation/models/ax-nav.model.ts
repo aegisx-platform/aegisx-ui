@@ -11,6 +11,7 @@ export interface AppGroup {
   route: string;
   permission: string;
   modules: NavModule[];
+  iconStyle?: 'mono' | 'diamond';
 }
 
 /** Module = Level 2 navigation (inside an app group) */
@@ -23,6 +24,7 @@ export interface NavModule {
   permission?: string;
   badge?: number;
   children?: NavChild[];
+  iconStyle?: 'mono' | 'diamond';
 }
 
 /** Sub-route = Level 3 (for expanded panel detail) */

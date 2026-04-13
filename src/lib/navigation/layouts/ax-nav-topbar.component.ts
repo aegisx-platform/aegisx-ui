@@ -11,7 +11,7 @@ import { AxNavLogoComponent } from '../shared/ax-nav-logo.component';
 import { AxNavAvatarComponent } from '../shared/ax-nav-avatar.component';
 import { AxNavItemComponent } from '../shared/ax-nav-item.component';
 import { AxNavBadgeComponent } from '../shared/ax-nav-badge.component';
-import { NavModule } from '../models/ax-nav.model';
+import { AppGroup, NavModule } from '../models/ax-nav.model';
 
 @Component({
   selector: 'ax-nav-topbar',
@@ -44,10 +44,12 @@ import { NavModule } from '../models/ax-nav.model';
         @if (navService.activeApp(); as app) {
           <div
             class="ax-nav-topbar__app-pill-icon"
-            [style.background]="app.color + '4d'"
+            [style.background]="
+              isAppDiamond(app) ? 'transparent' : app.color + '4d'
+            "
             [style.color]="app.color"
           >
-            <mat-icon [svgIcon]="app.icon"></mat-icon>
+            <mat-icon [svgIcon]="resolveAppIcon(app)"></mat-icon>
           </div>
           <span>{{ app.labelTh || app.label }}</span>
         }
@@ -67,6 +69,8 @@ import { NavModule } from '../models/ax-nav.model';
             [showTooltip]="false"
             [showActiveBar]="false"
             [showLabel]="true"
+            [iconStyle]="navService.iconStyle()"
+            [darkContext]="true"
             (moduleClick)="onModuleClick($event)"
           />
         }
@@ -242,5 +246,18 @@ export class AxNavTopbarComponent {
 
   onModuleClick(mod: NavModule): void {
     this.navService.setActiveModule(mod.id);
+  }
+
+  isAppDiamond(app: AppGroup): boolean {
+    if (app.icon.startsWith('axd:') || app.icon.startsWith('axdl:'))
+      return true;
+    return app.iconStyle === 'diamond';
+  }
+
+  resolveAppIcon(app: AppGroup): string {
+    const icon = app.icon;
+    if (icon.includes(':')) return icon;
+    if (app.iconStyle === 'diamond') return `axd:${icon}`;
+    return `ax:${icon}`;
   }
 }

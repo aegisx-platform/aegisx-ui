@@ -40,7 +40,11 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         [attr.aria-current]="active ? 'page' : null"
         (click)="moduleClick.emit(module)"
       >
-        <mat-icon class="ax-nav-item__icon" [svgIcon]="module.icon"></mat-icon>
+        <mat-icon
+          class="ax-nav-item__icon"
+          [class.ax-nav-item__icon--diamond]="isDiamond()"
+          [svgIcon]="resolvedIcon()"
+        ></mat-icon>
         @if (showLabel) {
           <span class="ax-nav-item__label">{{ module.label }}</span>
         }
@@ -146,6 +150,19 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         height: 22px;
       }
 
+      .ax-nav-item__icon--diamond {
+        width: 32px;
+        height: 32px;
+        font-size: 32px;
+        color: initial;
+      }
+
+      .ax-nav-item--topbar .ax-nav-item__icon--diamond {
+        width: 24px;
+        height: 24px;
+        font-size: 24px;
+      }
+
       .ax-nav-item__label {
         flex: 1;
         white-space: nowrap;
@@ -163,5 +180,23 @@ export class AxNavItemComponent {
   @Input() showTooltip = true;
   @Input() showActiveBar = true;
   @Input() showLabel = false;
+  @Input() iconStyle: 'mono' | 'diamond' = 'mono';
+  @Input() darkContext = true;
   @Output() moduleClick = new EventEmitter<NavModule>();
+
+  isDiamond(): boolean {
+    const icon = this.module.icon;
+    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) return true;
+    return (this.module.iconStyle ?? this.iconStyle) === 'diamond';
+  }
+
+  resolvedIcon(): string {
+    const icon = this.module.icon;
+    if (icon.includes(':')) return icon;
+    const style = this.module.iconStyle ?? this.iconStyle;
+    if (style === 'diamond') {
+      return this.darkContext ? `axd:${icon}` : `axdl:${icon}`;
+    }
+    return `ax:${icon}`;
+  }
 }

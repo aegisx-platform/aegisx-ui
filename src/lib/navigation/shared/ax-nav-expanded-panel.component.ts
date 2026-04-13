@@ -24,10 +24,13 @@ import { navSlideIn } from '../animations/ax-nav.animations';
         <div class="ax-nav-panel__header-left">
           <div
             class="ax-nav-panel__app-icon"
-            [style.background]="app.color + '1a'"
+            [class.ax-nav-panel__app-icon--diamond]="isAppDiamond()"
+            [style.background]="
+              isAppDiamond() ? 'transparent' : app.color + '1a'
+            "
             [style.color]="app.color"
           >
-            <mat-icon [svgIcon]="app.icon"></mat-icon>
+            <mat-icon [svgIcon]="resolveAppIcon()"></mat-icon>
           </div>
           <span class="ax-nav-panel__app-name">{{
             app.labelTh || app.label
@@ -65,11 +68,16 @@ import { navSlideIn } from '../animations/ax-nav.animations';
           >
             <mat-icon
               class="ax-nav-panel__module-icon"
+              [class.ax-nav-panel__module-icon--diamond]="isModuleDiamond(mod)"
               [class.ax-nav-panel__module-icon--active]="
                 mod.id === activeModuleId
               "
-              [svgIcon]="mod.icon"
-              [style.color]="mod.id === activeModuleId ? app.color : ''"
+              [svgIcon]="resolveModuleIcon(mod)"
+              [style.color]="
+                !isModuleDiamond(mod) && mod.id === activeModuleId
+                  ? app.color
+                  : ''
+              "
             ></mat-icon>
             <span class="ax-nav-panel__module-label">{{ mod.label }}</span>
             @if (mod.badge) {
@@ -233,6 +241,13 @@ import { navSlideIn } from '../animations/ax-nav.animations';
         color: var(--ax-nav-panel-icon-active, #3b82f6);
       }
 
+      .ax-nav-panel__module-icon--diamond {
+        width: 28px;
+        height: 28px;
+        font-size: 28px;
+        color: initial;
+      }
+
       .ax-nav-panel__module-label {
         flex: 1;
         white-space: nowrap;
@@ -289,4 +304,30 @@ export class AxNavExpandedPanelComponent {
   @Output() moduleSelect = new EventEmitter<NavModule>();
   @Output() pinToggle = new EventEmitter<void>();
   @Output() collapse = new EventEmitter<void>();
+
+  isAppDiamond(): boolean {
+    if (this.app.icon.startsWith('axd:') || this.app.icon.startsWith('axdl:'))
+      return true;
+    return this.app.iconStyle === 'diamond';
+  }
+
+  resolveAppIcon(): string {
+    const icon = this.app.icon;
+    if (icon.includes(':')) return icon;
+    if (this.app.iconStyle === 'diamond') return `axdl:${icon}`;
+    return `ax:${icon}`;
+  }
+
+  isModuleDiamond(mod: NavModule): boolean {
+    if (mod.icon.startsWith('axd:') || mod.icon.startsWith('axdl:'))
+      return true;
+    return mod.iconStyle === 'diamond';
+  }
+
+  resolveModuleIcon(mod: NavModule): string {
+    const icon = mod.icon;
+    if (icon.includes(':')) return icon;
+    if (mod.iconStyle === 'diamond') return `axdl:${icon}`;
+    return `ax:${icon}`;
+  }
 }
