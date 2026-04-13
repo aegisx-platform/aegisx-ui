@@ -1,13 +1,36 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { AxNavService } from '../services/ax-nav.service';
 import { AxNavRailComponent } from '../layouts/ax-nav-rail.component';
 import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loading-bar.component';
+import { AxNavUserMenuComponent } from '../features/ax-nav-user-menu.component';
+import {
+  AxNavContextSwitcherComponent,
+  ContextOption,
+} from '../features/ax-nav-context-switcher.component';
+import { AxNavConfigPopoverComponent } from '../features/ax-nav-config-popover.component';
+import {
+  AxAppSwitcherComponent,
+  AppSwitcherData,
+} from '../features/ax-app-switcher.component';
+import { NavMode } from '../models/ax-nav.model';
 
 @Component({
   selector: 'ax-nav-shell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AxNavRailComponent, AxLoadingBarComponent],
+  imports: [
+    AxNavRailComponent,
+    AxLoadingBarComponent,
+    AxNavUserMenuComponent,
+    AxNavContextSwitcherComponent,
+    AxNavConfigPopoverComponent,
+  ],
   template: `
     <ax-loading-bar variant="primary" />
     <div
@@ -62,6 +85,48 @@ import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loa
         }
       }
 
+      <!-- Overlays positioned relative to sidebar -->
+      <div class="ax-nav-shell__overlays">
+        @if (userMenuOpen()) {
+          <div
+            class="ax-nav-shell__overlay-anchor ax-nav-shell__overlay-anchor--bottom"
+          >
+            <ax-nav-user-menu
+              [user]="navService.user()!"
+              [hospital]="navService.activeHospital()"
+              [currentMode]="navService.mode()"
+              (menuAction)="onMenuAction($event)"
+              (modeChange)="onModeChange($event)"
+              (closed)="userMenuOpen.set(false)"
+            />
+          </div>
+        }
+        @if (hospitalOpen()) {
+          <div
+            class="ax-nav-shell__overlay-anchor ax-nav-shell__overlay-anchor--top"
+          >
+            <ax-nav-context-switcher
+              [title]="'SWITCH HOSPITAL'"
+              [options]="hospitalOptions()"
+              [activeId]="navService.hospitalId()"
+              (optionSelect)="onHospitalSelect($event)"
+              (closed)="hospitalOpen.set(false)"
+            />
+          </div>
+        }
+        @if (configOpen()) {
+          <div
+            class="ax-nav-shell__overlay-anchor ax-nav-shell__overlay-anchor--bottom-settings"
+          >
+            <ax-nav-config-popover
+              [currentMode]="navService.mode()"
+              (modeChange)="onModeChange($event)"
+              (closed)="configOpen.set(false)"
+            />
+          </div>
+        }
+      </div>
+
       <main class="ax-nav-shell__main">
         <ng-content></ng-content>
       </main>
@@ -85,6 +150,7 @@ import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loa
           'Noto Sans Thai',
           -apple-system,
           sans-serif;
+        position: relative;
       }
 
       .ax-nav-shell--topnav {
@@ -104,28 +170,122 @@ import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loa
       .ax-nav-shell--dock .ax-nav-shell__main {
         padding-left: 112px;
       }
+
+      /* Overlay anchoring system */
+      .ax-nav-shell__overlays {
+        position: fixed;
+        left: 80px;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        z-index: 9998;
+        pointer-events: none;
+      }
+      .ax-nav-shell__overlays > * {
+        pointer-events: auto;
+      }
+
+      .ax-nav-shell__overlay-anchor {
+        position: absolute;
+      }
+      .ax-nav-shell__overlay-anchor--bottom {
+        bottom: 16px;
+        left: 12px;
+      }
+      .ax-nav-shell__overlay-anchor--top {
+        top: 80px;
+        left: 12px;
+      }
+      .ax-nav-shell__overlay-anchor--bottom-settings {
+        bottom: 70px;
+        left: 12px;
+      }
     `,
   ],
 })
 export class AxNavShellComponent {
+  private readonly dialog = inject(Dialog);
   readonly navService = inject(AxNavService);
 
+  // Overlay state
+  readonly userMenuOpen = signal(false);
+  readonly hospitalOpen = signal(false);
+  readonly configOpen = signal(false);
+
+  // Map hospitals to ContextOption for generic switcher
+  readonly hospitalOptions = () =>
+    this.navService.hospitals().map((h) => ({
+      id: h.id,
+      label: h.label,
+      code: h.code,
+    }));
+
   onAppSwitcher(): void {
-    /* Phase 2 */
+    this.closeAllOverlays();
+    const dialogRef = this.dialog.open<
+      import('../models/ax-nav.model').AppGroup | undefined
+    >(AxAppSwitcherComponent, {
+      data: {
+        apps: this.navService.visibleApps(),
+        activeAppId: this.navService.activeAppId(),
+      } satisfies AppSwitcherData,
+      backdropClass: 'ax-nav-backdrop',
+    });
+    dialogRef.closed.subscribe((app) => {
+      if (app) {
+        this.navService.setActiveApp(app.id);
+      }
+    });
   }
+
   onSearch(): void {
-    /* Phase 2: wire to command palette */
+    this.closeAllOverlays();
+    // Phase 4: Wire to AxCommandPaletteService
   }
+
   onHospital(): void {
-    /* Phase 2 */
+    this.closeAllOverlays();
+    this.hospitalOpen.set(true);
   }
+
   onNotification(): void {
-    /* Phase 2 */
+    this.closeAllOverlays();
+    // Phase 3: Open notification panel
   }
+
   onSettings(): void {
-    /* Phase 2 */
+    this.closeAllOverlays();
+    this.configOpen.set(true);
   }
+
   onUserMenu(): void {
-    /* Phase 2 */
+    this.closeAllOverlays();
+    this.userMenuOpen.set(true);
+  }
+
+  onMenuAction(action: 'profile' | 'settings' | 'theme' | 'logout'): void {
+    this.userMenuOpen.set(false);
+    // Consumers handle these via navService event subjects
+    this.navService.moduleClick$.next({
+      appId: '',
+      moduleId: action,
+      route: `/${action}`,
+    });
+  }
+
+  onModeChange(mode: NavMode): void {
+    this.navService.setMode(mode);
+    this.closeAllOverlays();
+  }
+
+  onHospitalSelect(opt: ContextOption): void {
+    this.navService.setHospital(opt.id);
+    this.hospitalOpen.set(false);
+  }
+
+  private closeAllOverlays(): void {
+    this.userMenuOpen.set(false);
+    this.hospitalOpen.set(false);
+    this.configOpen.set(false);
   }
 }

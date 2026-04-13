@@ -49,6 +49,7 @@ export type { AppSwitcherData } from './features/ax-app-switcher.component';
 export { AxNavContextSwitcherComponent } from './features/ax-nav-context-switcher.component';
 export type { ContextOption } from './features/ax-nav-context-switcher.component';
 export { AxNavUserMenuComponent } from './features/ax-nav-user-menu.component';
+export { AxNavConfigPopoverComponent } from './features/ax-nav-config-popover.component';
 
 // Shared (AxNavItemComponent renamed to avoid conflict with navbar AxNavItemComponent)
 export { AxNavLogoComponent } from './shared/ax-nav-logo.component';
