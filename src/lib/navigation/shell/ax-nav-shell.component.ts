@@ -8,6 +8,8 @@ import {
 import { Dialog } from '@angular/cdk/dialog';
 import { AxNavService } from '../services/ax-nav.service';
 import { AxNavRailComponent } from '../layouts/ax-nav-rail.component';
+import { AxNavExpandedComponent } from '../layouts/ax-nav-expanded.component';
+import { AxNavTopbarComponent } from '../layouts/ax-nav-topbar.component';
 import { AxLoadingBarComponent } from '../../components/feedback/loading-bar/loading-bar.component';
 import { AxNavUserMenuComponent } from '../features/ax-nav-user-menu.component';
 import {
@@ -27,6 +29,8 @@ import { NavMode } from '../models/ax-nav.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AxNavRailComponent,
+    AxNavExpandedComponent,
+    AxNavTopbarComponent,
     AxLoadingBarComponent,
     AxNavUserMenuComponent,
     AxNavContextSwitcherComponent,
@@ -64,8 +68,7 @@ import { NavMode } from '../models/ax-nav.model';
           />
         }
         @case ('expanded') {
-          <ax-nav-rail
-            [hideTooltips]="true"
+          <ax-nav-expanded
             (appSwitcherClick)="onAppSwitcher()"
             (searchClick)="onSearch()"
             (hospitalClick)="onHospital()"
@@ -75,12 +78,10 @@ import { NavMode } from '../models/ax-nav.model';
           />
         }
         @case ('topnav') {
-          <ax-nav-rail
+          <ax-nav-topbar
             (appSwitcherClick)="onAppSwitcher()"
             (searchClick)="onSearch()"
-            (hospitalClick)="onHospital()"
             (notificationClick)="onNotification()"
-            (settingsClick)="onSettings()"
             (userMenuClick)="onUserMenu()"
           />
         }
@@ -200,6 +201,12 @@ import { NavMode } from '../models/ax-nav.model';
       .ax-nav-shell__overlay-anchor--bottom-settings {
         bottom: 70px;
         left: 12px;
+      }
+
+      .ax-nav-shell--topnav .ax-nav-shell__overlays {
+        left: auto;
+        right: 16px;
+        top: 56px;
       }
     `,
   ],
