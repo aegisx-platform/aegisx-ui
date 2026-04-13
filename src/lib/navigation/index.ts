@@ -57,3 +57,4 @@ export { AxNavAvatarComponent } from './shared/ax-nav-avatar.component';
 export { AxNavBadgeComponent } from './shared/ax-nav-badge.component';
 export { AxNavActiveBarComponent } from './shared/ax-nav-active-bar.component';
 export { AxNavItemComponent as AxNavRailItemComponent } from './shared/ax-nav-item.component';
+export { AxNavExpandedPanelComponent } from './shared/ax-nav-expanded-panel.component';
