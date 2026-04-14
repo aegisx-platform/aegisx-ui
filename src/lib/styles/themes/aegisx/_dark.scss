@@ -153,6 +153,19 @@
   --ax-nav-active: rgba(129, 140, 248, 0.15);
   --ax-nav-border: #27272a; // zinc-800
 
+  // Nav panel (expanded sidebar)
+  --ax-nav-panel-bg: #18181b; // zinc-900
+  --ax-nav-panel-text: #fafafa; // zinc-50
+  --ax-nav-panel-text-muted: #71717a; // zinc-500
+  --ax-nav-panel-icon-muted: #71717a; // zinc-500
+  --ax-nav-panel-icon-active: #818cf8; // indigo-400
+  --ax-nav-panel-item-hover-bg: #27272a; // zinc-800
+  --ax-nav-panel-item-active-bg: rgba(129, 140, 248, 0.12);
+  --ax-nav-panel-border: #27272a; // zinc-800
+
+  // Content area
+  --ax-content-bg: #09090b; // zinc-950
+
   // ===========================================
   // INTERACTIVE STATES
   // ===========================================

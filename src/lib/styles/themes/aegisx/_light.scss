@@ -127,6 +127,19 @@
   --ax-nav-active: #{$aegisx-indigo-50};
   --ax-nav-border: #{$aegisx-zinc-200};
 
+  // Nav panel (expanded sidebar)
+  --ax-nav-panel-bg: #ffffff;
+  --ax-nav-panel-text: #0f172a;
+  --ax-nav-panel-text-muted: #94a3b8;
+  --ax-nav-panel-icon-muted: #94a3b8;
+  --ax-nav-panel-icon-active: #3b82f6;
+  --ax-nav-panel-item-hover-bg: #f8fafc;
+  --ax-nav-panel-item-active-bg: #f1f5f9;
+  --ax-nav-panel-border: #e5e7eb;
+
+  // Content area
+  --ax-content-bg: #eef1f5;
+
   // ===========================================
   // COMPONENT TOKENS (Layer 3)
   // ===========================================
