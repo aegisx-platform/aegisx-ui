@@ -10,28 +10,44 @@ import { AxNavAvatarComponent } from './ax-nav-avatar.component';
 import { AxNavBadgeComponent } from './ax-nav-badge.component';
 import { AppGroup, NavModule, NavUser } from '../models/ax-nav.model';
 import { navSlideIn } from '../animations/ax-nav.animations';
+import {
+  AxDiamondIconComponent,
+  getDiamondColors,
+} from '../../components/navigation/icon';
 
 @Component({
   selector: 'ax-nav-expanded-panel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, AxNavAvatarComponent, AxNavBadgeComponent],
+  imports: [
+    MatIconModule,
+    AxNavAvatarComponent,
+    AxNavBadgeComponent,
+    AxDiamondIconComponent,
+  ],
   animations: [navSlideIn],
   template: `
     <div class="ax-nav-panel" @navSlideIn>
       <!-- Header -->
       <div class="ax-nav-panel__header">
         <div class="ax-nav-panel__header-left">
-          <div
-            class="ax-nav-panel__app-icon"
-            [class.ax-nav-panel__app-icon--diamond]="isAppDiamond()"
-            [style.background]="
-              isAppDiamond() ? 'transparent' : app.color + '1a'
-            "
-            [style.color]="app.color"
-          >
-            <mat-icon [svgIcon]="resolveAppIcon()"></mat-icon>
-          </div>
+          @if (isAppDiamond()) {
+            <ax-diamond-icon
+              [icon]="resolveAppIcon()"
+              [bg]="getAppDiamondColor('bg')"
+              [border]="getAppDiamondColor('border')"
+              [iconColor]="getAppDiamondColor('stroke')"
+              size="md"
+            />
+          } @else {
+            <div
+              class="ax-nav-panel__app-icon"
+              [style.background]="app.color + '1a'"
+              [style.color]="app.color"
+            >
+              <mat-icon [svgIcon]="resolveAppIcon()"></mat-icon>
+            </div>
+          }
           <span class="ax-nav-panel__app-name">{{
             app.labelTh || app.label
           }}</span>
@@ -324,6 +340,12 @@ export class AxNavExpandedPanelComponent {
 
   isAppDiamond(): boolean {
     return this.app.iconStyle === 'diamond';
+  }
+
+  getAppDiamondColor(key: 'bg' | 'border' | 'stroke'): string {
+    const icon = this.app.icon;
+    const name = icon.includes(':') ? icon.split(':')[1] : icon;
+    return getDiamondColors(name, 'light')[key];
   }
 
   resolveAppIcon(): string {

@@ -12,6 +12,10 @@ import { AxNavAvatarComponent } from '../shared/ax-nav-avatar.component';
 import { AxNavItemComponent } from '../shared/ax-nav-item.component';
 import { AxNavBadgeComponent } from '../shared/ax-nav-badge.component';
 import { AppGroup, NavModule } from '../models/ax-nav.model';
+import {
+  AxDiamondIconComponent,
+  getDiamondColors,
+} from '../../components/navigation/icon';
 
 @Component({
   selector: 'ax-nav-topbar',
@@ -23,6 +27,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
     AxNavAvatarComponent,
     AxNavItemComponent,
     AxNavBadgeComponent,
+    AxDiamondIconComponent,
   ],
   template: `
     <header class="ax-nav-topbar" [attr.aria-label]="'Main navigation'">
@@ -42,15 +47,23 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         "
       >
         @if (navService.activeApp(); as app) {
-          <div
-            class="ax-nav-topbar__app-pill-icon"
-            [style.background]="
-              isAppDiamond(app) ? 'transparent' : app.color + '4d'
-            "
-            [style.color]="app.color"
-          >
-            <mat-icon [svgIcon]="resolveAppIcon(app)"></mat-icon>
-          </div>
+          @if (isAppDiamond(app)) {
+            <ax-diamond-icon
+              [icon]="resolveAppIcon(app)"
+              [bg]="getAppDiamondColor(app, 'bg')"
+              [border]="getAppDiamondColor(app, 'border')"
+              [iconColor]="getAppDiamondColor(app, 'stroke')"
+              size="sm"
+            />
+          } @else {
+            <div
+              class="ax-nav-topbar__app-pill-icon"
+              [style.background]="app.color + '4d'"
+              [style.color]="app.color"
+            >
+              <mat-icon [svgIcon]="resolveAppIcon(app)"></mat-icon>
+            </div>
+          }
           <span>{{ app.labelTh || app.label }}</span>
         }
         <mat-icon class="ax-nav-topbar__chevron">expand_more</mat-icon>
@@ -265,5 +278,10 @@ export class AxNavTopbarComponent {
     }
     if (icon.includes(':')) return icon;
     return `ax:${icon}`;
+  }
+
+  getAppDiamondColor(app: AppGroup, key: 'bg' | 'border' | 'stroke'): string {
+    const name = app.icon.includes(':') ? app.icon.split(':')[1] : app.icon;
+    return getDiamondColors(name, 'dark')[key];
   }
 }

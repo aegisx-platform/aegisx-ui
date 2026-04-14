@@ -57,6 +57,10 @@ export const DIAMOND_COLOR_MAP: Record<string, DiamondColors> = {
     dark: { bg: '#991b1b', border: '#ef4444', stroke: '#fca5a5' },
     light: { bg: '#fef2f2', border: '#fecaca', stroke: '#dc2626' },
   },
+  emergency: {
+    dark: { bg: '#991b1b', border: '#ef4444', stroke: '#fca5a5' },
+    light: { bg: '#fef2f2', border: '#fecaca', stroke: '#dc2626' },
+  },
   'or-surgery': {
     dark: { bg: '#7f1d1d', border: '#ef4444', stroke: '#fca5a5' },
     light: { bg: '#fef2f2', border: '#fecaca', stroke: '#991b1b' },

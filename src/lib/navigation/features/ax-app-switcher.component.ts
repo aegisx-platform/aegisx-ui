@@ -7,6 +7,10 @@ import {
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { AppGroup } from '../models/ax-nav.model';
+import {
+  AxDiamondIconComponent,
+  getDiamondColors,
+} from '../../components/navigation/icon';
 
 export interface AppSwitcherData {
   apps: readonly AppGroup[];
@@ -18,7 +22,7 @@ export interface AppSwitcherData {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [MatIconModule],
+  imports: [MatIconModule, AxDiamondIconComponent],
   template: `
     <div class="ax-app-switcher" role="dialog" aria-label="Switch App">
       <!-- Header -->
@@ -54,13 +58,28 @@ export interface AppSwitcherData {
             "
             (click)="selectApp(app)"
           >
-            <div
-              class="ax-app-switcher__icon"
-              [style.background]="app.color + '26'"
-              [style.color]="app.color"
-            >
-              <mat-icon [svgIcon]="app.icon"></mat-icon>
-            </div>
+            @if (app.iconStyle === 'diamond') {
+              <div
+                class="ax-app-switcher__icon"
+                style="background: transparent"
+              >
+                <ax-diamond-icon
+                  [icon]="resolveIcon(app.icon)"
+                  [bg]="getAppDiamondColor(app.icon, 'bg')"
+                  [border]="getAppDiamondColor(app.icon, 'border')"
+                  [iconColor]="getAppDiamondColor(app.icon, 'stroke')"
+                  size="xl"
+                />
+              </div>
+            } @else {
+              <div
+                class="ax-app-switcher__icon"
+                [style.background]="app.color + '26'"
+                [style.color]="app.color"
+              >
+                <mat-icon [svgIcon]="resolveIcon(app.icon)"></mat-icon>
+              </div>
+            }
             <div class="ax-app-switcher__label">{{ app.label }}</div>
             <div class="ax-app-switcher__label-th">{{ app.labelTh }}</div>
           </button>
@@ -197,5 +216,18 @@ export class AxAppSwitcherComponent {
 
   selectApp(app: AppGroup): void {
     this.dialogRef.close(app);
+  }
+
+  resolveIcon(icon: string): string {
+    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) {
+      return `ax:${icon.split(':')[1]}`;
+    }
+    if (icon.includes(':')) return icon;
+    return `ax:${icon}`;
+  }
+
+  getAppDiamondColor(icon: string, key: 'bg' | 'border' | 'stroke'): string {
+    const name = icon.includes(':') ? icon.split(':')[1] : icon;
+    return getDiamondColors(name, 'light')[key];
   }
 }
