@@ -94,6 +94,120 @@ export interface LayoutOption {
   description: string;
 }
 
+/** Nav accent preset — background color for the sidebar/topbar */
+export interface NavAccent {
+  id: string;
+  label: string;
+  bg: string;
+  text: string;
+  iconDefault: string;
+  iconHover: string;
+  iconActive: string;
+  btnHover: string;
+  btnActive: string;
+  divider: string;
+}
+
+/** Built-in nav accent presets */
+export const NAV_ACCENTS: readonly NavAccent[] = [
+  {
+    id: 'slate',
+    label: 'Slate',
+    bg: '#0f172a',
+    text: '#fff',
+    iconDefault: '#94a3b8',
+    iconHover: '#cbd5e1',
+    iconActive: '#3b82f6',
+    btnHover: 'rgba(148,163,184,0.12)',
+    btnActive: 'rgba(59,130,246,0.2)',
+    divider: 'rgba(148,163,184,0.15)',
+  },
+  {
+    id: 'zinc',
+    label: 'Zinc',
+    bg: '#18181b',
+    text: '#fff',
+    iconDefault: '#a1a1aa',
+    iconHover: '#d4d4d8',
+    iconActive: '#818cf8',
+    btnHover: 'rgba(161,161,170,0.12)',
+    btnActive: 'rgba(129,140,248,0.2)',
+    divider: 'rgba(161,161,170,0.12)',
+  },
+  {
+    id: 'indigo',
+    label: 'Indigo',
+    bg: '#312e81',
+    text: '#fff',
+    iconDefault: '#a5b4fc',
+    iconHover: '#c7d2fe',
+    iconActive: '#fff',
+    btnHover: 'rgba(165,180,252,0.15)',
+    btnActive: 'rgba(255,255,255,0.18)',
+    divider: 'rgba(165,180,252,0.15)',
+  },
+  {
+    id: 'blue',
+    label: 'Blue',
+    bg: '#1e3a5f',
+    text: '#fff',
+    iconDefault: '#93c5fd',
+    iconHover: '#bfdbfe',
+    iconActive: '#fff',
+    btnHover: 'rgba(147,197,253,0.15)',
+    btnActive: 'rgba(255,255,255,0.18)',
+    divider: 'rgba(147,197,253,0.12)',
+  },
+  {
+    id: 'emerald',
+    label: 'Emerald',
+    bg: '#064e3b',
+    text: '#fff',
+    iconDefault: '#6ee7b7',
+    iconHover: '#a7f3d0',
+    iconActive: '#fff',
+    btnHover: 'rgba(110,231,183,0.15)',
+    btnActive: 'rgba(255,255,255,0.18)',
+    divider: 'rgba(110,231,183,0.12)',
+  },
+  {
+    id: 'rose',
+    label: 'Rose',
+    bg: '#4c0519',
+    text: '#fff',
+    iconDefault: '#fda4af',
+    iconHover: '#fecdd3',
+    iconActive: '#fff',
+    btnHover: 'rgba(253,164,175,0.15)',
+    btnActive: 'rgba(255,255,255,0.18)',
+    divider: 'rgba(253,164,175,0.12)',
+  },
+  {
+    id: 'white',
+    label: 'White',
+    bg: '#ffffff',
+    text: '#0f172a',
+    iconDefault: '#64748b',
+    iconHover: '#334155',
+    iconActive: '#3b82f6',
+    btnHover: 'rgba(0,0,0,0.04)',
+    btnActive: 'rgba(59,130,246,0.1)',
+    divider: 'rgba(0,0,0,0.08)',
+  },
+  {
+    id: 'stone',
+    label: 'Stone',
+    bg: '#f5f5f4',
+    text: '#1c1917',
+    iconDefault: '#78716c',
+    iconHover: '#44403c',
+    iconActive: '#3b82f6',
+    btnHover: 'rgba(0,0,0,0.04)',
+    btnActive: 'rgba(59,130,246,0.1)',
+    divider: 'rgba(0,0,0,0.06)',
+  },
+] as const;
+
 /** All layout options */
 export const LAYOUT_OPTIONS: readonly LayoutOption[] = [
   {

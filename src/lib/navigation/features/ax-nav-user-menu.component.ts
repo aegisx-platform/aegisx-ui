@@ -18,9 +18,11 @@ import {
   NavMode,
   Hospital,
   LAYOUT_OPTIONS,
+  NAV_ACCENTS,
 } from '../models/ax-nav.model';
 import { AxThemeService } from '../../services/theme/ax-theme.service';
 import { ThemePreference } from '../../services/theme/ax-theme.types';
+import { AxNavService } from '../services/ax-nav.service';
 
 @Component({
   selector: 'ax-nav-user-menu',
@@ -105,6 +107,29 @@ import { ThemePreference } from '../../services/theme/ax-theme.types';
                 opt.icon
               }}</mat-icon>
             </button>
+          }
+        </div>
+      </div>
+
+      <!-- Nav accent color -->
+      <div class="ax-nav-user-menu__layout-section">
+        <div class="ax-nav-user-menu__layout-label">NAV COLOR</div>
+        <div class="ax-nav-user-menu__accent-dots">
+          @for (accent of accentOptions; track accent.id) {
+            <button
+              type="button"
+              class="ax-nav-user-menu__accent-dot"
+              [class.ax-nav-user-menu__accent-dot--active]="
+                accent.id === navService.accentId()
+              "
+              [style.background]="accent.bg"
+              [style.border-color]="
+                accent.id === 'white' ? '#e5e7eb' : accent.bg
+              "
+              [attr.aria-label]="'Nav color: ' + accent.label"
+              [attr.title]="accent.label"
+              (click)="navService.setAccent(accent.id)"
+            ></button>
           }
         </div>
       </div>
@@ -264,6 +289,32 @@ import { ThemePreference } from '../../services/theme/ax-theme.types';
         box-shadow: var(--ax-shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
       }
 
+      /* Accent dots */
+      .ax-nav-user-menu__accent-dots {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .ax-nav-user-menu__accent-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        outline: none;
+        transition: all var(--ax-duration-fast, 150ms);
+      }
+      .ax-nav-user-menu__accent-dot:hover {
+        transform: scale(1.15);
+      }
+      .ax-nav-user-menu__accent-dot--active {
+        box-shadow:
+          0 0 0 2px var(--ax-surface, #fff),
+          0 0 0 4px var(--ax-primary, #3b82f6);
+        transform: scale(1.15);
+      }
+
       @keyframes popIn {
         from {
           opacity: 0;
@@ -282,6 +333,7 @@ export class AxNavUserMenuComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   readonly themeService = inject(AxThemeService);
+  readonly navService = inject(AxNavService);
 
   @Input({ required: true }) user!: NavUser;
   @Input() hospital?: Hospital;
@@ -294,6 +346,7 @@ export class AxNavUserMenuComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
 
   readonly layoutOptions = LAYOUT_OPTIONS;
+  readonly accentOptions = NAV_ACCENTS;
   readonly themeOptions: {
     id: ThemePreference;
     label: string;

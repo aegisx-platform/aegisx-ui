@@ -8,7 +8,9 @@ export type {
   Hospital,
   NavNotification,
   NavUser,
+  NavAccent,
 } from './models/ax-nav.model';
+export { NAV_ACCENTS } from './models/ax-nav.model';
 
 // Re-export nav-specific CommandItem and LayoutOption under prefixed names
 // to avoid collision with components/navigation/command-palette and ax-layout-switcher

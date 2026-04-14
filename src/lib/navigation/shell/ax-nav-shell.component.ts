@@ -49,6 +49,16 @@ import { NavMode, NavNotification } from '../models/ax-nav.model';
       [class.ax-nav-shell--expanded]="navService.mode() === 'expanded'"
       [class.ax-nav-shell--dock]="navService.mode() === 'dock'"
       [class.ax-nav-shell--topnav]="navService.mode() === 'topnav'"
+      [style.--ax-nav-bg]="navService.accent().bg"
+      [style.--ax-nav-text-on-dark]="navService.accent().text"
+      [style.--ax-nav-icon-default]="navService.accent().iconDefault"
+      [style.--ax-nav-icon-hover]="navService.accent().iconHover"
+      [style.--ax-nav-icon-active]="navService.accent().iconActive"
+      [style.--ax-nav-btn-hover]="navService.accent().btnHover"
+      [style.--ax-nav-btn-active]="navService.accent().btnActive"
+      [style.--ax-nav-divider]="navService.accent().divider"
+      [style.--ax-nav-topbar]="navService.accent().bg"
+      [style.--ax-nav-dock-bg]="navService.accent().bg"
     >
       @switch (navService.mode()) {
         @case ('rail') {

@@ -19,6 +19,8 @@ import {
   Hospital,
   NavNotification,
   NavUser,
+  NavAccent,
+  NAV_ACCENTS,
 } from '../models/ax-nav.model';
 import {
   NavAppSwitchEvent,
@@ -53,6 +55,7 @@ export class AxNavService {
   private _notifications = signal<NavNotification[]>([]);
   private _user = signal<NavUser | null>(null);
   private _iconStyle = signal<'mono' | 'diamond'>('mono');
+  private _accentId = signal<string>(this.loadFromStorage('accent', 'slate'));
 
   // ── Public Readonly ───────────────────────────────────
   readonly mode = this._mode.asReadonly();
@@ -65,6 +68,10 @@ export class AxNavService {
   readonly appGroups = this._appGroups.asReadonly();
   readonly hospitals = this._hospitals.asReadonly();
   readonly iconStyle = this._iconStyle.asReadonly();
+  readonly accentId = this._accentId.asReadonly();
+  readonly accent: Signal<NavAccent> = computed(
+    () => NAV_ACCENTS.find((a) => a.id === this._accentId()) ?? NAV_ACCENTS[0],
+  );
 
   // ── Computed ──────────────────────────────────────────
   readonly activeApp: Signal<AppGroup | undefined> = computed(() =>
@@ -209,6 +216,11 @@ export class AxNavService {
 
   setIconStyle(style: 'mono' | 'diamond'): void {
     this._iconStyle.set(style);
+  }
+
+  setAccent(accentId: string): void {
+    this._accentId.set(accentId);
+    this.saveToStorage('accent', accentId);
   }
 
   setNotifications(notifications: NavNotification[]): void {
