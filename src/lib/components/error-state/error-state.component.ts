@@ -221,7 +221,7 @@ export interface ErrorStateAction {
       .ax-error-state__tech-code {
         margin-top: 16px;
         font-size: 12px;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         color: var(--ax-text-muted, #98a2b3);
       }
 
@@ -247,7 +247,7 @@ export interface ErrorStateAction {
         border-radius: 8px;
         padding: 12px;
         font-size: 12px;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         color: var(--ax-text-secondary, #667085);
         text-align: left;
         word-break: break-all;

@@ -173,7 +173,7 @@ export interface CodeTab {
         flex: 1;
         color: #6c7086;
         font-size: 13px;
-        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
       }
       .code-tabs__tab-buttons {
         display: flex;
@@ -186,7 +186,7 @@ export interface CodeTab {
         background: transparent;
         color: #6c7086;
         font-size: 13px;
-        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         cursor: pointer;
         border-radius: 6px;
         transition: all 0.15s ease;
@@ -221,8 +221,7 @@ export interface CodeTab {
         padding: 20px;
         background: #1e1e2e;
         overflow-x: auto;
-        font-family:
-          'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-size: 14px;
         line-height: 1.7;
         color: #cdd6f4;

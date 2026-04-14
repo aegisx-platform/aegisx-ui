@@ -175,7 +175,7 @@ import {
       .hex-input {
         width: 60px;
         border: none;
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-size: 0.6875rem;
         text-transform: uppercase;
         background: transparent;

@@ -549,7 +549,7 @@ type SchemeMode = 'light' | 'dark';
       .seed-badge {
         padding: 0.25rem 0.75rem;
         border-radius: var(--ax-radius-md);
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-size: 0.75rem;
         font-weight: 600;
       }

@@ -640,7 +640,7 @@ interface ColorCategory {
       }
 
       .color-hex {
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--ax-text-primary, #3f3f46);
@@ -703,7 +703,7 @@ interface ColorCategory {
       }
 
       .category-name {
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-weight: 600;
         color: var(--ax-text-primary, #3f3f46);
       }
@@ -851,7 +851,7 @@ interface ColorCategory {
       }
 
       .selected-hex {
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-size: 1rem;
         font-weight: 600;
         color: var(--ax-text-primary, #3f3f46);

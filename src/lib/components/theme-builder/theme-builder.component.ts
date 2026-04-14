@@ -1266,7 +1266,7 @@ import {
         input[type='text'] {
           width: 70px;
           border: none;
-          font-family: monospace;
+          font-family: var(--ax-font-mono, ui-monospace, monospace);
           font-size: 0.75rem;
           text-transform: uppercase;
           background: transparent;
@@ -1366,7 +1366,7 @@ import {
       }
 
       .slider-value {
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--ax-brand-600, #4f46e5);
@@ -1662,7 +1662,7 @@ import {
         align-items: center;
         gap: 0.5rem;
         font-size: 0.75rem;
-        font-family: monospace;
+        font-family: var(--ax-font-mono, ui-monospace, monospace);
         color: var(--ax-text-secondary, #71717a);
       }
 
