@@ -151,6 +151,7 @@ import { AxNavService } from '../services/ax-nav.service';
     `
       :host {
         display: block;
+        font-family: inherit;
         position: absolute;
         bottom: calc(100% + 8px);
         left: 0;

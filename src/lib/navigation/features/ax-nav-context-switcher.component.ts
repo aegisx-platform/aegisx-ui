@@ -58,6 +58,7 @@ export interface ContextOption {
     `
       :host {
         display: block;
+        font-family: inherit;
         position: absolute;
         left: calc(100% + 12px);
         top: 0;
@@ -69,9 +70,11 @@ export interface ContextOption {
         background: var(--ax-surface, #fff);
         border-radius: var(--ax-radius-lg, 12px);
         padding: var(--ax-spacing-sm);
-        box-shadow: var(--ax-nav-popover-shadow,
+        box-shadow: var(
+          --ax-nav-popover-shadow,
           0 8px 30px rgba(0, 0, 0, 0.12),
-          0 0 0 1px rgba(0, 0, 0, 0.06));
+          0 0 0 1px rgba(0, 0, 0, 0.06)
+        );
         animation: popIn 0.15s ease;
       }
 

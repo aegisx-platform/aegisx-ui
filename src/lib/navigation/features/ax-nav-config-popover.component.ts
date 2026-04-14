@@ -47,6 +47,7 @@ import { NavMode, LAYOUT_OPTIONS } from '../models/ax-nav.model';
     `
       :host {
         display: block;
+        font-family: inherit;
         position: absolute;
         left: calc(100% + 12px);
         bottom: 0;
@@ -58,9 +59,11 @@ import { NavMode, LAYOUT_OPTIONS } from '../models/ax-nav.model';
         background: var(--ax-surface, #fff);
         border-radius: var(--ax-radius-lg, 12px);
         padding: var(--ax-spacing-lg);
-        box-shadow: var(--ax-nav-popover-shadow,
+        box-shadow: var(
+          --ax-nav-popover-shadow,
           0 8px 30px rgba(0, 0, 0, 0.12),
-          0 0 0 1px rgba(0, 0, 0, 0.06));
+          0 0 0 1px rgba(0, 0, 0, 0.06)
+        );
         animation: popIn 0.18s ease;
       }
 

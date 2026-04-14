@@ -42,6 +42,10 @@ import { NavModule } from '../models/ax-nav.model';
   `,
   styles: [
     `
+      :host {
+        font-family: inherit;
+      }
+
       .ax-nav-expanded {
         display: flex;
         height: 100vh;

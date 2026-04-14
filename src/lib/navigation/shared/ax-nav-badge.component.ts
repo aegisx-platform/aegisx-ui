@@ -20,6 +20,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     `
       :host {
         display: contents;
+        font-family: inherit;
       }
 
       .ax-nav-badge--dot {

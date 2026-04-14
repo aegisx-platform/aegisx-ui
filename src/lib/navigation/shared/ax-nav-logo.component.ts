@@ -34,6 +34,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     `
       :host {
         display: inline-flex;
+        font-family: inherit;
         align-items: center;
         justify-content: center;
         color: var(--ax-primary, #3b82f6);

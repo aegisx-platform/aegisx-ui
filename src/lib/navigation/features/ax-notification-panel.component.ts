@@ -86,6 +86,10 @@ import { navSlideRight } from '../animations/ax-nav.animations';
   `,
   styles: [
     `
+      :host {
+        font-family: inherit;
+      }
+
       .ax-notif-backdrop {
         position: fixed;
         inset: 0;

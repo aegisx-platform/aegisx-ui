@@ -36,12 +36,19 @@ import {
   `,
   styles: [
     `
+      :host {
+        font-family: inherit;
+      }
+
       .ax-nav-avatar {
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--ax-nav-avatar-bg, linear-gradient(135deg, #3b82f6, #6366f1));
+        background: var(
+          --ax-nav-avatar-bg,
+          linear-gradient(135deg, #3b82f6, #6366f1)
+        );
         color: var(--ax-nav-avatar-text, #fff);
         font-weight: 700;
         cursor: pointer;
