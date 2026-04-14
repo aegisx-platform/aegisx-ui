@@ -60,6 +60,11 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .ax-nav-item__wrapper {
         position: relative;
         width: 100%;
@@ -70,7 +75,7 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       .ax-nav-item {
         width: var(--ax-nav-btn-size, 46px);
         height: var(--ax-nav-btn-size, 46px);
-        border-radius: var(--ax-nav-btn-radius, 14px);
+        border-radius: var(--ax-nav-btn-radius, 10px);
         display: flex;
         align-items: center;
         justify-content: center;

@@ -92,7 +92,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
       <div class="ax-nav-rail__divider ax-nav-rail__divider--thin"></div>
 
       <!-- Module nav -->
-      <nav class="ax-nav-rail__nav">
+      <nav class="ax-nav-rail__nav" [class.ax-nav-rail__nav--dock]="dock">
         @for (mod of navService.visibleModules(); track mod.id) {
           <ax-nav-item
             [module]="mod"
@@ -109,7 +109,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
       </nav>
 
       <!-- Bottom section -->
-      <div class="ax-nav-rail__bottom">
+      <div class="ax-nav-rail__bottom" [class.ax-nav-rail__bottom--dock]="dock">
         <!-- Notifications -->
         <button
           type="button"
@@ -186,7 +186,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         height: auto;
         background: rgba(15, 23, 42, 0.95);
         backdrop-filter: blur(20px) saturate(1.4);
-        border-radius: 14px;
+        border-radius: 10px;
         border: 1px solid rgba(148, 163, 184, 0.1);
         box-shadow:
           0 8px 40px rgba(0, 0, 0, 0.3),
@@ -196,7 +196,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
 
       .ax-nav-rail__logo {
         cursor: pointer;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         flex-shrink: 0;
       }
 
@@ -228,23 +228,23 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         width: var(--ax-nav-btn-size, 46px);
         height: 1px;
         background: var(--ax-nav-divider, rgba(148, 163, 184, 0.15));
-        margin: 4px 0 2px;
+        margin: 10px 0;
       }
       .ax-nav-rail__divider--thin {
         background: var(--ax-nav-divider, rgba(148, 163, 184, 0.1));
-        margin: 2px 0 2px;
+        margin: 10px 0;
       }
 
       .ax-nav-rail__app-switcher {
         position: relative;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         flex-shrink: 0;
       }
 
       .ax-nav-rail__btn {
         width: var(--ax-nav-btn-size, 46px);
         height: var(--ax-nav-btn-size, 46px);
-        border-radius: var(--ax-nav-btn-radius, 14px);
+        border-radius: var(--ax-nav-btn-radius, 10px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -286,7 +286,7 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
         align-items: center;
         justify-content: center;
         transition: all 0.15s;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         flex-shrink: 0;
       }
       .ax-nav-rail__search:hover {
@@ -312,6 +312,14 @@ import { AppGroup, NavModule } from '../models/ax-nav.model';
       }
       .ax-nav-rail__nav::-webkit-scrollbar {
         width: 0;
+      }
+
+      /* Dock: more spacious layout */
+      .ax-nav-rail__nav--dock {
+        gap: 8px !important;
+      }
+      .ax-nav-rail__bottom--dock {
+        gap: 8px !important;
       }
 
       .ax-nav-rail__bottom {
