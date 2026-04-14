@@ -1,6 +1,9 @@
 /** 4 layout modes */
 export type NavMode = 'rail' | 'expanded' | 'dock' | 'topnav';
 
+/** Interaction type for a navigation module */
+export type NavModuleType = 'route' | 'action' | 'external' | 'divider';
+
 /** App group = Level 1 navigation (e.g. Clinical, Inventory, Finance) */
 export interface AppGroup {
   id: string;
@@ -20,7 +23,10 @@ export interface NavModule {
   icon: string;
   label: string;
   labelEn?: string;
-  route: string;
+  route?: string;
+  type?: NavModuleType;
+  action?: string;
+  externalUrl?: string;
   permission?: string;
   badge?: number;
   children?: NavChild[];
@@ -90,8 +96,28 @@ export interface LayoutOption {
 
 /** All layout options */
 export const LAYOUT_OPTIONS: readonly LayoutOption[] = [
-  { id: 'rail', label: 'Rail', icon: 'view_sidebar', description: 'Icon sidebar' },
-  { id: 'expanded', label: 'Expanded', icon: 'view_quilt', description: 'Sidebar + panel' },
-  { id: 'dock', label: 'Dock', icon: 'dock_to_left', description: 'Floating sidebar' },
-  { id: 'topnav', label: 'Top Nav', icon: 'web', description: 'Horizontal bar' },
+  {
+    id: 'rail',
+    label: 'Rail',
+    icon: 'view_sidebar',
+    description: 'Icon sidebar',
+  },
+  {
+    id: 'expanded',
+    label: 'Expanded',
+    icon: 'view_quilt',
+    description: 'Sidebar + panel',
+  },
+  {
+    id: 'dock',
+    label: 'Dock',
+    icon: 'dock_to_left',
+    description: 'Floating sidebar',
+  },
+  {
+    id: 'topnav',
+    label: 'Top Nav',
+    icon: 'web',
+    description: 'Horizontal bar',
+  },
 ] as const;

@@ -109,7 +109,9 @@ import {
           <ax-nav-item
             [module]="mod"
             [active]="navService.activeModuleId() === mod.id"
-            [appColor]="navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'"
+            [appColor]="
+              navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'
+            "
             [variant]="dock ? 'dock' : 'rail'"
             [showTooltip]="!hideTooltips"
             [showActiveBar]="!dock"
@@ -155,7 +157,11 @@ import {
               [initials]="user.initials"
               [avatarUrl]="user.avatarUrl"
               [online]="user.online"
-              [borderColor]="dock ? 'var(--ax-nav-dock-bg, rgba(15,23,42,0.95))' : 'var(--ax-nav-bg, #0f172a)'"
+              [borderColor]="
+                dock
+                  ? 'var(--ax-nav-dock-bg, rgba(15,23,42,0.95))'
+                  : 'var(--ax-nav-bg, #0f172a)'
+              "
               (avatarClick)="userMenuClick.emit()"
             />
           }
@@ -170,6 +176,7 @@ import {
         height: 100vh;
         height: 100dvh;
         flex-shrink: 0;
+        font-family: inherit;
       }
 
       .ax-nav-rail {
@@ -199,10 +206,13 @@ import {
         background: var(--ax-nav-dock-bg, rgba(15, 23, 42, 0.95));
         backdrop-filter: blur(20px) saturate(1.4);
         border-radius: var(--ax-radius-lg, 12px);
-        border: var(--ax-border-width-thin) solid var(--ax-nav-dock-border, rgba(148, 163, 184, 0.1));
-        box-shadow: var(--ax-nav-dock-shadow,
+        border: var(--ax-border-width-thin) solid
+          var(--ax-nav-dock-border, rgba(148, 163, 184, 0.1));
+        box-shadow: var(
+          --ax-nav-dock-shadow,
           0 8px 40px rgba(0, 0, 0, 0.3),
-          inset 0 1px 0 rgba(148, 163, 184, 0.08));
+          inset 0 1px 0 rgba(148, 163, 184, 0.08)
+        );
         z-index: var(--ax-z-nav-dock, 50);
       }
 
@@ -290,7 +300,8 @@ import {
         width: 46px;
         height: 34px;
         border-radius: var(--ax-radius-lg, 12px);
-        border: var(--ax-border-width-thin) solid var(--ax-nav-search-border, rgba(148, 163, 184, 0.15));
+        border: var(--ax-border-width-thin) solid
+          var(--ax-nav-search-border, rgba(148, 163, 184, 0.15));
         background: var(--ax-nav-search-bg, rgba(148, 163, 184, 0.05));
         color: var(--ax-nav-icon-default, #94a3b8);
         cursor: pointer;

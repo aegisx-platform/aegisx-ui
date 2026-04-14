@@ -76,30 +76,40 @@ import {
       <!-- Module list -->
       <div class="ax-nav-panel__modules">
         @for (mod of modules; track mod.id) {
-          <button
-            type="button"
-            class="ax-nav-panel__module"
-            [class.ax-nav-panel__module--active]="mod.id === activeModuleId"
-            (click)="moduleSelect.emit(mod)"
-          >
-            <mat-icon
-              class="ax-nav-panel__module-icon"
-              [class.ax-nav-panel__module-icon--diamond]="isModuleDiamond(mod)"
-              [class.ax-nav-panel__module-icon--active]="
-                mod.id === activeModuleId
-              "
-              [svgIcon]="resolveModuleIcon(mod)"
-              [style.color]="
-                !isModuleDiamond(mod) && mod.id === activeModuleId
-                  ? app.color
-                  : ''
-              "
-            ></mat-icon>
-            <span class="ax-nav-panel__module-label">{{ mod.label }}</span>
-            @if (mod.badge) {
-              <ax-nav-badge [count]="mod.badge" />
-            }
-          </button>
+          @if ((mod.type ?? 'route') === 'divider') {
+            <div class="ax-nav-panel__divider" [attr.aria-hidden]="true">
+              @if (mod.label) {
+                <span class="ax-nav-panel__divider-label">{{ mod.label }}</span>
+              }
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="ax-nav-panel__module"
+              [class.ax-nav-panel__module--active]="mod.id === activeModuleId"
+              (click)="moduleSelect.emit(mod)"
+            >
+              <mat-icon
+                class="ax-nav-panel__module-icon"
+                [class.ax-nav-panel__module-icon--diamond]="
+                  isModuleDiamond(mod)
+                "
+                [class.ax-nav-panel__module-icon--active]="
+                  mod.id === activeModuleId
+                "
+                [svgIcon]="resolveModuleIcon(mod)"
+                [style.color]="
+                  !isModuleDiamond(mod) && mod.id === activeModuleId
+                    ? app.color
+                    : ''
+                "
+              ></mat-icon>
+              <span class="ax-nav-panel__module-label">{{ mod.label }}</span>
+              @if (mod.badge) {
+                <ax-nav-badge [count]="mod.badge" />
+              }
+            </button>
+          }
         }
       </div>
 
@@ -126,6 +136,10 @@ import {
   `,
   styles: [
     `
+      :host {
+        font-family: inherit;
+      }
+
       .ax-nav-panel {
         width: 240px;
         min-width: 240px;
@@ -279,6 +293,26 @@ import {
         font-size: 28px;
         overflow: visible;
         color: initial;
+      }
+
+      /* Divider */
+      .ax-nav-panel__divider {
+        padding: 8px 18px 4px;
+      }
+      .ax-nav-panel__divider::after {
+        content: '';
+        display: block;
+        height: 1px;
+        background: var(--ax-nav-panel-border, #e5e7eb);
+      }
+      .ax-nav-panel__divider-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ax-nav-panel-text-muted, #94a3b8);
+        margin-bottom: 4px;
       }
 
       .ax-nav-panel__module-label {

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NavModule } from '../models/ax-nav.model';
+import { NavModule, NavModuleType } from '../models/ax-nav.model';
 import { AxNavBadgeComponent } from './ax-nav-badge.component';
 import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
 
@@ -23,39 +23,75 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
   ],
   template: `
     <div class="ax-nav-item__wrapper">
-      @if (showActiveBar && variant !== 'dock') {
-        <ax-nav-active-bar [active]="active" [color]="appColor" />
-      }
-      <button
-        type="button"
-        class="ax-nav-item"
-        [class.ax-nav-item--active-rail]="active && variant === 'rail'"
-        [class.ax-nav-item--active-dock]="active && variant === 'dock'"
-        [class.ax-nav-item--active-topbar]="active && variant === 'topbar'"
-        [class.ax-nav-item--dock]="variant === 'dock'"
-        [class.ax-nav-item--topbar]="variant === 'topbar'"
-        [matTooltip]="showTooltip ? module.label : ''"
-        matTooltipPosition="right"
-        [attr.aria-label]="module.label"
-        [attr.aria-current]="active ? 'page' : null"
-        (click)="moduleClick.emit(module)"
-      >
-        <mat-icon
-          class="ax-nav-item__icon"
-          [class.ax-nav-item__icon--diamond]="isDiamond()"
-          [svgIcon]="resolvedIcon()"
-        ></mat-icon>
-        @if (showLabel) {
-          <span class="ax-nav-item__label">{{ module.label }}</span>
+      @switch (moduleType) {
+        @case ('divider') {
+          <div class="ax-nav-item__divider" [attr.aria-hidden]="true">
+            @if (showLabel && module.label) {
+              <span class="ax-nav-item__divider-label">{{ module.label }}</span>
+            }
+          </div>
         }
-        @if (module.badge && !(active && variant === 'dock')) {
-          @if (showLabel) {
-            <ax-nav-badge [count]="module.badge" />
-          } @else {
-            <ax-nav-badge [count]="module.badge" [dot]="true" />
+        @case ('external') {
+          <a
+            class="ax-nav-item"
+            [class.ax-nav-item--topbar]="variant === 'topbar'"
+            [class.ax-nav-item--dock]="variant === 'dock'"
+            [href]="module.externalUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            [matTooltip]="showTooltip ? module.label : ''"
+            matTooltipPosition="right"
+            [attr.aria-label]="module.label + ' (external)'"
+            (click)="moduleClick.emit(module)"
+          >
+            <mat-icon
+              class="ax-nav-item__icon"
+              [svgIcon]="resolvedIcon()"
+            ></mat-icon>
+            @if (showLabel) {
+              <span class="ax-nav-item__label">{{ module.label }}</span>
+              <mat-icon class="ax-nav-item__external-indicator"
+                >open_in_new</mat-icon
+              >
+            }
+          </a>
+        }
+        @default {
+          @if (showActiveBar && variant !== 'dock') {
+            <ax-nav-active-bar [active]="active" [color]="appColor" />
           }
+          <button
+            type="button"
+            class="ax-nav-item"
+            [class.ax-nav-item--active-rail]="active && variant === 'rail'"
+            [class.ax-nav-item--active-dock]="active && variant === 'dock'"
+            [class.ax-nav-item--active-topbar]="active && variant === 'topbar'"
+            [class.ax-nav-item--dock]="variant === 'dock'"
+            [class.ax-nav-item--topbar]="variant === 'topbar'"
+            [matTooltip]="showTooltip ? module.label : ''"
+            matTooltipPosition="right"
+            [attr.aria-label]="module.label"
+            [attr.aria-current]="active ? 'page' : null"
+            (click)="moduleClick.emit(module)"
+          >
+            <mat-icon
+              class="ax-nav-item__icon"
+              [class.ax-nav-item__icon--diamond]="isDiamond()"
+              [svgIcon]="resolvedIcon()"
+            ></mat-icon>
+            @if (showLabel) {
+              <span class="ax-nav-item__label">{{ module.label }}</span>
+            }
+            @if (module.badge && !(active && variant === 'dock')) {
+              @if (showLabel) {
+                <ax-nav-badge [count]="module.badge" />
+              } @else {
+                <ax-nav-badge [count]="module.badge" [dot]="true" />
+              }
+            }
+          </button>
         }
-      </button>
+      }
     </div>
   `,
   styles: [
@@ -63,6 +99,7 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       :host {
         display: block;
         width: 100%;
+        font-family: inherit;
       }
 
       :host-context(.ax-nav-topbar__tabs) {
@@ -119,7 +156,10 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       .ax-nav-item--active-dock {
         background: var(--ax-nav-dock-btn-active, #fff);
         color: var(--ax-nav-bg, #0f172a);
-        box-shadow: var(--ax-nav-dock-item-shadow, 0 2px 12px rgba(0, 0, 0, 0.15));
+        box-shadow: var(
+          --ax-nav-dock-item-shadow,
+          0 2px 12px rgba(0, 0, 0, 0.15)
+        );
       }
       .ax-nav-item--active-dock:hover {
         background: var(--ax-nav-dock-btn-active, #fff);
@@ -144,12 +184,18 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
       }
       .ax-nav-item--active-topbar {
-        background: var(--ax-nav-topbar-item-active-bg, rgba(255, 255, 255, 0.12));
+        background: var(
+          --ax-nav-topbar-item-active-bg,
+          rgba(255, 255, 255, 0.12)
+        );
         color: var(--ax-nav-text-on-dark, #fff);
         font-weight: 600;
       }
       .ax-nav-item--active-topbar:hover {
-        background: var(--ax-nav-topbar-item-active-hover, rgba(255, 255, 255, 0.15));
+        background: var(
+          --ax-nav-topbar-item-active-hover,
+          rgba(255, 255, 255, 0.15)
+        );
       }
 
       .ax-nav-item__icon {
@@ -186,6 +232,43 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
+      /* Divider */
+      .ax-nav-item__divider {
+        width: 100%;
+        padding: 6px 12px;
+      }
+      .ax-nav-item__divider::after {
+        content: '';
+        display: block;
+        height: 1px;
+        background: var(--ax-nav-divider, rgba(148, 163, 184, 0.15));
+      }
+      .ax-nav-item__divider-label {
+        display: block;
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ax-nav-icon-default, #94a3b8);
+        margin-bottom: 4px;
+      }
+
+      /* External link indicator */
+      .ax-nav-item__external-indicator {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        opacity: 0.4;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+
+      /* External link (anchor) inherits button styles */
+      a.ax-nav-item {
+        text-decoration: none;
+        color: inherit;
+      }
     `,
   ],
 })
@@ -200,6 +283,10 @@ export class AxNavItemComponent {
   @Input() iconStyle: 'mono' | 'diamond' = 'mono';
   @Input() darkContext = true;
   @Output() moduleClick = new EventEmitter<NavModule>();
+
+  get moduleType(): NavModuleType {
+    return this.module.type ?? 'route';
+  }
 
   isDiamond(): boolean {
     return (this.module.iconStyle ?? this.iconStyle) === 'diamond';

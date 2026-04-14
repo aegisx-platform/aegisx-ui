@@ -41,11 +41,13 @@ export class AxNavShortcutsService {
       this.onEscape?.();
     }
 
-    // Cmd/Ctrl+1-9 -> module navigation
+    // Cmd/Ctrl+1-9 -> module navigation (skip dividers)
     if (meta && /^[1-9]$/.test(e.key)) {
       e.preventDefault();
       const idx = parseInt(e.key, 10) - 1;
-      const modules = this.navService.visibleModules();
+      const modules = this.navService
+        .visibleModules()
+        .filter((m) => (m.type ?? 'route') !== 'divider');
       if (modules[idx]) {
         this.navService.setActiveModule(modules[idx].id);
       }

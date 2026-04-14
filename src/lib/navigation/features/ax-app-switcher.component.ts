@@ -97,8 +97,12 @@ export interface AppSwitcherData {
         width: 480px;
         background: var(--ax-surface, #fff);
         border-radius: var(--ax-radius-2xl, 24px);
+        font-family: var(--ax-font-family, inherit);
         padding: 28px 28px 20px;
-        box-shadow: var(--ax-nav-dialog-shadow, 0 20px 60px rgba(0, 0, 0, 0.15));
+        box-shadow: var(
+          --ax-nav-dialog-shadow,
+          0 20px 60px rgba(0, 0, 0, 0.15)
+        );
         animation: popIn 0.2s ease;
       }
 

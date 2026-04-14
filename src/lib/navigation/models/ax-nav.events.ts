@@ -1,9 +1,23 @@
-import { NavMode, NavNotification, CommandItem } from './ax-nav.model';
+import {
+  NavMode,
+  NavModuleType,
+  NavNotification,
+  CommandItem,
+} from './ax-nav.model';
 
 export interface NavModuleClickEvent {
   appId: string;
   moduleId: string;
   route: string;
+  type: NavModuleType;
+  action?: string;
+  externalUrl?: string;
+}
+
+export interface NavActionEvent {
+  appId: string;
+  moduleId: string;
+  action: string;
 }
 
 export interface NavAppSwitchEvent {

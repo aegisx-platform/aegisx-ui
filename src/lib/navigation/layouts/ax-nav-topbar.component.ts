@@ -77,7 +77,9 @@ import {
           <ax-nav-item
             [module]="mod"
             [active]="navService.activeModuleId() === mod.id"
-            [appColor]="navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'"
+            [appColor]="
+              navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'
+            "
             variant="topbar"
             [showTooltip]="false"
             [showActiveBar]="false"
@@ -130,6 +132,10 @@ import {
   `,
   styles: [
     `
+      :host {
+        font-family: inherit;
+      }
+
       .ax-nav-topbar {
         width: 100%;
         height: var(--ax-nav-topbar-h, 64px);
@@ -166,7 +172,8 @@ import {
         gap: 6px;
         padding: 5px 12px 5px 8px;
         border-radius: var(--ax-radius-md, 8px);
-        border: var(--ax-border-width-thin) solid var(--ax-nav-topbar-pill-border, rgba(255, 255, 255, 0.1));
+        border: var(--ax-border-width-thin) solid
+          var(--ax-nav-topbar-pill-border, rgba(255, 255, 255, 0.1));
         background: var(--ax-nav-topbar-pill-bg, rgba(255, 255, 255, 0.05));
         cursor: pointer;
         margin-right: 8px;

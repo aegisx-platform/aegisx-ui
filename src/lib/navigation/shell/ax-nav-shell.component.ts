@@ -318,6 +318,8 @@ export class AxNavShellComponent {
       appId: '',
       moduleId: action,
       route: `/${action}`,
+      type: 'action',
+      action,
     });
   }
 

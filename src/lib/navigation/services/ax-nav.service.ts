@@ -25,6 +25,7 @@ import {
   NavModeChangeEvent,
   NavHospitalSwitchEvent,
   NavModuleClickEvent,
+  NavActionEvent,
 } from '../models/ax-nav.events';
 
 const STORAGE_PREFIX = 'ax-nav-state';
@@ -90,6 +91,7 @@ export class AxNavService {
   readonly modeChange$ = new Subject<NavModeChangeEvent>();
   readonly hospitalSwitch$ = new Subject<NavHospitalSwitchEvent>();
   readonly moduleClick$ = new Subject<NavModuleClickEvent>();
+  readonly actionClick$ = new Subject<NavActionEvent>();
 
   // ── Configuration ─────────────────────────────────────
   configure(config: {
@@ -121,26 +123,66 @@ export class AxNavService {
     this._activeAppId.set(appId);
     const app = this._appGroups().find((a) => a.id === appId);
     if (app?.modules.length) {
-      this.setActiveModule(app.modules[0].id);
+      const first = app.modules.find((m) => (m.type ?? 'route') === 'route');
+      if (first) this.setActiveModule(first.id);
     }
     this.appSwitch$.next({ previousAppId: prev, newAppId: appId });
   }
 
   setActiveModule(moduleId: string): void {
-    this._activeModuleId.set(moduleId);
     const app = this.activeApp();
     const mod = app?.modules.find((m) => m.id === moduleId);
-    if (app && mod) {
-      const fullRoute = `/${app.route}/${mod.route}`;
-      this.router.navigate([fullRoute]);
-      this.moduleClick$.next({
-        appId: app.id,
-        moduleId: mod.id,
-        route: fullRoute,
-      });
+    if (!app || !mod) return;
+
+    const type = mod.type ?? 'route';
+
+    if (type === 'divider') return;
+
+    switch (type) {
+      case 'route': {
+        this._activeModuleId.set(moduleId);
+        const fullRoute = `/${app.route}/${mod.route}`;
+        this.router.navigate([fullRoute]);
+        this.moduleClick$.next({
+          appId: app.id,
+          moduleId: mod.id,
+          route: fullRoute,
+          type: 'route',
+        });
+        break;
+      }
+      case 'action': {
+        this.moduleClick$.next({
+          appId: app.id,
+          moduleId: mod.id,
+          route: '',
+          type: 'action',
+          action: mod.action,
+        });
+        this.actionClick$.next({
+          appId: app.id,
+          moduleId: mod.id,
+          action: mod.action ?? moduleId,
+        });
+        break;
+      }
+      case 'external': {
+        if (mod.externalUrl && isPlatformBrowser(this.platformId)) {
+          window.open(mod.externalUrl, '_blank', 'noopener,noreferrer');
+        }
+        this.moduleClick$.next({
+          appId: app.id,
+          moduleId: mod.id,
+          route: '',
+          type: 'external',
+          externalUrl: mod.externalUrl,
+        });
+        break;
+      }
     }
-    // Auto-collapse expanded panel if not pinned
-    if (this._mode() === 'expanded' && !this._pinned()) {
+
+    // Auto-collapse expanded panel only for route navigation
+    if (type === 'route' && this._mode() === 'expanded' && !this._pinned()) {
       this.setMode('rail');
     }
   }
@@ -206,6 +248,7 @@ export class AxNavService {
           this._activeAppId.set(app.id);
           const modSegments = segments.slice(1);
           const mod = app.modules.find((m) => {
+            if (!m.route) return false;
             const routeParts = m.route.split('/').filter(Boolean);
             return routeParts.every((part) => modSegments.includes(part));
           });
