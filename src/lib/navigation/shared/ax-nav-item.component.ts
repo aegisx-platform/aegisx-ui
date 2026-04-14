@@ -48,7 +48,7 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         @if (showLabel) {
           <span class="ax-nav-item__label">{{ module.label }}</span>
         }
-        @if (module.badge) {
+        @if (module.badge && !(active && variant === 'dock')) {
           @if (showLabel) {
             <ax-nav-badge [count]="module.badge" />
           } @else {
@@ -63,6 +63,10 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       :host {
         display: block;
         width: 100%;
+      }
+
+      :host-context(.ax-nav-topbar__tabs) {
+        width: auto;
       }
 
       .ax-nav-item__wrapper {
