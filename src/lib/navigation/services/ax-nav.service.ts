@@ -152,24 +152,23 @@ export class AxNavService {
         break;
       }
       case 'action': {
+        const actionKey = mod.action ?? moduleId;
         this.moduleClick$.next({
           appId: app.id,
           moduleId: mod.id,
           route: '',
           type: 'action',
-          action: mod.action,
+          action: actionKey,
         });
         this.actionClick$.next({
           appId: app.id,
           moduleId: mod.id,
-          action: mod.action ?? moduleId,
+          action: actionKey,
         });
         break;
       }
       case 'external': {
-        if (mod.externalUrl && isPlatformBrowser(this.platformId)) {
-          window.open(mod.externalUrl, '_blank', 'noopener,noreferrer');
-        }
+        // Template <a> handles navigation; service only emits the event
         this.moduleClick$.next({
           appId: app.id,
           moduleId: mod.id,

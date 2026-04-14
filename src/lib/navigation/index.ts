@@ -1,6 +1,7 @@
 // Models (selective to avoid conflicts with components barrel)
 export type {
   NavMode,
+  NavModuleType,
   AppGroup,
   NavModule,
   NavChild,
@@ -18,6 +19,7 @@ export { LAYOUT_OPTIONS as NAV_LAYOUT_OPTIONS } from './models/ax-nav.model';
 // Events
 export type {
   NavModuleClickEvent,
+  NavActionEvent,
   NavAppSwitchEvent,
   NavHospitalSwitchEvent,
   NavModeChangeEvent,
