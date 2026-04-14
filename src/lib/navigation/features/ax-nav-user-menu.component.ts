@@ -19,6 +19,8 @@ import {
   Hospital,
   LAYOUT_OPTIONS,
 } from '../models/ax-nav.model';
+import { AxThemeService } from '../../services/theme/ax-theme.service';
+import { ThemePreference } from '../../services/theme/ax-theme.types';
 
 @Component({
   selector: 'ax-nav-user-menu',
@@ -74,10 +76,34 @@ import {
               (click)="modeChange.emit(opt.id)"
             >
               @if (opt.icon) {
-                <mat-icon class="ax-nav-user-menu__layout-icon">{{ opt.icon }}</mat-icon>
+                <mat-icon class="ax-nav-user-menu__layout-icon">{{
+                  opt.icon
+                }}</mat-icon>
               } @else {
                 {{ opt.label }}
               }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Theme picker -->
+      <div class="ax-nav-user-menu__layout-section">
+        <div class="ax-nav-user-menu__layout-label">THEME</div>
+        <div class="ax-nav-user-menu__layout-buttons">
+          @for (opt of themeOptions; track opt.id) {
+            <button
+              type="button"
+              class="ax-nav-user-menu__layout-btn"
+              [class.ax-nav-user-menu__layout-btn--active]="
+                opt.id === themeService.preference()
+              "
+              [attr.aria-label]="'Switch to ' + opt.label + ' theme'"
+              (click)="setThemePreference(opt.id)"
+            >
+              <mat-icon class="ax-nav-user-menu__layout-icon">{{
+                opt.icon
+              }}</mat-icon>
             </button>
           }
         </div>
@@ -117,9 +143,11 @@ import {
         width: 240px;
         background: var(--ax-surface, #fff);
         border-radius: var(--ax-radius-xl, 16px);
-        box-shadow: var(--ax-nav-popover-shadow,
+        box-shadow: var(
+          --ax-nav-popover-shadow,
           0 8px 30px rgba(0, 0, 0, 0.12),
-          0 0 0 1px rgba(0, 0, 0, 0.06));
+          0 0 0 1px rgba(0, 0, 0, 0.06)
+        );
         overflow: hidden;
         padding-bottom: 8px;
         animation: popIn 0.18s ease;
@@ -253,6 +281,7 @@ export class AxNavUserMenuComponent implements OnInit {
   private readonly elementRef = inject(ElementRef);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
+  readonly themeService = inject(AxThemeService);
 
   @Input({ required: true }) user!: NavUser;
   @Input() hospital?: Hospital;
@@ -265,6 +294,15 @@ export class AxNavUserMenuComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
 
   readonly layoutOptions = LAYOUT_OPTIONS;
+  readonly themeOptions: {
+    id: ThemePreference;
+    label: string;
+    icon: string;
+  }[] = [
+    { id: 'light', label: 'Light', icon: 'light_mode' },
+    { id: 'dark', label: 'Dark', icon: 'dark_mode' },
+    { id: 'system', label: 'System', icon: 'desktop_windows' },
+  ];
 
   ngOnInit(): void {
     // Close on click outside
@@ -276,5 +314,9 @@ export class AxNavUserMenuComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => this.closed.emit());
+  }
+
+  setThemePreference(pref: ThemePreference): void {
+    this.themeService.setPreference(pref);
   }
 }

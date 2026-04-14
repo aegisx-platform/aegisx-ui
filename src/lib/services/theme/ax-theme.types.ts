@@ -6,6 +6,7 @@
 
 export type ColorScheme = 'aegisx' | 'verus';
 export type ThemeMode = 'light' | 'dark';
+export type ThemePreference = 'light' | 'dark' | 'system';
 
 export interface ThemeOption {
   id: string;
@@ -24,6 +25,8 @@ export interface ThemeConfig {
   colorScheme: ColorScheme;
   /** Current theme mode */
   mode: ThemeMode;
+  /** User preference: light, dark, or system */
+  preference?: ThemePreference;
   /** Combined theme ID */
   themeId: string;
   /** data-theme attribute value */

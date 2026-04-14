@@ -4,6 +4,7 @@ import {
   ThemeConfig,
   ColorScheme,
   ThemeMode,
+  ThemePreference,
 } from './ax-theme.types';
 
 /**
@@ -69,10 +70,13 @@ export class AxThemeService {
   // Reactive state - separate color scheme and mode
   private _colorScheme = signal<ColorScheme>('aegisx');
   private _mode = signal<ThemeMode>('light');
+  private _preference = signal<ThemePreference>('system');
+  private _mediaQuery?: MediaQueryList;
 
   // Public readonly signals
   readonly colorScheme = this._colorScheme.asReadonly();
   readonly mode = this._mode.asReadonly();
+  readonly preference = this._preference.asReadonly();
 
   // Computed theme ID and config
   readonly themeId = computed(() => {
@@ -94,6 +98,7 @@ export class AxThemeService {
   readonly config = computed<ThemeConfig>(() => ({
     colorScheme: this._colorScheme(),
     mode: this._mode(),
+    preference: this._preference(),
     themeId: this.themeId(),
     dataTheme: this.dataTheme(),
   }));
@@ -138,7 +143,9 @@ export class AxThemeService {
    * Set theme mode (light, dark)
    */
   setMode(mode: ThemeMode): void {
+    this._preference.set(mode);
     this._mode.set(mode);
+    this.stopSystemListener();
 
     // Apply theme immediately
     const scheme = this._colorScheme();
@@ -149,11 +156,36 @@ export class AxThemeService {
   }
 
   /**
+   * Set preference (light, dark, system)
+   * When 'system', follows OS dark mode and listens for changes.
+   */
+  setPreference(pref: ThemePreference): void {
+    this._preference.set(pref);
+
+    if (pref === 'system') {
+      this.startSystemListener();
+      const systemMode = this.getSystemMode();
+      this._mode.set(systemMode);
+      const scheme = this._colorScheme();
+      const dataTheme = systemMode === 'light' ? scheme : `${scheme}-dark`;
+      this.applyDataTheme(dataTheme);
+    } else {
+      this.stopSystemListener();
+      this._mode.set(pref);
+      const scheme = this._colorScheme();
+      const dataTheme = pref === 'light' ? scheme : `${scheme}-dark`;
+      this.applyDataTheme(dataTheme);
+    }
+
+    this.saveConfig();
+  }
+
+  /**
    * Toggle between light and dark modes
    */
   toggleMode(): void {
     const newMode = this._mode() === 'light' ? 'dark' : 'light';
-    this.setMode(newMode);
+    this.setPreference(newMode);
   }
 
   /**
@@ -199,18 +231,55 @@ export class AxThemeService {
 
     if (savedConfig) {
       this._colorScheme.set(savedConfig.colorScheme);
-      this._mode.set(savedConfig.mode);
-      // Apply theme immediately on load!
-      this.applyDataTheme(savedConfig.dataTheme);
+      const pref = savedConfig.preference ?? savedConfig.mode;
+      this._preference.set(pref);
+
+      if (pref === 'system') {
+        const systemMode = this.getSystemMode();
+        this._mode.set(systemMode);
+        const scheme = savedConfig.colorScheme;
+        this.applyDataTheme(systemMode === 'light' ? scheme : `${scheme}-dark`);
+        this.startSystemListener();
+      } else {
+        this._mode.set(savedConfig.mode);
+        this.applyDataTheme(savedConfig.dataTheme);
+      }
     } else {
-      // Use system preference for mode
-      const prefersDark = window.matchMedia?.(
-        '(prefers-color-scheme: dark)',
-      ).matches;
-      this._mode.set(prefersDark ? 'dark' : 'light');
-      // Apply default theme
-      const dataTheme = prefersDark ? 'aegisx-dark' : 'aegisx';
+      // Default to system preference
+      this._preference.set('system');
+      const systemMode = this.getSystemMode();
+      this._mode.set(systemMode);
+      const dataTheme = systemMode === 'dark' ? 'aegisx-dark' : 'aegisx';
       this.applyDataTheme(dataTheme);
+      this.startSystemListener();
+    }
+  }
+
+  private getSystemMode(): ThemeMode {
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  private readonly onSystemChange = (e: MediaQueryListEvent): void => {
+    if (this._preference() !== 'system') return;
+    const mode: ThemeMode = e.matches ? 'dark' : 'light';
+    this._mode.set(mode);
+    const scheme = this._colorScheme();
+    this.applyDataTheme(mode === 'light' ? scheme : `${scheme}-dark`);
+    this.saveConfig();
+  };
+
+  private startSystemListener(): void {
+    this.stopSystemListener();
+    this._mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    this._mediaQuery.addEventListener('change', this.onSystemChange);
+  }
+
+  private stopSystemListener(): void {
+    if (this._mediaQuery) {
+      this._mediaQuery.removeEventListener('change', this.onSystemChange);
+      this._mediaQuery = undefined;
     }
   }
 
@@ -277,6 +346,7 @@ export class AxThemeService {
       const config: ThemeConfig = {
         colorScheme: this._colorScheme(),
         mode: this._mode(),
+        preference: this._preference(),
         themeId: this.themeId(),
         dataTheme: this.dataTheme(),
       };
