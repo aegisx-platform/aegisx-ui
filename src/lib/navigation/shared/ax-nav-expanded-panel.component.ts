@@ -323,28 +323,28 @@ export class AxNavExpandedPanelComponent {
   @Output() collapse = new EventEmitter<void>();
 
   isAppDiamond(): boolean {
-    if (this.app.icon.startsWith('axd:') || this.app.icon.startsWith('axdl:'))
-      return true;
     return this.app.iconStyle === 'diamond';
   }
 
   resolveAppIcon(): string {
     const icon = this.app.icon;
+    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) {
+      return `ax:${icon.split(':')[1]}`;
+    }
     if (icon.includes(':')) return icon;
-    if (this.app.iconStyle === 'diamond') return `axdl:${icon}`;
     return `ax:${icon}`;
   }
 
   isModuleDiamond(mod: NavModule): boolean {
-    if (mod.icon.startsWith('axd:') || mod.icon.startsWith('axdl:'))
-      return true;
     return mod.iconStyle === 'diamond';
   }
 
   resolveModuleIcon(mod: NavModule): string {
     const icon = mod.icon;
+    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) {
+      return `ax:${icon.split(':')[1]}`;
+    }
     if (icon.includes(':')) return icon;
-    if (mod.iconStyle === 'diamond') return `axdl:${icon}`;
     return `ax:${icon}`;
   }
 }

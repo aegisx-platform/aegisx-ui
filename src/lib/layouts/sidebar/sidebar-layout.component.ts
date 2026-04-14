@@ -90,7 +90,10 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         <!-- Brand -->
         <div class="ax-sidebar__brand">
           @if (logoSvgIcon) {
-            <mat-icon [svgIcon]="logoSvgIcon" class="ax-sidebar__logo-icon"></mat-icon>
+            <mat-icon
+              [svgIcon]="logoSvgIcon"
+              class="ax-sidebar__logo-icon"
+            ></mat-icon>
           } @else if (logoUrl) {
             <img [src]="logoUrl" [alt]="appName" class="ax-sidebar__logo" />
           } @else {
@@ -120,9 +123,14 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                   matTooltipPosition="right"
                 >
                   @if (item.svgIcon) {
-                    <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                    <mat-icon
+                      class="ax-sidebar__nav-icon"
+                      [svgIcon]="item.svgIcon"
+                    ></mat-icon>
                   } @else if (item.icon) {
-                    <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
+                    <mat-icon class="ax-sidebar__nav-icon">{{
+                      item.icon
+                    }}</mat-icon>
                   }
                   @if (!collapsed()) {
                     <span class="ax-sidebar__nav-label">{{ item.title }}</span>
@@ -142,9 +150,14 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                   <div class="ax-sidebar__nav-group">
                     <div class="ax-sidebar__nav-group-label">
                       @if (item.svgIcon) {
-                        <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                        <mat-icon
+                          class="ax-sidebar__nav-icon"
+                          [svgIcon]="item.svgIcon"
+                        ></mat-icon>
                       } @else if (item.icon) {
-                        <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
+                        <mat-icon class="ax-sidebar__nav-icon">{{
+                          item.icon
+                        }}</mat-icon>
                       }
                       <span>{{ item.title }}</span>
                     </div>
@@ -158,9 +171,14 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                         class="ax-sidebar__nav-link ax-sidebar__nav-link--child"
                       >
                         @if (child.svgIcon) {
-                          <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="child.svgIcon"></mat-icon>
+                          <mat-icon
+                            class="ax-sidebar__nav-icon"
+                            [svgIcon]="child.svgIcon"
+                          ></mat-icon>
                         } @else if (child.icon) {
-                          <mat-icon class="ax-sidebar__nav-icon">{{ child.icon }}</mat-icon>
+                          <mat-icon class="ax-sidebar__nav-icon">{{
+                            child.icon
+                          }}</mat-icon>
                         }
                         <span class="ax-sidebar__nav-label">
                           {{ child.title }}
@@ -178,9 +196,14 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
                     matTooltipPosition="right"
                   >
                     @if (item.svgIcon) {
-                      <mat-icon class="ax-sidebar__nav-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                      <mat-icon
+                        class="ax-sidebar__nav-icon"
+                        [svgIcon]="item.svgIcon"
+                      ></mat-icon>
                     } @else if (item.icon) {
-                      <mat-icon class="ax-sidebar__nav-icon">{{ item.icon }}</mat-icon>
+                      <mat-icon class="ax-sidebar__nav-icon">{{
+                        item.icon
+                      }}</mat-icon>
                     }
                   </button>
                   <mat-menu #childMenu="matMenu">
@@ -688,7 +711,7 @@ export class AxSidebarLayoutComponent implements OnInit {
   /** Logo image URL (optional). Falls back to a placeholder icon. */
   @Input() logoUrl?: string;
 
-  /** SVG icon name registered via MatIconRegistry (e.g. 'axd:inv-warehouse'). Takes precedence over logoUrl. */
+  /** SVG icon name registered via MatIconRegistry (e.g. 'ax:inv-warehouse'). Takes precedence over logoUrl. */
   @Input() logoSvgIcon?: string;
 
   /** App name shown next to the logo. */

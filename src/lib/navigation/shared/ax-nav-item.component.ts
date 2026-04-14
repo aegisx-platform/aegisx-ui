@@ -202,18 +202,16 @@ export class AxNavItemComponent {
   @Output() moduleClick = new EventEmitter<NavModule>();
 
   isDiamond(): boolean {
-    const icon = this.module.icon;
-    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) return true;
     return (this.module.iconStyle ?? this.iconStyle) === 'diamond';
   }
 
   resolvedIcon(): string {
     const icon = this.module.icon;
-    if (icon.includes(':')) return icon;
-    const style = this.module.iconStyle ?? this.iconStyle;
-    if (style === 'diamond') {
-      return this.darkContext ? `axd:${icon}` : `axdl:${icon}`;
+    // Strip legacy axd:/axdl: prefixes → use ax: mono icon
+    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) {
+      return `ax:${icon.split(':')[1]}`;
     }
+    if (icon.includes(':')) return icon;
     return `ax:${icon}`;
   }
 }

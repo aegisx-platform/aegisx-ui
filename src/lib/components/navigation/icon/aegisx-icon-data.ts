@@ -206,6 +206,57 @@ export const errWifiOff = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 
 
 export const errWrench = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`;
 
+export const actAdd = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <line x1="12" y1="8" x2="12" y2="16"/> <line x1="8" y1="12" x2="16" y2="12"/> </svg>`;
+export const actCancel = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <line x1="15" y1="9" x2="9" y2="15"/> <line x1="9" y1="9" x2="15" y2="15"/> </svg>`;
+export const actCopy = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="9" y="9" width="13" height="13" rx="2"/> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/> </svg>`;
+export const actDelete = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M3 6h18"/> <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/> <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/> <line x1="10" y1="11" x2="10" y2="17" opacity="0.5"/> <line x1="14" y1="11" x2="14" y2="17" opacity="0.5"/> </svg>`;
+export const actDuplicate = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="9" y="9" width="13" height="13" rx="2"/> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/> <line x1="15.5" y1="13" x2="15.5" y2="19"/> <line x1="12.5" y1="16" x2="18.5" y2="16"/> </svg>`;
+export const actEdit = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/> <path d="M15 5l4 4"/> </svg>`;
+export const actExport = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/> <path d="M7 10l5 5 5-5"/> <line x1="12" y1="15" x2="12" y2="3"/> </svg>`;
+export const actFilter = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M22 3H2l8 9.46V19l4 2v-8.54z"/> </svg>`;
+export const actImport = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/> <path d="M17 8l-5-5-5 5"/> <line x1="12" y1="3" x2="12" y2="15"/> </svg>`;
+export const actMore = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="5" r="1.5" fill="currentColor" opacity="0.6" stroke="none"/> <circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.6" stroke="none"/> <circle cx="12" cy="19" r="1.5" fill="currentColor" opacity="0.6" stroke="none"/> </svg>`;
+export const actPrint = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M6 9V2h12v7"/> <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/> <rect x="6" y="14" width="12" height="8"/> </svg>`;
+export const actRefresh = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M1 4v6h6"/> <path d="M23 20v-6h-6"/> <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/> <path d="M3.51 15A9 9 0 0 0 18.36 18.36L23 14"/> </svg>`;
+export const actSave = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/> <path d="M17 21v-8H7v8"/> <path d="M7 3v5h8"/> </svg>`;
+export const actSearch = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65"/> </svg>`;
+export const actSort = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <line x1="7" y1="3" x2="7" y2="21"/> <path d="M4 6l3-3 3 3"/> <line x1="17" y1="21" x2="17" y2="3"/> <path d="M20 18l-3 3-3-3"/> </svg>`;
+export const emptyNoData = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="2" y="3" width="20" height="18" rx="2"/> <line x1="2" y1="9" x2="22" y2="9"/> <path d="M8 14h8" opacity="0.3"/> <path d="M10 17h4" opacity="0.2"/> </svg>`;
+export const emptyNoPermission = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M12 2l9 4v6c0 5.5-3.8 10.7-9 12-5.2-1.3-9-6.5-9-12V6l9-4z"/> <line x1="9" y1="9" x2="15" y2="15"/> <line x1="15" y1="9" x2="9" y2="15"/> </svg>`;
+export const emptyNoResults = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65"/> <line x1="8" y1="8" x2="14" y2="14" opacity="0.4"/> <line x1="14" y1="8" x2="8" y2="14" opacity="0.4"/> </svg>`;
+export const emptyOffline = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M1 1l22 22"/> <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/> <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/> <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/> <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/> <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/> <circle cx="12" cy="20" r="1.5" fill="currentColor" opacity="0.5" stroke="none"/> </svg>`;
+export const emptyWelcome = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/> <path d="M22 4L12 14.01l-3-3"/> <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.05" stroke="none"/> </svg>`;
+export const fileExcel = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/> <path d="M14 2v6h6"/> <rect x="7" y="12" width="10" height="7" rx="1" opacity="0.15" fill="currentColor" stroke="none"/> <line x1="7" y1="15.5" x2="17" y2="15.5" opacity="0.3"/> <line x1="12" y1="12" x2="12" y2="19" opacity="0.3"/> </svg>`;
+export const fileGeneric = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/> <path d="M14 2v6h6"/> </svg>`;
+export const fileImage = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="3" y="3" width="18" height="18" rx="2"/> <circle cx="8.5" cy="8.5" r="1.5"/> <path d="M21 15l-5-5L5 21"/> </svg>`;
+export const filePdf = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/> <path d="M14 2v6h6"/> <path d="M10 12h4" opacity="0.5"/> <path d="M10 16h4" opacity="0.5"/> <rect x="7" y="11" width="2" height="6" rx="0.5" fill="currentColor" opacity="0.15" stroke="none"/> </svg>`;
+export const fileWord = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/> <path d="M14 2v6h6"/> <line x1="8" y1="13" x2="16" y2="13" opacity="0.4"/> <line x1="8" y1="16" x2="16" y2="16" opacity="0.4"/> <line x1="8" y1="19" x2="13" y2="19" opacity="0.3"/> </svg>`;
+export const fileZip = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/> <path d="M14 2v6h6"/> <rect x="10" y="12" width="4" height="2" rx="0.5" opacity="0.4"/> <rect x="10" y="15" width="4" height="2" rx="0.5" opacity="0.3"/> <rect x="10" y="18" width="4" height="2" rx="0.5" opacity="0.2"/> </svg>`;
+export const forensic = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"/> <circle cx="11" cy="8" r="2" opacity="0.4"/> <path d="M11 10v4" opacity="0.4"/> <path d="M9 13h4" opacity="0.4"/> </svg>`;
+export const homeHealth = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/> <line x1="10" y1="14" x2="14" y2="14"/> <line x1="12" y1="12" x2="12" y2="16"/> <path d="M9 22V16h6v6"/> </svg>`;
+export const maternal = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="10" cy="6" r="3"/> <path d="M4 22v-3a6 6 0 0 1 12 0v3"/> <circle cx="18" cy="10" r="2.5"/> <path d="M18 12.5v2"/> <path d="M16 16h4" opacity="0.5"/> </svg>`;
+export const notifyEmail = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/> <path d="M22 6l-10 7L2 6"/> </svg>`;
+export const notifyLine = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M21 11c0 5-4 9-9 9-1.5 0-2.9-.3-4.2-.9L3 21l1.5-3.5C3 16 2 13.6 2 11c0-5 4-9 9-9"/> <path d="M12 11c5 0 10-1.8 10-4s-5-4-10-4"/> <line x1="8" y1="9" x2="8" y2="13"/> <line x1="11" y1="9" x2="11" y2="13"/> <line x1="11" y1="13" x2="14" y2="13"/> </svg>`;
+export const notifyPush = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/> <path d="M13.73 21a2 2 0 0 1-3.46 0"/> <path d="M2 2l2 2" opacity="0.4"/> <path d="M22 2l-2 2" opacity="0.4"/> </svg>`;
+export const notifySms = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/> <circle cx="8" cy="10" r="1" fill="currentColor" opacity="0.4" stroke="none"/> <circle cx="12" cy="10" r="1" fill="currentColor" opacity="0.4" stroke="none"/> <circle cx="16" cy="10" r="1" fill="currentColor" opacity="0.4" stroke="none"/> </svg>`;
+export const occupationalHealth = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="5" r="3"/> <path d="M5 22v-5a7 7 0 0 1 14 0v5"/> <path d="M8 14l4-2 4 2"/> <rect x="9" y="2" width="6" height="3" rx="1" fill="currentColor" opacity="0.1" stroke="none"/> </svg>`;
+export const pathology = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <circle cx="12" cy="12" r="5"/> <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.15" stroke="none"/> <line x1="12" y1="2" x2="12" y2="7" opacity="0.3"/> <line x1="12" y1="17" x2="12" y2="22" opacity="0.3"/> <line x1="2" y1="12" x2="7" y2="12" opacity="0.3"/> <line x1="17" y1="12" x2="22" y2="12" opacity="0.3"/> </svg>`;
+export const socialWork = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.34l-.77-.76a5.4 5.4 0 0 0-7.65 0 5.4 5.4 0 0 0 0 7.65L12 20.65l8.42-8.42a5.4 5.4 0 0 0 0-7.65z"/> <path d="M12 13v4"/> <path d="M9 17h6"/> </svg>`;
+export const stActive = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <path d="M8 12l3 3 5-5"/> </svg>`;
+export const stApproved = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.08"/> <path d="M8 12l3 3 5-5" stroke-width="2"/> </svg>`;
+export const stCancelled = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/> </svg>`;
+export const stDraft = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <path d="M14.5 8.5L10 16h4l-1 3" opacity="0.6"/> </svg>`;
+export const stExpired = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <line x1="15" y1="9" x2="9" y2="15"/> <line x1="9" y1="9" x2="15" y2="15"/> </svg>`;
+export const stLocked = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <rect x="8" y="11" width="8" height="6" rx="1.5"/> <path d="M10 11V9a2 2 0 0 1 4 0v2"/> </svg>`;
+export const stPending = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <path d="M12 6v6l4 2"/> </svg>`;
+export const stRejected = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.08"/> <line x1="15" y1="9" x2="9" y2="15" stroke-width="2"/> <line x1="9" y1="9" x2="15" y2="15" stroke-width="2"/> </svg>`;
+export const thai43files = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="2" y="2" width="20" height="20" rx="2"/> <path d="M2 8h20"/> <path d="M8 2v20"/> <line x1="11" y1="12" x2="18" y2="12" opacity="0.4"/> <line x1="11" y1="15" x2="16" y2="15" opacity="0.3"/> <line x1="11" y1="18" x2="17" y2="18" opacity="0.3"/> <circle cx="5" cy="5" r="1.5" fill="currentColor" opacity="0.2" stroke="none"/> </svg>`;
+export const thaiDmsic = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="3" y="3" width="12" height="16" rx="3"/> <rect x="5" y="6" width="8" height="3" rx="1" fill="currentColor" opacity="0.15" stroke="none"/> <line x1="9" y1="12" x2="9" y2="16"/> <line x1="7" y1="14" x2="11" y2="14"/> <path d="M15 8h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4"/> <circle cx="18" cy="15" r="1.5" fill="currentColor" opacity="0.15" stroke="none"/> </svg>`;
+export const thaiDrg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <path d="M8 8h8v8H8z" rx="1" fill="currentColor" opacity="0.08" stroke="none"/> <path d="M8 12h8"/> <path d="M12 8v8"/> <path d="M9 9l6 6" opacity="0.3"/> </svg>`;
+export const thaiEReferral = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <rect x="2" y="4" width="8" height="16" rx="2"/> <rect x="14" y="4" width="8" height="16" rx="2"/> <path d="M10 10h4"/> <path d="M12 8l2 2-2 2"/> <line x1="4" y1="8" x2="8" y2="8" opacity="0.4"/> <line x1="16" y1="14" x2="20" y2="14" opacity="0.4"/> </svg>`;
+export const thaiIcd10 = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/> <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/> <path d="M8 7h3" opacity="0.5"/> <path d="M8 10h8"/> <path d="M8 13h6" opacity="0.5"/> <circle cx="16" cy="7" r="2" fill="currentColor" opacity="0.15" stroke="none"/> </svg>`;
+export const thaiMoph = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M3 21h18"/> <path d="M4 21V10l8-7 8 7v11"/> <line x1="12" y1="7" x2="12" y2="12"/> <line x1="9.5" y1="9.5" x2="14.5" y2="9.5"/> <rect x="8" y="14" width="8" height="7" rx="1"/> <line x1="12" y1="14" x2="12" y2="21" opacity="0.4"/> </svg>`;
+
 export const AEGISX_ICON_DATA: Record<string, string> = {
   alert: alert,
   'api-integration': apiIntegration,
@@ -310,4 +361,54 @@ export const AEGISX_ICON_DATA: Record<string, string> = {
   waste: waste,
   'wave-picking': wavePicking,
   'zone-picking': zonePicking,
+  'act-add': actAdd,
+  'act-cancel': actCancel,
+  'act-copy': actCopy,
+  'act-delete': actDelete,
+  'act-duplicate': actDuplicate,
+  'act-edit': actEdit,
+  'act-export': actExport,
+  'act-filter': actFilter,
+  'act-import': actImport,
+  'act-more': actMore,
+  'act-print': actPrint,
+  'act-refresh': actRefresh,
+  'act-save': actSave,
+  'act-search': actSearch,
+  'act-sort': actSort,
+  'empty-no-data': emptyNoData,
+  'empty-no-permission': emptyNoPermission,
+  'empty-no-results': emptyNoResults,
+  'empty-offline': emptyOffline,
+  'empty-welcome': emptyWelcome,
+  'file-excel': fileExcel,
+  'file-generic': fileGeneric,
+  'file-image': fileImage,
+  'file-pdf': filePdf,
+  'file-word': fileWord,
+  'file-zip': fileZip,
+  forensic: forensic,
+  'home-health': homeHealth,
+  maternal: maternal,
+  'notify-email': notifyEmail,
+  'notify-line': notifyLine,
+  'notify-push': notifyPush,
+  'notify-sms': notifySms,
+  'occupational-health': occupationalHealth,
+  pathology: pathology,
+  'social-work': socialWork,
+  'st-active': stActive,
+  'st-approved': stApproved,
+  'st-cancelled': stCancelled,
+  'st-draft': stDraft,
+  'st-expired': stExpired,
+  'st-locked': stLocked,
+  'st-pending': stPending,
+  'st-rejected': stRejected,
+  'thai-43files': thai43files,
+  'thai-dmsic': thaiDmsic,
+  'thai-drg': thaiDrg,
+  'thai-e-referral': thaiEReferral,
+  'thai-icd10': thaiIcd10,
+  'thai-moph': thaiMoph,
 };

@@ -356,15 +356,15 @@ export class AxNavRailComponent {
   }
 
   isAppDiamond(app: AppGroup): boolean {
-    if (app.icon.startsWith('axd:') || app.icon.startsWith('axdl:'))
-      return true;
     return app.iconStyle === 'diamond';
   }
 
   resolveAppIcon(app: AppGroup): string {
     const icon = app.icon;
+    if (icon.startsWith('axd:') || icon.startsWith('axdl:')) {
+      return `ax:${icon.split(':')[1]}`;
+    }
     if (icon.includes(':')) return icon;
-    if (app.iconStyle === 'diamond') return `axd:${icon}`;
     return `ax:${icon}`;
   }
 }
