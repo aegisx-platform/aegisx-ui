@@ -41,8 +41,8 @@ import {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #3b82f6, #6366f1);
-        color: #fff;
+        background: var(--ax-nav-avatar-bg, linear-gradient(135deg, #3b82f6, #6366f1));
+        color: var(--ax-nav-avatar-text, #fff);
         font-weight: 700;
         cursor: pointer;
         border: none;
@@ -63,7 +63,7 @@ import {
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: #22c55e;
+        background: var(--ax-success-default, #22c55e);
         border: 2px solid var(--ax-nav-avatar-dot-border, #0f172a);
       }
     `,
@@ -74,6 +74,6 @@ export class AxNavAvatarComponent {
   @Input() initials = '';
   @Input() avatarUrl?: string;
   @Input() online = true;
-  @Input() borderColor = '#0f172a';
+  @Input() borderColor = 'var(--ax-nav-bg, #0f172a)';
   @Output() avatarClick = new EventEmitter<void>();
 }

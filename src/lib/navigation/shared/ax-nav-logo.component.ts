@@ -18,11 +18,11 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         height="25.46"
         rx="5"
         transform="rotate(45 20 2)"
-        fill="#3b82f6"
+        fill="currentColor"
       />
       <path
         d="M11 20L16 20L18 15L20 23L22 17L24 20L29 20"
-        stroke="white"
+        stroke="currentColor"
         stroke-width="2.2"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -36,6 +36,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        color: var(--ax-primary, #3b82f6);
+      }
+      svg path {
+        color: var(--ax-nav-logo-ecg, #fff);
       }
     `,
   ],

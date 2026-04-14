@@ -77,7 +77,7 @@ import {
           <ax-nav-item
             [module]="mod"
             [active]="navService.activeModuleId() === mod.id"
-            [appColor]="navService.activeApp()?.color ?? '#3b82f6'"
+            [appColor]="navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'"
             variant="topbar"
             [showTooltip]="false"
             [showActiveBar]="false"
@@ -110,7 +110,7 @@ import {
             <ax-nav-badge
               [count]="navService.unreadCount()"
               [dot]="true"
-              [borderColor]="'#0f172a'"
+              [borderColor]="'var(--ax-nav-topbar, #0f172a)'"
             />
           }
         </button>
@@ -121,7 +121,7 @@ import {
             [initials]="user.initials"
             [avatarUrl]="user.avatarUrl"
             [online]="user.online"
-            [borderColor]="'#0f172a'"
+            [borderColor]="'var(--ax-nav-topbar, #0f172a)'"
             (avatarClick)="userMenuClick.emit()"
           />
         }
@@ -136,10 +136,10 @@ import {
         background: var(--ax-nav-topbar, #0f172a);
         display: flex;
         align-items: center;
-        padding: 0 16px;
+        padding: 0 var(--ax-spacing-lg);
         gap: 4px;
         flex-shrink: 0;
-        z-index: 30;
+        z-index: var(--ax-z-nav, 30);
         overflow: hidden;
         min-width: 0;
         max-width: 100vw;
@@ -165,18 +165,18 @@ import {
         align-items: center;
         gap: 6px;
         padding: 5px 12px 5px 8px;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--ax-radius-md, 8px);
+        border: var(--ax-border-width-thin) solid var(--ax-nav-topbar-pill-border, rgba(255, 255, 255, 0.1));
+        background: var(--ax-nav-topbar-pill-bg, rgba(255, 255, 255, 0.05));
         cursor: pointer;
         margin-right: 8px;
         color: var(--ax-nav-text-on-dark, #fff);
         font-size: 12.5px;
         font-weight: 600;
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
       }
       .ax-nav-topbar__app-pill:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--ax-nav-topbar-pill-hover, rgba(255, 255, 255, 0.1));
       }
 
       .ax-nav-topbar__app-pill-icon {
@@ -197,14 +197,14 @@ import {
         font-size: 14px;
         width: 14px;
         height: 14px;
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--ax-nav-topbar-chevron, rgba(255, 255, 255, 0.5));
       }
 
       /* Divider */
       .ax-nav-topbar__divider {
         width: 1px;
         height: 24px;
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--ax-nav-topbar-divider, rgba(255, 255, 255, 0.1));
         margin: 0 4px;
       }
 
@@ -232,7 +232,7 @@ import {
       .ax-nav-topbar__icon-btn {
         width: 34px;
         height: 34px;
-        border-radius: 8px;
+        border-radius: var(--ax-radius-md, 8px);
         border: none;
         cursor: pointer;
         display: flex;
@@ -240,7 +240,7 @@ import {
         justify-content: center;
         background: transparent;
         color: var(--ax-nav-icon-default, rgba(255, 255, 255, 0.4));
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
         position: relative;
       }
       .ax-nav-topbar__icon-btn:hover {

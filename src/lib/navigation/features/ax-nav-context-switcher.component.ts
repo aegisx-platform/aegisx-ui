@@ -61,17 +61,17 @@ export interface ContextOption {
         position: absolute;
         left: calc(100% + 12px);
         top: 0;
-        z-index: 9999;
+        z-index: var(--ax-z-nav-overlay, 9999);
       }
 
       .ax-nav-ctx {
         width: 220px;
         background: var(--ax-surface, #fff);
-        border-radius: 12px;
-        padding: 8px;
-        box-shadow:
+        border-radius: var(--ax-radius-lg, 12px);
+        padding: var(--ax-spacing-sm);
+        box-shadow: var(--ax-nav-popover-shadow,
           0 8px 30px rgba(0, 0, 0, 0.12),
-          0 0 0 1px rgba(0, 0, 0, 0.06);
+          0 0 0 1px rgba(0, 0, 0, 0.06));
         animation: popIn 0.15s ease;
       }
 
@@ -98,7 +98,7 @@ export interface ContextOption {
         color: var(--ax-text-secondary, #475569);
         font-weight: 400;
         text-align: left;
-        transition: background 0.1s;
+        transition: background var(--ax-duration-instant, 100ms);
       }
       .ax-nav-ctx__item:hover {
         background: var(--ax-hover, #f8fafc);

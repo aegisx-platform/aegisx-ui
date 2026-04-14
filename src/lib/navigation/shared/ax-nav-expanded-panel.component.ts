@@ -113,7 +113,7 @@ import {
               [initials]="user.initials"
               [avatarUrl]="user.avatarUrl"
               [online]="user.online"
-              [borderColor]="'#fff'"
+              [borderColor]="'var(--ax-nav-panel-bg, #fff)'"
             />
             <div class="ax-nav-panel__user-info">
               <div class="ax-nav-panel__user-name">{{ user.shortName }}</div>
@@ -195,7 +195,7 @@ import {
         justify-content: center;
         background: transparent;
         color: var(--ax-nav-panel-icon-muted, #94a3b8);
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
       }
       .ax-nav-panel__pin-btn:hover,
       .ax-nav-panel__collapse-btn:hover {
@@ -241,7 +241,7 @@ import {
         font-weight: 450;
         font-size: 14px;
         text-align: left;
-        transition: all 0.1s;
+        transition: all var(--ax-duration-instant, 100ms);
         width: 100%;
       }
       .ax-nav-panel__module:hover {

@@ -50,17 +50,17 @@ import { NavMode, LAYOUT_OPTIONS } from '../models/ax-nav.model';
         position: absolute;
         left: calc(100% + 12px);
         bottom: 0;
-        z-index: 9999;
+        z-index: var(--ax-z-nav-overlay, 9999);
       }
 
       .ax-nav-config {
         width: 200px;
         background: var(--ax-surface, #fff);
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow:
+        border-radius: var(--ax-radius-lg, 12px);
+        padding: var(--ax-spacing-lg);
+        box-shadow: var(--ax-nav-popover-shadow,
           0 8px 30px rgba(0, 0, 0, 0.12),
-          0 0 0 1px rgba(0, 0, 0, 0.06);
+          0 0 0 1px rgba(0, 0, 0, 0.06));
         animation: popIn 0.18s ease;
       }
 
@@ -94,7 +94,7 @@ import { NavMode, LAYOUT_OPTIONS } from '../models/ax-nav.model';
         cursor: pointer;
         text-align: left;
         width: 100%;
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
         position: relative;
       }
       .ax-nav-config__option:hover {

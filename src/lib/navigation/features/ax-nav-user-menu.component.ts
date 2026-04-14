@@ -103,7 +103,7 @@ import {
         position: absolute;
         bottom: calc(100% + 8px);
         left: 0;
-        z-index: 9999;
+        z-index: var(--ax-z-nav-overlay, 9999);
       }
 
       :host-context(.ax-nav-shell--topnav) {
@@ -116,10 +116,10 @@ import {
       .ax-nav-user-menu {
         width: 240px;
         background: var(--ax-surface, #fff);
-        border-radius: 14px;
-        box-shadow:
+        border-radius: var(--ax-radius-xl, 16px);
+        box-shadow: var(--ax-nav-popover-shadow,
           0 8px 30px rgba(0, 0, 0, 0.12),
-          0 0 0 1px rgba(0, 0, 0, 0.06);
+          0 0 0 1px rgba(0, 0, 0, 0.06));
         overflow: hidden;
         padding-bottom: 8px;
         animation: popIn 0.18s ease;
@@ -163,7 +163,7 @@ import {
         font-size: 13px;
         color: var(--ax-text-secondary, #475569);
         text-align: left;
-        transition: background 0.1s;
+        transition: background var(--ax-duration-instant, 100ms);
       }
       .ax-nav-user-menu__item:hover {
         background: var(--ax-surface-hover, #f8fafc);
@@ -214,7 +214,7 @@ import {
         font-size: 11px;
         font-weight: 500;
         color: var(--ax-text-secondary, #64748b);
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -227,13 +227,13 @@ import {
       }
       .ax-nav-user-menu__layout-btn:hover {
         color: var(--ax-text-primary, #0f172a);
-        background: rgba(255, 255, 255, 0.5);
+        background: var(--ax-nav-layout-btn-hover, rgba(255, 255, 255, 0.5));
       }
       .ax-nav-user-menu__layout-btn--active {
         background: var(--ax-surface, #fff);
         color: var(--ax-text-primary, #0f172a);
         font-weight: 600;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--ax-shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
       }
 
       @keyframes popIn {

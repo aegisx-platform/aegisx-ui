@@ -163,11 +163,14 @@ import { NavMode, NavNotification } from '../models/ax-nav.model';
         height: 100vh;
         height: 100dvh;
         background: var(--ax-content-bg, #eef1f5);
-        font-family:
+        font-family: var(
+          --ax-font-family,
+          'IBM Plex Sans Thai',
           'IBM Plex Sans',
-          'Noto Sans Thai',
           -apple-system,
-          sans-serif;
+          BlinkMacSystemFont,
+          sans-serif
+        );
         position: relative;
       }
 
@@ -196,7 +199,7 @@ import { NavMode, NavNotification } from '../models/ax-nav.model';
         top: 0;
         bottom: 0;
         width: 0;
-        z-index: 9998;
+        z-index: var(--ax-z-nav-overlay, 9998);
         pointer-events: none;
       }
       .ax-nav-shell__overlays > * {

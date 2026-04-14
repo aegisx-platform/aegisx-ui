@@ -89,7 +89,7 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         position: relative;
         background: transparent;
         color: var(--ax-nav-icon-default, #94a3b8);
-        transition: all 0.15s ease;
+        transition: all var(--ax-duration-fast, 150ms) ease;
       }
 
       .ax-nav-item:hover {
@@ -113,13 +113,13 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       }
       .ax-nav-item--dock:hover {
         background: var(--ax-nav-btn-hover, rgba(148, 163, 184, 0.15));
-        color: #fff;
+        color: var(--ax-nav-text-on-dark, #fff);
         transform: scale(1.06);
       }
       .ax-nav-item--active-dock {
         background: var(--ax-nav-dock-btn-active, #fff);
         color: var(--ax-nav-bg, #0f172a);
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--ax-nav-dock-item-shadow, 0 2px 12px rgba(0, 0, 0, 0.15));
       }
       .ax-nav-item--active-dock:hover {
         background: var(--ax-nav-dock-btn-active, #fff);
@@ -131,7 +131,7 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
       .ax-nav-item--topbar {
         width: auto;
         height: auto;
-        border-radius: 8px;
+        border-radius: var(--ax-radius-md, 8px);
         padding: 6px 12px;
         gap: 5px;
         font-size: 13px;
@@ -144,12 +144,12 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         color: var(--ax-nav-icon-hover, rgba(255, 255, 255, 0.8));
       }
       .ax-nav-item--active-topbar {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
+        background: var(--ax-nav-topbar-item-active-bg, rgba(255, 255, 255, 0.12));
+        color: var(--ax-nav-text-on-dark, #fff);
         font-weight: 600;
       }
       .ax-nav-item--active-topbar:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--ax-nav-topbar-item-active-hover, rgba(255, 255, 255, 0.15));
       }
 
       .ax-nav-item__icon {
@@ -192,7 +192,7 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
 export class AxNavItemComponent {
   @Input({ required: true }) module!: NavModule;
   @Input() active = false;
-  @Input() appColor = '#3b82f6';
+  @Input() appColor = 'var(--ax-primary, #3b82f6)';
   @Input() variant: 'rail' | 'dock' | 'topbar' = 'rail';
   @Input() showTooltip = true;
   @Input() showActiveBar = true;

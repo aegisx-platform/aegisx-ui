@@ -89,9 +89,9 @@ import { navSlideRight } from '../animations/ax-nav.animations';
       .ax-notif-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.3);
+        background: var(--ax-nav-backdrop, rgba(0, 0, 0, 0.3));
         backdrop-filter: blur(4px);
-        z-index: 9500;
+        z-index: var(--ax-z-nav-backdrop, 9500);
       }
 
       .ax-notif-panel {
@@ -101,11 +101,11 @@ import { navSlideRight } from '../animations/ax-nav.animations';
         bottom: 0;
         width: 380px;
         background: var(--ax-surface, #fff);
-        box-shadow: -8px 0 30px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--ax-nav-drawer-shadow, -8px 0 30px rgba(0, 0, 0, 0.1));
         padding: 20px;
         display: flex;
         flex-direction: column;
-        z-index: 9501;
+        z-index: var(--ax-z-nav-panel, 9501);
       }
 
       .ax-notif-panel__header {
@@ -176,7 +176,7 @@ import { navSlideRight } from '../animations/ax-nav.animations';
         cursor: pointer;
         text-align: left;
         width: 100%;
-        transition: background 0.1s;
+        transition: background var(--ax-duration-instant, 100ms);
       }
       .ax-notif-panel__item:hover {
         background: var(--ax-surface-hover, #f1f5f9);

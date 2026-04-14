@@ -109,7 +109,7 @@ import {
           <ax-nav-item
             [module]="mod"
             [active]="navService.activeModuleId() === mod.id"
-            [appColor]="navService.activeApp()?.color ?? '#3b82f6'"
+            [appColor]="navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'"
             [variant]="dock ? 'dock' : 'rail'"
             [showTooltip]="!hideTooltips"
             [showActiveBar]="!dock"
@@ -155,7 +155,7 @@ import {
               [initials]="user.initials"
               [avatarUrl]="user.avatarUrl"
               [online]="user.online"
-              [borderColor]="dock ? 'rgba(15,23,42,0.95)' : '#0f172a'"
+              [borderColor]="dock ? 'var(--ax-nav-dock-bg, rgba(15,23,42,0.95))' : 'var(--ax-nav-bg, #0f172a)'"
               (avatarClick)="userMenuClick.emit()"
             />
           }
@@ -182,28 +182,28 @@ import {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 16px 0 16px;
+        padding: var(--ax-spacing-lg) 0;
         flex-shrink: 0;
-        z-index: 30;
+        z-index: var(--ax-z-nav, 30);
       }
 
       /* Dock variant */
       .ax-nav-rail--dock {
         position: absolute;
-        left: 12px;
-        top: 12px;
-        bottom: 12px;
+        left: var(--ax-spacing-md);
+        top: var(--ax-spacing-md);
+        bottom: var(--ax-spacing-md);
         width: 80px;
         min-width: 80px;
         height: auto;
-        background: rgba(15, 23, 42, 0.95);
+        background: var(--ax-nav-dock-bg, rgba(15, 23, 42, 0.95));
         backdrop-filter: blur(20px) saturate(1.4);
-        border-radius: 10px;
-        border: 1px solid rgba(148, 163, 184, 0.1);
-        box-shadow:
+        border-radius: var(--ax-radius-lg, 12px);
+        border: var(--ax-border-width-thin) solid var(--ax-nav-dock-border, rgba(148, 163, 184, 0.1));
+        box-shadow: var(--ax-nav-dock-shadow,
           0 8px 40px rgba(0, 0, 0, 0.3),
-          inset 0 1px 0 rgba(148, 163, 184, 0.08);
-        z-index: 50;
+          inset 0 1px 0 rgba(148, 163, 184, 0.08));
+        z-index: var(--ax-z-nav-dock, 50);
       }
 
       .ax-nav-rail__logo {
@@ -222,10 +222,10 @@ import {
         border: none;
         cursor: pointer;
         padding: 2px 8px;
-        border-radius: 4px;
+        border-radius: var(--ax-radius-sm, 4px);
         font-weight: 500;
         letter-spacing: 0.04em;
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
       }
       .ax-nav-rail__hospital:hover {
         color: var(--ax-nav-icon-hover, #94a3b8);
@@ -264,7 +264,7 @@ import {
         cursor: pointer;
         background: transparent;
         color: var(--ax-nav-icon-default, #94a3b8);
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
         position: relative;
       }
       .ax-nav-rail__btn:hover {
@@ -289,20 +289,20 @@ import {
       .ax-nav-rail__search {
         width: 46px;
         height: 34px;
-        border-radius: 12px;
-        border: 1px solid rgba(148, 163, 184, 0.15);
-        background: rgba(148, 163, 184, 0.05);
+        border-radius: var(--ax-radius-lg, 12px);
+        border: var(--ax-border-width-thin) solid var(--ax-nav-search-border, rgba(148, 163, 184, 0.15));
+        background: var(--ax-nav-search-bg, rgba(148, 163, 184, 0.05));
         color: var(--ax-nav-icon-default, #94a3b8);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
         margin-bottom: 4px;
         flex-shrink: 0;
       }
       .ax-nav-rail__search:hover {
-        background: rgba(148, 163, 184, 0.12);
+        background: var(--ax-nav-search-hover, rgba(148, 163, 184, 0.12));
         color: var(--ax-nav-icon-hover, #cbd5e1);
       }
       .ax-nav-rail__search mat-icon {

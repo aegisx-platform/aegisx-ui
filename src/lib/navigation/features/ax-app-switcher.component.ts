@@ -96,9 +96,9 @@ export interface AppSwitcherData {
       .ax-app-switcher {
         width: 480px;
         background: var(--ax-surface, #fff);
-        border-radius: 20px;
+        border-radius: var(--ax-radius-2xl, 24px);
         padding: 28px 28px 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--ax-nav-dialog-shadow, 0 20px 60px rgba(0, 0, 0, 0.15));
         animation: popIn 0.2s ease;
       }
 
@@ -152,16 +152,16 @@ export interface AppSwitcherData {
 
       .ax-app-switcher__card {
         padding: 18px 12px;
-        border-radius: 14px;
+        border-radius: var(--ax-radius-xl, 16px);
         border: 2px solid transparent;
         cursor: pointer;
         text-align: center;
-        transition: all 0.15s;
+        transition: all var(--ax-duration-fast, 150ms);
       }
 
       .ax-app-switcher__card:hover {
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow: var(--ax-shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
       }
 
       .ax-app-switcher__icon {

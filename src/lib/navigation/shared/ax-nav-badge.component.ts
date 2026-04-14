@@ -48,5 +48,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class AxNavBadgeComponent {
   @Input() count?: number;
   @Input() dot = false;
-  @Input() borderColor = '#0f172a';
+  @Input() borderColor = 'var(--ax-nav-bg, #0f172a)';
 }
