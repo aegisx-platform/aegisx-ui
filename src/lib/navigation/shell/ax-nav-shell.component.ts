@@ -222,7 +222,12 @@ import { NavMode, NavNotification } from '../models/ax-nav.model';
       .ax-nav-shell--topnav .ax-nav-shell__overlays {
         left: auto;
         right: 16px;
-        top: 56px;
+        top: 64px;
+        bottom: auto;
+      }
+      .ax-nav-shell--topnav .ax-nav-shell__overlay-anchor--bottom {
+        bottom: auto;
+        top: 8px;
       }
     `,
   ],

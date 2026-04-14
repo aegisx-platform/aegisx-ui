@@ -70,9 +70,14 @@ import {
                 opt.id === currentMode
               "
               [attr.aria-label]="'Switch to ' + opt.label + ' layout'"
+              [attr.title]="opt.description"
               (click)="modeChange.emit(opt.id)"
             >
-              {{ opt.label }}
+              @if (opt.icon) {
+                <mat-icon class="ax-nav-user-menu__layout-icon">{{ opt.icon }}</mat-icon>
+              } @else {
+                {{ opt.label }}
+              }
             </button>
           }
         </div>
@@ -83,7 +88,7 @@ import {
       <!-- Logout -->
       <button
         type="button"
-        class="ax-nav-user-menu__item ax-nav-user-menu__item--danger"
+        class="ax-nav-user-menu__item ax-nav-user-menu__logout"
         (click)="menuAction.emit('logout')"
       >
         <mat-icon class="ax-nav-user-menu__item-icon">logout</mat-icon>
@@ -101,6 +106,13 @@ import {
         z-index: 9999;
       }
 
+      :host-context(.ax-nav-shell--topnav) {
+        bottom: auto;
+        top: 0;
+        left: auto;
+        right: 0;
+      }
+
       .ax-nav-user-menu {
         width: 240px;
         background: var(--ax-surface, #fff);
@@ -109,6 +121,7 @@ import {
           0 8px 30px rgba(0, 0, 0, 0.12),
           0 0 0 1px rgba(0, 0, 0, 0.06);
         overflow: hidden;
+        padding-bottom: 8px;
         animation: popIn 0.18s ease;
       }
 
@@ -156,11 +169,8 @@ import {
         background: var(--ax-surface-hover, #f8fafc);
       }
 
-      .ax-nav-user-menu__item--danger {
-        color: var(--ax-error, #ef4444);
-      }
-      .ax-nav-user-menu__item--danger:hover {
-        background: var(--ax-error-subtle, #fef2f2);
+      .ax-nav-user-menu__logout:hover {
+        background: var(--ax-background-subtle);
       }
 
       .ax-nav-user-menu__item-icon {
@@ -169,46 +179,61 @@ import {
         width: 18px;
         height: 18px;
       }
-      .ax-nav-user-menu__item--danger .ax-nav-user-menu__item-icon {
-        color: var(--ax-error, #ef4444);
+      .ax-nav-user-menu__logout .ax-nav-user-menu__item-icon {
+        color: inherit;
       }
 
       .ax-nav-user-menu__layout-section {
-        padding: 10px 16px;
+        padding: 12px 16px 14px;
       }
 
       .ax-nav-user-menu__layout-label {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
         color: var(--ax-text-muted, #94a3b8);
-        margin-bottom: 6px;
-        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
       }
 
       .ax-nav-user-menu__layout-buttons {
         display: flex;
-        gap: 4px;
+        gap: 2px;
+        background: var(--ax-surface-muted, #f1f5f9);
+        border-radius: 8px;
+        padding: 3px;
       }
 
       .ax-nav-user-menu__layout-btn {
         flex: 1;
-        padding: 5px 0;
+        padding: 6px 0;
         border-radius: 6px;
-        border: 1.5px solid var(--ax-border, #e5e7eb);
-        background: var(--ax-surface, #fff);
+        border: none;
+        background: transparent;
         cursor: pointer;
-        font-size: 10px;
-        font-weight: 600;
+        font-size: 11px;
+        font-weight: 500;
         color: var(--ax-text-secondary, #64748b);
         transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .ax-nav-user-menu__layout-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
       }
       .ax-nav-user-menu__layout-btn:hover {
-        border-color: var(--ax-border-hover, #cbd5e1);
+        color: var(--ax-text-primary, #0f172a);
+        background: rgba(255, 255, 255, 0.5);
       }
       .ax-nav-user-menu__layout-btn--active {
-        border-color: var(--ax-primary, #3b82f6);
-        background: var(--ax-primary-subtle, #eff6ff);
-        color: var(--ax-primary-dark, #2563eb);
+        background: var(--ax-surface, #fff);
+        color: var(--ax-text-primary, #0f172a);
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       }
 
       @keyframes popIn {
