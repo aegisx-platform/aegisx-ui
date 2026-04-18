@@ -52,7 +52,12 @@ export interface ErrorStateAction {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIconModule],
   template: `
-    <div class="ax-error-state" role="alert" aria-live="polite">
+    <div
+      class="ax-error-state"
+      [class.ax-error-state--bordered]="bordered()"
+      role="alert"
+      aria-live="polite"
+    >
       <!-- Featured icon -->
       <div class="ax-error-state__icon">
         @if (resolvedIcon().includes(':')) {
@@ -150,6 +155,12 @@ export interface ErrorStateAction {
         text-align: center;
         padding: 48px 24px;
         min-height: 320px;
+      }
+
+      .ax-error-state--bordered {
+        border: 1px solid var(--ax-border-default, #e4e4e7);
+        border-radius: 12px;
+        background: var(--ax-background-default, #fff);
       }
 
       .ax-error-state__icon mat-icon {
@@ -265,6 +276,8 @@ export class AxErrorStateComponent {
   readonly showTechnicalCode = input(true);
   readonly technicalDetails = input<string>();
   readonly hideActions = input(false);
+  /** Render a card-like border around the state */
+  readonly bordered = input(false);
 
   // ── Legacy API (v1 backward compat — deprecated) ──────
   /** @deprecated Use `code` instead */
