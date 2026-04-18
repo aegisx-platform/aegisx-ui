@@ -171,6 +171,79 @@ $colors: (
 }
 
 // ----------------------------------------------------------------------------
+// Icon-Leading Variant
+// ----------------------------------------------------------------------------
+// Big 48px icon badge on the left, value + label + subtitle stacked on right.
+// Good for workflow status cards (draft/inspecting/accepted) where the icon
+// carries status meaning and users scan by icon before reading the number.
+
+.ax-stat-card--icon-leading {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.ax-stat-card__leading-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ax-background-muted, #fafafa);
+  color: var(--ax-text-subtle, #a1a1aa);
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+}
+
+.ax-stat-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ax-stat-card--icon-leading .ax-stat-card__value {
+  font-size: 1.75rem; // 28px — slightly larger than compact
+  line-height: 1.15;
+}
+
+.ax-stat-card__label-text {
+  font-size: 0.8125rem; // 13px
+  font-weight: 500;
+  color: var(--ax-text-secondary, #71717a);
+  margin-top: 2px;
+}
+
+.ax-stat-card--icon-leading .ax-stat-card__subtitle {
+  font-size: 0.75rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  opacity: 0.75;
+  margin-top: 1px;
+}
+
+// Leading icon tint per semantic color
+@each $name, $tokens in $colors {
+  .ax-stat-card--icon-leading[data-color='#{$name}']
+    .ax-stat-card__leading-icon {
+    background-color: map-get($tokens, active-bg);
+    color: map-get($tokens, dot);
+  }
+
+  .ax-stat-card--icon-leading[data-color='#{$name}'] .ax-stat-card__value {
+    color: map-get($tokens, dot);
+  }
+}
+
+// ----------------------------------------------------------------------------
 // Responsive
 // ----------------------------------------------------------------------------
 

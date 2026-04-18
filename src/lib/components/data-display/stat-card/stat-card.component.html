@@ -2,26 +2,44 @@
   class="ax-stat-card"
   [class.ax-stat-card--active]="active && clickable"
   [class.ax-stat-card--clickable]="clickable"
+  [class.ax-stat-card--icon-leading]="variant === 'icon-leading'"
   [attr.data-color]="color"
   [attr.role]="clickable ? 'button' : null"
   [attr.tabindex]="clickable ? 0 : null"
   (click)="onClick()"
   (keyup.enter)="onClick()"
 >
-  <div class="ax-stat-card__header">
-    @if (label) {
-      <span class="ax-stat-card__label">{{ label }}</span>
-    }
-    @if (icon) {
-      <div class="ax-stat-card__icon-badge" [attr.data-color]="color">
+  @if (variant === 'icon-leading') {
+    <div class="ax-stat-card__leading-icon" [attr.data-color]="color">
+      @if (icon) {
         <mat-icon>{{ icon }}</mat-icon>
-      </div>
-    } @else {
-      <span class="ax-stat-card__dot" [attr.data-color]="color"></span>
+      }
+    </div>
+    <div class="ax-stat-card__body">
+      <div class="ax-stat-card__value">{{ value }}</div>
+      @if (label) {
+        <div class="ax-stat-card__label-text">{{ label }}</div>
+      }
+      @if (subtitle) {
+        <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
+      }
+    </div>
+  } @else {
+    <div class="ax-stat-card__header">
+      @if (label) {
+        <span class="ax-stat-card__label">{{ label }}</span>
+      }
+      @if (icon) {
+        <div class="ax-stat-card__icon-badge" [attr.data-color]="color">
+          <mat-icon>{{ icon }}</mat-icon>
+        </div>
+      } @else {
+        <span class="ax-stat-card__dot" [attr.data-color]="color"></span>
+      }
+    </div>
+    <div class="ax-stat-card__value">{{ value }}</div>
+    @if (subtitle) {
+      <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
     }
-  </div>
-  <div class="ax-stat-card__value">{{ value }}</div>
-  @if (subtitle) {
-    <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
   }
 </div>

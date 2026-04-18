@@ -15,3 +15,14 @@ export type StatCardColor =
   | 'success'
   | 'warning'
   | 'error';
+
+/**
+ * Layout variant for the stat card.
+ *
+ * - `compact` (default): label top-right with small icon badge, big value below.
+ *   Good for dense KPI dashboards where numeric insight is primary.
+ * - `icon-leading`: large 48px icon badge on the left, value + label stacked
+ *   on the right. Good for workflow status cards where the icon carries
+ *   meaning (draft/inspecting/accepted) and users scan by icon first.
+ */
+export type StatCardVariant = 'compact' | 'icon-leading';

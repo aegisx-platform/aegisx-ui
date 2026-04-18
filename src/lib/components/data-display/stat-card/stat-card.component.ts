@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { StatCardColor } from './stat-card.types';
+import { StatCardColor, StatCardVariant } from './stat-card.types';
 
 /**
  * Stat Card Component
@@ -63,6 +63,9 @@ export class AxStatCardComponent {
 
   /** Semantic color — controls icon bg and active border */
   @Input() color: StatCardColor = 'info';
+
+  /** Layout variant — `compact` (default) or `icon-leading` (big icon on left) */
+  @Input() variant: StatCardVariant = 'compact';
 
   /** Stat value (number or formatted string) */
   @Input() value: string | number = '';
