@@ -597,15 +597,14 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         height: 20px;
       }
 
-      /* Main area — owns the page-level bg so pages flow flush with
-         whatever --ax-background-page resolves to (zinc-50 light /
-         zinc-950 dark). Cards on pages keep --ax-background-default,
-         giving a consistent one-step separation across every page. */
+      /* Main area — flat white (Untitled UI style). Page content sits
+         directly on --ax-background-default, and cards/panels separate
+         themselves with 1px borders rather than a tinted page bg. */
       .ax-sidebar-main {
         min-width: 0;
         display: flex;
         flex-direction: column;
-        background: var(--ax-background-page, #fafafa);
+        background: var(--ax-background-default, #ffffff);
       }
 
       .ax-sidebar-main__header {
