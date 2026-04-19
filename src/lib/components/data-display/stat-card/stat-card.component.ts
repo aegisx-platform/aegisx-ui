@@ -82,6 +82,21 @@ export class AxStatCardComponent {
   /** Whether the card is clickable (default true) */
   @Input() clickable = true;
 
+  /**
+   * Progress value from 0 to 100. When set, a thin horizontal progress bar
+   * renders at the bottom of the card. Leave undefined to hide.
+   *
+   * Common use: budget utilisation, stock levels against max, quota
+   * consumption, contract expiry countdown, etc.
+   */
+  @Input() progress?: number;
+
+  /**
+   * Progress bar color. Defaults to the card's `color` prop. Useful when
+   * the card is `info` but the progress should go red past 80%.
+   */
+  @Input() progressColor?: StatCardColor;
+
   /** Emitted when card is clicked */
   @Output() clicked = new EventEmitter<void>();
 
@@ -89,5 +104,21 @@ export class AxStatCardComponent {
     if (this.clickable) {
       this.clicked.emit();
     }
+  }
+
+  /** Resolve the effective progress color, falling back to `color`. */
+  get effectiveProgressColor(): StatCardColor {
+    return this.progressColor ?? this.color;
+  }
+
+  /** Clamp progress into [0, 100]. */
+  get clampedProgress(): number {
+    if (this.progress == null || isNaN(this.progress)) return 0;
+    return Math.max(0, Math.min(100, this.progress));
+  }
+
+  /** True when the progress bar should render. */
+  get showProgress(): boolean {
+    return this.progress != null && !isNaN(this.progress);
   }
 }

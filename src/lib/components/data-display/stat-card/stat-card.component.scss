@@ -328,6 +328,52 @@ $colors: (
 }
 
 // ----------------------------------------------------------------------------
+// Progress Bar (shared across variants)
+// ----------------------------------------------------------------------------
+// Thin 4px bar pinned to the bottom. Track uses --ax-background-muted;
+// fill uses the semantic color (`color` prop or `progressColor` override).
+
+.ax-stat-card__progress {
+  height: 4px;
+  margin-top: 12px;
+  background: var(--ax-background-muted, #f4f4f5);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ax-stat-card__progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 220ms ease-out;
+  background: var(--ax-text-subtle, #a1a1aa);
+}
+
+// Color-per-data-color so [progressColor] can diverge from card color
+@each $name, $tokens in $colors {
+  .ax-stat-card__progress[data-color='#{$name}'] .ax-stat-card__progress-fill {
+    background: map-get($tokens, dot);
+  }
+}
+
+// Icon-leading variant: progress spans full width under the whole row
+.ax-stat-card--icon-leading {
+  flex-wrap: wrap;
+
+  .ax-stat-card__progress {
+    flex-basis: 100%;
+    margin-top: 12px;
+  }
+}
+
+// Hero variant: tuck progress above the ghost icon (align with body)
+.ax-stat-card--hero .ax-stat-card__progress {
+  margin-top: 14px;
+  // give a bit of extra breathing room so the ghost icon doesn't overlap
+  margin-right: 36px;
+}
+
+// ----------------------------------------------------------------------------
 // Responsive
 // ----------------------------------------------------------------------------
 

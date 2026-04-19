@@ -61,4 +61,21 @@
       <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
     }
   }
+
+  <!-- Progress bar (shared across variants, shown when [progress] is set) -->
+  @if (showProgress) {
+    <div
+      class="ax-stat-card__progress"
+      [attr.data-color]="effectiveProgressColor"
+      role="progressbar"
+      [attr.aria-valuenow]="clampedProgress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      <div
+        class="ax-stat-card__progress-fill"
+        [style.width.%]="clampedProgress"
+      ></div>
+    </div>
+  }
 </div>
