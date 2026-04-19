@@ -1,0 +1,52 @@
+<div class="ax-priority-alert" [attr.data-variant]="variant()" role="alert">
+  <div class="ax-priority-alert__icon">
+    <mat-icon>{{ icon() }}</mat-icon>
+  </div>
+
+  <div class="ax-priority-alert__body">
+    @if (title()) {
+      <div class="ax-priority-alert__title">{{ title() }}</div>
+    }
+
+    @if (chips().length > 0 || subtitle()) {
+      <div class="ax-priority-alert__chips">
+        @for (chip of chips(); track $index) {
+          @if (chip.link) {
+            <a
+              class="ax-priority-chip ax-priority-chip--clickable"
+              [routerLink]="linkCommands(chip.link)"
+              (click)="onChipClick(chip, $event)"
+            >
+              <span
+                class="ax-priority-chip__dot"
+                [attr.data-color]="dotColor(chip)"
+              ></span>
+              {{ chip.label }}
+            </a>
+          } @else {
+            <button
+              type="button"
+              class="ax-priority-chip"
+              [class.ax-priority-chip--clickable]="!!chip.onClick"
+              (click)="onChipClick(chip, $event)"
+            >
+              <span
+                class="ax-priority-chip__dot"
+                [attr.data-color]="dotColor(chip)"
+              ></span>
+              {{ chip.label }}
+            </button>
+          }
+        }
+        @if (subtitle()) {
+          <span class="ax-priority-alert__subtitle">{{ subtitle() }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="ax-priority-alert__actions">
+    <ng-content select="[actions]" />
+    <ng-content />
+  </div>
+</div>

@@ -24,5 +24,10 @@ export type StatCardColor =
  * - `icon-leading`: large 48px icon badge on the left, value + label stacked
  *   on the right. Good for workflow status cards where the icon carries
  *   meaning (draft/inspecting/accepted) and users scan by icon first.
+ * - `hero`: small uppercase label top, oversized 32px value, subtle delta
+ *   chip, and a ghost icon watermarked in the bottom-right corner. Active
+ *   state adds a colored ring + colored value/icon (no bg tint). Good for
+ *   landing/dashboard headers where the number is the hero and the icon is
+ *   a secondary scanning cue.
  */
-export type StatCardVariant = 'compact' | 'icon-leading';
+export type StatCardVariant = 'compact' | 'icon-leading' | 'hero';

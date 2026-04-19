@@ -3,6 +3,7 @@
   [class.ax-stat-card--active]="active && clickable"
   [class.ax-stat-card--clickable]="clickable"
   [class.ax-stat-card--icon-leading]="variant === 'icon-leading'"
+  [class.ax-stat-card--hero]="variant === 'hero'"
   [attr.data-color]="color"
   [attr.role]="clickable ? 'button' : null"
   [attr.tabindex]="clickable ? 0 : null"
@@ -24,6 +25,24 @@
         <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
       }
     </div>
+  } @else if (variant === 'hero') {
+    <!-- Hero: label top, big value, delta chip inline, ghost icon bottom-right -->
+    @if (label) {
+      <div class="ax-stat-card__label ax-stat-card__label--hero">
+        {{ label }}
+      </div>
+    }
+    <div class="ax-stat-card__value-row">
+      <span class="ax-stat-card__value">{{ value }}</span>
+      @if (subtitle) {
+        <span class="ax-stat-card__delta">· {{ subtitle }}</span>
+      }
+    </div>
+    @if (icon) {
+      <span class="ax-stat-card__ghost-icon">
+        <mat-icon>{{ icon }}</mat-icon>
+      </span>
+    }
   } @else {
     <div class="ax-stat-card__header">
       @if (label) {

@@ -244,6 +244,90 @@ $colors: (
 }
 
 // ----------------------------------------------------------------------------
+// Hero Variant
+// ----------------------------------------------------------------------------
+// Big 32px value as hero, small uppercase label on top, optional subtitle
+// rendered as a ghost delta chip inline with the value. A watermark-style
+// icon sits at the bottom-right (low opacity, tints on hover).
+//
+// Active state: colored 3px ring + colored value/icon. No bg change —
+// keeps the feeling "calm urgency" instead of "alarm."
+
+.ax-stat-card--hero {
+  padding: 18px 20px;
+  position: relative;
+  min-height: 104px;
+
+  .ax-stat-card__label--hero {
+    font-size: 0.6875rem; // 11px
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ax-text-secondary, #71717a);
+  }
+
+  .ax-stat-card__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .ax-stat-card__value {
+    font-size: 2rem; // 32px
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ax-text-heading, #09090b);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ax-stat-card__delta {
+    font-size: 0.6875rem; // 11px
+    font-weight: 500;
+    color: var(--ax-text-subtle, #a1a1aa);
+  }
+
+  .ax-stat-card__ghost-icon {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    color: var(--ax-text-subtle, #a1a1aa);
+    opacity: 0.35;
+    transition:
+      opacity 120ms ease,
+      color 120ms ease;
+    pointer-events: none;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+    }
+  }
+
+  &:hover .ax-stat-card__ghost-icon {
+    opacity: 0.6;
+  }
+}
+
+// Active state — colored ring + tint value + tint icon (no bg change)
+@each $name, $tokens in $colors {
+  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}'] {
+    border-color: color-mix(in srgb, map-get($tokens, dot) 40%, transparent);
+    box-shadow: 0 0 0 3px map-get($tokens, active-bg);
+  }
+  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}']
+    .ax-stat-card__value,
+  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}']
+    .ax-stat-card__ghost-icon {
+    color: map-get($tokens, dot);
+    opacity: 1;
+  }
+}
+
+// ----------------------------------------------------------------------------
 // Responsive
 // ----------------------------------------------------------------------------
 
@@ -254,5 +338,9 @@ $colors: (
 
   .ax-stat-card__value {
     font-size: 1.25rem; // 20px on mobile
+  }
+
+  .ax-stat-card--hero .ax-stat-card__value {
+    font-size: 1.5rem; // 24px on mobile
   }
 }

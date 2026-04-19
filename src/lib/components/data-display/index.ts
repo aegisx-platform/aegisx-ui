@@ -16,6 +16,7 @@ export * from './chip';
 export * from './avatar';
 export * from './list';
 export * from './stat-card';
+export * from './stat-group';
 export * from './stats-card';
 export * from './timeline';
 export * from './divider';
