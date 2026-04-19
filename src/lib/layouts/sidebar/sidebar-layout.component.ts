@@ -597,11 +597,15 @@ const COLLAPSED_STORAGE_KEY = 'ax-sidebar-layout:collapsed';
         height: 20px;
       }
 
-      /* Main area ------------------------------------------------------ */
+      /* Main area — owns the page-level bg so pages flow flush with
+         whatever --ax-background-page resolves to (zinc-50 light /
+         zinc-950 dark). Cards on pages keep --ax-background-default,
+         giving a consistent one-step separation across every page. */
       .ax-sidebar-main {
         min-width: 0;
         display: flex;
         flex-direction: column;
+        background: var(--ax-background-page, #fafafa);
       }
 
       .ax-sidebar-main__header {

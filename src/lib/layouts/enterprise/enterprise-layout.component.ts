@@ -820,11 +820,16 @@ import {
         }
       }
 
-      /* Main Content — white like Tremor */
+      /* Main Content — owns the page-level bg so individual pages don't
+         have to. Uses --ax-background-page (zinc-50 / zinc-950) which
+         sits one step below --ax-background-default used by cards, giving
+         a consistent subtle separation in both light and dark themes.
+         Apps that want a different tone can override --ax-background-page
+         globally or per-layout. */
       .ax-enterprise-main {
         flex: 1;
         overflow-y: auto;
-        background: var(--ax-background-default, #ffffff);
+        background: var(--ax-background-page, #fafafa);
       }
 
       .ax-enterprise-content {
