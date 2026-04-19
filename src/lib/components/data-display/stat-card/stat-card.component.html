@@ -4,6 +4,12 @@
   [class.ax-stat-card--clickable]="clickable"
   [class.ax-stat-card--icon-leading]="variant === 'icon-leading'"
   [class.ax-stat-card--hero]="variant === 'hero'"
+  [class.ax-stat-card--trend]="variant === 'trend'"
+  [class.ax-stat-card--ring]="variant === 'ring'"
+  [class.ax-stat-card--comparison]="variant === 'comparison'"
+  [class.ax-stat-card--breakdown]="variant === 'breakdown'"
+  [class.ax-stat-card--bars]="variant === 'bars'"
+  [class.ax-stat-card--status]="variant === 'status'"
   [attr.data-color]="color"
   [attr.data-value-color]="valueColor"
   [attr.data-icon-color]="iconColor"
@@ -29,23 +35,157 @@
         <div class="ax-stat-card__subtitle">{{ subtitle }}</div>
       }
     </div>
-  } @else if (variant === 'hero') {
-    <!-- Hero: label top, big value, delta chip inline, ghost icon bottom-right -->
-    @if (label) {
-      <div class="ax-stat-card__label ax-stat-card__label--hero">
-        {{ label }}
-      </div>
-    }
+  } @else if (
+    variant === 'hero' ||
+    variant === 'trend' ||
+    variant === 'comparison' ||
+    variant === 'breakdown' ||
+    variant === 'bars'
+  ) {
+    <!-- Shared "hero-family" layout: label + 32px icon badge on top,
+         oversized value below. Each variant adds its own data payload
+         (sparkline / bar / chips / …) beneath the value-row. -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
     <div class="ax-stat-card__value-row">
       <span class="ax-stat-card__value">{{ value }}</span>
       @if (subtitle) {
         <span class="ax-stat-card__delta">· {{ subtitle }}</span>
       }
     </div>
-    @if (icon) {
-      <span class="ax-stat-card__ghost-icon">
-        <mat-icon>{{ icon }}</mat-icon>
-      </span>
+
+    @if (variant === 'trend' && sparklinePoints) {
+      <svg
+        class="ax-stat-card__sparkline"
+        viewBox="0 0 100 30"
+        preserveAspectRatio="none"
+        role="img"
+        aria-label="trend chart"
+      >
+        <polygon class="ax-stat-card__sparkline-area" [attr.points]="sparklineAreaPoints" />
+        <polyline class="ax-stat-card__sparkline-line" [attr.points]="sparklinePoints" />
+      </svg>
+    }
+
+    @if (variant === 'comparison' && target) {
+      <div class="ax-stat-card__comparison">
+        <div class="ax-stat-card__comparison-track">
+          <div
+            class="ax-stat-card__comparison-fill"
+            [style.width.%]="comparisonPercent"
+          ></div>
+        </div>
+        <div class="ax-stat-card__comparison-label">
+          {{ comparisonPercentRounded }}% of {{ targetLabel ?? target }}
+        </div>
+      </div>
+    }
+
+    @if (variant === 'breakdown' && breakdown && breakdown.length > 0) {
+      <div class="ax-stat-card__breakdown">
+        @for (item of breakdown; track item.label) {
+          <span class="ax-stat-card__breakdown-chip">
+            <span
+              class="ax-stat-card__breakdown-dot"
+              [attr.data-color]="item.color ?? 'neutral'"
+            ></span>
+            {{ item.label }}
+            <span class="ax-stat-card__breakdown-value">{{ item.value }}</span>
+          </span>
+        }
+      </div>
+    }
+
+    @if (variant === 'bars' && barData && barData.length > 0) {
+      <div class="ax-stat-card__bars">
+        @for (h of barHeights; track $index) {
+          <div class="ax-stat-card__bar-col">
+            <div class="ax-stat-card__bar" [style.height.%]="h"></div>
+          </div>
+        }
+      </div>
+      @if (barLabels && barLabels.length > 0) {
+        <div class="ax-stat-card__bar-labels">
+          @for (bl of barLabels; track $index) {
+            <span>{{ bl }}</span>
+          }
+        </div>
+      }
+    }
+  } @else if (variant === 'ring') {
+    <!-- Ring: circular progress left, label/value/subtitle right -->
+    <div class="ax-stat-card__ring-layout">
+      <svg
+        class="ax-stat-card__ring"
+        viewBox="0 0 80 80"
+        role="img"
+        [attr.aria-label]="clampedProgress + ' percent'"
+      >
+        <circle class="ax-stat-card__ring-track" cx="40" cy="40" r="36" />
+        <circle
+          class="ax-stat-card__ring-fill"
+          cx="40"
+          cy="40"
+          r="36"
+          [attr.stroke-dasharray]="ringCircumference"
+          [attr.stroke-dashoffset]="ringDashOffset"
+          transform="rotate(-90 40 40)"
+        />
+        <text class="ax-stat-card__ring-text" x="40" y="46" text-anchor="middle">
+          {{ clampedProgress }}%
+        </text>
+      </svg>
+      <div class="ax-stat-card__ring-body">
+        @if (label) {
+          <div class="ax-stat-card__label ax-stat-card__label--hero">{{ label }}</div>
+        }
+        <div class="ax-stat-card__value">{{ value }}</div>
+        @if (progressLabel || subtitle) {
+          <div class="ax-stat-card__ring-subtitle">
+            {{ progressLabel || subtitle }}
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (variant === 'status') {
+    <!-- Status: live dot + label + icon top, value below, last-updated -->
+    <div class="ax-stat-card__status-header">
+      <span
+        class="ax-stat-card__status-dot"
+        [attr.data-status]="status ?? 'healthy'"
+      ></span>
+      @if (label) {
+        <span class="ax-stat-card__status-label">{{ label }}</span>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon ax-stat-card__hero-icon--status">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="ax-stat-card__value">{{ value }}</div>
+    @if (subtitle || lastUpdated) {
+      <div class="ax-stat-card__status-meta">
+        @if (subtitle) {
+          <span>{{ subtitle }}</span>
+        }
+        @if (subtitle && lastUpdated) {
+          <span class="ax-stat-card__status-sep">·</span>
+        }
+        @if (lastUpdated) {
+          <span>{{ lastUpdated }}</span>
+        }
+      </div>
     }
   } @else {
     <div class="ax-stat-card__header">

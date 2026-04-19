@@ -241,10 +241,6 @@ $colors: (
     color: map-get($tokens, dot);
   }
 
-  .ax-stat-card--icon-leading[data-color='#{$name}'][data-value-color='accent']
-    .ax-stat-card__value {
-    color: map-get($tokens, dot);
-  }
 }
 
 // Neutral icon override — muted gray badge, regardless of semantic color.
@@ -257,17 +253,24 @@ $colors: (
 // ----------------------------------------------------------------------------
 // Hero Variant
 // ----------------------------------------------------------------------------
-// Big 32px value as hero, small uppercase label on top, optional subtitle
-// rendered as a ghost delta chip inline with the value. A watermark-style
-// icon sits at the bottom-right (low opacity, tints on hover).
+// Big 32px value as hero, small uppercase label + 32px icon badge on top,
+// optional subtitle rendered as a ghost delta chip inline with the value.
+// Header row (label left, icon right) keeps the reading order natural and
+// the icon in a conventional "category indicator" slot.
 //
-// Active state: colored 3px ring + colored value/icon. No bg change —
-// keeps the feeling "calm urgency" instead of "alarm."
+// Active state: colored 3px ring. No bg change — keeps the feeling
+// "calm urgency" instead of "alarm."
 
 .ax-stat-card--hero {
   padding: 18px 20px;
-  position: relative;
-  min-height: 104px;
+
+  // Header row: label on the left, icon badge on the right.
+  .ax-stat-card__hero-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
 
   .ax-stat-card__label--hero {
     font-size: 0.6875rem; // 11px
@@ -275,13 +278,18 @@ $colors: (
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ax-text-secondary, #71717a);
+    flex: 1;
+    min-width: 0;
   }
+
+  // (.ax-stat-card__hero-icon sizing is defined globally below — shared
+  // across hero + all hero-family variants + status.)
 
   .ax-stat-card__value-row {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 10px;
   }
 
   .ax-stat-card__value {
@@ -289,7 +297,7 @@ $colors: (
     font-weight: 600;
     line-height: 1;
     letter-spacing: -0.03em;
-    color: var(--ax-text-heading, #09090b);
+    color: var(--ax-text-primary, #3f3f46);
     font-variant-numeric: tabular-nums;
   }
 
@@ -298,52 +306,414 @@ $colors: (
     font-weight: 500;
     color: var(--ax-text-subtle, #a1a1aa);
   }
+}
 
-  .ax-stat-card__ghost-icon {
-    position: absolute;
-    right: 16px;
-    bottom: 14px;
-    color: var(--ax-text-subtle, #a1a1aa);
-    opacity: 0.35;
-    transition:
-      opacity 120ms ease,
-      color 120ms ease;
-    pointer-events: none;
-
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-      line-height: 28px;
-    }
-  }
-
-  &:hover .ax-stat-card__ghost-icon {
-    opacity: 0.6;
+// Hero icon tint per semantic color — only when iconColor='accent'.
+@each $name, $tokens in $colors {
+  .ax-stat-card--hero[data-color='#{$name}'][data-icon-color='accent']
+    .ax-stat-card__hero-icon {
+    background: map-get($tokens, active-bg);
+    color: map-get($tokens, dot);
   }
 }
 
-// Active state — colored ring + tint value + tint icon (no bg change)
+// Universal valueColor='accent' rule — applies to every variant (compact,
+// icon-leading, hero). When opted-in, the value text picks up the semantic
+// color. Default (neutral) keeps the value using --ax-text-primary.
+@each $name, $tokens in $colors {
+  .ax-stat-card[data-color='#{$name}'][data-value-color='accent']
+    .ax-stat-card__value {
+    color: map-get($tokens, dot);
+  }
+}
+
+// Active state — colored ring (no bg change, keeps "calm urgency" feel)
 @each $name, $tokens in $colors {
   .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}'] {
     border-color: color-mix(in srgb, map-get($tokens, dot) 40%, transparent);
     box-shadow: 0 0 0 3px map-get($tokens, active-bg);
   }
-  // Value color in hero-active only when valueColor='accent' (default for
-  // hero is still 'neutral', so active cards get a ring + colored icon but
-  // the number stays readable unless explicitly opted-in).
-  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}'][data-value-color='accent']
-    .ax-stat-card__value {
+}
+
+// ----------------------------------------------------------------------------
+// Hero-family variants (trend, comparison, breakdown, bars) — inherit the
+// same padding/header/value-row layout as .ax-stat-card--hero, so we just
+// extend the same selector shape.
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--trend,
+.ax-stat-card--comparison,
+.ax-stat-card--breakdown,
+.ax-stat-card--bars {
+  padding: 18px 20px;
+
+  .ax-stat-card__hero-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .ax-stat-card__label--hero {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ax-text-secondary, #71717a);
+    flex: 1;
+    min-width: 0;
+  }
+  .ax-stat-card__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .ax-stat-card__value {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ax-text-primary, #3f3f46);
+    font-variant-numeric: tabular-nums;
+  }
+  .ax-stat-card__delta {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--ax-text-subtle, #a1a1aa);
+  }
+}
+
+// Shared hero-icon badge sizing — used by hero + all hero-family variants
+// + the status variant's top-right icon. Hoisted out of per-variant blocks
+// so status (which has a different header structure) still picks it up.
+.ax-stat-card--hero .ax-stat-card__hero-icon,
+.ax-stat-card--trend .ax-stat-card__hero-icon,
+.ax-stat-card--comparison .ax-stat-card__hero-icon,
+.ax-stat-card--breakdown .ax-stat-card__hero-icon,
+.ax-stat-card--bars .ax-stat-card__hero-icon,
+.ax-stat-card--status .ax-stat-card__hero-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--ax-background-muted, #fafafa);
+  color: var(--ax-text-secondary, #71717a);
+  padding: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    // Guard against mat-icon's default 24px intrinsic sizing leaking out
+    overflow: hidden;
+  }
+}
+
+// Hero icon tint per semantic color — applies to all hero-family variants
+// when iconColor='accent'.
+@each $name, $tokens in $colors {
+  .ax-stat-card[data-color='#{$name}'][data-icon-color='accent']
+    .ax-stat-card__hero-icon {
+    background: map-get($tokens, active-bg);
     color: map-get($tokens, dot);
   }
-  // Ghost icon always picks up the semantic color on active hero — the
-  // icon is already a faint watermark, so tinting it reads as "this
-  // card is active" without affecting the primary number.
-  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}']
-    .ax-stat-card__ghost-icon {
-    color: map-get($tokens, dot);
+}
+
+// ----------------------------------------------------------------------------
+// Trend — sparkline under the value
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__sparkline {
+  width: 100%;
+  height: 36px;
+  margin-top: 12px;
+  display: block;
+  overflow: visible;
+}
+.ax-stat-card__sparkline-line {
+  fill: none;
+  stroke: var(--ax-text-secondary, #71717a);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.ax-stat-card__sparkline-area {
+  fill: var(--ax-background-muted, #fafafa);
+  opacity: 0.5;
+}
+
+// Accent trend color per semantic [color]
+@each $name, $tokens in $colors {
+  .ax-stat-card--trend[data-color='#{$name}'] .ax-stat-card__sparkline-line {
+    stroke: map-get($tokens, dot);
+  }
+  .ax-stat-card--trend[data-color='#{$name}'] .ax-stat-card__sparkline-area {
+    fill: map-get($tokens, active-bg);
     opacity: 1;
   }
+}
+
+// ----------------------------------------------------------------------------
+// Comparison — actual vs target horizontal bar
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__comparison {
+  margin-top: 12px;
+}
+.ax-stat-card__comparison-track {
+  height: 6px;
+  background: var(--ax-background-muted, #fafafa);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ax-stat-card__comparison-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ax-text-secondary, #71717a);
+  transition: width 300ms ease-out;
+}
+.ax-stat-card__comparison-label {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--ax-text-secondary, #71717a);
+  font-variant-numeric: tabular-nums;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--comparison[data-color='#{$name}']
+    .ax-stat-card__comparison-fill {
+    background: map-get($tokens, dot);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Breakdown — secondary chips under the total
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 12px;
+}
+.ax-stat-card__breakdown-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ax-text-default, #3f3f46);
+}
+.ax-stat-card__breakdown-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__breakdown-dot[data-color='primary'] {
+  background: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__breakdown-dot[data-color='info'] {
+  background: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__breakdown-dot[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__breakdown-dot[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__breakdown-dot[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__breakdown-value {
+  font-weight: 600;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+
+// ----------------------------------------------------------------------------
+// Bars — 7-bar mini chart
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 40px;
+  margin-top: 12px;
+}
+.ax-stat-card__bar-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+}
+.ax-stat-card__bar {
+  width: 100%;
+  background: var(--ax-background-muted, #fafafa);
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  transition: height 220ms ease-out;
+}
+.ax-stat-card__bar-labels {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.625rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  text-align: center;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--bars[data-color='#{$name}'] .ax-stat-card__bar {
+    background: color-mix(in srgb, map-get($tokens, dot) 50%, transparent);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Ring — circular progress left, body right
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--ring {
+  padding: 18px 20px;
+}
+.ax-stat-card__ring-layout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ax-stat-card__ring {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+.ax-stat-card__ring-track {
+  fill: none;
+  stroke: var(--ax-background-muted, #fafafa);
+  stroke-width: 6;
+}
+.ax-stat-card__ring-fill {
+  fill: none;
+  stroke: var(--ax-text-secondary, #71717a);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 400ms ease-out;
+}
+.ax-stat-card__ring-text {
+  font-size: 16px;
+  font-weight: 700;
+  fill: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__ring-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ax-stat-card__ring-body .ax-stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ax-text-primary, #3f3f46);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.ax-stat-card__ring-body .ax-stat-card__label--hero {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ax-text-secondary, #71717a);
+}
+.ax-stat-card__ring-subtitle {
+  font-size: 0.75rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  margin-top: 2px;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--ring[data-color='#{$name}'] .ax-stat-card__ring-fill {
+    stroke: map-get($tokens, dot);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Status — live dot + label + value + last-updated
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--status {
+  padding: 16px 20px;
+}
+.ax-stat-card__status-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ax-stat-card__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--ax-success-default, #22c55e);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--ax-success-default, #22c55e) 20%, transparent);
+  animation: axStatCardPulse 2s ease-in-out infinite;
+}
+.ax-stat-card__status-dot[data-status='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--ax-warning-default, #f59e0b) 20%, transparent);
+}
+.ax-stat-card__status-dot[data-status='critical'] {
+  background: var(--ax-error-default, #ef4444);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--ax-error-default, #ef4444) 20%, transparent);
+}
+@keyframes axStatCardPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+.ax-stat-card__status-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ax-text-heading, #09090b);
+  flex: 1;
+  min-width: 0;
+}
+.ax-stat-card__hero-icon--status {
+  margin-left: auto;
+}
+.ax-stat-card--status .ax-stat-card__value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ax-text-primary, #3f3f46);
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+.ax-stat-card__status-meta {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ax-stat-card__status-sep {
+  opacity: 0.6;
 }
 
 // ----------------------------------------------------------------------------

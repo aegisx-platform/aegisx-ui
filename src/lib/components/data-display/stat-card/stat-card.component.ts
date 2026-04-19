@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {
+  StatCardBreakdownItem,
   StatCardColor,
+  StatCardStatus,
   StatCardValueColor,
   StatCardVariant,
 } from './stat-card.types';
@@ -126,6 +128,38 @@ export class AxStatCardComponent {
    */
   @Input() progressColor?: StatCardColor;
 
+  // ─── Variant-specific inputs ──────────────────────────────────────────
+
+  /**
+   * Array of numeric data points for the `trend` variant's sparkline.
+   * Normalised to fit a 100×30 SVG viewport internally.
+   */
+  @Input() trendData?: readonly number[];
+
+  /** Target value for the `comparison` variant's actual-vs-target bar. */
+  @Input() target?: number;
+
+  /** Human label for the target (e.g., '฿5M'). Defaults to the raw number. */
+  @Input() targetLabel?: string;
+
+  /** Breakdown items rendered as chips in the `breakdown` variant. */
+  @Input() breakdown?: readonly StatCardBreakdownItem[];
+
+  /** Data points for the `bars` variant's mini bar chart (one bar each). */
+  @Input() barData?: readonly number[];
+
+  /** Optional labels under each bar (e.g., ['M','T','W','T','F','S','S']). */
+  @Input() barLabels?: readonly string[];
+
+  /** Status level for the `status` variant's live indicator dot. */
+  @Input() status?: StatCardStatus;
+
+  /** Freshness text for the `status` variant (e.g., 'อัพเดท 2 นาทีที่แล้ว'). */
+  @Input() lastUpdated?: string;
+
+  /** Human label shown below value in the `ring` variant (e.g., '฿3.2M / ฿5M'). */
+  @Input() progressLabel?: string;
+
   /** Emitted when card is clicked */
   @Output() clicked = new EventEmitter<void>();
 
@@ -149,5 +183,70 @@ export class AxStatCardComponent {
   /** True when the progress bar should render. */
   get showProgress(): boolean {
     return this.progress != null && !isNaN(this.progress);
+  }
+
+  // ─── Sparkline (trend variant) ────────────────────────────────────────
+
+  /**
+   * SVG polyline points for the sparkline, normalised into a 100×30
+   * viewport with 2px vertical padding so the stroke doesn't clip.
+   */
+  get sparklinePoints(): string {
+    const data = this.trendData;
+    if (!data || data.length === 0) return '';
+    if (data.length === 1) return `0,15 100,15`;
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const range = max - min || 1;
+    const step = 100 / (data.length - 1);
+    return data
+      .map((v, i) => {
+        const x = i * step;
+        const y = 28 - ((v - min) / range) * 26;
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+      })
+      .join(' ');
+  }
+
+  /** Closed-polygon version of the sparkline for the area fill. */
+  get sparklineAreaPoints(): string {
+    const line = this.sparklinePoints;
+    if (!line) return '';
+    return `0,30 ${line} 100,30`;
+  }
+
+  // ─── Ring variant ──────────────────────────────────────────────────────
+
+  /** SVG circumference for a 36px-radius circle (2πr). */
+  readonly ringCircumference = 2 * Math.PI * 36;
+
+  /** Stroke-dashoffset for the ring's progress arc. */
+  get ringDashOffset(): number {
+    return this.ringCircumference * (1 - this.clampedProgress / 100);
+  }
+
+  // ─── Comparison variant ───────────────────────────────────────────────
+
+  /** Percent of target reached (clamped 0-100) for the comparison bar. */
+  get comparisonPercent(): number {
+    if (!this.target || this.target <= 0) return 0;
+    const raw = Number(this.value);
+    if (isNaN(raw)) return 0;
+    return Math.max(0, Math.min(100, (raw / this.target) * 100));
+  }
+
+  /** Rounded integer version for the "{N}% of target" caption. */
+  get comparisonPercentRounded(): number {
+    return Math.round(this.comparisonPercent);
+  }
+
+  // ─── Bars variant ──────────────────────────────────────────────────────
+
+  /** Height percentage (0-100) for each bar in the bars variant. */
+  get barHeights(): readonly number[] {
+    const data = this.barData;
+    if (!data || data.length === 0) return [];
+    const max = Math.max(...data, 1);
+    return data.map((v) => Math.max(2, (v / max) * 100));
   }
 }
