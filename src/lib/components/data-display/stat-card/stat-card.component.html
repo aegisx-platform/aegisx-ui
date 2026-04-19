@@ -156,7 +156,13 @@
           [attr.stroke-dashoffset]="ringDashOffset"
           transform="rotate(-90 40 40)"
         />
-        <text class="ax-stat-card__ring-text" x="40" y="46" text-anchor="middle">
+        <text
+          class="ax-stat-card__ring-text"
+          x="40"
+          y="46"
+          text-anchor="middle"
+          aria-hidden="true"
+        >
           {{ clampedProgress }}%
         </text>
       </svg>
@@ -196,6 +202,7 @@
           x="40"
           y="44"
           text-anchor="middle"
+          aria-hidden="true"
         >
           {{ clampedProgress }}%
         </text>
@@ -347,10 +354,13 @@
       {{ value }}
     </div>
     @if (subtitle) {
-      <div class="ax-stat-card__inline-delta">
-        @if (icon) {
-          <mat-icon class="ax-stat-card__inline-delta-icon">trending_up</mat-icon>
-        }
+      <div
+        class="ax-stat-card__inline-delta"
+        [attr.data-direction]="deltaDirection ?? 'up'"
+      >
+        <mat-icon class="ax-stat-card__inline-delta-icon" aria-hidden="true">
+          {{ inlineDeltaIcon }}
+        </mat-icon>
         <span>{{ subtitle }}</span>
       </div>
     }
@@ -685,6 +695,7 @@
             x="40"
             y="36"
             text-anchor="middle"
+            aria-hidden="true"
           >
             {{ centerLabel }}
           </text>
@@ -693,6 +704,7 @@
             x="40"
             y="50"
             text-anchor="middle"
+            aria-hidden="true"
           >
             {{ centerValue }}
           </text>

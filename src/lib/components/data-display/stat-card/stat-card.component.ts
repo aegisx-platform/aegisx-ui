@@ -5,6 +5,7 @@ import {
   Output,
   ViewEncapsulation,
   ChangeDetectionStrategy,
+  signal,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -178,6 +179,13 @@ export class AxStatCardComponent {
   /** Meta info shown top-right in `billboard` variant (e.g., 'All · 30 days'). */
   @Input() meta?: string;
 
+  /**
+   * Direction for the subtitle-as-delta chip in `inline-bars`. Drives the
+   * leading arrow icon (trending_up / trending_down / trending_flat) and
+   * the delta color. Defaults to 'up' when omitted.
+   */
+  @Input() deltaDirection?: 'up' | 'down' | 'flat';
+
   /** Period boxes for the `compare-period` variant (current first, baseline second). */
   @Input() periods?: readonly StatCardPeriod[];
 
@@ -245,6 +253,19 @@ export class AxStatCardComponent {
   /** Resolve the effective progress color, falling back to `color`. */
   get effectiveProgressColor(): StatCardColor {
     return this.progressColor ?? this.color;
+  }
+
+  /** Material icon name matching the inline-bars delta direction. */
+  get inlineDeltaIcon(): string {
+    switch (this.deltaDirection) {
+      case 'down':
+        return 'trending_down';
+      case 'flat':
+        return 'trending_flat';
+      case 'up':
+      default:
+        return 'trending_up';
+    }
   }
 
   /** Clamp progress into [0, 100]. */
@@ -467,6 +488,22 @@ export class AxStatCardComponent {
   // ─── Donut / Gauge-split variants ─────────────────────────────────────
 
   /**
+   * Donut segments normalised so their percents always sum to 100.
+   * Callers can pass raw counts (percent = 700 for "700 units") or
+   * slightly-off percents; both are rescaled so arcs fit the circle.
+   */
+  private get normalisedDonutSegments(): readonly StatCardDonutSegment[] {
+    if (!this.donutSegments || this.donutSegments.length === 0) return [];
+    const total = this.donutSegments.reduce((sum, s) => sum + s.percent, 0);
+    if (total <= 0) return [];
+    if (Math.abs(total - 100) < 0.01) return this.donutSegments;
+    return this.donutSegments.map((s) => ({
+      ...s,
+      percent: (s.percent / total) * 100,
+    }));
+  }
+
+  /**
    * Enriched donut segments with precomputed stroke-dasharray and
    * stroke-dashoffset so the template can bind them directly onto
    * <circle> / <path> elements without inlining any math.
@@ -479,11 +516,12 @@ export class AxStatCardComponent {
       cumulative: number;
     }
   > {
-    if (!this.donutSegments || this.donutSegments.length === 0) return [];
+    const segments = this.normalisedDonutSegments;
+    if (segments.length === 0) return [];
     // Full circle circumference at r=36
     const C = 2 * Math.PI * 36;
     let cumulative = 0;
-    return this.donutSegments.map((s) => {
+    return segments.map((s) => {
       const arc = (s.percent / 100) * C;
       const view = {
         ...s,
@@ -507,12 +545,13 @@ export class AxStatCardComponent {
       cumulative: number;
     }
   > {
-    if (!this.donutSegments || this.donutSegments.length === 0) return [];
+    const segments = this.normalisedDonutSegments;
+    if (segments.length === 0) return [];
     // Half-circle length (what the path "M 4 44 A 36 36 0 0 1 76 44"
     // draws) ≈ π·36.
     const C = Math.PI * 36;
     let cumulative = 0;
-    return this.donutSegments.map((s) => {
+    return segments.map((s) => {
       const arc = (s.percent / 100) * C;
       const view = {
         ...s,
@@ -526,17 +565,20 @@ export class AxStatCardComponent {
   }
 
   // ─── Category-browser variant ────────────────────────────────────────
+  // Uses a signal, not a plain field — this component is OnPush, so field
+  // mutations wouldn't trigger re-render after a click. Signals auto-mark
+  // dirty on write, so the prev/next navigator updates immediately.
 
-  private _currentCategoryIndex = 0;
+  private readonly _currentCategoryIndex = signal(0);
 
   /** Currently-visible category entry. */
   get currentCategory(): StatCardCategory | undefined {
-    return this.categories?.[this._currentCategoryIndex];
+    return this.categories?.[this._currentCategoryIndex()];
   }
 
   /** Zero-based index of the current category (for the demo / consumers). */
   get currentCategoryIndex(): number {
-    return this._currentCategoryIndex;
+    return this._currentCategoryIndex();
   }
 
   /**
@@ -554,17 +596,18 @@ export class AxStatCardComponent {
   /** Cycle to previous category (wraps around). */
   onPrevCategory(event: Event): void {
     event.stopPropagation();
-    if (!this.categories || this.categories.length === 0) return;
-    this._currentCategoryIndex =
-      (this._currentCategoryIndex - 1 + this.categories.length) %
-      this.categories.length;
+    const list = this.categories;
+    if (!list || list.length === 0) return;
+    this._currentCategoryIndex.update(
+      (i) => (i - 1 + list.length) % list.length,
+    );
   }
 
   /** Cycle to next category (wraps around). */
   onNextCategory(event: Event): void {
     event.stopPropagation();
-    if (!this.categories || this.categories.length === 0) return;
-    this._currentCategoryIndex =
-      (this._currentCategoryIndex + 1) % this.categories.length;
+    const list = this.categories;
+    if (!list || list.length === 0) return;
+    this._currentCategoryIndex.update((i) => (i + 1) % list.length);
   }
 }

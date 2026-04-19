@@ -15,6 +15,98 @@
 //
 // Active state (clickable + active): brand border + brand-faint bg + 1px ring
 
+// ----------------------------------------------------------------------------
+// Hero-family variant list
+// ----------------------------------------------------------------------------
+// Variants that share the "label top-left + 32px icon badge top-right +
+// big value below" layout. Keep this list in one place — mixins below
+// use it to generate per-variant selectors so new variants only need
+// to be added here (not in 3-4 places).
+
+// All variants that render the 32px hero-icon badge top-right
+// (hero + hero-family variants + status, which has its own header but
+// reuses the same icon slot).
+$hero-family: (
+  hero,
+  trend,
+  comparison,
+  breakdown,
+  bars,
+  status,
+  stacked-bar,
+  dual-metric,
+  compare-period,
+  threshold,
+  progress-steps,
+  heatmap,
+  metric-grid,
+  ranking,
+  donut-legend,
+  gauge-split,
+  category-browser
+);
+
+// Subset used for the "label top + value below" layout block. Excludes
+// 'hero' (has its own padding / value styles) and 'status' (uses a
+// different header structure entirely).
+$hero-family-layout: (
+  trend,
+  comparison,
+  breakdown,
+  bars,
+  stacked-bar,
+  dual-metric,
+  compare-period,
+  threshold,
+  progress-steps,
+  heatmap,
+  metric-grid,
+  ranking,
+  donut-legend,
+  gauge-split,
+  category-browser
+);
+
+// Generates a comma-separated descendant selector list like
+//   .ax-stat-card--hero <child>,
+//   .ax-stat-card--trend <child>, …
+@mixin hero-family-descendants($child) {
+  $selectors: ();
+  @each $v in $hero-family {
+    $selectors: append(
+      $selectors,
+      unquote('.ax-stat-card--#{$v} #{$child}'),
+      comma
+    );
+  }
+  #{$selectors} {
+    @content;
+  }
+}
+
+// Generates a comma-separated root selector list from $hero-family-layout.
+// Used for the shared padding + value-row block.
+@mixin hero-family-layout-root {
+  $selectors: ();
+  @each $v in $hero-family-layout {
+    $selectors: append($selectors, unquote('.ax-stat-card--#{$v}'), comma);
+  }
+  #{$selectors} {
+    @content;
+  }
+}
+
+// Generates 5 per-color blocks in one shot — one CSS rule per semantic
+// color. Pass the selector (e.g. '.ax-stat-card__breakdown-dot') and
+// the property to set ('background', 'stroke', 'color', etc).
+@mixin per-color-prop($selector, $property) {
+  @each $name, $tokens in $colors {
+    #{$selector}[data-color='#{$name}'] {
+      #{$property}: map-get($tokens, dot);
+    }
+  }
+}
+
 // Color map — dot/badge + active states
 $colors: (
   'primary': (
@@ -341,20 +433,10 @@ $colors: (
 // extend the same selector shape.
 // ----------------------------------------------------------------------------
 
-.ax-stat-card--trend,
-.ax-stat-card--comparison,
-.ax-stat-card--breakdown,
-.ax-stat-card--bars,
-.ax-stat-card--stacked-bar,
-.ax-stat-card--dual-metric,
-.ax-stat-card--threshold,
-.ax-stat-card--progress-steps,
-.ax-stat-card--heatmap,
-.ax-stat-card--metric-grid,
-.ax-stat-card--ranking,
-.ax-stat-card--donut-legend,
-.ax-stat-card--gauge-split,
-.ax-stat-card--category-browser {
+// Shared hero-family layout — uses the $hero-family-layout list via
+// the mixin, so new variants pick up padding + label + value styles
+// automatically just by being added to the list.
+@include hero-family-layout-root {
   padding: 18px 20px;
 
   .ax-stat-card__hero-header {
@@ -396,23 +478,10 @@ $colors: (
 // Shared hero-icon badge sizing — used by hero + all hero-family variants
 // + the status variant's top-right icon. Hoisted out of per-variant blocks
 // so status (which has a different header structure) still picks it up.
-.ax-stat-card--hero .ax-stat-card__hero-icon,
-.ax-stat-card--trend .ax-stat-card__hero-icon,
-.ax-stat-card--comparison .ax-stat-card__hero-icon,
-.ax-stat-card--breakdown .ax-stat-card__hero-icon,
-.ax-stat-card--bars .ax-stat-card__hero-icon,
-.ax-stat-card--status .ax-stat-card__hero-icon,
-.ax-stat-card--stacked-bar .ax-stat-card__hero-icon,
-.ax-stat-card--dual-metric .ax-stat-card__hero-icon,
-.ax-stat-card--compare-period .ax-stat-card__hero-icon,
-.ax-stat-card--threshold .ax-stat-card__hero-icon,
-.ax-stat-card--progress-steps .ax-stat-card__hero-icon,
-.ax-stat-card--heatmap .ax-stat-card__hero-icon,
-.ax-stat-card--metric-grid .ax-stat-card__hero-icon,
-.ax-stat-card--ranking .ax-stat-card__hero-icon,
-.ax-stat-card--donut-legend .ax-stat-card__hero-icon,
-.ax-stat-card--gauge-split .ax-stat-card__hero-icon,
-.ax-stat-card--category-browser .ax-stat-card__hero-icon {
+// Shared 32px hero-icon badge — auto-applied to every variant in
+// $hero-family via the mixin (one source of truth; no drift when
+// adding new variants).
+@include hero-family-descendants('.ax-stat-card__hero-icon') {
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -535,21 +604,7 @@ $colors: (
   flex-shrink: 0;
   background: var(--ax-text-subtle, #a1a1aa);
 }
-.ax-stat-card__breakdown-dot[data-color='primary'] {
-  background: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__breakdown-dot[data-color='info'] {
-  background: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__breakdown-dot[data-color='success'] {
-  background: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__breakdown-dot[data-color='warning'] {
-  background: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__breakdown-dot[data-color='error'] {
-  background: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__breakdown-dot', background);
 .ax-stat-card__breakdown-value {
   font-weight: 600;
   color: var(--ax-text-heading, #09090b);
@@ -830,21 +885,7 @@ $colors: (
 .ax-stat-card__stacked-seg + .ax-stat-card__stacked-seg {
   margin-left: 2px; // tiny gap so segments read as distinct
 }
-.ax-stat-card__stacked-seg[data-color='primary'] {
-  background: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__stacked-seg[data-color='info'] {
-  background: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__stacked-seg[data-color='success'] {
-  background: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__stacked-seg[data-color='warning'] {
-  background: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__stacked-seg[data-color='error'] {
-  background: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__stacked-seg', background);
 .ax-stat-card__stacked-legend {
   display: flex;
   flex-wrap: wrap;
@@ -865,21 +906,7 @@ $colors: (
   flex-shrink: 0;
   background: var(--ax-text-subtle, #a1a1aa);
 }
-.ax-stat-card__stacked-dot[data-color='primary'] {
-  background: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__stacked-dot[data-color='info'] {
-  background: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__stacked-dot[data-color='success'] {
-  background: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__stacked-dot[data-color='warning'] {
-  background: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__stacked-dot[data-color='error'] {
-  background: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__stacked-dot', background);
 
 // ----------------------------------------------------------------------------
 // Billboard — full-bleed colored hero card + embedded chart
@@ -887,18 +914,22 @@ $colors: (
 
 .ax-stat-card--billboard {
   padding: 24px 28px;
-  color: #ffffff;
-  // Fixed dark bg (not --ax-text-heading which flips to white in dark
-  // theme and kills contrast). Users opt into a semantic [color] below
-  // for a colored billboard.
-  background: #18181b;
+  // --ax-background-inverse flips per theme (dark in light mode, light
+  // in dark mode) so the billboard always stands out from the surface.
+  // --ax-text-inverse is its on-surface text color (white / near-black).
+  background: var(--ax-background-inverse, #18181b);
+  color: var(--ax-text-inverse, #ffffff);
   border-color: transparent;
   min-height: 180px;
 }
+// Colored billboards override the inverse bg with the semantic color.
+// Text stays white regardless of theme (colored backgrounds are strong
+// enough that white always wins — matches Stripe / Linear billboard style).
 @each $name, $tokens in $colors {
   .ax-stat-card--billboard[data-color='#{$name}'] {
     background: map-get($tokens, dot);
     border-color: transparent;
+    color: #ffffff;
   }
 }
 .ax-stat-card--billboard.ax-stat-card--clickable:hover {
@@ -911,26 +942,32 @@ $colors: (
   justify-content: space-between;
   gap: 16px;
 }
+// Text inside billboard uses currentColor / opacity so it works against
+// both light and dark inverse backgrounds without theme-specific tweaks.
 .ax-stat-card__label--billboard {
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: inherit;
+  opacity: 0.85;
   margin-bottom: 8px;
 }
 .ax-stat-card__value--billboard {
   font-size: 2.5rem !important;
   font-weight: 700 !important;
-  color: #ffffff !important;
+  color: inherit !important;
   line-height: 1.05;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .ax-stat-card__billboard-meta {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: inherit;
+  opacity: 0.75;
   flex-shrink: 0;
   margin-top: 4px;
 }
+// Charts inside a billboard pick up currentColor so they stay consistent
+// with the card's text color (works with default dark bg AND colored bg).
 .ax-stat-card__billboard-bars {
   display: flex;
   align-items: flex-end;
@@ -939,24 +976,26 @@ $colors: (
   margin-top: 20px;
 
   .ax-stat-card__bar {
-    background: rgba(255, 255, 255, 0.75);
+    background: currentColor;
+    opacity: 0.75;
     border-radius: 2px 2px 0 0;
   }
 }
 .ax-stat-card__bar-labels--billboard {
-  color: rgba(255, 255, 255, 0.7);
+  color: inherit;
+  opacity: 0.7;
   margin-top: 6px;
 }
 .ax-stat-card__sparkline--billboard {
   margin-top: 20px;
   height: 50px;
   .ax-stat-card__sparkline-line {
-    stroke: #ffffff;
+    stroke: currentColor;
     stroke-width: 2;
   }
   .ax-stat-card__sparkline-area {
-    fill: rgba(255, 255, 255, 0.18);
-    opacity: 1;
+    fill: currentColor;
+    opacity: 0.18;
   }
 }
 
@@ -983,21 +1022,7 @@ $colors: (
 .ax-stat-card__dual-seg + .ax-stat-card__dual-seg {
   margin-left: 2px;
 }
-.ax-stat-card__dual-seg[data-color='primary'] {
-  background: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__dual-seg[data-color='info'] {
-  background: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__dual-seg[data-color='success'] {
-  background: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__dual-seg[data-color='warning'] {
-  background: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__dual-seg[data-color='error'] {
-  background: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__dual-seg', background);
 .ax-stat-card__dual-rows {
   margin-top: 12px;
   display: flex;
@@ -1017,21 +1042,7 @@ $colors: (
   flex-shrink: 0;
   background: var(--ax-text-subtle, #a1a1aa);
 }
-.ax-stat-card__dual-stripe[data-color='primary'] {
-  background: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__dual-stripe[data-color='info'] {
-  background: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__dual-stripe[data-color='success'] {
-  background: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__dual-stripe[data-color='warning'] {
-  background: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__dual-stripe[data-color='error'] {
-  background: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__dual-stripe', background);
 .ax-stat-card__dual-value {
   font-weight: 700;
   color: var(--ax-text-heading, #09090b);
@@ -1075,8 +1086,17 @@ $colors: (
   gap: 4px;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--ax-success-default, #22c55e);
+  color: var(--ax-text-secondary, #71717a);
   margin-top: 6px;
+}
+.ax-stat-card__inline-delta[data-direction='up'] {
+  color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__inline-delta[data-direction='down'] {
+  color: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__inline-delta[data-direction='flat'] {
+  color: var(--ax-text-secondary, #71717a);
 }
 .ax-stat-card__inline-delta-icon {
   font-size: 16px;
@@ -1099,14 +1119,14 @@ $colors: (
   min-height: 2px;
   transition: height 220ms ease-out;
 }
+// inline-bars bars pick up the card's semantic [color]. Delta color is
+// driven by [data-direction] (see above), not the color prop — this
+// keeps the delta signal semantically honest (up=green, down=red)
+// regardless of the card's palette.
 @each $name, $tokens in $colors {
   .ax-stat-card--inline-bars[data-color='#{$name}']
     .ax-stat-card__inline-bar {
     background: map-get($tokens, dot);
-  }
-  .ax-stat-card--inline-bars[data-color='#{$name}']
-    .ax-stat-card__inline-delta {
-    color: map-get($tokens, dot);
   }
 }
 .ax-stat-card__inline-footer {
@@ -1610,21 +1630,7 @@ $colors: (
     stroke-dasharray 400ms ease-out,
     stroke-dashoffset 400ms ease-out;
 }
-.ax-stat-card__donut-seg[data-color='primary'] {
-  stroke: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__donut-seg[data-color='info'] {
-  stroke: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__donut-seg[data-color='success'] {
-  stroke: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__donut-seg[data-color='warning'] {
-  stroke: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__donut-seg[data-color='error'] {
-  stroke: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__donut-seg', stroke);
 .ax-stat-card__donut-center-label {
   font-size: 9px;
   font-weight: 500;
@@ -1659,21 +1665,7 @@ $colors: (
   background: var(--ax-text-subtle, #a1a1aa);
   align-self: center;
 }
-.ax-stat-card__donut-dot[data-color='primary'] {
-  background: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__donut-dot[data-color='info'] {
-  background: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__donut-dot[data-color='success'] {
-  background: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__donut-dot[data-color='warning'] {
-  background: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__donut-dot[data-color='error'] {
-  background: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__donut-dot', background);
 .ax-stat-card__donut-label {
   color: var(--ax-text-default, #3f3f46);
   min-width: 0;
@@ -1734,21 +1726,7 @@ $colors: (
     stroke-dasharray 400ms ease-out,
     stroke-dashoffset 400ms ease-out;
 }
-.ax-stat-card__gauge-split-seg[data-color='primary'] {
-  stroke: var(--ax-brand-default, #6366f1);
-}
-.ax-stat-card__gauge-split-seg[data-color='info'] {
-  stroke: var(--ax-info-default, #3b82f6);
-}
-.ax-stat-card__gauge-split-seg[data-color='success'] {
-  stroke: var(--ax-success-default, #22c55e);
-}
-.ax-stat-card__gauge-split-seg[data-color='warning'] {
-  stroke: var(--ax-warning-default, #f59e0b);
-}
-.ax-stat-card__gauge-split-seg[data-color='error'] {
-  stroke: var(--ax-error-default, #ef4444);
-}
+@include per-color-prop('.ax-stat-card__gauge-split-seg', stroke);
 .ax-stat-card__gauge-split-center {
   position: absolute;
   left: 0;
