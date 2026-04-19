@@ -67,8 +67,14 @@ export class AxStatCardComponent {
   /** Layout variant — `compact` (default) or `icon-leading` (big icon on left) */
   @Input() variant: StatCardVariant = 'compact';
 
-  /** Stat value (number or formatted string) */
-  @Input() value: string | number = '';
+  /**
+   * Stat value (number or formatted string).
+   *
+   * Accepts `null` so callers can pipe through Angular's `number` /
+   * `currency` / `percent` pipes which all return `string | null`.
+   * Renders as empty string when null / undefined.
+   */
+  @Input() value: string | number | null | undefined = '';
 
   /** Card label */
   @Input() label = '';
