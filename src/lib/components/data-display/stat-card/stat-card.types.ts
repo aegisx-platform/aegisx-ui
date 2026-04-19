@@ -17,6 +17,22 @@ export type StatCardColor =
   | 'error';
 
 /**
+ * Whether the value text follows the semantic `color` prop or stays neutral.
+ *
+ * - `neutral` (default): value uses `--ax-text-heading` (near-black light /
+ *   white dark, with a `#09090b` fallback when no theme is applied). The
+ *   icon badge still carries the accent. Right for dashboards where the
+ *   number is data, not a warning — the Untitled UI / enterprise-SaaS look.
+ * - `accent`: value inherits the tint from `color` (blue/amber/red/green).
+ *   Right for cards whose sole purpose is to scream an urgent number.
+ *
+ * Breaking change note: this default flipped from accent → neutral so new
+ * dashboards look cohesive without extra props. Existing pages that relied
+ * on tinted values must opt back in with `valueColor="accent"`.
+ */
+export type StatCardValueColor = 'accent' | 'neutral';
+
+/**
  * Layout variant for the stat card.
  *
  * - `compact` (default): label top-right with small icon badge, big value below.

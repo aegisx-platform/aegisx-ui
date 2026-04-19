@@ -820,12 +820,17 @@ import {
         }
       }
 
-      /* Main Content — flat white (Untitled UI style). Cards separate
-         themselves via 1px border, not via a tinted page bg. */
+      /* Main Content — default is flat white. Opt-in "gray canvas" mode
+         (contentBackground="gray") tints the page so white cards float on
+         a subtle surface — the right move for dashboards that mix several
+         card styles (alerts, stats, tables) on one screen. */
       .ax-enterprise-main {
         flex: 1;
         overflow-y: auto;
         background: var(--ax-background-default, #ffffff);
+      }
+      .ax-enterprise-main.bg-gray {
+        background: var(--ax-background-subtle, #fafafa);
       }
 
       .ax-enterprise-content {

@@ -5,6 +5,8 @@
   [class.ax-stat-card--icon-leading]="variant === 'icon-leading'"
   [class.ax-stat-card--hero]="variant === 'hero'"
   [attr.data-color]="color"
+  [attr.data-value-color]="valueColor"
+  [attr.data-icon-color]="iconColor"
   [attr.role]="clickable ? 'button' : null"
   [attr.tabindex]="clickable ? 0 : null"
   (click)="onClick()"

@@ -7,7 +7,11 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { StatCardColor, StatCardVariant } from './stat-card.types';
+import {
+  StatCardColor,
+  StatCardValueColor,
+  StatCardVariant,
+} from './stat-card.types';
 
 /**
  * Stat Card Component
@@ -81,6 +85,25 @@ export class AxStatCardComponent {
 
   /** Optional subtitle */
   @Input() subtitle = '';
+
+  /**
+   * Whether the **value text** follows the semantic `color` prop or stays
+   * neutral. Default `'neutral'` — value reads as data, not warning.
+   * Set `'accent'` for urgent/emphasis cards where the number itself
+   * must scream the status.
+   *
+   * Breaking change: this default flipped from accent → neutral to match
+   * the Untitled UI / enterprise-SaaS look. Opt back in with `"accent"`.
+   */
+  @Input() valueColor: StatCardValueColor = 'neutral';
+
+  /**
+   * Whether the **icon badge** follows the semantic `color` prop or stays
+   * neutral. Default `'accent'` keeps the small colored icon as a scan
+   * hint (info = blue, warning = amber, etc.) — the only accent left when
+   * `valueColor` is neutral, so the card still has identity.
+   */
+  @Input() iconColor: StatCardValueColor = 'accent';
 
   /** Whether the card is in active/selected state */
   @Input() active = false;

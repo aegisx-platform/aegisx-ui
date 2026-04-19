@@ -63,13 +63,10 @@ $colors: (
   &--clickable {
     cursor: pointer;
 
+    // Hover: just a slightly darker border. No shadow — avoids the
+    // heavy "card lifted" feel that clashed with flat/gray-canvas pages.
     &:hover {
       border-color: var(--ax-border-emphasis, #d4d4d8);
-      box-shadow: var(--ax-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-    }
-
-    &:active {
-      box-shadow: none;
     }
   }
 }
@@ -136,7 +133,10 @@ $colors: (
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.025em;
-  color: var(--ax-text-heading, #09090b);
+  // Body-text weight (zinc-700) — matches other text on the page so the
+  // number feels like data, not a heading. Use `valueColor="accent"` to
+  // opt into semantic color tint when emphasis is needed.
+  color: var(--ax-text-primary, #3f3f46);
 }
 
 .ax-stat-card__subtitle {
@@ -230,17 +230,28 @@ $colors: (
   margin-top: 1px;
 }
 
-// Leading icon tint per semantic color
+// Leading icon tint per semantic color — only applied when iconColor/
+// valueColor are set to 'accent' (see StatCardValueColor). Default is
+// 'accent' for icon, 'neutral' for value, so the icon badge carries the
+// accent while the number stays readable data.
 @each $name, $tokens in $colors {
-  .ax-stat-card--icon-leading[data-color='#{$name}']
+  .ax-stat-card--icon-leading[data-color='#{$name}'][data-icon-color='accent']
     .ax-stat-card__leading-icon {
     background-color: map-get($tokens, active-bg);
     color: map-get($tokens, dot);
   }
 
-  .ax-stat-card--icon-leading[data-color='#{$name}'] .ax-stat-card__value {
+  .ax-stat-card--icon-leading[data-color='#{$name}'][data-value-color='accent']
+    .ax-stat-card__value {
     color: map-get($tokens, dot);
   }
+}
+
+// Neutral icon override — muted gray badge, regardless of semantic color.
+.ax-stat-card--icon-leading[data-icon-color='neutral']
+  .ax-stat-card__leading-icon {
+  background-color: var(--ax-background-muted, #fafafa);
+  color: var(--ax-text-secondary, #71717a);
 }
 
 // ----------------------------------------------------------------------------
@@ -318,8 +329,16 @@ $colors: (
     border-color: color-mix(in srgb, map-get($tokens, dot) 40%, transparent);
     box-shadow: 0 0 0 3px map-get($tokens, active-bg);
   }
-  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}']
-    .ax-stat-card__value,
+  // Value color in hero-active only when valueColor='accent' (default for
+  // hero is still 'neutral', so active cards get a ring + colored icon but
+  // the number stays readable unless explicitly opted-in).
+  .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}'][data-value-color='accent']
+    .ax-stat-card__value {
+    color: map-get($tokens, dot);
+  }
+  // Ghost icon always picks up the semantic color on active hero — the
+  // icon is already a faint watermark, so tinting it reads as "this
+  // card is active" without affecting the primary number.
   .ax-stat-card--hero.ax-stat-card--active[data-color='#{$name}']
     .ax-stat-card__ghost-icon {
     color: map-get($tokens, dot);
