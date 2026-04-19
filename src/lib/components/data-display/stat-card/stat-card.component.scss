@@ -344,7 +344,17 @@ $colors: (
 .ax-stat-card--trend,
 .ax-stat-card--comparison,
 .ax-stat-card--breakdown,
-.ax-stat-card--bars {
+.ax-stat-card--bars,
+.ax-stat-card--stacked-bar,
+.ax-stat-card--dual-metric,
+.ax-stat-card--threshold,
+.ax-stat-card--progress-steps,
+.ax-stat-card--heatmap,
+.ax-stat-card--metric-grid,
+.ax-stat-card--ranking,
+.ax-stat-card--donut-legend,
+.ax-stat-card--gauge-split,
+.ax-stat-card--category-browser {
   padding: 18px 20px;
 
   .ax-stat-card__hero-header {
@@ -391,7 +401,18 @@ $colors: (
 .ax-stat-card--comparison .ax-stat-card__hero-icon,
 .ax-stat-card--breakdown .ax-stat-card__hero-icon,
 .ax-stat-card--bars .ax-stat-card__hero-icon,
-.ax-stat-card--status .ax-stat-card__hero-icon {
+.ax-stat-card--status .ax-stat-card__hero-icon,
+.ax-stat-card--stacked-bar .ax-stat-card__hero-icon,
+.ax-stat-card--dual-metric .ax-stat-card__hero-icon,
+.ax-stat-card--compare-period .ax-stat-card__hero-icon,
+.ax-stat-card--threshold .ax-stat-card__hero-icon,
+.ax-stat-card--progress-steps .ax-stat-card__hero-icon,
+.ax-stat-card--heatmap .ax-stat-card__hero-icon,
+.ax-stat-card--metric-grid .ax-stat-card__hero-icon,
+.ax-stat-card--ranking .ax-stat-card__hero-icon,
+.ax-stat-card--donut-legend .ax-stat-card__hero-icon,
+.ax-stat-card--gauge-split .ax-stat-card__hero-icon,
+.ax-stat-card--category-browser .ax-stat-card__hero-icon {
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -714,6 +735,1174 @@ $colors: (
 }
 .ax-stat-card__status-sep {
   opacity: 0.6;
+}
+
+// ----------------------------------------------------------------------------
+// Gauge — semi-circle speedometer (180° arc)
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--gauge {
+  padding: 18px 20px;
+}
+.ax-stat-card__gauge-layout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ax-stat-card__gauge {
+  width: 110px;
+  height: 68px;
+  flex-shrink: 0;
+  overflow: visible;
+}
+.ax-stat-card__gauge-track {
+  fill: none;
+  stroke: var(--ax-background-muted, #fafafa);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.ax-stat-card__gauge-fill {
+  fill: none;
+  stroke: var(--ax-text-secondary, #71717a);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 400ms ease-out;
+}
+.ax-stat-card__gauge-text {
+  font-size: 14px;
+  font-weight: 700;
+  fill: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__gauge-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ax-stat-card__gauge-body .ax-stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ax-text-primary, #3f3f46);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.ax-stat-card__gauge-body .ax-stat-card__label--hero {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ax-text-secondary, #71717a);
+}
+.ax-stat-card__gauge-subtitle {
+  font-size: 0.75rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  margin-top: 2px;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--gauge[data-color='#{$name}'] .ax-stat-card__gauge-fill {
+    stroke: map-get($tokens, dot);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Stacked-bar — multi-segment horizontal bar + legend
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--stacked-bar {
+  padding: 18px 20px;
+}
+.ax-stat-card__stacked-bar {
+  display: flex;
+  height: 8px;
+  margin-top: 12px;
+  background: var(--ax-background-muted, #fafafa);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ax-stat-card__stacked-seg {
+  height: 100%;
+  background: var(--ax-text-subtle, #a1a1aa);
+  transition: width 300ms ease-out;
+}
+.ax-stat-card__stacked-seg + .ax-stat-card__stacked-seg {
+  margin-left: 2px; // tiny gap so segments read as distinct
+}
+.ax-stat-card__stacked-seg[data-color='primary'] {
+  background: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__stacked-seg[data-color='info'] {
+  background: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__stacked-seg[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__stacked-seg[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__stacked-seg[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__stacked-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+}
+.ax-stat-card__stacked-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ax-text-default, #3f3f46);
+}
+.ax-stat-card__stacked-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__stacked-dot[data-color='primary'] {
+  background: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__stacked-dot[data-color='info'] {
+  background: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__stacked-dot[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__stacked-dot[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__stacked-dot[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+
+// ----------------------------------------------------------------------------
+// Billboard — full-bleed colored hero card + embedded chart
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--billboard {
+  padding: 24px 28px;
+  color: #ffffff;
+  // Fixed dark bg (not --ax-text-heading which flips to white in dark
+  // theme and kills contrast). Users opt into a semantic [color] below
+  // for a colored billboard.
+  background: #18181b;
+  border-color: transparent;
+  min-height: 180px;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--billboard[data-color='#{$name}'] {
+    background: map-get($tokens, dot);
+    border-color: transparent;
+  }
+}
+.ax-stat-card--billboard.ax-stat-card--clickable:hover {
+  border-color: transparent;
+  filter: brightness(1.05);
+}
+.ax-stat-card__billboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.ax-stat-card__label--billboard {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8px;
+}
+.ax-stat-card__value--billboard {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__billboard-meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.ax-stat-card__billboard-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 60px;
+  margin-top: 20px;
+
+  .ax-stat-card__bar {
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 2px 2px 0 0;
+  }
+}
+.ax-stat-card__bar-labels--billboard {
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 6px;
+}
+.ax-stat-card__sparkline--billboard {
+  margin-top: 20px;
+  height: 50px;
+  .ax-stat-card__sparkline-line {
+    stroke: #ffffff;
+    stroke-width: 2;
+  }
+  .ax-stat-card__sparkline-area {
+    fill: rgba(255, 255, 255, 0.18);
+    opacity: 1;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Dual-metric — split bar + 2 rows (value + delta + label)
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--dual-metric {
+  padding: 18px 20px;
+}
+.ax-stat-card__dual-bar {
+  display: flex;
+  height: 8px;
+  margin-top: 12px;
+  background: var(--ax-background-muted, #fafafa);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ax-stat-card__dual-seg {
+  height: 100%;
+  background: var(--ax-text-subtle, #a1a1aa);
+  transition: width 300ms ease-out;
+}
+.ax-stat-card__dual-seg + .ax-stat-card__dual-seg {
+  margin-left: 2px;
+}
+.ax-stat-card__dual-seg[data-color='primary'] {
+  background: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__dual-seg[data-color='info'] {
+  background: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__dual-seg[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__dual-seg[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__dual-seg[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__dual-rows {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ax-stat-card__dual-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+.ax-stat-card__dual-stripe {
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  background: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__dual-stripe[data-color='primary'] {
+  background: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__dual-stripe[data-color='info'] {
+  background: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__dual-stripe[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__dual-stripe[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__dual-stripe[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__dual-value {
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__dual-delta {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__dual-delta[data-direction='up'] {
+  color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__dual-delta[data-direction='down'] {
+  color: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__dual-label {
+  margin-left: auto;
+  color: var(--ax-text-secondary, #71717a);
+  font-size: 0.8125rem;
+}
+
+// ----------------------------------------------------------------------------
+// Inline-bars — dense barcode-style bars behind big value
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--inline-bars {
+  padding: 18px 20px;
+}
+.ax-stat-card__value--inline {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__inline-delta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ax-success-default, #22c55e);
+  margin-top: 6px;
+}
+.ax-stat-card__inline-delta-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+}
+.ax-stat-card__inline-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 28px;
+  margin-top: 12px;
+}
+.ax-stat-card__inline-bar {
+  flex: 1;
+  min-width: 0;
+  background: var(--ax-text-subtle, #a1a1aa);
+  border-radius: 1px;
+  min-height: 2px;
+  transition: height 220ms ease-out;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--inline-bars[data-color='#{$name}']
+    .ax-stat-card__inline-bar {
+    background: map-get($tokens, dot);
+  }
+  .ax-stat-card--inline-bars[data-color='#{$name}']
+    .ax-stat-card__inline-delta {
+    color: map-get($tokens, dot);
+  }
+}
+.ax-stat-card__inline-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ax-border-subtle, #f4f4f5);
+  font-size: 0.8125rem;
+  color: var(--ax-text-secondary, #71717a);
+}
+.ax-stat-card__inline-footer-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  color: var(--ax-text-subtle, #a1a1aa);
+}
+
+// ----------------------------------------------------------------------------
+// Compare-period — current box (emphasised) + baseline boxes (muted)
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--compare-period {
+  padding: 18px 20px;
+}
+.ax-stat-card__cp-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ax-stat-card__cp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.ax-stat-card__cp-box {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--ax-border-default, #e4e4e7);
+  background: var(--ax-background-muted, #fafafa);
+}
+.ax-stat-card__cp-box--current {
+  background: var(--ax-background-default, #ffffff);
+  border-color: var(--ax-border-emphasis, #d4d4d8);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--ax-text-subtle, #a1a1aa) 10%, transparent);
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--compare-period[data-color='#{$name}']
+    .ax-stat-card__cp-box--current {
+    border-color: color-mix(
+      in srgb,
+      map-get($tokens, dot) 40%,
+      transparent
+    );
+    box-shadow: 0 0 0 2px map-get($tokens, active-bg);
+  }
+}
+.ax-stat-card__cp-label {
+  font-size: 0.75rem;
+  color: var(--ax-text-secondary, #71717a);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.ax-stat-card__cp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ax-stat-card__cp-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.ax-stat-card__cp-box:not(.ax-stat-card__cp-box--current)
+  .ax-stat-card__cp-value {
+  color: var(--ax-text-secondary, #71717a);
+  font-weight: 600;
+}
+.ax-stat-card__cp-delta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__cp-delta[data-direction='up'] {
+  color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__cp-delta[data-direction='down'] {
+  color: var(--ax-error-default, #ef4444);
+}
+
+// ----------------------------------------------------------------------------
+// Threshold — value on a min-max scale with markers
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__threshold {
+  margin-top: 14px;
+  position: relative;
+  padding-bottom: 24px;
+}
+.ax-stat-card__threshold-track {
+  position: relative;
+  height: 8px;
+  background: var(--ax-background-muted, #fafafa);
+  border-radius: 999px;
+  overflow: visible;
+}
+.ax-stat-card__threshold-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ax-text-secondary, #71717a);
+  transition: width 300ms ease-out;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--threshold[data-color='#{$name}']
+    .ax-stat-card__threshold-fill {
+    background: map-get($tokens, dot);
+  }
+}
+.ax-stat-card__threshold-marker {
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--ax-text-heading, #09090b);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+.ax-stat-card__threshold-marker[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__threshold-marker[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__threshold-marker[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__threshold-labels {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 0.6875rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__threshold-label-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--ax-text-secondary, #71717a);
+  font-weight: 500;
+}
+
+// ----------------------------------------------------------------------------
+// Progress-steps — workflow pipeline (dots + connectors + labels)
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__steps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  gap: 4px;
+}
+.ax-stat-card__step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+}
+.ax-stat-card__step-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ax-background-muted, #fafafa);
+  border: 2px solid var(--ax-border-default, #e4e4e7);
+  z-index: 1;
+  position: relative;
+  transition: background 160ms ease;
+}
+.ax-stat-card__step[data-state='done'] .ax-stat-card__step-dot {
+  background: var(--ax-success-default, #22c55e);
+  border-color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__step[data-state='active'] .ax-stat-card__step-dot {
+  background: var(--ax-info-default, #3b82f6);
+  border-color: var(--ax-info-default, #3b82f6);
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--ax-info-default, #3b82f6) 20%, transparent);
+}
+.ax-stat-card__step-line {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--ax-border-default, #e4e4e7);
+  z-index: 0;
+}
+.ax-stat-card__step[data-state='done'] .ax-stat-card__step-line {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__step-body {
+  margin-top: 8px;
+  text-align: center;
+  min-width: 0;
+}
+.ax-stat-card__step-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ax-text-secondary, #71717a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ax-stat-card__step[data-state='active'] .ax-stat-card__step-label,
+.ax-stat-card__step[data-state='done'] .ax-stat-card__step-label {
+  color: var(--ax-text-heading, #09090b);
+}
+.ax-stat-card__step-count {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+// ----------------------------------------------------------------------------
+// Heatmap — 2D intensity grid
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__heatmap-grid {
+  display: grid;
+  gap: 3px;
+  margin-top: 14px;
+}
+.ax-stat-card__heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--ax-text-secondary, #71717a);
+  min-height: 10px;
+  transition: transform 120ms ease;
+}
+.ax-stat-card__heatmap-cell:hover {
+  transform: scale(1.15);
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--heatmap[data-color='#{$name}']
+    .ax-stat-card__heatmap-cell {
+    background: map-get($tokens, dot);
+  }
+}
+.ax-stat-card__heatmap-labels {
+  display: grid;
+  gap: 3px;
+  margin-top: 6px;
+  font-size: 0.625rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+  text-align: center;
+}
+
+// ----------------------------------------------------------------------------
+// Metric-grid — 2×2 mini-metrics
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 14px;
+  border-top: 1px solid var(--ax-border-subtle, #f4f4f5);
+  border-left: 1px solid var(--ax-border-subtle, #f4f4f5);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.ax-stat-card__grid-cell {
+  padding: 12px 14px;
+  border-right: 1px solid var(--ax-border-subtle, #f4f4f5);
+  border-bottom: 1px solid var(--ax-border-subtle, #f4f4f5);
+  min-width: 0; // lets children shrink below intrinsic width
+  overflow: hidden;
+}
+.ax-stat-card__grid-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  color: var(--ax-text-subtle, #a1a1aa);
+  margin-bottom: 4px;
+}
+.ax-stat-card__grid-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.ax-stat-card__grid-label {
+  font-size: 0.75rem;
+  color: var(--ax-text-secondary, #71717a);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap; // delta chip drops below the label on narrow cells
+  min-width: 0;
+}
+.ax-stat-card__grid-delta {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.ax-stat-card__grid-delta {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__grid-delta[data-direction='up'] {
+  color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__grid-delta[data-direction='down'] {
+  color: var(--ax-error-default, #ef4444);
+}
+
+// ----------------------------------------------------------------------------
+// Ranking — top-N list
+// ----------------------------------------------------------------------------
+
+.ax-stat-card__ranking {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ax-stat-card__rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ax-border-subtle, #f4f4f5);
+}
+.ax-stat-card__rank-row:last-child {
+  border-bottom: none;
+}
+.ax-stat-card__rank-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ax-text-subtle, #a1a1aa);
+  font-variant-numeric: tabular-nums;
+  min-width: 24px;
+}
+.ax-stat-card__rank-label {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--ax-text-default, #3f3f46);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-stat-card__rank-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__rank-delta {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ax-text-subtle, #a1a1aa);
+  min-width: 40px;
+  text-align: right;
+}
+.ax-stat-card__rank-delta[data-direction='up'] {
+  color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__rank-delta[data-direction='down'] {
+  color: var(--ax-error-default, #ef4444);
+}
+
+// ----------------------------------------------------------------------------
+// Journey — before → after narrative (3-col split)
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--journey {
+  padding: 20px 24px;
+}
+.ax-stat-card__journey {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+}
+.ax-stat-card__journey-side {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ax-stat-card__journey-side--projected {
+  text-align: right;
+}
+.ax-stat-card__journey-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ax-text-secondary, #71717a);
+}
+.ax-stat-card__journey-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ax-text-primary, #3f3f46);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.ax-stat-card__journey-side--projected .ax-stat-card__journey-value {
+  color: var(--ax-text-heading, #09090b);
+}
+.ax-stat-card__journey-tag {
+  font-size: 0.75rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--journey[data-color='#{$name}']
+    .ax-stat-card__journey-side--projected
+    .ax-stat-card__journey-value {
+    color: map-get($tokens, dot);
+  }
+  .ax-stat-card--journey[data-color='#{$name}']
+    .ax-stat-card__journey-icon {
+    background: map-get($tokens, active-bg);
+    color: map-get($tokens, dot);
+  }
+}
+.ax-stat-card__journey-icon,
+.ax-stat-card__journey-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--ax-background-muted, #fafafa);
+  color: var(--ax-text-secondary, #71717a);
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Donut-legend — 360° multi-segment donut + legend rows
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--donut-legend {
+  padding: 18px 20px;
+}
+.ax-stat-card__donut-layout {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 14px;
+}
+.ax-stat-card__donut {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  // Stroke-width 12 with r=36 pushes the outer edge beyond the viewBox.
+  // overflow: visible stops SVG from clipping the top/bottom of the
+  // circle, which was making the donut look squashed.
+  overflow: visible;
+}
+.ax-stat-card__donut-track {
+  fill: none;
+  stroke: var(--ax-background-muted, #fafafa);
+  stroke-width: 12;
+}
+.ax-stat-card__donut-seg {
+  fill: none;
+  stroke: var(--ax-text-secondary, #71717a);
+  stroke-width: 12;
+  stroke-linecap: butt;
+  transition:
+    stroke-dasharray 400ms ease-out,
+    stroke-dashoffset 400ms ease-out;
+}
+.ax-stat-card__donut-seg[data-color='primary'] {
+  stroke: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__donut-seg[data-color='info'] {
+  stroke: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__donut-seg[data-color='success'] {
+  stroke: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__donut-seg[data-color='warning'] {
+  stroke: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__donut-seg[data-color='error'] {
+  stroke: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__donut-center-label {
+  font-size: 9px;
+  font-weight: 500;
+  fill: var(--ax-text-secondary, #71717a);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ax-stat-card__donut-center-value {
+  font-size: 14px;
+  font-weight: 700;
+  fill: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__donut-legend {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ax-stat-card__donut-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.8125rem;
+}
+.ax-stat-card__donut-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--ax-text-subtle, #a1a1aa);
+  align-self: center;
+}
+.ax-stat-card__donut-dot[data-color='primary'] {
+  background: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__donut-dot[data-color='info'] {
+  background: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__donut-dot[data-color='success'] {
+  background: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__donut-dot[data-color='warning'] {
+  background: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__donut-dot[data-color='error'] {
+  background: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__donut-label {
+  color: var(--ax-text-default, #3f3f46);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-stat-card__donut-value {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__donut-percent {
+  color: var(--ax-text-subtle, #a1a1aa);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+// ----------------------------------------------------------------------------
+// Gauge-split — 180° multi-segment gauge + legend + center total
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--gauge-split {
+  padding: 18px 20px;
+}
+.ax-stat-card__gauge-split-layout {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 14px;
+}
+.ax-stat-card__gauge-split-chart {
+  position: relative;
+  flex-shrink: 0;
+  width: 140px;
+  height: 90px;
+}
+.ax-stat-card__gauge-split {
+  width: 140px;
+  height: 90px;
+  // Same stroke-clip issue as the donut — stroke-width 10 on the arc
+  // path would be cropped at the viewBox edges.
+  overflow: visible;
+}
+.ax-stat-card__gauge-split-track {
+  fill: none;
+  stroke: var(--ax-background-muted, #fafafa);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+.ax-stat-card__gauge-split-seg {
+  fill: none;
+  stroke: var(--ax-text-secondary, #71717a);
+  stroke-width: 10;
+  stroke-linecap: butt;
+  transition:
+    stroke-dasharray 400ms ease-out,
+    stroke-dashoffset 400ms ease-out;
+}
+.ax-stat-card__gauge-split-seg[data-color='primary'] {
+  stroke: var(--ax-brand-default, #6366f1);
+}
+.ax-stat-card__gauge-split-seg[data-color='info'] {
+  stroke: var(--ax-info-default, #3b82f6);
+}
+.ax-stat-card__gauge-split-seg[data-color='success'] {
+  stroke: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__gauge-split-seg[data-color='warning'] {
+  stroke: var(--ax-warning-default, #f59e0b);
+}
+.ax-stat-card__gauge-split-seg[data-color='error'] {
+  stroke: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__gauge-split-center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  text-align: center;
+  pointer-events: none;
+}
+.ax-stat-card__gauge-split-center-label {
+  font-size: 0.75rem;
+  color: var(--ax-text-secondary, #71717a);
+  font-weight: 500;
+}
+.ax-stat-card__gauge-split-center-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--ax-text-heading, #09090b);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+.ax-stat-card__gauge-split-legend {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ax-stat-card__gauge-split-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.8125rem;
+}
+
+// ----------------------------------------------------------------------------
+// Category-browser — main metric + bars + prev/next navigator
+// ----------------------------------------------------------------------------
+
+.ax-stat-card--category-browser {
+  padding: 18px 20px;
+}
+.ax-stat-card__cb-main-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+
+  .ax-stat-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ax-text-heading, #09090b);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+.ax-stat-card__cb-delta {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ax-success-default, #22c55e);
+}
+.ax-stat-card__cb-delta[data-direction='down'] {
+  color: var(--ax-error-default, #ef4444);
+}
+.ax-stat-card__cb-delta-label {
+  font-size: 0.8125rem;
+  color: var(--ax-text-subtle, #a1a1aa);
+}
+.ax-stat-card__cb-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 32px;
+  margin-top: 12px;
+}
+.ax-stat-card__cb-bar {
+  flex: 1;
+  min-width: 0;
+  min-height: 2px;
+  background: var(--ax-text-subtle, #a1a1aa);
+  border-radius: 1px;
+}
+@each $name, $tokens in $colors {
+  .ax-stat-card--category-browser[data-color='#{$name}']
+    .ax-stat-card__cb-bar {
+    background: map-get($tokens, dot);
+  }
+}
+.ax-stat-card__cb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ax-border-subtle, #f4f4f5);
+  flex-wrap: wrap;
+}
+.ax-stat-card__cb-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.ax-stat-card__cb-category {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ax-text-heading, #09090b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.ax-stat-card__cb-arrow {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--ax-border-default, #e4e4e7);
+  background: var(--ax-background-default, #ffffff);
+  color: var(--ax-text-secondary, #71717a);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+  }
+
+  &:hover {
+    background: var(--ax-background-muted, #fafafa);
+    color: var(--ax-text-heading, #09090b);
+  }
+}
+.ax-stat-card__cb-sub {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: var(--ax-text-secondary, #71717a);
+  font-variant-numeric: tabular-nums;
+}
+.ax-stat-card__cb-sub-value {
+  font-weight: 600;
+  color: var(--ax-text-heading, #09090b);
 }
 
 // ----------------------------------------------------------------------------

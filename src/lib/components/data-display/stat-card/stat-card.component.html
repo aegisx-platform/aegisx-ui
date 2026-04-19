@@ -10,6 +10,21 @@
   [class.ax-stat-card--breakdown]="variant === 'breakdown'"
   [class.ax-stat-card--bars]="variant === 'bars'"
   [class.ax-stat-card--status]="variant === 'status'"
+  [class.ax-stat-card--gauge]="variant === 'gauge'"
+  [class.ax-stat-card--stacked-bar]="variant === 'stacked-bar'"
+  [class.ax-stat-card--billboard]="variant === 'billboard'"
+  [class.ax-stat-card--dual-metric]="variant === 'dual-metric'"
+  [class.ax-stat-card--inline-bars]="variant === 'inline-bars'"
+  [class.ax-stat-card--compare-period]="variant === 'compare-period'"
+  [class.ax-stat-card--threshold]="variant === 'threshold'"
+  [class.ax-stat-card--progress-steps]="variant === 'progress-steps'"
+  [class.ax-stat-card--heatmap]="variant === 'heatmap'"
+  [class.ax-stat-card--metric-grid]="variant === 'metric-grid'"
+  [class.ax-stat-card--ranking]="variant === 'ranking'"
+  [class.ax-stat-card--journey]="variant === 'journey'"
+  [class.ax-stat-card--donut-legend]="variant === 'donut-legend'"
+  [class.ax-stat-card--gauge-split]="variant === 'gauge-split'"
+  [class.ax-stat-card--category-browser]="variant === 'category-browser'"
   [attr.data-color]="color"
   [attr.data-value-color]="valueColor"
   [attr.data-icon-color]="iconColor"
@@ -157,6 +172,693 @@
         }
       </div>
     </div>
+  } @else if (variant === 'gauge') {
+    <!-- Gauge: semi-circle speedometer + right-side label/value -->
+    <div class="ax-stat-card__gauge-layout">
+      <svg
+        class="ax-stat-card__gauge"
+        viewBox="0 0 80 50"
+        role="img"
+        [attr.aria-label]="clampedProgress + ' percent'"
+      >
+        <path
+          class="ax-stat-card__gauge-track"
+          d="M 4 44 A 36 36 0 0 1 76 44"
+        />
+        <path
+          class="ax-stat-card__gauge-fill"
+          d="M 4 44 A 36 36 0 0 1 76 44"
+          [attr.stroke-dasharray]="gaugeCircumference"
+          [attr.stroke-dashoffset]="gaugeDashOffset"
+        />
+        <text
+          class="ax-stat-card__gauge-text"
+          x="40"
+          y="44"
+          text-anchor="middle"
+        >
+          {{ clampedProgress }}%
+        </text>
+      </svg>
+      <div class="ax-stat-card__gauge-body">
+        @if (label) {
+          <div class="ax-stat-card__label ax-stat-card__label--hero">
+            {{ label }}
+          </div>
+        }
+        <div class="ax-stat-card__value">{{ value }}</div>
+        @if (progressLabel || subtitle) {
+          <div class="ax-stat-card__gauge-subtitle">
+            {{ progressLabel || subtitle }}
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (variant === 'stacked-bar') {
+    <!-- Stacked-bar: single multi-segment horizontal bar + legend -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="ax-stat-card__value-row">
+      <span class="ax-stat-card__value">{{ value }}</span>
+      @if (subtitle) {
+        <span class="ax-stat-card__delta">· {{ subtitle }}</span>
+      }
+    </div>
+    @if (segmentViews.length > 0) {
+      <div class="ax-stat-card__stacked-bar">
+        @for (seg of segmentViews; track seg.label) {
+          <span
+            class="ax-stat-card__stacked-seg"
+            [attr.data-color]="seg.color ?? 'neutral'"
+            [style.width.%]="seg.percent"
+          ></span>
+        }
+      </div>
+      <div class="ax-stat-card__stacked-legend">
+        @for (seg of segmentViews; track seg.label) {
+          <span class="ax-stat-card__stacked-chip">
+            <span
+              class="ax-stat-card__stacked-dot"
+              [attr.data-color]="seg.color ?? 'neutral'"
+            ></span>
+            {{ seg.label }}
+          </span>
+        }
+      </div>
+    }
+  } @else if (variant === 'billboard') {
+    <!-- Billboard: full-bleed colored hero card + optional embedded chart -->
+    <div class="ax-stat-card__billboard-header">
+      <div class="ax-stat-card__billboard-title">
+        @if (label) {
+          <div class="ax-stat-card__label--billboard">{{ label }}</div>
+        }
+        <div class="ax-stat-card__value ax-stat-card__value--billboard">
+          {{ value }}
+        </div>
+      </div>
+      @if (meta) {
+        <div class="ax-stat-card__billboard-meta">{{ meta }}</div>
+      }
+    </div>
+    @if (barData && barData.length > 0) {
+      <div class="ax-stat-card__billboard-bars">
+        @for (h of barHeights; track $index) {
+          <div class="ax-stat-card__bar-col">
+            <div class="ax-stat-card__bar" [style.height.%]="h"></div>
+          </div>
+        }
+      </div>
+      @if (barLabels && barLabels.length > 0) {
+        <div class="ax-stat-card__bar-labels ax-stat-card__bar-labels--billboard">
+          @for (bl of barLabels; track $index) {
+            <span>{{ bl }}</span>
+          }
+        </div>
+      }
+    } @else if (sparklinePoints) {
+      <svg
+        class="ax-stat-card__sparkline ax-stat-card__sparkline--billboard"
+        viewBox="0 0 100 30"
+        preserveAspectRatio="none"
+      >
+        <polygon class="ax-stat-card__sparkline-area" [attr.points]="sparklineAreaPoints" />
+        <polyline class="ax-stat-card__sparkline-line" [attr.points]="sparklinePoints" />
+      </svg>
+    }
+  } @else if (variant === 'dual-metric') {
+    <!-- Dual-metric: split-bar + 2 rows with value + delta + label -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    @if (metricViews.length > 0) {
+      <div class="ax-stat-card__dual-bar">
+        @for (m of metricViews; track m.label) {
+          <span
+            class="ax-stat-card__dual-seg"
+            [attr.data-color]="m.color ?? 'neutral'"
+            [style.width.%]="m.percent"
+          ></span>
+        }
+      </div>
+      <div class="ax-stat-card__dual-rows">
+        @for (m of metricViews; track m.label) {
+          <div class="ax-stat-card__dual-row">
+            <span
+              class="ax-stat-card__dual-stripe"
+              [attr.data-color]="m.color ?? 'neutral'"
+            ></span>
+            <span class="ax-stat-card__dual-value">{{ m.value }}</span>
+            @if (m.delta) {
+              <span
+                class="ax-stat-card__dual-delta"
+                [attr.data-direction]="m.deltaDirection ?? null"
+              >
+                {{ m.delta }}
+              </span>
+            }
+            <span class="ax-stat-card__dual-label">{{ m.label }}</span>
+          </div>
+        }
+      </div>
+    }
+  } @else if (variant === 'inline-bars') {
+    <!-- Inline-bars: big value + dense barcode-style bars behind, icon+caption footer -->
+    <div class="ax-stat-card__value ax-stat-card__value--inline">
+      {{ value }}
+    </div>
+    @if (subtitle) {
+      <div class="ax-stat-card__inline-delta">
+        @if (icon) {
+          <mat-icon class="ax-stat-card__inline-delta-icon">trending_up</mat-icon>
+        }
+        <span>{{ subtitle }}</span>
+      </div>
+    }
+    @if (barData && barData.length > 0) {
+      <div class="ax-stat-card__inline-bars">
+        @for (h of barHeights; track $index) {
+          <span
+            class="ax-stat-card__inline-bar"
+            [style.height.%]="h"
+          ></span>
+        }
+      </div>
+    }
+    @if (label) {
+      <div class="ax-stat-card__inline-footer">
+        @if (icon) {
+          <mat-icon class="ax-stat-card__inline-footer-icon">{{ icon }}</mat-icon>
+        }
+        <span>{{ label }}</span>
+      </div>
+    }
+  } @else if (variant === 'compare-period') {
+    <!-- Compare-period: current box (emphasised) + baseline boxes (muted) -->
+    @if (label) {
+      <div class="ax-stat-card__cp-header">
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+        @if (icon) {
+          <span class="ax-stat-card__hero-icon">
+            <mat-icon>{{ icon }}</mat-icon>
+          </span>
+        }
+      </div>
+    }
+    @if (periods && periods.length > 0) {
+      <div class="ax-stat-card__cp-grid">
+        @for (p of periods; track p.label; let i = $index) {
+          <div
+            class="ax-stat-card__cp-box"
+            [class.ax-stat-card__cp-box--current]="i === 0"
+          >
+            <div class="ax-stat-card__cp-label">{{ p.label }}</div>
+            <div class="ax-stat-card__cp-row">
+              <span class="ax-stat-card__cp-value">{{ p.value }}</span>
+              @if (p.delta) {
+                <span
+                  class="ax-stat-card__cp-delta"
+                  [attr.data-direction]="p.deltaDirection ?? null"
+                >
+                  {{ p.delta }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  } @else if (variant === 'threshold') {
+    <!-- Threshold: value on a min-max scale with reorder/max markers -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="ax-stat-card__value-row">
+      <span class="ax-stat-card__value">{{ value }}</span>
+      @if (subtitle) {
+        <span class="ax-stat-card__delta">· {{ subtitle }}</span>
+      }
+    </div>
+    <div class="ax-stat-card__threshold">
+      <div class="ax-stat-card__threshold-track">
+        <div
+          class="ax-stat-card__threshold-fill"
+          [style.width.%]="thresholdValuePercent"
+        ></div>
+        @for (t of thresholdViews; track t.label) {
+          <span
+            class="ax-stat-card__threshold-marker"
+            [attr.data-color]="t.color ?? 'neutral'"
+            [style.left.%]="t.percent"
+          ></span>
+        }
+      </div>
+      <div class="ax-stat-card__threshold-labels">
+        <span>{{ min ?? 0 }}</span>
+        @for (t of thresholdViews; track t.label) {
+          <span
+            class="ax-stat-card__threshold-label-tick"
+            [style.left.%]="t.percent"
+          >
+            {{ t.label }}
+          </span>
+        }
+        <span>{{ max ?? 100 }}</span>
+      </div>
+    </div>
+  } @else if (variant === 'progress-steps') {
+    <!-- Progress-steps: horizontal pipeline with dots + connectors -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    @if (value) {
+      <div class="ax-stat-card__value-row">
+        <span class="ax-stat-card__value">{{ value }}</span>
+        @if (subtitle) {
+          <span class="ax-stat-card__delta">· {{ subtitle }}</span>
+        }
+      </div>
+    }
+    @if (steps && steps.length > 0) {
+      <div class="ax-stat-card__steps">
+        @for (s of steps; track s.label; let i = $index) {
+          <div
+            class="ax-stat-card__step"
+            [attr.data-state]="s.state ?? 'pending'"
+          >
+            <span class="ax-stat-card__step-dot"></span>
+            <div class="ax-stat-card__step-body">
+              <div class="ax-stat-card__step-label">{{ s.label }}</div>
+              @if (s.count != null) {
+                <div class="ax-stat-card__step-count">{{ s.count }}</div>
+              }
+            </div>
+            @if (i < steps.length - 1) {
+              <span class="ax-stat-card__step-line"></span>
+            }
+          </div>
+        }
+      </div>
+    }
+  } @else if (variant === 'heatmap') {
+    <!-- Heatmap: 2D grid of intensity cells + row/col labels -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="ax-stat-card__value-row">
+      <span class="ax-stat-card__value">{{ value }}</span>
+      @if (subtitle) {
+        <span class="ax-stat-card__delta">· {{ subtitle }}</span>
+      }
+    </div>
+    @if (heatmapData && heatmapData.length > 0) {
+      <div
+        class="ax-stat-card__heatmap-grid"
+        [style.grid-template-columns]="'repeat(' + heatmapCols + ', 1fr)'"
+      >
+        @for (cell of heatmapCells; track $index) {
+          <span
+            class="ax-stat-card__heatmap-cell"
+            [style.opacity]="cell.opacity"
+            [attr.title]="cell.value"
+          ></span>
+        }
+      </div>
+      @if (heatmapColLabels && heatmapColLabels.length > 0) {
+        <div
+          class="ax-stat-card__heatmap-labels"
+          [style.grid-template-columns]="'repeat(' + heatmapCols + ', 1fr)'"
+        >
+          @for (lbl of heatmapColLabels; track $index) {
+            <span>{{ lbl }}</span>
+          }
+        </div>
+      }
+    }
+  } @else if (variant === 'metric-grid') {
+    <!-- Metric-grid: 4 mini-metrics in a 2x2 grid -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    @if (cells && cells.length > 0) {
+      <div class="ax-stat-card__grid">
+        @for (c of cells; track $index) {
+          <div class="ax-stat-card__grid-cell">
+            @if (c.icon) {
+              <mat-icon class="ax-stat-card__grid-icon">{{ c.icon }}</mat-icon>
+            }
+            <div class="ax-stat-card__grid-value">{{ c.value }}</div>
+            <div class="ax-stat-card__grid-label">
+              {{ c.label }}
+              @if (c.delta) {
+                <span
+                  class="ax-stat-card__grid-delta"
+                  [attr.data-direction]="c.deltaDirection ?? null"
+                >
+                  {{ c.delta }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  } @else if (variant === 'ranking') {
+    <!-- Ranking: top-N list with rank + label + value + delta -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    @if (ranking && ranking.length > 0) {
+      <ol class="ax-stat-card__ranking">
+        @for (r of ranking; track r.label; let i = $index) {
+          <li class="ax-stat-card__rank-row">
+            <span class="ax-stat-card__rank-num">#{{ i + 1 }}</span>
+            <span class="ax-stat-card__rank-label">{{ r.label }}</span>
+            <span class="ax-stat-card__rank-value">{{ r.value }}</span>
+            @if (r.delta) {
+              <span
+                class="ax-stat-card__rank-delta"
+                [attr.data-direction]="r.deltaDirection ?? null"
+              >
+                {{ r.delta }}
+              </span>
+            }
+          </li>
+        }
+      </ol>
+    }
+  } @else if (variant === 'journey') {
+    <!-- Journey: current → icon/transition → projected. 3-col narrative -->
+    <div class="ax-stat-card__journey">
+      <div class="ax-stat-card__journey-side">
+        <div class="ax-stat-card__journey-label">{{ label || 'Current' }}</div>
+        <div class="ax-stat-card__journey-value">{{ value }}</div>
+        @if (subtitle) {
+          <div class="ax-stat-card__journey-tag">{{ subtitle }}</div>
+        }
+      </div>
+      <div class="ax-stat-card__journey-middle">
+        @if (icon) {
+          <span class="ax-stat-card__journey-icon">
+            <mat-icon>{{ icon }}</mat-icon>
+          </span>
+        } @else {
+          <span class="ax-stat-card__journey-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </span>
+        }
+      </div>
+      <div class="ax-stat-card__journey-side ax-stat-card__journey-side--projected">
+        <div class="ax-stat-card__journey-label">
+          {{ projectedLabel || 'Projected' }}
+        </div>
+        <div class="ax-stat-card__journey-value">{{ projectedValue }}</div>
+        @if (projectedSubtitle) {
+          <div class="ax-stat-card__journey-tag">{{ projectedSubtitle }}</div>
+        }
+      </div>
+    </div>
+  } @else if (variant === 'donut-legend') {
+    <!-- Donut-legend: full 360° multi-segment donut + legend rows right -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="ax-stat-card__donut-layout">
+      <svg
+        class="ax-stat-card__donut"
+        viewBox="0 0 80 80"
+        role="img"
+        aria-label="segmented donut"
+      >
+        <circle class="ax-stat-card__donut-track" cx="40" cy="40" r="36" />
+        <g transform="rotate(-90 40 40)">
+          @for (seg of donutSegmentViews; track seg.label) {
+            <circle
+              class="ax-stat-card__donut-seg"
+              [attr.data-color]="seg.color ?? 'neutral'"
+              cx="40"
+              cy="40"
+              r="36"
+              [attr.stroke-dasharray]="seg.dashArray"
+              [attr.stroke-dashoffset]="seg.dashOffset"
+            />
+          }
+        </g>
+        @if (centerValue) {
+          <text
+            class="ax-stat-card__donut-center-label"
+            x="40"
+            y="36"
+            text-anchor="middle"
+          >
+            {{ centerLabel }}
+          </text>
+          <text
+            class="ax-stat-card__donut-center-value"
+            x="40"
+            y="50"
+            text-anchor="middle"
+          >
+            {{ centerValue }}
+          </text>
+        }
+      </svg>
+      <div class="ax-stat-card__donut-legend">
+        @for (seg of donutSegmentViews; track seg.label) {
+          <div class="ax-stat-card__donut-row">
+            <span
+              class="ax-stat-card__donut-dot"
+              [attr.data-color]="seg.color ?? 'neutral'"
+            ></span>
+            <span class="ax-stat-card__donut-label">{{ seg.label }}</span>
+            <span class="ax-stat-card__donut-value">{{ seg.value }}</span>
+            <span class="ax-stat-card__donut-percent">
+              · {{ seg.percent }}%
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (variant === 'gauge-split') {
+    <!-- Gauge-split: 180° multi-segment arc + legend + center total -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="ax-stat-card__gauge-split-layout">
+      <div class="ax-stat-card__gauge-split-chart">
+        <svg
+          class="ax-stat-card__gauge-split"
+          viewBox="0 0 80 50"
+          role="img"
+          aria-label="segmented gauge"
+        >
+          <path
+            class="ax-stat-card__gauge-split-track"
+            d="M 4 44 A 36 36 0 0 1 76 44"
+          />
+          @for (seg of gaugeSplitSegmentViews; track seg.label) {
+            <path
+              class="ax-stat-card__gauge-split-seg"
+              [attr.data-color]="seg.color ?? 'neutral'"
+              d="M 4 44 A 36 36 0 0 1 76 44"
+              [attr.stroke-dasharray]="seg.dashArray"
+              [attr.stroke-dashoffset]="seg.dashOffset"
+            />
+          }
+        </svg>
+        @if (centerLabel || centerValue) {
+          <div class="ax-stat-card__gauge-split-center">
+            @if (centerLabel) {
+              <div class="ax-stat-card__gauge-split-center-label">
+                {{ centerLabel }}
+              </div>
+            }
+            @if (centerValue) {
+              <div class="ax-stat-card__gauge-split-center-value">
+                {{ centerValue }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+      <div class="ax-stat-card__gauge-split-legend">
+        @for (seg of gaugeSplitSegmentViews; track seg.label) {
+          <div class="ax-stat-card__gauge-split-row">
+            <span
+              class="ax-stat-card__donut-dot"
+              [attr.data-color]="seg.color ?? 'neutral'"
+            ></span>
+            <span class="ax-stat-card__donut-label">{{ seg.label }}</span>
+            <span class="ax-stat-card__donut-value">{{ seg.value }}</span>
+            <span class="ax-stat-card__donut-percent">· {{ seg.percent }}%</span>
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (variant === 'category-browser') {
+    <!-- Category-browser: main metric + bars + prev/next navigator -->
+    <div class="ax-stat-card__hero-header">
+      @if (label) {
+        <div class="ax-stat-card__label ax-stat-card__label--hero">
+          {{ label }}
+        </div>
+      }
+      @if (icon) {
+        <span class="ax-stat-card__hero-icon">
+          <mat-icon>{{ icon }}</mat-icon>
+        </span>
+      }
+    </div>
+    @if (currentCategory) {
+      <div class="ax-stat-card__cb-main-row">
+        <span class="ax-stat-card__value">{{ currentCategory.value }}</span>
+        @if (currentCategory.delta) {
+          <span
+            class="ax-stat-card__cb-delta"
+            [attr.data-direction]="currentCategory.deltaDirection ?? null"
+          >
+            {{ currentCategory.delta }}
+          </span>
+        }
+        @if (currentCategory.deltaLabel) {
+          <span class="ax-stat-card__cb-delta-label">
+            {{ currentCategory.deltaLabel }}
+          </span>
+        }
+      </div>
+      @if (currentCategoryBarHeights.length > 0) {
+        <div class="ax-stat-card__cb-bars">
+          @for (h of currentCategoryBarHeights; track $index) {
+            <span
+              class="ax-stat-card__cb-bar"
+              [style.height.%]="h"
+            ></span>
+          }
+        </div>
+      }
+      <div class="ax-stat-card__cb-footer">
+        <div class="ax-stat-card__cb-nav">
+          <span class="ax-stat-card__cb-category">
+            {{ currentCategory.label }}
+          </span>
+          <button
+            type="button"
+            class="ax-stat-card__cb-arrow"
+            aria-label="Previous category"
+            (click)="onPrevCategory($event)"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button
+            type="button"
+            class="ax-stat-card__cb-arrow"
+            aria-label="Next category"
+            (click)="onNextCategory($event)"
+          >
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        @if (currentCategory.subValue) {
+          <div class="ax-stat-card__cb-sub">
+            <span class="ax-stat-card__cb-sub-value">
+              {{ currentCategory.subValue }}
+            </span>
+            @if (currentCategory.subDelta) {
+              <span
+                class="ax-stat-card__cb-delta"
+                [attr.data-direction]="currentCategory.subDeltaDirection ?? null"
+              >
+                · {{ currentCategory.subDelta }}
+              </span>
+            }
+          </div>
+        }
+      </div>
+    }
   } @else if (variant === 'status') {
     <!-- Status: live dot + label + icon top, value below, last-updated -->
     <div class="ax-stat-card__status-header">
