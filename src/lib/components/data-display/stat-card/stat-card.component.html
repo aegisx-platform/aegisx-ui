@@ -9,6 +9,8 @@
   [attr.tabindex]="clickable ? 0 : null"
   (click)="onClick()"
   (keyup.enter)="onClick()"
+  (keydown.space)="$event.preventDefault()"
+  (keyup.space)="onClick()"
 >
   @if (variant === 'icon-leading') {
     <div class="ax-stat-card__leading-icon" [attr.data-color]="color">
