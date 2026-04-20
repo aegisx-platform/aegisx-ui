@@ -184,7 +184,7 @@ import {
         "
         [activeChildRoute]="currentRoute()"
         (childSelect)="onChildSelect($event)"
-        (close)="navService.collapseModule()"
+        (closed)="navService.collapseModule()"
       />
     }
   `,

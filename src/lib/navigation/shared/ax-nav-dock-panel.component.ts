@@ -25,7 +25,7 @@ import { NavModule, NavChild } from '../models/ax-nav.model';
         <button
           type="button"
           class="ax-nav-dock-panel__close"
-          (click)="close.emit()"
+          (click)="closed.emit()"
           aria-label="Close sub-navigation"
         >
           <mat-icon>close</mat-icon>
@@ -225,7 +225,7 @@ export class AxNavDockPanelComponent {
   @Input() activeChildRoute: string | null = null;
 
   @Output() childSelect = new EventEmitter<NavChild>();
-  @Output() close = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 
   resolveIcon(icon: string): string {
     if (icon.startsWith('axd:') || icon.startsWith('axdl:')) {
