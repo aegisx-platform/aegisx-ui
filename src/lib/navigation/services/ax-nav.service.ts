@@ -16,6 +16,7 @@ import {
   NavMode,
   AppGroup,
   NavModule,
+  NavChild,
   Hospital,
   NavNotification,
   NavUser,
@@ -56,6 +57,7 @@ export class AxNavService {
   private _user = signal<NavUser | null>(null);
   private _iconStyle = signal<'mono' | 'diamond'>('mono');
   private _accentId = signal<string>(this.loadFromStorage('accent', 'slate'));
+  private _expandedModuleId = signal<string | null>(null);
 
   // ── Public Readonly ───────────────────────────────────
   readonly mode = this._mode.asReadonly();
@@ -69,6 +71,7 @@ export class AxNavService {
   readonly hospitals = this._hospitals.asReadonly();
   readonly iconStyle = this._iconStyle.asReadonly();
   readonly accentId = this._accentId.asReadonly();
+  readonly expandedModuleId = this._expandedModuleId.asReadonly();
   readonly accent: Signal<NavAccent> = computed(
     () => NAV_ACCENTS.find((a) => a.id === this._accentId()) ?? NAV_ACCENTS[0],
   );
@@ -92,6 +95,12 @@ export class AxNavService {
   readonly unreadCount: Signal<number> = computed(
     () => this._notifications().filter((n) => n.unread).length,
   );
+
+  readonly expandedModule: Signal<NavModule | null> = computed(() => {
+    const id = this._expandedModuleId();
+    if (!id) return null;
+    return this.activeApp()?.modules.find((m) => m.id === id) ?? null;
+  });
 
   // ── Events ────────────────────────────────────────────
   readonly appSwitch$ = new Subject<NavAppSwitchEvent>();
@@ -121,6 +130,9 @@ export class AxNavService {
     if (prev === mode) return;
     this._mode.set(mode);
     this.saveToStorage('mode', mode);
+    if (mode !== 'dock') {
+      this._expandedModuleId.set(null);
+    }
     this.modeChange$.next({ previousMode: prev, newMode: mode });
   }
 
@@ -145,6 +157,15 @@ export class AxNavService {
 
     if (type === 'divider') return;
 
+    const hasChildren = (mod.children?.length ?? 0) > 0;
+    const isDockMode = this._mode() === 'dock';
+
+    // Dock + route module with children → expand panel, don't navigate
+    if (isDockMode && hasChildren && type === 'route') {
+      this.toggleModuleExpand(moduleId);
+      return;
+    }
+
     switch (type) {
       case 'route': {
         this._activeModuleId.set(moduleId);
@@ -156,6 +177,10 @@ export class AxNavService {
           route: fullRoute,
           type: 'route',
         });
+        // Dock + navigating to module without children → close any open panel
+        if (isDockMode && !hasChildren) {
+          this.collapseModule();
+        }
         break;
       }
       case 'action': {
@@ -187,10 +212,32 @@ export class AxNavService {
       }
     }
 
-    // Auto-collapse expanded panel only for route navigation
+    // Auto-collapse expanded panel only for route navigation (non-dock modes)
     if (type === 'route' && this._mode() === 'expanded' && !this._pinned()) {
       this.setMode('rail');
     }
+  }
+
+  toggleModuleExpand(moduleId: string): void {
+    const current = this._expandedModuleId();
+    this._expandedModuleId.set(current === moduleId ? null : moduleId);
+  }
+
+  collapseModule(): void {
+    this._expandedModuleId.set(null);
+  }
+
+  setActiveChild(child: NavChild): void {
+    const app = this.activeApp();
+    const parentId = this._expandedModuleId();
+    if (!app || !parentId) return;
+    this.router.navigate([child.route]);
+    this.moduleClick$.next({
+      appId: app.id,
+      moduleId: parentId,
+      route: child.route,
+      type: 'route',
+    });
   }
 
   setHospital(hospitalId: string): void {
