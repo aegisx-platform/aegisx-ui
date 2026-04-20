@@ -25,3 +25,13 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
  * - square: Square avatar with rounded corners
  */
 export type AvatarShape = 'circle' | 'square';
+
+/**
+ * Optional tint color for the avatar background + initials text.
+ *
+ * The Manage.City-style palette — used by activity / dashboard lists
+ * to visually distinguish rows. When `undefined` the avatar keeps the
+ * existing zinc-neutral appearance (`--ax-background-muted` bg +
+ * `--ax-text-secondary` text).
+ */
+export type AvatarColor = 'blue' | 'pink' | 'green' | 'amber' | 'purple';

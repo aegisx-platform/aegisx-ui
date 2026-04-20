@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AvatarSize, AvatarShape } from './avatar.types';
+import { AvatarSize, AvatarShape, AvatarColor } from './avatar.types';
 
 @Component({
   selector: 'ax-avatar',
@@ -15,6 +15,8 @@ export class AxAvatarComponent {
   @Input() name: string = '';
   @Input() size: AvatarSize = 'md';
   @Input() shape: AvatarShape = 'circle';
+  /** Optional tint color — see {@link AvatarColor}. */
+  @Input() color?: AvatarColor;
 
   imageError = false;
 
@@ -22,6 +24,7 @@ export class AxAvatarComponent {
     const classes = ['ax-avatar'];
     classes.push(`ax-avatar-${this.size}`);
     classes.push(`ax-avatar-${this.shape}`);
+    if (this.color) classes.push(`ax-avatar-tint-${this.color}`);
     return classes.join(' ');
   }
 
