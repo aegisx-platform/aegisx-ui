@@ -480,10 +480,10 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     --ax-spacing-4xl: #{$aegisx-light-spacing-4xl};
 
     /* Form Layout Tokens — 3 density levels (4px base unit) */
-    --ax-form-gap-dense: 0.75rem;    /* 12px — high-volume entry (drug form, PO) */
-    --ax-form-gap-default: 1rem;     /* 16px — standard CRUD forms */
-    --ax-form-gap-relaxed: 1rem;     /* 16px — wizard, onboarding */
-    --ax-form-section-gap: 2.5rem;    /* 40px — between form sections */
+    --ax-form-gap-dense: 0.75rem; /* 12px — high-volume entry (drug form, PO) */
+    --ax-form-gap-default: 1rem; /* 16px — standard CRUD forms */
+    --ax-form-gap-relaxed: 1rem; /* 16px — wizard, onboarding */
+    --ax-form-section-gap: 2.5rem; /* 40px — between form sections */
     --ax-form-card-padding: 0.75rem; /* 12px — padding inside form cards */
 
     /* Success Colors - Levels (50-900) */
@@ -994,9 +994,11 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
 
     /* Font Family (sans-serif stack) */
     --ax-font-family:
-      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
+      sans-serif;
     --ax-font-sans:
-      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
+      sans-serif;
     /* Font Family (monospace stack for code) */
     --ax-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
@@ -1033,6 +1035,39 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
     /* Navigation-Specific Transitions */
     --ax-navigation-transition-duration: 300ms;
     --ax-navigation-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* =============================================================================
+       Dashboard Dark Panel Toolkit — design constants
+       The dark panel is always dark regardless of app light/dark theme.
+       ========================================================================= */
+    --ax-dashboard-panel-bg: linear-gradient(180deg, #0b1220 0%, #0a0f1c 100%);
+    --ax-dashboard-panel-radius: 20px;
+    --ax-dashboard-panel-padding: 22px 28px 28px;
+    --ax-dashboard-panel-body-ratio: 1.4fr 1fr;
+    --ax-dashboard-panel-body-gap: 24px;
+
+    --ax-dashboard-hero-bg: linear-gradient(
+      135deg,
+      #1e40af 0%,
+      #2563eb 50%,
+      #3b82f6 100%
+    );
+    --ax-dashboard-hero-glow: radial-gradient(
+      circle at top right,
+      rgba(147, 197, 253, 0.15),
+      transparent 60%
+    );
+    --ax-dashboard-hero-radius: 18px;
+
+    --ax-dashboard-accent: #3b82f6;
+    --ax-dashboard-accent-soft: #93c5fd;
+    --ax-dashboard-accent-glass: rgba(255, 255, 255, 0.08);
+    --ax-dashboard-accent-glass-strong: rgba(255, 255, 255, 0.18);
+
+    --ax-dashboard-nav-link: rgba(255, 255, 255, 0.7);
+    --ax-dashboard-nav-link-active: #ffffff;
+    --ax-dashboard-nav-link-hover: rgba(255, 255, 255, 0.85);
+    --ax-dashboard-nav-text-muted: rgba(255, 255, 255, 0.5);
   }
 }
 
@@ -1403,9 +1438,11 @@ $aegisx-dark-brand-inverted: #1a237e; // Indigo 900 (dark)
 
     /* Font Family (sans-serif stack) */
     --ax-font-family:
-      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
+      sans-serif;
     --ax-font-sans:
-      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
+      sans-serif;
     /* Font Family (monospace stack for code) */
     --ax-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
