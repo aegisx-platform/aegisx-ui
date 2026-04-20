@@ -39,3 +39,4 @@ export * from './select-card';
 // Dashboard Dark Panel Toolkit
 export * from './hero-metric-card';
 export * from './bar-chart-area';
+export * from './activity-list-card';
