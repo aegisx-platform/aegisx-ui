@@ -50,6 +50,9 @@ export type StatCardValueColor = 'accent' | 'neutral';
  * With visual data
  * - `trend`: hero layout + sparkline line chart below. Needs `trendData`.
  *   Shows movement over time (receipts/day, revenue trend, etc).
+ * - `trend-corner`: hero layout + corner sparkline (60×24, 50% opacity).
+ *   Variant tuned for Manage.City-style KPI tiles — delta chip top,
+ *   big value middle, caption + corner sparkline bottom. Needs `trendData`.
  * - `ring`: circular progress (left) + value/label/subtitle (right).
  *   Needs `progress`. Shows proportion reached — budget, quota, goal.
  * - `comparison`: hero layout + actual-vs-target horizontal bar.
@@ -66,6 +69,7 @@ export type StatCardVariant =
   | 'icon-leading'
   | 'hero'
   | 'trend'
+  | 'trend-corner'
   | 'ring'
   | 'comparison'
   | 'breakdown'

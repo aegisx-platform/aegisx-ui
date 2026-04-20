@@ -5,6 +5,7 @@
   [class.ax-stat-card--icon-leading]="variant === 'icon-leading'"
   [class.ax-stat-card--hero]="variant === 'hero'"
   [class.ax-stat-card--trend]="variant === 'trend'"
+  [class.ax-stat-card--trend-corner]="variant === 'trend-corner'"
   [class.ax-stat-card--ring]="variant === 'ring'"
   [class.ax-stat-card--comparison]="variant === 'comparison'"
   [class.ax-stat-card--breakdown]="variant === 'breakdown'"
@@ -919,6 +920,45 @@
         }
       </div>
     }
+  } @else if (variant === 'trend-corner') {
+    <!-- trend-corner: Manage.City KPI tile — delta chip top, big value
+         middle, caption bottom-left, 60x24 corner sparkline bottom-right
+         at 50% opacity. -->
+    <div class="ax-stat-card__body ax-stat-card__body--trend-corner">
+      @if (subtitle) {
+        <div
+          class="ax-stat-card__delta-chip"
+          [attr.data-direction]="deltaDirection ?? 'up'"
+        >
+          <mat-icon class="ax-stat-card__delta-icon">{{
+            inlineDeltaIcon
+          }}</mat-icon>
+          <span>{{ subtitle }}</span>
+        </div>
+      }
+      <div class="ax-stat-card__value ax-stat-card__value--trend-corner">
+        {{ value }}
+      </div>
+      <div class="ax-stat-card__footer-row">
+        <span class="ax-stat-card__label ax-stat-card__label--trend-corner">
+          {{ label }}
+        </span>
+        @if (trendData && trendData.length > 0) {
+          <div class="ax-stat-card__corner-sparkline" aria-hidden="true">
+            <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+              <polyline
+                [attr.points]="sparklinePoints"
+                fill="none"
+                [attr.stroke]="'var(--ax-dashboard-accent, #3b82f6)'"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+        }
+      </div>
+    </div>
   } @else {
     <div class="ax-stat-card__header">
       @if (label) {

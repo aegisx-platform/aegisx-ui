@@ -332,7 +332,6 @@ $colors: (
     background-color: map-get($tokens, active-bg);
     color: map-get($tokens, dot);
   }
-
 }
 
 // Neutral icon override — muted gray badge, regardless of semantic color.
@@ -1124,8 +1123,7 @@ $colors: (
 // keeps the delta signal semantically honest (up=green, down=red)
 // regardless of the card's palette.
 @each $name, $tokens in $colors {
-  .ax-stat-card--inline-bars[data-color='#{$name}']
-    .ax-stat-card__inline-bar {
+  .ax-stat-card--inline-bars[data-color='#{$name}'] .ax-stat-card__inline-bar {
     background: map-get($tokens, dot);
   }
 }
@@ -1181,11 +1179,7 @@ $colors: (
 @each $name, $tokens in $colors {
   .ax-stat-card--compare-period[data-color='#{$name}']
     .ax-stat-card__cp-box--current {
-    border-color: color-mix(
-      in srgb,
-      map-get($tokens, dot) 40%,
-      transparent
-    );
+    border-color: color-mix(in srgb, map-get($tokens, dot) 40%, transparent);
     box-shadow: 0 0 0 2px map-get($tokens, active-bg);
   }
 }
@@ -1385,8 +1379,7 @@ $colors: (
   transform: scale(1.15);
 }
 @each $name, $tokens in $colors {
-  .ax-stat-card--heatmap[data-color='#{$name}']
-    .ax-stat-card__heatmap-cell {
+  .ax-stat-card--heatmap[data-color='#{$name}'] .ax-stat-card__heatmap-cell {
     background: map-get($tokens, dot);
   }
 }
@@ -1568,8 +1561,7 @@ $colors: (
     .ax-stat-card__journey-value {
     color: map-get($tokens, dot);
   }
-  .ax-stat-card--journey[data-color='#{$name}']
-    .ax-stat-card__journey-icon {
+  .ax-stat-card--journey[data-color='#{$name}'] .ax-stat-card__journey-icon {
     background: map-get($tokens, active-bg);
     color: map-get($tokens, dot);
   }
@@ -1812,8 +1804,7 @@ $colors: (
   border-radius: 1px;
 }
 @each $name, $tokens in $colors {
-  .ax-stat-card--category-browser[data-color='#{$name}']
-    .ax-stat-card__cb-bar {
+  .ax-stat-card--category-browser[data-color='#{$name}'] .ax-stat-card__cb-bar {
     background: map-get($tokens, dot);
   }
 }
@@ -1944,5 +1935,74 @@ $colors: (
 
   .ax-stat-card--hero .ax-stat-card__value {
     font-size: 1.5rem; // 24px on mobile
+  }
+}
+
+/* =============================================================================
+   Variant: trend-corner — Manage.City KPI tile
+   ========================================================================= */
+.ax-stat-card__body--trend-corner {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  min-height: 112px;
+}
+
+.ax-stat-card__value--trend-corner {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--ax-text-heading, #111827);
+  line-height: 1.1;
+}
+
+.ax-stat-card__footer-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ax-stat-card__label--trend-corner {
+  font-size: 13px;
+  color: var(--ax-text-secondary, #6b7280);
+  line-height: 1.3;
+}
+
+.ax-stat-card__corner-sparkline {
+  width: 60px;
+  height: 24px;
+  opacity: 0.5;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.ax-stat-card__delta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ax-dashboard-accent, #3b82f6);
+  line-height: 1;
+
+  &[data-direction='down'] {
+    color: var(--ax-danger-emphasis, #dc2626);
+  }
+
+  &[data-direction='flat'] {
+    color: var(--ax-text-secondary, #6b7280);
+  }
+
+  .ax-stat-card__delta-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
   }
 }
