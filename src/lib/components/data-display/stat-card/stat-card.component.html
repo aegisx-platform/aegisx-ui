@@ -87,8 +87,14 @@
         role="img"
         aria-label="trend chart"
       >
-        <polygon class="ax-stat-card__sparkline-area" [attr.points]="sparklineAreaPoints" />
-        <polyline class="ax-stat-card__sparkline-line" [attr.points]="sparklinePoints" />
+        <polygon
+          class="ax-stat-card__sparkline-area"
+          [attr.points]="sparklineAreaPoints"
+        />
+        <polyline
+          class="ax-stat-card__sparkline-line"
+          [attr.points]="sparklinePoints"
+        />
       </svg>
     }
 
@@ -168,7 +174,9 @@
       </svg>
       <div class="ax-stat-card__ring-body">
         @if (label) {
-          <div class="ax-stat-card__label ax-stat-card__label--hero">{{ label }}</div>
+          <div class="ax-stat-card__label ax-stat-card__label--hero">
+            {{ label }}
+          </div>
         }
         <div class="ax-stat-card__value">{{ value }}</div>
         @if (progressLabel || subtitle) {
@@ -287,7 +295,9 @@
         }
       </div>
       @if (barLabels && barLabels.length > 0) {
-        <div class="ax-stat-card__bar-labels ax-stat-card__bar-labels--billboard">
+        <div
+          class="ax-stat-card__bar-labels ax-stat-card__bar-labels--billboard"
+        >
           @for (bl of barLabels; track $index) {
             <span>{{ bl }}</span>
           }
@@ -299,8 +309,14 @@
         viewBox="0 0 100 30"
         preserveAspectRatio="none"
       >
-        <polygon class="ax-stat-card__sparkline-area" [attr.points]="sparklineAreaPoints" />
-        <polyline class="ax-stat-card__sparkline-line" [attr.points]="sparklinePoints" />
+        <polygon
+          class="ax-stat-card__sparkline-area"
+          [attr.points]="sparklineAreaPoints"
+        />
+        <polyline
+          class="ax-stat-card__sparkline-line"
+          [attr.points]="sparklinePoints"
+        />
       </svg>
     }
   } @else if (variant === 'dual-metric') {
@@ -367,17 +383,16 @@
     @if (barData && barData.length > 0) {
       <div class="ax-stat-card__inline-bars">
         @for (h of barHeights; track $index) {
-          <span
-            class="ax-stat-card__inline-bar"
-            [style.height.%]="h"
-          ></span>
+          <span class="ax-stat-card__inline-bar" [style.height.%]="h"></span>
         }
       </div>
     }
     @if (label) {
       <div class="ax-stat-card__inline-footer">
         @if (icon) {
-          <mat-icon class="ax-stat-card__inline-footer-icon">{{ icon }}</mat-icon>
+          <mat-icon class="ax-stat-card__inline-footer-icon">{{
+            icon
+          }}</mat-icon>
         }
         <span>{{ label }}</span>
       </div>
@@ -498,7 +513,7 @@
             <span class="ax-stat-card__step-dot"></span>
             <div class="ax-stat-card__step-body">
               <div class="ax-stat-card__step-label">{{ s.label }}</div>
-              @if (s.count != null) {
+              @if (s.count !== null && s.count !== undefined) {
                 <div class="ax-stat-card__step-count">{{ s.count }}</div>
               }
             </div>
@@ -644,7 +659,9 @@
           </span>
         }
       </div>
-      <div class="ax-stat-card__journey-side ax-stat-card__journey-side--projected">
+      <div
+        class="ax-stat-card__journey-side ax-stat-card__journey-side--projected"
+      >
         <div class="ax-stat-card__journey-label">
           {{ projectedLabel || 'Projected' }}
         </div>
@@ -786,7 +803,9 @@
             ></span>
             <span class="ax-stat-card__donut-label">{{ seg.label }}</span>
             <span class="ax-stat-card__donut-value">{{ seg.value }}</span>
-            <span class="ax-stat-card__donut-percent">· {{ seg.percent }}%</span>
+            <span class="ax-stat-card__donut-percent"
+              >· {{ seg.percent }}%</span
+            >
           </div>
         }
       </div>
@@ -825,10 +844,7 @@
       @if (currentCategoryBarHeights.length > 0) {
         <div class="ax-stat-card__cb-bars">
           @for (h of currentCategoryBarHeights; track $index) {
-            <span
-              class="ax-stat-card__cb-bar"
-              [style.height.%]="h"
-            ></span>
+            <span class="ax-stat-card__cb-bar" [style.height.%]="h"></span>
           }
         </div>
       }
@@ -862,7 +878,9 @@
             @if (currentCategory.subDelta) {
               <span
                 class="ax-stat-card__cb-delta"
-                [attr.data-direction]="currentCategory.subDeltaDirection ?? null"
+                [attr.data-direction]="
+                  currentCategory.subDeltaDirection ?? null
+                "
               >
                 · {{ currentCategory.subDelta }}
               </span>
