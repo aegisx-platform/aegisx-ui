@@ -162,6 +162,11 @@ export class AxNavService {
 
     // Dock + route module with children → expand panel, don't navigate
     if (isDockMode && hasChildren && type === 'route') {
+      const wasExpanded = this._expandedModuleId() === moduleId;
+      if (!wasExpanded) {
+        // Opening: mark parent active so dock icon reflects current context
+        this._activeModuleId.set(moduleId);
+      }
       this.toggleModuleExpand(moduleId);
       return;
     }
@@ -231,6 +236,8 @@ export class AxNavService {
     const app = this.activeApp();
     const parentId = this._expandedModuleId();
     if (!app || !parentId) return;
+    // Keep parent marked as active — we're on its sub-route
+    this._activeModuleId.set(parentId);
     this.router.navigate([child.route]);
     this.moduleClick$.next({
       appId: app.id,
