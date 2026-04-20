@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  Input,
   Output,
   EventEmitter,
   inject,
@@ -21,6 +22,9 @@ import {
   selector: 'ax-nav-topbar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.ax-nav-topbar--dark]': 'theme === "dark"',
+  },
   imports: [
     MatIconModule,
     AxNavLogoComponent,
@@ -259,11 +263,45 @@ import {
         width: 20px;
         height: 20px;
       }
+
+      /* Dark theme — drops into <ax-dashboard-panel> or any dark hero */
+      :host(.ax-nav-topbar--dark) .ax-nav-topbar,
+      .ax-nav-topbar--dark .ax-nav-topbar {
+        background: transparent;
+        color: var(--ax-dashboard-nav-link, rgba(255, 255, 255, 0.7));
+        border-bottom: none;
+      }
+
+      :host(.ax-nav-topbar--dark) .ax-nav-topbar__brand-text,
+      .ax-nav-topbar--dark .ax-nav-topbar__brand-text {
+        color: var(--ax-dashboard-nav-link-active, #fff);
+      }
+
+      :host(.ax-nav-topbar--dark) .ax-nav-topbar__app-pill,
+      .ax-nav-topbar--dark .ax-nav-topbar__app-pill {
+        background: var(--ax-dashboard-accent-glass, rgba(255, 255, 255, 0.08));
+        color: #fff;
+        border-color: transparent;
+      }
+
+      :host(.ax-nav-topbar--dark) .ax-nav-topbar__app-pill:hover,
+      .ax-nav-topbar--dark .ax-nav-topbar__app-pill:hover {
+        background: var(
+          --ax-dashboard-accent-glass-strong,
+          rgba(255, 255, 255, 0.18)
+        );
+      }
     `,
   ],
 })
 export class AxNavTopbarComponent {
   readonly navService = inject(AxNavService);
+
+  /**
+   * Visual theme. Light (default) for use outside a dark surface;
+   * dark for use inside <ax-dashboard-panel> or any dark hero.
+   */
+  @Input() theme: 'light' | 'dark' = 'light';
 
   @Output() appSwitcherClick = new EventEmitter<void>();
   @Output() searchClick = new EventEmitter<void>();
