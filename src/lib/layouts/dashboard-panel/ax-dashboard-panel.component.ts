@@ -1,9 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ContentChildren,
   Directive,
-  QueryList,
+  contentChildren,
 } from '@angular/core';
 
 /**
@@ -45,8 +44,12 @@ export class AxDashboardPanelNavSlotDirective {}
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (hasNav) {
-      <div class="ax-dashboard-panel__nav">
+    @if (hasNav()) {
+      <div
+        class="ax-dashboard-panel__nav"
+        role="navigation"
+        aria-label="Dashboard navigation"
+      >
         <ng-content select="[nav]" />
       </div>
     }
@@ -89,14 +92,12 @@ export class AxDashboardPanelNavSlotDirective {}
 export class AxDashboardPanelComponent {
   /**
    * Picks up every projected element carrying the `nav` attribute.
-   * Empty → hide the slot wrapper so the hero/chart sit flush to the
-   * panel top.
+   * Uses the signal-based `contentChildren()` query so OnPush re-reads
+   * the slot automatically when projected content changes — no
+   * `markForCheck()` dance needed.
    */
-  @ContentChildren(AxDashboardPanelNavSlotDirective)
-  private readonly navSlot!: QueryList<AxDashboardPanelNavSlotDirective>;
+  private readonly navSlot = contentChildren(AxDashboardPanelNavSlotDirective);
 
   /** True while at least one `[nav]` child is projected. */
-  get hasNav(): boolean {
-    return this.navSlot?.length > 0;
-  }
+  readonly hasNav = () => this.navSlot().length > 0;
 }

@@ -175,7 +175,7 @@ export class AxBarChartAreaComponent {
     this.primarySignal.set(value);
   }
   @Input() set secondary(value: readonly number[] | undefined) {
-    this.secondarySignal.set(value);
+    this._secondarySignal.set(value);
   }
   @Input() primaryLegend = 'Primary';
   @Input() secondaryLegend = 'Secondary';
@@ -184,7 +184,11 @@ export class AxBarChartAreaComponent {
 
   readonly activePeriodSignal = signal<string>('M');
   private readonly primarySignal = signal<readonly number[]>([]);
-  readonly secondarySignal = signal<readonly number[] | undefined>(undefined);
+  private readonly _secondarySignal = signal<readonly number[] | undefined>(
+    undefined,
+  );
+  /** Read-only view so template bindings work but external writes are blocked. */
+  readonly secondarySignal = this._secondarySignal.asReadonly();
 
   readonly chartData = computed<ChartData<'bar'>>(() => {
     const datasets: ChartConfiguration<'bar'>['data']['datasets'] = [
@@ -245,10 +249,10 @@ export class AxBarChartAreaComponent {
         ticks: {
           color: 'rgba(255,255,255,0.45)',
           font: { size: 11 },
-          stepSize: 300,
         },
         border: { display: false },
-        suggestedMax: 900,
+        // stepSize and max intentionally omitted — Chart.js picks them
+        // from the supplied data so this component scales for any range.
       },
     },
   };

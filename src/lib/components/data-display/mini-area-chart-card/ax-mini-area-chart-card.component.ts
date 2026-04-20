@@ -174,16 +174,18 @@ export class AxMiniAreaChartCardComponent {
   @Input() value: string | number = '';
   @Input() delta?: MiniAreaDelta;
   @Input() set data(value: readonly number[]) {
-    this.dataSignal.set(value);
+    this._dataSignal.set(value);
   }
   get data(): readonly number[] {
-    return this.dataSignal();
+    return this._dataSignal();
   }
   @Input() xLabels: readonly string[] = [];
   /** Passthrough to inner <ax-card>. */
   @Input() flat = false;
 
-  readonly dataSignal = signal<readonly number[]>([]);
+  private readonly _dataSignal = signal<readonly number[]>([]);
+  /** Read-only projection of the data signal for any consumer that needs it. */
+  readonly dataSignal = this._dataSignal.asReadonly();
   private static counter = 0;
   private readonly instanceId = ++AxMiniAreaChartCardComponent.counter;
 
