@@ -10,7 +10,7 @@ import {
   imports: [AxDashboardPanelComponent, AxDashboardPanelNavSlotDirective],
   template: `
     <ax-dashboard-panel>
-      <div nav class="test-nav">NAV-SLOT</div>
+      <div axNav class="test-nav">NAV-SLOT</div>
       <div class="hero">HERO</div>
       <div class="chart">CHART</div>
     </ax-dashboard-panel>
@@ -31,7 +31,7 @@ class WithNavHost {}
 class WithoutNavHost {}
 
 describe('AxDashboardPanelComponent', () => {
-  it('projects content into [nav] slot when provided', async () => {
+  it('projects content into [axNav] slot when provided', async () => {
     await TestBed.configureTestingModule({
       imports: [WithNavHost],
     }).compileComponents();
@@ -45,7 +45,7 @@ describe('AxDashboardPanelComponent', () => {
     ).toBe('NAV-SLOT');
   });
 
-  it('omits the nav slot wrapper when no [nav] content is projected', async () => {
+  it('omits the nav slot wrapper when no [axNav] content is projected', async () => {
     await TestBed.configureTestingModule({
       imports: [WithoutNavHost],
     }).compileComponents();

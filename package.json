@@ -54,7 +54,9 @@
     "@nx/angular": ">=21.0.0",
     "angular-gridster2": ">=18.0.0",
     "angularx-qrcode": ">=18.0.0",
+    "chart.js": ">=4.0.0 <5.0.0",
     "lodash-es": "^4.17.21",
+    "ng2-charts": ">=6.0.0",
     "ngx-toastr": ">=17.0.0 <20.0.0",
     "prismjs": ">=1.29.0",
     "rxjs": ">=7.0.0 <8.0.0",
@@ -102,6 +104,9 @@
       "optional": true
     },
     "chartjs-adapter-date-fns": {
+      "optional": true
+    },
+    "ng2-charts": {
       "optional": true
     },
     "jspdf": {

@@ -7,12 +7,12 @@ import {
 
 /**
  * Internal marker directive that lights up on any element carrying the
- * `nav` attribute inside `<ax-dashboard-panel>`. Used to detect whether
- * a nav bar was projected so the panel can hide the slot wrapper when
- * none was supplied. Consumers don't import this — they just write
- * `<div nav>...</div>` (or `<ax-nav-topbar nav theme="dark">`).
+ * `axNav` attribute inside `<ax-dashboard-panel>`. Used to detect
+ * whether a nav bar was projected so the panel can hide the slot
+ * wrapper when none was supplied. Consumers just write
+ * `<div axNav>...</div>` (or `<ax-nav-topbar axNav theme="dark">`).
  */
-@Directive({ selector: '[nav]', standalone: true })
+@Directive({ selector: '[axNav]', standalone: true })
 export class AxDashboardPanelNavSlotDirective {}
 
 /**
@@ -23,8 +23,8 @@ export class AxDashboardPanelNavSlotDirective {}
  * and a chart area. Part of the dashboard dark panel toolkit.
  *
  * Content projection:
- *   [nav]    — optional top bar. Typically <ax-nav-topbar theme="dark">
- *              but accepts any component. Hidden when no [nav] children.
+ *   [axNav]  — optional top bar. Typically <ax-nav-topbar theme="dark">
+ *              but accepts any component. Hidden when no [axNav] children.
  *   default  — panel body. Expected to contain two direct children:
  *              hero card + chart area (grid layout handles placement).
  *
@@ -33,7 +33,7 @@ export class AxDashboardPanelNavSlotDirective {}
  *
  * @example
  *   <ax-dashboard-panel>
- *     <ax-nav-topbar nav theme="dark" [navigation]="nav" />
+ *     <ax-nav-topbar axNav theme="dark" [navigation]="nav" />
  *     <ax-hero-metric-card label="Revenue" [value]="'$356.7K'" />
  *     <ax-bar-chart-area title="General processes" [labels]="labels"
  *                        [primary]="primary" [secondary]="secondary" />
@@ -50,7 +50,7 @@ export class AxDashboardPanelNavSlotDirective {}
         role="navigation"
         aria-label="Dashboard navigation"
       >
-        <ng-content select="[nav]" />
+        <ng-content select="[axNav]" />
       </div>
     }
     <div class="ax-dashboard-panel__body">
