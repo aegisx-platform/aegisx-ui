@@ -39,6 +39,7 @@ export interface NavChild {
   label: string;
   route: string;
   icon?: string;
+  badge?: number;
 }
 
 /** Hospital site (multi-tenant) */
