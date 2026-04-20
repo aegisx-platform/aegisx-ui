@@ -4,9 +4,13 @@ import {
   computed,
   inject,
   signal,
+  DestroyRef,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
+import { fromEvent, filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AxNavService } from '../services/ax-nav.service';
 import { AxNavShortcutsService } from '../services/ax-nav-shortcuts.service';
 import { AxNavRailComponent } from '../layouts/ax-nav-rail.component';
@@ -250,6 +254,8 @@ export class AxNavShellComponent {
   private readonly router = inject(Router);
   private readonly shortcuts = inject(AxNavShortcutsService);
   private readonly commandPalette = inject(AxCommandPaletteService);
+  private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
   readonly navService = inject(AxNavService);
 
   // Overlay state
@@ -263,6 +269,22 @@ export class AxNavShellComponent {
     this.shortcuts.initialize();
     this.shortcuts.onCommandPalette = () => this.onSearch();
     this.shortcuts.onEscape = () => this.closeAllOverlays();
+
+    // Outside-click: close dock panel when clicking outside rail/panel
+    fromEvent<MouseEvent>(this.document, 'mousedown')
+      .pipe(
+        filter(() => this.navService.expandedModuleId() !== null),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((event) => {
+        const target = event.target as HTMLElement | null;
+        if (!target) return;
+        const insideRail = target.closest('.ax-nav-rail');
+        const insidePanel = target.closest('.ax-nav-dock-panel');
+        if (!insideRail && !insidePanel) {
+          this.navService.collapseModule();
+        }
+      });
   }
 
   // Map hospitals to ContextOption for generic switcher
@@ -360,5 +382,6 @@ export class AxNavShellComponent {
     this.hospitalOpen.set(false);
     this.configOpen.set(false);
     this.notifPanelOpen.set(false);
+    this.navService.collapseModule();
   }
 }
