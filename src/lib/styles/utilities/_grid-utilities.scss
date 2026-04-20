@@ -1,0 +1,110 @@
+// =============================================================================
+// Grid / Layout Utilities
+// =============================================================================
+// Reusable layout helpers for stat-card rows, equal-height grids, etc.
+// Consumed by app styles.scss via @use.
+
+// -----------------------------------------------------------------------------
+// ax-equal-height
+// Forces direct children of a grid/flex container to stretch to the tallest
+// sibling's height. Use when cards in a row must share the same height for
+// scan-friendly alignment (e.g. dashboard stat-card rows).
+//
+// Works with both grid and flex parents. Pairs with any Tailwind grid
+// classes — it only changes alignment + child height.
+//
+// Usage:
+//   <div class="grid grid-cols-4 gap-3 ax-equal-height">
+//     <ax-stat-card />
+//     <ax-stat-card />
+//   </div>
+// -----------------------------------------------------------------------------
+.ax-equal-height,
+.ax-stat-row.ax-equal-height {
+  // Opt-in equal-height only. Cards that need to match the tallest in the
+  // row stretch to fill. Pairs with parent grid/flex setup.
+  //
+  // The compound `.ax-stat-row.ax-equal-height` selector is needed to
+  // override `.ax-stat-row { align-items: start }` declared later in
+  // this file — without it grid cells stay content-sized and children
+  // with `height: 100%` overflow their cell.
+  align-items: stretch;
+
+  > * {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+  }
+  > ax-stat-card > .ax-stat-card {
+    flex: 1;
+    // No explicit width — flex cross-axis stretch fills the host. Setting
+    // width: 100% combined with the card's content-box padding would
+    // overflow the host by (padding-x * 2 + border * 2), pushing cards
+    // into their neighbor's grid cell.
+    box-sizing: border-box;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// ax-stat-row — pre-configured grid for stat-card rows
+// Includes responsive columns + gap + equal-height. Add a column-count
+// modifier (.ax-stat-row-2/3/4) to opt into fixed column breakpoints.
+// Without a modifier, it stacks single-column.
+//
+// Usage:
+//   <div class="ax-stat-row ax-stat-row-4">
+//     <ax-stat-card /> × 4
+//   </div>
+// -----------------------------------------------------------------------------
+.ax-stat-row {
+  // Matches the stat-card-demo archetype: natural-height cards aligned
+  // to the top of the row. Short cards don't grow — they keep their
+  // own intrinsic size. If equal-height is desired, compose with the
+  // `.ax-equal-height` utility.
+  display: grid;
+  gap: 12px;
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+.ax-stat-row-2 {
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ax-stat-row-3 {
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ax-stat-row-4 {
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ax-stat-row-5 {
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+// ax-stat-row-auto — responsive auto-fit.
+// Cards size to natural content with a min-width floor. Use for rows
+// with a variable/conditional number of cards (e.g. urgent-issues zone)
+// so they don't stretch wide when only 1-2 cards render.
+.ax-stat-row-auto {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
