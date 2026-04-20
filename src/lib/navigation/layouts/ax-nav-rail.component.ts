@@ -6,6 +6,9 @@ import {
   EventEmitter,
   inject,
 } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AxNavService } from '../services/ax-nav.service';
@@ -13,7 +16,8 @@ import { AxNavLogoComponent } from '../shared/ax-nav-logo.component';
 import { AxNavAvatarComponent } from '../shared/ax-nav-avatar.component';
 import { AxNavItemComponent } from '../shared/ax-nav-item.component';
 import { AxNavBadgeComponent } from '../shared/ax-nav-badge.component';
-import { AppGroup, NavModule } from '../models/ax-nav.model';
+import { AxNavDockPanelComponent } from '../shared/ax-nav-dock-panel.component';
+import { AppGroup, NavModule, NavChild } from '../models/ax-nav.model';
 import {
   AxDiamondIconComponent,
   getDiamondColors,
@@ -31,6 +35,7 @@ import {
     AxNavItemComponent,
     AxNavBadgeComponent,
     AxDiamondIconComponent,
+    AxNavDockPanelComponent,
   ],
   template: `
     <aside
@@ -117,6 +122,8 @@ import {
             [showActiveBar]="!dock"
             [iconStyle]="navService.iconStyle()"
             [darkContext]="true"
+            [hasChildren]="(mod.children?.length ?? 0) > 0"
+            [isExpanded]="dock && navService.expandedModuleId() === mod.id"
             (moduleClick)="onModuleClick($event)"
           />
         }
@@ -168,6 +175,18 @@ import {
         </div>
       </div>
     </aside>
+
+    @if (dock && navService.expandedModule(); as expMod) {
+      <ax-nav-dock-panel
+        [module]="expMod"
+        [appColor]="
+          navService.activeApp()?.color ?? 'var(--ax-primary, #3b82f6)'
+        "
+        [activeChildRoute]="currentRoute()"
+        (childSelect)="onChildSelect($event)"
+        (close)="navService.collapseModule()"
+      />
+    }
   `,
   styles: [
     `
@@ -363,6 +382,7 @@ import {
 })
 export class AxNavRailComponent {
   readonly navService = inject(AxNavService);
+  private readonly router = inject(Router);
 
   @Input() dock = false;
   @Input() hideTooltips = false;
@@ -374,8 +394,21 @@ export class AxNavRailComponent {
   @Output() settingsClick = new EventEmitter<void>();
   @Output() userMenuClick = new EventEmitter<void>();
 
+  readonly currentRoute = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => e.urlAfterRedirects),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+
   onModuleClick(mod: NavModule): void {
     this.navService.setActiveModule(mod.id);
+  }
+
+  onChildSelect(child: NavChild): void {
+    this.navService.setActiveChild(child);
   }
 
   isAppDiamond(app: AppGroup): boolean {
