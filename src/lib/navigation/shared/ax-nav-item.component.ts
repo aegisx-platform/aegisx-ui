@@ -68,10 +68,14 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
             [class.ax-nav-item--active-topbar]="active && variant === 'topbar'"
             [class.ax-nav-item--dock]="variant === 'dock'"
             [class.ax-nav-item--topbar]="variant === 'topbar'"
+            [class.ax-nav-item--has-children]="
+              variant === 'dock' && hasChildren
+            "
             [matTooltip]="showTooltip ? module.label : ''"
             matTooltipPosition="right"
             [attr.aria-label]="module.label"
             [attr.aria-current]="active ? 'page' : null"
+            [attr.aria-expanded]="hasChildren ? isExpanded : null"
             (click)="moduleClick.emit(module)"
           >
             <mat-icon
@@ -88,6 +92,14 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
               } @else {
                 <ax-nav-badge [count]="module.badge" [dot]="true" />
               }
+            }
+            @if (variant === 'dock' && hasChildren) {
+              <mat-icon
+                class="ax-nav-item__chevron"
+                [class.ax-nav-item__chevron--expanded]="isExpanded"
+                aria-hidden="true"
+                >chevron_right</mat-icon
+              >
             }
           </button>
         }
@@ -269,6 +281,31 @@ import { AxNavActiveBarComponent } from './ax-nav-active-bar.component';
         text-decoration: none;
         color: inherit;
       }
+
+      /* Chevron indicator for dock items with children */
+      .ax-nav-item__chevron {
+        position: absolute;
+        right: -2px;
+        top: -2px;
+        width: 14px;
+        height: 14px;
+        font-size: 14px;
+        color: var(--ax-nav-icon-default, #94a3b8);
+        opacity: 0.7;
+        transition:
+          transform var(--ax-duration-fast, 150ms) ease,
+          opacity var(--ax-duration-fast, 150ms) ease;
+        pointer-events: none;
+      }
+      .ax-nav-item__chevron--expanded {
+        transform: rotate(90deg);
+        opacity: 1;
+        color: var(--ax-nav-icon-active, #3b82f6);
+      }
+      .ax-nav-item--active-dock .ax-nav-item__chevron {
+        color: var(--ax-nav-bg, #0f172a);
+        opacity: 1;
+      }
     `,
   ],
 })
@@ -282,6 +319,8 @@ export class AxNavItemComponent {
   @Input() showLabel = false;
   @Input() iconStyle: 'mono' | 'diamond' = 'mono';
   @Input() darkContext = true;
+  @Input() hasChildren = false;
+  @Input() isExpanded = false;
   @Output() moduleClick = new EventEmitter<NavModule>();
 
   get moduleType(): NavModuleType {
