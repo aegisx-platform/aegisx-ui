@@ -182,10 +182,6 @@ export class AxNavService {
           route: fullRoute,
           type: 'route',
         });
-        // Dock + navigating to module without children → close any open panel
-        if (isDockMode && !hasChildren) {
-          this.collapseModule();
-        }
         break;
       }
       case 'action': {
@@ -215,6 +211,12 @@ export class AxNavService {
         });
         break;
       }
+    }
+
+    // Dock mode: any non-expanding module click closes an open panel
+    // (we already returned early for the expand case above)
+    if (isDockMode) {
+      this.collapseModule();
     }
 
     // Auto-collapse expanded panel only for route navigation (non-dock modes)
