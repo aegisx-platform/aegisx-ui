@@ -4,12 +4,24 @@ import {
   EventEmitter,
   Input,
   Output,
+  PLATFORM_ID,
   computed,
+  inject,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BaseChartDirective } from 'ng2-charts';
 import type { ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
+
+/**
+ * Chart.js cannot parse `var(--...)` in color options. We read the
+ * resolved CSS custom property once (at construction) and fall back to
+ * the Manage.City-standard hex values when the token is not registered
+ * on `:root` or when running outside the browser (SSR).
+ */
+const DEFAULT_ACCENT = '#3b82f6';
+const DEFAULT_ACCENT_SOFT = '#93c5fd';
 
 export interface BarChartPeriod {
   readonly id: string;
@@ -190,12 +202,35 @@ export class AxBarChartAreaComponent {
   /** Read-only view so template bindings work but external writes are blocked. */
   readonly secondarySignal = this._secondarySignal.asReadonly();
 
+  /**
+   * Hex values resolved from `--ax-dashboard-accent` / `--ax-dashboard-accent-soft`
+   * at construction. Chart.js does not accept `var(...)` strings, so we
+   * compute the actual color once and pass it to the dataset config.
+   */
+  private readonly accentHex: string;
+  private readonly accentSoftHex: string;
+
+  constructor() {
+    const platformId = inject(PLATFORM_ID);
+    if (isPlatformBrowser(platformId) && typeof document !== 'undefined') {
+      const styles = getComputedStyle(document.documentElement);
+      this.accentHex =
+        styles.getPropertyValue('--ax-dashboard-accent').trim() ||
+        DEFAULT_ACCENT;
+      this.accentSoftHex =
+        styles.getPropertyValue('--ax-dashboard-accent-soft').trim() ||
+        DEFAULT_ACCENT_SOFT;
+    } else {
+      this.accentHex = DEFAULT_ACCENT;
+      this.accentSoftHex = DEFAULT_ACCENT_SOFT;
+    }
+  }
+
   readonly chartData = computed<ChartData<'bar'>>(() => {
     const datasets: ChartConfiguration<'bar'>['data']['datasets'] = [
       {
         data: Array.from(this.primarySignal()),
-        backgroundColor:
-          'var(--ax-dashboard-accent, #3b82f6)' as unknown as string,
+        backgroundColor: this.accentHex,
         borderRadius: 3,
         barThickness: 8,
         categoryPercentage: 0.6,
@@ -206,8 +241,7 @@ export class AxBarChartAreaComponent {
     if (secondary && secondary.length > 0) {
       datasets.push({
         data: Array.from(secondary),
-        backgroundColor:
-          'var(--ax-dashboard-accent-soft, #93c5fd)' as unknown as string,
+        backgroundColor: this.accentSoftHex,
         borderRadius: 3,
         barThickness: 8,
         categoryPercentage: 0.6,
