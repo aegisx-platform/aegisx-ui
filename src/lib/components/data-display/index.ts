@@ -40,3 +40,4 @@ export * from './select-card';
 export * from './hero-metric-card';
 export * from './bar-chart-area';
 export * from './activity-list-card';
+export * from './mini-area-chart-card';
