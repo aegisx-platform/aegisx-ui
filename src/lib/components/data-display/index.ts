@@ -35,3 +35,6 @@ export * from './code-tag';
 export * from './section-label';
 export * from './section-card';
 export * from './select-card';
+
+// Dashboard Dark Panel Toolkit
+export * from './hero-metric-card';
