@@ -10,6 +10,8 @@ export * from './docs';
 export * from './empty/empty-layout.component';
 export { EnterpriseLayoutComponent } from './enterprise/enterprise-layout.component';
 export * from './sidebar';
+export * from './dashboard-panel';
+export { AxDashboardPanelComponent } from './dashboard-panel/ax-dashboard-panel.component';
 
 // Enterprise Layout Theme Types
 export type {
