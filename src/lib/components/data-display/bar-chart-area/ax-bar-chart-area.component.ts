@@ -119,11 +119,21 @@ export interface BarChartPeriod {
 
       .ax-bar-chart-area__periods {
         background: transparent;
+        // mat-button-toggle-group renders a 1px outer border + divider
+        // rules by default. The reference uses a borderless group with a
+        // single pill-highlighted selection, so null both here.
+        border: none !important;
+        border-radius: 10px;
+
+        ::ng-deep .mat-button-toggle-group {
+          border: none !important;
+          background: transparent;
+        }
 
         ::ng-deep .mat-button-toggle {
           background: transparent;
           color: rgba(255, 255, 255, 0.55);
-          border: none;
+          border: none !important;
         }
 
         ::ng-deep .mat-button-toggle-checked {
@@ -279,10 +289,22 @@ export class AxBarChartAreaComponent {
       y: {
         grid: {
           color: 'rgba(255,255,255,0.08)',
+          // Reference uses faint dashed grid lines rather than solid
+          // rules — keeps the chart visually calmer on a dark surface.
+          lineWidth: 1,
+          drawTicks: false,
+          // `borderDash` is a per-line dash pattern (in pixels). Chart.js
+          // v4 forwards this into each gridline's strokeDasharray. Typed
+          // as `any` because Chart.js's own type defs still lag the runtime.
+          ...({ borderDash: [4, 4] } as any),
         },
         ticks: {
           color: 'rgba(255,255,255,0.45)',
           font: { size: 11 },
+          padding: 8,
+          // Cap Chart.js auto-steps so the axis reads like a data label
+          // (100/300/600/900) instead of a 9-row ruler.
+          maxTicksLimit: 5,
         },
         border: { display: false },
         // stepSize and max intentionally omitted — Chart.js picks them
