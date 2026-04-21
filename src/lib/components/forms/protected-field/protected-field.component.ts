@@ -178,6 +178,14 @@ export class AxProtectedFieldComponent implements ControlValueAccessor, OnInit {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched: () => void = () => {};
 
+  // Guard flag — when parent writes value via CVA, skip propagating
+  // through onChange (prevents infinite write ↔ valueChanges loop).
+  // We intentionally DO emit valueChanges so mat-form-field/matInput
+  // observe the value change and re-float the label correctly —
+  // using `{ emitEvent: false }` here used to break label state on
+  // async patchValue (e.g. loading drug data after init).
+  private _writingValue = false;
+
   ngOnInit(): void {
     if (this.locked) {
       this.isLocked.set(true);
@@ -185,13 +193,16 @@ export class AxProtectedFieldComponent implements ControlValueAccessor, OnInit {
     }
 
     this.innerControl.valueChanges.subscribe((value) => {
+      if (this._writingValue) return;
       this.onChange(value ?? '');
     });
   }
 
   // ControlValueAccessor
   writeValue(value: string): void {
-    this.innerControl.setValue(value, { emitEvent: false });
+    this._writingValue = true;
+    this.innerControl.setValue(value);
+    this._writingValue = false;
   }
 
   registerOnChange(fn: (value: string) => void): void {
