@@ -5,6 +5,131 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-04-21
+
+### Added
+
+- **`AxStatCardComponent` — major expansion to 24 layout variants**
+  (up from 4 in 0.4.0). New variants:
+  `hero`, `trend`, `trend-corner`, `ring`, `comparison`, `breakdown`,
+  `bars`, `status`, `gauge`, `stacked-bar`, `billboard`, `dual-metric`,
+  `inline-bars`, `compare-period`, `threshold`, `progress-steps`,
+  `heatmap`, `metric-grid`, `ranking`, `journey`, `donut-legend`,
+  `gauge-split`, `category-browser` — on top of the existing `compact`
+  and `icon-leading`.
+- **Stat-card payload inputs** — `trendData`, `target`/`targetLabel`,
+  `breakdown`, `barData`/`barLabels`, `status`/`lastUpdated`,
+  `progressLabel`, `segments`, `metrics`, `meta`, `deltaDirection`,
+  `periods`, `min`/`max`/`thresholds`, `steps`, `heatmapData`/
+  `heatmapRowLabels`/`heatmapColLabels`, `cells`, `ranking`,
+  `projectedValue`/`projectedLabel`/`projectedSubtitle`,
+  `donutSegments`/`centerValue`/`centerLabel`, `categories`.
+- **Stat-card progress bar** — `[progress]` (0–100) + optional
+  `progressColor` renders a thin bottom bar on any variant.
+- **Stat-card color controls** — `valueColor` (`accent` | `neutral`) and
+  `iconColor` (`accent` | `neutral`) decouple the value tint from the
+  icon badge.
+- **`AxStatGroupComponent`** (`ax-stat-group`) — small uppercase labeled
+  wrapper for a cluster of stat cards with optional leading icon.
+- **`AxPriorityAlertComponent`** — inline priority alert card.
+- **Enterprise navigation (`ax-nav-*` system)**:
+  - **`AxNavDockPanelComponent`** (`ax-nav-dock-panel`) — flush children
+    panel that slides out beside the dock sidebar when a module with
+    `children[]` is clicked. Closes on Escape, outside click, selecting
+    any non-expanding module, or toggling the parent again.
+  - `NavModule.children[]` now drives dock expansion; chevron indicator
+    rendered on dock items that have children.
+  - New `AxNavService` state: `expandedModuleId`, `expandedModule`,
+    plus `toggleModuleExpand(id)`, `collapseModule()`,
+    `setActiveChild(child)` — parent stays active while user navigates
+    to a sub-route in dock mode.
+  - `NavChild.badge` — optional badge on sub-routes.
+  - `AxNavTopbarComponent` gains `[theme]="'dark'"` input so it can sit
+    on a dark `ax-dashboard-panel` surface.
+  - `AxNavDockPanelComponent` exported from the `@aegisx/ui` public API.
+- **Dashboard toolkit** — dark-hero dashboard pattern components:
+  - `AxDashboardPanelComponent` (`ax-dashboard-panel`) + `[axNav]` slot
+    directive — dark-gradient wrapper with nav slot and 2-column body.
+  - `AxHeroMetricCardComponent` (`ax-hero-metric-card`) — blue-gradient
+    hero card with big value, pill chip, CTA, secondary stats, and
+    optional SVG wave chart.
+  - `AxBarChartAreaComponent` (`ax-bar-chart-area`) — paired bar chart
+    designed for dark surfaces (Chart.js 4 via `ng2-charts`).
+  - `AxMiniAreaChartCardComponent` (`ax-mini-area-chart-card`) — white
+    card with value + delta badge + inline SVG area chart, composed
+    from `ax-card` + `ax-badge`.
+  - `AxActivityListCardComponent` (`ax-activity-list-card`) — generic
+    dashboard activity list composed from `ax-card` + `ax-avatar` +
+    `ax-badge`.
+  - Shared tokens `--ax-dashboard-accent` and `--ax-dashboard-accent-soft`.
+- **Documentation**:
+  - New `docs/components/data-display/stat-card.md` covering all 24
+    variants + payload types + examples.
+  - New `docs/components/data-display/stat-group.md`.
+  - New `docs/components/navigation/nav-shell.md` covering the full
+    `ax-nav-*` system, 4 layout modes, accent presets, and the dock
+    children panel.
+  - New `docs/components/layout/dashboard-panel.md` covering the
+    dashboard toolkit.
+
+### Changed
+
+- **Stat-card default `valueColor` flipped `accent` → `neutral`** to
+  match the Untitled UI / enterprise-SaaS look — the value reads as
+  data while the small icon badge (`iconColor = 'accent'`) carries the
+  semantic color cue. Pages that relied on tinted values must opt back
+  in with `valueColor="accent"`.
+- Stat-card `[value]` widened to accept `null | undefined` so Angular's
+  `number` / `currency` / `percent` pipes (which return `string | null`)
+  pass through directly.
+- Stat-card hover state is now quieter; the active indicator stripe
+  rests on a neutral-default surface.
+- **80+ components refactored** to add `ChangeDetectionStrategy.OnPush`
+  and replace `CommonModule` with standalone imports (prep for Angular's
+  no-zone future).
+- Dashboard widgets resolve `--ax-dashboard-accent` tokens to hex once at
+  construction so Chart.js (which can't parse `var(...)`) renders with
+  the themed color while still degrading to sensible defaults in SSR.
+
+### Fixed
+
+- Stat-card template uses strict inequality so values of `0` render
+  rather than falling through to the empty branch.
+- Stat-card progress bar respects `isNaN`/clamped into [0, 100].
+- `ax-dashboard-panel` slot directive renamed to `[axNav]` (from the
+  generic `[nav]`) to avoid collisions with framework attributes; chart
+  peer dependencies explicitly declared.
+- Dock panel close output renamed `close → closed` to comply with the
+  `no-output-native` Angular lint rule.
+- Dock panel stays active / resets correctly when navigating to a child
+  route or switching modules mid-expand.
+
+### Accessibility
+
+- Dock panel exposes `role="navigation"` with a descriptive `aria-label`
+  derived from the module label.
+- Dock panel close button, items, and outside-click handlers use
+  `takeUntilDestroyed(DestroyRef)` for automatic subscription cleanup.
+- Stat-card `keyup.space` triggers `clicked`; `keydown.space` suppresses
+  default scrolling so the card behaves like a real button.
+
+### Migration Notes
+
+- **Stat-card value color** — if your dashboard previously relied on the
+  value inheriting the semantic color, add `valueColor="accent"`
+  explicitly. No change needed if you want the new neutral look.
+- **Dashboard panel slot** — if you used `<div nav>` inside
+  `<ax-dashboard-panel>`, rename to `<div axNav>`.
+- **Dock panel close event** — rename handler: `(close)` → `(closed)`.
+
+## [0.4.1] - 2026-04-12
+
+### Fixed
+
+- `tsd` moved to `peerDependencies` to fix consumer install warnings.
+- Removed unused peer dependencies left over from inventory component
+  cleanup.
+
 ## [0.4.0] - 2026-04-11
 
 ### Added
