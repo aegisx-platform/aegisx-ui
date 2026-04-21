@@ -38,19 +38,19 @@ $badge-colors: (
 // ---- Sizes ----
 
 .badge-sm {
-  padding: 3px 8px;
+  padding: 4px 8px;
   font-size: 0.75rem;
   mat-icon { font-size: 12px; width: 12px; height: 12px; }
   .dot { width: 6px; height: 6px; }
 }
 .badge-md {
-  padding: 4px 10px;
+  padding: 5px 10px;
   font-size: 0.8125rem;
   mat-icon { font-size: 14px; width: 14px; height: 14px; }
   .dot { width: 6px; height: 6px; }
 }
 .badge-lg {
-  padding: 6px 12px;
+  padding: 7px 12px;
   font-size: 0.875rem;
   gap: 6px;
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
@@ -68,9 +68,9 @@ $badge-colors: (
 // ---- Icon only ----
 
 .badge-icon-only {
-  &.badge-sm { padding: 5px; }
-  &.badge-md { padding: 6px; }
-  &.badge-lg { padding: 8px; }
+  &.badge-sm { padding: 6px; }
+  &.badge-md { padding: 7px; }
+  &.badge-lg { padding: 9px; }
 }
 
 // ---- Variant: Soft (filled bg only, no ring — Untitled UI style) ----
