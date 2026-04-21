@@ -8,81 +8,132 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export type ButtonVariant = 'raised' | 'stroked' | 'flat' | 'basic';
 export type ButtonColor = 'primary' | 'accent' | 'warn' | '';
 
 /**
- * AegisX Loading Button Component
+ * AegisX Loading Button
  *
- * A modern loading button with gradient background, shimmer effect,
- * pulse animation, and CSS-only spinner.
+ * Wraps Angular Material's button directives (mat-raised-button /
+ * mat-flat-button / mat-stroked-button / mat-button) and adds a
+ * loading-state swap (icon ↔ spinner + contextual text) on top. The
+ * visual output is **identical** to writing the equivalent plain
+ * Material button by hand — same size, radius, color, typography,
+ * ripple. This is the whole point of this component: you get a
+ * consistent loading-state pattern without drifting from the rest
+ * of the app's button standard.
+ *
+ * Prior versions of this component rendered a plain `<button>` with
+ * custom `.ax-raised` / `.ax-stroked` classes + gradient/shimmer
+ * animations. That diverged visually from mat-button everywhere
+ * else, so it has been rebuilt on top of Material directives.
  *
  * @example
- * ```html
- * <!-- Basic usage -->
  * <ax-loading-button
- *   [loading]="isLoading"
- *   loadingText="Signing in..."
+ *   variant="flat"
+ *   color="primary"
+ *   icon="save"
+ *   iconPosition="start"
+ *   [loading]="saving()"
+ *   loadingText="กำลังบันทึก..."
  *   (buttonClick)="onSubmit()"
  * >
- *   Sign In
+ *   บันทึก
  * </ax-loading-button>
- *
- * <!-- With icon -->
- * <ax-loading-button
- *   [loading]="isLoading"
- *   loadingText="Sending..."
- *   icon="send"
- *   iconPosition="end"
- * >
- *   Send Email
- * </ax-loading-button>
- *
- * <!-- Stroked variant -->
- * <ax-loading-button
- *   variant="stroked"
- *   [loading]="isLoading"
- *   loadingText="Resending..."
- * >
- *   Resend Email
- * </ax-loading-button>
- * ```
  */
 @Component({
   selector: 'ax-loading-button',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <button
-      [class]="buttonClass"
-      [class.loading]="loading"
-      [class.full-width]="fullWidth"
-      [disabled]="disabled || (disableWhenLoading && loading)"
-      [type]="type"
-      (click)="onClick($event)"
-    >
-      @if (loading) {
-        <div class="loading-content">
-          <div
-            class="spinner-ring"
-            [class.spinner-outlined]="
-              variant === 'stroked' || variant === 'basic'
-            "
-          ></div>
-          <span>{{ loadingText }}</span>
-        </div>
-      } @else {
-        @if (icon && iconPosition === 'start') {
-          <mat-icon class="button-icon start">{{ icon }}</mat-icon>
-        }
-        <span class="button-text"><ng-content></ng-content></span>
-        @if (icon && iconPosition === 'end') {
-          <mat-icon class="button-icon end">{{ icon }}</mat-icon>
-        }
+    <!-- Branch per variant because Angular templates can't
+         conditionally switch a structural directive. Material's
+         button directives (mat-raised-button et al.) are selectors,
+         so we render one of four branches. The inner content is
+         shared via ng-template so the icon/spinner swap logic only
+         lives in one place. -->
+    @switch (variant) {
+      @case ('raised') {
+        <button
+          mat-raised-button
+          [color]="color || null"
+          [class.full-width]="fullWidth"
+          [disabled]="disabled || (disableWhenLoading && loading)"
+          [type]="type"
+          (click)="onClick($event)"
+        >
+          <ng-container *ngTemplateOutlet="content" />
+        </button>
       }
-    </button>
+      @case ('flat') {
+        <button
+          mat-flat-button
+          [color]="color || null"
+          [class.full-width]="fullWidth"
+          [disabled]="disabled || (disableWhenLoading && loading)"
+          [type]="type"
+          (click)="onClick($event)"
+        >
+          <ng-container *ngTemplateOutlet="content" />
+        </button>
+      }
+      @case ('stroked') {
+        <button
+          mat-stroked-button
+          [color]="color || null"
+          [class.full-width]="fullWidth"
+          [disabled]="disabled || (disableWhenLoading && loading)"
+          [type]="type"
+          (click)="onClick($event)"
+        >
+          <ng-container *ngTemplateOutlet="content" />
+        </button>
+      }
+      @default {
+        <button
+          mat-button
+          [color]="color || null"
+          [class.full-width]="fullWidth"
+          [disabled]="disabled || (disableWhenLoading && loading)"
+          [type]="type"
+          (click)="onClick($event)"
+        >
+          <ng-container *ngTemplateOutlet="content" />
+        </button>
+      }
+    }
+
+    <!-- Shared inner content. Wrapped in an inline-flex span so
+         Material's icon auto-spacing selector
+         (.mdc-button > .mat-icon) keeps working across the @if
+         branches inside this template. -->
+    <ng-template #content>
+      <span class="ax-loading-button__inner">
+        @if (loading) {
+          <mat-spinner
+            [diameter]="18"
+            [color]="color || 'primary'"
+          ></mat-spinner>
+          <span>{{ loadingText }}</span>
+        } @else {
+          @if (icon && iconPosition === 'start') {
+            <mat-icon>{{ icon }}</mat-icon>
+          }
+          <span><ng-content></ng-content></span>
+          @if (icon && iconPosition === 'end') {
+            <mat-icon>{{ icon }}</mat-icon>
+          }
+        }
+      </span>
+    </ng-template>
   `,
   styles: [
     `
@@ -90,219 +141,64 @@ export type ButtonColor = 'primary' | 'accent' | 'warn' | '';
         display: inline-block;
       }
 
-      button {
-        height: 48px;
-        font-size: 1rem;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: var(--ax-radius-md, 8px);
-        padding: 0 1.5rem;
-        min-width: 120px;
-      }
-
+      /* Full-width passthrough — Material buttons don't stretch by
+       * default; applying width:100% on the button element keeps the
+       * parent contract honored. */
       .full-width {
         width: 100%;
       }
 
-      /* Button variants */
-      .ax-raised {
-        background: var(--ax-brand-default, #4f46e5);
-        color: white;
-        border: none;
-        box-shadow: var(--ax-shadow-sm);
-
-        &:hover:not(:disabled):not(.loading) {
-          background: var(--ax-brand-emphasis, #6366f1);
-          box-shadow: var(--ax-shadow-md);
-        }
-      }
-
-      .ax-stroked {
-        background: transparent;
-        color: var(--ax-brand-default, #4f46e5);
-        border: 1px solid var(--ax-brand-default, #4f46e5);
-
-        &:hover:not(:disabled):not(.loading) {
-          background: var(--ax-brand-subtle, rgba(79, 70, 229, 0.1));
-        }
-      }
-
-      .ax-flat {
-        background: var(--ax-brand-subtle, rgba(79, 70, 229, 0.1));
-        color: var(--ax-brand-default, #4f46e5);
-        border: none;
-
-        &:hover:not(:disabled):not(.loading) {
-          background: var(--ax-brand-muted, rgba(79, 70, 229, 0.2));
-        }
-      }
-
-      .ax-basic {
-        background: transparent;
-        color: var(--ax-brand-default, #4f46e5);
-        border: none;
-
-        &:hover:not(:disabled):not(.loading) {
-          background: var(--ax-background-muted, rgba(0, 0, 0, 0.04));
-        }
-      }
-
-      /* Icon styles */
-      .button-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        transition: transform 0.2s ease;
-
-        &.start {
-          margin-right: 0.25rem;
-        }
-
-        &.end {
-          margin-left: 0.25rem;
-        }
-      }
-
-      button:hover:not(:disabled):not(.loading) .button-icon.end {
-        transform: translateX(4px);
-      }
-
-      /* Loading state for raised/primary buttons */
-      .ax-raised.loading {
-        background: linear-gradient(
-          135deg,
-          var(--ax-brand-default, #4f46e5) 0%,
-          var(--ax-brand-emphasis, #6366f1) 100%
-        ) !important;
-        color: white !important;
-        pointer-events: none;
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-
-      .ax-raised.loading::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent 0%,
-          rgba(255, 255, 255, 0.2) 50%,
-          transparent 100%
-        );
-        animation: shimmer 1.5s infinite;
-      }
-
-      /* Loading state for outlined/stroked buttons */
-      .ax-stroked.loading,
-      .ax-flat.loading,
-      .ax-basic.loading {
-        pointer-events: none;
-        opacity: 0.8;
-      }
-
-      /* Disabled state */
-      button:disabled:not(.loading) {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.85;
-        }
-      }
-
-      @keyframes shimmer {
-        0% {
-          left: -100%;
-        }
-        100% {
-          left: 100%;
-        }
-      }
-
-      .loading-content {
-        display: flex;
+      /* Only wrapper styling — no color/radius/typography overrides.
+       * All visual properties come from the Material theme so this
+       * component matches plain mat-button exactly. */
+      .ax-loading-button__inner {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.75rem;
-      }
-
-      /* CSS-only spinner ring */
-      .spinner-ring {
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-
-      /* Spinner for outlined/stroked buttons */
-      .spinner-outlined {
-        border: 2px solid rgba(79, 70, 229, 0.3);
-        border-top-color: var(--ax-brand-default, #4f46e5);
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
+        gap: 0.5rem;
       }
     `,
   ],
 })
 export class AxLoadingButtonComponent {
-  /** Button variant style */
-  @Input() variant: ButtonVariant = 'raised';
+  /** Button variant — maps 1:1 to Material button directives:
+   *  raised → mat-raised-button, flat → mat-flat-button,
+   *  stroked → mat-stroked-button, basic → mat-button. */
+  @Input() variant: ButtonVariant = 'flat';
 
-  /** Button color (for Material buttons) */
-  @Input() color: ButtonColor = 'primary';
+  /** Material color theme. Pass '' (empty) to render neutral/default
+   *  (same as plain mat-button with no color= attribute). */
+  @Input() color: ButtonColor = '';
 
-  /** Loading state */
+  /** Loading state — swaps the icon+label for a spinner+loadingText. */
   @Input() loading: boolean = false;
 
-  /** Text to show during loading */
+  /** Text shown while loading. Should be contextual (e.g. "Saving...")
+   *  rather than a generic "Loading..." so the user knows what the
+   *  button is doing. */
   @Input() loadingText: string = 'Loading...';
 
-  /** Disabled state */
+  /** Disabled state. */
   @Input() disabled: boolean = false;
 
-  /** Whether to disable button when loading */
+  /** Auto-disable during loading to block duplicate clicks. */
   @Input() disableWhenLoading: boolean = true;
 
-  /** Button type attribute */
+  /** HTML button type. */
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
 
-  /** Icon name (Material icon) */
+  /** Material icon name (e.g. 'save', 'download'). Empty string = no
+   *  icon, just text. */
   @Input() icon: string = '';
 
-  /** Icon position */
-  @Input() iconPosition: 'start' | 'end' = 'end';
+  /** Where the icon sits relative to the label. */
+  @Input() iconPosition: 'start' | 'end' = 'start';
 
-  /** Full width button */
+  /** Stretch the button to 100% of its container width. */
   @Input() fullWidth: boolean = false;
 
-  /** Click event (only fires when not loading) */
+  /** Emitted on click — only while not loading or disabled. */
   @Output() buttonClick = new EventEmitter<MouseEvent>();
-
-  get buttonClass(): string {
-    const variantClass = `ax-${this.variant}`;
-    return `ax-loading-button ${variantClass}`;
-  }
 
   onClick(event: MouseEvent): void {
     if (!this.loading && !this.disabled) {
