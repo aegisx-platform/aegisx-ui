@@ -41,3 +41,7 @@ export * from './hero-metric-card';
 export * from './bar-chart-area';
 export * from './activity-list-card';
 export * from './mini-area-chart-card';
+
+// List / Metadata primitives (extracted from layouts-demo)
+export * from './list-item';
+export * from './metadata-grid';

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-04-21
+
+### Added
+
+- **`AxListItemComponent`** (`ax-list-item`) — compact 3-line row with
+  `code + title + meta` and optional `[slot=leading]` / `[slot=trailing]`
+  content projection. Supports `active` state, `(clicked)` output, and
+  `density` input (`comfortable` | `compact`). Extracted from the L6
+  split-view archetype in `/layouts-demo`.
+- **`AxMetadataGridComponent`** (`ax-metadata-grid`) — semantic `<dl>`
+  rendered as an auto-fit grid, driven by
+  `[items]="{ label, value }[]"`. Supports `density` and `minColWidth`.
+  Used for record headers and detail panes.
+- **Documentation** — `docs/components/data-display/list-item.md` and
+  `docs/components/data-display/metadata-grid.md`.
+
 ## [0.5.0] - 2026-04-21
 
 ### Added
