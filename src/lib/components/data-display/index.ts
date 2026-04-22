@@ -45,3 +45,6 @@ export * from './mini-area-chart-card';
 // List / Metadata primitives (extracted from layouts-demo)
 export * from './list-item';
 export * from './metadata-grid';
+
+// Step Progress (workflow timeline)
+export * from './step-progress';

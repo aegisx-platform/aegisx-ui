@@ -1,0 +1,55 @@
+<div class="track">
+  @for (node of visibleItems(); track $index; let i = $index, last = $last) {
+    @if (node.type === 'step') {
+      <button
+        type="button"
+        class="marker status-{{ node.item.status }}"
+        [class.has-icon]="!!node.item.icon"
+        [class.clickable]="clickable()"
+        [attr.tabindex]="clickable() ? 0 : -1"
+        [attr.role]="clickable() ? 'button' : 'img'"
+        [attr.aria-label]="ariaForMarker(node.item, i, steps().length)"
+        [matTooltip]="tooltipFor(node.item)"
+        matTooltipPosition="above"
+        data-testid="step-marker"
+        (click)="onStepClick(node.item)"
+        (keydown)="onStepKeydown($event, node.item)"
+      >
+        @if (node.item.icon) {
+          <mat-icon aria-hidden="true">{{ node.item.icon }}</mat-icon>
+        } @else {
+          <span class="fallback" aria-hidden="true">{{ fallbackIndex(i) }}</span>
+        }
+      </button>
+
+      @if (size() !== 'sm') {
+        <span class="label-block">
+          <span class="label">{{ node.item.label }}</span>
+          @if (size() === 'lg' && node.item.timestamp) {
+            <span class="timestamp">
+              {{ node.item.timestamp | date: 'd MMM yyyy' }}
+            </span>
+          }
+        </span>
+      }
+    } @else {
+      <span
+        class="ellipsis"
+        [matTooltip]="node.hiddenLabels.join(' · ')"
+        matTooltipPosition="above"
+        aria-hidden="true"
+        data-testid="step-ellipsis"
+      >
+        …+{{ node.count }}
+      </span>
+    }
+
+    @if (!last) {
+      @if (node.type === 'step') {
+        <span class="connector status-{{ node.item.status }}" aria-hidden="true"></span>
+      } @else {
+        <span class="connector status-upcoming" aria-hidden="true"></span>
+      }
+    }
+  }
+</div>

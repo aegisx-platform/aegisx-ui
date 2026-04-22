@@ -1,0 +1,194 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  --ax-marker-size: 24px;
+  --ax-marker-gap: 8px;
+  --ax-icon-size: 12px;
+  --ax-label-size: 0;
+  --ax-timestamp-size: 0;
+  --ax-connector-length: 20px;
+}
+
+:host(.size-md) {
+  --ax-marker-size: 32px;
+  --ax-marker-gap: 10px;
+  --ax-icon-size: 16px;
+  --ax-label-size: 12px;
+  --ax-connector-length: 28px;
+  align-items: flex-start;
+}
+
+:host(.size-lg) {
+  --ax-marker-size: 40px;
+  --ax-marker-gap: 12px;
+  --ax-icon-size: 20px;
+  --ax-label-size: 13px;
+  --ax-timestamp-size: 11px;
+  --ax-connector-length: 36px;
+  align-items: flex-start;
+}
+
+.track {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-marker-gap);
+  flex-wrap: nowrap;
+}
+
+:host(.size-md) .track,
+:host(.size-lg) .track {
+  align-items: flex-start;
+}
+
+.marker {
+  width: var(--ax-marker-size);
+  height: var(--ax-marker-size);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1.5px solid var(--ax-border-default, #e5e7eb);
+  color: var(--ax-text-disabled, #9ca3af);
+  padding: 0;
+  cursor: default;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: var(--ax-icon-size);
+    width: var(--ax-icon-size);
+    height: var(--ax-icon-size);
+    line-height: var(--ax-icon-size);
+  }
+
+  .fallback {
+    font-size: calc(var(--ax-icon-size) * 1.1);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--ax-info-default, #3b82f6);
+      outline-offset: 2px;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  &.status-completed {
+    background: var(--ax-neutral-900, #111827);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  &.status-current {
+    background: var(--ax-neutral-900, #111827);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--ax-info-default, #3b82f6) 25%, transparent);
+  }
+
+  &.status-upcoming {
+    background: transparent;
+    border-color: var(--ax-border-default, #e5e7eb);
+    border-style: dashed;
+    color: var(--ax-text-disabled, #9ca3af);
+  }
+
+  &.status-cancelled {
+    background: var(--ax-neutral-100, #f3f4f6);
+    border-color: var(--ax-border-muted, #d1d5db);
+    color: var(--ax-text-disabled, #9ca3af);
+  }
+
+  &.status-error {
+    background: var(--ax-error-faint, #fee2e2);
+    border-color: var(--ax-error-default, #ef4444);
+    color: var(--ax-error-default, #ef4444);
+  }
+}
+
+.connector {
+  display: inline-block;
+  width: var(--ax-connector-length);
+  height: 2px;
+  background: var(--ax-border-default, #e5e7eb);
+  flex: 0 0 auto;
+
+  &.status-completed,
+  &.status-current {
+    background: var(--ax-neutral-900, #111827);
+  }
+
+  &.status-upcoming {
+    background: transparent;
+    border-top: 1.5px dashed var(--ax-border-default, #e5e7eb);
+    height: 0;
+  }
+
+  &.status-cancelled {
+    background: var(--ax-border-muted, #d1d5db);
+  }
+
+  &.status-error {
+    background: var(--ax-error-default, #ef4444);
+  }
+}
+
+:host(.size-md) .connector,
+:host(.size-lg) .connector {
+  margin-top: calc(var(--ax-marker-size) / 2 - 1px);
+}
+
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0 6px;
+  height: calc(var(--ax-marker-size) * 0.7);
+  border-radius: 999px;
+  background: var(--ax-neutral-100, #f3f4f6);
+  color: var(--ax-text-secondary, #6b7280);
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.label-block {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: var(--ax-marker-size);
+  max-width: 88px;
+}
+
+.label {
+  font-size: var(--ax-label-size);
+  color: var(--ax-text-default, #111827);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 88px;
+}
+
+.timestamp {
+  font-size: var(--ax-timestamp-size);
+  color: var(--ax-text-secondary, #6b7280);
+  text-align: center;
+}
+
+:host(.overflow-scroll) .track {
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: thin;
+}
