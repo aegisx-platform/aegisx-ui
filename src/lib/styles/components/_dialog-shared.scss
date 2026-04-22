@@ -228,6 +228,21 @@
     margin: 0;
     border-radius: 0 !important;
   }
+
+  // Reset size caps on the inner `.dialog-content` wrapper that many
+  // AegisX dialogs use (PR/PO create, stockcard, etc.). In normal mode
+  // that wrapper intentionally caps at ~90vw/85vh; in fullscreen mode
+  // it must yield to the 100vw/100vh surface, otherwise the right side
+  // of the dialog stays blank.
+  .dialog-content {
+    min-width: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    width: 100%;
+    // Leave room for the mat-dialog-title bar (~64px) + mat-dialog-actions
+    // footer (~60px) so the form scrolls inside, not the whole surface.
+    height: calc(100vh - 128px);
+  }
 }
 
 /* ============================================================
