@@ -132,19 +132,27 @@ export class AxStepProgressComponent {
 
   /**
    * Status of the connector AFTER visibleItems[i] — inherits from the NEXT
-   * rendered step's status (or 'upcoming' when the next node is an ellipsis
-   * or end-of-list).
+   * rendered *step* (skipping an ellipsis node if present, since an
+   * ellipsis has no status of its own).
    *
    * This matches the reference UX where the line between current and the
    * next upcoming step reads as "not yet reached" (dashed / muted), not
-   * "already traversed" (solid dark).
+   * "already traversed" (solid dark). When a run of completed steps is
+   * collapsed into '…+N', the connectors on BOTH sides of the ellipsis
+   * still inherit from the surrounding visible step so the line does not
+   * lie about what is behind it.
    */
   protected connectorStatusAfter(i: number): string {
     const nodes = this.visibleItems();
     const nextNode = nodes[i + 1];
     if (!nextNode) return 'upcoming';
-    if (nextNode.type === 'ellipsis') return 'upcoming';
-    return nextNode.item.status;
+    if (nextNode.type === 'step') return nextNode.item.status;
+    // next is an ellipsis — peek past it to the next real step
+    const afterEllipsis = nodes[i + 2];
+    if (afterEllipsis && afterEllipsis.type === 'step') {
+      return afterEllipsis.item.status;
+    }
+    return 'upcoming';
   }
 
   protected onStepClick(item: StepProgressItem): void {
