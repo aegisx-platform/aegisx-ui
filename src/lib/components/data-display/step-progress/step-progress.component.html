@@ -7,7 +7,7 @@
         [class.has-icon]="!!node.item.icon"
         [class.clickable]="clickable()"
         [attr.tabindex]="clickable() ? 0 : -1"
-        [attr.role]="clickable() ? 'button' : 'img'"
+        [attr.aria-disabled]="clickable() ? null : 'true'"
         [attr.aria-label]="ariaForMarker(node.item, i, steps().length)"
         [matTooltip]="tooltipFor(node.item)"
         matTooltipPosition="above"
@@ -45,11 +45,10 @@
     }
 
     @if (!last) {
-      @if (node.type === 'step') {
-        <span class="connector status-{{ node.item.status }}" aria-hidden="true"></span>
-      } @else {
-        <span class="connector status-upcoming" aria-hidden="true"></span>
-      }
+      <span
+        class="connector status-{{ connectorStatusAfter(i) }}"
+        aria-hidden="true"
+      ></span>
     }
   }
 </div>
