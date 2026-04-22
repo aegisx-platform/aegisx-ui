@@ -264,11 +264,12 @@ Third-party integrations and specialized components.
 
 Dialog and modal components.
 
-| Component                 | Selector                   | Purpose                                     |
-| ------------------------- | -------------------------- | ------------------------------------------- |
-| **Confirm Dialog**        | `ax-confirm-dialog`        | Confirmation dialog for destructive actions |
-| **Calendar Event Dialog** | `ax-calendar-event-dialog` | Dialog for calendar event details           |
-| **Sample JSON Dialog**    | `ax-sample-json-dialog`    | Display JSON data in dialog                 |
+| Component                     | Selector                       | Purpose                                                                   |
+| ----------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
+| **Confirm Dialog**            | `ax-confirm-dialog`            | Confirmation dialog for destructive actions                               |
+| **Calendar Event Dialog**     | `ax-calendar-event-dialog`     | Dialog for calendar event details                                         |
+| **Sample JSON Dialog**        | `ax-sample-json-dialog`        | Display JSON data in dialog                                               |
+| **Dialog Fullscreen Button**  | `ax-dialog-fullscreen-button`  | Drop-in header button that toggles a dialog between default and fullscreen — [docs](./components/feedback/ax-dialog-fullscreen-button.md) |
 
 **Documentation:** Dialog components use Angular Material's `MatDialog` service. See individual component source code for detailed API.
 
@@ -297,6 +298,7 @@ Dialogs are opened programmatically using Angular Material's `MatDialog` service
 - `ax-color-palette-editor` - Color palette editor
 - `ax-command-palette` - Command palette interface
 - `ax-confirm-dialog` - Confirmation dialog
+- `ax-dialog-fullscreen-button` - Toggle a Material dialog to full viewport
 - `ax-confirm-email` - Email confirmation form
 - `ax-date-picker` - Date picker input
 - `ax-description-list` - Description list
