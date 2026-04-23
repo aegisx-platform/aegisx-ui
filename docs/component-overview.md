@@ -100,24 +100,25 @@ Add to your `styles.scss`:
 
 Components for presenting data in various formats.
 
-| Component              | Selector                | Purpose                                          |
-| ---------------------- | ----------------------- | ------------------------------------------------ |
-| **Avatar**             | `ax-avatar`             | Display user avatars with images or initials     |
-| **Badge**              | `ax-badge`              | Show notification counts or status indicators    |
-| **Calendar**           | `ax-calendar`           | Full-featured calendar with event management     |
-| **Card**               | `ax-card`               | Container for content with elevation and borders |
-| **Circular Progress**  | `ax-circular-progress`  | Circular progress indicator                      |
-| **Code Tabs**          | `ax-code-tabs`          | Display code snippets with syntax highlighting   |
-| **Description List**   | `ax-description-list`   | Key-value pairs in formatted list                |
-| **Divider**            | `ax-divider`            | Visual separator between content sections        |
-| **Field Display**      | `ax-field-display`      | Display form field values in read-only mode      |
-| **KPI Card**           | `ax-kpi-card`           | Display key performance indicators               |
-| **KBD**                | `ax-kbd`                | Display keyboard shortcuts                       |
-| **List**               | `ax-list`               | Generic list component                           |
-| **Segmented Progress** | `ax-segmented-progress` | Multi-step progress indicator                    |
-| **Sparkline**          | `ax-sparkline`          | Mini line charts for trends                      |
-| **Stats Card**         | `ax-stats-card`         | Statistical data display                         |
-| **Timeline**           | `ax-timeline`           | Chronological event timeline                     |
+| Component              | Selector                | Purpose                                                                                                              |
+| ---------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Avatar**             | `ax-avatar`             | Display user avatars with images or initials                                                                         |
+| **Badge**              | `ax-badge`              | Show notification counts or status indicators                                                                        |
+| **Calendar**           | `ax-calendar`           | Full-featured calendar with event management                                                                         |
+| **Card**               | `ax-card`               | Container for content with elevation and borders                                                                     |
+| **Circular Progress**  | `ax-circular-progress`  | Circular progress indicator                                                                                          |
+| **Code Tabs**          | `ax-code-tabs`          | Display code snippets with syntax highlighting                                                                       |
+| **Description List**   | `ax-description-list`   | Key-value pairs in formatted list                                                                                    |
+| **Divider**            | `ax-divider`            | Visual separator between content sections                                                                            |
+| **Field Display**      | `ax-field-display`      | Display form field values in read-only mode                                                                          |
+| **KPI Card**           | `ax-kpi-card`           | Display key performance indicators                                                                                   |
+| **KBD**                | `ax-kbd`                | Display keyboard shortcuts                                                                                           |
+| **List**               | `ax-list`               | Generic list component                                                                                               |
+| **Segmented Progress** | `ax-segmented-progress` | Multi-step progress indicator                                                                                        |
+| **Sparkline**          | `ax-sparkline`          | Mini line charts for trends                                                                                          |
+| **Stats Card**         | `ax-stats-card`         | Statistical data display                                                                                             |
+| **Step Progress**      | `ax-step-progress`      | Horizontal step timeline (sm/md/lg, 5 states, 3 overflow modes) — [docs](./components/data-display/step-progress.md) |
+| **Timeline**           | `ax-timeline`           | Chronological event timeline                                                                                         |
 
 **Documentation:** See [components/data-display/](./components/data-display/)
 
@@ -264,12 +265,12 @@ Third-party integrations and specialized components.
 
 Dialog and modal components.
 
-| Component                     | Selector                       | Purpose                                                                   |
-| ----------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
-| **Confirm Dialog**            | `ax-confirm-dialog`            | Confirmation dialog for destructive actions                               |
-| **Calendar Event Dialog**     | `ax-calendar-event-dialog`     | Dialog for calendar event details                                         |
-| **Sample JSON Dialog**        | `ax-sample-json-dialog`        | Display JSON data in dialog                                               |
-| **Dialog Fullscreen Button**  | `ax-dialog-fullscreen-button`  | Drop-in header button that toggles a dialog between default and fullscreen — [docs](./components/feedback/ax-dialog-fullscreen-button.md) |
+| Component                    | Selector                      | Purpose                                                                                                                                   |
+| ---------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Confirm Dialog**           | `ax-confirm-dialog`           | Confirmation dialog for destructive actions                                                                                               |
+| **Calendar Event Dialog**    | `ax-calendar-event-dialog`    | Dialog for calendar event details                                                                                                         |
+| **Sample JSON Dialog**       | `ax-sample-json-dialog`       | Display JSON data in dialog                                                                                                               |
+| **Dialog Fullscreen Button** | `ax-dialog-fullscreen-button` | Drop-in header button that toggles a dialog between default and fullscreen — [docs](./components/feedback/ax-dialog-fullscreen-button.md) |
 
 **Documentation:** Dialog components use Angular Material's `MatDialog` service. See individual component source code for detailed API.
 
@@ -350,6 +351,7 @@ Dialogs are opened programmatically using Angular Material's `MatDialog` service
 - `ax-splash-screen` - Splash screen
 - `ax-splitter` - Resizable splitter
 - `ax-stats-card` - Statistics card
+- `ax-step-progress` - Horizontal step-progress timeline
 - `ax-theme-builder` - Theme builder
 - `ax-theme-preview-panel` - Theme preview panel
 - `ax-theme-switcher` - Theme switcher

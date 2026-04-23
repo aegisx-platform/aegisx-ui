@@ -197,6 +197,31 @@ Mini line chart for showing data trends in small spaces.
 - Performance trends
 - Quick data overview
 
+#### Step Progress (`ax-step-progress`)
+
+**Selector**: `ax-step-progress`
+
+Horizontal step-progress timeline for table rows and detail headers.
+
+**Key Features**:
+
+- Three sizes (`sm` / `md` / `lg`)
+- Five per-step states (`completed` / `current` / `upcoming` /
+  `cancelled` / `error`)
+- Three overflow modes (`none` / `scroll` / `collapse` with `…+N` bubble)
+- Icon fallback to numeric index
+- Keyboard navigation + ARIA group semantics
+- Token-only styling, dark-mode aware
+
+**Use Cases**:
+
+- Inline workflow progress in table rows
+- Detail-page header showing PR/PO workflow state
+- Multi-step approval timelines
+- Any strictly ordered sequence with known status per step
+
+**Documentation**: [Step Progress Component](./step-progress.md)
+
 ### Information Display Components
 
 #### List (`ax-list`)
