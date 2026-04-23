@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-04-24
+
+### Added
+
+- **`AxStepProgressComponent`** (`ax-step-progress`) — reusable
+  horizontal step-progress timeline for table rows and detail headers.
+  Supports 3 sizes (`sm` | `md` | `lg`), 5 per-step states
+  (`completed` | `current` | `upcoming` | `cancelled` | `error`),
+  3 overflow modes (`none` | `scroll` | `collapse`), icon fallback to
+  numeric index, keyboard navigation, and ARIA group semantics.
+  Tokens-only styling — works in light + dark themes via `--ax-*`
+  variables.
+- **`AxDialogFullscreenButtonComponent`** (`ax-dialog-fullscreen-button`)
+  — drop-in header button that toggles an open Material dialog between
+  its default size and full-viewport via the `.dialog-fullscreen`
+  class shipped by `_dialog-shared.scss`. Inputs: `persistKey`
+  (localStorage key, toggle survives reloads), `defaultOpen`,
+  `expandLabel`/`collapseLabel`. Output: `(fullscreenChange)` for
+  richer storage hooks (per-user keys, analytics, etc.).
+- **Documentation** —
+  `docs/components/feedback/ax-dialog-fullscreen-button.md` with
+  installation, persistence patterns, integration notes, and
+  troubleshooting. `component-overview.md` updated with the new
+  Dialogs entry.
+
+### Fixed
+
+- **`ax-step-progress` collapsed connector** — the line after a
+  `…+N` overflow bubble now inherits its style from the step
+  **following** the bubble instead of hard-coding `upcoming`.
+  Previous behaviour drew an upcoming-style line even when every
+  hidden step was already completed — a visual lie about workflow
+  state.
+- **`.dialog-fullscreen` inner cap override** — when a dialog adopts
+  the common `.dialog-content` wrapper (`min-width: 1200px` /
+  `max-width: 90vw` / `max-height: 85vh` in normal mode), the 90vw
+  cap was still in effect after `.cdk-overlay-pane` was grown to
+  100vw by `.dialog-fullscreen`. The right 10vw of the surface stayed
+  blank. Fixed by resetting the wrapper's size caps inside
+  `.dialog-fullscreen`, reserving 128px vertical for the
+  `mat-dialog-title` + `mat-dialog-actions` chrome so the inner form
+  scrolls instead of the whole surface.
+
 ## [0.5.1] - 2026-04-21
 
 ### Added
