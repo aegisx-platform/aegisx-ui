@@ -1,0 +1,147 @@
+/* ============================================================
+   AegisX UI — Data Table (Global Style)
+   ------------------------------------------------------------
+   STANDARD: Untitled UI × Stripe × Polaris data-table aesthetic
+   for the AegisX Hospital Platform. Apply to any mat-table in
+   a consumer app by wrapping it with:
+
+       <mat-card appearance="outlined"
+                 class="overflow-hidden ax-data-table relative">
+         <!-- optional bulk action ribbon here -->
+         <div class="overflow-x-auto">
+           <table mat-table [dataSource]="ds" matSort ...></table>
+         </div>
+         <mat-paginator ...></mat-paginator>
+       </mat-card>
+
+   The class `ax-data-table` triggers these overrides. Works with:
+     - mat-table (Material Design MDC)
+     - mat-sort-header
+     - mat-mdc-paginator
+     - mat-mdc-checkbox (selection column)
+
+   USAGE:
+     @use '@aegisx/ui/styles/components/data-table';  // or the
+     monorepo path during development.
+
+   Reference pages in aegisx-starter:
+     - /inventory/budget/budget-requests/list
+     - /platform/master-data/provinces
+     - (and ~15 other list pages)
+
+   Anatomy:
+     - Card surface: white bg, 1px zinc-200 border, radius 12px,
+       shadow-xs.
+     - Header row: muted bg, 44px tall, 1px bottom border.
+     - Header cell: 12px uppercase + 0.04em tracking, zinc-500,
+       padding 12px/20px.
+     - Body cell: 14px, padding 14px/20px, 1px bottom border.
+     - Row hover: muted bg.
+     - Paginator: muted text, 1px top border.
+   ============================================================ */
+
+:host ::ng-deep .ax-data-table,
+.ax-data-table {
+  border: 1px solid var(--ax-border-default, #e4e4e7);
+  border-radius: 12px;
+  box-shadow: var(--ax-shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.04));
+
+  .mat-mdc-table {
+    background: var(--ax-background-default, #ffffff);
+  }
+
+  /* Header row — muted bg, 44px tall, 1px bottom border */
+  .mat-mdc-header-row {
+    background-color: var(--ax-background-muted, #fafafa);
+    border-bottom: 1px solid var(--ax-border-default, #e4e4e7);
+    height: 44px;
+  }
+
+  /* Header cell — uppercase, tracked, muted text */
+  .mat-mdc-header-cell {
+    color: var(--ax-text-secondary, #71717a);
+    font-size: 0.75rem; /* 12px */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 12px 20px;
+    border-bottom: none;
+    background-color: transparent;
+  }
+
+  /* Body cell — comfortable padding, subtle bottom border */
+  .mat-mdc-cell {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--ax-border-default, #e4e4e7);
+    color: var(--ax-text-default, #3f3f46);
+    font-size: 0.875rem; /* 14px */
+  }
+
+  /* Last row — no border to let card border take over */
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: none;
+  }
+
+  /* Row hover — muted bg, no transform */
+  .ax-data-row,
+  .mat-mdc-row {
+    transition: background-color 0.12s ease;
+  }
+
+  .ax-data-row:hover,
+  .mat-mdc-row:hover {
+    background-color: var(--ax-background-muted, #fafafa);
+  }
+
+  /* Sort header arrow — muted color */
+  .mat-sort-header-arrow {
+    color: var(--ax-text-subtle, #a1a1aa);
+  }
+
+  /* Selection checkbox — brand color when checked */
+  .mat-mdc-checkbox .mdc-checkbox__background {
+    border-color: var(--ax-border-emphasis, #d4d4d8);
+  }
+
+  .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: var(--ax-primary, #6366f1);
+    border-color: var(--ax-primary, #6366f1);
+  }
+
+  /* Expandable detail row — no hover bg */
+  .detail-row {
+    height: 0;
+    overflow: hidden;
+  }
+
+  .detail-row:hover {
+    background-color: transparent !important;
+  }
+
+  /* Paginator — muted text, border-top */
+  .mat-mdc-paginator {
+    background: var(--ax-background-default, #ffffff);
+    color: var(--ax-text-secondary, #71717a);
+    font-size: 0.875rem;
+    border-top: 1px solid var(--ax-border-default, #e4e4e7);
+  }
+
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--ax-text-secondary, #71717a);
+    font-size: 0.875rem;
+  }
+
+  .mat-mdc-paginator .mat-mdc-icon-button {
+    color: var(--ax-text-secondary, #71717a);
+  }
+
+  .mat-mdc-paginator .mat-mdc-icon-button:hover:not([disabled]) {
+    color: var(--ax-text-default, #3f3f46);
+    background-color: var(--ax-background-muted, #fafafa);
+  }
+
+  .mat-mdc-paginator .mat-mdc-icon-button[disabled] {
+    color: var(--ax-text-disabled, #d4d4d8);
+  }
+}

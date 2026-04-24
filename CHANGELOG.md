@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2026-04-24
+
+### Added
+
+- **`.ax-data-table`** — global SCSS hook that styles any Angular
+  Material `mat-table` to the AegisX Hospital Platform canonical data
+  table: outlined mat-card wrapper, muted 44px header, 14px body with
+  comfortable 14/20 padding, subtle `--ax-shadow-xs` card chrome,
+  overridden `mat-mdc-paginator` with border-top + muted text. Apply
+  by wrapping the table in
+  `<mat-card appearance="outlined" class="overflow-hidden ax-data-table">`.
+  Extracted from the production `budget-requests-list` page so every
+  consumer app on the platform gets one consistent data-table look.
+  File: `src/lib/styles/components/_data-table.scss`.
+- **Documentation** — `docs/styles/data-table.md` with full anatomy,
+  required HTML structure, token map, density guidance, and the list
+  of production consumers in `aegisx-starter`.
+
+### Notes
+
+- The existing per-page SCSS in `apps/web/src/app/features/**/*-list.component.scss`
+  will migrate to `@use '@aegisx/ui/styles/components/data-table'` and
+  remove duplication in a follow-up. This release is purely additive —
+  no existing page styling is altered.
+
 ## [0.5.2] - 2026-04-24
 
 ### Added
