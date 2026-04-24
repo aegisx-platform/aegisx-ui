@@ -147,17 +147,23 @@ interface StepProgressItem {
 
 ## Design notes
 
-### Status colour mapping (via `--ax-*` tokens)
+### Status colour mapping (via `--ax-*` semantic tokens)
 
-| Status      | Marker                                     | Connector                         |
-| ----------- | ------------------------------------------ | --------------------------------- |
-| `completed` | filled, `--ax-color-success`               | solid, success                    |
-| `current`   | filled, `--ax-color-primary`, subtle pulse | solid up to current, dashed after |
-| `upcoming`  | outlined, `--ax-border-muted`              | dashed, muted                     |
-| `cancelled` | filled, `--ax-text-subtle`, strikethrough  | dashed, subtle                    |
-| `error`     | filled, `--ax-color-error`                 | solid, error                      |
+| Status      | Marker background         | Marker text / icon              | Marker border          | Connector                    |
+| ----------- | ------------------------- | ------------------------------- | ---------------------- | ---------------------------- |
+| `completed` | `--ax-success-default`    | `--ax-success-inverted` (white) | transparent            | solid `--ax-success-default` |
+| `current`   | `--ax-brand-default`      | `#ffffff`                       | transparent + 4px glow | solid `--ax-brand-default`   |
+| `upcoming`  | `--ax-background-default` | `--ax-text-subtle`              | `--ax-border-default`  | dashed `--ax-border-default` |
+| `cancelled` | `--ax-background-muted`   | `--ax-text-subtle`              | `--ax-border-muted`    | solid `--ax-border-muted`    |
+| `error`     | `--ax-error-faint`        | `--ax-error-default`            | `--ax-error-default`   | solid `--ax-error-default`   |
 
-Every colour resolves through tokens → dark-mode flip happens for free.
+The `current` marker also renders a 4px outer glow in
+`color-mix(--ax-brand-default 20%, transparent)` to draw the eye to
+the active step without being noisy.
+
+Every colour resolves through AegisX semantic tokens — light/dark
+mode flips automatically and all 100+ apps on the hospital platform
+see the same workflow colour language.
 
 ### Connector after an overflow bubble
 
@@ -182,6 +188,11 @@ visual lie about workflow state.
 
 ## Changelog
 
+- **0.5.4 (2026-04-24)** — status colours now use AegisX semantic
+  tokens (`success` / `brand` / `error` / muted) instead of
+  `neutral-900` for both `completed` and `current`. Fixes the
+  "everything looks black" issue and makes the active step visually
+  distinct from completed ones.
 - **0.5.2 (2026-04-24)** — initial release.
   - Fix: collapsed connector now inherits from the next real step instead of
     hard-coding `upcoming`.

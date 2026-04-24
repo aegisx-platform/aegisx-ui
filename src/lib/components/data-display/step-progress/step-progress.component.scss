@@ -52,7 +52,9 @@
   color: var(--ax-text-disabled, #9ca3af);
   padding: 0;
   cursor: default;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
   flex-shrink: 0;
 
   mat-icon {
@@ -81,31 +83,34 @@
     }
   }
 
+  /* Status colours — resolved through AegisX semantic tokens so
+     light/dark theme flips automatically and every consumer app
+     on the platform sees the same workflow colours. */
+
   &.status-completed {
-    background: var(--ax-neutral-900, #111827);
+    background: var(--ax-success-default, #22c55e);
     border-color: transparent;
-    color: #fff;
+    color: var(--ax-success-inverted, #ffffff);
   }
 
   &.status-current {
-    background: var(--ax-neutral-900, #111827);
+    background: var(--ax-brand-default, #6366f1);
     border-color: transparent;
-    color: #fff;
-    box-shadow: 0 0 0 2px
-      color-mix(in srgb, var(--ax-info-default, #3b82f6) 25%, transparent);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px
+      color-mix(in srgb, var(--ax-brand-default, #6366f1) 20%, transparent);
   }
 
   &.status-upcoming {
-    background: transparent;
+    background: var(--ax-background-default, #ffffff);
     border-color: var(--ax-border-default, #e5e7eb);
-    border-style: dashed;
-    color: var(--ax-text-disabled, #9ca3af);
+    color: var(--ax-text-subtle, #a1a1aa);
   }
 
   &.status-cancelled {
-    background: var(--ax-neutral-100, #f3f4f6);
-    border-color: var(--ax-border-muted, #d1d5db);
-    color: var(--ax-text-disabled, #9ca3af);
+    background: var(--ax-background-muted, #fafafa);
+    border-color: var(--ax-border-muted, #d4d4d8);
+    color: var(--ax-text-subtle, #a1a1aa);
   }
 
   &.status-error {
@@ -122,9 +127,15 @@
   background: var(--ax-border-default, #e5e7eb);
   flex: 0 0 auto;
 
-  &.status-completed,
+  /* Green connector between completed steps, brand tint up to the
+     current marker — same semantic language as the markers above. */
+
+  &.status-completed {
+    background: var(--ax-success-default, #22c55e);
+  }
+
   &.status-current {
-    background: var(--ax-neutral-900, #111827);
+    background: var(--ax-brand-default, #6366f1);
   }
 
   &.status-upcoming {
@@ -134,7 +145,7 @@
   }
 
   &.status-cancelled {
-    background: var(--ax-border-muted, #d1d5db);
+    background: var(--ax-border-muted, #d4d4d8);
   }
 
   &.status-error {

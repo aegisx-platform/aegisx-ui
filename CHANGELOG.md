@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] - 2026-04-24
+
+### Fixed
+
+- **`ax-step-progress` status colours now use AegisX semantic tokens**
+  instead of `--ax-neutral-900` for both `completed` and `current`.
+  Previously both states rendered as identical solid-black markers —
+  users could not tell which step the workflow was actually on, and
+  the Clean Clinical SaaS palette felt "stiff". Now:
+  - `completed` → `--ax-success-default` (green fill, white icon)
+  - `current` → `--ax-brand-default` (indigo fill, white icon, 4px
+    brand-tinted glow ring)
+  - `upcoming` → outlined on `--ax-background-default`, `--ax-text-subtle`
+  - `cancelled` → `--ax-background-muted` + `--ax-border-muted` +
+    `--ax-text-subtle`
+  - `error` → `--ax-error-faint` fill + `--ax-error-default` border
+    and icon (unchanged)
+- **Connectors** now match marker semantics: `success` colour between
+  completed steps, `brand` colour up to the current step, dashed
+  `--ax-border-default` for upcoming, `--ax-error-default` for error.
+  Previously all completed + current connectors were solid black which
+  did not communicate workflow direction.
+
+### Notes
+
+- Zero API changes — all consumers pick up the fix by bumping to
+  `@aegisx/ui@0.5.4`.
+- Dark mode is automatic via the `--ax-*` tokens.
+
 ## [0.5.3] - 2026-04-24
 
 ### Added
