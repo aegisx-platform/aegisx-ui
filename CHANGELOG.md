@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.5] - 2026-04-25
+
+### Added
+
+- **`DESIGN.md`** — agent-facing canonical descriptor (~480 lines) at
+  the library root. Inspired by [google-labs-code/design.md](https://github.com/google-labs-code/design.md),
+  adapted to AegisX: SCSS tokens stay the runtime ground truth; this
+  file is the readable index + rule book that points at the sources of
+  truth, lists the rules that get violated most often, and enumerates
+  every `--ax-*` token family. Sections covered:
+  - Sources of truth (where each thing lives)
+  - Tokens — `--ax-*` + `--mat-sys-*` split, full family inventory,
+    spacing/duration/easing scales (34 token families enumerated)
+  - Typography — delegated to Material + IBM Plex font stack
+  - Layout & spacing — page-width playbook, Tailwind allow/forbid lists
+  - Elevation
+  - Theme behaviour — light/dark via tokens (the single biggest source
+    of regression in this repo)
+  - Components — decision priority + `Frequently misused` table for
+    `<ax-page-shell>`, `<ax-step-progress>`, `.ax-data-table`,
+    `<ax-stat-card>` (25 variants), `<ax-loading-button>`,
+    `<ax-dialog-fullscreen-button>` — each entry verified against
+    the actual `.ts` source (Inputs/Outputs)
+  - Anti-patterns 8.1–8.9 — concrete forbidden code from past sessions
+
+### Notes
+
+- Doc-only release. Zero runtime behaviour change. No new components
+  and no token additions. The bump exists so consumers can pin to the
+  agent-readable design contract that ships with each release.
+- A companion quality gate `scripts/quality/check-design-md-sync.sh`
+  lives in the monorepo and verifies that every `--ax-*` token family
+  in `_aegisx-tokens.scss` is mentioned in this file, so it cannot
+  drift out of sync with the SCSS source.
+
 ## [0.5.4] - 2026-04-24
 
 ### Fixed
