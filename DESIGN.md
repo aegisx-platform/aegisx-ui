@@ -199,8 +199,21 @@ not raw `<h1>`/`<h2>` with custom styling.
 | Settings       | 896px      | profile, settings panes       |
 | Fluid          | no cap     | kiosk, full-bleed displays    |
 
-Use `<ax-page-shell>` as the wrapper for every page. It applies the
-correct width via config — do not set `max-width` on inner divs.
+Set the page width on the **page component's `:host`**, not on
+`<ax-page-shell>`. The shell itself is `max-width: 100%` and only
+provides breadcrumb + header + content slots — it does not own a
+`[width]` Input. The page declares its own width:
+
+```scss
+:host {
+  display: block;
+  max-width: 1080px; /* or 1440 / 1200 / 896 — see table above */
+  margin: 0 auto;
+}
+```
+
+`check-ui-widths.sh` currently enforces these widths on the
+`playbook-demo` reference patterns (P1a–P14), not on every app page.
 
 ### Tailwind: layout glue only
 
@@ -318,14 +331,14 @@ API reference. For full inputs / outputs read the `.ts` source or
 
 ### Frequently misused — read the `.ts` before using
 
-| Component                | Common mistake                                                                           | Fix                                                            |
-| ------------------------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `<ax-page-shell>`        | Setting max-width on inner div instead of `[width]` config                               | Use the shell's width input — it applies the playbook spec     |
-| `<ax-step-progress>`     | Passing colours via Input                                                                | Colours come from `--ax-*` tokens; see component .scss         |
-| `<ax-data-table>`        | Wrapping in another scrollable container                                                 | The table owns its scroll                                      |
-| `<ax-stat-card>` (24 variants) | Picking variant by guessing                                                       | Match variant to KPI semantic — read component-overview.md      |
-| `<ax-loading-button>`    | Used on every button, even sync ones                                                     | Only when `[loading]` is bound to async work                    |
-| `<ax-dialog-fullscreen-button>` | Reimplemented per-dialog                                                          | Reuse — already exists for PO / PR side dialogs                 |
+| Component                       | Common mistake                                                  | Fix                                                                                                            |
+| ------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `<ax-page-shell>`               | Assuming a `[width]` Input exists                               | The shell only takes `[breadcrumb]` + `[headerBorder]`. Set width on the **page's `:host`** — see §4.          |
+| `<ax-step-progress>`            | Passing colours via Input                                       | No colour Input exists. Colours come from `--ax-*` tokens; only `steps`, `size`, `overflow`, `maxVisible`, `clickable`, `ariaLabel` are inputs |
+| `.ax-data-table` (SCSS class)   | Treating it as a component (`<ax-data-table>`)                  | It's a **global SCSS class** in `styles/components/_data-table.scss`, not a component. Apply on a wrapper around `<table mat-table>`. |
+| `<ax-stat-card>` (25 variants)  | Picking variant by guessing                                     | Match variant to KPI semantic — full union list in `stat-card.types.ts`                                        |
+| `<ax-loading-button>`           | Used on every button, even sync ones                            | Only when `[loading]` is bound to async work                                                                   |
+| `<ax-dialog-fullscreen-button>` | Reimplemented per-dialog                                        | Reuse — already exists for PO / PR side dialogs. Optional `persistKey` saves state to `localStorage`.          |
 
 ### Categories (for `aegisx_components_search`)
 
@@ -440,13 +453,23 @@ imports: [NgTemplateOutlet, NgIf]  // standalone primitives only
 ### 8.9 Setting `max-width` on inner page divs
 
 ```html
-<!-- ❌ bypasses ax-page-shell width control -->
+<!-- ❌ inner-div max-width fights ax-page-shell's gap stack -->
 <ax-page-shell>
   <div class="max-w-[1440px] mx-auto">…</div>
 </ax-page-shell>
+```
 
-<!-- ✅ -->
-<ax-page-shell width="list">…</ax-page-shell>
+```scss
+/* ✅ width belongs on the page component's :host (see §4) */
+:host {
+  display: block;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+```
+
+```html
+<ax-page-shell [breadcrumb]="breadcrumb">…</ax-page-shell>
 ```
 
 ---
