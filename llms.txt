@@ -1,306 +1,389 @@
 # AegisX UI Library
 
-> Enterprise Angular UI component library built on Angular Material with custom theming and design system.
+> Enterprise Angular UI library built on Angular Material with custom theming.
+> **101 standalone components** (selector prefix: `ax-`), 4 layouts, 8 services,
+> nav-shell system, widget framework, design-token system.
 
-## Overview
+**Companion docs:**
+- [`AGENTS.md`](./AGENTS.md) — rules + decision tree for AI assistants (READ FIRST)
+- [`DESIGN.md`](./DESIGN.md) — design philosophy / aesthetic
+- [`docs/TOKEN_REFERENCE.md`](./docs/TOKEN_REFERENCE.md) — full `--ax-*` + `--mat-sys-*` reference (609 lines)
+- [`docs/THEMING_GUIDE.md`](./docs/THEMING_GUIDE.md) — light/dark + custom themes
+- [`docs/components/<category>/<name>.md`](./docs/components/) — per-component pages
 
-AegisX UI (`@aegisx/ui`) is a comprehensive Angular UI library providing:
-- 45+ standalone components with `ax-` prefix selectors
-- 4 pre-built application layouts
-- 8 core services for state management
-- Widget framework for dashboard building
-- Design token system with CSS custom properties
-- Light/Dark theme presets with custom theme support
+---
 
-## Installation & Setup
+## Setup
 
 ```typescript
 // app.config.ts
 import { provideAegisxUI } from '@aegisx/ui';
 
-export const appConfig = {
+export const appConfig: ApplicationConfig = {
   providers: [
-    provideAegisxUI({
-      // Optional configuration
-    }),
+    provideAegisxUI({ /* optional config */ }),
+    // OR composable:
+    //   provideAegisxConfig(...),
+    //   provideAegisxLayouts(...),
+    //   provideAegisxComponents(...),
+    //   provideAegisxTheme({ defaultTheme: lightTheme }),
   ],
 };
 ```
 
-## Import Pattern
-
-All components are standalone and tree-shakable:
+All components are **standalone** + tree-shakable:
 
 ```typescript
-import {
-  AxCardComponent,
-  AxThemeSwitcherComponent,
-  AxCompactLayoutComponent,
-} from '@aegisx/ui';
+import { AxCardComponent, AxThemeSwitcherComponent } from '@aegisx/ui';
 
 @Component({
+  standalone: true,
   imports: [AxCardComponent, AxThemeSwitcherComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<ax-card><ax-theme-switcher /></ax-card>`,
 })
 ```
 
 ---
 
-## Layouts
+## Layouts (4)
 
-### AxEmptyLayoutComponent
-- Selector: `ax-empty-layout`
-- Purpose: Minimal layout with centered content
-- Use cases: Login, error pages, standalone views
+| Component                  | Selector              | When to use                                     |
+| -------------------------- | --------------------- | ----------------------------------------------- |
+| `AxEmptyLayoutComponent`   | `ax-empty-layout`     | Login, error pages, standalone views            |
+| `AxEnterpriseLayoutComponent` | `ax-enterprise-layout` | Top-nav enterprise dashboard                  |
+| `AxSidebarLayoutComponent` | `ax-sidebar-layout`   | Left-nav app shell (most common)                |
+| `AxDocsLayoutComponent`    | `ax-docs-layout`      | Documentation site (sidebar + TOC)              |
+| `AxDashboardPanelComponent` | `ax-dashboard-panel` | Dashboard sub-region (used inside other layouts) |
 
-### AxEnterpriseLayoutComponent
-- Selector: `ax-enterprise-layout`
-- Purpose: Full-featured enterprise dashboard layout
-- Features: Multiple navigation levels, breadcrumbs, user menu
+All layouts share a **Common API**:
+`appName`, `logoUrl`, `navigation`, `showFooter`, `showSettingsMenuItem`,
+`(profileClicked)`, `(settingsClicked)`, `(logoutClicked)`, plus content
+projection slots `#headerActions`, `#userMenu`, `#footerContent`.
 
-### AxDocsLayoutComponent
-- Selector: `ax-docs-layout`
-- Purpose: Documentation site layout (Shadcn/ui style)
-- Features: Sidebar navigation, table of contents, search
+```html
+<ax-sidebar-layout
+  appName="My App"
+  logoUrl="/assets/logo.svg"
+  [navigation]="navItems"
+  [showFooter]="true"
+  (logoutClicked)="logout()">
+  <ng-template #headerActions>
+    <ax-theme-switcher />
+  </ng-template>
+  <router-outlet />
+</ax-sidebar-layout>
+```
 
 ---
 
-## Components
+## Navigation Shell (next-gen layout system)
 
-### Data Display
+A composable shell for complex nav patterns. Use when the 4 fixed layouts above
+are not flexible enough.
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AxCardComponent | `ax-card` | Content container with header/footer |
-| AxKpiCardComponent | `ax-kpi-card` | KPI metrics display |
-| AxStatsCardComponent | `ax-stats-card` | Statistics with trends |
-| AxAvatarComponent | `ax-avatar` | User avatar with fallback |
-| AxBadgeComponent | `ax-badge` | Status badges |
-| AxListComponent | `ax-list` | Styled list items |
-| AxTimelineComponent | `ax-timeline` | Vertical timeline |
-| AxFieldDisplayComponent | `ax-field-display` | Label-value pairs |
-| AxDescriptionListComponent | `ax-description-list` | Key-value data display |
-| AxCircularProgressComponent | `ax-circular-progress` | Circular progress indicator |
-| AxSegmentedProgressComponent | `ax-segmented-progress` | Multi-segment progress |
-| AxSparklineComponent | `ax-sparkline` | Mini line charts |
+| Component                 | Selector                | Purpose                              |
+| ------------------------- | ----------------------- | ------------------------------------ |
+| `AxNavShellComponent`     | `ax-nav-shell`          | Outer shell that wires everything    |
+| `AxNavTopbarComponent`    | `ax-nav-topbar`         | Top bar variant                      |
+| `AxNavRailComponent`      | `ax-nav-rail`           | Compact icon rail                    |
+| `AxNavExpandedComponent`  | `ax-nav-expanded`       | Wide labelled sidebar                |
+| `AxAppSwitcherComponent`  | `ax-app-switcher`       | Multi-app launcher                   |
+| `AxNavConfigPopoverComponent` | `ax-nav-config-popover` | Per-user nav configuration       |
+| `AxNavContextSwitcherComponent` | `ax-nav-context-switcher` | Tenant / workspace switcher  |
+| `AxNavUserMenuComponent`  | `ax-nav-user-menu`      | Profile / logout dropdown            |
+| `AxNotificationPanelComponent` | `ax-notification-panel` | Slide-out notifications         |
 
-### Forms
+`[axNav]` directive is also available for binding nav state to custom elements.
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AxDatePickerComponent | `ax-date-picker` | Date selection with validation |
-| AxFileUploadComponent | `ax-file-upload` | File upload with drag-drop |
+---
 
-### Feedback
+## Components by category (101 total)
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AxAlertComponent | `ax-alert` | Alert messages |
-| AxLoadingBarComponent | `ax-loading-bar` | Top loading indicator |
-| AxEmptyStateComponent | `ax-empty-state` | Empty state placeholder |
-| AxErrorStateComponent | `ax-error-state` | Error state display |
+### Auth (7) → `docs/components/auth/`
 
-### Navigation
+`ax-auth-layout`, `ax-confirm-email`, `ax-forgot-password-form`,
+`ax-login-form`, `ax-register-form`, `ax-reset-password-form`,
+`ax-social-login`
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AegisxNavigationComponent | `aegisx-navigation` | Vertical sidebar navigation |
-| AxBreadcrumbComponent | `ax-breadcrumb` | Breadcrumb navigation |
-| AxAppLauncherComponent | `ax-app-launcher` | App grid launcher |
+### Data Display (32) → `docs/components/data-display/`
 
-### Utilities
+`ax-activity-list-card`, `ax-avatar`, `ax-badge`, `ax-bar-chart-area`,
+`ax-card`, `ax-card-header`, `ax-chip`, `ax-circular-progress`,
+`ax-code-tag`, `ax-description-list`, `ax-divider`, `ax-field-display`,
+`ax-hero-metric-card`, `ax-image-preview`, `ax-info-row`, `ax-kbd`,
+`ax-kpi-card`, `ax-list`, `ax-list-item`, `ax-metadata-grid`,
+`ax-mini-area-chart-card`, `ax-section-card`, `ax-section-label`,
+`ax-segmented-progress`, `ax-select-card`, `ax-sparkline`,
+`ax-stat-card` (24 variants), `ax-stat-group`, `ax-stats-card`,
+`ax-status-badge`, `ax-step-progress`, `ax-timeline`
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AxThemeSwitcherComponent | `ax-theme-switcher` | Light/Dark theme toggle |
-| AxLayoutSwitcherComponent | `ax-layout-switcher` | Switch between layouts |
-| AxDrawerComponent | `ax-drawer` | Side panel/sheet |
-| AxGridsterComponent | `ax-gridster` | Draggable grid layout |
-| AxCalendarComponent | `ax-calendar` | FullCalendar integration |
+### Forms (9) → `docs/components/forms/`
 
-### Dialogs
+`ax-calendar-grid`, `ax-calendar-header`, `ax-date-picker`,
+`ax-input-otp`, `ax-knob`, `ax-popup-edit`, `ax-protected-field`,
+`ax-scheduler`, `ax-time-slots`
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AxConfirmDialogComponent | `ax-confirm-dialog` | Confirmation dialogs |
+> For text inputs, selects, checkboxes, radios, sliders, toggles —
+> **use Angular Material directly** (`mat-form-field`, `mat-input`,
+> `mat-select`, etc.). AegisX UI does not wrap these.
 
-### Skeleton Loaders
+### Feedback (5) → `docs/components/feedback/`
 
-| Component | Selector | Purpose |
-|-----------|----------|---------|
-| AxSkeletonComponent | `ax-skeleton` | Loading placeholder |
-| AxSkeletonTextComponent | `ax-skeleton-text` | Text skeleton |
-| AxSkeletonCardComponent | `ax-skeleton-card` | Card skeleton |
-| AxSkeletonTableComponent | `ax-skeleton-table` | Table skeleton |
+`ax-alert`, `ax-inner-loading`, `ax-loading-bar`, `ax-priority-alert`,
+`ax-splash-screen`
+
+### Layout Primitives (5) → `docs/components/layout/`
+
+`ax-form-section`, `ax-master-detail`, `ax-page-header`,
+`ax-page-shell`, `ax-splitter`
+
+> Every page should start from `ax-page-shell`. Use `ax-page-header`
+> for the title/breadcrumb area, `ax-form-section` to group fields.
+
+### Navigation (13) → `docs/components/navigation/`
+
+`ax-breadcrumb`, `ax-command-palette`, `ax-command-palette-dialog`,
+`ax-diamond-icon`, `ax-nav-item`, `ax-navbar`, `ax-navbar-actions`,
+`ax-navbar-brand`, `ax-navbar-icon-button`, `ax-navbar-nav`,
+`ax-navbar-user`, `ax-navigation`, `ax-tab-pills`
+
+### Skeleton Loaders (5)
+
+`ax-skeleton`, `ax-skeleton-avatar`, `ax-skeleton-card`,
+`ax-skeleton-list`, `ax-skeleton-table`
+
+### State (4)
+
+`ax-empty-state`, `ax-error-state`, `ax-error-banner`, `ax-loading-state`
+
+### Theme (8) → `docs/components/theme/`
+
+`ax-theme-switcher`, `ax-theme-builder`, `ax-theme-preview-panel`,
+`ax-color-palette-editor`, `ax-image-color-extractor`,
+`ax-m3-color-preview`, `ax-sample-json-dialog`, `ax-layout-switcher`
+
+### Integrations (2) → `docs/components/integrations/`
+
+`ax-qrcode`, `ax-signature-pad`
+
+### Misc
+
+`ax-card` (root), `ax-code-tabs`, `ax-confirm-dialog`,
+`ax-dialog-fullscreen-button`, `ax-drawer`, `ax-file-upload`,
+`ax-gridster`, `ax-launcher`, `ax-launcher-card`, `ax-loading-button`,
+`ax-calendar`, `ax-calendar-event-dialog`
+
+> **Per-component reference (selector, inputs, outputs, slots, examples)
+> lives in [`docs/components/<category>/<name>.md`](./docs/components/).**
+> Look there before guessing an API.
+
+---
+
+## Widget framework (8) → `src/lib/widgets/`
+
+`ax-widget-host`, `ax-dashboard-builder`, `ax-dashboard-viewer`,
+`ax-chart-widget`, `ax-kpi-widget`, `ax-list-widget`,
+`ax-progress-widget`, `ax-table-widget`
+
+For dashboards composed of draggable widgets.
 
 ---
 
 ## Services
 
-### AxThemeService
-Theme management with reactive state:
 ```typescript
 inject(AxThemeService).setTheme('dark');
-inject(AxThemeService).theme$; // Observable<'light' | 'dark'>
-```
-
-### AxToastService
-Toast notifications:
-```typescript
-inject(AxToastService).success('Saved successfully');
-inject(AxToastService).error('An error occurred');
-```
-
-### AxDialogService
-Modal dialog management:
-```typescript
-inject(AxDialogService).confirm({
-  title: 'Delete?',
-  message: 'This cannot be undone',
-});
-```
-
-### AxNavigationService
-Navigation state management:
-```typescript
+inject(AxToastService).success('Saved');
+inject(AxDialogService).confirm({ title: 'Delete?', message: '…' });
 inject(AxNavigationService).setNavigation(items);
-inject(AxNavigationService).navigation$;
-```
-
-### AegisxConfigService
-Library configuration:
-```typescript
 inject(AegisxConfigService).config;
-```
-
-### AegisxMediaWatcherService
-Responsive breakpoint detection:
-```typescript
 inject(AegisxMediaWatcherService).onMediaChange('(max-width: 960px)');
-```
-
-### AxLoadingBarService
-Loading bar control:
-```typescript
 inject(AxLoadingBarService).show();
-inject(AxLoadingBarService).hide();
+inject(AegisxIconService).register(...);
 ```
 
-### AegisxIconService
-Icon registration and management.
+Use `inject()` (not constructor DI) and Signals over RxJS where the API allows.
 
 ---
 
-## Theme System
+## Provider functions
 
-### Built-in Themes
-- `lightTheme` - Default light theme
-- `darkTheme` - Dark theme
-- `brandTheme` - Customizable brand theme
-
-### Theme Provider
-```typescript
-import { provideAegisxTheme, lightTheme } from '@aegisx/ui';
-
-providers: [
-  provideAegisxTheme({
-    defaultTheme: lightTheme,
-  }),
-]
-```
-
-### Custom Theme
-```typescript
-import { createCustomTheme } from '@aegisx/ui';
-
-const myTheme = createCustomTheme({
-  primary: '#6366f1',
-  secondary: '#ec4899',
-  // ...
-});
-```
+| Function                    | Purpose              |
+| --------------------------- | -------------------- |
+| `provideAegisxUI()`         | Full library setup   |
+| `provideAegisxConfig()`     | Config only          |
+| `provideAegisxLayouts()`    | Layout services      |
+| `provideAegisxComponents()` | Component services   |
+| `provideAegisxTheme()`      | Theme setup          |
 
 ---
 
 ## Animations
 
-Pre-built animations for common effects:
+Pre-built animation triggers (apply to `animations: [...]` in `@Component`):
+
+`expandCollapse`, `fadeIn`, `fadeOut`, `slideInLeft`, `slideInRight`,
+`slideInTop`, `slideInBottom`, `zoomIn`, `zoomOut`, `routerTransition`,
+`shake`, `navSlideIn`, `navSlideRight`, `navPopIn`, `navActiveBar`
+
+Plus the bundle: `aegisxAnimations` (everything except nav-shell).
+
+---
+
+## Theming & Design Tokens (overview)
+
+Two layers of tokens:
+
+1. **Material Design tokens** — `--mat-sys-*` (surface, on-surface, outline,
+   primary, error…). These flip light/dark automatically.
+2. **AegisX semantic tokens** — `--ax-*` (text, background, border, brand,
+   shadow, radius, spacing, typography, motion, component-level button/nav).
+
+Always reference tokens — **never hardcode hex / rgb / hsl** for any
+semantic value (color, border, shadow, radius). Layout numerics
+(width, height, breakpoints) are fine.
+
+```scss
+.card {
+  background: var(--mat-sys-surface-container);   // or --ax-bg-surface
+  color: var(--mat-sys-on-surface);                // or --ax-text-heading
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--ax-radius-lg);
+  box-shadow: var(--ax-shadow-sm);
+  padding: var(--ax-spacing-md);
+}
+```
+
+**Full token list:** [`docs/TOKEN_REFERENCE.md`](./docs/TOKEN_REFERENCE.md)
+**How theming works:** [`docs/THEMING_GUIDE.md`](./docs/THEMING_GUIDE.md)
+
+### Light / Dark mode
+
+Theme is controlled by `data-theme` on `<html>`, set by `AxThemeService`.
+Tokens flip automatically — components do **not** need to know which mode
+is active.
+
+> ❌ **Do not** use `.dark` class selectors, `[isDarkMode]` inputs, or
+> `@media (prefers-color-scheme: dark)` in component code.
+> ❌ **Do not** duplicate styles per mode.
+> ✅ Reference tokens once; let the theme switch them.
+
+```html
+<!-- Drop this anywhere a header lives -->
+<ax-theme-switcher />
+```
+
+---
+
+## Tailwind × Material × tokens — interop rules
+
+**Tailwind is layout glue only.** Never use Tailwind utilities for color,
+border, shadow, radius, font-size, font-weight, transitions on Material
+or AegisX components — they will be overridden by Material's own
+styles or, worse, win specificity and break dark mode.
+
+| Allowed Tailwind classes | Forbidden (use components / tokens instead) |
+| ------------------------ | ------------------------------------------- |
+| `flex`, `grid`, `gap-*`  | `bg-*`, `text-red-*`, `border-gray-*`       |
+| `p-*`, `m-*`, `space-*`  | `rounded-lg`, `shadow-sm/md/lg`             |
+| `w-*`, `h-*`, `max-w-*`  | `text-xl`, `font-bold`, `tracking-*`        |
+| `col-span-*`, `row-*`    | `transition-*`, `animate-*`                 |
+| `hidden`, `block`, `flex`| `hover:bg-*`, `hover:text-*`                |
+| `relative`, `absolute`   | `dark:*` variants (handled by tokens)       |
+| `sm: md: lg: xl:`        | `bg-opacity-*`, `mix-blend-*`               |
+
+Never override Material internals (`--mdc-*`, `.mat-mdc-*`) directly.
+Override the `--ax-button-*`, `--ax-nav-*` semantic wrappers instead —
+Material consumes them through theme tokens.
+
+---
+
+## Quick patterns
+
+### Page scaffold
 
 ```typescript
-import { expandCollapse, fadeIn, slideInLeft } from '@aegisx/ui';
-
 @Component({
-  animations: [expandCollapse, fadeIn, slideInLeft],
+  standalone: true,
+  imports: [AxPageShellComponent, AxPageHeaderComponent, AxFormSectionComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <ax-page-shell>
+      <ax-page-header [title]="'Drugs'" [breadcrumbs]="crumbs" />
+      <ax-form-section title="Basic info">
+        <!-- form fields -->
+      </ax-form-section>
+    </ax-page-shell>
+  `,
 })
+export class DrugsPage {
+  readonly crumbs = [{ label: 'Inventory', link: '/inventory' }, { label: 'Drugs' }];
+}
 ```
 
-Available: `expandCollapse`, `fadeIn`, `fadeOut`, `slideInLeft`, `slideInRight`, `slideInTop`, `slideInBottom`, `zoomIn`, `zoomOut`, `routerTransition`, `shake`
-
----
-
-## Widget Framework
-
-Dashboard widget system for building customizable dashboards:
+### Stat dashboard
 
 ```typescript
-import { AxWidgetComponent, AxDashboardComponent } from '@aegisx/ui';
+imports: [AxStatGroupComponent, AxStatCardComponent, AxKpiCardComponent],
+template: `
+  <ax-stat-group>
+    <ax-stat-card variant="trend-up" label="Sales" [value]="123_456" suffix="THB" />
+    <ax-stat-card variant="trend-down" label="Returns" [value]="42" />
+    <ax-kpi-card label="Conversion" [value]="0.034" format="percent" />
+  </ax-stat-group>
+`,
+```
+
+### Confirm dialog
+
+```typescript
+const confirmed = await firstValueFrom(
+  inject(AxDialogService).confirm({
+    title: 'Delete drug?',
+    message: 'This action cannot be undone.',
+    confirmText: 'Delete',
+    color: 'error',
+  }),
+);
+if (confirmed) await this.delete();
+```
+
+> ⚠ `confirm()` returns an Observable — always wrap with `firstValueFrom()`.
+
+---
+
+## File layout (source of truth)
+
+```
+libs/aegisx-ui/src/lib/
+├── components/      # 101 ax-* components in 22 sub-dirs
+├── layouts/         # ax-empty / ax-enterprise / ax-sidebar / ax-docs / ax-dashboard-panel
+├── navigation/      # ax-nav-shell + features + animations + models
+├── services/        # 8 services (theme, toast, dialog, navigation, config, media-watcher, loading-bar, icon)
+├── providers/       # provideAegisxUI / provideAegisxTheme / etc.
+├── widgets/         # 8 widget components
+├── theme/           # lightTheme, darkTheme, brandTheme, createCustomTheme
+├── animations/      # 11 main + 4 nav-shell animations
+├── foundations/     # design tokens (colors, spacing, typography, radius, shadows, motion)
+├── types/           # public TypeScript interfaces
+└── utils/           # helpers
 ```
 
 ---
 
-## Design Tokens (CSS Variables)
-
-All components use CSS custom properties with `--ax-` prefix:
-
-```css
-/* Colors */
---ax-text-primary
---ax-text-secondary
---ax-background-default
---ax-background-subtle
---ax-brand-default
---ax-border-default
-
-/* Spacing */
---ax-spacing-xs: 4px
---ax-spacing-sm: 8px
---ax-spacing-md: 16px
---ax-spacing-lg: 24px
---ax-spacing-xl: 32px
-
-/* Typography */
---ax-text-xs
---ax-text-sm
---ax-text-base
---ax-text-lg
---ax-text-xl
---ax-font-mono
-
-/* Border Radius */
---ax-radius-sm
---ax-radius-md
---ax-radius-lg
-
-/* Shadows */
---ax-shadow-sm
---ax-shadow-md
---ax-shadow-lg
-```
-
----
-
-## Types & Interfaces
+## Types & interfaces
 
 ```typescript
 import type {
-  AxNavigationItem,
-  AxNavigation,
-  AegisxConfig,
-  ThemeConfig,
-  LayoutType,
+  AxNavigationItem,    // sidebar/topbar nav items
+  AxNavigation,        // full nav config
+  AegisxConfig,        // library config
+  ThemeConfig,         // theme definition
+  LayoutType,          // 'empty' | 'enterprise' | 'sidebar' | 'docs'
 } from '@aegisx/ui';
 ```
 
-### AxNavigationItem
 ```typescript
 interface AxNavigationItem {
   id: string;
@@ -315,95 +398,9 @@ interface AxNavigationItem {
 
 ---
 
-## Provider Functions
+## Versioning & subtree
 
-| Function | Purpose |
-|----------|---------|
-| `provideAegisxUI()` | Full library setup |
-| `provideAegisxConfig()` | Config only |
-| `provideAegisxLayouts()` | Layout services |
-| `provideAegisxComponents()` | Component services |
-| `provideAegisxTheme()` | Theme setup |
-
----
-
-## File Structure
-
-```
-libs/aegisx-ui/src/lib/
-├── components/          # UI components
-│   ├── data-display/    # Card, Avatar, Badge, etc.
-│   ├── feedback/        # Alert, Loading, States
-│   ├── forms/           # DatePicker, FileUpload
-│   ├── navigation/      # Breadcrumb, Menu
-│   ├── skeleton/        # Skeleton loaders
-│   ├── dialogs/         # Confirm dialog
-│   ├── drawer/          # Side drawer
-│   ├── calendar/        # FullCalendar wrapper
-│   ├── gridster/        # Grid layout
-│   └── launcher/        # App launcher
-├── layouts/             # Application layouts
-│   ├── empty/           # Empty layout
-│   ├── enterprise/      # Enterprise layout
-│   └── docs/            # Documentation layout
-├── services/            # Core services
-├── theme/               # Theme system
-├── widgets/             # Widget framework
-├── animations/          # Animation presets
-├── types/               # TypeScript interfaces
-├── utils/               # Utility functions
-└── foundations/         # Design tokens
-```
-
----
-
-## Common Patterns
-
-### Using a Layout
-```typescript
-@Component({
-  template: `
-    <ax-sidebar-layout>
-      <router-outlet />
-    </ax-sidebar-layout>
-  `,
-  imports: [AxSidebarLayoutComponent, RouterOutlet],
-})
-```
-
-### Theme-Aware Component
-```typescript
-@Component({
-  template: `
-    <div [class.dark]="isDark$ | async">
-      <!-- content -->
-    </div>
-  `,
-})
-export class MyComponent {
-  isDark$ = inject(AxThemeService).isDark$;
-}
-```
-
-### Navigation Setup
-```typescript
-const navigation: AxNavigationItem[] = [
-  {
-    id: 'dashboard',
-    title: 'Dashboard',
-    type: 'basic',
-    icon: 'dashboard',
-    link: '/dashboard',
-  },
-  {
-    id: 'settings',
-    title: 'Settings',
-    type: 'collapsable',
-    icon: 'settings',
-    children: [
-      { id: 'profile', title: 'Profile', link: '/settings/profile' },
-      { id: 'security', title: 'Security', link: '/settings/security' },
-    ],
-  },
-];
-```
+This library is mirrored to `github.com/aegisx-platform/aegisx-ui` via
+`sync-to-repo.sh`. Edits should land in the AegisX monorepo first; the
+sync script copies them out. Breaking changes are capped at minor bumps
+(see `.releaserc.json`) — v2 requires explicit version bump.
