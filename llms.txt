@@ -756,6 +756,94 @@ template: `
 `,
 ```
 
+### 16. Badge (12 colors × 3 variants × features)
+
+`ax-badge` is a small status / counter pill. It carries the most
+configuration of any "tiny" component because it doubles as a status
+chip, a counter bubble, a removable filter pill, and a leading/trailing
+icon label.
+
+> **Live demo (in monorepo):** `apps/web/src/app/features/layouts-demo/badge-showcase.component.ts`
+> renders 111 instances across every color/variant/size/feature combo.
+
+**Type unions:**
+
+```typescript
+type BadgeVariant = 'soft' | 'outlined' | 'outlined-strong';
+type BadgeType    =
+  // 5 semantic
+  | 'success' | 'error' | 'warning' | 'info' | 'neutral'
+  // 7 extended (Untitled UI palette)
+  | 'brand' | 'blue' | 'indigo' | 'purple' | 'pink' | 'orange' | 'sky';
+type BadgeSize    = 'sm' | 'md' | 'lg';
+```
+
+**Common patterns:**
+
+```html
+<!-- Status chip (semantic color, soft variant by default) -->
+<ax-badge color="success">Active</ax-badge>
+<ax-badge color="warning" icon="schedule">Pending</ax-badge>
+<ax-badge color="error" variant="outlined-strong">Critical</ax-badge>
+
+<!-- Counter bubble (square + counter) -->
+<ax-badge color="error" [counter]="12" [iconOnly]="true" />
+
+<!-- Dot indicator (8px solid circle) -->
+<ax-badge color="success" [dot]="true" />
+
+<!-- Removable filter pill -->
+<ax-badge color="info" [removable]="true" (remove)="removeFilter()">
+  Status: Active
+</ax-badge>
+
+<!-- Extended palette -->
+<ax-badge color="purple" variant="soft">Beta</ax-badge>
+<ax-badge color="orange" variant="outlined" icon="local_fire_department">Hot</ax-badge>
+
+<!-- Sizes -->
+<ax-badge size="sm" color="neutral">Small</ax-badge>
+<ax-badge size="md" color="neutral">Medium (default)</ax-badge>
+<ax-badge size="lg" color="neutral">Large</ax-badge>
+```
+
+> Use `color="success|error|warning|info|neutral"` for semantic states
+> (auto-flips per theme). Use the extended palette
+> (`brand|blue|indigo|purple|pink|orange|sky`) only for non-semantic
+> categorical labels (tags, channels, brand colors). The 3 variants
+> trade off prominence: `soft` (default, low-key) → `outlined`
+> (medium) → `outlined-strong` (loud).
+
+---
+
+## Real-world page templates
+
+The monorepo ships **9 ready-made page templates** that combine
+multiple `ax-*` components into production-grade page shells. **Open
+these before scaffolding a new page from scratch** — they are the
+canonical "how to lay out a page in AegisX" reference.
+
+| Template | Path (in monorepo) | Use for |
+| -------- | ------------------ | ------- |
+| **L1 — List page** | `apps/web/src/app/features/layouts-demo/l1-list-page-demo.component.ts` | Master list with filters, table, pagination |
+| **L2 — Dashboard** | `apps/web/src/app/features/layouts-demo/l2-dashboard-demo.component.ts` | KPI dashboard (stat-card grid + charts) |
+| **L3 — Record** | `apps/web/src/app/features/layouts-demo/l3-record-page-demo.component.ts` | Single-record detail view (PR/PO/case file) |
+| **L4 — Workflow** | `apps/web/src/app/features/layouts-demo/l4-workflow-demo.component.ts` | Stepper-based wizard (horizontal + vertical) |
+| **L5 — Form** | `apps/web/src/app/features/layouts-demo/l5-form-demo.component.ts` | Long settings form, grouped sections |
+| **L6 — Split** | `apps/web/src/app/features/layouts-demo/l6-split-demo.component.ts` | Master-detail with `ax-master-detail` |
+| **L7 — Hub** | `apps/web/src/app/features/layouts-demo/l7-hub-demo.component.ts` | Module landing page (cards as entry points) |
+| **L8 — Settings** | `apps/web/src/app/features/layouts-demo/l8-settings-demo.component.ts` | Untitled UI "big card" settings layout |
+| **L9 — Dashboard panel** | `apps/web/src/app/features/layouts-demo/l9-dashboard-panel-demo.component.ts` | Manage.City-style dashboard composition |
+
+Plus 3 component showcases (each renders every variant of one component):
+
+- `stat-card-demo.component.ts` — 25 variants × multiple colors (90+ instances)
+- `badge-showcase.component.ts` — 12 colors × 3 variants × features (111 instances)
+- `icon-showcase.component.ts` — Material icon catalogue used across the app
+
+Routes live in `apps/web/src/app/features/layouts-demo/layouts-demo.routes.ts`.
+Visit `http://localhost:4200/layouts-demo/...` while running `pnpm run dev:web`.
+
 ---
 
 ## File layout (source of truth)
