@@ -31,7 +31,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideAegisxUI({
       theme: { name: 'indigo', scheme: 'auto' },
-      layout: { default: 'classic', sidenavWidth: 280 },
+      layout: { default: 'sidebar', sidenavWidth: 280 },
       features: { darkMode: true, animations: true },
     }),
   ],
@@ -48,26 +48,24 @@ import { AegisxUIModule } from '@aegisx/ui';
   imports: [
     AegisxUIModule.forRoot({
       theme: { name: 'default', scheme: 'light' },
-      layout: { default: 'classic' },
+      layout: { default: 'sidebar' },
     }),
   ],
 })
 export class AppModule {}
 ```
 
-#### **Option 3: Feature Modules (Tree-shaking)**
+#### **Option 3: Direct standalone imports (Tree-shakable)**
 
 ```typescript
-// app.module.ts
-import { AegisxCoreModule, AegisxLayoutsModule } from '@aegisx/ui';
+// component.ts — pick only the components you actually use
+import { AxSidebarLayoutComponent, AxCardComponent, AxThemeSwitcherComponent } from '@aegisx/ui';
 
-@NgModule({
-  imports: [
-    AegisxCoreModule.forRoot(config),
-    AegisxLayoutsModule, // Only import what you need
-  ],
+@Component({
+  standalone: true,
+  imports: [AxSidebarLayoutComponent, AxCardComponent, AxThemeSwitcherComponent],
 })
-export class AppModule {}
+export class AppComponent {}
 ```
 
 ### Basic Usage
@@ -75,20 +73,18 @@ export class AppModule {}
 ```typescript
 // app.component.ts
 import { Component } from '@angular/core';
-import { AxClassicLayoutComponent, AxCardComponent } from '@aegisx/ui';
+import { AxSidebarLayoutComponent, AxCardComponent } from '@aegisx/ui';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [AxClassicLayoutComponent, AxCardComponent],
+  imports: [AxSidebarLayoutComponent, AxCardComponent],
   template: `
-    <ax-classic-layout>
-      <div toolbar-title>Dashboard</div>
-
+    <ax-sidebar-layout appName="Dashboard">
       <ax-card title="Welcome" subtitle="Getting started">
         <p>Your content here</p>
       </ax-card>
-    </ax-classic-layout>
+    </ax-sidebar-layout>
   `,
 })
 export class AppComponent {}
@@ -102,12 +98,14 @@ export class AppComponent {}
 - **🎨 Customizable** - Configurable sidebars, headers, and navigation
 - **🚀 Modern** - Built with Angular Signals and standalone components
 
-| Layout                 | Description                           | Best For               |
-| ---------------------- | ------------------------------------- | ---------------------- |
-| `ax-classic-layout`    | Traditional admin layout with sidebar | Dashboard applications |
-| `ax-compact-layout`    | Collapsible icon-based navigation     | Content-focused apps   |
-| `ax-enterprise-layout` | Horizontal navigation bar             | Complex applications   |
-| `ax-empty-layout`      | Minimal layout without navigation     | Landing pages, auth    |
+| Layout                    | Description                                        | Best For                    |
+| ------------------------- | -------------------------------------------------- | --------------------------- |
+| `ax-sidebar-layout`       | Left sidebar navigation                            | Most admin / SaaS apps      |
+| `ax-enterprise-layout`    | Horizontal top-nav bar                             | Multi-module enterprise UIs |
+| `ax-docs-layout`          | Sidebar nav + table of contents                    | Documentation sites         |
+| `ax-empty-layout`         | Minimal centered layout, no chrome                 | Login, error, standalone    |
+| `ax-dashboard-panel`      | Composable dashboard sub-region                    | Inside other layouts        |
+| `ax-nav-shell` (next-gen) | Composable shell (top-bar / rail / expanded modes) | Custom or multi-mode apps   |
 
 ### 🛠️ Core Services
 
@@ -128,57 +126,7 @@ export class AppComponent {}
 | Navigation  | `<ax-navigation>`  | Flexible navigation trees         |
 | Breadcrumb  | `<ax-breadcrumb>`  | Dynamic breadcrumb navigation     |
 | Loading Bar | `<ax-loading-bar>` | Global progress indicators        |
-| User Menu   | `<ax-user-menu>`   | User profile dropdowns            |
-
-### 📦 Inventory Management Components
-
-Complete inventory management system with 10 specialized components:
-
-| Component         | Selector                       | Description                                      |
-| ----------------- | ------------------------------ | ------------------------------------------------ |
-| Stock Level       | `<ax-stock-level>`             | Visual stock indicator with color-coded alerts   |
-| Barcode Scanner   | `<ax-barcode-scanner>`         | Camera/manual barcode scanner (QR, EAN, Code128) |
-| Quantity Input    | `<ax-quantity-input>`          | Unit conversion input with validation            |
-| Batch Selector    | `<ax-batch-selector>`          | FIFO/FEFO/LIFO batch selection with expiry       |
-| Expiry Badge      | `<ax-expiry-badge>`            | Compact expiry status badge with countdown       |
-| Variant Selector  | `<ax-variant-selector>`        | Product variant selection (size, color, style)   |
-| Stock Alert Panel | `<ax-stock-alert-panel>`       | Real-time alerts dashboard (WebSocket support)   |
-| Movement Timeline | `<ax-stock-movement-timeline>` | Movement history with Chart.js visualization     |
-| Transfer Wizard   | `<ax-transfer-wizard>`         | Multi-step stock transfer workflow               |
-| Location Picker   | `<ax-location-picker>`         | Hierarchical location tree picker                |
-
-**Quick Example:**
-
-```typescript
-import { AxStockLevelComponent, AxBarcodeScannerComponent, AxBatchSelectorComponent } from '@aegisx/ui';
-
-@Component({
-  selector: 'stock-receive',
-  standalone: true,
-  imports: [AxBarcodeScannerComponent, AxBatchSelectorComponent],
-  template: `
-    <!-- Scan product -->
-    <ax-barcode-scanner (onScan)="lookupProduct($event)" />
-
-    <!-- Select batch -->
-    <ax-batch-selector [productId]="selectedProduct.id" strategy="fefo" (onSelect)="allocateBatch($event)" />
-  `,
-})
-export class StockReceiveComponent {}
-```
-
-**Features:**
-
-- 🏷️ Barcode scanning (camera + manual input)
-- 📊 Real-time stock level visualization
-- 🔄 FIFO/FEFO/LIFO inventory strategies
-- 📅 Expiry date tracking and alerts
-- 🗂️ Multi-variant product support
-- 📈 Movement history with export (PDF/Excel)
-- 🔔 WebSocket real-time alerts
-- 🏢 Hierarchical location management
-
-See [CHANGELOG.md](./CHANGELOG.md) for detailed component documentation.
+| Navbar User | `<ax-navbar-user>` | User profile dropdown for navbars |
 
 ### 🎯 Developer Experience
 
@@ -193,20 +141,24 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed component documentation.
 ### Using Layouts
 
 ```typescript
-// Classic Layout
-<ax-classic-layout>
-  <div toolbar-title>Dashboard</div>
-  <div toolbar-actions>
-    <button mat-icon-button>
+// Sidebar Layout
+<ax-sidebar-layout
+  appName="My App"
+  [navigation]="navItems"
+  [showFooter]="true"
+  (logoutClicked)="logout()">
+  <ng-template #headerActions>
+    <ax-theme-switcher />
+    <button mat-icon-button aria-label="Settings">
       <mat-icon>settings</mat-icon>
     </button>
-  </div>
+  </ng-template>
 
   <!-- Page content -->
   <div class="p-6">
     <h1>Welcome to AegisX</h1>
   </div>
-</ax-classic-layout>
+</ax-sidebar-layout>
 ```
 
 ### Using Services
@@ -388,30 +340,29 @@ provideAegisxUI({
 **3. Component Import Updates**
 
 ```typescript
-// ❌ Old imports (still supported)
-import { ClassicLayoutComponent } from '@aegisx/ui';
+// ✅ Standardized imports (all components are standalone)
+import { AxSidebarLayoutComponent } from '@aegisx/ui';
 
-// ✅ New standardized imports
-import { AxClassicLayoutComponent } from '@aegisx/ui';
-// or
-import { AxClassicLayoutComponent } from '@aegisx/ui/layouts';
-
-// Component usage remains the same
-<ax-classic-layout>...</ax-classic-layout>
+// Component usage
+<ax-sidebar-layout>...</ax-sidebar-layout>
 ```
 
-**4. Feature Module Imports (Optional)**
+**4. Tree-shakable provider functions (Recommended)**
 
 ```typescript
-// 🆕 Tree-shakable imports
-import { AegisxCoreModule, AegisxLayoutsModule } from '@aegisx/ui';
+// Pick only what you need (modern Angular)
+import { provideAegisxConfig, provideAegisxLayouts, provideAegisxComponents, provideAegisxTheme } from '@aegisx/ui';
 
-@NgModule({
-  imports: [
-    AegisxCoreModule.forRoot(config),
-    AegisxLayoutsModule // Only layouts
-  ]
-})
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAegisxConfig({
+      /* … */
+    }),
+    provideAegisxLayouts(),
+    provideAegisxComponents(),
+    provideAegisxTheme(),
+  ],
+});
 ```
 
 ## Development
