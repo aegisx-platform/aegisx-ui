@@ -299,47 +299,164 @@ Material consumes them through theme tokens.
 
 ---
 
-## Quick patterns
+## Recipes (verified APIs)
 
-### Page scaffold
+> Each recipe has been checked against the actual component source.
+> Inputs/outputs match `libs/aegisx-ui/src/lib/components/...`.
+> Per-component reference (full input list, slots, examples):
+> [`docs/components/<category>/<name>.md`](./docs/components/).
+
+### 1. Page scaffold (page-shell + page-header + form-section)
 
 ```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  AxPageShellComponent,
+  AxPageHeaderComponent,
+  AxFormSectionComponent,
+  AxCardComponent,
+  type BreadcrumbItem,
+} from '@aegisx/ui';
+
 @Component({
   standalone: true,
-  imports: [AxPageShellComponent, AxPageHeaderComponent, AxFormSectionComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AxPageShellComponent, AxPageHeaderComponent, AxFormSectionComponent, AxCardComponent],
   template: `
-    <ax-page-shell>
-      <ax-page-header [title]="'Drugs'" [breadcrumbs]="crumbs" />
-      <ax-form-section title="Basic info">
-        <!-- form fields -->
+    <ax-page-shell [breadcrumb]="crumbs">
+      <ax-page-header title="Drugs" subtitle="Master drug list" />
+      <ax-form-section title="Filters" icon="filter_list">
+        <!-- filter row -->
       </ax-form-section>
+      <ax-card><!-- table / list --></ax-card>
     </ax-page-shell>
   `,
 })
 export class DrugsPage {
-  readonly crumbs = [{ label: 'Inventory', link: '/inventory' }, { label: 'Drugs' }];
+  readonly crumbs: BreadcrumbItem[] = [
+    { label: 'Inventory', link: '/inventory' },
+    { label: 'Drugs' },
+  ];
 }
 ```
 
-### Stat dashboard
+> Breadcrumb sits on `ax-page-shell`, **not** on `ax-page-header`. The header
+> has `title` (required), `subtitle`, `headingLevel` (1–6).
+
+### 2. Stat dashboard (verified variants)
 
 ```typescript
 imports: [AxStatGroupComponent, AxStatCardComponent, AxKpiCardComponent],
 template: `
   <ax-stat-group>
-    <ax-stat-card variant="trend-up" label="Sales" [value]="123_456" suffix="THB" />
-    <ax-stat-card variant="trend-down" label="Returns" [value]="42" />
-    <ax-kpi-card label="Conversion" [value]="0.034" format="percent" />
+    <!-- compact: dense KPI tile (default) -->
+    <ax-stat-card icon="payments" color="success" label="Today's sales" [value]="'฿123,456'" />
+
+    <!-- trend: hero layout + sparkline (needs trendData) -->
+    <ax-stat-card variant="trend" color="info" icon="trending_up"
+                  label="Receipts / day" [value]="142"
+                  [trendData]="[120, 135, 128, 142, 138, 156, 142]" />
+
+    <!-- ring: circular progress (needs progress 0-100) -->
+    <ax-stat-card variant="ring" color="warning" icon="inventory_2"
+                  label="Budget used" [value]="'72%'" [progress]="72" />
+
+    <!-- KPI card with delta + change label -->
+    <ax-kpi-card variant="simple" label="Conversion"
+                 [value]="'3.4%'" [change]="0.4" changeType="up" changeLabel="vs last week" />
   </ax-stat-group>
 `,
 ```
 
-### Confirm dialog
+> `StatCardVariant` has 25 values (compact, icon-leading, hero, trend,
+> trend-corner, ring, comparison, breakdown, bars, status, gauge, …).
+> There is no `trend-up`/`trend-down` — use `variant="trend"` + `trendData`.
+> There is no `suffix` or `format` prop — pass formatted strings as `value`.
+
+### 3. List page with empty / loading / error states
 
 ```typescript
+@Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    AxCardComponent, AxLoadingStateComponent,
+    AxEmptyStateComponent, AxErrorStateComponent,
+    MatTableModule,
+  ],
+  template: `
+    <ax-card>
+      @switch (state()) {
+        @case ('loading') {
+          <ax-loading-state message="กำลังโหลดข้อมูล..." />
+        }
+        @case ('error') {
+          <ax-error-state [showTechnicalCode]="true" [bordered]="true" />
+        }
+        @case ('empty') {
+          <ax-empty-state
+            icon="inbox"
+            title="ยังไม่มีรายการ"
+            message="กดปุ่ม + เพื่อสร้างรายการแรก"
+            [actions]="[{ label: 'สร้างรายการ', icon: 'add', primary: true, callback: create }]" />
+        }
+        @case ('ready') {
+          <table mat-table [dataSource]="rows()">
+            <!-- column defs -->
+          </table>
+        }
+      }
+    </ax-card>
+  `,
+})
+export class DrugsListPage {
+  readonly state = signal<'loading' | 'error' | 'empty' | 'ready'>('loading');
+  readonly rows = signal<Drug[]>([]);
+  create = () => this.router.navigate(['/drugs/new']);
+}
+```
+
+> `ax-error-state` uses signal inputs (`showTechnicalCode`, `bordered`,
+> `compact`, `showDetails`, `hideActions`). `ax-empty-state` actions are
+> typed `EmptyStateAction[]` — each item has `label`, `icon?`, `primary?`,
+> `onClick`.
+
+### 4. Data table (use Material — there is no `ax-data-table`)
+
+```typescript
+imports: [AxCardComponent, MatTableModule, MatSortModule, MatPaginatorModule],
+template: `
+  <ax-card>
+    <table mat-table matSort [dataSource]="rows()" class="ax-data-table">
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+        <td mat-cell *matCellDef="let r">{{ r.code }}</td>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="cols"></tr>
+      <tr mat-row *matRowDef="let row; columns: cols"></tr>
+    </table>
+    <mat-paginator [length]="total()" pageSize="25" [pageSizeOptions]="[25, 50, 100]" />
+  </ax-card>
+`,
+```
+
+> `class="ax-data-table"` is just a styling hook (defined in `tailwind.config.js`)
+> — it is **not** a component selector. AegisX does not wrap `mat-table`.
+
+### 5. Confirm dialog (Observable — wrap with `firstValueFrom`)
+
+```typescript
+import { firstValueFrom } from 'rxjs';
+import { AxDialogService } from '@aegisx/ui';
+
+const dialog = inject(AxDialogService);
+
 const confirmed = await firstValueFrom(
-  inject(AxDialogService).confirm({
+  dialog.confirm({
     title: 'Delete drug?',
     message: 'This action cannot be undone.',
     confirmText: 'Delete',
@@ -349,7 +466,236 @@ const confirmed = await firstValueFrom(
 if (confirmed) await this.delete();
 ```
 
-> ⚠ `confirm()` returns an Observable — always wrap with `firstValueFrom()`.
+> `confirm()` returns `Observable<boolean>` — `await` directly will resolve
+> to the Observable, not the result. Always `firstValueFrom()`.
+
+### 6. Drawer (slide-over panel)
+
+```typescript
+imports: [AxDrawerComponent, MatButtonModule],
+template: `
+  <button mat-flat-button (click)="open.set(true)">Open</button>
+
+  <ax-drawer
+    [(open)]="open"
+    position="right"
+    size="md"
+    title="Drug detail"
+    subtitle="DRG-001"
+    icon="medication"
+    [hasBackdrop]="true">
+    <p>Drawer content here…</p>
+  </ax-drawer>
+`,
+```
+
+```typescript
+readonly open = signal(false);
+```
+
+> `position`: `'left' | 'right' | 'top' | 'bottom'`.
+> `size`: `'sm' | 'md' | 'lg' | 'xl' | 'full'`.
+
+### 7. Tab pills (filter switcher)
+
+```typescript
+import { AxTabPillsComponent, type TabPill } from '@aegisx/ui';
+
+readonly tabs: TabPill[] = [
+  { value: 'all',     label: 'All',      count: 142 },
+  { value: 'active',  label: 'Active',   count: 138 },
+  { value: 'expired', label: 'Expired',  count: 4 },
+];
+readonly active = signal('all');
+
+template: `
+  <ax-tab-pills [tabs]="tabs" [activeValue]="active()" (tabChange)="active.set($event)" />
+`,
+```
+
+> `tabs` is required. `tabChange` emits the selected `value` (string).
+
+### 8. Form section group (collapsible)
+
+```typescript
+imports: [AxFormSectionComponent, MatFormFieldModule, MatInputModule],
+template: `
+  <ax-form-section title="Basic info" icon="info" fieldCount="4" [collapsible]="true">
+    <mat-form-field><mat-label>Code</mat-label><input matInput /></mat-form-field>
+    <mat-form-field><mat-label>Name</mat-label><input matInput /></mat-form-field>
+  </ax-form-section>
+
+  <ax-form-section title="Pricing" icon="payments" [collapsible]="true" [collapsed]="true">
+    <!-- starts collapsed -->
+  </ax-form-section>
+`,
+```
+
+> `title` is `input.required<string>()` — must pass it. `collapsible`
+> defaults to `true`, `collapsed` (initial state) defaults to `false`.
+
+### 9. Date picker (with min/max + helper)
+
+```typescript
+imports: [AxDatePickerComponent, ReactiveFormsModule],
+template: `
+  <ax-date-picker
+    label="Expiry date"
+    placeholder="Select expiry"
+    [required]="true"
+    size="md"
+    [minDate]="today"
+    helperText="Drugs expiring within 6 months will be flagged"
+    [formControl]="expiryCtrl" />
+`,
+```
+
+```typescript
+readonly today = new Date();
+readonly expiryCtrl = new FormControl<Date | null>(null, Validators.required);
+```
+
+### 10. File upload (with constraints)
+
+```typescript
+imports: [AxFileUploadComponent],
+template: `
+  <ax-file-upload
+    label="Upload drug list (CSV, max 10 MB)"
+    accept=".csv,text/csv"
+    [multiple]="false"
+    [maxFiles]="1"
+    [maxSize]="10 * 1024 * 1024"
+    hint="ใช้ template จาก /downloads/drug-template.csv"
+    (filesChange)="onFiles($event)" />
+`,
+```
+
+```typescript
+import { type FileItem } from '@aegisx/ui';
+
+onFiles(files: FileItem[]) {
+  if (!files.length) return;
+  this.import(files[0].file);
+}
+```
+
+### 11. Loading button (async submit)
+
+```typescript
+imports: [AxLoadingButtonComponent],
+template: `
+  <ax-loading-button
+    variant="flat"
+    color="primary"
+    type="submit"
+    icon="save"
+    [loading]="saving()"
+    loadingText="กำลังบันทึก..."
+    (axClick)="save()">
+    บันทึก
+  </ax-loading-button>
+`,
+```
+
+```typescript
+readonly saving = signal(false);
+
+async save() {
+  this.saving.set(true);
+  try { await this.api.save(); } finally { this.saving.set(false); }
+}
+```
+
+> Use `ax-loading-button` **only** for buttons with real async state.
+> Plain confirm/close buttons should be `<button mat-button>`.
+
+### 12. Master-detail layout (with persistent splitter)
+
+```typescript
+imports: [AxMasterDetailComponent, AxSplitterComponent],
+template: `
+  <ax-master-detail [masterWidth]="340" masterPosition="left" [showDivider]="true">
+    <div master>
+      <!-- list -->
+    </div>
+    <div detail>
+      <!-- selected item -->
+    </div>
+  </ax-master-detail>
+`,
+```
+
+For a draggable splitter that remembers user width:
+
+```html
+<ax-splitter
+  orientation="horizontal"
+  unit="percent"
+  [size]="35"
+  [min]="20"
+  [max]="60"
+  stateKey="drugs-list-width"
+  stateStorage="local">
+  <div before><!-- left pane --></div>
+  <div after><!-- right pane --></div>
+</ax-splitter>
+```
+
+### 13. Skeleton placeholder while loading
+
+```typescript
+imports: [AxCardComponent, AxSkeletonTableComponent, AxSkeletonCardComponent],
+template: `
+  <ax-card>
+    @if (loading()) {
+      <ax-skeleton-table [rows]="5" [columns]="4" [showHeader]="true" />
+    } @else {
+      <!-- real table -->
+    }
+  </ax-card>
+`,
+```
+
+### 14. Toast notifications
+
+```typescript
+import { AxToastService } from '@aegisx/ui';
+
+private readonly toast = inject(AxToastService);
+
+async save() {
+  try {
+    await this.api.save();
+    this.toast.success('บันทึกสำเร็จ');
+  } catch (err) {
+    this.toast.error('บันทึกไม่สำเร็จ — โปรดลองอีกครั้ง');
+  }
+}
+```
+
+> `AxToastService` exposes `success`, `error`, `warning`, `info`, `show`.
+> Each accepts `(message, options?)` and returns a `ToastRef`.
+
+### 15. Priority alert (urgent banner with chips)
+
+```typescript
+import { AxPriorityAlertComponent, type PriorityAlertChip } from '@aegisx/ui';
+
+readonly criticalChips: PriorityAlertChip[] = [
+  { label: 'หมดอายุ ≤ 7 วัน 3 รายการ', color: 'error',   link: '/drugs?filter=expiring-week' },
+  { label: 'สต็อกต่ำ 5 รายการ',          color: 'warning', link: '/drugs?filter=low-stock' },
+];
+
+template: `
+  <ax-priority-alert
+    variant="error"
+    icon="priority_high"
+    title="งานเร่งด่วน 8 รายการ"
+    subtitle="ต้องดำเนินการก่อนสิ้นวัน"
+    [chips]="criticalChips" />
+`,
+```
 
 ---
 
