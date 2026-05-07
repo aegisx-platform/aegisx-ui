@@ -814,6 +814,76 @@ type BadgeSize    = 'sm' | 'md' | 'lg';
 > trade off prominence: `soft` (default, low-key) → `outlined`
 > (medium) → `outlined-strong` (loud).
 
+### 17. KPI card (7 variants — simpler sibling to stat-card)
+
+`ax-kpi-card` is the Tremor-inspired smaller KPI tile. Use it when you
+need a 1-line metric with optional change indicator — `ax-stat-card` is
+overkill for many dashboards.
+
+**Type unions:**
+
+```typescript
+type KpiCardVariant     =
+  | 'simple'           // clean: label + value (default)
+  | 'badge'            // value + colored % badge (success/error/warning)
+  | 'compact'          // dense, smaller padding
+  | 'accent'           // colored bar on one edge
+  | 'visual-indicator' // value + small visual (bars/dots)
+  | 'progress'         // value + progress bar
+  | 'segmented';       // multi-segment progress bar
+type KpiCardSize        = 'sm' | 'md' | 'lg';
+type KpiCardTrend       = 'up' | 'down' | 'neutral';
+type KpiCardBadgeType   = 'success' | 'error' | 'warning' | 'info' | 'neutral';
+type KpiCardAccentColor = 'primary' | 'info' | 'success' | 'warning' | 'error';
+```
+
+**Common patterns** (real usage from `apps/web/src/app/features/platform/...`):
+
+```html
+<!-- 1. Simple: clean tile, no shadow ([flat]="true" for table headers) -->
+<ax-kpi-card variant="simple" [flat]="true" label="Total" [value]="stats.total" />
+
+<!-- 2. Badge: with percentage + semantic color -->
+<ax-kpi-card variant="badge" [flat]="true"
+             label="Available" [value]="stats.available"
+             [badge]="percentage + '%'" badgeType="success" />
+
+<!-- 3. Change indicator (works on any variant) -->
+<ax-kpi-card variant="simple" label="Conversion"
+             [value]="'3.4%'" [change]="0.4" changeType="up"
+             changeLabel="vs last week" />
+
+<!-- 4. Accent bar (colored edge for visual grouping) -->
+<ax-kpi-card variant="accent" accentColor="warning" accentPosition="left"
+             label="At risk" [value]="12" />
+
+<!-- 5. Progress (0-100, with optional progressLabel) -->
+<ax-kpi-card variant="progress" label="Quota"
+             [value]="'฿72k'" [progress]="72" progressColor="success"
+             progressLabel="of ฿100k target" />
+
+<!-- 6. Segmented (multi-segment bar — pass segments) -->
+<ax-kpi-card variant="segmented" label="Status mix" [value]="142"
+             [segments]="[
+               { value: 90, color: '#22c55e', label: 'Active' },
+               { value: 40, color: '#f59e0b', label: 'Pending' },
+               { value: 12, color: '#ef4444', label: 'Failed' }
+             ]" />
+
+<!-- 7. Compact + clickable (use as filter chip / drill-down) -->
+<ax-kpi-card variant="compact" [clickable]="true" [hoverable]="true"
+             label="Drugs" [value]="1250" (click)="filterByDrug()" />
+```
+
+> Useful flags: `[flat]="true"` (no shadow — for embedded tiles),
+> `[hoverable]="true"` (lift on hover), `[clickable]="true"` (cursor +
+> click handler), `[showDivider]="true"` (line below value),
+> `accentPosition` flips the accent bar to `top|right|bottom`.
+>
+> When to use which: `ax-kpi-card` for small tiles in list-page headers
+> and table summaries. `ax-stat-card` for dashboard hero sections that
+> need rich payloads (sparkline / ring / threshold / breakdown).
+
 ---
 
 ## Real-world page templates
