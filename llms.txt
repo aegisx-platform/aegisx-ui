@@ -343,35 +343,94 @@ export class DrugsPage {
 > Breadcrumb sits on `ax-page-shell`, **not** on `ax-page-header`. The header
 > has `title` (required), `subtitle`, `headingLevel` (1–6).
 
-### 2. Stat dashboard (verified variants)
+### 2. Stat dashboard (`ax-stat-card` has **25 variants** — pick the right one)
+
+`ax-stat-card` is the most versatile component in the library. One
+component, 25 layout variants, driven entirely by `[variant]` + a few
+variant-specific payload inputs.
+
+> **Catalogue:** [`docs/components/data-display/stat-card.md`](./docs/components/data-display/stat-card.md)
+> describes every variant.
+> **Live demo (in monorepo):** `apps/web/src/app/features/layouts-demo/stat-card-demo.component.ts`
+> shows 90+ real usages — open it before guessing inputs.
+
+The 25 variants by family:
+
+| Family            | Variants                                                                  |
+| ----------------- | ------------------------------------------------------------------------- |
+| Text-only         | `compact` (default), `icon-leading`, `hero`                               |
+| With sparkline    | `trend`, `trend-corner`                                                   |
+| With progress     | `ring`, `gauge`, `gauge-split`, `progress-steps`                          |
+| With comparison   | `comparison`, `compare-period`, `threshold`                               |
+| With breakdown    | `breakdown`, `bars`, `inline-bars`, `stacked-bar`, `dual-metric`          |
+| With status       | `status`, `journey`                                                       |
+| With rich payload | `donut-legend`, `metric-grid`, `heatmap`, `ranking`, `category-browser`, `billboard` |
+
+8 representative recipes (real APIs from demo file):
 
 ```typescript
-imports: [AxStatGroupComponent, AxStatCardComponent, AxKpiCardComponent],
+imports: [AxStatGroupComponent, AxStatCardComponent],
 template: `
   <ax-stat-group>
-    <!-- compact: dense KPI tile (default) -->
-    <ax-stat-card icon="payments" color="success" label="Today's sales" [value]="'฿123,456'" />
+    <!-- 1. compact (default) — dense KPI tile -->
+    <ax-stat-card icon="payments" color="success"
+                  label="Today's sales" [value]="'฿123,456'" />
 
-    <!-- trend: hero layout + sparkline (needs trendData) -->
-    <ax-stat-card variant="trend" color="info" icon="trending_up"
+    <!-- 2. icon-leading — workflow status with 48px icon on the left -->
+    <ax-stat-card variant="icon-leading" icon="local_shipping" color="info"
+                  label="Pending shipments" [value]="42" iconColor="accent" />
+
+    <!-- 3. hero — oversized value, uppercase label, dashboard headers -->
+    <ax-stat-card variant="hero" icon="trending_up" color="primary"
+                  label="MRR" [value]="'฿4.2M'" subtitle="+12% MoM" />
+
+    <!-- 4. trend — hero layout + sparkline (needs trendData) -->
+    <ax-stat-card variant="trend" icon="medication" color="info"
                   label="Receipts / day" [value]="142"
                   [trendData]="[120, 135, 128, 142, 138, 156, 142]" />
 
-    <!-- ring: circular progress (needs progress 0-100) -->
-    <ax-stat-card variant="ring" color="warning" icon="inventory_2"
+    <!-- 5. trend-corner — Manage.City-style, sparkline tucked in corner -->
+    <ax-stat-card variant="trend-corner" color="primary"
+                  [value]="'4,582'" label="Active users" subtitle="+12.5%"
+                  deltaDirection="up" [trendData]="weeklyActiveUsers" />
+
+    <!-- 6. ring — circular progress (needs progress 0-100) -->
+    <ax-stat-card variant="ring" icon="inventory_2" color="warning"
                   label="Budget used" [value]="'72%'" [progress]="72" />
 
-    <!-- KPI card with delta + change label -->
-    <ax-kpi-card variant="simple" label="Conversion"
-                 [value]="'3.4%'" [change]="0.4" changeType="up" changeLabel="vs last week" />
+    <!-- 7. comparison — actual vs target horizontal bar -->
+    <ax-stat-card variant="comparison" icon="account_balance_wallet" color="info"
+                  [value]="3_200_000" label="Revenue" subtitle="this quarter"
+                  [target]="5_000_000" targetLabel="฿5M" />
+
+    <!-- 8. status — semantic status dot + lastUpdated timestamp -->
+    <ax-stat-card variant="status" icon="check_circle"
+                  [value]="'1,234 หน่วย'" label="สต็อกรวม"
+                  status="healthy" subtitle="ปลอดภัย"
+                  lastUpdated="อัพเดท 2 นาทีที่แล้ว" />
   </ax-stat-group>
 `,
 ```
 
-> `StatCardVariant` has 25 values (compact, icon-leading, hero, trend,
-> trend-corner, ring, comparison, breakdown, bars, status, gauge, …).
-> There is no `trend-up`/`trend-down` — use `variant="trend"` + `trendData`.
-> There is no `suffix` or `format` prop — pass formatted strings as `value`.
+KPI card (smaller, simpler — for non-stat-card metrics):
+
+```html
+<ax-kpi-card variant="simple" label="Conversion"
+             [value]="'3.4%'" [change]="0.4" changeType="up"
+             changeLabel="vs last week" />
+```
+
+> Variants need different payload inputs:
+> `trend` / `trend-corner` → `[trendData]: number[]`
+> `ring` / `gauge` → `[progress]: 0-100`
+> `comparison` → `[target]` + `targetLabel`
+> `breakdown` → `[breakdown]: StatCardBreakdownItem[]`
+> `metric-grid` / `heatmap` → `[cells]: StatCardGridCell[]`
+> `bars` / `inline-bars` → `[barData]` + `[barLabels]`
+>
+> There is **no** `suffix`/`format` prop — pre-format and pass `[value]`
+> as a string. There is **no** `trend-up`/`trend-down` — use `variant="trend"`
+> with `trendData` (direction comes from the data).
 
 ### 3. List page with empty / loading / error states
 
