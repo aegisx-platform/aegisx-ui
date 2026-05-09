@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.5] - 2026-04-25
+## [0.5.5] - 2026-05-08
 
 ### Added
 
@@ -30,14 +30,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the actual `.ts` source (Inputs/Outputs)
   - Anti-patterns 8.1–8.9 — concrete forbidden code from past sessions
 
+- **`AGENTS.md`** (new — 318 lines) — focused rules file for AI
+  assistants writing code that imports `@aegisx/ui`. Covers:
+  - Component-selection decision tree (`ax-*` → `mat-*` → compose →
+    ask) with forbidden shortcuts.
+  - Modern standalone component template (signals + `inject()` +
+    `OnPush` + `@if`/`@for` + `takeUntilDestroyed`) — copy-paste ready.
+  - Token-only styling rule (no hex, no `.dark` class, no
+    `[isDarkMode]` input — tokens flip automatically per `data-theme`).
+  - Tailwind layout-only rules with allowed/forbidden table.
+  - **7 real-world pitfalls** we shipped to production:
+    `ax-loading-button` only-when-async, `axDialog.confirm()`
+    Observable wrapping, signal circular dependencies, `@if`
+    inside `mat-button`, `space-y-*` with native control flow,
+    FK fields must use dropdowns, KPI stats must come from a
+    server endpoint.
+
+- **`llms.txt` rewritten and expanded** (409 → 969 lines) — now an
+  accurate entry-point for AI consumers of the library. Diff vs the
+  previous version:
+  - Component list synced from the stale "45+" banner to the actual
+    **101 standalone selectors** in source (verified by grepping
+    `selector: '...'` across `src/lib/components/`).
+  - Layout list completed: now lists **5 real layouts**
+    (`ax-empty-layout`, `ax-enterprise-layout`, `ax-sidebar-layout`,
+    `ax-docs-layout`, `ax-dashboard-panel`) plus the next-gen
+    `ax-nav-shell` system. The old list referenced
+    `ax-classic-layout` and `ax-compact-layout`, neither of which
+    exists in source.
+  - **17 verified-API recipes** — every input/output/slot in every
+    recipe checked against the component source: page scaffold,
+    list-state trio (loading/empty/error), Material data tables,
+    drawers, tab-pills, form sections, date pickers, file uploads,
+    loading buttons, master-detail, skeletons, toasts, priority
+    alerts.
+  - **Stat-card recipe surfaces all 25 variants** with their
+    required payload inputs (`trendData`, `progress`,
+    `target`/`targetLabel`, `breakdown`, `cells`, `barData`),
+    grouped by family (text-only / sparkline / progress /
+    comparison / breakdown / status / rich payload). Points at the
+    live demo at `apps/web/src/app/features/layouts-demo/stat-card-demo.component.ts`
+    (90+ instances) for the full catalogue.
+  - **Badge recipe** surfaces 12 colors × 3 variants × features
+    (`counter`, `dot`, `removable`, `iconOnly`) with type unions.
+  - **KPI-card recipe** surfaces 7 variants with a "when to pick
+    kpi-card vs stat-card" note.
+  - New **"Real-world page templates"** section pointing to the
+    9 ready-made page-shell templates (L1–L9) in
+    `apps/web/src/app/features/layouts-demo/` — list, dashboard,
+    record, workflow, form, split, hub, settings, dashboard-panel.
+  - **Tailwind × Material × tokens** interop section (allowed vs
+    forbidden classes) with explicit anti-patterns.
+  - **Documentation Map** linking to `docs/components/<category>/<name>.md`,
+    `docs/TOKEN_REFERENCE.md`, `docs/THEMING_GUIDE.md`, and `DESIGN.md`.
+
+### Changed
+
+- **`README.md` scrubbed** of vapor selectors that would have been
+  embarrassing once published to the public mirror:
+  - Removed the "Inventory Management Components" section and its
+    10 fake selectors (`ax-stock-level`, `ax-batch-selector`,
+    `ax-barcode-scanner`, `ax-expiry-badge`, `ax-location-picker`,
+    `ax-quantity-input`, `ax-transfer-wizard`, `ax-variant-selector`,
+    `ax-stock-alert-panel`, `ax-stock-movement-timeline`) — none
+    exist in source. Matching `docs/components/inventory/` pages
+    also removed.
+  - Replaced `ax-classic-layout` / `ax-compact-layout` with the
+    real `ax-sidebar-layout` (and rewrote the layout table to
+    list the 5 layouts that actually exist).
+  - Replaced the `AegisxLayoutsModule` "feature module" example
+    with the real `provideAegisxConfig` / `provideAegisxLayouts`
+    / `provideAegisxComponents` / `provideAegisxTheme` provider
+    functions.
+  - Fixed `ax-user-menu` → `ax-navbar-user` (correct selector
+    name).
+  - All 14 `ax-*` selectors mentioned in the README are now
+    verified to exist in source.
+
 ### Notes
 
-- Doc-only release. Zero runtime behaviour change. No new components
-  and no token additions. The bump exists so consumers can pin to the
-  agent-readable design contract that ships with each release.
+- Doc-only release. Zero runtime behaviour change. No new components,
+  no input/output/slot changes, no token additions. `src/lib/` is
+  identical to v0.5.4. The bump exists so consumers can pin to the
+  full agent-readable design + rules contract that ships with each
+  release.
 - A companion quality gate `scripts/quality/check-design-md-sync.sh`
   lives in the monorepo and verifies that every `--ax-*` token family
-  in `_aegisx-tokens.scss` is mentioned in this file, so it cannot
+  in `_aegisx-tokens.scss` is mentioned in `DESIGN.md`, so it cannot
   drift out of sync with the SCSS source.
 
 ## [0.5.4] - 2026-04-24
