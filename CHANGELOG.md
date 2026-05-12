@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.6] - 2026-05-12
+
+### Changed
+
+- **Peer dependency range widened to support Angular v21.** All
+  `@angular/*` peers (animations, cdk, common, core, forms, material,
+  platform-browser, router) now accept `>=17.0.0 <22.0.0`. The library
+  now installs cleanly into apps running Angular 17, 18, 19, 20, **and
+  21** without `--legacy-peer-deps`.
+- **`ngx-toastr` peer widened** from `>=17.0.0 <20.0.0` to
+  `>=17.0.0 <22.0.0`. Versions 20 and 21 are now allowed.
+
+### Notes
+
+- This release ships no source changes — the dist artifact is
+  byte-identical to 0.5.5 except for `package.json` peer-dep ranges.
+- No breaking changes. Existing v17–v20 consumers do not need to do
+  anything. v21 consumers can now install `@aegisx/ui` without
+  overriding peers.
+- Other ecosystem peers (`angular-gridster2 21.0.x`,
+  `angularx-qrcode 21.0.x`, `@angular/cdk 21.2.x`,
+  `@angular/material 21.2.x`, `@nx/angular >=21`) already support
+  Angular 21 with the existing floors — no change needed.
+
 ## [0.5.5] - 2026-05-08
 
 ### Added
