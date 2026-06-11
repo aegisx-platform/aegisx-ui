@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.7] - 2026-06-11
+
+### Fixed
+
+- **`ax-launcher` permission matching now normalizes kebab-case to
+  camelCase**, matching the backend (`auth.strategies.ts`) and the app's
+  `MultiAppService`. Previously `normalizePermission` only replaced dots
+  with colons, so a role granted the legacy
+  `inventory:procurement-committees:read` did **not** match a card
+  requiring `inventory:procurementCommittees:read` — those launcher cards
+  (e.g. คณะกรรมการ / committee, master-data) were wrongly hidden even
+  though the backend authorized the page. Cards seeded in camelCase were
+  unaffected, which is why the bug looked intermittent. Roles holding
+  kebab-case permissions now see every card they actually have access to.
+
+### Removed
+
+- **Dead `:host-context(.dark) / .dark` style block in `ax-launcher`.**
+  The platform applies dark mode via the `data-theme="…dark"` attribute and
+  `--ax-*` tokens (which auto-flip), never a `.dark` class — so this override
+  block never applied. Its 24 hardcoded hex colours duplicated values the
+  main styles already derive from tokens. Removed with zero visual change.
+
 ## [0.5.6] - 2026-05-12
 
 ### Changed

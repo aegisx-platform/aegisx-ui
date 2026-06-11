@@ -951,108 +951,6 @@ const DEFAULT_CONFIG: LauncherConfig = {
         gap: 1rem;
       }
     }
-
-    /* Dark Mode Support */
-    :host-context(.dark),
-    .dark {
-      .ax-launcher__title {
-        color: #f9fafb;
-      }
-
-      .ax-launcher__subtitle {
-        color: #9ca3af;
-      }
-
-      .ax-launcher__search {
-        ::ng-deep .mat-mdc-text-field-wrapper {
-          background: #1f2937;
-        }
-      }
-
-      .ax-launcher__search-hint {
-        color: #6b7280;
-        background: #374151;
-        border-color: #4b5563;
-      }
-
-      .ax-launcher__notification-summary:hover {
-        background: #374151;
-      }
-
-      .ax-launcher__notification-summary mat-icon {
-        color: #9ca3af;
-      }
-
-      .tab-count {
-        background: #374151;
-        color: #9ca3af;
-      }
-
-      .tab-count--pinned {
-        background: rgba(245, 158, 11, 0.2);
-        color: #fbbf24;
-      }
-
-      .ax-launcher__section-header {
-        border-bottom-color: #374151;
-      }
-
-      .ax-launcher__section-header h3 {
-        color: #f9fafb;
-      }
-
-      .ax-launcher__section-header .section-hint {
-        color: #6b7280;
-      }
-
-      .ax-launcher__section-header .section-icon {
-        color: #9ca3af;
-      }
-
-      .ax-launcher__section-header .section-icon.section-icon--pinned {
-        color: #fbbf24;
-      }
-
-      .ax-launcher__group-header {
-        border-bottom-color: #374151;
-
-        mat-icon {
-          color: #9ca3af;
-        }
-
-        h3 {
-          color: #f9fafb;
-        }
-
-        .group-count {
-          background: #374151;
-          color: #9ca3af;
-        }
-      }
-
-      .ax-launcher__empty {
-        mat-icon {
-          color: #6b7280;
-        }
-
-        p {
-          color: #9ca3af;
-        }
-      }
-
-      .ax-launcher__gridster {
-        background: transparent;
-      }
-
-      .ax-launcher__gridster--editing {
-        background: #1f2937;
-      }
-
-      .ax-launcher__edit-btn--active {
-        background: var(--ax-brand-default, #6366f1);
-        color: white;
-      }
-    }
   `,
 })
 export class AxLauncherComponent {
@@ -1757,11 +1655,25 @@ export class AxLauncherComponent {
     });
   }
 
+  private kebabToCamelCase(str: string): string {
+    return str.replace(/-([a-z])/g, (_, letter: string) =>
+      letter.toUpperCase(),
+    );
+  }
+
   private normalizePermission(permission: string): string {
-    const normalized = permission.replace(/\./g, ':').trim();
+    let normalized = permission.replace(/\./g, ':').trim();
     if (normalized === 'inventory:inventory:*') {
       return 'inventory:*';
     }
+
+    // Normalize kebab-case segments to camelCase so a card requiring
+    // `inventory:procurementCommittees:read` matches a role granted the
+    // legacy `inventory:procurement-committees:read`. Mirrors the backend
+    // (auth.strategies.ts normalizePermission) and MultiAppService — without
+    // this, launcher cards for kebab-granted modules are wrongly hidden.
+    const parts = normalized.split(':');
+    normalized = parts.map((part) => this.kebabToCamelCase(part)).join(':');
 
     return normalized;
   }
