@@ -51,7 +51,7 @@ import { BreadcrumbItem } from '../../navigation/breadcrumb/breadcrumb.types';
   imports: [AxBreadcrumbComponent],
   template: `
     <div class="ax-page-shell">
-      <div class="ax-page-shell-inner">
+      <div class="ax-page-shell-inner" [style.max-width]="maxWidth || null">
         @if (breadcrumb && breadcrumb.length > 0) {
           <ax-breadcrumb
             [items]="breadcrumb"
@@ -113,4 +113,11 @@ export class AxPageShellComponent {
    * Use for pages where header + content are separate visual zones.
    */
   @Input({ transform: booleanAttribute }) headerBorder = false;
+
+  /**
+   * Optional max content width (e.g. `'1400px'`). When set, the breadcrumb,
+   * header slot and content are constrained together and centered — keeping
+   * header and body aligned. Defaults to full width (`100%`).
+   */
+  @Input() maxWidth?: string;
 }
