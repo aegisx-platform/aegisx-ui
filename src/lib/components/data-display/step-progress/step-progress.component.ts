@@ -55,11 +55,18 @@ export class AxStepProgressComponent {
   /** aria-label for the whole group. */
   readonly ariaLabel = input<string>('Step progress');
 
+  /** When true, the track stretches to fill its container (connectors grow). */
+  readonly fullWidth = input<boolean, boolean | string>(false, {
+    transform: booleanAttribute,
+  });
+
   /** Emitted when a marker is activated (click / Enter / Space). */
   readonly stepClick = output<StepProgressItem>();
 
   @HostBinding('class') get hostClass(): string {
-    return `size-${this.size()} overflow-${this.overflow()}`;
+    return `size-${this.size()} overflow-${this.overflow()}${
+      this.fullWidth() ? ' full-width' : ''
+    }`;
   }
 
   @HostBinding('attr.role') readonly role = 'group';

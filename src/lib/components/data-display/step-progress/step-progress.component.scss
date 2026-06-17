@@ -96,7 +96,7 @@
   &.status-current {
     background: var(--ax-brand-default, #6366f1);
     border-color: transparent;
-    color: #ffffff;
+    color: var(--ax-text-inverse, #ffffff);
     box-shadow: 0 0 0 4px
       color-mix(in srgb, var(--ax-brand-default, #6366f1) 20%, transparent);
   }
@@ -202,4 +202,20 @@
   overflow-x: auto;
   max-width: 100%;
   scrollbar-width: thin;
+}
+
+/* full-width: stretch the track across the container so connectors grow and
+   step labels get the full width instead of shrinking to content. */
+:host(.full-width) {
+  display: flex;
+  width: 100%;
+}
+
+:host(.full-width) .track {
+  display: flex;
+  width: 100%;
+}
+
+:host(.full-width) .connector {
+  flex: 1 1 auto;
 }
