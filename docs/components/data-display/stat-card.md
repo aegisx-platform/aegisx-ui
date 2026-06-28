@@ -312,10 +312,10 @@ automatically via the theme system. No `.dark` class or `isDarkMode` input
 is required. Key tokens:
 
 ```
---ax-bg-surface            / --ax-bg-subtle
+--ax-background-default    / --ax-background-subtle
 --ax-border-default        / --ax-border-subtle
 --ax-text-heading          / --ax-text-secondary / --ax-text-subtle
---ax-color-{primary|info|success|warning|error}-{50|100|500|600}
+--ax-{brand|info|success|warning|error}-{50|100|500|600}
 ```
 
 See `TOKEN_REFERENCE.md` for the full list.
