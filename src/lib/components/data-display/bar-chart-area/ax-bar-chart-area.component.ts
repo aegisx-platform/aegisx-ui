@@ -12,7 +12,23 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BaseChartDirective } from 'ng2-charts';
-import type { ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  LinearScale,
+  Tooltip,
+  type ChartConfiguration,
+  type ChartData,
+  type ChartOptions,
+} from 'chart.js';
+
+// Chart.js v4 tree-shakes by default — nothing is registered unless this
+// component registers what its own 'bar' chart type needs. Registration
+// is additive/idempotent, so this is safe to call even if some other
+// chart component on the page already registered other pieces.
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
 
 /**
  * Chart.js cannot parse `var(--...)` in color options. We read the
