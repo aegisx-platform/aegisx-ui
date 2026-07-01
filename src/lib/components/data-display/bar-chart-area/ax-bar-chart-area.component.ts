@@ -4,12 +4,9 @@ import {
   EventEmitter,
   Input,
   Output,
-  PLATFORM_ID,
   computed,
-  inject,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BaseChartDirective } from 'ng2-charts';
 import {
@@ -23,21 +20,13 @@ import {
   type ChartData,
   type ChartOptions,
 } from 'chart.js';
+import { axChartColor } from '../../../utils/chart-color.util';
 
 // Chart.js v4 tree-shakes by default — nothing is registered unless this
 // component registers what its own 'bar' chart type needs. Registration
 // is additive/idempotent, so this is safe to call even if some other
 // chart component on the page already registered other pieces.
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
-
-/**
- * Chart.js cannot parse `var(--...)` in color options. We read the
- * resolved CSS custom property once (at construction) and fall back to
- * the Manage.City-standard hex values when the token is not registered
- * on `:root` or when running outside the browser (SSR).
- */
-const DEFAULT_ACCENT = '#3b82f6';
-const DEFAULT_ACCENT_SOFT = '#93c5fd';
 
 export interface BarChartPeriod {
   readonly id: string;
@@ -114,7 +103,7 @@ export interface BarChartPeriod {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        color: #fff;
+        color: var(--ax-dashboard-text, #fff);
         height: 100%;
         min-height: 280px;
       }
@@ -154,7 +143,7 @@ export interface BarChartPeriod {
 
         ::ng-deep .mat-button-toggle-checked {
           background: rgba(255, 255, 255, 0.14);
-          color: #fff;
+          color: var(--ax-dashboard-text, #fff);
           border-radius: 10px;
         }
 
@@ -237,19 +226,11 @@ export class AxBarChartAreaComponent {
   private readonly accentSoftHex: string;
 
   constructor() {
-    const platformId = inject(PLATFORM_ID);
-    if (isPlatformBrowser(platformId) && typeof document !== 'undefined') {
-      const styles = getComputedStyle(document.documentElement);
-      this.accentHex =
-        styles.getPropertyValue('--ax-dashboard-accent').trim() ||
-        DEFAULT_ACCENT;
-      this.accentSoftHex =
-        styles.getPropertyValue('--ax-dashboard-accent-soft').trim() ||
-        DEFAULT_ACCENT_SOFT;
-    } else {
-      this.accentHex = DEFAULT_ACCENT;
-      this.accentSoftHex = DEFAULT_ACCENT_SOFT;
-    }
+    // axChartColor() already guards `typeof document === 'undefined'`
+    // internally and returns its hex fallback in that case, so this is
+    // safe to call unconditionally (browser or SSR).
+    this.accentHex = axChartColor('--ax-dashboard-accent');
+    this.accentSoftHex = axChartColor('--ax-dashboard-accent-soft');
   }
 
   readonly chartData = computed<ChartData<'bar'>>(() => {

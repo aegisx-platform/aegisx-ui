@@ -148,3 +148,8 @@ export function slugify(text: string): string {
  * Datetime utility functions
  */
 export * from './datetime.utils';
+
+/**
+ * Chart colour token resolution (Chart.js needs real colours, not var())
+ */
+export * from './chart-color.util';
