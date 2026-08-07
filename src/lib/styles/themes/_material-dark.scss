@@ -1,0 +1,73 @@
+/* ============================================================
+   AegisX — Angular Material Dark Theme (scoped)
+
+   ทำไมต้องมีไฟล์นี้แยก:
+
+   `aegisx-light.scss` และ `aegisx-dark.scss` ต่างก็ include
+   `mat.all-component-themes(...)` ใต้ `:root` เหมือนกัน — import ทั้งคู่
+   ตัวหลังจะทับตัวแรกเสมอ ไม่ผูกกับธีมที่ผู้ใช้เลือก ผลคือแอปโหลดได้แค่
+   ธีม Material เดียว (ปัจจุบันคือ light) แล้ว `--mdc-*` / `--mat-*`
+   ค้างเป็นค่าโหมดสว่างทั้งแอป ต่อให้ `--ax-*` flip ไปแล้วก็ตาม
+   อาการ: ปุ่ม outlined, chips, form field จางจนอ่านไม่ออกบนพื้นเข้ม
+
+   ไฟล์นี้จึง include Material dark theme ใต้ selector เดียวกับที่
+   `AxThemeService` เขียนลง <html> (`data-theme` / `.theme-*`) เพื่อให้
+   Material flip พร้อม `--ax-*` โดยไม่ต้องแก้ไฟล์ธีมเดิมทั้งสองตัว
+
+   ต้อง `@use` ไฟล์นี้ "หลัง" aegisx-light.scss — specificity ของ
+   `[data-theme='aegisx-dark']` เท่ากับ `:root` (0,1,0) จึงชนะด้วยลำดับ
+   ============================================================ */
+
+@use '@angular/material' as mat;
+
+// ค่าต้องตรงกับ aegisx-dark.scss ทุกประการ ต่างกันแค่ selector ที่ครอบ
+$aegisx-material-dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$violet-palette,
+    ),
+    typography: (
+      plain-family:
+        'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      brand-family:
+        'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    ),
+    density: (
+      scale: -1,
+    ),
+  )
+);
+
+[data-theme='aegisx-dark'],
+.theme-aegisx-dark {
+  @include mat.all-component-themes($aegisx-material-dark-theme);
+
+  // รองรับ color="accent" / color="warn" แบบ Material 2 ที่ยังใช้อยู่ในแอป
+  @include mat.color-variants-backwards-compatibility(
+    $aegisx-material-dark-theme
+  );
+
+  // ปุ่ม raised ที่ระบุ color attribute ไม่ได้ถูกครอบด้วย M3 mixin ข้างบน
+  .mat-mdc-raised-button.mat-primary {
+    @include mat.button-color(
+      $aegisx-material-dark-theme,
+      $color-variant: primary
+    );
+  }
+
+  .mat-mdc-raised-button.mat-accent {
+    @include mat.button-color(
+      $aegisx-material-dark-theme,
+      $color-variant: tertiary
+    );
+  }
+
+  .mat-mdc-raised-button.mat-warn {
+    @include mat.button-color(
+      $aegisx-material-dark-theme,
+      $color-variant: error
+    );
+  }
+}
