@@ -96,16 +96,16 @@ import { resolveErrorConfig } from './resolve-error-config';
 
       /* Severity variants */
       .ax-error-banner--error {
-        background: var(--ax-error-50, #fef3f2);
-        border: 1px solid var(--ax-error-200, #fecdca);
+        background: var(--ax-error-surface, #fef3f2);
+        border: 1px solid var(--ax-error-border, #fecdca);
       }
       .ax-error-banner--warning {
-        background: var(--ax-warning-50, #fffaeb);
-        border: 1px solid var(--ax-warning-200, #fedf89);
+        background: var(--ax-warning-surface, #fffaeb);
+        border: 1px solid var(--ax-warning-border, #fedf89);
       }
       .ax-error-banner--info {
-        background: var(--ax-brand-50, #eff8ff);
-        border: 1px solid var(--ax-brand-200, #b2ddff);
+        background: var(--ax-brand-surface, #eff8ff);
+        border: 1px solid var(--ax-brand-border, #b2ddff);
       }
       .ax-error-banner--neutral {
         background: var(--ax-gray-50, #f9fafb);
@@ -123,13 +123,13 @@ import { resolveErrorConfig } from './resolve-error-config';
         font-size: 20px;
       }
       .ax-error-banner--error .ax-error-banner__icon {
-        color: var(--ax-error-600, #d92d20);
+        color: var(--ax-error-emphasis, #d92d20);
       }
       .ax-error-banner--warning .ax-error-banner__icon {
-        color: var(--ax-warning-600, #dc6803);
+        color: var(--ax-warning-emphasis, #dc6803);
       }
       .ax-error-banner--info .ax-error-banner__icon {
-        color: var(--ax-brand-600, #1570ef);
+        color: var(--ax-brand-emphasis, #1570ef);
       }
       .ax-error-banner--neutral .ax-error-banner__icon {
         color: var(--ax-gray-500, #667085);
@@ -146,13 +146,13 @@ import { resolveErrorConfig } from './resolve-error-config';
         font-weight: 500;
       }
       .ax-error-banner--error .ax-error-banner__title {
-        color: var(--ax-error-700, #b42318);
+        color: var(--ax-error-emphasis, #b42318);
       }
       .ax-error-banner--warning .ax-error-banner__title {
-        color: var(--ax-warning-700, #b54708);
+        color: var(--ax-warning-emphasis, #b54708);
       }
       .ax-error-banner--info .ax-error-banner__title {
-        color: var(--ax-brand-700, #175cd3);
+        color: var(--ax-brand-emphasis, #175cd3);
       }
       .ax-error-banner--neutral .ax-error-banner__title {
         color: var(--ax-gray-700, #344054);
@@ -164,13 +164,13 @@ import { resolveErrorConfig } from './resolve-error-config';
         margin-top: 4px;
       }
       .ax-error-banner--error .ax-error-banner__desc {
-        color: var(--ax-error-600, #d92d20);
+        color: var(--ax-error-emphasis, #d92d20);
       }
       .ax-error-banner--warning .ax-error-banner__desc {
-        color: var(--ax-warning-600, #dc6803);
+        color: var(--ax-warning-emphasis, #dc6803);
       }
       .ax-error-banner--info .ax-error-banner__desc {
-        color: var(--ax-brand-600, #1570ef);
+        color: var(--ax-brand-emphasis, #1570ef);
       }
       .ax-error-banner--neutral .ax-error-banner__desc {
         color: var(--ax-gray-600, #475569);
@@ -192,13 +192,13 @@ import { resolveErrorConfig } from './resolve-error-config';
         padding: 0;
       }
       .ax-error-banner--error .ax-error-banner__link {
-        color: var(--ax-error-700, #b42318);
+        color: var(--ax-error-emphasis, #b42318);
       }
       .ax-error-banner--warning .ax-error-banner__link {
-        color: var(--ax-warning-700, #b54708);
+        color: var(--ax-warning-emphasis, #b54708);
       }
       .ax-error-banner--info .ax-error-banner__link {
-        color: var(--ax-brand-700, #175cd3);
+        color: var(--ax-brand-emphasis, #175cd3);
       }
       .ax-error-banner--neutral .ax-error-banner__link {
         color: var(--ax-gray-700, #344054);
@@ -228,13 +228,13 @@ import { resolveErrorConfig } from './resolve-error-config';
         font-size: 16px;
       }
       .ax-error-banner--error .ax-error-banner__close {
-        color: var(--ax-error-600, #d92d20);
+        color: var(--ax-error-emphasis, #d92d20);
       }
       .ax-error-banner--warning .ax-error-banner__close {
-        color: var(--ax-warning-600, #dc6803);
+        color: var(--ax-warning-emphasis, #dc6803);
       }
       .ax-error-banner--info .ax-error-banner__close {
-        color: var(--ax-brand-600, #1570ef);
+        color: var(--ax-brand-emphasis, #1570ef);
       }
       .ax-error-banner--neutral .ax-error-banner__close {
         color: var(--ax-gray-500, #667085);

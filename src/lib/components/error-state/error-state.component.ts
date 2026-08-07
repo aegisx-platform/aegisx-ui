@@ -205,8 +205,8 @@ export interface ErrorStateAction {
       }
 
       .ax-error-state__btn--primary {
-        background: var(--ax-brand-600, #1570ef);
-        color: #fff;
+        background: var(--ax-brand-default, #1570ef);
+        color: var(--ax-brand-inverted, #fff);
         box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
       }
       .ax-error-state__btn--primary:hover {

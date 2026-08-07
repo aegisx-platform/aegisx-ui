@@ -696,7 +696,7 @@ const DEFAULT_CONFIG: LauncherConfig = {
 
       .tab-count--pinned {
         background: var(--ax-warning-faint, #fef3c7);
-        color: var(--ax-warning-700, #b45309);
+        color: var(--ax-warning-emphasis, #b45309);
       }
     }
 

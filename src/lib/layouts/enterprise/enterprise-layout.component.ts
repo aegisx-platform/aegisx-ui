@@ -119,7 +119,10 @@ import {
             <!-- Brand -->
             <div class="ax-enterprise-brand">
               @if (logoSvgIcon) {
-                <mat-icon [svgIcon]="logoSvgIcon" class="ax-enterprise-logo-icon"></mat-icon>
+                <mat-icon
+                  [svgIcon]="logoSvgIcon"
+                  class="ax-enterprise-logo-icon"
+                ></mat-icon>
               } @else if (logoUrl) {
                 <img
                   [src]="logoUrl"
@@ -286,7 +289,10 @@ import {
                     [disabled]="item.disabled || false"
                   >
                     @if (item.svgIcon) {
-                      <mat-icon class="tab-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                      <mat-icon
+                        class="tab-icon"
+                        [svgIcon]="item.svgIcon"
+                      ></mat-icon>
                     } @else if (item.icon) {
                       <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
                     }
@@ -326,7 +332,10 @@ import {
                     [disabled]="item.disabled || false"
                   >
                     @if (item.svgIcon) {
-                      <mat-icon class="tab-icon" [svgIcon]="item.svgIcon"></mat-icon>
+                      <mat-icon
+                        class="tab-icon"
+                        [svgIcon]="item.svgIcon"
+                      ></mat-icon>
                     } @else if (item.icon) {
                       <mat-icon class="tab-icon">{{ item.icon }}</mat-icon>
                     }
@@ -783,7 +792,7 @@ import {
 
         &.badge-warn {
           background: var(--ax-warning-default);
-          color: var(--ax-warning-950);
+          color: var(--ax-warning-emphasis);
         }
       }
 
