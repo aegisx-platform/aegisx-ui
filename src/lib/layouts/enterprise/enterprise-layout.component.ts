@@ -411,7 +411,7 @@ import {
         position: sticky;
         top: 0;
         z-index: 100;
-        background: var(--ax-background-surface);
+        background: var(--ax-background-default, #ffffff);
         border-bottom: 1px solid var(--ax-border-default);
       }
 
@@ -798,7 +798,7 @@ import {
 
       /* Sub Navigation */
       .ax-enterprise-subnav {
-        background: var(--ax-background-surface);
+        background: var(--ax-background-default, #ffffff);
         border-bottom: 1px solid var(--ax-border-default);
       }
 
@@ -881,7 +881,7 @@ import {
 
       /* Footer */
       .ax-enterprise-footer {
-        background: var(--ax-background-surface);
+        background: var(--ax-background-default, #ffffff);
         border-top: 1px solid var(--ax-border-default);
       }
 
