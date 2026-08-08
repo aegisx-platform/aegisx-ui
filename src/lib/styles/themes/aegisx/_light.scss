@@ -97,6 +97,26 @@
   --ax-info-border: #{$aegisx-info-200};
 
   // ===========================================
+  // INDIGO (accent — การ์ด/แบนเนอร์ที่ไม่ใช่ semantic state)
+  // ===========================================
+  --ax-indigo-default: #{$aegisx-indigo-500};
+  --ax-indigo-emphasis: #{$aegisx-indigo-800};
+  --ax-indigo-faint: #{$aegisx-indigo-50};
+  --ax-indigo-muted: #{$aegisx-indigo-200};
+  --ax-indigo-surface: #{$aegisx-indigo-50};
+  --ax-indigo-border: #{$aegisx-indigo-200};
+
+  // ===========================================
+  // PURPLE (accent)
+  // ===========================================
+  --ax-purple-default: #{$aegisx-purple-600};
+  --ax-purple-emphasis: #{$aegisx-purple-700};
+  --ax-purple-faint: #{$aegisx-purple-50};
+  --ax-purple-muted: #{$aegisx-purple-200};
+  --ax-purple-surface: #{$aegisx-purple-50};
+  --ax-purple-border: #{$aegisx-purple-200};
+
+  // ===========================================
   // GRAY SCALE
   // ===========================================
   --ax-gray-50: #{$aegisx-zinc-50};

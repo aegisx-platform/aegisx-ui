@@ -100,6 +100,26 @@
   --ax-info-border: rgba(96, 165, 250, 0.3);
 
   // ===========================================
+  // INDIGO (accent — สว่างขึ้นสำหรับพื้นเข้ม)
+  // ===========================================
+  --ax-indigo-default: #818cf8; // Indigo 400
+  --ax-indigo-emphasis: #a5b4fc; // Indigo 300
+  --ax-indigo-faint: rgba(129, 140, 248, 0.1);
+  --ax-indigo-muted: rgba(129, 140, 248, 0.2);
+  --ax-indigo-surface: rgba(129, 140, 248, 0.08);
+  --ax-indigo-border: rgba(129, 140, 248, 0.3);
+
+  // ===========================================
+  // PURPLE (accent)
+  // ===========================================
+  --ax-purple-default: #c084fc; // Purple 400
+  --ax-purple-emphasis: #d8b4fe; // Purple 300
+  --ax-purple-faint: rgba(192, 132, 252, 0.1);
+  --ax-purple-muted: rgba(192, 132, 252, 0.2);
+  --ax-purple-surface: rgba(192, 132, 252, 0.08);
+  --ax-purple-border: rgba(192, 132, 252, 0.3);
+
+  // ===========================================
   // GRAY SCALE (Tailwind Zinc - inverted for dark mode)
   // ===========================================
   --ax-gray-50: #09090b; // zinc-950

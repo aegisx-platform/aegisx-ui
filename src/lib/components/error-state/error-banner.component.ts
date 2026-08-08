@@ -108,8 +108,8 @@ import { resolveErrorConfig } from './resolve-error-config';
         border: 1px solid var(--ax-brand-border, #b2ddff);
       }
       .ax-error-banner--neutral {
-        background: var(--ax-gray-50, #f9fafb);
-        border: 1px solid var(--ax-gray-200, #eaecf0);
+        background: var(--ax-background-subtle, #f9fafb);
+        border: 1px solid var(--ax-border-default, #eaecf0);
       }
 
       /* Icon */
@@ -132,7 +132,7 @@ import { resolveErrorConfig } from './resolve-error-config';
         color: var(--ax-brand-emphasis, #1570ef);
       }
       .ax-error-banner--neutral .ax-error-banner__icon {
-        color: var(--ax-gray-500, #667085);
+        color: var(--ax-text-secondary, #667085);
       }
 
       /* Content */
@@ -155,7 +155,7 @@ import { resolveErrorConfig } from './resolve-error-config';
         color: var(--ax-brand-emphasis, #175cd3);
       }
       .ax-error-banner--neutral .ax-error-banner__title {
-        color: var(--ax-gray-700, #344054);
+        color: var(--ax-text-heading, #344054);
       }
 
       .ax-error-banner__desc {
@@ -173,7 +173,7 @@ import { resolveErrorConfig } from './resolve-error-config';
         color: var(--ax-brand-emphasis, #1570ef);
       }
       .ax-error-banner--neutral .ax-error-banner__desc {
-        color: var(--ax-gray-600, #475569);
+        color: var(--ax-text-secondary, #475569);
       }
 
       /* Action links */
@@ -201,7 +201,7 @@ import { resolveErrorConfig } from './resolve-error-config';
         color: var(--ax-brand-emphasis, #175cd3);
       }
       .ax-error-banner--neutral .ax-error-banner__link {
-        color: var(--ax-gray-700, #344054);
+        color: var(--ax-text-heading, #344054);
       }
 
       /* Close button */
@@ -237,7 +237,7 @@ import { resolveErrorConfig } from './resolve-error-config';
         color: var(--ax-brand-emphasis, #1570ef);
       }
       .ax-error-banner--neutral .ax-error-banner__close {
-        color: var(--ax-gray-500, #667085);
+        color: var(--ax-text-secondary, #667085);
       }
 
       @keyframes bannerSlideIn {
