@@ -634,6 +634,9 @@ import {
         width: 36px;
         height: 36px;
         flex-shrink: 0;
+        /* ไอคอน SVG ใช้ stroke=currentColor — ไม่ตั้งสีไว้จะได้สีเข้มจาก
+           ตัวแม่ แล้วจมหายไปกับพื้นหัวสีเข้ม */
+        color: var(--ax-enterprise-header-text-hover, #ffffff);
       }
 
       .ax-enterprise-logo-placeholder {

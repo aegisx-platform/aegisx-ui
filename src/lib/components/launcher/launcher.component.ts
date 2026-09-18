@@ -104,6 +104,9 @@ const DEFAULT_CONFIG: LauncherConfig = {
         </div>
 
         <div class="ax-launcher__actions">
+          <!-- ปุ่มของหน้าที่ใช้ launcher (เช่น เปลี่ยนคลัง) วางคู่กับช่องค้นหา -->
+          <ng-content select="[launcherActions]"></ng-content>
+
           <!-- Notification Summary Badge -->
           @if (totalNotifications() > 0) {
             <div
