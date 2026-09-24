@@ -31,7 +31,7 @@ export const lightTheme = {
       // Colors
       '--ax-bg': this.colors.background.default,
       '--ax-bg-muted': this.colors.background.muted,
-      '--ax-bg-subtle': this.colors.background.subtle,
+      '--ax-background-subtle': this.colors.background.subtle,
       '--ax-bg-emphasis': this.colors.background.emphasis,
 
       '--ax-text': this.colors.text.primary,
