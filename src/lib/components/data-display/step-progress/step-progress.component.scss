@@ -206,6 +206,21 @@
   color: var(--ax-error-default, #ef4444);
 }
 
+/* ขั้นที่กำลังทำ = ยังไม่เสร็จ — marker ทึบกับเส้นทึบอ่านเป็น "ทำแล้ว"
+   (ทึบ = เสร็จเป็นภาษาเดียวกับขั้นสีเขียว) จึงใช้วงโปร่งขอบสีหลัก และเส้นที่
+   วิ่งเข้าหาเป็นเส้นประ: ยังไปไม่ถึง */
+:host(.label-bottom) .marker.status-current {
+  background: var(--ax-background-default, #ffffff);
+  border: 2px solid var(--ax-brand-default, #6366f1);
+  color: var(--ax-brand-default, #6366f1);
+}
+
+:host(.label-bottom) .connector.status-current {
+  background: transparent;
+  border-top: 2px dashed var(--ax-brand-default, #6366f1);
+  height: 0;
+}
+
 .label-block {
   display: inline-flex;
   flex-direction: column;
@@ -235,6 +250,10 @@
   overflow-x: auto;
   max-width: 100%;
   scrollbar-width: thin;
+  /* overflow-x: auto ตัดแกนตั้งด้วย — วง glow 4px ของ marker current โดนตัด
+     ขอบบน เว้นที่ให้แล้วหักคืนด้วย margin ความสูงรวมจึงเท่าเดิม */
+  padding-block: 6px;
+  margin-block: -6px;
 }
 
 /* full-width: stretch the track across the container so connectors grow and
