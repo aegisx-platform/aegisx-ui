@@ -109,14 +109,15 @@ see: `step 1 · … · step 5 · step 6 (current) · step 9`.
 
 ### Inputs
 
-| Input        | Type                                | Default           | Description                                                |
-| ------------ | ----------------------------------- | ----------------- | ---------------------------------------------------------- |
-| `steps`      | `StepProgressItem[]` **(required)** | —                 | Ordered list of steps.                                     |
-| `size`       | `'sm' \| 'md' \| 'lg'`              | `'sm'`            | Visual density.                                            |
-| `overflow`   | `'none' \| 'scroll' \| 'collapse'`  | `'none'`          | Overflow strategy.                                         |
-| `maxVisible` | `number`                            | `5`               | Max markers when `overflow='collapse'`. Ignored otherwise. |
-| `clickable`  | `boolean`                           | `false`           | Markers focusable + emit `(stepClick)` on activate.        |
-| `ariaLabel`  | `string`                            | `'Step progress'` | Host `aria-label`.                                         |
+| Input           | Type                                | Default           | Description                                                                                               |
+| --------------- | ----------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------- |
+| `steps`         | `StepProgressItem[]` **(required)** | —                 | Ordered list of steps.                                                                                    |
+| `size`          | `'sm' \| 'md' \| 'lg'`              | `'sm'`            | Visual density.                                                                                           |
+| `overflow`      | `'none' \| 'scroll' \| 'collapse'`  | `'none'`          | Overflow strategy.                                                                                        |
+| `maxVisible`    | `number`                            | `5`               | Max markers when `overflow='collapse'`. Ignored otherwise.                                                |
+| `clickable`     | `boolean`                           | `false`           | Markers focusable + emit `(stepClick)` on activate.                                                       |
+| `ariaLabel`     | `string`                            | `'Step progress'` | Host `aria-label`.                                                                                        |
+| `labelPosition` | `'end' \| 'bottom'`                 | `'end'`           | Label beside the marker, or centred under it (md/lg). `'bottom'` shows the full label (max 160px, wraps). |
 
 ### Outputs
 

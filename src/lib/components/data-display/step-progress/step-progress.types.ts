@@ -12,6 +12,13 @@ export type StepProgressStatus =
 /** Visual density of the component. */
 export type StepProgressSize = 'sm' | 'md' | 'lg';
 
+/**
+ * Where the label + timestamp sit relative to the marker (md / lg only).
+ * 'end' = beside the marker (compact, label capped at 88px).
+ * 'bottom' = centred under the marker, full label — for detail-page headers.
+ */
+export type StepProgressLabelPosition = 'end' | 'bottom';
+
 /** How to handle step lists that exceed the available width. */
 export type StepProgressOverflow = 'scroll' | 'collapse' | 'none';
 

@@ -7,11 +7,12 @@ import {
   input,
   output,
 } from '@angular/core';
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   StepProgressItem,
+  StepProgressLabelPosition,
   StepProgressOverflow,
   StepProgressSize,
 } from './step-progress.types';
@@ -29,7 +30,7 @@ import {
 @Component({
   selector: 'ax-step-progress',
   standalone: true,
-  imports: [DatePipe, NgTemplateOutlet, MatIconModule, MatTooltipModule],
+  imports: [NgTemplateOutlet, MatIconModule, MatTooltipModule],
   templateUrl: './step-progress.component.html',
   styleUrls: ['./step-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,11 +61,14 @@ export class AxStepProgressComponent {
     transform: booleanAttribute,
   });
 
+  /** Label beside the marker ('end', default) or centred under it ('bottom'). */
+  readonly labelPosition = input<StepProgressLabelPosition>('end');
+
   /** Emitted when a marker is activated (click / Enter / Space). */
   readonly stepClick = output<StepProgressItem>();
 
   @HostBinding('class') get hostClass(): string {
-    return `size-${this.size()} overflow-${this.overflow()}${
+    return `size-${this.size()} overflow-${this.overflow()} label-${this.labelPosition()}${
       this.fullWidth() ? ' full-width' : ''
     }`;
   }
@@ -174,6 +178,17 @@ export class AxStepProgressComponent {
       event.preventDefault();
       this.stepClick.emit(item);
     }
+  }
+
+  /** วันที่ใต้ชื่อขั้น — แบบไทย "27 ก.ย. 2569" ให้ตรงกับ tooltip และทั้งระบบ */
+  protected formatTimestamp(timestamp: string): string {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('th-TH', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 
   protected tooltipFor(item: StepProgressItem): string {

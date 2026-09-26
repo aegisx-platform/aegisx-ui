@@ -173,6 +173,39 @@
   flex-shrink: 0;
 }
 
+/* Wrapper for marker + label. 'end' layout: transparent to the track, so the
+   marker and label stay direct flex children exactly as before the wrapper. */
+.step {
+  display: contents;
+}
+
+:host(.label-bottom) .step {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+:host(.label-bottom) .label-block,
+:host(.label-bottom) .label {
+  max-width: 160px;
+}
+
+:host(.label-bottom) .label {
+  white-space: normal;
+}
+
+/* ใต้ marker ชื่อขั้นอยู่ห่างจากวงกลม — ขั้นที่กำลังทำต้องเด่นที่ตัวชื่อด้วย */
+:host(.label-bottom) .step.status-current .label {
+  color: var(--ax-brand-default, #6366f1);
+  font-weight: 600;
+}
+
+:host(.label-bottom) .step.status-error .label {
+  color: var(--ax-error-default, #ef4444);
+}
+
 .label-block {
   display: inline-flex;
   flex-direction: column;
