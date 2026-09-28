@@ -1626,15 +1626,6 @@ export class AxLauncherComponent {
         return true;
       }
 
-      if (
-        this.matchesInventoryDomainPermission(
-          normalizedUserPermission,
-          normalizedRequiredPermission,
-        )
-      ) {
-        return true;
-      }
-
       const userParts = this.splitPermission(normalizedUserPermission);
       if (!userParts) {
         return false;
@@ -1693,36 +1684,6 @@ export class AxLauncherComponent {
       resource: permission.slice(0, separatorIndex),
       action: permission.slice(separatorIndex + 1),
     };
-  }
-
-  private matchesInventoryDomainPermission(
-    normalizedUserPermission: string,
-    normalizedRequiredPermission: string,
-  ): boolean {
-    if (!normalizedRequiredPermission.startsWith('inventory:')) {
-      return false;
-    }
-    if (!normalizedUserPermission.startsWith('inventory:inventory:')) {
-      return false;
-    }
-
-    const inventoryAction = normalizedUserPermission.slice(
-      'inventory:inventory:'.length,
-    );
-
-    if (inventoryAction === '*') {
-      return true;
-    }
-
-    const requiredParts = this.splitPermission(normalizedRequiredPermission);
-    if (!requiredParts) {
-      return false;
-    }
-
-    return (
-      requiredParts.action === inventoryAction ||
-      requiredParts.action.endsWith(`:${inventoryAction}`)
-    );
   }
 
   // ============================================
