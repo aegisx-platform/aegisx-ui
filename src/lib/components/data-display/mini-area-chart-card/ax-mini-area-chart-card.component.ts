@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostBinding,
   Input,
   computed,
   signal,
@@ -87,18 +88,18 @@ export interface MiniAreaDelta {
               stroke-width="2.2"
               stroke-linecap="round"
               stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"
             />
-            @if (endPoint(); as end) {
-              <circle
-                [attr.cx]="end.x"
-                [attr.cy]="end.y"
-                r="4"
-                fill="#fff"
-                stroke="var(--ax-dashboard-accent, #3b82f6)"
-                stroke-width="2"
-              />
-            }
           </svg>
+          <!-- จุดปลายเส้นเป็น HTML วางด้วย % ของ viewBox (400×110) — ถ้าวาดเป็น
+               <circle> ใน svg ที่ preserveAspectRatio="none" จะกลายเป็นวงรีเมื่อกราฟยืด -->
+          @if (endPoint(); as end) {
+            <span
+              class="ax-mini-area-chart-card__dot"
+              [style.left.%]="(end.x / 400) * 100"
+              [style.top.%]="(end.y / 110) * 100"
+            ></span>
+          }
         </div>
 
         <footer class="ax-mini-area-chart-card__x-labels">
@@ -114,6 +115,34 @@ export interface MiniAreaDelta {
       :host {
         display: block;
         min-width: 0;
+      }
+
+      /* fill: สูงเต็มช่อง (เช่น grid ที่ stretch ให้เท่าการ์ดข้าง ๆ) และกราฟยืดตาม */
+      :host(.ax-mini-area-chart-card--fill) {
+        height: 100%;
+      }
+      :host(.ax-mini-area-chart-card--fill) .ax-mini-area-chart-card {
+        display: block;
+        height: 100%;
+      }
+      :host(.ax-mini-area-chart-card--fill)
+        .ax-mini-area-chart-card
+        ::ng-deep
+        .ax-card {
+        height: 100%;
+      }
+      :host(.ax-mini-area-chart-card--fill)
+        .ax-mini-area-chart-card
+        ::ng-deep
+        .ax-card-body {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+      }
+      :host(.ax-mini-area-chart-card--fill) .ax-mini-area-chart-card__chart {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 110px;
       }
 
       .ax-mini-area-chart-card ::ng-deep .ax-card-body {
@@ -158,6 +187,17 @@ export interface MiniAreaDelta {
         }
       }
 
+      .ax-mini-area-chart-card__dot {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ax-background-default, #fff);
+        border: 2px solid var(--ax-dashboard-accent, #3b82f6);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
       .ax-mini-area-chart-card__x-labels {
         display: flex;
         justify-content: space-between;
@@ -182,6 +222,13 @@ export class AxMiniAreaChartCardComponent {
   @Input() xLabels: readonly string[] = [];
   /** Passthrough to inner <ax-card>. */
   @Input() flat = false;
+  /** สูงเต็มช่องของ parent และให้กราฟยืดตาม (ค่าเริ่มต้น = สูงตามเนื้อหา) */
+  @Input() fill = false;
+
+  @HostBinding('class.ax-mini-area-chart-card--fill')
+  get fillClass(): boolean {
+    return this.fill;
+  }
 
   private readonly _dataSignal = signal<readonly number[]>([]);
   /** Read-only projection of the data signal for any consumer that needs it. */

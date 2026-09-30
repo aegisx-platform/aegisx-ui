@@ -64,19 +64,25 @@ import {
           [attr.data-menu]="columns.menu !== false || null"
         >
           <span></span>
-          <span class="ax-activity-list-card__h">CLIENT</span>
+          <span class="ax-activity-list-card__h">{{
+            headerLabels.client ?? 'CLIENT'
+          }}</span>
           @if (columns.amount !== false) {
             <span
               class="ax-activity-list-card__h ax-activity-list-card__h--right"
             >
-              AMOUNT
+              {{ headerLabels.amount ?? 'AMOUNT' }}
             </span>
           }
           @if (columns.status !== false) {
-            <span class="ax-activity-list-card__h">STATUS</span>
+            <span class="ax-activity-list-card__h">{{
+              headerLabels.status ?? 'STATUS'
+            }}</span>
           }
           @if (columns.date !== false) {
-            <span class="ax-activity-list-card__h">DATE</span>
+            <span class="ax-activity-list-card__h">{{
+              headerLabels.date ?? 'DATE'
+            }}</span>
           }
           @if (columns.menu !== false) {
             <span></span>
@@ -328,6 +334,16 @@ export class AxActivityListCardComponent {
   @Input() title = '';
   @Input() items: readonly ActivityListItem[] = [];
   @Input() headerFilterLabel?: string;
+  /**
+   * ป้ายหัวคอลัมน์ — ไม่ส่ง = ค่าเดิมภาษาอังกฤษ (CLIENT / AMOUNT / STATUS / DATE)
+   * หน้าภาษาไทยส่งเช่น `{ client: 'ใบขอซื้อ', amount: 'จำนวนเงิน' }`
+   */
+  @Input() headerLabels: {
+    client?: string;
+    amount?: string;
+    status?: string;
+    date?: string;
+  } = {};
   @Input() columns: ActivityListColumns = {
     amount: true,
     status: true,
