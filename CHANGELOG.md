@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **`ax-stat-card` no longer draws the bottom progress bar twice on
+  `ring` / `gauge`.** Those variants already render `progress` as a
+  circle, but the shared bottom bar also appeared whenever `progress` was
+  set. It is now hidden on them by default.
+
+### Added
+
+- **`ax-stat-card` `showProgressBar` input** — `undefined` (default) keeps
+  the automatic behaviour above; `true` / `false` forces the bottom bar on
+  or off on any variant.
+
 ## [0.5.7] - 2026-06-11
 
 ### Fixed

@@ -138,6 +138,14 @@ export class AxStatCardComponent {
    */
   @Input() progressColor?: StatCardColor;
 
+  /**
+   * Show the thin bottom progress bar when `progress` is set.
+   * `undefined` (default) = auto: shown on every variant except `ring` /
+   * `gauge`, which already draw `progress` as a circle. Pass `true` / `false`
+   * to force it on or off.
+   */
+  @Input() showProgressBar?: boolean;
+
   // ─── Variant-specific inputs ──────────────────────────────────────────
 
   /**
@@ -276,7 +284,10 @@ export class AxStatCardComponent {
 
   /** True when the progress bar should render. */
   get showProgress(): boolean {
-    return this.progress != null && !isNaN(this.progress);
+    if (this.progress == null || isNaN(this.progress)) return false;
+    if (this.showProgressBar != null) return this.showProgressBar;
+    // ring / gauge วาด progress เป็นวงอยู่แล้ว — ค่าเริ่มต้นไม่วาดแถบล่างซ้ำ
+    return this.variant !== 'ring' && this.variant !== 'gauge';
   }
 
   // ─── Sparkline (trend variant) ────────────────────────────────────────
@@ -418,9 +429,7 @@ export class AxStatCardComponent {
   }
 
   /** Enriched thresholds with percent positions for marker placement. */
-  get thresholdViews(): ReadonlyArray<
-    StatCardThreshold & { percent: number }
-  > {
+  get thresholdViews(): ReadonlyArray<StatCardThreshold & { percent: number }> {
     if (!this.thresholds) return [];
     const min = this.min ?? 0;
     const max = this.max ?? 100;
@@ -429,7 +438,10 @@ export class AxStatCardComponent {
     }
     return this.thresholds.map((t) => ({
       ...t,
-      percent: Math.max(0, Math.min(100, ((t.value - min) / (max - min)) * 100)),
+      percent: Math.max(
+        0,
+        Math.min(100, ((t.value - min) / (max - min)) * 100),
+      ),
     }));
   }
 

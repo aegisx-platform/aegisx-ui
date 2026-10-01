@@ -18,7 +18,7 @@ input plus a small set of variant-specific payload inputs.
 - **Clickable filter mode** — `[active]` + `(clicked)` for list-page filters
 - **Value-as-data defaults** — `valueColor="neutral"` + `iconColor="accent"`
   so the number reads as data while the icon still scans by color
-- **Optional progress bar** — set `[progress]` (0–100) on any variant
+- **Optional progress bar** — set `[progress]` (0–100) on any variant (auto-hidden on `ring` / `gauge`; override with `showProgressBar`)
 - **OnPush change detection** + full design-token / dark-mode support via
   `--ax-*` variables
 - **Null-safe value** — `[value]` accepts `string | number | null | undefined`
@@ -76,20 +76,21 @@ Standalone — add to a component's `imports` array.
 
 ### Inputs — Common
 
-| Input           | Type                                    | Default     | Description                                                                |
-| --------------- | --------------------------------------- | ----------- | -------------------------------------------------------------------------- |
-| `icon`          | `string`                                | `''`        | Material icon name.                                                        |
-| `color`         | `StatCardColor`                         | `'info'`    | Semantic color — drives icon bg, active border, and accent tints.          |
-| `variant`       | `StatCardVariant`                       | `'compact'` | Layout variant (see table above).                                          |
-| `value`         | `string \| number \| null \| undefined` | `''`        | Main stat value. Accepts `null`/`undefined` so Angular pipes pass through. |
-| `label`         | `string`                                | `''`        | Card label.                                                                |
-| `subtitle`      | `string`                                | `''`        | Optional subtitle (or delta text in `hero`/`inline-bars`).                 |
-| `valueColor`    | `'accent' \| 'neutral'`                 | `'neutral'` | Whether the value text inherits the semantic color or stays neutral.       |
-| `iconColor`     | `'accent' \| 'neutral'`                 | `'accent'`  | Whether the icon badge follows the semantic color.                         |
-| `active`        | `boolean`                               | `false`     | Active/selected state (shows accent border).                               |
-| `clickable`     | `boolean`                               | `true`      | Whether the card is interactive (cursor, `role=button`, keyboard).         |
-| `progress`      | `number`                                | `undefined` | 0–100. Renders a thin bottom progress bar. Leave `undefined` to hide.      |
-| `progressColor` | `StatCardColor`                         | `color`     | Override for the progress bar color.                                       |
+| Input             | Type                                    | Default     | Description                                                                                                  |
+| ----------------- | --------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------ |
+| `icon`            | `string`                                | `''`        | Material icon name.                                                                                          |
+| `color`           | `StatCardColor`                         | `'info'`    | Semantic color — drives icon bg, active border, and accent tints.                                            |
+| `variant`         | `StatCardVariant`                       | `'compact'` | Layout variant (see table above).                                                                            |
+| `value`           | `string \| number \| null \| undefined` | `''`        | Main stat value. Accepts `null`/`undefined` so Angular pipes pass through.                                   |
+| `label`           | `string`                                | `''`        | Card label.                                                                                                  |
+| `subtitle`        | `string`                                | `''`        | Optional subtitle (or delta text in `hero`/`inline-bars`).                                                   |
+| `valueColor`      | `'accent' \| 'neutral'`                 | `'neutral'` | Whether the value text inherits the semantic color or stays neutral.                                         |
+| `iconColor`       | `'accent' \| 'neutral'`                 | `'accent'`  | Whether the icon badge follows the semantic color.                                                           |
+| `active`          | `boolean`                               | `false`     | Active/selected state (shows accent border).                                                                 |
+| `clickable`       | `boolean`                               | `true`      | Whether the card is interactive (cursor, `role=button`, keyboard).                                           |
+| `progress`        | `number`                                | `undefined` | 0–100. Renders a thin bottom progress bar. Leave `undefined` to hide.                                        |
+| `progressColor`   | `StatCardColor`                         | `color`     | Override for the progress bar color.                                                                         |
+| `showProgressBar` | `boolean`                               | `undefined` | Bottom bar on/off. Default auto: hidden on `ring` / `gauge` (they already draw the circle), shown elsewhere. |
 
 > **Note on defaults (breaking change in 0.5.0)** — `valueColor` flipped from
 > `accent` → `neutral` to match the Untitled UI / enterprise-SaaS look.
